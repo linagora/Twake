@@ -1,0 +1,129 @@
+<div ng-controller="applicationProfilCtrl as apc" style="position:relative;height:100%;">
+
+    <div class="title" >
+        {{apc.data.name}}
+    </div>
+    <div class="page" ng-show="apc.loading" style="height:100%;">
+        <div scrollbar style="height: 100%;position:absolute;width:100%;overflow-x:hidden;" class="scroller">
+            <div class="default-text" style="display: flex; flex-direction: column; position:relative">
+                <div class="cover_app" style="{{apc.data.csscover}}"></div>
+
+
+                <div style="flex: 1; display: flex;position: relative;">
+
+                    <div class="box_left_app_profil">
+
+                        <div class="profil_app" style="{{apc.data.cssthumbnail}}"></div>
+                        <span class="page-title">Popularité</span>
+                        <div style="margin-left: 15px; margin-bottom:10px">
+                            <div class="default-text count_user_profil_app">{{apc.data.nbUsers}} <span style="font-size: 11px">installations</span></div>
+                            <div class="default-text star_app_profil">
+                                <div class="star_container">
+                                    <i class="fa fa-star-o" aria-hidden="true"></i>
+                                    <i class="fa fa-star-o" aria-hidden="true"></i>
+                                    <i class="fa fa-star-o" aria-hidden="true"></i>
+                                    <i class="fa fa-star-o" aria-hidden="true"></i>
+                                    <i class="fa fa-star-o" aria-hidden="true"></i>
+                                </div>
+                                <div style="{{apc.cssVote}}" class="full_star_container">
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                    <i class="fa fa-star" aria-hidden="true"></i>
+                                </div>
+                            </div>
+                            <div class="score_app_profil">({{apc.data.score | number:2}}/5)</div>
+                            <div style="font-size: 10px">{{apc.data.nbvote}} votes</div>
+                        </div>
+                        <div ng-show="apc.data.linkorga.acquired">
+                          <span class="page-title" style="margin-top: 5px">Votre note</span> <br>
+                          <div ng-show="apc.data.linkuser.score<0" style="font-size: 10px;width: 160px;">Vous n'avez pas encore noté cette application</div>
+                          <div ng-show="apc.voteRegistered" style="font-size: 10px">Note enregistrée</div>
+                          <div class="default-text star_app_profil" style="margin-left: 15px; cursor:default" ng-click="apc.vote()" ng-mouseleave="apc.resetScore()">
+                              <div class="star_container">
+                                  <i class="fa fa-star-o" aria-hidden="true" ng-mouseover="apc.scoreHover(1)"></i>
+                                  <i class="fa fa-star-o" aria-hidden="true" ng-mouseover="apc.scoreHover(2)"></i>
+                                  <i class="fa fa-star-o" aria-hidden="true" ng-mouseover="apc.scoreHover(3)"></i>
+                                  <i class="fa fa-star-o" aria-hidden="true" ng-mouseover="apc.scoreHover(4)"></i>
+                                  <i class="fa fa-star-o" aria-hidden="true" ng-mouseover="apc.scoreHover(5)"></i>
+                              </div>
+                              <div class="full_star_container" style="width: {{apc.hover * 20}}%">
+                                  <i class="fa fa-star" aria-hidden="true" ng-mouseover="apc.scoreHover(1)" ></i>
+                                  <i class="fa fa-star" aria-hidden="true" ng-mouseover="apc.scoreHover(2)" ></i>
+                                  <i class="fa fa-star" aria-hidden="true" ng-mouseover="apc.scoreHover(3)" ></i>
+                                  <i class="fa fa-star" aria-hidden="true" ng-mouseover="apc.scoreHover(4)" ></i>
+                                  <i class="fa fa-star" aria-hidden="true" ng-mouseover="apc.scoreHover(5)" ></i>
+                              </div>
+                          </div>
+                        </div>
+                    </div>
+
+
+                    <div style="flex:1; position: relative;margin-right: 80px;">
+                        <div style="width:100%; position: absolute;margin-top: 32px;">
+
+
+                            <div class="title_profil_app" >{{apc.data.name}}</div>
+                            <div class="description_profil_app">{{apc.data.shortDescription}}</div>
+
+                            <div ng-show="apc.showScreens">
+                                <div class="page-title">Captures d'écran</div>
+                                <div style="margin-bottom: 20px;" uib-carousel active="apc.active" interval="5000" no-wrap="noWrapSlides">
+                                    <div uib-slide ng-repeat="slide in apc.slides track by slide.id" index="slide.id">
+                                        <div class="carousel_screen_profil">
+                                          <img src="{{slide.img}}"/>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div ng-show="apc.showDescription">
+                                <div class="page-title">Détails de l'application</div>
+                                <div class="description_complete_app">{{apc.data.description}} </div>
+                            </div>
+
+                            <div class="page-title">Créateur</div>
+                            <div class="creator_app" style="margin-top: 10px;display: flex;font-size: 18px;">
+                                <div class="default_group_image" style="width:50px;height: 50px; border-radius: 15%; display: inline-block; margin-right: 10px; {{apc.data.group.csslogo}}"></div>
+                                <div class="default-text" style="flex:1">
+                                  {{apc.data.group.name}} <span style="opacity: 0.5" class="nfo">{{apc.data.group.key}}</span>
+                                  <br>
+                                  <a ui-sref="group({gid:apc.data.group.id})" style="font-size: 12px;">Voir le groupe</a>
+                                </div>
+                            </div>
+
+                            <div name="Wasting Space TM" style="height: 100px;"></div>
+                        </div>
+
+
+                    </div>
+
+
+
+
+
+                    <div class="box_right_app_profil">
+                        <div ng-show="!apc.data.linkorga.acquired">
+                            <div ng-show="apc.data.price == 0">
+                                <div class="buy_app_btn btn btn-primary" ng-click="apc.acquire()">Install</div>
+                                <div style="text-align: right; margin-top: 5px">Free</div>
+                            </div>
+                            <div ng-show="apc.data.price != 0">
+                                <div class="buy_app_btn btn btn-primary">Buy</div>
+                                <div style="text-align: right; margin-top: 5px">{{apc.data.price}} €</div>
+                            </div>
+                        </div>
+                        <div ng-show="apc.data.linkorga.acquired">
+                            <a ui-sref="application({name:apc.data.name,url:apc.data.url})" ng-show="!apc.data.internal">
+                                <span class="buy_app_btn btn btn-primary">Open</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+
+           </div>
+        </div>
+    </div>
+</div>

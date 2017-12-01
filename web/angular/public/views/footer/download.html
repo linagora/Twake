@@ -1,0 +1,44 @@
+<div class="download" ng-controller="downloadCtrl as ctrl">
+    <div class="blue_content">
+        <div class="title">
+            Twake pour {{ctrl.osSelected}}
+        </div>
+        <div class="content">
+            Pour bénéficier de toutes les possibilités de Twake, télécharger l'application desktop.</br>
+            <div class="active">
+                <button type="button" class="btn_large">Télécharger</button>
+            </div>
+            <img style="max-width:800px;margin-top:50px;height:auto;" src="/public/img/home/screenDesktop.png" >
+        </div>
+    </div>
+    <div style="display:flex;">
+        <div class="box active" ng-class="{'active':ctrl.osSelected=='Windows'}" ng-click="ctrl.osSelected='Windows'">
+            <div class="title">
+                Windows
+            </div>
+            <div class="content">
+                <img class="img" src="/public/img/home/windows.svg">
+                <a href="{{ctrl.linkApp['Windows']}}" download ><button type="button" class="btn_large" >Télécharger</button></a>
+            </div>
+        </div>
+        <div class="box" ng-class="{'active':ctrl.osSelected=='Mac OS'}" ng-click="ctrl.osSelected='Mac OS'">
+            <div class="title">
+                Mac OS
+            </div>
+            <div class="content">
+                <img class="img" src="/public/img/home/mac.svg">
+                <a href="{{ctrl.linkApp['Mac OS']}}" download ><button type="button" class="btn_large" ng-click="ctrl.download">Télécharger</button></a>
+            </div>
+        </div>
+        <div class="box" ng-class="{'active':ctrl.osSelected=='Linux'}" ng-click="ctrl.osSelected='Linux'">
+            <div class="title">
+                Linux
+            </div>
+            <div class="content">
+                <img class="img" src="/public/img/home/linux.svg">
+                <a href="{{ctrl.linkApp['Linux']}}" download ><button type="button" class="btn_large" ng-click="ctrl.download">Télécharger</button></a>
+            </div>
+        </div>
+    </div>
+    {{ctrl.device}}
+</div>

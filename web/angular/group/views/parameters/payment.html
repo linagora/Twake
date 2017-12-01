@@ -1,0 +1,107 @@
+<div class="title">
+  Paramètres du groupe
+</div>
+<div style="display:flex;height: 100%;" ng-controller="parametersPaymentCtrl as payment">
+    <div class="left-pane" ng-include="'@gviews/parameters/left-menu.html'">
+    </div>
+    <div style="flex:1;position:relative;" >
+        <div ng-attr-perfect-scrollbar="window.ismobile" style="height: 100%;position:absolute;width:100%;overflow-x:hidde;" class="scroller">
+            <div class="main-app">
+                <div class="default-text">
+
+                    <div class="page_block_payment" style="width:100%;border-top: solid 5px rgb(230, 0, 0);box-shadow: 0 3px 10px rgba(230, 0, 0, 0.2);">
+                        <div style="font-size: 35px;padding: 0px 20px 0px 20px;">Vos applications en attente de paiement</div>
+                        <div style="max-width: 550px;margin:auto;margin-top: 25px;">
+                            <div style="border: solid 1px rgba(0,0,0,0.7);">
+                                <div style="width:100%;text-align:right;padding:20px;padding: 5px 20px 5px 20px;">
+                                        5 applications * 15 mois </br>
+                                </div>
+                                <div  style="display:inline-block;width:100%;text-align:right;padding: 5px 20px 5px 20px;background-color:rgba(127,127,127,0.2);">
+                                    85€ HT
+                                </div>
+                                <div  style="display:inline-block;width:100%;text-align:right;padding: 5px 20px 5px 20px;">
+                                    TVA 17€</br>
+                                </div>
+                                <div  style="display:flex;width:100%;font-weight:bold;padding: 5px 20px 5px 20px;background-color:rgba(127,127,127,0.2);">
+
+                                    <div style="flex:1;text-align:right;">TOTAL 167€ TTC</div>
+                                </div>
+                            </div>
+                            <div style="text-align:right;">
+                                <button  ui-sref="paymentConfirmation" class="renouvel">Payer</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page_block_payment" style="width:100%;">
+                        <div style="font-size:35px">Vos services</div>
+                        <div style="max-width: 550px;margin:auto;">
+                            <div style="border: solid 1px rgba(0,0,0,0.7);">
+                                <div style="padding:20px;border-bottom: solid 1px rgba(0,0,0,0.3);display:flex;">
+                                    <div  class="default_group_image" style="width:50px;height:50px;vertical-align:middle;display:inline-block;border-radius:20%; {{cgroup.csslogo}}"></div>
+                                    <div style="flex:1;">
+                                        <div style="font-size: 25px;text-align: left;">Twake INC</div>
+                                        <div style="font-size: 12px;text-align: left;"><span style="opacity:0.5;"> date d'expiration : 18/07/2017 </span><span style="color:red;margin-left:5px;">(5j)</span></div>
+                                    </div>
+                                </div>
+                                <div style="width:100%;text-align:right;padding:20px;padding: 5px 20px 5px 20px;">
+                                        5 sous-groupes </br>
+                                        11 utilisateurs</br>
+                                        15 applications</br>
+                                </div>
+                                <div  style="display:inline-block;width:100%;text-align:right;padding: 5px 20px 5px 20px;background-color:rgba(127,127,127,0.2);">
+                                    85€/mois HT
+                                </div>
+                                <div  style="display:inline-block;width:100%;text-align:right;padding: 5px 20px 5px 20px;">
+                                    TVA 17€</br>
+                                    Nouvelles applications 65€
+                                </div>
+                                <div  style="display:flex;width:100%;font-weight:bold;padding: 5px 20px 5px 20px;background-color:rgba(127,127,127,0.2);">
+                                    <div style="display:inline-block;">
+                                        <select class="choice privacy_select" style=""  ng-model="payment.nbMonth">
+                                            <option  value=1 selected>1 mois</option>
+                                            <option  value=3 >3 mois</option>
+                                            <option  value=6  >6 mois</option>
+                                            <option  value=12  >12 mois</option>
+                                        </select>
+                                    </div>
+                                    <div style="flex:1;text-align:right;">TOTAL 167€ TTC</div>
+                                </div>
+                            </div>
+                            <div style="text-align:right;">
+                                <button ui-sref="paymentConfirmation" class="renouvel">renouveller</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="page_block_payment" style="width:100%;">
+                        <div style="font-size:35px">Vos derniers paiements</div>
+                            <table style="margin-top: 15px;max-width:550px;width:100%;margin:auto;">
+                                <thead>
+                                    <tr>
+                                        <td >date</td>
+                                        <td >prix</td>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>27/05/2017</td>
+                                        <td>55€</td>
+                                    </tr>
+                                    <tr>
+                                        <td>27/06/2017</td>
+                                        <td >55€</td>
+                                    </tr>
+                                    <tr>
+                                        <td>27/07/2017</td>
+                                        <td >55€</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

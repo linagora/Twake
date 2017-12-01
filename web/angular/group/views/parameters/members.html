@@ -1,0 +1,195 @@
+<div class="title">
+	Paramètres du groupe
+</div>
+<div style="display:flex;height: 100%;">
+	<div class="left-pane" ng-include="'@gviews/parameters/left-menu.html'">
+	</div>
+	<div style="flex:1;position: relative;" ng-controller="parametersMembersCtrl as param">
+		<div scrollbar style="height: 100%;position:absolute;width:100%;overflow-x:hidde;" class="scroller">
+
+			<div class="main-app">
+				<div class="page-title">
+					Gestion des membres
+				</div>
+
+				<div class="nfo" ng-show="!cgroup.data.right.base.members.edit">
+					Vous êtes {{cgroup.data.nameLevel}}, vous ne pouvez pas modifier les membres du groupe.
+				</div>
+
+
+				<table style="margin-top: 15px;">
+					<thead>
+					<td style="text-align:left;">
+						Utilisateur
+					</td>
+					<td class="td-right">
+						Adresse mail utilisée
+					</td>
+					<td class="td-right">
+						Niveau
+					</td>
+					<td>
+					</td>
+					</thead>
+
+					<tr ng-repeat="user in param.members" ng-class="{'selected': param.selectedMembers[user.id]}">
+						<td>
+							<div style="display:flex">
+								<div class="groupCircleProfile" style="margin:0; {{user.cssuserimage}}"></div>
+								<div style="text-align:left; flex:1;display: flex;flex-direction: column;justify-content: center;padding-left: 10px;">
+									{{user.username}}
+								</div>
+							</div>
+						</td>
+						<td class="td-right">
+							{{user.mail}}
+						</td>
+						<td class="td-right">
+							{{user.role}}
+						</td>
+						<td style="text-align: center;" ng-show="cgroup.data.right.base.members.edit">
+							<input style="margin-top:5px !important;" type="checkbox" class="checkbox"
+							       ng-model="param.selectedMembers[user.id]"
+							       ng-show="groupGeneral.hasRightMembersRemove || groupGeneral.hasRightRightEdit">
+						</td>
+					</tr>
+
+				</table>
+
+				<div style="display: flex;">
+					<div style="flex:1">
+						<ul uib-pagination total-items="param.totalItems" ng-model="param.currentPage"
+						    items-per-page="param.pageSize" class="pagination-sm" boundary-link-numbers="true"
+						    ng-change="param.loadUsers(param.currentPage)"></ul>
+					</div>
+					<div style="padding-top: 20px;" ng-show="cgroup.data.right.base.members.edit">
+						<select class="form-control" ng-model="param.actionSelect"
+						        ng-change="param.actionSelectChange();param.actionSelectLevel=''"
+						        ng-show="groupGeneral.hasRightMembersRemove || groupGeneral.hasRightRightEdit">
+							<option value="">Pour la sélection</option>
+							<option value="delete" ng-show="groupGeneral.hasRightMembersRemove">Supprimer</option>
+							<option value="level" ng-show="groupGeneral.hasRightRightEdit">Changer le niveau...</option>
+						</select>
+						<select class="form-control"
+						        ng-show="param.afficheLevelSelection && param.actionSelect=='level'"
+						        ng-model="param.actionSelectLevel" ng-change="param.actionSelectChangeLevel()">
+							<option value={{param.actionSelectLevel}} selected>Niveau</option>
+							<option ng-repeat="lvl in param.levels" value={{lvl.idLevel}}>{{lvl.nameLevel}}</option>
+						</select>
+
+					</div>
+				</div>
+
+				<!--
+				<div class="page-subtitle" style="margin-top: 15px;">
+				  Demandes en attente
+				</div>
+
+				[TODO]
+				-->
+				<div ng-show="groupGeneral.hasRightMembersInvite">
+					<div ng-show="param.pending_mail.length>0">
+						<div class="page-subtitle" style="margin-top: 15px;">
+							Invitations par email en attente
+						</div>
+
+						<div class="pane" style="margin-top: 5px;">
+							<div style="" ng-repeat="mail in param.pending_mail">
+								{{mail.mail}}
+								<button class="btn btn-danger" style="margin-left: 20px;"
+								        ng-really-message="Supprimer cet invitation ?"
+								        ng-really-click="param.deleteUserByMail(mail.mail)">Annuler l'invitation
+								</button>
+							</div>
+						</div>
+					</div>
+
+					<div ng-show="param.pending_users.length>0">
+						<div class="page-subtitle" style="margin-top: 15px;">
+							Invitations d'utilisateurs en attente
+						</div>
+
+						<div class="pane" style="margin-top: 5px;padding-bottom: 1px;">
+							<div style="margin-bottom: 10px;" ng-repeat="user in param.pending_users">
+								<div style="display:flex">
+									<div class="groupCircleProfile"
+									     style="margin:0;justify-content: flex-start; {{user.cssuserimage}}"></div>
+									<div style="text-align:left;display: flex;flex-direction: column;justify-content: center;padding-left: 10px;">
+										{{user.username}}
+									</div>
+									<button class="btn btn-danger" style="margin-left: 20px;"
+									        ng-really-message="Supprimer cet invitation ?"
+									        ng-really-click="param.deleteUserById(user.id)">Annuler l'invitation
+									</button>
+								</div>
+							</div>
+						</div>
+					</div>
+
+
+					<div class="page-subtitle" style="margin-top: 15px;">
+						Nouvel utilisateur
+					</div>
+
+					<div class="nfo" style="margin-top: 5px; margin-bottom: 5px;">
+						Entrez les adresses mails des utilisateurs que vous souhaitez ajouter à ce groupe.<br>
+						Vous pouvez également ajouter les utilisateurs directement avec leur pseudo Twake.
+					</div>
+
+					<div class="pane">
+
+						<form ng-submit="param.verifyUser(param.newuserinput)">
+							<input ng-model="param.newuserinput" placeholder="Entrez une adresse mail ou un pseudo"
+							       style="width: 100%; max-width: 350px;" type="text" class="text_input form-control">
+
+							<input type="submit" class="btn btn-classic" value="Vérifier">
+						</form>
+
+						<div class="nfo" ng-show="param.newuserverified=='mail'" style="padding-top: 16px;">
+							<button class="btn btn btn-success" ng-really-message="Inviter cet utilisateur ?"
+							        ng-really-click="param.inviteUser()">Envoyer une invitation à
+								{{param.newuserverified_value}}
+							</button>
+						</div>
+						<div class="nfo" ng-show="param.newuserverified=='unknown'" style="color: ">
+							<br>
+							Cette adresse mail n'est pas valide et aucun utilisateur ne possède ce pseudo...
+						</div>
+						<div class="nfo" ng-show="param.newuserverified=='user'" style="display: flex;">
+							<div style="width: 70px">
+								<div class="groupCircleProfile"
+								     style="margin-left:0px;{{param.newuserverified_data.cssuserimage}}"></div>
+							</div>
+							<div style="flex:1;padding-top: 16px;">
+								<button class="btn btn btn-success" ng-really-message="Inviter cet utilisateur ?"
+								        ng-really-click="param.inviteUser()">Ajouter @{{param.newuserverified_value}} au
+									groupe
+								</button>
+							</div>
+						</div>
+
+					</div>
+				</div>
+
+				<div ng-show="!cgroup.data.right.base.members.edit"
+				     style="margin-top:50px;padding:20px;border:2px solid #FA6047;display: flex">
+					<p class="page-title" style="flex:1">
+						Quitter le groupe
+					</p>
+
+					<div>
+						<input type="button"
+						       class="btn btn-block btn-danger"
+						       style="float:right;display: inline-block;max-width: 150px;"
+						       ng-really-click="param.quit();"
+						       ng-really-message="Quitter ce groupe ?"
+						       value="Quitter le groupe"/>
+					</div>
+				</div>
+			</div>
+
+		</div>
+
+	</div>
+</div>
+</div>

@@ -1,0 +1,31 @@
+security:
+
+    encoders:
+        WebsiteApi\UsersBundle\Entity\User: sha512
+
+    providers:
+         main:
+            id: fos_user.user_provider.username_email #app.core_user_provider
+
+#    access_control:
+#        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https, host: dev\.citigo\.fr$ }
+#        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: http, host: localhost$ }
+
+    firewalls:
+        main:
+            pattern: ^/
+            anonymous: true
+            provider:  main
+            form_login:
+                remember_me: true
+                login_path: / #Redirect to start page if try to access to restricted area
+            logout:
+                path:   /logout #The user have to go here to logout
+                target: / #The user is redirected to start page after logout
+            remember_me:
+                secret: '%secret%'
+                lifetime: 31536000
+                always_remember_me: true
+                remember_me_parameter: _remember_me
+                path: /
+                domain: ~

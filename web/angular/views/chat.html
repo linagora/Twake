@@ -1,0 +1,162 @@
+<div upload-zone="{{chat.discussionKey.split('_').length<=1 ? 'both' : 'temp'}}" upload-from="chat"
+     upload-interface="chat" upload-button="#chat_upload_button" ng-show="chat.ready" class="message-container"
+     ng-class="{'loading':loading}" style="overflow: hidden;" ng-controller="chatCtrl as chat">
+
+	<!--<div class="video-conference"
+	     ng-class="{'video': calls.states[chat.discussionKey]=='joined', 'fullscreen': calls.options.fullscreen}"
+	     ng-show="calls.states[chat.discussionKey]=='started' || calls.states[chat.discussionKey]=='joined'">
+
+		<div class="video-conference-status-bar">
+
+			<div tooltip-placement="bottom" uib-tooltip="{{member.username}}"
+			     class="mini-user default_user_image stream_audio_{{member.id}}"
+			     ng-repeat="member in calls.members[chat.discussionKey]" style="{{member.cssuserimage}}">
+				<i ng-show="calls.peersOptions[member.id].mic==false && calls.peersOptions[member.id].audio==true"
+				   class="fa fa-microphone-slash"></i>
+				<i ng-show="calls.peersOptions[member.id].audio==false" class="fa fa-volume-off"></i>
+			</div>
+
+      <span ng-show="calls.states[chat.discussionKey]=='joined'">
+        <i class="call-icon fa"
+           ng-class="{'on fa-volume-up': calls.options.audio, 'fa-volume-off': !calls.options.audio}"
+           ng-click="calls.toggleOptions('audio')"></i>
+        <i class="call-icon fa fa-microphone" ng-class="{'on': calls.options.mic}" ng-click="calls.toggleOptions('mic')"
+           ng-show="calls.available.audio"></i>
+        <i class="call-icon fa fa-microphone" ng-show="!calls.available.audio" uib-tooltip="Aucun micro n'a été trouvé"
+           tooltip-placement="left"></i>
+        <i class="call-icon fa fa-video-camera" ng-class="{'on': calls.options.video}"
+           ng-click="calls.toggleOptions('video')" ng-show="calls.available.video"></i>
+        <i class="call-icon fa fa-video-camera" ng-show="!calls.available.video"
+           uib-tooltip="Aucune caméra n'a été trouvée" tooltip-placement="left"></i>
+        <i class="call-icon fa fa-desktop" ng-show="window.electron" ng-class="{'on': calls.options.screen}"
+           ng-click="calls.toggleOptions('screen')"></i>
+        <i class="call-icon fa fa-th-large" ng-class="{'on': calls.options.showvideo}"
+           ng-click="calls.toggleOptions('showvideo')"></i>
+        <i class="call-icon fa fa-arrows-alt" ng-class="{'on': calls.options.fullscreen}"
+           ng-click="calls.toggleOptions('fullscreen')"></i>
+      </span>
+      <span ng-show="calls.states[chat.discussionKey]!='joined'"
+            style="font-size: 11px;color: #FFF;float: right;padding: 12px;">
+        Un appel est en cours... <a ng-click="calls.click(chat.discussionKey, chat);">rejoindre ?</a>
+      </span>
+
+		</div>
+
+		<div class="jitsi_video" ng-show="calls.states[chat.discussionKey]=='joined'"
+		     style="position:relative; overflow: hidden;">
+		</div>
+
+	</div>-->
+
+	<div ng-show="!chat.search" style="overflow: hidden;flex: 1;display: flex; flex-direction: column">
+
+		<div ng-click="chat.scrollToBottom()" class="messages-topbar" ng-show="chat.unreadMessages">
+			Cliquez pour voir les nouveaux messages
+		</div>
+
+
+		<div class="message-header">
+			<span class="channel_title"
+			      ng-show="chat.type=='channel'">
+				<i ng-show="!cmsg.channels[chat.discussionId].privacy">#</i><i class="fa fa-lock" aria-hidden="true"
+				                                                               ng-show="cmsg.channels[chat.discussionId].privacy"></i>
+				{{cmsg.channels[chat.discussionId].name}}
+			</span>
+			<span class="channel_title"
+			      ng-show="chat.type!='channel'">
+				<div class="default_user_image" style="{{cmsg.contactsById[chat.discussionId].cssuserimage}}"></div>
+				{{cmsg.contactsById[chat.discussionId].username}}
+			</span>
+
+			<span class="channel_infos" ng-show="chat.type=='channel'">
+				<span ng-show="!cmsg.channels[chat.discussionId].privacy"> Chaine de discussion publique </span>
+				<span ng-show="cmsg.channels[chat.discussionId].privacy"> Chaine de discussion privée / {{cmsg.channels[chat.discussionId].members.length}} utilisateurs</span>
+			</span>
+
+			<span class="channel_infos" ng-show="chat.type!='channel'" style="margin-left: 42px;">
+				<a ui-sref="user({username: cmsg.contactsById[chat.discussionId].username})">Voir le profil</a>
+			</span>
+
+			<span class="channel_buttons">
+				<i ng-show="chat.type=='channel'" class="fa fa-cog param" aria-hidden="true"
+				   ng-click="openModalSetChannel()"></i>
+				<div ng-class="{create: !calls.states[chat.discussionKey] || calls.states[chat.discussionKey]=='', join: calls.states[chat.discussionKey]=='started', exit: calls.states[chat.discussionKey]=='joined', loading: calls.states[chat.discussionKey]=='loading'}"
+				     class="call-button nomobile" ng-click="calls.click(chat.discussionKey, chat)"></div>
+			</span>
+			<span class="channel_reduce nomobile" ng-click="cmsg.addFloatBloc(chat.discussionKey)">
+				<i class="fa fa-arrow-down" aria-hidden="true"></i>
+			</span>
+		</div>
+
+		<div scrollbar class="message-list-container" message-list-container>
+
+			<div style="text-align: center;display: block;height:40px;line-height:40px;min-height:0px;"
+			     ng-class="{'loading': !cmsg.messagesData[chat.discussionKey].ready || cmsg.messagesData[chat.discussionKey].loading}">
+				<a ng-show="cmsg.messagesData[chat.discussionKey].nomore==false" class="link"
+				   ng-click="chat.getOldMessages()">Voir les anciens messages</a>
+				<span ng-show="cmsg.messagesData[chat.discussionKey].nomore && !cmsg.messagesData[chat.discussionKey].nomessage"
+				      class="nfo">Pas de messages plus anciens</span>
+				<span ng-show="cmsg.messagesData[chat.discussionKey].nomessage" class="nfo">Pas de messages</span>
+			</div>
+
+			<div class="message m_{{id}}"
+			     ng-class="{'message_pinned':chat.messages[id].pinned,'mine':chat.messages[id].sid==cuser.data.uid, 'recent':(chat.messages[id].timestamp-chat.messages[cmsg.ids[chat.discussionKey][$index - 1]].timestamp)<60 && chat.messages[cmsg.ids[chat.discussionKey][$index - 1]].sid==chat.messages[id].sid, 'longseparation':(chat.messages[id].timestamp-chat.messages[cmsg.ids[chat.discussionKey][$index - 1]].timestamp)>60*60*3}"
+			     ng-show="!(chat.messages[id] == undefined || chat.messages[id].content == undefined)" data-id="{{id}}"
+			     ng-include="'@views/message.html'" ng-repeat="id in cmsg.ids[chat.discussionKey] | orderBy"></div>
+
+
+			<div style="width:100%;height: 20px;"></div>
+
+		</div>
+
+		<div class="message-input" style="position: relative">
+
+			<div class="writingspace"
+			     style="pointer-events: none;padding: 5px;font-size: 0;margin-top: -40px;text-align: right;background: transparent;height: 40px;width: 100%;position: absolute;">
+
+				<div ng-repeat="(id, date) in cmsg.writing[chat.discussionKey]" tooltip-placement="bottom"
+				     uib-tooltip="{{cmsg.contactsById[id].username}}" class="no-animate mini-user default_user_image"
+				     style="margin: 4px;border: 0px;width:20px;height:20px;{{cmsg.contactsById[id].cssuserimage}}">
+
+					<div class="writing-gif"></div>
+
+				</div>
+
+			</div>
+
+			<div class="more-option-button">
+				<i id="chat_upload_button" class="chat_upload glyphicon glyphicon-upload"></i>
+				<i class="fa fa-search" ng-click="chat.openSearch()" uib-tooltip="Recherche et épinglé"
+				   tooltip-placement="right"></i>
+			</div>
+
+			<div class="input-container" style="position: relative;">
+
+	        <textarea maxlength="9999" message-main-input pseudo-autocomplete emoji-autocomplete ng-click="chat.edit=0"
+	                  onkeydown="if(!event.shiftKey && event.keyCode==13){return false;}; if(event.keyCode==9){return false;}"
+	                  ng-keydown="chat.keyPressed($event, chat.input);" ng-change="chat.contentChange(chat.input)"
+	                  msd-elastic rows="1" ng-model="chat.input" ng-class="{'commandmode': chat.inputCommandMode}"
+	                  placeholder="Votre message" class="form-control">
+	        </textarea>
+
+	      <span class="msg-infos nomobile" ng-click="cmsg.displayInfos()">
+		      How to use Messages ?
+	      </span>
+
+			</div>
+			<div class="buttons">
+
+				<button emoji-button></button>
+				<i class="fa fa-paper-plane separate-button" ng-click="chat.send(chat.input)" uib-tooltip="Envoyer"
+				   tooltip-placement="top"></i>
+
+			</div>
+		</div>
+	</div>
+
+	<div ng-show="chat.search" ng-include="'@views/chat_search.html'"
+	     style="overflow: hidden;flex: 1;display: flex; flex-direction: column">
+	</div>
+
+
+</div>

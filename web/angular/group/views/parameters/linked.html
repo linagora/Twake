@@ -1,0 +1,141 @@
+<div class="title">
+  Paramètres du groupe
+</div>
+<div style="display:flex;height: 100%;" ng-controller="parametersLinkedCtrl as plc">
+  <div class="left-pane" ng-include="'@gviews/parameters/left-menu.html'">
+  </div>
+  <div style="flex:1; position:relative" >
+    <div scrollbar style="height: 100%;position:absolute;width:100%;overflow-x:hidde;" class="scroller">
+
+      <div class="main-app">
+        <div class="page-title" style="margin-bottom: 20px">
+          Groupes liés
+        </div>
+        <div ng-show="plc.show['parent']">
+          <div style="padding-left: 10px">
+
+            <table style="margin-top: 15px;">
+              <thead>
+              <tr><td style="text-align:left;">
+                Groupes parents
+              </td>
+                <td class="td-right">
+                  Niveau de droit des membres venant de ce groupe
+                </td>
+                <td class="td-right">
+                </td>
+              </tr>
+              </thead>
+
+              <tr ng-repeat="link in plc.linkedGroups['parent']">
+                <td style="flex:1">
+                  <div style="display:flex">
+                    <div class="default_group_image groupSquareModule" style="margin:0;{{link.csslogo}}"></div>
+                    <div style="text-align:left; flex:1;display: flex;flex-direction: column;justify-content: center;padding-left: 10px;" class="ng-binding">
+                      {{link.name}} <span class="nfo">{{link.key}}</span>
+                    </div>
+                  </div>
+                </td>
+                <td style="padding-top: 13px;" class="td-right">
+                  {{link.parentToChildLevel.id}}
+                  <select class="form-control" ng-model="link.parentToChildLevel.id" ng-change="plc.updateParentToChildLevel(link.id, link.parentToChildLevel.id)" ng-show="groupGeneral.hasRightLinksEdit">
+                    <option value="-1">Pas autorisé</option>
+                    <option ng-repeat="level in plc.levels" value="{{level.id}}" ng-selected="link.parentToChildLevel.id == level.id">{{level.name}} {{link.parentToChildLevel.id}} {{level.id}}</option>
+                  </select>
+                </td>
+                <td style="padding-top: 13px;" class="td-right">
+                  <div ng-show="link.status == 'A'" ng-click="plc.remove(link)" class="btn btn-danger" style="margin-right: 10px;"> Supprimer ce lien </div>
+                </td>
+              </tr>
+            </table>
+
+          </div>
+        </div>
+
+        <div ng-show="plc.show['child']">
+          <div style="padding-left: 10px">
+            <table style="margin-top: 15px;">
+              <thead>
+                <tr>
+                  <td style="text-align:left;">
+                    Groupes enfants
+                  </td>
+                  <td class="td-right">
+                    Niveaux de droits autorisés à accéder au groupe
+                  </td>
+                  <td class="td-right">
+                  </td>
+                </tr>
+              </thead>
+
+              <tr ng-repeat="link in plc.linkedGroups['child']">
+                <td style="flex:1">
+                  <div style="display:flex">
+                    <div class="default_group_image groupSquareModule" style="margin:0;{{link.csslogo}}"></div>
+                    <div style="text-align:left; flex:1;display: flex;flex-direction: column;justify-content: center;padding-left: 10px;" class="ng-binding">
+                      {{link.name}} <span class="nfo">{{link.key}}</span>
+                    </div>
+                  </div>
+                </td>
+                <td style="padding-top: 13px;" class="td-right">
+                  <div ng-show="link.status == 'A'" ng-click="plc.addAccessLevels(link)" class="btn btn-success" style="margin-right: 10px;"> Ajouter </div>
+                </td>
+                <td style="padding-top: 13px;" class="td-right">
+                  <div ng-show="link.status == 'A'" ng-click="plc.remove(link)" class="btn btn-danger" style="margin-right: 10px;"> Supprimer ce lien </div>
+                </td>
+              </tr>
+            </table>
+
+          </div>
+        </div>
+        <div style="padding-left: 10px">
+
+
+          <div ng-show="plc.show['pending']['child']">
+            <div class="page-subtitle" style="margin-bottom: 5px; margin-top: 30px"> Demandes pour que ce groupe soit parent :</div>
+            <div style="padding-left: 5px">
+
+              <div class="pane" style="margin-top: 5px;">
+                <div ng-repeat="link in plc.linkedGroups['pending']['child']" ng-include="'@gviews/templates/link.html'" class="default-text" style="margin-bottom: 10px"></div>
+              </div>
+            </div>
+          </div>
+
+
+          <div ng-show="plc.show['pending']['parent']">
+            <div  class="page-subtitle" style="margin-bottom: 5px; margin-top: 30px"> Demandes pour que ce groupe soit enfant :</div>
+            <div style="padding-left: 5px">
+              <div class="pane" style="margin-top: 5px;">
+                <div ng-repeat="link in plc.linkedGroups['pending']['parent']" ng-include="'@gviews/templates/link.html'" class="default-text" style="margin-bottom: 5px"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div ng-show="groupGeneral.hasRightLinksEdit">
+
+          <div class="page-subtitle" style="margin-top: 30px"> Demander un lien </div>
+          <div>
+            <input  type="text" style="width:150px;" class="form-control bordered" ng-model="plc.parent.code" ng-class="{'input-error':plc.errorParent==true}"><button class="btn btn-success" style="margin-top:-4px;" ng-click="plc.searchByCode()">rechercher</button>
+          </div>
+
+          <div style="max-width:500px;width:100%;margin:auto;margin-bottom:5px;padding:30px;box-shadow: 0px 0px 10px rgba(127,127,127,0.2);border-top:solid 2px rgba(22,127,255,0.5);padding: 5px;" ng-show="plc.groupToLink!=undefined">
+              <div style="margin-bottom:20px;">
+                  <div  class="default_group_image" style="width:40px;height:40px;vertical-align:middle;display:inline-block;border-radius:20%; {{plc.groupToLink.csslogo}}"></div>
+                  <div style="display:inline-block;vertical-align:middle;font-weight:500;font-size:20px;">{{plc.groupToLink.name}} <span style="font-size:12px;opacity:0.7">{{plc.groupToLink.key}}</span></div>
+              </div>
+              <div >
+                    {{plc.groupToLink.description}}
+              </div>
+              <div style="width:450px;margin:auto;">
+                  <button type="button" class="btn btn-default" style="width: 200px;height: 30px;margin:5px;" ng-click="plc.askChild()">Demander à être l'enfant</button>
+                  <button type="button" class="btn btn-default" style="width: 200px;height: 30px;margin:5px;" ng-click="plc.askParent()">Demander à être le parent</button>
+              </div>
+          </div>
+        </div>
+      </div>
+
+
+    </div>
+  </div>
+</div>

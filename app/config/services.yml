@@ -1,0 +1,162 @@
+# Learn more about services, parameters and containers at
+# http://symfony.com/doc/current/service_container.html
+parameters:
+#    parameter_name: value
+
+services:
+    #################################################################################
+    ###################### Services
+    #################################################################################
+    acme.security.authentication_handler:
+        class: WebsiteApi\UsersBundle\Services\AuthenticationHandler
+        public: false
+        arguments: ["@router", "@session"]
+
+    acme.periodic_sample_service:
+            class: WebsiteApi\CoreBundle\Services\PDOPinger
+            arguments:
+                - '@?pdo'
+            tags:
+                - { name: gos_web_socket.periodic }
+
+    app.minifier:
+        class: WebsiteApi\CoreBundle\Services\Minifier
+
+    app.string_cleaner:
+        class: WebsiteApi\CoreBundle\Services\StringCleaner
+
+    app.images_modifiers:
+        class: WebsiteApi\UploadBundle\Services\ImagesModifiers
+
+    app.upload:
+        class: WebsiteApi\UploadBundle\Services\Upload
+        arguments: ["@app.images_modifiers"]
+
+    app.groups.access:
+        class: WebsiteApi\OrganizationsBundle\Services\Access
+        arguments: ["@doctrine.orm.entity_manager", "@security.token_storage", '@security.authorization_checker']
+
+
+    app.uploader:
+        class: WebsiteApi\UploadBundle\Services\Uploader
+        arguments: ["@doctrine.orm.entity_manager", "@app.upload", "@app.images_modifiers"]
+
+    app.tags:
+        class: WebsiteApi\TagsBundle\Services\Tags
+        arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker']
+
+    app.notifications:
+        class: WebsiteApi\UsersBundle\Services\Notifications
+        arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", "@templating", "@mailer", "@security.token_storage", '@security.authorization_checker', '@gos_web_socket.zmq.pusher']
+
+    app.contacts:
+        class: WebsiteApi\UsersBundle\Services\Contacts
+        arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer"]
+
+    app.deleteUser:
+        class: WebsiteApi\UsersBundle\Services\deleteUser
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    app.updateGroup:
+        class: WebsiteApi\OrganizationsBundle\Services\UpdateGroup
+        arguments: ['@gos_web_socket.zmq.pusher']
+
+    app.messages:
+            class: WebsiteApi\DiscussionBundle\Services\Messages
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@app.command_executor", "@app.notifications", '@gos_web_socket.zmq.pusher','@app.groups.access']
+
+    app.calls:
+            class: WebsiteApi\CallsBundle\Services\Calls
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@app.messages", "@gos_web_socket.zmq.pusher"]
+
+    app.command_executor:
+                class: WebsiteApi\DiscussionBundle\Services\CommandExecutor
+                arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications"]
+
+    app.status:
+        class: WebsiteApi\StatusBundle\Services\StatusService
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    app.core_remember_me_manager:
+        class: WebsiteApi\UsersBundle\Services\RememberMe
+        arguments: ["@service_container"]
+
+    app.before_render:
+            class: WebsiteApi\CoreBundle\Services\BeforeRender
+            tags: [{ name: kernel.event_listener, event: kernel.response, method: beforeRender }]
+            arguments: ["@doctrine.orm.entity_manager", '@security.authorization_checker']
+
+    api.CheckRightApplication:
+            class: DevelopersApi\CheckBundle\Services\CheckRight
+            arguments: ["@doctrine.orm.entity_manager"]
+
+
+
+    #################################################################################
+    ###################### Topic
+    #################################################################################
+    infosNotification.topic:
+        class: WebsiteApi\UsersBundle\Topic\NotificationTopic
+        tags:
+            - { name: gos_web_socket.topic }
+        arguments : ["@doctrine.orm.entity_manager","@app.notifications","@gos_web_socket.websocket.client_manipulator"]
+
+    group.topic:
+        class: WebsiteApi\OrganizationsBundle\Topic\GroupTopic
+        tags:
+            - { name: gos_web_socket.topic }
+
+    discussion.topic:
+        class: WebsiteApi\DiscussionBundle\Topic\DiscussionTopic
+        tags:
+            - { name: gos_web_socket.topic }
+        arguments: ["@app.messages", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications"]
+
+    connections.topic:
+        class: WebsiteApi\UsersBundle\Topic\ConnectionsTopic
+        tags:
+            - { name: gos_web_socket.topic }
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    echo.topic:
+        class: WebsiteApi\UsersBundle\Topic\EchoTopic
+        tags:
+            - { name: gos_web_socket.topic }
+
+
+    #################################################################################
+    ###################### Event listener
+    #################################################################################
+
+    gos_web_socket_server.client_event.listener:
+      class: WebsiteApi\UsersBundle\Services\Connections
+      arguments: ["@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager","@gos_web_socket.zmq.pusher", "@app.calls"]
+      tags:
+          - { name: kernel.event_listener, event: 'gos_web_socket.client_connected', method: onClientConnect }
+          - { name: kernel.event_listener, event: 'gos_web_socket.client_disconnected', method: onClientDisconnect }
+          - { name: kernel.event_listener, event: 'gos_web_socket.client_error', method: onClientError }
+          - { name: kernel.event_listener, event: 'gos_web_socket.client_rejected', method: onClientRejected }
+          - { name: kernel.event_listener, event: 'gos_web_socket.server_launched', method: onServerStart }
+
+
+    #################################################################################
+    ###################### System
+    #################################################################################
+
+    pdo:
+        class: PDO
+        arguments:
+            dsn: mysql:host=%database_host%;port=%database_port%;dbname=%database_name%
+            user: '%database_user%'
+            password: '%database_password%'
+        calls:
+            - [ setAttribute, [3, 2] ] # \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION
+
+    session.handler.pdo:
+        class:     Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
+        arguments: ['@pdo', {lock_mode: 0}]
+
+    kernel.event_listener.json_request_transformer:
+      class: Qandidate\Common\Symfony\HttpKernel\EventListener\JsonRequestTransformerListener
+      tags:
+        - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest, priority: 100 }

@@ -1,0 +1,11 @@
+
+<div ng-show="Btn.contact.canask" ng-click="$event.stopPropagation();$event.preventDefault();Btn.ask()" class="contact_button_mini glyphicon glyphicon-plus"" uib-tooltip="Demander en contact"></div>
+
+<div ng-show="Btn.contact.cancel" ng-click="$event.stopPropagation();$event.preventDefault();Btn.cancel()" type="button" class="contact_button_mini glyphicon glyphicon-remove" uib-tooltip="Annuler la demande"></div>
+
+<div ng-show="Btn.contact.accept">
+	<div ng-click="$event.stopPropagation();$event.preventDefault();Btn.accept()" class="contact_button_mini glyphicon glyphicon-ok" uib-tooltip="Accepter"></div>
+	<div ng-click="$event.stopPropagation();$event.preventDefault();Btn.refuse()" class="contact_button_mini glyphicon glyphicon-remove" uib-tooltip="Refuser"></div>
+</div>
+
+<div ng-show="Btn.contact.remove" ng-click="$event.stopPropagation();$event.preventDefault();Btn.remove()" class="contact_button_mini glyphicon glyphicon-minus" uib-tooltip="Supprimer la relation"></div>

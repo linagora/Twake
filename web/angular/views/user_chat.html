@@ -1,0 +1,15 @@
+<div class="page" style="position:relative;width: 100%;height: 100%;">
+	<div style="display:flex;height: 100%;" ng-controller="messagesCtrl as mct">
+		<div class="disabled_prepare chat_container" ng-class="{'incall': !calls.minify && calls.currentCallKey}"
+		     style="flex:1; position:relative">
+
+			<div ng-click="toggleLeft=0" ng-include="'@views/chat.html'"
+			     ng-init="rightmenugroup.load();rightmenugroup.mode='channel'"></div>
+
+		</div>
+		<div class="bigVideoView" ng-class="{'attach_call_to_me': !calls.minify && calls.currentCallKey}"
+		     ng-show="!calls.minify && calls.currentCallKey" style="color:#FFF">
+
+		</div>
+	</div>
+</div>

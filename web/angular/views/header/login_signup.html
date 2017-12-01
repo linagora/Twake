@@ -1,0 +1,82 @@
+<div class="nomobile header-button button-connect ah" ng-click="header.go('login')">
+    CONNEXION
+</div>
+<div class="nomobile header-button button-subscribe ah" ng-click="header.go('signup')">
+    INSCRIPTION
+</div>
+
+<div class="nodesktop header-button button-subscribe ah" ng-click="header.go('login')">
+    COMPTE
+</div>
+
+<div id="header_subscribe" class="connexion_popup" ng-clickout="header.exit('signup')" ng-show="header.popup=='signup'">
+  <form>
+    <div class="tick" style="right: 190px;"></div>
+
+	  <div class="link_button" style="float: right;line-height:26px" ng-click="header.go('login')">J'ai un compte</div>
+        <div class="title">Inscription</div>
+
+        <input id="header_signup_pseudo" type="text" style="width:100%" class="text_input form-control bordered" placeholder="Pseudo">
+
+        <center>
+        <span id="header_signup_error_pseudou" class="header_signup_error" style="display: none;color: #800;text-align: center; width: 100%;margin-top: 10px;">Ce pseudo est déjà utilisé.</span>
+        <span id="header_signup_error_pseudov" class="header_signup_error" style="display: none;color: #800;text-align: center; width: 100%;margin-top: 10px;">Ce pseudo n'est pas valide.</span>
+        </center>
+
+        <input id="header_signup_mail" type="text" style="width:100%" class="text_input form-control bordered" placeholder="Adresse mail">
+
+        <center>
+        <span id="header_signup_error_mailu" class="header_signup_error" style="display: none;color: #800;text-align: center; width: 100%;margin-top: 10px;">Cette adresse email est déjà utilisée.</span>
+        <span id="header_signup_error_mailv" class="header_signup_error" style="display: none;color: #800;text-align: center; width: 100%;margin-top: 10px;">Cette adresse email n'est pas valide.</span>
+        </center>
+
+        <div style="clear: both;margin-bottom:10px;"></div>
+
+        <input type="submit" class="button btn btn-block ah" value="S'inscrire" style="width: 100px;" ng-click="header.signup()">
+
+
+        <div style="clear: both;"></div>
+    <!-- DISABLE FACEBOOK & GOOGLE
+        <div style="margin-bottom:10px;margin-top:10px;width:100%;border-top: 1px solid #DDD;"></div>
+
+        <input type="button" class="button btn btn-block ah button_fb" value="S'inscrire avec Facebook" style="width: 100%;">
+        <input type="button" class="button btn btn-block ah button_goo" value="S'inscrire avec Google" style="width: 100%;">
+-->
+    </div>
+  </form>
+</div>
+<div id="header_connection" class="connexion_popup" ng-clickout="header.exit('login')" ng-show="header.popup=='login'">
+
+    <div class="tick"></div>
+      <form>
+	      <div class="link_button" style="float:right;line-height:26px" ng-click="header.go('signup')">S'inscrire !
+	      </div>
+        <div class="title">Mon compte</div>
+
+        <input id="header_pseudo" type="text" style="width:100%" class="text_input form-control bordered" placeholder="Adresse mail ou pseudo">
+        <input id="header_password" type="password" style="width:100%" class="text_input form-control bordered" placeholder="Mot de passe">
+
+        <span id="header_connect_error" style="display: none;color: #800;text-align: center; width: 100%;margin-top: 10px;">Impossible de se connecter.</span>
+
+        <div style="margin-top:15px;width:100%">
+            <input id="header_remember" class="checkbox" type="checkbox" checked>
+            <label for="header_remember" style="margin-top: 2px;vertical-align: top;">Se souvenir de moi</label>
+        </div>
+
+        <div style="clear: both;margin-bottom:0px;"></div>
+
+	      <a class="link_button" ui-sref="connection-probleme" ng-click="header.exit('login')">Problèmes de
+		      connexion</a>
+
+        <input type="submit" class="button btn btn-block ah" value="Connexion" style="width: 100px;" ng-click="header.login()">
+
+        <div style="clear: both;"></div>
+        <!--
+        <div style="margin-bottom:10px;margin-top:10px;width:100%;border-top: 1px solid #DDD;"></div>
+
+        <input type="button" class="button btn btn-block ah button_fb" value="Se connecter via Facebook" style="width: 100%;">
+        <input type="button" class="button btn btn-block ah button_goo" value="Se connecter via Google" style="width: 100%;">
+        -->
+      </form>
+
+</div>

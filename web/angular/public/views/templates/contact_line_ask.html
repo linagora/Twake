@@ -1,0 +1,10 @@
+<div class="user_line" data-cleanusername="{{ contact.susername }}" style="width:100%;">
+	<div style="display:inline-block;">
+		<div class="image default_user_image default_user_style" style="{{ contact.cssuserimage }}"></div>
+		<div class="name">{{contact.username}}</div>
+	</div>
+	<div style="display:inline-block;float:right;">
+		<button style="display:inline-block;width: 90px;" ng-click="btn.accept();contacts.removeContactAsk({{btn.idUser}},true)" type="button" class="contact_button acceptpeople btn btn-success jsalert-valid-button">Accepter</button>
+		<button style="display:inline-block;width: 90px;" ng-click="btn.refuse();contacts.removeContactAsk({{btn.idUser}},false)" type="button" class="contact_button refusepeople btn btn-danger jsalert-valid-button">Refuser</button>
+	</div>
+</div>

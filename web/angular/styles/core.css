@@ -1,0 +1,256 @@
+.popup_contener {
+	transition: all 0.2s;
+	background: rgba(0,0,0,0);
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	z-index: 10000;
+	pointer-events: none;
+}
+.popup_contener .popup_window {
+	transition: all 0.2s;
+	background: #FFF;
+	opacity: 0;
+	position: absolute;
+	width: 100px;
+	height: 100px;
+	margin: auto;
+	top: 20%;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	box-shadow: 0 3px 20px rgba(0,0,0,0.2);
+	max-width: 90%;
+	max-height: 70%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	z-index: 10;
+	box-sizing: border-box;
+}
+
+.popup_contener.open {
+	background: rgba(0,0,0,0.5);
+	pointer-events: all;
+}
+.popup_contener.open .popup_window {
+	opacity: 1;
+	top: 0%;
+}
+
+.popup_contener.alert.open {
+	background: rgba(0,0,0,0.2);
+	z-index: 10001;
+}
+
+.popup_window {
+	padding: 15px;
+	min-width: 250px;
+	min-height: 100px;
+}
+
+.popup_window .popup_title {
+	font-size: 25px;
+	margin-top: -2px;
+	line-height: 30px;
+	margin-bottom: 10px;
+}
+
+.popup_window .popup_text {
+	font-size: 16px;
+}
+
+.popup_window .popup_bottom_space {
+	width: 100%;
+	height: 35px;
+}
+
+.popup_window .popup-cancel {
+	background: #FF1019;
+	border: none;
+	padding: 5px 20px;
+	width: auto;
+	min-width: 100px;
+	position: absolute;
+	bottom: 15px;
+	left: 15px;
+}
+
+.popup_window .popup-valid {
+	background: #0495F7;
+	border: none;
+	padding: 5px 20px;
+	width: auto;
+	min-width: 100px;
+	position: absolute;
+	bottom: 15px;
+	right: 15px;
+}
+
+@media (max-width: 600px) {
+	.popup_contener.noalert .popup_window {
+		max-width: 100%;
+		max-height: 100%;
+		width: 100% !important;
+		height: 100% !important;
+		border-radius: 0;
+		box-shadow: none;
+	}
+	.popup_contener.alert .popup_window {
+		max-width: 94%;
+		max-height: 70%;
+		border-radius: 4px;
+	}
+}
+
+.input_privacy {
+	display: inline-block;
+}
+
+select.privacy_select {
+	display: inline-block;
+	background: #555;
+	color: #FFF;
+	border: none;
+	-webkit-appearance: none;
+	-moz-appearance: none;
+	height: 25px;
+	line-height: 25px;
+	font-size: 12px;
+	padding: 0px 5px;
+	margin-right: 5px;
+	background-image: url(/public/img/select.svg);
+	background-size: auto 30%;
+	background-position: center right 8px;
+	background-repeat: no-repeat;
+	padding-right: 25px;
+	cursor: pointer;
+	border-radius: 20px;
+	margin-left: 5px;
+}
+
+select.privacy_select.private {
+	background-color: #607D8B;
+}
+
+select.privacy_select.public {
+	background-color: #4CAF50;
+}
+
+select.privacy_select.contacts {
+	background-color: #009688;
+
+}
+
+select.privacy_select:disabled {
+	background: #dedede;
+	border-color: transparent;
+	color: #888;
+	padding-right: 0px;
+}
+
+/* Tagit */
+
+ul.tagit {
+	transition: width 0.2s;
+	background: #F6F6F6;
+	padding: 5px;
+	border: 1px solid #EEE;
+	display: inline-block;	overflow: auto;
+	margin-left: inherit; /* usually we don't want the regular ul margins. */
+	margin-right: inherit;
+}
+ul.tagit li {
+	display: block;
+	float: left;
+	margin: 2px 5px 2px 0;
+}
+ul.tagit li.tagit-choice {
+	position: relative;
+	padding: 0px 7px;
+	background: #d7a54c;
+	display: inline-block;
+	color: #FFF;
+	height: 30px;
+	box-sizing: border-box;
+	line-height: 25px;
+	margin-right: 5px;
+}
+input.tagit-hidden-field {
+	display: none;
+}
+ul.tagit li.tagit-choice-read-only {
+	padding: .2em .5em .2em .5em;
+}
+
+ul.tagit li.tagit-choice-editable {
+	padding: .2em 22px .2em .5em;
+}
+
+ul.tagit li.tagit-new {
+	padding: .25em 4px .25em 0;
+	min-width: 50px;
+}
+
+ul.tagit li.tagit-choice a.tagit-label {
+	cursor: pointer;
+	text-decoration: none;
+}
+ul.tagit li.tagit-choice .tagit-close {
+	cursor: pointer;
+	position: absolute;
+	margin-right: 5px;
+	top: 50%;
+	margin-top: -8px;
+	line-height: 17px;
+	margin-left: 5px;
+	font-size: 0px;
+}
+
+/* used for some custom themes that don't need image icons */
+ul.tagit li.tagit-choice .tagit-close .text-icon {
+	display: none;
+}
+
+ul.tagit li.tagit-choice input {
+	display: block;
+	float: left;
+	margin: 2px 5px 2px 0;
+}
+ul.tagit input[type="text"] {
+	-moz-box-sizing:    border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing:         border-box;
+
+	-moz-box-shadow: none;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+
+	border: none;
+	margin: 0;
+	padding: 0;
+	width: inherit;
+	background-color: inherit;
+	outline: none;
+}
+
+.tagit-new {
+	display: inline-block;
+}
+
+.tagit-close:before {
+	font-family: "untitled-font-2";
+	content: '\e1a8';
+	font-size: 11px;
+}
+
+.tagit-close {
+	opacity: 0.5;
+	color: #FFF;
+}
+
+.tagit-close:hover {
+	opacity: 0.9;
+	color: #b83135;
+}

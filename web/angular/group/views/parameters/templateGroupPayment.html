@@ -1,0 +1,25 @@
+<div class="bloc_paiement start" style="width:90%;margin-top:30px;" >
+    <div class="top">
+        <div  class="default_group_image" style="width:40px;height:40px;vertical-align:middle;display:inline-block;border-radius:20%; {{group.details.csslogo}}"></div>
+        <div style="display:inline-block;vertical-align:middle;font-weight:500;font-size:20px;">{{group.details.name}}</div>
+        <div style="text-align:right;display:inline-block;flex:1;vertical-align:middle;">
+            <select ng-change="payment.changePrice=true;payment.loadPrice();" class="choice privacy_select" style=""  ng-model="group.details.levelId">
+               <option ng-repeat="t in payment.typePrice" value="{{t.id}}" selected style="">{{t.name}}</option>
+            </select>
+        </div>
+    </div>
+    <div style="width:100%;padding-left:20px;margin-top:10px;">
+        <div style="opacity:0.5;">
+            <span style="">{{group.applicationsCount}} Applications</span>
+            <span style="float:right;">{{group.applicationsPrice}}€/mois</span>
+        </div>
+        <div style="opacity:0.5;">
+            <span style="">{{group.membersCount}} utilisateurs</span>
+            <span style="float:right;">{{payment.getTypeFromId(group.details.levelId).price}}€/mois/utilisateur</span>
+        </div>
+        <div style="width:100%;text-align:right;">
+            <span><span style="font-size:20px;">{{group.membersCount * payment.getTypeFromId(group.details.levelId).price + group.applicationsPrice}}</span>€/mois</span>
+        </div>
+    </div>
+</div>
+<div ng-include="'@gviews/parameters/templateGroupPayment.html'" ng-repeat="group in group.children"></div>

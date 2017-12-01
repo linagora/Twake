@@ -1,0 +1,38 @@
+.ng-toast__message {
+	padding-right: 30px;
+}
+.ng-toast__message  .alert {
+	border-radius: 12px;
+	box-shadow: 2px 2px 20px 0px rgba(0, 0, 0, 0.2);
+	margin-bottom: 4px;
+	border: 0;
+	background: #fff;
+	padding-left: 0px;
+	padding-top: 0px;
+	padding-bottom: 0px;
+	position: relative;
+	max-width: 250px;
+	max-height: 100px;
+	overflow: hidden;
+	cursor: pointer;
+	pointer-events: all;
+}
+.ng-toast__message  .alert .content {
+  padding-left: 7px;
+  padding-top: 7px;
+  padding-bottom: 7px;
+  text-align: left;
+}
+.ng-toast__message  .alert .close {
+  text-shadow: none;
+  margin-top: auto;
+  margin-bottom: auto;
+  top: -1px;
+  right: 10px;
+  bottom: 0px;
+  position: absolute;
+}
+
+.ng-toast__list {
+	pointer-events: none;
+}

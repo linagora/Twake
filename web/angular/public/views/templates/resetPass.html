@@ -1,0 +1,19 @@
+<div class="menu_block" ng-controller="resetPsswCtrl as reset">
+    <div class="title">Récupération de mot de passe</div>
+    <div ng-show="reset.success==1">
+        <form>
+            <div class="error" ng-show="reset.passDiff">Les mots de passe sont différents</div>
+            <div class="subtitle">Votre nouveau mot de passe : </div>
+            <input type="password" class="form-control bordered" ng-model="reset.pass1">
+            <div class="subtitle">Confirmation : </div>
+            <input type="password" class="form-control bordered" ng-model="reset.pass2">
+             <input type="submit" class="btn btn-block btn-success" ng-click="reset.reset();" style="display: inline-block;margin-left: 5px;max-width: 100px;" value="Accept"></input>
+        </form>
+    </div>
+    <div ng-show="reset.success==2">
+        Token inconnu
+    </div>
+    <div ng-show="reset.success==3">
+        Votre mot de passe a été changé avec succès
+    </div>
+</div>

@@ -1,0 +1,6 @@
+<div ng-controller="homeCtrl as home" style="margin: -10px;">
+	<div ng-show="cuser.data.status!='connected'" ng-include="'@pviews/home/startpage.html'" style="height: 100%">
+    </div>
+	<div ng-show="cuser.data.status=='connected'" ng-include="'@pviews/home/user_startpage.html'" style="padding:10px;">
+    </div>
+</div>

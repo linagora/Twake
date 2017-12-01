@@ -1,0 +1,47 @@
+<div class="longseparation">
+	{{chat.messages[id].timestamp*1000 | date : 'Le dd/MM/yyyy à HH'}}h
+</div>
+
+<div class="user">
+	<div class="userimage default_user_image" style="{{cmsg.contactsById[chat.messages[id].sid].cssuserimage}}">
+	</div>
+</div>
+<div class="content" ng-mouseover="chat.includeOptions[id]='@views/messages/options.html'"
+     ng-click="chat.includeOptions[id]='@views/messages/options.html'">
+	<div class="username">
+		{{cmsg.contactsById[chat.messages[id].sid].username}}
+		<div class="date">{{chat.messages[id].timestamp*1000 | dateStyle }}</div>
+	</div>
+
+  <span ng-show="chat.edit!=id && !chat.messages[id].brut">
+    <span msg-parsing="chat.messages[id].content" ng-show="chat.messages[id].fileurl == ''"></span>
+    <span ng-class="{image: chat.messages[id].fileisimage}" ng-show="chat.messages[id].fileurl != ''"
+          ng-click="!chat.messages[id].fileisfromdrive ? href.goInNewTab(chat.messages[id].fileurl) : chat.overview(chat.messages[id].file)">
+	    <span ng-bind-html="cps.parseUploadedFile(chat.messages[id].fileurl, chat.messages[id].fileisimage, chat.messages[id].filename, chat.messages[id].isBig)"></span>
+    </span>
+    <span style="color: rgba(128,128,128,0.2);font-size: 11px;margin-left:5px;" ng-show="chat.messages[id].edited">(édité)</span>
+  </span>
+
+	<pre ng-show="chat.edit!=id && chat.messages[id].brut">{{chat.messages[id].content}}</pre>
+
+  <span ng-show="chat.edit==id" ng-include="chat.includeEdit[id]">
+  </span>
+
+	<div class="likes">
+		<div ng-repeat="(code,likes) in chat.messages[id].likes" ng-show="likes>0" class="like_icon {{code}}">
+			{{likes}}
+		</div>
+	</div>
+
+</div>
+
+<div class="add_likes" ng-clickout="chat.likeMenu = 0"
+     ng-click="chat.likeMenu = id; chat.includeLikeMenu[id]='@views/messages/like_menu.html'">
+</div>
+
+<div class="like_menu fade" ng-show="chat.likeMenu == id" ng-include="chat.includeLikeMenu[id]">
+</div>
+
+<span ng-include="chat.includeOptions[id]">
+
+</span>

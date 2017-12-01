@@ -1,0 +1,12 @@
+
+<button ng-show="Btn.contact.canask" ng-click="Btn.ask()" type="button" class="contact_button askpeople btn btn-block jsalert-valid-button">Demander en contact</button>
+
+<button ng-show="Btn.contact.cancel" ng-click="Btn.cancel()" type="button" class="contact_button cancelpeople btn btn-block jsalert-valid-button">Annuler la demande</button>
+
+<div ng-show="Btn.contact.accept">
+	<span style="font-size:12px;">Vous avez reçu une demande de cette personne</span>
+	<button ng-click="Btn.accept()" type="button" class="contact_button acceptpeople btn btn-block jsalert-valid-button">Accepter</button>
+	<button ng-click="Btn.refuse()" type="button" class="contact_button refusepeople btn btn-block jsalert-valid-button">Refuser</button>
+</div>
+
+<button ng-show="Btn.contact.remove" ng-click="Btn.remove()" type="button" class="contact_button removepeople btn btn-block jsalert-valid-button">Supprimer la relation</button>

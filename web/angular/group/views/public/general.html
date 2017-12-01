@@ -1,0 +1,47 @@
+<div ng-controller="publicGroupCtrl as public">
+    <div class="page_block" >
+
+        <div class="cover default_user_cover" style='{{ cgroup.data.csscover }}' ></div>
+
+
+        <div class="user_page_image default_group_image" style='background-color:white;{{ cgroup.data.csslogo }}' ></div>
+
+        <div class="user_page_right_photo">
+
+            {{ cgroup.data.name}}
+            <br>
+        </div>
+
+        <br>
+        <div style="margin-left:10px">
+            <div style="margin-top: 10px;">
+                <b>À propos</b><br>
+                {{ cgroup.data.description }}
+            </div>
+        </div>
+
+        <br>
+
+
+
+    </div>
+    <div style="display: flex">
+        <div style="width:40%">
+
+            <div class="page_block" ng-show="userCtrl.user.mail !== undefined || userCtrl.user.secondaryMails.length > 0">
+
+                <div class="title">Informations de contact</div>
+
+                <div style="margin-bottom: 10px;">Addresses email : </div>
+                <em>{{ userCtrl.user.mail }}</em>
+                <div ng-repeat="mail in userCtrl.user.secondaryMails">
+                    <em>{{mail}}</em>
+                </div>
+            </div>
+
+        </div>
+    </div>
+	<div ng-include="'@views/status/status.html'" ng-controller="statusCtrl as status"
+	     ng-init="public.fctOnReady=status.setId;public.load();status.loadFct=status.load;    "></div>
+
+</div>

@@ -1,0 +1,126 @@
+<div ng-show="cgroup.data.name" class="groupHeader btn-group" style="float: left;margin-right: 10px;margin-top: 5px;">
+	<div class="default_group_image default_group_style"
+	     style="{{cgroup.data.csslogo}}"></div>
+	<span class="nomobile">{{cgroup.data.name}}</span>
+</div>
+
+<span class="header_mobile_group_name nodesktop">{{cgroup.data.name}}</span>
+
+<div class="header_apps nodesktop">
+	<div uib-tooltip="Applications" tooltip-placement="bottom">
+		<div class="clickable_icon icon icon-groups" data-toggle="dropdown"></div>
+	</div>
+</div>
+
+<div class="header_channels nodesktop">
+	<div uib-tooltip="Channels" tooltip-placement="bottom">
+		<div class="clickable_icon icon icon-channel" data-toggle="dropdown"></div>
+	</div>
+</div>
+
+<div class="btn-group" style="float: right;margin-right: 0px;margin-top:3px;">
+	<button id="header_userimage" type="button" class="dropdown-toggle header_userimage"
+	        ng-click="header.go('usermenu')" ng-clickout="header.exit('usermenu')">
+		<div class="image default_user_image" style='{{ cuser.data.cssuserimage }}'></div>
+		<span class="caret nomobile"></span>
+	</button>
+	<ul class="header-dropdown-menu dropdown-menu ticked right" style="right: -6px;top: 36px;" role="menu"
+	    ng-show="header.popup=='usermenu'">
+		<li><a ui-sref="user({username:cuser.data.susername})">Profil public</a></li>
+		<li><a ui-sref="account-parameters">Paramètres du compte</a></li>
+		<li><a ng-click="header.toggleDark();">Mode sombre/clair</a></li>
+		<li><a ng-click="header.logout();">Deconnexion</a></li>
+		<li><a style="text-align:center;" ng-show="cuser.data.isadmin" href="/administration/">Administration</a>
+	</ul>
+</div>
+<div class="nomobile default-text header_username" onclick="$('#header_userimage').click();event.stopPropagation();">
+	{{ cuser.data.username }}
+</div>
+
+<!-- Messagerie @TODO -->
+
+<div class="header_messagerie" ng-class="{'active': notifications.data.msg.count>0}" ng-click="header.go('messages')"
+     ng-clickout="header.exit('messages')">
+	<div uib-tooltip="Messages" tooltip-placement="bottom">
+		<div class="clickable_icon icon icon-comments" data-toggle="dropdown"></div>
+		<div ng-show="notifications.data.msg.count > 0" class="header_notification notif-badge">
+			{{notifications.data.msg.count}}
+		</div>
+	</div>
+	<ul class="header-dropdown-menu dropdown-menu ticked messagerie-general-dropdown message-panel" role="menu"
+	    ng-show="header.popup=='messages'">
+		<li ng-show="id != 'count'" class="header-messagerie-li" ng-repeat="(id, count) in notifications.data.msg"
+		    ui-sref="chat_user({username: cmsg.contactsById[id].susername})">
+			<div class="default_user_image contact_header_image" style="{{cmsg.contactsById[id].cssuserimage}}"></div>
+			<div class="default-text" style="flex:1">{{cmsg.contactsById[id].username}}<span
+					class="header_notification notif-badge contact_header_badge">{{count}}</span></div>
+
+		</li>
+		<li ng-show="!notifications.data.msg.count > 0" class="default-text" style="margin-left: 15px;">
+			Aucun nouveau message !
+		</li>
+	</ul>
+</div>
+
+
+<div class="header_notifications global_notification" ng-class="{'active': notifications.data.listcount>0}"
+     ng-click="header.go('notifications')" ng-clickout="header.exit('notifications')">
+	<div uib-tooltip="Notifications" tooltip-placement="bottom">
+		<div class="clickable_icon icon icon-bell-1" data-toggle="dropdown"></div>
+		<div ng-show="notifications.data.listcount > 0" class="header_notification notif-badge">
+			{{notifications.data.listcount}}
+		</div>
+	</div>
+	<ul class="header-dropdown-menu dropdown-menu ticked notification-general-dropdown notification-panel" role="menu"
+	    ng-show="header.popup=='notifications'">
+		<li class="notifications_title">
+			<a class="readall_notifications" ng-click="notifications.readAllNotif()">
+				tout marquer comme lu
+			</a>
+			Notifications
+		</li>
+
+		<div class="notifications_contener" style="font-size: 12px;border-top: 1px solid #DDD;">
+			<div style="margin: 0px" ng-show="notifications.data.list.length>0">
+				<div ng-repeat="notif in notifications.data.list | orderBy:'timestamp':true"
+				     ng-include="'@pviews/templates/notification.html'"></div>
+			</div>
+			<div style="text-align: center;padding: 10px;" class="nfo header_nonotif"
+			     ng-show="!notifications.data.list || notifications.data.list.length==0">
+				Aucune notification
+			</div>
+			<li class="all_notifications" ui-sref="account-notifications" ng-click="header.exit('notifications')">
+				Voir toutes les notifications
+			</li>
+		</div>
+
+	</ul>
+</div>
+
+<!--<div class="header_groups" ng-class="{'active': notifications.data.group.count>0}" ng-click="header.go('groups')"
+     ng-clickout="header.exit('groups')">
+	<div uib-tooltip="Groupes" tooltip-placement="bottom">
+		<div class="clickable_icon icon icon-groups-color" data-toggle="dropdown"></div>
+		<div class="header_notification notif-badge" ng-show="notifications.data.group.count>0">
+			{{notifications.data.group.count}}
+		</div>
+	</div>
+	<ul class="header-dropdown-menu dropdown-menu ticked" role="menu" ng-show="header.popup=='groups'">
+		<li ng-repeat="group in cuser.data.groups">
+			<a ui-sref="group-home({gid:group.id})">
+				<div class="default_group_image"
+				     style="margin-left: -10px;margin-right: 5px;border-radius: 20%;vertical-align:middle;{{group.csslogo}};width:25px;height:25px;display:inline-block;"></div>
+				<div style="vertical-align:middle;display:inline-block;">
+					{{group.name}}
+				</div>
+				<span class="notif-badge" ng-show="notifications.data.group[group.id].count>0">{{notifications.data.group[group.id].count}}</span>
+			</a>
+		</li>
+		<li ng-show="cuser.data.groups.length==0" style="font-size: 12px; text-align:center;line-height: 30px;">
+			Vous n'avez aucun groupe
+		</li>
+		<div style="height: 1px;width: 100%;background-color: #DDD;"></div>
+		<li><a ui-sref="inscriptionGroupe" class="link" style="font-size: 12px;text-align: center;margin-bottom: -5px;">
+			Créer un groupe </a></li>
+	</ul>
+</div>-->

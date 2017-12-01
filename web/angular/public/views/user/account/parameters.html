@@ -1,0 +1,121 @@
+<div class="page_block title">
+	Paramètres de compte
+</div>
+
+<div ng-controller="parametersCtrl as prt" ng-class="{'loading':!prt.ready}">
+	<div class="page_block">
+
+		<div class="form_title">Pseudo</div>
+		<br>
+
+		<div class="input_contener">
+			<form>
+				<input style="max-width: 200px;width:100%" class="text_input form-control bordered" type="text"
+				       ng-disabled="!prt.username_edit" ng-model="prt.name"/>
+
+				<input ng-show="!prt.username_edit" class="btn btn-default"
+				       style="display: inline-block;margin-left: 5px;max-width: 100px;"
+				       ng-click="prt.toggleUsernameEdit();" value="Modifier"></input>
+
+				<input ng-show="prt.username_edit" class="btn btn-danger"
+				       style="display: inline-block;margin-left: 5px;max-width: 100px;"
+				       ng-click="prt.toggleUsernameEdit();" value="Cancel"></input>
+				<input type="submit" ng-show="prt.username_edit" class="btn btn-block btn-success"
+				       style="display: inline-block;margin-left: 5px;max-width: 100px;" ng-click="prt.setUsername();"
+				       value="Accept"></input>
+				<span ng-show="prt.username_errors.username_too_short"
+				      class="form_error">Your username is too short</span>
+				<span ng-show="prt.username_errors.username_already_used" class="form_error">Your username is already used</span>
+			</form>
+		</div>
+
+	</div>
+	<div class="page_block">
+
+		<div class="form_title">Adresses mail</div>
+
+		<div class="input_contener" style="margin-top: 5px;">
+			<input style="max-width: 250px;" class="text_input form-control" type="text" disabled
+			       value="{{ prt.email }}"/>
+
+			<div class="right_label">
+				<div style="background: #c74545;color: #FFF;padding: 0 10px;font-size: 12px;height: 22px;line-height: 22px;">
+					Adresse principale
+				</div>
+			</div>
+		</div>
+
+
+		<div ng-repeat="mail in prt.secondary" class="input_contener" style="margin-top: 5px;">
+
+			<input style="max-width: 250px;" class="text_input form-control" type="text" disabled
+			       value="{{ mail.mail }}"/>
+
+			<div class="right_label">
+
+				<span ng-show='mail.token == null ' class="btn btn-default" style="display: inline-block;"
+				      ng-disabled="!prt.chmail" ng-click="prt.changeMail({{ mail.id }});">Définir comme adresse principale</span>
+				<span ng-show='mail.token != null ' class="btn btw-warning"
+				      style="background: #c88e3c;color: #FFF;padding: 0 10px;font-size: 12px;height: 22px;line-height: 22px;margin-right: 10px;">non confirmé</span>
+
+				<span class="btn  btn-danger" style="display: inline-block;" ng-disabled="!prt.chmail"
+				      ng-click="prt.deleteMail({{ mail.id }})">Supprimer</span>
+
+			</div>
+
+		</div>
+		<form>
+			<input placeholder="Enter your new mail" ng-show="prt.new_address"
+			       style="width: 100%;max-width: 250px; margin-top:5px" class="form-control bordered" type="text"
+			       ng-disabled:"!prt.new_address" ng-model="prt.newmail" />
+			<input type="submit" ng-show="prt.new_address" class="btn btn-block btn-success"
+			       style="display: inline-block;margin-left: 5px;max-width: 100px;" ng-click="prt.addMail();"
+			       value="Accept"/>
+			<button ng-show="!prt.new_address" class="btn btn-block btn-default"
+			        style="margin-top: 5px;max-width: 200px;" ng-click="prt.toggleMail()">Ajouter une adresse
+			</button>
+			<input ng-show="prt.new_address" class="btn btn-danger"
+			       style="display: inline-block;margin-left: 5px;max-width: 100px;margin-right: 5px;"
+			       ng-click="prt.toggleMail();" value="Cancel"/>
+
+			<div ng-show="prt.mail_errors.bad_mail" class="form_error">Addresse invalide</div>
+			<div ng-show="prt.mail_errors.mail_already_used" class="form_error">Addresse déjà utilisée</div>
+		</form>
+
+
+	</div>
+	<div class="page_block">
+
+		<div class="form_title">Mot de Passe
+			<span ng-show="prt.passchanged" style="margin-left: 10px; color: #0B0;"> Votre mot de passe a été modifié avec succès ! </span>
+		</div>
+		<button ng-show="!prt.chgPass" class="btn btn-block btn-default" style="margin-top: 5px;max-width: 200px;"
+		        ng-click="prt.showPass()">Changer de mot de passe
+		</button>
+		<form>
+			<input ng-show="prt.chgPass" type="password"
+			       style="width: 100%;max-width: 250px; margin-top:5px; display:block;" class="form-control bordered"
+			       type="text" ng-model="prt.curpass" placeholder="Enter your current password... "/>
+			<input ng-show="prt.chgPass" type="password"
+			       style="width: 100%;max-width: 250px; margin-top:5px; display:block;" class="form-control bordered"
+			       type="text" ng-model="prt.newpass" placeholder="Enter your new password... "/>
+			<input ng-show="prt.chgPass" type="password"
+			       style="width: 100%;max-width: 250px; margin-top:5px; display:block;margin-bottom:5px;"
+			       class="form-control bordered" type="text" ng-model="prt.newpassval"
+			       placeholder="Enter your new password again... "/>
+
+			<input type="submit" ng-show="prt.chgPass" class="btn btn-block btn-success"
+			       style="display: inline-block;max-width: 100px;" ng-click="prt.changePass();" value="Accept"/>
+			<input type="submit" ng-show="prt.chgPass" class="btn btn-block btn-danger"
+			       style="display: inline-block;max-width: 100px;margin-top: 0px;" ng-click="prt.cancelPass();"
+			       value="Cancel"/>
+
+			<div ng-show="prt.pass_errors.old_password_incorrect" class="form_error">Ancien mot de passe incorrect</div>
+			<div ng-show="prt.pass_errors.new_password_incorrect" class="form_error">Nouveau mot de passe invalide</div>
+
+		</form>
+
+		<br>
+	</div>
+
+</div>

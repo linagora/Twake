@@ -1,0 +1,91 @@
+<div class="title">
+  Paramètres du groupe
+</div>
+<div style="display:flex;height: 100%;" ng-controller="parametersRessourceCtrl as payment">
+  <div class="left-pane" ng-include="'@gviews/parameters/left-menu.html'">
+  </div>
+  <div style="flex:1;position:relative;" >
+    <div scrollbar style="height: 100%;position:absolute;width:100%;overflow-x:hidde;" class="scroller">
+
+      <div class="main-app">
+          <div class="default-text">
+              <div class="topPayment">
+                  <div class="popup" ng-show="payment.popup">
+                      Un paiement est en attente, vérifier votre abonnement. Si aucun peiment n'est effectué  dans les 10 jours, l'accès aux applications sera désactivé pour tous les membres jusqu'à régularisation.
+                  </div>
+                  <div class="">
+                      Des applications ou des utilisateurs ont étés ajoutés  durant les derniers jours, votre abonement a évolué.
+                  </div>
+                  <div class="price" ng-show="payment.changePrice">
+                      <div style="flex:0.4;">
+                          <div class="titlePrice">
+                              Ancien abonnement
+                          </div>
+                          <div style="opacity:0.5;">
+                              <span style="font-size:35px;">{{payment.oldPrice}}</span>
+                              <span style="font-size:20px;">€/mois</span>
+                          </div>
+                      </div>
+                      <div style="flex:0.4;">
+                          <div class="titlePrice">
+                              Nouvel abonnement
+                          </div>
+                          <div style="">
+                              <span style="font-size:35px;">{{payment.getPriceApplication() + payment.right.usersTotalPrice}}</span>
+                              <span style="font-size:20px;">€/mois</span>
+                          </div>
+                      </div>
+                      <div style="flex:0.2">
+                          <button ng-click="payment.update()" style="background-color: #219EFF;border: none;color: white;padding:5px;">Mettre à jour l'abonnement</button>
+                      </div>
+                  </div>
+              </div>
+              <div style="display:flex;">
+                  <div class="arbo" style="flex:1;font-weight:500;">
+                      <div ng-repeat="group in payment.dataByGroup"  ng-include="'@gviews/parameters/templateGroupPayment.html'"></div>
+                  </div>
+                  <div class="resume" style="flex:1;">
+                      <div style="font-size:30px;">
+                          <span style="opacity:0.5">Total</span>
+                          <span >{{payment.getPriceApplication() + payment.right.usersTotalPrice}}€</span>
+                          <span style="font-size:20px">/mois</span>
+                      </div>
+                      <div style="margin-top:20px;">
+                          <div class="sub-title">Utilisateurs</div>
+                          <div style="width:100%;">
+                              <span>{{payment.right.usersTotalCount}}</span>
+                              <span style="float:right;">
+                                  <span style="font-size:20px;">{{payment.right.usersTotalPrice}}</span>
+                                  <span style="font-size:15px;">€/mois</span>
+                              </span>
+                          </div>
+                      </div>
+                      <div style="margin-top:20px;">
+                           <div class="sub-title">Applications</div>
+                           <div style="width:100%;">
+                               <div class="application" ng-repeat="app in payment.right.apps">
+                                   <div class="photo" style="background-size:contain;{{app.details.cssthumbnail}}"></div>
+                                   <div style="flex:1;margin-left: 10px;">
+                                       <div class="application-title">{{app.details.name}}</div>
+                                       <div>
+                                           <span style="opacity:0.5">{{app.userCount}} utilisateurs</span>
+                                           <span style="float:right">{{app.price * app.userCount}}€/mois</span>
+                                       </div>
+                                   </div>
+                               </div>
+                           </div>
+                       </div>
+                       <div style="margin-top:20px;">
+                           <div style="float:right;">
+                               <span style="font-size:20px;">{{payment.getPriceApplication()}}</span>
+                               <span style="font-size:15px;">€/mois</span>
+                           </div>
+                       </div>
+                  </div>
+              </div>
+          </div>
+      </div>
+
+        </div>
+    </div>
+</div>

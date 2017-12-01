@@ -1,0 +1,127 @@
+administration_authentication:
+    resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
+    prefix:   /administration/ajax/authentication
+
+#website_group:
+#    resource: "@WebsiteGroupBundle/Resources/config/routing.yml"
+#    prefix:   /group/
+
+
+fos_user_resetting:
+    resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
+    prefix: /resetting
+
+#Api doc
+NelmioApiDocBundle:
+    resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
+    prefix:   /api/doc
+
+#Administration
+
+administration_general:
+    resource: "@AdministrationGeneralBundle/Resources/config/routing.yml"
+    prefix:   /administration/
+
+
+#API pour les developpeurs
+check:
+    resource: "@TwakeCheckBundle/Controller/"
+    prefix:   /api/
+
+
+#API pour le site (et pas les developpeurs)
+
+citi_go_discussion:
+    resource: "@TwakeDiscussionBundle/Resources/config/routing.yml"
+    prefix:   /ajax/discussion/
+    methods: [POST]
+
+citi_go_calls:
+    resource: "@TwakeCallsBundle/Resources/config/routing.yml"
+    prefix:   /ajax/calls/
+    methods: [POST]
+
+citi_go_upload:
+    resource: "@TwakeUploadBundle/Resources/config/routing.yml"
+    prefix:   /ajax/upload/
+    methods: [POST]
+
+citi_go_payments:
+    resource: "@TwakePaymentsBundle/Resources/config/routing.yml"
+    prefix:   /ajax/payments/
+    methods: [POST]
+
+citi_go_organizations:
+    resource: "@TwakeOrganizationsBundle/Resources/config/routing.yml"
+    prefix:   /ajax/group/
+    methods: [POST]
+
+citi_go_events:
+    resource: "@TwakeEventsBundle/Resources/config/routing.yml"
+    prefix:   /ajax/events/
+    methods: [POST]
+
+citi_go_users:
+    resource: "@TwakeUsersBundle/Resources/config/routing.yml"
+    prefix:   /ajax/users/
+    methods: [POST]
+
+citi_go_core:
+    resource: "@TwakeCoreBundle/Resources/config/routing.yml"
+    prefix:   /ajax/core/
+
+
+citi_go_tags:
+    resource: "@TwakeTagsBundle/Resources/config/routing.yml"
+    prefix:   /ajax/tags/
+    methods: [POST]
+
+citi_go_marketplace:
+    resource: "@TwakeMarketBundle/Resources/config/routing.yml"
+    prefix:   /ajax/market/
+    methods: [POST]
+
+twake_drive_download:
+    path:     ajax/drive/download
+    defaults: { _controller: TwakeDriveBundle:Files:download }
+
+twake_drive:
+    resource: "@TwakeDriveBundle/Resources/config/routing.yml"
+    prefix:   ajax/drive/
+    methods: [POST]
+
+twake_status:
+    resource: "@TwakeStatusBundle/Resources/config/routing.yml"
+    prefix:   /ajax/status/
+    methods: [POST]
+
+twake_comments:
+    resource: "@TwakeCommentsBundle/Resources/config/routing.yml"
+    prefix:   /ajax/status/comment
+    methods: [POST]
+
+#API pour les developpeurs
+developers_api_users:
+    resource: "@DevelopersApiUsersBundle/Resources/config/routing.yml"
+    prefix:   /api/users/
+    methods: [POST]
+
+developers_api_groups:
+    resource: "@DevelopersApiGroupsBundle/Resources/config/routing.yml"
+    prefix:   /api/group/
+    methods: [POST]
+
+developers_api_drive:
+    resource: "@DevelopersApiDriveBundle/Resources/config/routing.yml"
+    prefix:   /api/drive/
+    methods: [POST]
+
+developers_api_error:
+    path:     /api/{req}
+    defaults: { _controller: TwakeCheckBundle:Error:BadRequest }
+    requirements:
+      req: ".*"
+
+website_public:
+    resource: "@WebsitePublicBundle/Resources/config/routing.yml"
+    prefix:   /

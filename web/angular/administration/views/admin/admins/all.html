@@ -1,0 +1,70 @@
+<div ng-controller="AdminsCtrl as admins">
+	<div class="box">
+		<div class="box-header">
+			<h3 class="box-title">Administrators</h3>
+		</div>
+		<div class="box-body">
+			<table id="example2" class="table table-bordered table-hover">
+				<thead>
+				<tr>
+					<th>User ID</th>
+					<th>Username</th>
+					<th>Rôles</th>
+					<th>Operations</th>
+				</tr>
+				</thead>
+				<tbody>
+
+				<tr ng-repeat="admin in admins.list">
+					<td>{{admin.id}}</td>
+					<td>{{admin.username}}</td>
+					<td>
+						<span ng-repeat="role in admin.roles"
+						        class="badge label-success" style="margin-left: 5px;opacity: 0.5;cursor:pointer"
+						        ng-really-click="admins.updateRoles(admin, 'remove', role)"
+						        ng-really-message="Voulez-vous supprimer ce rôle ?"
+								>
+							x {{role}}
+						</span>
+						<span ng-repeat="role in admins.available_roles"
+						      class="badge" style="margin-left: 5px;opacity: 0.5;cursor:pointer"
+						      ng-really-click="admins.updateRoles(admin, 'add', role)"
+						      ng-really-message="Voulez-vous ajouter ce rôle ?"
+								>
+							+ {{role}}
+						</span>
+
+
+					</td>
+					<td>
+						<button ng-show="admin.id != cadmin.user.id"
+						        type="button"
+						        class="btn btn-danger"
+								ng-really-click="admins.remove(admin.id)">
+							REMOVE
+						</button>
+					</td>
+				</tr>
+
+				</tbody>
+
+			</table>
+
+		</div>
+	</div>
+	<div class="box">
+		<div class="box-header">
+			<h3 class="box-title">Add new admin (need user id)</h3>
+		</div>
+		<div class="box-body">
+
+			<form class="form-inline">
+				<div class="form-group">
+					<input type="number" class="form-control" style="width: 100px" id="new_admin_userid" ng-model="new_admin_userid">
+				</div>
+				<button type="submit" class="btn btn-primary" ng-click="admins.add(new_admin_userid)">Add new admin</button>
+			</form>
+
+		</div>
+	</div>
+</div>

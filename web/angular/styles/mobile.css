@@ -1,0 +1,214 @@
+@media (min-width: 601px) {
+	.nodesktop {
+		display: none !important;
+	}
+}
+
+@media (max-width: 600px) {
+
+	.padding-public {
+		overflow: hidden;
+	}
+
+	.nomobile {
+		display: none !important;
+	}
+
+	.disabled_prepare {
+		transition: all 0.2s;
+	}
+
+	.disabled {
+		opacity: 0.2;
+		transition: all 0.2s;
+	}
+
+	/* Menus */
+	.mobileRightMenu {
+		width: 0px !important;
+		position: relative;
+	}
+
+	.mobileRightMenu > div {
+		width: 200px;
+		height: 100%;
+		background: #f2f2f2;
+		box-shadow: 10px 0 10px -10px rgba(0, 0, 0, 0.4) inset;
+		transform: translateX(0px);
+		position: absolute;
+		z-index: 10;
+	}
+
+	.mobileRightMenu .mobileRightMenuTouch {
+		height: 100%;
+		position: absolute;
+		left: -20px;
+		top: 0px;
+		width: 20px;
+		background: transparent;
+	}
+
+	.right_space, .left_space {
+		display: none;
+	}
+
+	.footer .col {
+		width: 100% !important;
+	}
+
+	main {
+	}
+
+	main.closed {
+		transform: translate(0px) !important;
+		transition: all 0.2s !important;
+	}
+
+	main.moving {
+		transition: all 0s !important;
+	}
+
+	main.showContacts {
+		transform: translate(-200px) !important;
+		transition: all 0.2s !important;
+	}
+
+	footer {
+		height: 60px;
+		width: 100%;
+		border-top: 1px solid #DDD;
+		background: #FFF;
+	}
+
+	.connexion_popup .tick {
+		display: none;
+	}
+
+	.connexion_popup {
+		margin-left: 0px;
+		top: 0px;
+		right: 0px;
+		margin-top: 50px;
+		padding: 50px 30px;
+		width: 100%;
+		height: 100%;
+		position: fixed;
+		border-radius: 0px;
+		box-shadow: none;
+		overflow: auto;
+		padding-bottom: 100px;
+	}
+
+	/* Structure */
+	.header_userimage {
+		margin-left: 6px;
+	}
+
+	.notification-general-dropdown {
+		display: block;
+		position: fixed;
+		width: auto;
+		left: 0px;
+		margin-left: 10px;
+		right: 0px;
+		top: 50px;
+		margin-right: 10px;
+	}
+
+	.notification-panel.dropdown-menu.ticked:before {
+		display: none;
+	}
+
+	/* Messages */
+	.emojionearea-standalone {
+		display: none !important;
+	}
+
+	.separate-button {
+		border: none !important;
+	}
+
+	.message-input .buttons {
+		width: 52px !important;
+	}
+
+	.message-left-options {
+		display: none !important;
+	}
+
+	/* Groups */
+	.groupLeftBar {
+		display: none;
+	}
+
+	.groupCenterContainer .left-pane-opener {
+		line-height: 40px;
+		font-size: 18px;
+		position: absolute;
+		left: 0;
+		top: 0;
+		width: 50px;
+		height: 40px;
+	}
+
+	.groupCenterContainer .left-pane {
+		margin-left: -200px;
+		transform: translateX(0%);
+		transition: all 0.2s;
+		z-index: 1;
+	}
+
+	.groupCenterContainer .left-pane.open {
+		transform: translateX(100%);
+		box-shadow: 0 15px 70px rgba(0, 0, 0, 0.2);
+	}
+
+	.groupCenterContainer .title {
+		text-align: center !important;
+	}
+
+	/*  Accueil */
+	.startPage .textHeader {
+		padding-top: 5vh !important;
+		padding: 20px;
+		height: inherit !important;
+	}
+
+	.startPage .textHeader button {
+		margin: 10px !important;
+	}
+
+	.startPage .nbGroups {
+		display: none;
+	}
+
+	/* User page */
+	.menu_user {
+		margin-top: 20px !important;
+		margin-left: -10px;
+		margin-right: -10px;
+	}
+
+	/* Misc */
+	.websocket_error_message {
+		display: none !important;
+	}
+
+	.sf-toolbar {
+		display: none !important;
+	}
+
+	input, textarea {
+		-webkit-appearance: none;
+	}
+
+	select, textarea, input[type="text"], input[type="password"], input[type="datetime"], input[type="datetime-local"], input[type="date"], input[type="month"], input[type="time"], input[type="week"], input[type="number"], input[type="email"], input[type="url"], input[type="search"], input[type="tel"], input[type="color"] {
+		font-size: 16px !important;
+	}
+
+	/* User Report */
+	#crowd-shortcut {
+		display: none !important;
+	}
+
+}

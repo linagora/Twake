@@ -1,0 +1,89 @@
+.dragTopBar {
+    -ms-overflow-style: scrollbar;
+    -webkit-app-region:drag;
+    height: 30px;
+    width: 100%;
+    pointer-events: none;
+    position :absolute;
+    top: 0;
+    left: 0;
+    z-index: 10000;
+}
+
+/* Boutons windows */
+.windows .electron-wbuttons {
+  position: absolute;
+  right: 5px;
+  top: 4px;
+  font-size: 20px;
+  z-index: 10000000;
+}
+
+.windows .dragTopBar {
+	right: 140px;
+	left: auto;
+}
+
+.windows .electron-wbuttons a {
+  color: rgba(128,128,128,0.5);
+  margin-left: 4px;
+}
+
+.windows .electron-wbuttons a:hover {
+  color: rgba(128,128,128,1);
+}
+
+/* Macos */
+.macos .electron-buttons {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100px;
+  text-align: left;
+  z-index: 10000000;
+}
+
+.macos .electron-buttons a {
+  width: 12px;
+  height: 12px;
+  opacity: 0.5;
+  display: inline-block;
+  border-radius: 50%;
+  float: left;
+  margin: 5px;
+  margin-right: 2px;
+  cursor: pointer;
+  background: #111;
+}
+
+.electron-buttons a:hover {
+  opacity: 1;
+}
+
+.macos .electron-buttons .close {
+  background: #db0000;
+}
+
+.macos .electron-buttons .reduce {
+  background: #efac00;
+}
+
+.macos .electron-buttons .extend {
+  background: #00dd38;
+}
+
+.macos header {
+	padding-top: 20px;
+	height: 65px;
+}
+
+.windows header {
+	padding-top: 25px;
+	height: 70px;
+}
+
+.macos header .header-button {
+	height: 65px;
+	margin-top: -20px;
+	line-height: 65px;
+}

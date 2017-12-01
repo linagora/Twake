@@ -1,0 +1,64 @@
+<div ng-controller="inscriptionGroupeCtrl as inscription">
+
+    <div class="page_block title">
+        Création d'un groupe
+    </div>
+
+    <div class="page_block" ng-show="inscription.type=='none'">
+
+	    <div style="text-align: center;padding: 40px;max-width: 380px;margin: auto;">
+
+		    <div>Juste avant d'accéder à votre nouveau groupe, nous avons besoin d'un nom !</div>
+
+		    <br>
+
+		    <div class="form_title">Nom du groupe</div>
+
+		    </br>
+
+		    <input style="width: 100%;max-width: 200px;" class="text_input form-control bordered" type="text"
+		           placeholder="Nom" ng-model="inscription.data.name"
+		           ng-class="{'input-error':inscription.errors.emptyName==true}"/>
+
+		    <span class="error"
+		          ng-show="inscription.errors.emptyName==true">
+			    Nom de groupe vide
+		    </span>
+
+		    </br>
+
+
+		    <input type="submit" class="btn btn-block btn-success"
+		           style="margin-top: 15px; width: 180px; margin-left: auto;" ng-click="inscription.submit();"
+		           value="Accéder au groupe"/>
+
+	    </div>
+
+	    <!--
+	    <div class="form_title">Visibilité</div>
+	    </br>
+	    <label class="inputRadio"><input class="inputRadio" type="radio" name="visibility"
+	                                     ng-model="inscription.data.privacy" value="P"> Public</label>
+	    <label class="inputRadio"><input class="inputRadio" type="radio" name="visibility"
+	                                     ng-model="inscription.data.privacy" value="M"> Accès uniquement par
+		    lien</label>
+	    <label class="inputRadio"><input class="inputRadio" type="radio" name="visibility"
+	                                     ng-model="inscription.data.privacy" value="Q"> Privé</label><br>
+-->
+
+	    <!--
+			<div class="form_title">Type de groupe</div>
+			</br>
+			<select ng-model="inscription.data.type">
+				<option value="P" selected>Projet</option>
+				<option value="C">Club</option>
+				<option value="A">Association</option>
+				<option value="E">Entreprise</option>
+				<option value="I">Institution</option>
+				<option value="O">Autre</option>
+			</select><br>
+	-->
+
+    </div>
+
+</div>

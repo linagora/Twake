@@ -1,0 +1,42 @@
+.blockButtonInscriptionGroupe{
+    max-width:580px;
+    margin:auto;
+    text-align: center;
+}
+.buttonInscriptionGroupe{
+    background-color: #F0F0F0;
+    width:150px;
+    height:150px;
+    /*padding-top:80px;*/
+    font-size: 25px;
+    margin:20px;
+    text-align: center;
+    display:inline-block;
+    border-radius: 20%;
+}
+.buttonInscriptionGroupe:hover{
+    background-color: #F5F5F5;
+    cursor:pointer;
+}
+.buttonInscriptionGroupe .image {
+  background-size: auto 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+  height: 100px;
+  margin-top: 10px;
+}
+
+.blocCreationGroupe{
+    margin:auto;
+    /*margin-top:50px;*/
+    margin-top:15px;
+    line-space:5px;
+}
+.inputRouge{
+    border:red;
+}
+.inputRadio{
+    display:inline-block;
+    margin-left:10px;
+    margin-right:5px;
+}

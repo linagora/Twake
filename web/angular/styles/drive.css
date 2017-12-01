@@ -1,0 +1,325 @@
+.drive_quotas_container {
+	flex: 1;
+  background: transparent;
+  height: 10px;
+  display: inline-block;
+  border-radius: 5px;
+  margin-right: 10px;
+  border: 2px solid #FFF;
+	margin-top: 15px;
+}
+
+.drive_quotas {
+  width: 30%;
+  background: #FFF;
+  border-radius: 5px;
+  height: 10px;
+  margin: -2px 0px;
+}
+
+.drive_bar {
+  width: 100%;
+  color: #FFF;
+  margin-bottom: 10px;
+  font-size: 15px;
+}
+
+.message_element {
+    text-align: center;
+}
+
+.message_element div {
+    margin: auto;
+}
+
+.drive_element {
+  margin: 10px;
+  height: auto;
+  width: 80px;
+  display:inline-block;
+  vertical-align: bottom;
+	position: relative;
+}
+
+.drive_element:hover{
+    cursor:pointer;
+    background: rgba(128,128,128,0.2);
+    border-radius: 10px;
+}
+
+.file_app:after {
+	content: "";
+	position: absolute;
+	top: 0;
+	right: 0;
+	width: 20px;
+	height: 20px;
+	border-left: 3px solid #2b2d32;
+	border-bottom: 3px solid #2b2d32;
+	border-radius: 0 0 0 5px;
+}
+
+.file_app {
+	position: absolute;
+	bottom: 7px;
+	left: 18px;
+	right: 0;
+	border-radius: 5px 22px 5px 5px;
+	width: 46px;
+	height: 66px;
+	background-size: cover;
+	background-position: center;
+	background-color: #EEE;
+}
+
+.list .drive_element {
+  margin: 0 10px;
+  margin-top: 5px;
+  width: 100%;
+  height: 30px;
+  border-bottom: 1px solid rgba(128,128,128,0.2);
+}
+
+.list .drive_element:hover {
+  border-radius: 0px;
+}
+
+.drive_element .icon {
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
+  width: 80px;
+  height: 80px;
+	position: relative;
+}
+
+.list .drive_element .icon {
+  width: 20px;
+  height: 30px;
+}
+
+.drive_directory {
+    background-image: url('/public/img/drive/directory.svg');
+}
+
+.drive_file {
+    background-image: url('/public/img/drive/file.svg');
+}
+
+.drive_multiple_folder{
+    opacity:0.8;
+}
+
+.drive_element .icon.directory {
+  background-image: url('/public/img/drive/directory.svg');
+}
+
+.drive_element .multiple_folder{
+    opacity:0.8;
+}
+
+.drive_element .icon.file {
+  background-image: url('/public/img/drive/file.svg');
+}
+
+.none{
+    background-color:rgba(0,0,0,0); !IMPORTANT
+}
+.drive_element .name {
+  max-width: 80px;
+  height: 40px;
+  margin:auto;
+  text-align: center;
+  color: #FFF;
+  font-size: 12px;
+  position: relative;
+}
+
+.drive_element .name div {
+    max-width:100px;
+    top: 0;
+      width: 100%;
+      word-wrap: break-word;
+      font-size: 10px;
+}
+
+.list .drive_element .name {
+  color: #FFF;
+  font-size: 12px;
+  position: absolute;
+  left: 30px;
+  width: 100%;
+  text-align: left;
+  top: 8px;
+}
+
+.list .drive_element .name div {
+  font-size: 12px;
+}
+
+.draggabled{
+    opacity:0;
+}
+
+
+.drive_content .active{
+    background: rgba(128,128,128,0.2);
+    border-radius: 10px;
+}
+
+.link-tree{
+    opacity: 0.7;
+}
+.link-tree:hover{
+    cursor: pointer;
+    opacity: 1
+}
+.active-link-tree{
+    opacity:1;
+}
+
+.input_name_drive_element{
+    height: 20px;
+	color: #000;
+	background-color: #FFF;
+	box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    padding: 0;
+    padding-left: 2px;
+    padding-right: 2px;
+    border: none;
+    border-radius: 5px;
+    font-size: 10px;
+    width:80px;
+}
+
+.drive_element .copy:hover{
+    cursor :  Not-Allowed;
+}
+
+/* light */
+
+.light .drive_element .name {
+  color: #000;
+}
+
+.light .drive_bar {
+  color: #000;
+}
+
+/* -------------------------------- */
+
+.noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+#rectangle{
+    position:absolute;
+    z-index:5;
+    border:1px solid blue;
+    background-color:blue;
+    opacity: 0.1;
+}
+
+.degage{
+    margin-top:-5000px;
+    margin-left:-5000px;
+}
+
+.popup_file_item:hover {
+    background-color: #F4F4F4;
+    cursor: pointer;
+}
+
+.close-button {
+    position: fixed;
+    right: 0;
+    top: 0;
+    font-size: 30px;
+    margin: 20px;
+}
+
+.close-button:hover {
+    opacity: 0.5;
+    cursor: pointer;
+}
+
+.overview-title {
+    font-size: 20px;
+    color: lightgrey;
+    padding-bottom: 5px;
+}
+
+.overview-details {
+    padding-bottom: 15px;
+    font-size: 15px;
+    color: white;
+}
+
+.overview-separation {
+    margin-left: 20px;
+    padding-left: 20px;
+    border-left: white solid 1px;
+}
+
+/* Animations */
+
+.driveBox.opened .drive_element_icon {
+	transform: scale(1.5);
+	opacity: 0;
+	transition: all 0.2s;
+	position: relative;
+}
+
+.drive_content.opening_child {
+	transform: translateX(-100%);
+	opacity: 0;
+	transition: all 0.5s;
+}
+
+.drive_content.opening_parent {
+	transform: translateX(100%);
+	opacity: 0;
+	transition: all 0.5s;
+}
+
+.drive_content.changed_child {
+	animation: drive_content_changed_child 0.5s;
+}
+
+.drive_content.changed_parent {
+	animation: drive_content_changed_parent 0.5s;
+}
+
+@keyframes drive_content_changed_child {
+	from {
+		opacity: 0;
+	}
+	1% {
+		opacity: 0;
+		transform: translateX(100%);
+	}
+	to {
+		transform: translateX(0%);
+		opacity: 1;
+	}
+}
+
+@keyframes drive_content_changed_parent {
+	from {
+		opacity: 0;
+	}
+	1% {
+		opacity: 0;
+		transform: translateX(-100%);
+	}
+	to {
+		transform: translateX(0%);
+		opacity: 1;
+	}
+}

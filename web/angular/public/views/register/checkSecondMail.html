@@ -1,0 +1,38 @@
+<div class="text_center" ng-controller="checkSecondMailCtrl as mailCtrl">
+    <div ng-show="mailCtrl.detail == 'userAndMailMismatch'">
+        L'ajout de cette seconde adresse mail n'a pas été demandé par l'utilisateur actuel.
+        <br>
+        Veuillez vous connecter avec le compte aillant demandé l'ajout de cette adresse
+        <br>
+        <br>
+        <a ng-click="cuser.logout()" class="red_link" >Changer de compte</a>
+    </div>
+
+    <div ng-show="mailCtrl.detail == 'mustconfirm'">
+        Cette adresse mail n'est pas encore associée à un compte sur Twake.<br>
+            Voulez vous associer <b>{{ mailCtrl.mail }}</b> à votre compte <b>{{ cuser.data.username }}</b> ?<br>
+            <br>
+            <a ng-click="cuser.logout()" class="red_link" style="float:left;margin-left:20px;">Changer de compte</a>
+
+            <a ng-click="mailCtrl.confirm()" style="float:right;margin-right:20px;" >Confirmer</a>
+        </div>
+
+    <div ng-show="mailCtrl.status== 'success'">
+        Votre adresse mail <b>{{ mailCtrl.mail }}</b><br> a été ajoutée à la liste de vos adresses avec succès !
+        <br><br>
+        <a ui-sref="account-parameters" >Paramètres de compte</a>
+    </div>
+
+    <div ng-show="mailCtrl.detail == 'notconnected'">
+        Cette adresse mail ne correspond à aucun compte pour le moment !<br>
+        <b>{{ mailCtrl.mail }}</b>
+        <br>
+        • Vous avez un compte ? Connectez vous pour ajouter cette adresse mail.<br>
+        • Vous n'avez pas de compte ? Inscrivez-vous avec cette adresse mail !
+    </div>
+
+    <div ng-show="mailCtrl.detail == 'emailNotFound'">
+        L'adresse mail n'a pas été demandée ou a déjà été validée.
+    </div>
+
+</div>

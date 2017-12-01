@@ -1,0 +1,324 @@
+<div ng-include="'@views/status/new.html'" style="margin-top: 40px;margin-bottom: 20px;"></div>
+
+<div class="page_block status" ng-repeat="stat in status.status"
+     style="padding:0;">
+	<div class="status message" ng-show="status.statusEdit!=stat" style="display:flex;">
+
+		<div ng-show="status.isGroup==false;" class="default_user_image status_image_owner"
+		     style='border-radius: 50%;background-color: #EEE;{{ stat.ownerDetails.cssuserimage }}'></div>
+		<div ng-show="status.isGroup==true;" class="default_group_image status_image_owner"
+		     style="border-radius:20%; {{cgroup.data.csslogo}}"></div>
+
+		<div style="display:inline-block;flex:1;">
+			<div style="width:100%;margin-top: -5px;">
+				<div class="status_owner">
+					<a class="link_user">{{stat.ownerDetails.username}} {{stat.ownerDetails.name}}</a>
+				</div>
+				<!--<div class="publish" ng-show="stat.sharedStatus==null">
+					a publié :
+				</div>
+				<div class="publish" ng-show="stat.sharedStatus!=null">
+					a partagé :
+				</div>-->
+				<div class="when">
+					Il y a {{stat.when}}
+				</div>
+				<div uib-dropdown
+				     ng-show="cuser.data.uid==status.ownerId || (status.ownerIsGroup && status.hasRightToEddit(status.ownerId))">
+					<div class="hoverrable" style="display:inline-block;float:right;">
+						<a href id="simple-dropdown" uib-dropdown-toggle><i class="fa fa-ellipsis-v"
+						                                                    aria-hidden="true"></i></a>
+					</div>
+					<ul class="dropdown-menu ticked right" role="menu" uib-dropdown-menu
+					    aria-labelledby="simple-dropdown">
+						<li role="menuitem">
+							<a ng-click="status.delete(stat.id)">Supprimer</a>
+							<a ng-click="status.statusEdit=stat">Editer</a>
+						</li>
+					</ul>
+				</div>
+			</div>
+			<div class="status_content content" style="width:100%">
+				<span msg-parsing="stat.content"></span>
+			</div>
+		</div>
+	</div>
+	<div class="status_content status share_statut" ng-show="stat.sharedStatus!=null"
+	     style="border-top: solid;border-width: 2px;border-color: rgba(13,130,223,0.8);box-shadow: 0px 1px 6px rgba(13,130,223,0.5)">
+		<div ng-show="stat.sharedStatus.ownerIsGroup==false;" class="default_user_image status_image_owner"
+		     style='border-radius:100%;{{ stat.sharedStatus.ownerDetails.cssuserimage }}'></div>
+		<div ng-show="stat.sharedStatus.ownerIsGroup==true;" class="default_group_image status_image_owner"
+		     style="border-radius:100%; {{stat.sharedStatus.ownerDetails.csslogo}}"></div>
+		<div style="display:inline-block;">
+			<div class="status_owner">
+				<a class="link_user">{{stat.sharedStatus.ownerDetails.username}}{{stat.sharedStatus.ownerDetails.name}}</a>
+
+			</div>
+			<div class="publish">
+			</div>
+			<div class="when">
+				Il y a {{stat.sharedStatus.when || "0 secondes" }}
+			</div>
+		</div>
+		<div class="status_content">
+			<span msg-parsing="stat.sharedStatus.content"></span>
+		</div>
+	</div>
+	<div class="buttons" style="text-align: left;">
+		<span class="buttons_s" ng-click="status.like(stat.id)">
+			<i class="fa fa-star button" aria-hidden="true"
+			   ng-class="{'fa-star blue':stat.haveLiked, 'fa-star-o':!stat.haveLiked}"></i>
+			<span style="display:inline-block;margin-left:3px;">{{stat.likes}}</span>
+			<span style="text_button"></span>
+		</span>
+		<span class="buttons_s" ng-click="status.share(stat)">
+			<i class="fa fa-retweet button" aria-hidden="true"></i>
+			<span style="display:inline-block;margin-left:3px;">{{stat.shares}}</span>
+			<span style="text_button"></span>
+		</span>
+		<span class="buttons_s" ng-click="status.comment(stat,true)">
+			<i class="fa fa-comment button" aria-hidden="true"></i>
+			<span style="display:inline-block;margin-left:3px;">{{stat.comments}}</span>
+		</span>
+
+		<div class="seeComment" ng-show="stat.comments>0" ng-click="status.comment(stat,false)">comments...</div>
+	</div>
+	<div class="status" ng-show="status.statusEdit==stat">
+		<div class="status input_status" style="display:flex;">
+			<div ng-show="status.isGroup==false;" class="default_user_image status_image_owner"
+			     style='border-radius: 50%;{{ cuser.data.userimage }}'></div>
+			<div ng-show="status.isGroup==true;" class="default_group_image status_image_owner"
+			     style="border-radius:20%; {{cgroup.data.csslogo}}"></div>
+			<textarea style="flex:1;" class="textarea_input" ng-model="stat.content"
+			          placeholder="Votre commentaire"></textarea>
+		</div>
+		<div class="button_new_stat">
+			<div style="margin-left:65px;">
+				<button class="button_privacy" ng-class="{'active':stat.privacy=='P'}" ng-click="stat.privacy='P';">
+					Public
+				</button>
+				<button class="button_privacy" ng-class="{'active':stat.privacy=='I'}" ng-click="stat.privacy='I';">
+					Contact
+				</button>
+			</div>
+			<div class="button_status">
+				<button class="send_status" style="margin" ng-click="status.statusEdit=undefined;">Annuler</button>
+				<button class="send_status" ng-click="status.edit()">Modifier</button>
+			</div>
+		</div>
+	</div>
+	<div ng-show="status.commentStatusId==stat.id">
+		<div class="comment" style="display:flex;">
+			<div uib-dropdown>
+				<div class="default_group_image status_image_owner"
+				     ng-class="{'default_group_image':status.entityCommenting!=cuser,'default_user_image':status.entityCommenting==cuser}"
+				     style="border-radius: 50%; {{status.entityCommenting.data.csslogo}}{{status.entityCommenting.data.cssuserimage}}"></div>
+				<span class="caret" id="choiceBtn" uib-dropdown-toggle></span>
+				<ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="choiceBtn"
+				    style="margin-top: -20px;border-radius: 4px;border: solid;border-width: 1px;border-color: rgba(0,0,0,0.2);">
+					<li role="menuitem" class="choicePublisherItem"
+					    ng-click="status.changeEntityCommenting(undefined);">
+						<div class="default_user_image status_image_owner"
+						     style='{{ cuser.data.cssuserimage }}'></div>
+						{{cuser.data.username}}
+					</li>
+					<li role="menuitem" class="choicePublisherItem" ng-repeat="group in status.groupsCanComment"
+					    ng-click="status.changeEntityCommenting(group);">
+						<div class="default_group_image status_image_owner" style="{{group.css}}"></div>
+						{{group.name}}
+					</li>
+				</ul>
+			</div>
+			<div style="vertical-align:middle;display:inline-block;width:100%;padding:0px;flex:1;"
+			     class="status input_status">
+				<textarea style="width:100%;vertical-align:middle;" id="newComment{{stat.id}}"
+				          data-id-status="{{stat.id}}" ng-model="status.newComment[stat.id]"
+				          class="textareaComment form-control"
+				          placeholder="Votre commentaire"></textarea>
+			</div>
+		</div>
+		<div class="comment " ng-repeat="comment in status.comments" ng-show="status.commentStatusId==stat.id">
+			<div class="page_block commentBlock"
+			     style="margin-bottom:0px;">
+				<div class="commentBlock1" ng-show="status.commentEdit != comment">
+					<div class="commentBlock2" style="display:flex;">
+						<div class="status_image_owner"
+						     ng-class="{'default_group_image':!comment.uid>0,'default_user_image':comment.uid>0}"
+						     style="display:inline-block;border-radius:20%; {{comment.ownerDetails.cssuserimage}}{{comment.ownerDetails.csslogo}}"></div>
+						<div style="flex:1;">
+							<div style="display:inline-block;">
+								<div style="display:inline-block;vertical-align:middle;margin-left:10px;margin-right:10px;">
+									<a class="link_user">{{comment.ownerDetails.username}}{{comment.ownerDetails.name}}</a>
+
+									<div class="when" style="font-size:10px;opacity:0.7;display:inline-block;">
+										{{comment.when}}
+									</div>
+								</div>
+							</div>
+
+							<div style="vertical-align:middle;display:inline-block;width:100%;padding:0px;flex:1;display:flex;"
+							     class="status input_status">
+								<div style="padding-left:10px;">
+									{{comment.content}}
+									</br>
+									<a style="color:#365899;font-size:10px;"
+									   ng-click="status.commentComment(comment);">Répondre</a>
+								</div>
+							</div>
+						</div>
+						<div class="uib" uib-dropdown
+						     ng-show="cuser.data.uid==comment.ownerId || (comment.ownerIsGroup && status.hasRightToEddit(comment.ownerId))">
+							<div class="hoverrable" style="display:inline-block;">
+								<a class="dropDownComment" href id="simple-dropdown" uib-dropdown-toggle><i
+										class="fa fa-ellipsis-v" aria-hidden="true"></i></a>
+							</div>
+							<ul class="dropdown-menu ticked right" role="menu" uib-dropdown-menu
+							    aria-labelledby="simple-dropdown">
+								<li role="menuitem">
+									<a ng-click="status.deleteComment(stat.id,-1,comment.id)">Supprimer</a>
+									<a ng-click="status.commentEdit=comment">Editer</a>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<div style="">
+						<div style="display:flex;margin-left:35px;margin-right:50px;" class="commentBlock"
+						     ng-repeat="commentComment in comment.commentsDetails" data-id="{{commentComment.id}}">
+							<div class="page_block commentBlock"
+							     style="margin-bottom:0px;border-left: solid;border-left-color: currentcolor;border-radius: 0;border-color: #4F81BA;margin-bottom:0px;">
+								<div class="commentBlock1" style="width:100%;display:flex;"
+								     ng-show="commentComment != status.commentEdit">
+									<div class="status_image_owner"
+									     ng-class="{'default_group_image':!commentComment.uid>0,'default_user_image':commentComment.uid>0}"
+									     style="border-radius:20%; {{commentComment.ownerDetails.cssuserimage}}{{commentComment.ownerDetails.csslogo}}"></div>
+									<div style="flex:1;">
+										<div style="width:100%;">
+											<div style="display:inline-block;vertical-align:middle;margin-left:10px;margin-right:10px;">
+												<a class="link_user">{{commentComment.ownerDetails.username}}{{commentComment.ownerDetails.name}}</a>
+
+												<div class="when"
+												     style="display:inline-block;font-size:10px;opacity:0.7;">Il y a
+													{{commentComment.when}}
+												</div>
+											</div>
+										</div>
+										<div>
+											<div style="vertical-align:middle;display:inline-block;width:100%;padding:0px;flex:1;display:flex;"
+											     class="status input_status">
+												<div style="padding-left:10px;font-size:14px;">
+													{{commentComment.content}}
+												</div>
+											</div>
+										</div>
+									</div>
+									<div class="commentBlock2" uib-dropdown
+									     ng-show="(cuser.data.uid==commentComment.ownerId || (commentComment.ownerIsGroup && status.hasRightToEddit(commentComment.ownerId)))">
+										<div class="hoverrable" style="display:inline-block;">
+											<a class="dropDownComment" href id="simple-dropdown"
+											   uib-dropdown-toggle><i class="fa fa-ellipsis-v"
+											                          aria-hidden="true"></i></a>
+										</div>
+										<ul class="dropdown-menu ticked right" role="menu" uib-dropdown-menu
+										    aria-labelledby="simple-dropdown">
+											<li role="menuitem">
+												<a ng-click="status.deleteComment(stat.id,comment.id,commentComment.id)">Supprimer</a>
+												<a ng-click="status.commentEdit=commentComment">Editer</a>
+											</li>
+										</ul>
+									</div>
+								</div>
+								<div class="comment" ng-show="commentComment == status.commentEdit"
+								     style="display:flex;width:100%;">
+									<div ng-show="!commentComment.isGroup"
+									     class="default_user_image status_image_owner"
+									     style='vertical-align:middle;{{commentComment.ownerDetails.cssuserimage}}'></div>
+									<div ng-show="commentComment.isGroup"
+									     class="default_group_image status_image_owner"
+									     style="vertical-align:middle;{{commentComment.ownerDetails.cssuserimage}}"></div>
+									<div style="vertical-align:middle;display:inline-block;width:100%;padding:0px;flex:1;"
+									     class="status input_status">
+										<textarea style="width:100%;vertical-align:middle;"
+										          data-id-status="{{stat.id}}" ng-model="commentComment.content"
+										          class="textareaComment"
+										          placeholder="Votre commentaire"></textarea>
+										<button ng-click="status.updateComment(stat.id,comment.id,commentComment)">
+											Modifier
+										</button>
+									</div>
+								</div>
+							</div>
+						</div>
+						<div style="display:flex;margin-left:35px;margin-right:50px;">
+							<div class="comment page_block" ng-show="comment.id==status.commentCommentStatusId"
+							     style="display:flex;border-left: solid;border-left-color: currentcolor;border-radius: 0;border-color: #4F81BA;">
+								<div class="default_group_image status_image_owner"
+								     ng-class="{'default_group_image':status.entityCommenting!=cuser,'default_user_image':status.entityCommenting==cuser}"
+								     style="border-radius:20%; {{status.entityCommenting.data.csslogo}}{{status.entityCommenting.data.cssuserimage}}"></div>
+
+								<div style="width:100%; " class="status input_status">
+									<textarea style="width:100%;vertical-align:middle;"
+									          id="newCommentComment{{comment.id}}"
+									          data-id-comment-status="{{comment.id}}" data-id-status="{{stat.id}}"
+									          ng-model="status.newCommentComment" class="textareaCommentComment"
+									          placeholder="Votre commentaire"></textarea>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="status" ng-show="status.statusEdit==stat">
+					<div class="status input_status" style="display:flex;">
+						<div ng-show="status.isGroup==false;" class="default_user_image status_image_owner"
+						     style='{{ userCtrl.user.profil }}'></div>
+						<div ng-show="status.isGroup==true;" class="default_group_image status_image_owner"
+						     style="border-radius:20%; {{cgroup.data.csslogo}}"></div>
+						<textarea style="flex:1;" class="textarea_input" ng-model="stat.content"
+						          placeholder="Votre commentaire"></textarea>
+					</div>
+					<div class="button_new_stat">
+						<div style="margin-left:65px;">
+							<button class="button_privacy" ng-class="{'active':stat.privacy=='P'}"
+							        ng-click="stat.privacy='P';">Public
+							</button>
+							<button class="button_privacy" ng-class="{'active':stat.privacy=='I'}"
+							        ng-click="stat.privacy='I';">Contact
+							</button>
+						</div>
+						<div class="button_status">
+							<button class="send_status" style="margin" ng-click="status.statusEdit=undefined;">
+								Annuler
+							</button>
+							<button class="send_status" ng-click="status.edit()">Modifier</button>
+						</div>
+					</div>
+				</div>
+				<div class="comment" ng-show="status.commentEdit==comment" class="comment" style="display:flex;">
+					<div class="status_image_owner"
+					     ng-class="{'default_group_image':!comment.uid>0,'default_user_image':comment.uid>0}"
+					     style="border-radius:20%; {{comment.ownerDetails.cssuserimage}}{{comment.ownerDetails.csslogo}}"></div>
+					<div style="vertical-align:middle;display:inline-block;width:100%;padding:0px;flex:1;"
+					     class="status input_status">
+						<textarea style="width:100%;vertical-align:middle;" data-id-status="{{stat.id}}"
+						          ng-model="comment.content" class="textareaComment"
+						          placeholder="Votre commentaire"></textarea>
+						<button ng-click="status.updateComment(stat.id,-1,comment)">Modifier</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!--<div class="comment" style="display:flex;" >
+		 <div uib-dropdown>
+			 <div class="default_group_image status_image_owner" ng-class="{'default_group_image':status.entityCommenting!=cuser,'default_user_image':status.entityCommenting==cuser}" style="border-radius:20%; {{status.entityCommenting.data.csslogo}}{{status.entityCommenting.data.cssuserimage}}"></div>
+			 <span class="caret" id="choiceBtn" uib-dropdown-toggle></span>
+			 <ul class="dropdown-menu" uib-dropdown-menu role="menu" aria-labelledby="choiceBtn" style="margin-top: -20px;border-radius: 4px;border: solid;border-width: 1px;border-color: rgba(0,0,0,0.2);">
+				<li role="menuitem" class="choicePublisherItem" ng-click="status.changeEntityCommenting(undefined);"><div class="default_user_image status_image_owner" style='{{ cuser.data.cssuserimage }}'></div>{{cuser.data.username}}</li>
+				<li role="menuitem" class="choicePublisherItem" ng-repeat="group in status.groupsCanComment" ng-click="status.changeEntityCommenting(group);"><div class="default_group_image status_image_owner" style="{{group.css}}"></div>{{group.name}}</li>
+			  </ul>
+		 </div>
+		 <div style="vertical-align:middle;display:inline-block;width:100%;padding:0px;flex:1;" class="status input_status">
+			 <textarea style="width:100%;vertical-align:middle;" id="newComment{{stat.id}}" data-id-status="{{stat.id}}" ng-model="status.newComment[stat.id]" class="textareaComment" placeholder="Votre commentaire"></textarea>
+		 </div>
+	 </div>-->
+</div>
+</div>

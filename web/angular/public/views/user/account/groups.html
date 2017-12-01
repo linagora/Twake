@@ -1,0 +1,46 @@
+<div ng-controller="groupsUserCtrl as ctrl">
+    <div class="page_block title">
+        Groupes
+    </div>
+
+    <div ng-class="{'loading':ctrl.loading}">
+        <div class="page_block" ng-show="ctrl.pendingCount > 0">
+
+            <div class="title">
+                Vos invitations
+            </div>
+
+            <div  ng-repeat="orga in ctrl.pending">
+                <div style="margin-bottom: 5px; display:flex;">
+	                <div class="image default_group_image default_group_style"
+	                     style="display:inline-block; width:50px; height:50px; {{orga.csslogo}}"></div>
+                        <span class="titleGroup">{{orga.name}}</span>
+                        <div class= "btn btn-success btnGroup" ng-click="ctrl.accept(orga.id)"> Accept </div>
+                        <div class=" btn btn-danger btnGroup" ng-click="ctrl.refuse(orga.id)"> Refuse </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="page_block">
+            <div class="title">
+                Vos groupes
+            </div>
+	        <div ng-show="ctrl.noOrga"
+	             style="font-size: 12px;text-align: center;width: 100%;display: block;line-height: 30px;">
+                Vous n'avez aucun groupe.
+            </div>
+
+            <div  ng-repeat="orga in ctrl.groups">
+                <a  ui-sref="group-home({gid:orga.id})" >
+                    <div class="lienGroup" style="display: flex">
+	                    <div class="image default_group_image default_group_style"
+	                         style="display:inline-block; width:50px; height:50px; {{orga.csslogo}}"></div>
+                        <div class="titleGroup" style="flex:1;">{{orga.name}}</div>
+                    </div>
+                </a>
+            </div>
+
+        </div>
+    </div>
+</div>
+

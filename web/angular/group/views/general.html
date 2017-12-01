@@ -1,0 +1,20 @@
+<div class="groupMainContainer" ng-controller="groupGeneralCtrl as groupGeneral">
+	<div style="flex: 1;display:flex;">
+		<div style="display:flex; flex-direction:column; flex:1;width: 100%;">
+
+			<div style="display:flex; flex:1; position: relative;height: 100%;width: 100%;">
+
+				<div scrollbar class="groupLeftBar" ng-include="'@gviews/menus/left.html'" ng-controller="menuLeftCtrl"
+				     style="position: relative;overflow: auto;">
+				</div>
+
+				<div class="groupCenterContainer" ui-view="" ng-controller="membersCtrl as mc"></div>
+
+			</div>
+		</div>
+
+	</div>
+	<div id="chargementUpload" ng-show="upload.isUploading" ng-include="'angular/views/template/chargementUpload.html'">
+	</div>
+
+</div>

@@ -1,0 +1,5 @@
+<div style="display: flex;">
+	<div class="image default_user_image default_user_style" style="{{contact.cssuserimage}}"></div>
+    <span style="color: #000;"><div class="name">{{ contact.username }}</div></span>
+    <div style="text-align: right; width: 100%; margin-right: 10px;" ng-controller="btnContactCtrl as Btn" ng-init="Btn.init(contact.id); Btn.load();" ng-include="'@pviews/templates/contact_buttons_mini.html'"></div>
+</div>

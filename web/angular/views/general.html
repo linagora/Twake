@@ -1,0 +1,56 @@
+<div id="subbody" style="display: flex;" ng-class="{'light':header.light}" ng-class="{'showContacts':showContacts}">
+	<div id="loading-bar-container"></div>
+	<div style="width: 100%;position: relative;height: 100%;flex:1;display: flex;flex-direction: column;">
+
+		<header ng-controller="mainHeaderCtrl as header" ng-include="'@views/header/header.html'"></header>
+
+		<main style="margin-bottom: 0px;display:flex;">
+
+		<div style="display: flex;min-height: 100%;width: 100%;" ui-view="">
+
+			</div>
+
+			<div ng-show="cuser.data.status=='connected'" style="display: flex;"
+			     class="mobileRightMenu contactsRightBar"
+			     ng-include="'@views/menus/contacts.html'">
+			</div>
+
+		</main>
+
+	</div>
+
+	<div class="floatMessages">
+		<div class="floatBloc" ng-class="{'closed': float.closed}" ng-repeat="float in cmsg.floating">
+			<div style="display: flex;height:100%;width:100%;flex-direction: column;">
+				<div class="floatBlocHeader">
+
+					<div class="floatName">
+						<span ng-show="float.type=='user'">
+							{{ cmsg.contactsById[float.id].username }}
+						</span>
+						<span ng-show="float.type=='channel'">
+							{{ cuser.getGroup(float.group).name }} - {{ cmsg.channels[float.id].name }}
+						</span>
+					</div>
+
+					<i style="color:#FFF;float:right;" uib-tooltip="Fermer" class="fa fa-close"
+					   ng-click="cmsg.remFloatBloc(float.key)" ng-show="!float.closed"></i>
+					<i style="color:#FFF;float:right" uib-tooltip="Ouvrir en grand" class="fa fa-plus"
+					   ng-click="cmsg.expandFloatBloc(float)" ng-show="!float.closed"></i>
+					<i style="color:#FFF;float:right" uib-tooltip="Réduire" class="fa fa-minus"
+					   ng-click="float.closed = !float.closed"></i>
+
+				</div>
+				<div class="content" ng-init="discussionKey = float.key" ng-include="'@views/chat.html'">
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div auto-attach-to=".attach_call_to_me" class="jitsi_video" style="transition: all 0.2s;">
+
+	</div>
+
+	<div class="websocket_error_message">
+	</div>
+</div>

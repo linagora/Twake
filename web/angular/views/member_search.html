@@ -1,0 +1,25 @@
+<div class="pane-title mini"
+     ng-show="contactsSearch.contacts.length>0">
+	Résultats :
+</div>
+<div class="nfo"
+     ng-show="contactsSearch.contacts.length==0"
+     style="
+  text-align: center;
+  margin: 5px;
+  margin-top: 10px;">Aucun résultat
+</div>
+<div class="contactRight" ng-init="cmsg.subscibeConnections(person.id)" ng-repeat="person in contactsSearch.contacts"
+     ui-sref="chat_user({username: person.susername})">
+	<div style="{{person.cssuserimage}}" class="contactRightImage default_user_image">
+		<div class="notif-badge" style="left: 36px;top: 2px;z-index: 10;"
+		     ng-show="notification.data.users['user_'+person.id].total>0">
+			{{notification.data.users['user_'+person.id].total}}
+		</div>
+    </div>
+	<div class="contactRightName">
+		{{person.username}}
+    </div>
+	<div class="groupCircleProfileConnexion"
+	     ng-class="{'connected':cmsg.contactsConnections[person.id].connected || cuser.data.uid == person.id}"></div>
+</div>

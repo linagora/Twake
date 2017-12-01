@@ -1,0 +1,50 @@
+<div ng-controller="savePopupCtrl as savePopup" style="display:flex;flex-direction: column;height: 300px;">
+
+	<div style="padding: 10px; background-color: lightgrey;width:100%;">
+		<b ng-show="savePopup.mode == 'save'">Save document</b>
+		<b ng-show="savePopup.mode == 'open'">Open document</b>
+		<b ng-show="savePopup.mode == 'new'">New document</b>
+		<br>
+        <span ng-repeat="directory in savePopup.directories" style="cursor: pointer;"
+              ng-click="savePopup.goTo(directory.id)">
+            <span style="margin-left : 10px;margin-right : 10px; line-height: 20px;" ng-show="$index != 0"> &gt; </span>
+            {{directory.name}}
+        </span>
+    </div>
+
+	<div scrollbar class="scroller" style="height:180px;flex:1;width:100%;">
+        <table class="table">
+            <tbody>
+            <tr ng-repeat="file in savePopup.files">
+	            <td ng-click="savePopup.selectFile(file)" ng-dblclick="savePopup.openDirectory(file)" style="padding:0px;" class="popup_file_item">
+		            <div style="display:flex;">
+                        <div style="width: 30px; height: 30px; background-size: 30px; margin: 2px 10px 2px 10px;" ng-class="{drive_directory: file.isDirectory, drive_file: !file.isDirectory}"></div>
+                        <div style="line-height: 30px; text-align:left; flex:1;display: flex;flex-direction: column;justify-content: center;padding-left: 10px;" class="ng-binding">
+                            {{file.name}}
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+	<div style="width: 100%; background-color: lightgrey;display: flex;">
+
+		<div class="btn btn-danger" style="margin: 15px;height: 30px;li;line-height: 20px;padding-bottom: 0;"
+		     ng-click="savePopup.cancel();">Cancel
+		</div>
+		<input style="margin: 15px 0;flex:1;height: 30px;" type="text" ng-model="savePopup.filename"
+		       ng-disabled="savePopup.mode == 'open'"
+		       class="text_input form-control ng-valid ng-not-empty ng-dirty ng-valid-parse ng-touched">
+
+		<div ng-disabled="savePopup.filename.length==0" class="btn btn-success ng-binding"
+		     style="margin: 15px 0;margin-right: 15px;height: 30px;line-height: 20px;" ng-click="savePopup.validate();">
+			<span ng-show="savePopup.mode == 'save'">Save</span>
+			<span ng-show="savePopup.mode == 'open'">Open</span>
+			<span ng-show="savePopup.mode == 'new'">New</span>
+		</div>
+
+	</div>
+
+</div>

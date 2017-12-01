@@ -1,0 +1,153 @@
+<div id="finder"
+     upload-zone="drive" upload-interface="finder" upload-button="#drive_upload_button"
+     upload-directory="finder.currentDirectory" id="drive" ng-init="finder.mode = 'block'"
+     ng-controller="finderCtrl as finder" style="height: 100%;width:100%;flex:1;display: flex;flex-direction: column;"
+     ng-keypress="finder.presseCtrl($event)">
+	<div class="title">
+		<div ng-show="finder.allowed>0" style="display:flex;">
+			<div class="drive_quotas_container">
+				<div class="drive_quotas" style="width: {{100*finder.quotas/finder.allowed}}%;"></div>
+			</div>
+			<div style="width:150px;text-align: right;">
+				{{finder.quotas | filesize}}/{{finder.allowed | filesize}}
+			</div>
+		</div>
+	</div>
+	<div ng-show="!finder.isInTrash" class="top-bar"
+	     style="height: 100px;background: rgba(128,128,128,0.1); border-bottom: 1px solid rgba(128,128,128,0.2);display: flex;">
+
+		<div style="width:40%;padding: 20px;">
+			<a ng-click="finder.directoryCreation();">Créer un dossier</a><br>
+			<a ng-click="finder.fileCreation();">Créer un fichier</a><br>
+			<a ng-click="finder.viewTrash();" style="color:rgba(128,128,128,0.5)">Accéder à la corbeille</a>
+		</div>
+
+		<div style="width:40%;padding: 20px;">
+			<a id="drive_upload_button">Uploader...</a><br>
+			<a ng-click="finder.getElements(finder.currentDirectory);">Recharger le dossier</a><br>
+		</div>
+
+		<!-- TODO
+		  <div style="flex: 1;text-align: right;padding: 33px;vertical-align: middle;justify-content: center;">
+			<input type="text" class="form-control bordered" placeholder="Rechercher un fichier" style="margin-right: 5px;"><input type="button" value="Rechercher" class="btn btn-info">
+		  </div>
+		  -->
+
+	</div>
+	<div ng-show="finder.isInTrash" class="top-bar"
+	     style="height: 100px;background: rgba(128,128,128,0.1); border-bottom: 1px solid rgba(128,128,128,0.2);display: flex;">
+
+		<div style="width:50%;padding: 20px;">
+			<a ng-click="finder.emptyTrash();">Vider la corbeille</a><br>
+			<a ng-click="finder.restoreFromTrash();">Restorer les elements</a><br>
+			<a ng-click="finder.viewTrash();" style="color:rgba(128,128,128,0.5)">Sortir de la corbeille</a>
+		</div>
+
+		<!-- TODO
+			<div style="flex: 1;text-align: right;padding: 33px;vertical-align: middle;justify-content: center;">
+			<input type="text" class="form-control bordered" placeholder="Rechercher un fichier" style="margin-right: 5px;"><input type="button" value="Rechercher" class="btn btn-info">
+		  </div>
+		  -->
+
+	</div>
+	<div class="page noselect" style="position:relative;padding-top: 10px;"
+	     context-menu="finder.rightClickMenuOptions">
+		<div scrollbar style="height: 100%;position:absolute;width:100%;overflow-x:hidden;" class="scroller">
+			<div id="rectangle"></div>
+			<div style="padding: 20px;font-size: 0;" class="drive_content {{finder.mode}}">
+
+				<div class="drive_bar">
+
+					<!-- TODO
+					<div style="float:right;font-size: 20px;padding:5px;display:inline-block;" ng-class="{'drive_drop':finder.dropable}" data-drop="true" jqyoui-droppable="{onDrop:'finder.trash'}" >
+						<i class="fa fa-trash" aria-hidden="true"></i>
+					</div>
+					-->
+
+					<!--<a style="float:right;font-size: 12px;" ng-click="finder.download(finder.currentDirectory)">
+						Télécharger au format zip
+					</a>-->
+
+					<!-- TODO
+				  <i class="fa" ng-click="finder.mode=(finder.mode=='list')?'block':'list'" ng-class="{'fa-th': finder.mode=='list','fa-list': finder.mode=='block'}" style="margin-right: 7px;" ></i>
+					-->
+
+					<i class="fa fa-trash default-text" ng-show="finder.isInTrash"
+					   style="margin-right: 8px;opacity: 0.5"></i>
+
+					<div class="default-text link-tree" ng-repeat="(i, t) in finder.tree"
+					     style="display:inline-block;{{t.style}}" ng-click="finder.go(t.id)"
+					     ng-class="{'active-link-tree':finder.currentDirectory==t.id, 'drive_drop':finder.dropable}"
+					     data-drop="true"
+					     jqyoui-droppable="{onDrop:'finder.drop(t,t.id)',onOver:'finder.onOver(t,t.id)',onOut:'finder.onOut(t,t.id)'}">
+						<span style="margin-left: 5px;" ng-show="i!=0"> > </span>{{t.name}}
+					</div>
+
+					<!--<i class="fa fa-cog default-text" style="margin-left: 4px;opacity: 0.5"></i>-->
+				  <span style="margin-left: 7px;color: rgba(128,128,128,0.7); font-size: 12px;">{{finder.elements.length}} élément(s)</span>
+				</div>
+
+
+				<div class="driveBox" style="display:inline-block;" ng-repeat="element in finder.elements">
+					<div ng-show="element.isDirectory" data-id={{element.id}} data-drag="true" data-drag="true"
+					     data-drop="true" data-jqyoui-options="{revert: 'invalid'}"
+					     jqyoui-draggable="{onStart:'finder.startDrag(element,element.id)',onStop:'finder.stopDrag'}"
+					     jqyoui-droppable="{onDrop:'finder.drop(element,element.id)',onOver:'finder.onOver(element,element.id)',onOut:'finder.onOut(element,element.id)'}"
+					     class="drive_element"
+					     ng-class="{'draggabled':finder.draggabled.indexOf(element.id)>=0 && finder.idtarget!=element.id ,'drive_drop':finder.dropable,'active':finder.selected.indexOf(element.id) >=0,'copy':finder.copy.indexOf(element.id)>=0 || finder.cut.indexOf(element.id)>=0,'degage':!element.isDirectory}"
+					     context-menu="finder.getContextMenu(element)">
+						<div class="icon drive_element_icon"
+						     ng-class="{'directory':element.isDirectory, 'multiple_folder':finder.idtarget==element.id}">
+							<div ng-show="finder.idtarget==element.id"
+							     style="padding-top: 25px;padding-right: 30px;padding-bottom: 30px;padding-left: 30px;color: #fff;font-size: 30px;font-weight: bold;">
+								{{finder.draggabled.length}}
+							</div>
+						</div>
+						<div class="name">
+							<div ng-if="finder.nameEdit!=element.id">
+								{{ element.name | miniName: (finder.mode!='list')?40:300 }}
+                            <span style="opacity: 0.5" ng-show="finder.mode=='list'">
+                              ({{element.size | filesize}})
+                            </span>
+							</div>
+							<div ng-if="finder.nameEdit==element.id"><input
+									class="form-control bordered default-text input_name_drive_element"
+									ng-model="finder.newName"></div>
+						</div>
+					</div>
+					<div ng-show="!element.isDirectory && !finder.draged.indexOf(element.id)>=0" data-id={{element.id}}
+					     data-drag="true" data-jqyoui-options="{revert: 'invalid'}"
+					     jqyoui-draggable="{onStart:'finder.startDrag(element,element.id)',onStop:'finder.stopDrag','none':finder.draged.indexOf(element.id)>=0}"
+					     class="drive_element"
+					     ng-class="{'degage':element.isDirectory,'draggabled':finder.draggabled.indexOf(element.id)>=0 && finder.idtarget!=element.id,'drive_drop':finder.dropable,'active':finder.selected.indexOf(element.id) >=0,'degage':element.isDirectory}"
+					     context-menu="finder.getContextMenu(element)">
+						<div class="icon drive_element_icon"
+						     ng-class="{'directory':element.isDirectory,'file':!element.isDirectory, 'multiple_folder':finder.idtarget==element.id}">
+							<div ng-show="finder.idtarget==element.id"
+							     style="padding-top: 25px;padding-right: 30px;padding-bottom: 30px;padding-left: 30px;color: #fff;font-size: 30px;font-weight: bold;">
+								{{finder.draggabled.length}}
+							</div>
+							<div class="file_app"
+							     style="{{ (cps.isImage(element) && !element.isBig ? 'background-image: url('+api.getRealRoute('/drive/download')+'?groupId=' + cgroup.groupId + '&fileId=' + element.id + ');' : cgroup.data.apps_filestypes[element.extension.toLowerCase()].cssthumbnail) }}">
+							</div>
+						</div>
+						<div class="name">
+							<div ng-if="finder.nameEdit!=element.id">
+								{{ element.name | miniName: (finder.mode!='list')?40:300 }}
+                            <span style="opacity: 0.5" ng-show="finder.mode=='list'">
+                              ({{element.size | filesize}})
+                            </span>
+							</div>
+							<div style="max-width: 80px;" ng-if="finder.nameEdit==element.id"><input
+									class="form-control bordered default-text input_name_drive_element"
+									ng-model="finder.newName"></div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div id="chargementUpload" style="bottom:0px;" ng-show="upload.isUploading"
+     ng-include="'@views/template/chargementUpload.html'">
+</div>

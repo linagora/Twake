@@ -1,0 +1,36 @@
+<div style='height:100%' ng-controller="menuLeftCtrl as mlc">
+
+	<!--<a ui-sref="publicGroup" ><div class="default_group_image groupSquareModule thisgroup" style="border-radius:20%; {{cgroup.data.csslogo}}"></div></a>
+
+  <div class="petit-trait" name="separation bar"></div>-->
+
+	<div id="sortable_app">
+		<div style="position:relative" ng-show="cgroup.data.right[appli.name].general.view"
+		     ng-repeat="appli in cgroup.data.apps">
+			<a uib-tooltip="{{appli.name}}" ui-sref="application({name:appli.name,data: appli.data})"
+			   style="z-index: 1000">
+				<div class="groupSquareModule" style="{{appli.cssthumbnail}}"></div>
+			</a>
+
+			<div class="app_notification" ng-show="notifications.data.group[cgroup.groupId][appli.id].count>0">
+				{{notifications.data.group[cgroup.groupId][appli.id].count}}
+			</div>
+		</div>
+	</div>
+
+	<div class="petit-trait" name="separation bar"></div>
+
+	<div style="position:relative">
+		<a uib-tooltip="Paramètres" ui-sref-active="active" ui-sref="parameters-general" style="z-index: 1000">
+			<div class="groupSquareModule"
+			     style="background-image: url('public/img/applications/parameters.svg');"></div>
+		</a>
+	</div>
+	<div style="position:relative">
+		<a uib-tooltip="Marketplace" ui-sref="marketplace" style="z-index: 1000">
+			<div class="groupSquareModule"
+			     style="background-image: url('public/img/applications/marketplace.svg');"></div>
+		</a>
+	</div>
+
+</div>

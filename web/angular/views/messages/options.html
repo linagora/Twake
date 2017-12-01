@@ -1,0 +1,15 @@
+
+<span ng-show="chat.edit!=id" class="message-options-container" ng-class="{'active':chat.messages[id].openoptions || chat.messages[id].brut}" style="float:right;color: #000" uib-dropdown on-toggle="chat.messages[id].openoptions=!chat.messages[id].openoptions">
+
+  <a class="message-options" context-menu="chat.contextMenu(chat.messages[id])" context-menu-on="click">
+	  <i style="color:#AAA;"class="fa fa-ellipsis-h"></i>
+  </a>
+
+  <!-- raw -->
+  <a style="font-size: 16px;line-height: 26px;margin-right: 10px;" class="message-options" ng-click="chat.messages[id].brut = !chat.messages[id].brut">
+	  <i style="color:#AAA;" class="fa fa-code show_raw_option"
+	     ng-show="!chat.messages[id].brut && chat.messages[id].fileurl == ''"></i>
+	  <i class="fa fa-code default-text" ng-show="chat.messages[id].brut"></i>
+  </a>
+
+</span>

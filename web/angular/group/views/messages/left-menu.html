@@ -1,0 +1,42 @@
+<div ng-controller="menuLeftMessagesCtrl as ctrl">
+
+	<div class="pane-title">
+		# Channels <span class="addNew" ng-click="ctrl.createChannel();">+</span>
+    </div>
+
+	<div id="channel_sort">
+		<div ng-repeat="ch in ctrl.channels" style="position:relative" class="channel" ng-class="{'muted':ch.mute}">
+	        <span class="left-pane-item" ui-sref-active="active" ui-sref="messages({id: ch.id, type: 'channel'})">
+	            <i ng-show="!ch.privacy">#</i><i class="fa fa-lock" aria-hidden="true" ng-show="ch.privacy"></i> <span
+			        style="text-transform: capitalize;">{{ch.name}}</span>
+	            <span class="badge"
+	                  ng-show="notifications.data.group[cgroup.groupId][cgroup.msgId]['group_message_ch'+ch.id]>0">{{notifications.data.group[cgroup.groupId][cgroup.msgId]['group_message_ch'+ch.id]}}</span>
+	        </span>
+			<!--<span style="position:absolute;right:35px;top:9px;line-height:20px;" class="glyphicon glyphicon-remove  remove clickable_icon" ng-click="ctrl.exit(ch.id);" aria-hidden="true" ></span>-->
+			<!--<span style="position:absolute;right:14px;top:5px;line-height: 20px;" class="clickable_icon"
+			      ng-show="ch.mute" ng-click="ctrl.mute(ch.id,false);" aria-hidden="true"
+			      uib-tooltip="Activer les notifications" tooltip-placement="left"><img class="bell_button"
+			                                                                            src="/public/img/icons/bell_disabled.svg"></span>
+			<span style="position:absolute;right:14px;top:5px;line-height: 20px;" class="clickable_icon"
+			      ng-show="!ch.mute" ng-click="ctrl.mute(ch.id,true);" aria-hidden="true"
+			      uib-tooltip="Désactiver les notifications" tooltip-placement="left"><img class="bell_button"
+			                                                                               src="/public/img/icons/bell.svg"></span>
+			-->
+		</div>
+	</div>
+
+	<div ng-show="cgroup.members.length>1" class="pane-title" style="margin-top:10px;">
+		Messages privés
+	</div>
+
+	<div ng-show="person.id != cuser.data.uid"
+	     ng-repeat="person in cgroup.members"
+	     style="position:relative" class="channel">
+        <span class="left-pane-item" ui-sref-active="active" ui-sref="messages({id: person.id, type:'user'})">
+            <span style="text-transform: capitalize;">{{person.username}}</span>
+            <!--<span class="badge" style="background:#F00;margin-top:-4px;margin-left: 5px;"
+                  ng-show="notifications.data.group[cgroup.groupId][cgroup.msgId]['group_message_ch'+ch.id]>0">{{notifications.data.group[cgroup.groupId][cgroup.msgId]['group_message_ch'+ch.id]}}</span>-->
+        </span>
+	</div>
+
+</div>

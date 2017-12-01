@@ -1,0 +1,17 @@
+<div class="user">
+  <div class="userimage default_user_image" style="{{cmsg.contactsById[message.sid].cssuserimage}}">
+  </div>
+</div>
+<div class="content">
+  <div class="username">
+    {{cmsg.contactsById[message.sid].username}}
+    <div class="date">{{message.timestamp*1000 | date : 'Le dd/MM à HH:mm'}}</div>
+  </div>
+
+  <span>
+    <span msg-parsing="message.content"></span>
+    <span ng-class="{image: message.fileisimage}" ng-show="message.fileurl != ''" ng-click="href.goInNewTab(message.fileurl)"><span ng-bind-html="cps.parseUploadedFile(message.fileurl, message.fileisimage, message.filename, message.isBig)"></span></span>
+    <span style="color: rgba(128,128,128,0.2);font-size: 11px;margin-left:5px;" ng-show="message.edited">(édité)</span>
+  </span>
+
+</div>

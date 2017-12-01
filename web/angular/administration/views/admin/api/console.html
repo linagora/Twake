@@ -1,0 +1,36 @@
+<div ng-controller="apiConsoleCtrl as apitest">
+  <div class="page_block">
+
+      <div class="title">
+        Api tests
+      </div>
+
+      <br><br>
+
+      Route : <input type="text" placeholder="/ajax/" class="text_input form-control bordered" style="width:300px"  ng-model="apitest.route"> <input type="submit" value="Test" class="btn btn-classic" ng-click="apitest.test()" />
+
+      <br><br>
+      Arguments :<br>
+      <div ng-repeat="(i,c) in apitest.args" style="width: 100%; display: flex;">
+        <input type="text" class="text_input form-control bordered"  ng-model="c.key" placeholder="key" style="width: 100px">
+        <input type="text" class="text_input form-control bordered"  ng-model="c.value" placeholder="value" style="flex: 1">
+        <input type="submit" class="btn btn-danger"  value="Supprimer" ng-click="apitest.args.splice(i,1)" />
+      </div>
+      <br>
+      <input type="submit" class="btn btn-classic"  value="Ajouter un argument" ng-click="apitest.args.push({key:'',value:''})" />
+
+      <br>
+      <br>
+
+      <pre style="overflow-x: scroll;width: 80%;"> {{apitest.response}}</pre>
+
+      <br><br>
+      Historique :<br>
+      <div style="margin-top: 5px" ng-repeat="(i,c) in apitest.history track by $index" style="width: 100%; display: flex;">
+        - <a style="cursor: pointer;" ng-click="apitest.loadOld(c.data)">{{c.text}}</a>
+      </div>
+
+      <br><br>
+
+    </div>
+</div>

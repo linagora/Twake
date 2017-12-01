@@ -1,0 +1,18 @@
+<div class="notification classic {{notif.data.class}}" ng-class="{'new_notification':!notif.data.isread}" ng-click="notifications.readNotif(notif.data.id);href.go(notif.data.url);">
+	<div style="display: flex;">
+		<div class="default_group_image groupSquareModule" style="border-radius:20%; margin-top: 0px; {{ notif.data.img }}"></div>
+		<div style="flex:1; margin-top:10px;margin-left: 10px;">
+			<b>{{ notif.data.title }}</b>
+			</br>
+			{{ notif.data.text }}
+			<div class="date">
+				{{notif.data.date*1000 | date : 'Le dd/MM à HH:mm'}}
+			</div>
+		</div>
+
+
+	</div>
+
+
+
+</div>

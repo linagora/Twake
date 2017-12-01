@@ -1,0 +1,27 @@
+<div class="menu_block account_summary_menu"> <!--ng-show="menu.isAccount">-->
+
+    <div class="default_user_cover" style='{{ cuser.data.cssusercover }}'></div>
+
+	<div class="default_user_image default_user_style" style='{{ cuser.data.cssuserimage }}'></div>
+
+    <div class="text">
+        {{ cuser.data.username }} (@{{cuser.data.susername}})
+        <br>
+        <a ui-sref="user({username:cuser.data.username})" >Profil public</a>
+    </div>
+
+</div>
+
+
+<div class="menu_block"> <!--ng-show="menu.isAccount">-->
+
+    <div class="title">Paramètres</div>
+
+    <a ui-sref-active="active" ui-sref="account">Modifier le profil public</a>
+    <a ui-sref-active="active" ui-sref="account-parameters">Paramètre de compte</a>
+    <a ui-sref-active="active" ui-sref="account-notifications">Notifications</a>
+    <a ui-sref-active="active" ui-sref="account-contacts">Contacts</a>
+    <a ui-sref-active="active" ui-sref="account-groups">Groupes</a>
+    <!--<a ui-sref-active="active" ui-sref="account-transactions">Transactions</a>-->
+
+</div>

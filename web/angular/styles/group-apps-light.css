@@ -1,0 +1,40 @@
+.light .groupCenterContainer .page-title{
+  color:black;
+}
+
+.light .groupCenterContainer .page-subtitle{
+  color:#1E2124;
+}
+
+.light .groupCenterContainer .page-subsubtitle{
+  color:#1E2124;
+}
+
+.light .groupCenterContainer .nfo{
+  color: black;
+}
+
+.light .groupCenterContainer .pane{
+  color: #000;
+}
+
+/* Tables */
+.light .groupCenterContainer  table thead tr {
+	background: #4E64AB;
+  color: #FFF;
+}
+.light .groupCenterContainer  table tr {
+  background: #E3E3E3;
+  color: black;
+  border-bottom: 2px solid #FFF;
+}
+.light .checkbox {
+  border-color: #D5D5D5;
+}
+.light .groupCenterContainer  table tr.selected {
+  background: #ABCBEA;
+}
+.light .groupCenterContainer  table td {
+  padding: 5px;
+  vertical-align: center;
+}

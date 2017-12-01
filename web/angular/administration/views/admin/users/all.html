@@ -1,0 +1,60 @@
+<div ng-controller="UsersCtrl as users">
+	<div class="info-box">
+		<span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+		<div class="info-box-content">
+			<span class="info-box-text">Members</span>
+			<span class="info-box-number">{{users.total}}</span>
+		</div>
+		<!-- /.info-box-content -->
+	</div>
+	<div class="box">
+		<div class="box-header">
+			<h3 class="box-title">Users</h3>
+		</div>
+		<div class="box-body">
+
+			<ul class="pagination">
+				<li ng-repeat="page in users.pages" ng-class="{'active': users.page == page}"><a ng-click="users.setPage(page)">{{page}}</a></li>
+			</ul>
+
+			<select ng-model="perpage" ng-change="users.setNbPerPage(perpage)" class="form-control" style="width:50px;float:right;">
+				<option value="{{users.perpage}}" disabled selected>{{users.perpage}}</option>
+				<option disabled></option>
+				<option value="2">25</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="250">250</option>
+				<option value="500">500</option>
+			</select>
+
+			<table class="table table-bordered table-hover">
+				<thead>
+				<tr>
+					<th>ID</th>
+					<th>Image</th>
+					<th>Username</th>
+					<th>Mail</th>
+					<th>Operations</th>
+				</tr>
+				</thead>
+				<tbody>
+
+				<tr ng-repeat="user in users.list">
+					<td>{{user.uid}}</td>
+					<td>
+						<div style="background-position: center; background-size: contain; width:50px; height:50px; {{user.cssuserimage}}"></div>
+					</td>
+					<td>{{user.username}}{{user.connected?' (online)':''}}</td>
+					<td></td>
+					<td></td>
+				</tr>
+
+				</tbody>
+
+			</table>
+
+
+		</div>
+	</div>
+</div>

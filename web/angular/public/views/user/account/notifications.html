@@ -1,0 +1,19 @@
+<div class="page_block title">
+    Toutes les notifications
+</div>
+
+<div class="page_block" ng-controller="notificationCtrl as ctrl" style="padding: 0px;">
+
+    <div class="results_notifications" style="margin:0px;" ng-class="{'loading': ctrl.notifs.loading }">
+        <div ng-include="'@pviews/templates/notification_profile.html'" ng-repeat="notif in notifications.olddata"></div>
+    </div>
+
+    <div class="no_notifications nfo" style="text-align: center;padding:20px;" ng-show="!ctrl.notifs.loading && notification.olddata.length==0">
+        Aucune notification
+    </div>
+
+    <div class="load_more" style="text-align: center; padding: 20px;" ng-show="ctrl.hasmore">
+        <a ng-click="ctrl.load();">Afficher plus</a>
+    </div>
+
+</div>

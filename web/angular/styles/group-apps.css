@@ -1,0 +1,227 @@
+.subbody {
+	background: #2b2d32;
+}
+
+.middle_space {
+	background: #2c2e33;
+}
+
+.page_block {
+	background: #222;
+	color: #FFF;
+}
+
+.groupCenterContainer .title {
+  width: 100%;
+  height: 40px;
+  line-height: 40px;
+	background: #467eb7;
+  color: #FFF;
+  padding-left: 15px;
+  padding-right: 15px;
+  font-size: 14px;
+}
+
+.groupCenterContainer .title .subtitle {
+  color: #CCC;
+  font-size: 12px;
+  margin-left: 5px;
+}
+
+.groupCenterContainer .left-pane {
+  width: 200px;
+	background: #222222;
+  color: #FFF;
+}
+
+.groupCenterContainer .left-pane-item {
+	line-height: 20px;
+	height: 25px;
+	font-size: 13px;
+	height: 30px;
+	padding: 0 15px;
+	color: #FFF;
+	display: inline-block;
+	width: 100%;
+	cursor: pointer;
+	padding-top: 5px;
+	padding-bottom: 5px;
+	padding-left: 20px;
+}
+
+.groupCenterContainer .left-pane-item.active {
+	background: #2b2d32;
+}
+
+header {
+	color: #FFF;
+}
+
+.pane-title {
+	color: #FFF;
+	background: #467eb7;
+	font-size: 16px;
+	padding: 10px 10px;
+	line-height: 16px;
+	height: auto;
+	padding-left: 20px;
+	display: inline-block;
+	width: 100%;
+	margin-bottom: 5px;
+	position: relative;
+}
+
+.pane-title.mini {
+	background: transparent;
+	color: #606060;
+	font-size: 12px;
+	margin-bottom: 0px;
+}
+
+.pane-title .addNew {
+	text-align: right;
+	position: absolute;
+	right: 10px;
+	top: 8px;
+	font-size: 25px;
+	cursor: pointer;
+	opacity: 0.5;
+}
+
+.pane-title .addNew:hover {
+	opacity: 1;
+}
+
+.groupCenterContainer .left-pane-item .badge {
+	background: #F56956;
+	margin-top: -4px;
+	margin-left: 5px;
+	position: absolute;
+	right: 5px;
+	top: 10px;
+}
+
+.groupCenterContainer .main-app {
+  padding: 20px;
+  margin-bottom: 40px;
+}
+
+.groupCenterContainer .page-title {
+  font-size: 16px;
+  color: #FFF;
+}
+
+.groupCenterContainer .page-subtitle {
+  font-size: 14px;
+  color: #EEE;
+}
+
+.groupCenterContainer .page-subsubtitle {
+  font-size: 13px;
+  color: #EEE;
+}
+
+.groupCenterContainer .nfo {
+  font-size: 12px;
+  color: #FFF;
+}
+
+.groupCenterContainer .pane {
+  padding: 10px;
+	background: rgba(128, 128, 128, 0.1);
+  color: #FFF;
+	border-radius: 21px;
+}
+
+.groupCenterContainer .pane .pane-title {
+  font-size: 16px;
+  border-bottom: 1px solid rgba(128,128,128,0.5);
+  margin-left: -10px;
+  margin-right: -10px;
+  padding-left: 13px;
+  margin-bottom: 10px;
+  padding-bottom: 6px;
+}
+
+.groupCenterContainer .pane .pane-subtitle {
+  font-size: 16px;
+  margin-left: -10px;
+  margin-right: -10px;
+  padding-left: 25px;
+  margin-bottom: 0px;
+  margin-top: 10px;
+  padding-top: 6px;
+  padding-bottom: 5px;
+}
+
+.groupCenterContainer .pane .line {
+  background: rgba(128, 128, 128, 0.26);
+  padding: 4px 0px;
+  margin: 4px;
+  margin-left: 25px;
+  border-radius: 5px;
+  padding-left: 10px;
+}
+
+.groupCenterContainer .pane .line.active {
+  background: rgba(0, 169, 255, 0.26);
+}
+
+/* Tables */
+.groupCenterContainer  table {
+  width:100%;
+  border: none;
+}
+.groupCenterContainer  table thead tr {
+  background: #1E2124;
+  color: #FFF;
+}
+.groupCenterContainer  table tr {
+  background: #36393E;
+  color: #FFF;
+  border-bottom: 2px solid #2A2C31;
+}
+.groupCenterContainer  table tr.selected {
+  background: #6B6B6B;
+}
+.groupCenterContainer  table td {
+  padding: 5px;
+  vertical-align: center;
+}
+/*
+.groupCenterContainer thead tr:first-child td:first-child {
+  border-radius: 5px 0 0 0;
+}
+.groupCenterContainer thead tr:first-child td:last-child {
+  border-radius: 0 5px 0 0;
+}
+.groupCenterContainer tbody tr:last-child td:first-child {
+  border-radius: 0 0 0 5px;
+}
+.groupCenterContainer tbody tr:last-child td:last-child {
+  border-radius: 0 0 5px 0;
+}
+*/
+
+.td-right {
+  text-align: right;
+}
+
+/* Forms */
+.checkbox {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background: #FFF;
+  border: 2px solid #EEE;
+  margin: 0px 5px !important;
+  cursor: pointer;
+  -webkit-appearance: none;
+}
+.checkbox:checked {
+  background: #FFF;
+  background-image: url('/public/img/icons/checkmark.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+}
