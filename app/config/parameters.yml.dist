@@ -1,19 +1,20 @@
-# This file is a "template" of what your parameters.yml file should look like
-# Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
-# http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
+# This file is auto-generated during the composer install
 parameters:
-    database_host:     127.0.0.1
-    database_port:     ~
-    database_name:     symfony
-    database_user:     root
-    database_password: ~
-    # You should uncomment this if you want use pdo_sqlite
-    # database_path: "%kernel.root_dir%/data.db3"
-
-    mailer_transport:  smtp
-    mailer_host:       127.0.0.1
-    mailer_user:       ~
-    mailer_password:   ~
-
-    # A secret key that's used to generate certain security-related tokens
-    secret:            ThisTokenIsNotSoSecretChangeIt
+    APPS_SERVER: http://127.0.0.1:8001
+    websocket_host: 127.0.0.1
+    websocket_port: 8080
+    websocket_pusher_host: 127.0.0.1
+    websocket_pusher_port: 8081
+    database_host: 127.0.0.1
+    database_port: 3306
+    database_name: Twake
+    database_user: root
+    database_password: azerty123
+    mailer_transport: smtp
+    mailer_host: -
+    mailer_username: -
+    mailer_password: -
+    mailer_port : -
+    mailer_encryption: -
+    mailer_auth_mode: plain
+    secret: c9a17eab88ab63bb3e90c027196a89776651a7c0

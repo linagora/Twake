@@ -115,3 +115,4 @@ fabric.properties
 
 ### Twake specific ###
 /build/
+/vendor/
