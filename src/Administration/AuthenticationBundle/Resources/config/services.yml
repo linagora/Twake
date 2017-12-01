@@ -1,0 +1,13 @@
+services:
+
+    admin.Authentication:
+        class: Administration\AuthenticationBundle\Services\AdministrationAuthentication
+        arguments: ["@doctrine.orm.entity_manager", "@security.encoder_factory"]
+
+    admin.Management:
+        class: Administration\AuthenticationBundle\Services\AdministrationUpdate
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    admin.TwakeUserManagement:
+        class: Administration\AuthenticationBundle\Services\AdministrationTwakeUserManagement
+        arguments: ["@doctrine.orm.entity_manager"]

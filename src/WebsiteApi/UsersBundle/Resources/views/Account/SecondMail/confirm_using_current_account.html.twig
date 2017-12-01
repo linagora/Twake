@@ -1,0 +1,15 @@
+{% extends "TwakeCoreBundle:pagetypes:base_classic.html.twig" %}
+
+{% block right_menu %}{% endblock %}
+{% block left_menu %}{% endblock %}
+{% block body %}
+
+    <div class='text_center'>Cette adresse mail n'est pas encore associée à un compte sur Twake.<br>
+        Voulez vous associer <b>{{ mail }}</b> à votre compte <b>{{ app.user.username }}</b> ?<br>
+        <br>
+        <a href="/c_logout" class="red_link" style="float:left;margin-left:20px;">Changer de compte</a>
+
+        <a href="/account/verifymail?token={{ token }}&confirmed=1" onclick="confirmUseCurrentAccount()" style="float:right;margin-right:20px;" >Confirmer</a>
+    </div>
+
+{% endblock %}

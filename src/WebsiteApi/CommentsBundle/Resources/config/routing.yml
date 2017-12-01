@@ -1,0 +1,23 @@
+twake_comments_create:
+    path:     /create
+    defaults: { _controller: TwakeCommentsBundle:Default:create }
+
+twake_comments_get:
+    path:     /get
+    defaults: { _controller: TwakeCommentsBundle:Default:get }
+
+twake_comments_edit:
+    path:     /edit
+    defaults: { _controller: TwakeCommentsBundle:Default:edit }
+
+twake_comments_delete:
+    path:     /delete
+    defaults: { _controller: TwakeCommentsBundle:Default:delete }
+
+twake_comments_comment:
+    path:     /comment
+    defaults: { _controller: TwakeCommentsBundle:Default:comment }
+
+twake_comments_like:
+    path:     /like
+    defaults: { _controller: TwakeCommentsBundle:Default:like }

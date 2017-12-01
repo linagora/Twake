@@ -1,0 +1,7 @@
+discussion_topic:
+    channel: discussion/{key}
+    handler:
+        callback: 'discussion.topic'
+    requirements:
+        key:
+            pattern: "[0-9]+(_[0-9]+)?"

@@ -1,0 +1,3 @@
+developers_api_groups_get:
+    path:     /users
+    defaults: { _controller: DevelopersApiGroupsBundle:Default:getUsers }

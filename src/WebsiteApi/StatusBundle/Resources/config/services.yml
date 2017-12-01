@@ -1,0 +1,4 @@
+services:
+#    website_api_status.example:
+#        class: WebsiteApi\StatusBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]

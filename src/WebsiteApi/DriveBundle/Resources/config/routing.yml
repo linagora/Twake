@@ -1,0 +1,47 @@
+twake_drive_create:
+    path:     /create
+    defaults: { _controller: TwakeDriveBundle:Files:create }
+
+twake_drive_delete:
+    path:     /delete
+    defaults: { _controller: TwakeDriveBundle:Files:delete }
+
+twake_drive_trash_empty:
+    path:     /trash/empty
+    defaults: { _controller: TwakeDriveBundle:Files:emptyTrash }
+
+twake_drive_list:
+    path:     /list
+    defaults: { _controller: TwakeDriveBundle:Files:list }
+
+twake_drive_trash_restore:
+    path:     /trash/restore
+    defaults: { _controller: TwakeDriveBundle:Files:restoreTrash }
+
+twake_drive_search:
+    path:     /search
+    defaults: { _controller: TwakeDriveBundle:Files:search }
+
+twake_drive_upload:
+    path:     /upload
+    defaults: { _controller: TwakeDriveBundle:Files:upload }
+
+twake_drive_move:
+    path:     /move
+    defaults: { _controller: TwakeDriveBundle:Files:move }
+
+twake_drive_copy:
+    path:     /copy
+    defaults: { _controller: TwakeDriveBundle:Files:copy }
+
+twake_drive_rename:
+    path:     /rename
+    defaults: { _controller: TwakeDriveBundle:Files:rename }
+
+twake_drive_content_get:
+    path:     /content/get
+    defaults: { _controller: TwakeDriveBundle:Files:getContent }
+
+twake_drive_content_set:
+    path:     /content/set
+    defaults: { _controller: TwakeDriveBundle:Files:setContent }

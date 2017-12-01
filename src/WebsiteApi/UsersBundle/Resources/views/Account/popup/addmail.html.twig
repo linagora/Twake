@@ -1,0 +1,29 @@
+<div class="popup_addmail">
+
+    <div class="form_title" style="margin-top:0px;">Ajouter une adresse mail</div>
+    <br>
+    <input type="text" class="text_input form-control newmail_inpopup" value="" placeholder="Entrer une adresse mail">
+
+
+    <div style="min-height: 40px;">
+        <div class="form_error" style="display: none;" id="error_bad_mail">Cette adresse mail n'est pas valide.</div>
+        <div class="form_error" style="display: none;" id="error_mail_already_used">Cette adresse mail est déjà associée à un compte.</div>
+    </div>
+
+    <div class="nfo">Un mail de confirmation sera envoyé.</div>
+
+    <button class="btn btn-info" style="margin-top: 5px;float:right;" onclick="popupaddmail()">Envoyer</button>
+
+</div>
+<script type="text/javascript">
+    function popupaddmail(){
+        var mail = $(".newmail_inpopup").val();
+
+        forms_send("/account/parameters/ajax",
+                {'source':"addmail",'mail':mail},
+                function(data){ document.location = ""; },
+                function(data){ console.log(data); },
+                ".popup_addmail");
+
+    }
+</script>

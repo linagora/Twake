@@ -1,0 +1,15 @@
+Vous avez reçu des notifications :
+<br><br>
+
+{% for notification in _notifications %}
+
+    Texte = {{ notification.text|raw }}<br>
+    Url = {{ notification.url }}<br>
+    Img = {{ notification.img }}<br>
+    ____________ <br><br>
+
+{% endfor %}
+
+<br><br>
+
+Mail envoyé à {{ _mailto }}

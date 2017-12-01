@@ -1,0 +1,15 @@
+twake_calls_create:
+    path:     /create
+    defaults: { _controller: TwakeCallsBundle:Calls:create }
+
+twake_calls_get:
+    path:     /get
+    defaults: { _controller: TwakeCallsBundle:Calls:get }
+
+twake_calls_join:
+    path:     /join
+    defaults: { _controller: TwakeCallsBundle:Calls:join }
+
+twake_calls_exit:
+    path:     /exit
+    defaults: { _controller: TwakeCallsBundle:Calls:exit }

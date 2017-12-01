@@ -1,0 +1,4 @@
+services:
+#    citi_go_discussion.example:
+#        class: WebsiteApi\DiscussionBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]

@@ -1,0 +1,163 @@
+citi_go_organizations_create:
+    path:     /create
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationStructure:create }
+
+citi_go_organizations_delete:
+    path:     /delete
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationStructure:delete }
+
+citi_go_organizations_fastsearch:
+    path:     /fastsearch
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationStructure:get }
+
+citi_go_organizations_user_list:
+    path:     /user/list
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationStructure:getListUser }
+
+citi_go_organizations_all_user_list:
+    path:     /user/alllist
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationStructure:getAllListUser }
+
+citi_go_organizations_get:
+    path:     /get
+    defaults: { _controller: TwakeOrganizationsBundle:Org:get }
+
+citi_go_organizations_getByCode:
+    path:     /getByCode
+    defaults: { _controller: TwakeOrganizationsBundle:Org:getByCode }
+
+citi_go_organizations_members_table:
+    path:     /members/table
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationMembers:table }
+
+citi_go_organizations_getmore:
+    path:     /getmore
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationStructure:getMore }
+
+citi_go_organizations_askLink:
+    path:     /links/ask
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationLinks:askLink }
+
+citi_go_organizations_getLink:
+    path:     /links/get
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationLinks:getLink }
+
+citi_go_organizations_acceptLink:
+    path:     /links/accept
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationLinks:acceptLink }
+
+citi_go_organizations_removeLink:
+    path:     /links/remove
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationLinks:removeLink }
+
+citi_go_organizations_getAllLink:
+    path:     /links/getall
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationLinks:getAllLink }
+
+
+citi_go_organizations_setmore:
+      path:     /setmore
+      defaults: { _controller: TwakeOrganizationsBundle:OrganizationStructure:setMore }
+citi_go_organizations_setlogo:
+      path:     /setlogo
+      defaults: { _controller: TwakeOrganizationsBundle:OrganizationStructure:setLogo }
+
+citi_go_organizations_members_verify:
+    path:     /members/verify
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationMembers:verify }
+
+citi_go_organizations_members_changelevel:
+    path:     /members/changelevel
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationRights:changelevelUsers }
+
+citi_go_organizations_members_has_acces:
+    path:     /hasAcces
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationRights:hasAcces}
+
+citi_go_organizations_members_accept:
+    path:     /members/accept
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationMembers:accept }
+
+citi_go_organizations_members_invite:
+    path:     /members/invite
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationMembers:invite }
+
+citi_go_organizations_members_invite_accept:
+    path:     /members/invite/accept
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationMembers:inviteAccept }
+
+citi_go_organizations_members_invite_refuse:
+    path:     /members/invite/refuse
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationMembers:inviteRefuse }
+
+citi_go_organizations_members_delete:
+    path:     /members/delete
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationMembers:delete }
+
+citi_go_organizations_members_search:
+    path:     /members/search
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationMembers:search }
+
+citi_go_organizations_rigths_get:
+    path:     /rights/getlevels
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationRights:getLevels }
+
+citi_go_organizations_rigths_getAllRights:
+    path:     /rights/getAllRights
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationRights:getAllRights }
+
+citi_go_organizations_rigths_deplaceLevelMembers:
+    path:     /rights/deplaceLevelMembers
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationRights:deplaceLevelMembers }
+
+citi_go_organizations_level_delete:
+    path:     /rights/deleteLevels
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationRights:deleteLevels }
+
+
+
+citi_go_organizations_levels_update:
+    path:     /rights/updateLevel
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationRights:updateLevel }
+
+citi_go_organizations_rights_set_default_level:
+    path:     /rights/setdefaultlevel
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationRights:setDefaultLevel }
+
+citi_go_organizations_rights_set_level_link:
+    path:     /rights/setLevelLink
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationRights:setLevelLink }
+
+
+citi_go_organizations_rigths_createlevel:
+    path:     /rights/createlevel
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationRights:createLevel }
+
+
+citi_go_organizations_search:
+    path:     /search
+    defaults: { _controller: TwakeOrganizationsBundle:Search:index }
+
+citi_go_organizations_createOrg:
+    path:     /org_create
+    defaults: { _controller: TwakeOrganizationsBundle:CreateOrg:showPage }
+
+citi_go_organizations_org:
+    path:     /org/{orgname}
+    defaults: { _controller: TwakeOrganizationsBundle:Org:getOrg }
+
+citi_go_organizations_search_scripts:
+    path:     /scripts/search/{script}
+    defaults: { _controller: TwakeOrganizationsBundle:Search:scripts }
+
+citi_go_organizations_createOrg_scripts:
+    path:    /scripts/createOrg/{script}
+    defaults: { _controller: TwakeOrganizationsBundle:CreateOrg:scripts }
+
+citi_go_organizations_Org_scripts:
+    path:    /scripts/optionOrg/{script}
+    defaults: { _controller: TwakeOrganizationsBundle:Org:scripts }
+
+citi_go_organizations_customize:
+    path:     /customize
+    defaults: { _controller: TwakeOrganizationsBundle:OrganizationStructure:customize }

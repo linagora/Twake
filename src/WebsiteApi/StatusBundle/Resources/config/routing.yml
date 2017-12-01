@@ -1,0 +1,31 @@
+website_api_status_getpostgroups:
+    path:     /getpostgroups
+    defaults: { _controller: TwakeStatusBundle:Default:getPostGroups }
+
+website_api_status_create:
+    path:     /create
+    defaults: { _controller: TwakeStatusBundle:Default:create }
+
+website_api_status_delete:
+    path:     /delete
+    defaults: { _controller: TwakeStatusBundle:Default:delete }
+
+website_api_status_edit:
+    path:     /edit
+    defaults: { _controller: TwakeStatusBundle:Default:edit }
+
+website_api_status_like:
+    path:     /like
+    defaults: { _controller: TwakeStatusBundle:Default:like }
+
+website_api_status_get:
+    path:     /get
+    defaults: { _controller: TwakeStatusBundle:Default:get }
+
+website_api_status_getcontactslikes:
+    path:     /getcontactslikes
+    defaults: { _controller: TwakeStatusBundle:Default:getContactsLikes }
+
+website_api_status_getrecap:
+    path:     /getrecap
+    defaults: { _controller: TwakeStatusBundle:Default:getRecap }

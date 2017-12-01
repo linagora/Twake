@@ -1,0 +1,29 @@
+{% extends "TwakeCoreBundle:pagetypes:base_classic.html.twig" %}
+
+{% block title %}CreateOrg{% endblock %}
+{% block body %}
+    <b>Hi, I'm the page that can create organizations !</b>
+    <br>
+    <br>
+    <br>
+    <label style="margin-left:5%;position:relative">Enter an Organization Name : <input type="text" id="name"></label><br>
+    <label style="margin-left:5%;position:relative">Enter the description of your organization<br><textarea id="description"></textarea></label><br>
+    <label style="margin-left:5%;position:relative"><input type="checkbox" id="CLUF"> I have read and accepted the <a href="http://google.com/search?q=CLUF">CLUF</a></label><br>
+    <input style="margin-left:5%;position:relative" type="button" value="Create" onclick="create_org()">
+
+    <script type="text/javascript">
+        function create_org() {
+            console.log("hey");
+            var name = $("#name").val();
+            var descr = $("#description").val();
+            var CLUF = $("#CLUF").is(":checked");
+            if (CLUF && name !== "" && descr !== "") {
+                console.log(name);
+                console.log(descr);
+                console.log(CLUF);
+                jQuery.post("/scripts/createOrg/CreateOrg", {name: name, descr: descr, CLUF: CLUF}, function (results) {
+                })
+            }
+        }
+    </script>
+{% endblock %}

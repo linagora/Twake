@@ -1,0 +1,21 @@
+{% extends app.request.get('ajax') == '1'
+    ? "TwakeCoreBundle:pagetypes:base_ajax.html.twig"
+    : "TwakeCoreBundle:pagetypes:base_no_ajax.html.twig" %}
+
+{% block menus %}
+
+    <div class="left_menu">
+        {% block left_menu %}
+            {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+                <div class="menu_block">
+                    Menu par défaut (seulement connectés)
+                </div>
+            {% endif  %}
+        {% endblock %}
+    </div>
+
+    {% block body %}{% endblock %}
+
+    <br><br>
+
+{% endblock %}

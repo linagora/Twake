@@ -1,0 +1,28 @@
+{% extends "TwakeUsersBundle:Account:account_general.html.twig" %}
+
+{% block title %}Groupes{% endblock %}
+{% block account_body %}
+
+    <div class="page_block">
+
+        <div class="title">
+            Trouver de nouveaux groupes
+        </div>
+
+        [TODO]
+
+    </div>
+
+        <div class="title">
+            Vos groupes
+        </div>
+
+        <ul>
+            {% for organization in organizations %}
+    <li><a href="/org/{{ organization.orga_name_clean }}">{{ organization.orga_name }}</a></li>
+{% endfor %}
+        </ul>
+
+    </div>
+
+{% endblock %}

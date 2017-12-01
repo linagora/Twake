@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8" />
+    <title>Twake</title>
+    <meta name="description"
+          content="Twake révolutionne vos équipes et projets professionnels ou personnels. Messagerie, Partage des fichiers, Collaboration, Gestion des droits, Gestion des membres, Marketplace. Gratuit à vie !">
+    <meta name="keywords" content="collaboration, projet, équipe, marketplace, groupes, twake, team">
+    <meta name="author" content="Twake">
+
+    <!-- CSS from /angular/libs -->
+    <link rel="stylesheet" href="/angular/css/libs.css"/>
+
+    <!-- CSS from /angular/styles -->
+    <link rel="stylesheet" href="/angular/css/styles.css"/>
+    <!-- JS  main libraries-->
+    <script src='/angular/js/electron.js'></script>
+    <script src='/angular/js/jquery.js'></script>
+    <script src='/angular/js/jquery-ui.min.js'></script>
+    <script src='/angular/js/angular.min.js'></script>
+    <script src='/angular/js/parameters.js'></script>
+    <script src='/angular/js/common.js'></script>
+    <script src='/angular/js/moment.js'></script>
+    <script src='/angular/js/hammer.js'></script>
+    <script src='/angular/js/fastclick.js'></script>
+    <script src='/angular/js/emojione.min.js'></script>
+    <script src='/angular/js/1angular-translate.js'></script>
+    <script src='/angular/js/2angular-translate-loader-url.js'></script>
+    
+
+    <!-- JS from services -->
+    <script src='/angular/js/services.js'></script>
+    <!-- JS /public/scripts/app.js  -->
+    <script src='/angular/js/app.js'></script>
+
+    <!-- End of head -->
+    <base href="/"> <!-- For public app only -->
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+
+</head>
+
+<!-- twake icons -->
+<link href="https://file.myfontastic.com/TzPb3vRY5SXJ6g2KQVpcMC/icons.css" rel="stylesheet">
+
+
+
+<!-- START BASE HTML -->
+
+
+<body ng-app="twake" ng-class="{'macos':window.macos,'windows':window.windows}">
+
+<toast style="margin-top:60px;"></toast>
+
+<div ng-include="'@views/electron.html'" style="overflow: visible;z-index: 100000000;"></div>
+<div ng-class="{'loaded':server_loaded && view_loaded}" class="server_loading animatedBackground">
+    <div style="" id="loading_canvas">
+
+    </div>
+
+    <div class="loading_text">
+        <div class="intext-loading"></div>
+        Twake
+        <br>
+        <span>Everything is going to be here...</span>
+    </div>
+</div>
+
+<div style="position: absolute;height: 100%;width: 100%;left:0px;top: 0px;overflow: hidden;">
+    <div ui-view="">
+
+    </div>
+</div>
+
+
+<!-- END BASE HTML -->
+
+
+<!-- JS from /libs -->
+<script src='/angular/js/innerlibs_0.js'></script>
+<script src='/angular/js/innerlibs_1.js'></script>
+
+
+<!-- JS from group, administration, public (controllers) -->
+<script src='/angular/js/app2.js'></script>
+<script src='/angular/js/administration.js'></script>
+<script src='/angular/js/group.js'></script>
+<script src='/angular/js/public.js'></script>
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.6/ace.js"></script>
+
+
+<script type="text/javascript">
+    $(function () {
+        window._urq = window._urq || [];
+        _urq.push(['initSite', 'bf184945-cfab-405c-aa9d-34a33e8e211c']);
+        (function () {
+            var ur = document.createElement('script');
+            ur.type = 'text/javascript';
+            ur.async = true;
+            ur.src = ('https:' == document.location.protocol ? 'https://cdn.userreport.com/userreport.js' : 'http://cdn.userreport.com/userreport.js');
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(ur, s);
+        })();
+    });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,122 @@
+<div style="float:right;width: 70px;">
+
+    <div class="im_current_context_results" style="display:none;">
+
+        <div class="im_member default_user_image">
+
+        </div>
+
+        <hr>
+    </div>
+
+    <div class="im_results">
+
+    </div>
+
+</div>
+
+<div class="clearfix"></div>
+
+<div class="im_search_box">
+
+    <input type="text" class="im_search_input" id="im_search_input" name="im_search_input" onkeyup="searchInstantMessageMember($(this).val())" onblur="$(this).parent().toggleClass('open');$(this).val('')">
+
+    <label for="im_search_input" class="im_search_icon icon-search" onclick="$(this).parent().toggleClass('open')"></label>
+
+</div>
+
+<div class="discussion_overlay_bloc">
+    <div class="im_title js-handle"></div>
+    <div class="im_messages_contener">
+
+        <div class="message me">
+            Salut !
+        </div>
+        <div class="message">
+            Non.<br>Ce n'est pas vrai.
+        </div>
+        <div class="message me">
+           ?
+        </div>
+        <div class="message">
+            Je refuse
+        </div>
+        <div class="message">
+            Je suis pas "Salut"
+        </div>
+        <div class="message me">
+            Ok...
+        </div>
+        <div class="message me">
+            Une salutation est un comportement destiné à adresser une marque de reconnaissance, de respect envers une (ou plusieurs) personnes rencontrée(s) physiquement ou seulement virtuellement (par exemple, lors d'une correspondance). Le salut peut s'effectuer au travers d'un acte de langage, éventuellement performatif. En français, le mot « salut » peut servir d'interjection pour saluer une personne dont on est familier. En langage SMS, l'abréviation de salut est "Slt".
+        </div>
+        <div class="message">
+            Wikipedia ?
+        </div>
+
+    </div>
+    <div class="im_input_contener">
+        <textarea  placeholder="Message"></textarea>
+    </div>
+</div>
+
+<script type="text/javascript">
+
+    $( ".discussion_overlay_bloc" ).draggable({
+        snap: "body",
+        containment: "body",
+        handle: ".js-handle"
+    });
+
+    var searchInstantMessageMember_budy = false;
+    var searchInstantMessageMember_wait = setTimeout("");
+    function searchInstantMessageMember(val){
+
+        if(!searchInstantMessageMember_budy) {
+            searchInstantMessageMember_budy = true;
+            $.get("/scripts/messages/search?context=" + getContext() + "&q=" + val, function (res) {
+                searchInstantMessageMember_budy = false;
+
+                $(".instant_messaging").find(".im_results").html("");
+                $.each(res.results.results_contacts,function(i,el){
+
+                    getImproved("messages_overlay_user",el,function(html){
+                        $(".instant_messaging").find(".im_results").append(html);
+                    });
+
+                });
+
+            });
+        }else{
+            clearTimeout(searchInstantMessageMember_wait);
+            searchInstantMessageMember_wait = setTimeout(function(){searchInstantMessageMember(val);}, 200);
+        }
+
+    }
+
+    searchInstantMessageMember("");
+
+    ajaxcenter_subscribe(
+            "messages_notifications_overlay", //Un identifiant pour l'abonnement
+            "messages_notifications", //Identifiant du script voulu
+            [], //Optionnel, une liste de tags pour l'abonnement
+            {}, //Optionnel arguments à passer au script
+            1
+    );
+    ajaxcenter_addfunction("messages_notifications_overlay", "get_messages_notifications", function(res){
+        $.each(res.results,function(i,el){
+            $(".overlay_user_"+i).find(".im_notifications").html(el.nbmessages);
+            if(el.nbmessages <= 0){
+                $(".overlay_user_"+i).find(".im_notifications").hide();
+            }else{
+                $(".overlay_user_"+i).find(".im_notifications").show();
+            }
+            if(el.online == 0){
+                $(".overlay_user_"+i).find(".im_connected").hide();
+            }else{
+                $(".overlay_user_"+i).find(".im_connected").show();
+            }
+        });
+    });
+
+</script>

@@ -1,0 +1,32 @@
+
+administration_authentication_authenticate:
+    path: /authenticate
+    defaults: {_controller: AdministrationAuthenticationBundle:Default:authenticate}
+
+administration_authentication_currentUser:
+    path: /currentUser
+    defaults: {_controller: AdministrationAuthenticationBundle:Default:currentUser}
+
+administration_authentication_addUser:
+  path: /addUser
+  defaults: {_controller: AdministrationAuthenticationBundle:AdminManager:addUser}
+
+
+administration_authentication_removeUser:
+  path: /removeUser
+  defaults: {_controller: AdministrationAuthenticationBundle:AdminManager:removeUser}
+
+
+administration_authentication_updateUser:
+  path: /updateUser
+  defaults: {_controller: AdministrationAuthenticationBundle:AdminManager:updateUser}
+
+
+administration_authentication_listUserAdmin:
+  path: /listUserAdmin
+  defaults: {_controller: AdministrationAuthenticationBundle:AdminManager:listUserAdmin}
+
+
+administration_users_listTwakeUsers:
+   path: /listTwakeUsers
+   defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:listTwakeUsers}

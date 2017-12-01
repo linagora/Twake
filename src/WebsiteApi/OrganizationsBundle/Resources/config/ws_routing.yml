@@ -1,0 +1,7 @@
+group_topic:
+    channel: group/{id}
+    handler:
+        callback: 'group.topic'
+    requirements:
+        id:
+            pattern: "[0-9]+"

@@ -1,0 +1,8 @@
+{% extends "TwakeUsersBundle:Mail:all.txt.twig" %}
+
+{% block body %}
+Bonjour {{ pseudo }} !
+
+Pour terminer l'activation de votre compte sur Twake, cliquez ici :
+https://twakeapp.com/register/confirm/{{ token }}
+{% endblock %}

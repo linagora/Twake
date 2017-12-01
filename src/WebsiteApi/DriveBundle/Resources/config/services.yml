@@ -1,0 +1,5 @@
+services:
+
+    app.drive.FileSystem:
+        class: WebsiteApi\DriveBundle\Services\DriveFileSystem
+        arguments: ["@doctrine.orm.entity_manager", %kernel.root_dir%]

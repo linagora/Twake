@@ -1,0 +1,9 @@
+{% if _subject == "newcontact" or _subject == "cntactaccept" %}
+
+    /user/{{ SenderCleanUsername }}
+
+{% else %}
+
+    /404
+
+{% endif %}

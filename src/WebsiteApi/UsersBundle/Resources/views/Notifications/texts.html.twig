@@ -1,0 +1,12 @@
+{% if _subject == "newcontact" %}
+
+    <b>{{ SenderUsername|capitalize }}</b> vous a envoyé une demande de contact. Accéder au profil de {{ SenderUsername|capitalize }}.
+
+{% elseif _subject == "cntactaccept" %}
+
+    <b>{{ SenderUsername|capitalize }}</b> a accepté votre invitation. Accéder au profil de {{ SenderUsername|capitalize }}.
+
+{% else %}
+        Vous avez une notification inconnue.
+
+{% endif %}

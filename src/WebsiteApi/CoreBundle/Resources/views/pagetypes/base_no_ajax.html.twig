@@ -1,0 +1,61 @@
+{% extends "TwakeCoreBundle:general:base_headers.html.twig" %}
+
+{% block general_content %}
+
+    <b_mobilemenu>
+        <mobilemenu></mobilemenu>
+    </b_mobilemenu>
+
+    <header {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}class="connected"{% endif %}>
+
+        <div class="logo" onclick="go(event,'/')">Twake</div>
+
+        {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+
+            {% include "TwakeCoreBundle:parts:header_connected.html.twig" %}
+
+        {% else %}
+
+            {% include "TwakeCoreBundle:parts:header_connection_buttons.html.twig" %}
+
+        {% endif %}
+
+    </header>
+
+    <main class="{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}connected{% endif %}">
+
+        <div class="left_space"></div>
+
+        <div class="middle_space ajax_load">
+        {% block menus %}{% endblock %}
+        </div>
+
+        <div class="right_space">
+        </div>
+    </main>
+
+    <div class="right_menu_fixed">
+    {% block right_menu %}
+        <div class="right_backcolor">
+            <div class="right_menu_contener">
+                <div class="menu_block">
+                    <div class="title">Activité</div>
+                </div>
+                <div class="menu_block">
+                    <br><br><br> <br><br><br> <br><br><br>aa
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+    </div>
+
+
+    {% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}
+        <div class="instant_messaging">
+            <script type="text/javascript">
+                $(".instant_messaging").load("/messages/overlay");
+            </script>
+        </div>
+    {% endif %}
+
+{% endblock %}

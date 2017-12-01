@@ -1,0 +1,347 @@
+{% extends "TwakeUsersBundle:Account:account_general.html.twig" %}
+
+{% block title %}Modifier le profil public{% endblock %}
+{% block account_body %}
+
+    <div class="page_block">
+        <form class="form_block identity">
+
+            <div class="title">Identité
+
+                <div type="button" class="save_button saved" onclick="profile_identity_save()"></div>
+
+            </div>
+
+            <div style="display:flex" class="mobileNoFlex">
+                <div style="width: 150px;" class="mobile100">
+
+                    <div class="input_upload profile" data-script="prfl" data-remove-btn="remove_profile_image" data-class="account_edit" data-input="#input_image" data-text="Modifier l'image de profil"></div>
+                    <input type="hidden" name="profile_image" id="input_image">
+
+                    <div class="nfo nomobile" style="width: 130px;margin-top: 10px;">
+                        Votre image de profil doit être de format gif, png ou jpg. Elle ne doit pas excéder 1mo.
+
+                        <a id="remove_profile_image" href="#" class="red_link">Réinitialiser</a>
+
+                    </div>
+
+
+                    <div class="nfo nodesktop" style="display: inline-block;width: 130px;    vertical-align: top;text-align: left;margin-left: 5px;">
+                        Votre image de profil doit être de format gif, png ou jpg. Elle ne doit pas excéder 1mo.
+
+                        <a id="remove_profile_image" href="#" class="red_link">Réinitialiser</a>
+
+                    </div>
+
+
+                </div>
+
+                <div class="nodesktop" style="height: 20px;"></div>
+
+                <div style="flex:1">
+
+
+                    <div class="input_contener">
+
+                        <input style="max-width: 200px;" class="text_input form-control" type="text" disabled value="{{ app.user.username|capitalize }}" />
+
+                        <div class="right_label">
+                            <div class="input_privacy" data-value="public" data-disabled="1"></div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="input_contener contain_all" style="margin-top: 10px;margin-right: 10px;margin-bottom: 10px;">
+
+                        <input placeholder="Prénom" style="max-width: 200px;" class="text_input form-control" type="text" value="{{ user.firstname }}" name="firstname" />
+
+                        <div class="right_label">
+                            <div class="input_privacy" data-name="privacy_firstname" data-value="{{ user.getPrivacy('firstname')}}"></div>
+                        </div>
+                    </div>
+
+                    <div class="input_contener contain_all" style="margin-bottom: 10px;">
+
+                        <input placeholder="Nom" style="max-width: 200px;" class="text_input form-control" type="text" value="{{ user.lastname }}" name="lastname"  />
+
+                        <div class="right_label">
+                            <div class="input_privacy" data-name="privacy_lastname" data-value="{{ user.getPrivacy('lastname')}}"></div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="input_contener contain_all">
+
+                        <select name="gender" class="select_input" style="margin-right: 10px;">
+                            <option value="" {% if user.gender=='' %}selected{%  endif %} >Ne pas renseigner</option>
+                            <option value="M" {% if user.gender=='M' %}selected{%  endif %}>Homme</option>
+                            <option value="F" {% if user.gender=='F' %}selected{%  endif %}>Femme</option>
+                            <option value="A" {% if user.gender=='A' %}selected{%  endif %}>Autre</option>
+                        </select>
+
+                        <div class="right_label">
+                            <div class="input_privacy" data-name="privacy_gender" data-value="{{ user.getPrivacy('gender')}}"></div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="input_contener contain_all" style="margin-top: 10px;">
+
+                        <input placeholder="Date de naissance" style="max-width: 160px;" class="text_input form-control" type="text" value="{{ user.birthdate }}" name="birthdate" />
+
+                        <div class="right_label">
+                            <div class="input_privacy"  data-name="privacy_birthdate" data-value="{{ user.getPrivacy('birthdate')}}"></div>
+                        </div>
+                    </div>
+
+                    <div class="clearfix"></div>
+
+                    <div class="form_title">À propos de vous
+                    </div>
+                    <div class="input_privacy" data-value="public" data-disabled="1"></div>
+
+                    <textarea placeholder="Dites au monde à quel point vous êtes génial !" class="text_input form-control" style="resize: vertical;" rows="4" name="description">{{ user.description }}</textarea>
+
+                    <div class="clearfix"></div>
+
+                    <div class="form_title">Vos centres d'intérêt
+                    </div>
+                    <div class="input_privacy"  data-name="privacy_hobbies" data-value="{{ user.getPrivacy('hobbies')}}"></div>
+                    <div class="nfo">Séparés par des virgules</div>
+
+                    <div class="input_tags" data-input="real_input_for_tags" data-disabled="0" data-can-create="1" data-object="prfl" data-id="12" data-tag-type="A"></div>
+                    <input type="hidden" id="real_input_for_tags" name="hobbies" value="{{ tags }}">
+
+                    <script type="text/javascript">
+                        tags_improve($(".input_tags")[0]);
+                    </script>
+
+
+                </div>
+            </div>
+
+        </form>
+    </div>
+
+
+    <script type="text/javascript">
+
+
+        function profile_identity_save() {
+
+            var form = $(".form_block.identity");
+
+            var dataToSend = $(form).serializeArray();
+            dataToSend.push({name:"content",value:"identity"});
+
+            forms_send('/scripts/account/save', dataToSend, function(){
+                $(form).find(".save_button").removeClass("unsaved")
+                        .addClass("saved");
+            }, function(){}, '#form');
+
+        }
+
+    </script>
+
+    <div class="page_block ">
+        <form class="form_block perso">
+
+
+
+            <div class="title">Personnalisation
+                <div type="button" class="save_button saved" onclick="profile_perso_save()"></div>
+            </div>
+
+
+
+            <div class="input_upload mycover" data-script="covr" data-remove-btn="remove_cover_image" data-class="img_cover" data-input="#input_cover" data-text="Modifier l'image de couverture"></div>
+            <input type="hidden" id="input_cover" name="cover_image">
+
+            <div class="nfo" style="margin-top: 10px;">
+                Votre image de couverture doit être de format gif, png ou jpg. Elle ne doit pas excéder 2mo. Sa taille doit être au minimum de 900x230 px.
+
+                <a id="remove_cover_image" href="#" class="red_link">Réinitialiser</a>
+
+            </div>
+
+            <br><br>
+            <div class="form_title">Informations visibles sur mon profil public</div>
+
+            <br><br>
+
+            Personnes pouvant voir mes amis : <div class="input_privacy"  data-name="privacy_friends" data-value="{{ user.getPrivacy('friends') }}"></div>
+
+            <br><br>
+
+            Personnes pouvant voir mes groupes : <div class="input_privacy"  data-name="privacy_groups" data-value="{{ user.getPrivacy('groups') }}"></div>
+
+            <br><br>
+
+        </form>
+    </div>
+
+
+    <script type="text/javascript">
+
+
+        function profile_perso_save() {
+
+            var form = $(".form_block.perso");
+
+            var dataToSend = $(form).serializeArray();
+            dataToSend.push({name:"content",value:"perso"});
+
+            forms_send('/scripts/account/save', dataToSend, function(){
+                $(form).find(".save_button").removeClass("unsaved")
+                        .addClass("saved");
+            }, function(){}, '#form');
+
+        }
+
+    </script>
+
+    <div class="page_block">
+        <form class="form_block contact">
+
+
+            <div class="title">Contact
+                <div type="button" class="save_button saved" onclick="profile_contact_save()"></div>
+
+            </div>
+
+
+            <div class="form_title">Vos adresses mail</div> <div class="nfo">Vous pouvez éditer vos addresses dans les paramètres de compte.</div>
+
+            <div class="input_contener" style="margin-top: 5px;">
+
+                <input style="max-width: 400px;" class="text_input form-control" type="text" disabled value="{{ app.user.email }}" />
+
+                <div class="right_label">
+                    <div class="input_privacy" data-value="{{ user.getPrivacy('mail') }}" data-name="privacy_mail"></div>
+                </div>
+            </div>
+
+            {% if app.user.hasSecondaryMails() %}
+                {% for mail in app.user.getSecondaryMails() %}
+
+                    <div class="input_contener" style="margin-top: 5px;">
+
+                        <input style="max-width: 400px;" class="text_input form-control" type="text" disabled value="{{ mail.mail }}" />
+
+                        <div class="right_label">
+                            <div class="input_privacy" data-value="{{ user.getPrivacy('mail_' ~ mail.id) }}" data-name="{{ 'privacy_mail_' ~ mail.id }}"></div>
+                        </div>
+                    </div>
+
+                {% endfor %}
+            {% endif %}
+
+
+            <div class="form_title">Téléphones</div><br>
+
+            <div class="input_contener contain_all" style="margin-bottom: 10px;">
+
+                <input placeholder="Téléphone 1" style="max-width: 200px;" class="text_input form-control" type="text" value="{{ user.data.phone1 }}" name="phone1"  />
+
+                <div class="right_label">
+                    <div class="input_privacy" data-name="privacy_phone1" data-value="{{ user.getPrivacy('phone1') }}"></div>
+                </div>
+            </div>
+
+            <div class="input_contener contain_all" style="margin-bottom: 10px;">
+
+                <input placeholder="Téléphone 2" style="max-width: 200px;" class="text_input form-control" type="text" value="{{ user.data.phone2 }}" name="phone2"  />
+
+                <div class="right_label">
+                    <div class="input_privacy" data-name="privacy_phone2" data-value="{{ user.getPrivacy('phone2') }}"></div>
+                </div>
+            </div>
+
+
+
+            <br><!--
+            <div class="form_title">Internet [TODO]</div>                             <div class="input_privacy" data-value="public" data-disabled="1"></div>
+
+            <br>
+
+            <div class="internet_links">
+
+                <div class="input_contener contain_all" style="margin-bottom: 5px;max-width: 400px">
+
+
+
+                    <input placeholder="Lien" style="width: 300px;" class="text_input form-control" type="text" value="" name="phone2"  />
+
+                    <div class="right_label">
+                        <div style="margin-right: 5px;">Supprimer</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="">Ajouter</div>
+
+            <script type="text/javascript">
+                function addLink(){
+
+                }
+            </script>
+
+
+            <br><br>-->
+
+        </form>
+    </div>
+
+
+    <script type="text/javascript">
+
+
+        function profile_contact_save() {
+
+            var form = $(".form_block.contact");
+
+            var dataToSend = $(form).serializeArray();
+            dataToSend.push({name:"content",value:"contact"});
+
+            forms_send('/scripts/account/save', dataToSend, function(){
+                $(form).find(".save_button").removeClass("unsaved")
+                        .addClass("saved");
+            }, function(){}, '#form');
+
+        }
+
+    </script>
+
+    <script type="text/javascript">
+
+        $(document).ready(function() {
+            forms_hideErrors('#form');
+            upload_improve($(".input_upload.profile")[0]);
+            upload_improve($(".input_upload.mycover")[0]);
+
+            var profile_img = "{{ user_thumbnail_url }}";
+            var cover_img = "{{ user_cover_url }}";
+
+            if(profile_img!="") {
+                $(".input_upload.profile").find(".image_contener").css({'background-image': 'url("' + profile_img + '")'});
+            }
+            if(cover_img!="") {
+                $(".input_upload.mycover").find(".image_contener").css({'background-image': 'url("' + cover_img + '")'});
+            }
+
+        });
+
+
+
+        $(".input_privacy").each(function(i,el){
+            privacy_improve(el);
+        });
+
+    </script>
+
+
+{% endblock %}

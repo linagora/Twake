@@ -1,0 +1,6 @@
+{% extends "TwakeUsersBundle:Mail:all.txt.twig" %}
+
+{% block body %}
+Vous avez ajouté un mail à votre compte, cliquez sur ce lien pour confirmer :
+https://twakeapp.com/account/verifymail/{{ token }}
+{% endblock %}

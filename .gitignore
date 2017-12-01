@@ -111,3 +111,7 @@ fabric.properties
 ### Symfony Patch ###
 /web/css/
 /web/js/
+
+
+### Twake specific ###
+/build/

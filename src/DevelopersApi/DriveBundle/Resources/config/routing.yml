@@ -1,0 +1,39 @@
+developers_api_drive_getinfo:
+    path:     /getinfo
+    defaults: { _controller: DevelopersApiDriveBundle:Default:getinfo }
+
+developers_api_drive_gettree:
+    path:     /gettree
+    defaults: { _controller: DevelopersApiDriveBundle:Default:gettree }
+
+developers_api_drive_read:
+    path:     /read
+    defaults: { _controller: DevelopersApiDriveBundle:Default:read }
+
+developers_api_drive_download:
+    path:     /download
+    defaults: { _controller: DevelopersApiDriveBundle:Default:download }
+
+developers_api_drive_upload:
+    path:     /upload
+    defaults: { _controller: DevelopersApiDriveBundle:Default:upload }
+
+developers_api_drive_save:
+    path:     /save
+    defaults: { _controller: DevelopersApiDriveBundle:Default:save }
+
+developers_api_drive_download:
+    path:     /download
+    defaults: { _controller: DevelopersApiDriveBundle:Default:download }
+
+developers_api_drive_create:
+    path:     /create
+    defaults: { _controller: DevelopersApiDriveBundle:Default:create }
+
+developers_api_drive_move:
+    path:     /move
+    defaults: { _controller: DevelopersApiDriveBundle:Default:move }
+
+developers_api_drive_delete:
+    path:     /delete
+    defaults: { _controller: DevelopersApiDriveBundle:Default:delete }

@@ -1,0 +1,113 @@
+<div class="popup_addcontact mobile100" style="min-width: 400px;">
+
+    <div class="form_title" style="margin-top:0px;">Chercher des contacts</div>
+    <br>
+
+    <div class="input_contener" style="display: flex;">
+
+    <input style="flex:1" type="text" class="text_input form-control newmail_inpopup" value="" placeholder="Entrer une adresse mail ou un pseudo" onkeyup="popupReinitUserSearch()">
+
+        <div class="right_label">
+            <button class="btn btn-info" style="margin-top: 0px;float:right;" onclick="popupSearchUser()">Rechercher</button>
+        </div>
+    </div>
+
+
+    <div class="results" style="min-height: 100px;text-align: center;">
+
+        <div class="nfo noresult" style="display: none;margin-top: 30px;">Aucun résultat ne correspond à votre recherche, vous pouvez taper directement une adresse mail si vous ne connaissez pas le pseudo de votre contact.</div>
+
+
+        <div class="ispseudo" style="display: none;text-align:left;margin-top: 15px;">
+
+        </div>
+
+        <div class="ismail" style="display: none;margin-top: 30px;">Vous avez entré une adresse mail.<br>
+        Voulez-vous envoyer une demande de contact à ce mail ?<br>
+        <a href="#" onclick="popupAskByMail()" >Envoyer la demande</a>
+        </div>
+
+        <div class="nfo willsearch" style="margin-top: 30px;">Commencez par chercher un pseudo ou une adresse mail.</div>
+
+    </div>
+
+</div>
+<script type="text/javascript">
+
+    var last_mail_requested = "";
+
+    function popupReinitUserSearch(){
+        var rcnt = $(".popup_addcontact").find(".results");
+        $(rcnt).children().hide();
+        $(rcnt).find(".willsearch").show();
+    }
+
+    function popupAskByMail(){
+        var mail = last_mail_requested;
+        forms_send('/account/contacts/addbymail', {mail:mail},
+                function(data){
+
+                    altAlert({title:"Demande envoyée !",text:"Demande envoyée à l'utilisateur "+mail});
+
+                }, function(data){
+                    console.log(data);
+                }, '.popup_addcontact');
+    }
+
+    function popupSearchUser(){
+
+        var query = $(".newmail_inpopup").val();
+
+        forms_send('/account/contacts/search', {"q":query},
+                function(data){
+
+                    if(data.results == undefined){
+                        return;
+                    }
+
+                    var rcnt = $(".popup_addcontact").find(".results");
+                    $(rcnt).children().hide();
+
+                    if(data.results.type=="mail"){
+
+                        $(rcnt).find(".ismail").show();
+                        last_mail_requested = data.results.query;
+
+                    }else{
+
+                        if(data.results.results.length==0){
+                            $(rcnt).find(".noresult").show();
+                        }else{
+                            $(rcnt).find(".ispseudo").show();
+                            $(rcnt).find(".ispseudo").html("");
+
+                            $.each(data.results.results,function(i,el){
+                                var res = $('<div class="user_line profil_relation"'
+                                        +'><div class="image default_user_image" style="'
+                                        + el.cssimg
+                                        +'"></div><div class="name">'
+                                        + el.pseudo
+                                        +'</div></div>');
+
+                                $(res).click(function(){
+                                    altConfirm({title:"Ajouter un contact", text:"Voulez-vous vraiment ajouter "+el.pseudo+" à vos contacts ?"},function(){
+
+                                        $.post("/scripts/contacts/ask",{"user_id":el.uid},function(){
+                                           altAlert({title:"Demande envoyée !",text:"Votre demande de contact à été envoyé à l'utilisateur "+el.pseudo});
+                                        });
+
+                                    });
+                                });
+                                $(rcnt).find(".ispseudo").append(res);
+                            });
+
+                        }
+
+                    }
+
+                }, function(data){
+                    console.log(data);
+                }, '.popup_addcontact');
+
+    }
+</script>

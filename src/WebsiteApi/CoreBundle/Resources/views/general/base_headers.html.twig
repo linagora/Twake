@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        <title>{% block title %}Projet Twake{% endblock %}</title>
+
+        {% block stylesheets %}
+            {% stylesheets
+                'public/css/bootstrap.css'
+                'public/css/site.css'
+                'public/css/hoverex-all.css'
+                'public/css/prettyPhoto.css'
+                'public/css/core.css'
+                'public/css/base.css'
+                'public/css/mobile.css'
+            %}
+            <link rel="stylesheet" href="{{ asset_url }}" type="text/css" />
+            {% endstylesheets %}
+            <link rel="stylesheet" href="/public/fonts/styles.css" type="text/css" />
+        {% endblock %}
+
+        {% block javascripts %}
+            {% javascripts
+            'public/js/bootflat.js'
+            'public/js/jquery-ui.min.js'
+            'public/js/twig.js'
+            'public/js/core.js'
+            'public/js/fastclick.js'
+            'public/js/tag-it.js'
+            %}
+            <script type="text/javascript" src="{{ asset_url }}"></script>
+            {% endjavascripts %}
+        {% endblock %}
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+
+
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body class="{% if is_granted('IS_AUTHENTICATED_REMEMBERED') %}connected{% endif %}">
+
+        <div class="ajax_loading_bar"></div>
+
+        <div style="position: relative;height: 100%;">
+
+        {% block general_content %}{% endblock %}
+        </div>
+    </body>
+</html>

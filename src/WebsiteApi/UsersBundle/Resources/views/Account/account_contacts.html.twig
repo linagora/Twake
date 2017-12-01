@@ -1,0 +1,119 @@
+{% extends "TwakeUsersBundle:Account:account_general.html.twig" %}
+
+{% block title %}Contacts{% endblock %}
+{% block account_body %}
+
+    <div class="page_block">
+
+        <div class="title">
+            Ajouter des contacts
+        </div>
+
+        <div class="maybeyouknow">
+            <div class="form_title" style="margin-top: 3px;">Vous connaissez peut-être</div>
+
+            <div class="maybeyouknow_contener">
+                <div style="margin: 10px">
+                    <div class="icon_loading"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="form_title">Rechercher des contacts</div><br>
+
+
+        <button class="btn btn-info" onclick="addContacts()">
+            Rechercher de nouveaux contacts</button>
+
+
+    </div>
+
+    <div class="page_block">
+
+        <div class="title">
+            Tous vos contacts
+            <input id="contact_search" style="height:22px;width: 130px;padding-left:5px;float:right;" class="form-control text-input" type="text" placeholder="Chercher" onkeyup="searchContacts(this.value);">
+
+        </div>
+        <div class="nfo">
+            Vous pouvez ne pas afficher vos contacts sur votre profil, rendez vous dans vos paramètres de compte.
+        </div>
+
+
+        <div id="demandes_mask" style="display: none">
+
+            Vous avez des demandes en attente<br>
+
+            <div id="demandes"></div>
+
+            <hr>
+            <br><br>
+        </div>
+
+        <br>
+
+        <div id="friends">
+            <div style="margin: 10px">
+                <div class="icon_loading"></div>
+            </div>
+        </div>
+
+
+        <script type="text/javascript">
+
+
+
+            function addContacts(){
+                openPopup("/account/contacts/addnew", {"improveresize":false});
+            }
+
+            function reload_contact_list(){
+                contact_list($('#friends'), $('#demandes_mask'), $('#demandes'), "reload_contact_list", nocontact);
+            }
+
+
+            var maybecontact_template = getTemplate("contact_maybe");
+
+            function maybeContacts(){
+                forms_send('/account/contacts/maybe', {"nb":10}, function(res){
+                    if(res.results.length==0){
+                        $(".maybeyouknow").hide();
+                        return;
+                    }
+                    $(".maybeyouknow").show();
+                    var ctn = $(".maybeyouknow_contener");
+                    $(ctn).html("");
+                    $.each(res.results,function(i,el){
+                        getImproved("contact_maybe",el,function(html){
+                            $(ctn).append(html);
+                        });
+                    });
+                }, function(){});
+            }
+
+
+            function nocontact(){
+                $("#friends").html('<center><div class="nfo">Aucun contact</div></center>');
+            }
+
+            function searchContacts(text){
+                if(text==""){
+                    $("#friends").find(".profil_relation").parent().css("display","inline-block");
+                }
+                $("#friends").find(".profil_relation").each(function(i, el){
+                    if($(el).attr("data-cleanusername").toLowerCase().indexOf(text.toLowerCase()) !== -1){
+                        $(el).css("display","inline-block");
+                    }else{
+                        $(el).hide();
+                    }
+                });
+            }
+
+            reload_contact_list();
+            maybeContacts();
+
+        </script>
+
+    </div>
+
+{% endblock %}

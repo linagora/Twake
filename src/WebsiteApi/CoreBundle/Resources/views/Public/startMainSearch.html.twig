@@ -1,0 +1,13 @@
+<input id="search_activity" type="text"class="text_input form-control search" placeholder="Rechercher une activité">
+
+<input id="search_city" type="text" class="text_input form-control city" placeholder="Ville" value="Nancy">
+
+<button class="advanced_button btn btn-block ah" onclick="start_search(1)">Options</button>
+<button class="button btn btn-block ah" onclick="start_search()">Trouver</button>
+
+
+<script type="text/javascript">
+    function start_search(details){
+        go(event, '/search?q='+$('#search_activity').val());
+    }
+</script>

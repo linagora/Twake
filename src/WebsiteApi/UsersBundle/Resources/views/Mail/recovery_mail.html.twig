@@ -1,0 +1,8 @@
+{% extends "TwakeUsersBundle:Mail:all.html.twig" %}
+
+{% block body %}
+Pour reinitialiser votre mot de passe cliquez ici :
+<br>
+<br>
+<a href="https://twakeapp.com/resetting/request/{{ token }}">https://twakeapp.com/resetting/request/{{ token }}</a>
+{% endblock %}

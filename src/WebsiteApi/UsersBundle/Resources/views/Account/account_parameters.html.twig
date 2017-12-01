@@ -1,0 +1,120 @@
+{% extends "TwakeUsersBundle:Account:account_general.html.twig" %}
+
+{% block title %}Paramètres de compte{% endblock %}
+{% block account_body %}
+
+<div class="page_block">
+
+    <div class="title">Paramètres généraux</div>
+
+    <div class="form_title">Pseudo</div><br>
+    <div class="input_contener">
+
+        <input style="max-width: 200px;" class="text_input form-control" type="text" disabled value="{{ app.user.username }}" />
+
+        <button class="btn btn-block btn-default" style="display: inline-block;margin-left: 5px;max-width: 100px;" onclick="manage_username()">Modifier</button>
+
+    </div>
+
+
+    <br>
+
+
+    <div class="form_title">Adresses mail</div>
+
+    <div class="input_contener" style="margin-top: 5px;">
+
+        <input style="max-width: 250px;" class="text_input form-control" type="text" disabled value="{{ app.user.email }}" />
+
+        <div class="right_label">
+            <div style="background: #c74545;color: #FFF;padding: 0 10px;font-size: 12px;height: 22px;line-height: 22px;">Adresse principale</div>
+        </div>
+    </div>
+
+    {% if app.user.hasSecondaryMails() %}
+        {% for mail in app.user.getSecondaryMails() %}
+
+            <div class="input_contener" style="margin-top: 5px;">
+
+                <input style="max-width: 250px;" class="text_input form-control" type="text" disabled value="{{ mail.mail }}" />
+
+                <div class="right_label">
+
+                    {% if mail.token=="" %}
+                    <a href="#" onclick="changeMail({{ mail.id }})">Définir comme adresse principale</a>
+                    {% else %}
+                        <div style="background: #c88e3c;color: #FFF;padding: 0 10px;font-size: 12px;height: 22px;line-height: 22px;display: inline-block;">En cours de vérification</div>
+                    {% endif %}
+
+                    <a href="#" class="red_link" style="margin-left: 10px;" onclick="deleteMail({{ mail.id }})">Supprimer</a>
+
+                </div>
+
+            </div>
+
+        {% endfor %}
+    {% endif %}
+    <button class="btn btn-block btn-default" style="margin-top: 5px;max-width: 200px;" onclick="manage_mails()">Ajouter une adresse</button>
+
+    <script type="text/javascript">
+        function deleteMail(id){
+            altConfirm(
+                    {title:"Confirmation",text:"Voulez-vous supprimer cette adresse ?"},
+                    function(){
+                        forms_send("/account/parameters/ajax",
+                                {'source':"deletemail",'mid':id},
+                                function(data){ document.location = ""; },
+                                function(data){ console.log(data); });
+            });
+        }
+        function changeMail(id){
+            altConfirm(
+                    {title:"Confirmation",text:"Voulez-vous changer d'adresse principale ?"},
+                    function(){
+            forms_send("/account/parameters/ajax",
+                    {'source':"changemail",'mid':id},
+                    function(data){ document.location = ""; },
+                    function(data){ console.log(data); });
+            });
+        }
+    </script>
+
+    <br><br>
+    <a href="#" onclick="manage_password()">Changement de mot de passe</a>
+    <br>
+    <br>
+    <!--<a href="#" onclick="go(event,'/account/delete')" class="red_link">Supprimer mon compte</a>
+    <br>-->
+    <a href="/c_logout" class="red_link">Déconnexion</a>
+
+
+    <script type="text/javascript">
+
+        function manage_username(){
+            openPopup("/account/parameters/managepseudo");
+        }
+
+        function manage_mails(){
+            openPopup("/account/parameters/managemails");
+        }
+
+        function manage_password(){
+            openPopup("/account/parameters/managepassword", {"improveresize":false});
+        }
+
+    </script>
+
+</div>
+
+<!--
+<div class="page_block">
+
+    <div class="title">Documents</div>
+
+    <a href="#" onclick="go(event,'/cluf')">CLUF</a><br>
+    <a href="#" onclick="go(event,'/privacy')">Utilisation des données privées</a>
+
+</div>
+-->
+
+{% endblock %}

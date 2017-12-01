@@ -1,0 +1,86 @@
+{% extends "TwakeCoreBundle:pagetypes:base_classic.html.twig" %}
+
+{% block title %}Accueil{% endblock %}
+{% block body %}
+
+    <div class="parallax_background">
+
+    </div>
+
+    <div class="start_parallax_box">
+
+
+        <div class="parallax_background_infobox">
+            cliquez pour voir la page correspondante
+        </div>
+
+    </div>
+    <div style="height: 20.3vh;background: #FFF;position: relative;text-align: center">
+
+        <div class="start_text_presentation">
+            <div class="slogan">
+                <span class="strong">Twake</span>, la première communauté pour <span class="strong">trouver des amis</span> dans votre ville
+            </div>
+            <div class="text">
+                Des centaines de milliers de personnes vous attendent pour partager leurs passions, sur Twake trouvez des clubs<br>
+                et des associations qui ont les même intérêts que vous.
+            </div>
+        </div>
+
+    </div>
+
+    <div style="height: 20vh;background: #FFF;position: relative;text-align: center;box-shadow: 0 -10px 70px -45px rgba(0,0,0,0.9);text-align: center;">
+
+        <div class="start_text_presentation" style="padding-top: 30px;font-size: 0;">
+             {% include "TwakeCoreBundle:Public:startMainSearch.html.twig" %}
+        </div>
+
+
+    </div>
+
+    <div class="background" style="background-image: url('')"></div>
+
+    <script type="text/javascript">
+
+        var INTERVAL_TIME = 7; //Interval in seconds
+        function start_nextbackground(){
+
+            $('.parallax_background').find('.background.disappeared').remove();
+            $('.parallax_background').find('.background.viewed').addClass('disappeared');
+
+            $('.parallax_background').find('.background.visible')
+                    .removeClass('visible')
+                    .next(".background").addClass('visible').addClass('viewed');
+
+            if($('.parallax_background').find('.background.visible').length==0){
+                $('.parallax_background').find('.background').first().addClass('visible').addClass('viewed');
+            }
+        }
+        function start_backgrounds_carousel(){
+
+            if($('.parallax_background').find('.background').length<=4) {
+
+                jQuery.get("/scripts/general/getBackground?n=4", function (res) {
+
+                    jQuery.each(res.data, function (i, el) {
+                        new_back = $('<div class="background"></div>');
+                        $(new_back).css({"background-image":"url('"+el+"')"});
+                        $('.parallax_background').append(new_back);
+                    });
+
+                    start_nextbackground();
+                    setTimeout(start_backgrounds_carousel, INTERVAL_TIME * 1000);
+
+                });
+
+            }else {
+                start_nextbackground();
+                setTimeout(start_backgrounds_carousel, INTERVAL_TIME * 1000);
+            }
+
+
+        }
+        start_backgrounds_carousel();
+    </script>
+
+{% endblock %}
