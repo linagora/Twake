@@ -1,0 +1,9 @@
+services:
+
+    app.calendar.CalendarSystem:
+        class: WebsiteApi\CalendarBundle\Services\CalendarSystem
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    app.event.EventSystem:
+        class: WebsiteApi\CalendarBundle\Services\EventSystem
+        arguments: ["@doctrine.orm.entity_manager"]

@@ -30,6 +30,10 @@ check:
 
 
 #API pour le site (et pas les developpeurs)
+calendar:
+    resource: "@TwakeCalendarBundle/Resources/config/routing.yml"
+    prefix:   /ajax/calendar/
+    methods: [POST]
 
 citi_go_discussion:
     resource: "@TwakeDiscussionBundle/Resources/config/routing.yml"
@@ -125,3 +129,4 @@ developers_api_error:
 website_public:
     resource: "@WebsitePublicBundle/Resources/config/routing.yml"
     prefix:   /
+

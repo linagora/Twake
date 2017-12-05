@@ -1,0 +1,17 @@
+calendar_get_calendars:
+    path:     /get
+    defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendars }
+calendar_create_calendar:
+    path:     /create
+    defaults: { _controller: TwakeCalendarBundle:Calendar:createCalendar }
+
+calendar_get_events_user:
+    path:     /event/getByUser
+    defaults: { _controller: TwakeCalendarBundle:Event:getEventsByOwner }
+calendar_get_events_calendar:
+    path:     /event/getByCalendar
+    defaults: { _controller: TwakeCalendarBundle:Event:getEventsByCalendar }
+calendar_create_event:
+    path:     /event/create
+    defaults: { _controller: TwakeCalendarBundle:Event:createEvent }
+
