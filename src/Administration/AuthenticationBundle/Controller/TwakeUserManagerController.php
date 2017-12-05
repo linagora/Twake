@@ -24,9 +24,8 @@ class TwakeUserManagerController extends Controller
             $pageNumber = $request->request->get("page","1");
             $nbUserPage = $request->request->get("per_page","25");
             $filter = $request->request->get("filters","");
-
-            $listTwakeUser = $this->get('admin.TwakeUserManagement')->listTwakeUsers($pageNumber,$nbUserPage,$filter);
-	        $totalNumber = $this->get('admin.TwakeUserManagement')->getNumberOfTwakeUsers($filter);
+            $totalNumber = 0;
+            $listTwakeUser = $this->get('admin.TwakeUserManagement')->listTwakeUsers($pageNumber,$nbUserPage,$filter,$totalNumber);
 
             $listResponse = Array();
             foreach($listTwakeUser as $twakeUser)
