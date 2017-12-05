@@ -20,7 +20,7 @@ class EventSystem implements EventCalendarInterface
         $this->doctrine = $doctrine;
     }
 
-    public function createEvent($owner, $title, $startDate, $endDate, $description, $location, $color, $cal)
+    public function createEvent($owner, $title, $startDate, $endDate, $description, $location, $color, $cal,$appid)
     {
         $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $owner));
         $linkCalendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id" => $cal));

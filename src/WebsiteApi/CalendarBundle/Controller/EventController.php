@@ -56,7 +56,7 @@ class EventController extends Controller
         if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             $data['errors'][] = "notconnected";
         } else {
-                $this->get('app.event.EventSystem')->createEvent($request->request->get("uid"),$request->request->get("title"),$request->request->get("sDate"),$request->request->get("eDate"),$request->request->get("description"),$request->request->get("location"),$request->request->get("color"),$request->request->get("cid"));
+                $this->get('app.event.EventSystem')->createEvent($request->request->get("uid"),$request->request->get("title"),$request->request->get("sDate"),$request->request->get("eDate"),$request->request->get("description"),$request->request->get("location"),$request->request->get("color"),$request->request->get("cid"),$request->request-get('appid'));
         }
         return new JsonResponse($data);
     }

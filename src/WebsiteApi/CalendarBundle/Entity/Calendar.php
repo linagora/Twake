@@ -88,6 +88,7 @@ class Calendar {
     }
 
 
+
     public function getArray(){
         return Array(
             "id" => $this->getId(),

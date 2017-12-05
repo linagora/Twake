@@ -13,7 +13,7 @@ namespace WebsiteApi\CalendarBundle\Model;
  */
 interface EventCalendarInterface
 {
-    public function createEvent($owner,$title,$startDate,$endDate,$description,$location,$color,$linkCalendar);
+    public function createEvent($owner,$title,$startDate,$endDate,$description,$location,$color,$linkCalendar,$appid);
 
     public function getEventsByOwner($owner);
 
