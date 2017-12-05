@@ -11,7 +11,7 @@ namespace Administration\AuthenticationBundle\Model;
 interface AdministrationTwakeUserManagementInterface
 {
     //@listTwakeUsers return twake users at the page number $pageNumber with $nbUserByPage
-    public function listTwakeUsers($pageNumber,$nbUserByPage,$filters=null);
+    public function listTwakeUsers($pageNumber,$nbUserByPage,$filters=null,&$total=null);
 
     //@setEnableTwakeUser block or unblock twake user
     public function setEnableTwakeUser($idTwakeUser,$bool);

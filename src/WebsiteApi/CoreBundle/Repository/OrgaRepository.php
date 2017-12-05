@@ -10,4 +10,33 @@ namespace WebsiteApi\CoreBundle\Repository;
  */
 class OrgaRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function search($pageNumber,$nbUserByPage, $filters,&$total){
+        $offset = ($pageNumber - 1) * $nbUserByPage;
+        $limit = $nbUserByPage;
+
+        $req = $this->createQueryBuilder('U')
+            ->select('count(U.id)');
+        $req = $this->searchMiddleQueryBuilder($req,$filters);
+        $total = $req->getQuery()->getSingleScalarResult();
+
+        $req1 = $this->createQueryBuilder('U');
+        $req1 = $this->searchMiddleQueryBuilder($req1,$filters);
+        $req1 = $req1->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()->getResult();
+        return $req1;
+    }
+
+    private function searchMiddleQueryBuilder($req,$filters){
+        if ($filters != null) {
+            if(isset($filters['name'])){
+                $req->where('U.cleanName LIKE \'%' . $filters['name'].'%\'');
+            }
+            if(isset($filters['memberCount'])){
+                $req->where('U.memberCount LIKE \'%' . $filters['memberCount'].'%\'');
+            }
+        }
+        return $req;
+    }
+
 }
