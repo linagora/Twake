@@ -10,6 +10,7 @@ namespace Administration\AuthenticationBundle\Services;
 
 
 use Administration\AuthenticationBundle\Model\AdministrationTwakeUserManagementInterface;
+use Administration\AuthenticationBundle\Repository\AdminUserRepository;
 use phpDocumentor\Reflection\Types\Array_;
 
 class AdministrationTwakeUserManagement implements AdministrationTwakeUserManagementInterface
