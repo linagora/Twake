@@ -212,12 +212,6 @@ class DriveFile
 		return $this->group->getId() . "/" . $this->getRealName();
 	}
 
-
-	public function getDownLoadLink()
-	{
-		return 'https://twakeapp.com/ajax/drive/download?groupId=' . $this->getGroup()->getId() . '&fileId=' . $this->getId() . '&download=0';
-	}
-
 	public function getArray()
 	{
 

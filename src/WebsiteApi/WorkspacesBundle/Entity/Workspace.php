@@ -431,7 +431,7 @@ class Workspace
 		if ($this->getLogo() == null) {
 			return "";
 		}
-		return "https://twakeapp.com" . $this->getLogo()->getPublicURL(2);
+		return $this->getLogo()->getPublicURL(2);
 	}
 
 	/**

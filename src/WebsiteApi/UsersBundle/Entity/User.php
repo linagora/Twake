@@ -276,7 +276,7 @@ class User extends BaseUser
 		if ($this->getProfileImage() == null) {
 			return "";
 		}
-		return "background-image: url('" . "https://twakeapp.com" . $this->getProfileImage()->getPublicURL(2) . "');";
+		return "background-image: url('" . $this->getProfileImage()->getPublicURL(2) . "');";
 	}
 
 	public function getCssCoverImage()
@@ -284,7 +284,7 @@ class User extends BaseUser
 		if ($this->getCoverImage() == null) {
 			return "";
 		}
-		return "background-image: url('" . "https://twakeapp.com" . $this->getCoverImage()->getPublicURL(0) . "');";
+		return "background-image: url('" . $this->getCoverImage()->getPublicURL(0) . "');";
 	}
 
 	public function getUrlProfileImage()
@@ -292,7 +292,7 @@ class User extends BaseUser
 		if ($this->getProfileImage() == null) {
 			return "";
 		}
-		return "https://twakeapp.com" . $this->getProfileImage()->getPublicURL(2);
+		return $this->getProfileImage()->getPublicURL(2);
 	}
 
 	public function getUrlCoverImage()
@@ -300,7 +300,7 @@ class User extends BaseUser
 		if ($this->getCoverImage() == null) {
 			return "";
 		}
-		return "https://twakeapp.com" . $this->getCoverImage()->getPublicURL(0);
+		return $this->getCoverImage()->getPublicURL(0);
 	}
 
 	public function getSecondaryMails()

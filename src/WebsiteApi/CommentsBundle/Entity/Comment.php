@@ -233,7 +233,7 @@ class Comment
 			"ownerDetails" => $this->getOwner()->getAsSimpleArray(),
 			"ownerIsGroup" => $this->getWorkspace() != null,
 			"content" => $this->getContent(),
-			"fileurl" => $this->getTempFile() != null ? "https://twakeapp.com".$this->getTempFile()->getPublicURL() : "",
+			"fileurl" => $this->getTempFile() != null ? "".$this->getTempFile()->getPublicURL() : "",
 			"date" => $this->getDate()->getTimestamp(),
 			"dateDifference" => Array(
 				"y" => $dateDifference->y, "m" => $dateDifference->m, "d" => $dateDifference->d,

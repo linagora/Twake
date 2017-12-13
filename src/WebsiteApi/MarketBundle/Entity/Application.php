@@ -301,7 +301,7 @@ class Application
 		if ($this->getThumbnail() == null) {
 			return "";
 		}
-		return "background-image: url('" . "https://twakeapp.com" . $this->getThumbnail()->getPublicURL(2) . "');";
+		return "background-image: url('" . "" . $this->getThumbnail()->getPublicURL(2) . "');";
 	}
 
 	public function getCssCover()
@@ -309,7 +309,7 @@ class Application
 		if ($this->getCover() == null) {
 			return "";
 		}
-		return "background-image: url('" . "https://twakeapp.com" . $this->getCover()->getPublicURL(2) . "');";
+		return "background-image: url('" . "" . $this->getCover()->getPublicURL(2) . "');";
 	}
 
 	public function getUrlThumbnail()
@@ -317,7 +317,7 @@ class Application
 		if ($this->getThumbnail() == null) {
 			return "";
 		}
-		return "https://twakeapp.com" . $this->getThumbnail()->getPublicURL(2);
+		return "" . $this->getThumbnail()->getPublicURL(2);
 	}
 
 	public function getUrlCover()
@@ -325,7 +325,7 @@ class Application
 		if ($this->getCover() == null) {
 			return "";
 		}
-		return "https://twakeapp.com" . $this->getCover()->getPublicURL(2);
+		return "" . $this->getCover()->getPublicURL(2);
 	}
 
 	public function getId()

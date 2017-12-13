@@ -249,7 +249,7 @@ class Status
 			"ownerIsGroup" => $this->getWorkspace() != null,
 			"ownerDetails" => $includesOwnerDetails ? $this->getOwnerDetails() : Array(),
 			"privacy" => $this->getPrivacy(),
-			"fileurl" => $this->getTempFile() != null ? "https://twakeapp.com".$this->getTempFile()->getPublicURL() : "",
+			"fileurl" => $this->getTempFile() != null ? "".$this->getTempFile()->getPublicURL() : "",
 			"likes" => $this->getLikes(),
 			"haveLiked" => $this->getLikeEntity($doctrineManager, $currentUser) != null,
 			"sharedStatus" => $sharedStatusCanBeShown && $this->getSharedStatus() != null ? $this->getSharedStatus()->getArray($doctrineManager, $currentUser, false, true) : null,
