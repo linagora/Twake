@@ -83,7 +83,7 @@ class GroupsUserRightsTest extends WebTestCaseExtended
                 "groupId"=>-1,
                 "levelId"=>$this->levels["Admin"],
             ));
-            $this->assertContains("orgaNotFound",$res["errors"],  "LevelDelete-- Accès à un level qui n'existe pas");
+            $this->assertContains("workspaceNotFound",$res["errors"],  "LevelDelete-- Accès à un level qui n'existe pas");
 
 
 
@@ -145,7 +145,7 @@ class GroupsUserRightsTest extends WebTestCaseExtended
             "groupId"=>-1,
             "levelId"=>$this->levels["Default"],
         ));
-        $this->assertContains("orgaNotFound",$res["errors"],  "LevelUpdate-- Accès à un level qui n'existe pas");
+        $this->assertContains("workspaceNotFound",$res["errors"],  "LevelUpdate-- Accès à un level qui n'existe pas");
 
 
 

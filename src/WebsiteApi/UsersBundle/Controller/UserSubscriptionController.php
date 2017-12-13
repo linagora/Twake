@@ -6,7 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Constraints\Email;
-use WebsiteApi\OrganizationsBundle\Entity\OrgaSubscription;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceSubscription;
 use WebsiteApi\UsersBundle\Entity\Mail;
 
 class UserSubscriptionController extends Controller
@@ -20,7 +20,7 @@ class UserSubscriptionController extends Controller
 		$groupId = $request->request->has("groupId") ? $request->request->get("groupId") : 0;
 
 		$manager = $this->getDoctrine()->getManager();
-		$group = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+		$group = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
 
 		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data["errors"][] = "notconnected";
@@ -33,12 +33,12 @@ class UserSubscriptionController extends Controller
 		}
 		else {
 
-			$subscription = $manager->getRepository("TwakeOrganizationsBundle:OrgaSubscription")->findOneBy(
-				Array("organization" => $groupId, "user" => $this->getUser())
+			$subscription = $manager->getRepository("TwakeWorkspacesBundle:WorkspaceSubscription")->findOneBy(
+				Array("workspace" => $groupId, "user" => $this->getUser())
 			);
 
 			if ($subscription == null) {
-				$subscription = new OrgaSubscription($group, $this->getUser());
+				$subscription = new WorkspaceSubscription($group, $this->getUser());
 				$manager->persist($subscription);
 			}
 			else {
@@ -77,7 +77,7 @@ class UserSubscriptionController extends Controller
 				$subscriptions = $user->getSubscriptions();
 
 				foreach ($subscriptions as $subscription) {
-					$data["data"][] = $subscription->getOrganization()->getAsSimpleArray(false);
+					$data["data"][] = $subscription->getWorkspace()->getAsSimpleArray(false);
 				}
 			}
 		}

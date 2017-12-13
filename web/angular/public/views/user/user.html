@@ -76,10 +76,10 @@
             </div>
             <div ng-show="userCtrl.publicGroups.length>0" class="page_block">
                 <div style="display:flex;margin-bottom: 20px;" ng-repeat="group in userCtrl.publicGroups">
-                    <div class="group_img_presation default_group_image" style="height:50px;width:50px;display:inline-block;border-radius:20%; {{group.orga.csslogo}}"></div>
+                    <div class="group_img_presation default_group_image" style="height:50px;width:50px;display:inline-block;border-radius:20%; {{group.workspace.csslogo}}"></div>
                     <div style="display:inline-block;flex:1;">
-                        <div><span class="nameGroup">{{group.orga.name}}</span><span class="keyGroup">{{group.orga.key}}</span></div>
-                        <div >{{group.orga.description}}</div>
+                        <div><span class="nameGroup">{{group.workspace.name}}</span><span class="keyGroup">{{group.workspace.key}}</span></div>
+                        <div >{{group.workspace.description}}</div>
                     </div>
                 </div>
             </div>
@@ -94,10 +94,10 @@
             </div>
             <div ng-show="userCtrl.followGroup.length>0" class="page_block">
                 <div style="display:flex;" style="margin-bottom: 10px;" ng-repeat="group in userCtrl.followGroup">
-                    <div class="group_img_presation default_group_image" style="height:50px;width:50px;display:inline-block;border-radius:20%; {{group.orga.csslogo}}"></div>
+                    <div class="group_img_presation default_group_image" style="height:50px;width:50px;display:inline-block;border-radius:20%; {{group.workspace.csslogo}}"></div>
                     <div style="display:inline-block;flex:1;">
-                        <div><span class="nameGroup">{{group.orga.name}}</span><span class="keyGroup">{{group.orga.key}}</span></div>
-                        <div >{{group.orga.description}}</div>
+                        <div><span class="nameGroup">{{group.workspace.name}}</span><span class="keyGroup">{{group.workspace.key}}</span></div>
+                        <div >{{group.workspace.description}}</div>
                     </div>
                 </div>
             </div>

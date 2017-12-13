@@ -7,8 +7,8 @@ use Symfony\Component\Security\Core\User\UserInterface;
 
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
-use WebsiteApi\OrganizationsBundle\Entity\LinkOrgaParent;
-use WebsiteApi\OrganizationsBundle\Entity\LinkOrgaUser;
+use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceParent;
+use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser;
 
 /**
  * User
@@ -90,12 +90,12 @@ class User extends BaseUser
 	protected $cover;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\OrganizationsBundle\Entity\LinkOrgaUser", mappedBy="User")
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser", mappedBy="User")
 	 */
-	protected $organizationsLinks;
+	protected $workspacesLinks;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\OrganizationsBundle\Entity\OrgaSubscription", mappedBy="user")
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceSubscription", mappedBy="user")
 	 */
 	protected $subscriptions;
 
@@ -363,9 +363,9 @@ class User extends BaseUser
 			}
 		}
 
-		foreach ($this->organizationsLinks as $orgaL) {
-			if (!isset($data['privacy']['orgas'][$orgaL->getGroup()->getId()])) {
-				$data['privacy']['orgas'][$orgaL->getGroup()->getId()] = 'public';
+		foreach ($this->workspacesLinks as $workspaceL) {
+			if (!isset($data['privacy']['workspaces'][$workspaceL->getGroup()->getId()])) {
+				$data['privacy']['workspaces'][$workspaceL->getGroup()->getId()] = 'public';
 			}
 		}
 
@@ -398,14 +398,14 @@ class User extends BaseUser
 		return "private";
 	}
 
-	public function getOrganizationPrivacy($orgaId)
+	public function getWorkspacePrivacy($workspaceId)
 	{
 
 		$data = $this->getData();
 
-		foreach ($this->organizationsLinks as $organizationLink) {
-			if ($organizationLink->getGroup()->getId() == $orgaId) {
-				return $data['privacy']["orgas"][$orgaId];
+		foreach ($this->workspacesLinks as $workspaceLink) {
+			if ($workspaceLink->getGroup()->getId() == $workspaceId) {
+				return $data['privacy']["workspaces"][$workspaceId];
 			}
 		}
 
@@ -432,10 +432,10 @@ class User extends BaseUser
 		$this->setData($data);
 	}
 
-	public function setOrgasPrivacy($param, $value)
+	public function setWorkspacesPrivacy($param, $value)
 	{
 		$data = $this->getData();
-		$data['privacy']['orgas'][$param] = $value;
+		$data['privacy']['workspaces'][$param] = $value;
 		$this->setData($data);
 	}
 
@@ -474,30 +474,30 @@ class User extends BaseUser
 		return $tags_service->getTags("user", $this->getId());
 	}
 
-	public function getOrganizations()
+	public function getWorkspaces()
 	{
 
-		$organisations = Array();
+		$workspaces = Array();
 
-		for ($i = 0; $i < count($this->organizationsLinks); ++$i) {
-			if ($this->organizationsLinks[$i]->getStatus() != "P" && !$this->organizationsLinks[$i]->getGroup()->getIsDeleted()) {
-				$organisations[] = $this->organizationsLinks[$i]->getGroup();
+		for ($i = 0; $i < count($this->workspacesLinks); ++$i) {
+			if ($this->workspacesLinks[$i]->getStatus() != "P" && !$this->workspacesLinks[$i]->getGroup()->getIsDeleted()) {
+				$workspaces[] = $this->workspacesLinks[$i]->getGroup();
 			}
 		}
 
-		return $organisations;
+		return $workspaces;
 	}
 
-	public function getAllOrganizations()
+	public function getAllWorkspaces()
 	{
 		$data = Array();
 
-		for ($i = 0; $i < count($this->organizationsLinks); ++$i) {
-			$orga = $this->organizationsLinks[$i]->getGroup();
-			if (!$orga->getIsDeleted()) {
+		for ($i = 0; $i < count($this->workspacesLinks); ++$i) {
+			$workspace = $this->workspacesLinks[$i]->getGroup();
+			if (!$workspace->getIsDeleted()) {
 				$data[] = Array(
-					"status" => $this->organizationsLinks[$i]->getStatus(),
-					"orga" => $orga->getAsSimpleArray()
+					"status" => $this->workspacesLinks[$i]->getStatus(),
+					"workspace" => $workspace->getAsSimpleArray()
 				);
 			}
 		}
@@ -505,17 +505,17 @@ class User extends BaseUser
 		return $data;
 	}
 
-	public function getOrganizationsPart($limit, $offset)
+	public function getWorkspacesPart($limit, $offset)
 	{
 
-		$organisations = Array();
-		$firstValue = min($offset, count($this->organizationsLinks));
+		$workspaces = Array();
+		$firstValue = min($offset, count($this->workspacesLinks));
 
-		for ($i = $firstValue; $i < min($firstValue + $limit, count($this->organizationsLinks)); ++$i) {
-			$organisations[] = $this->organizationsLinks[$i]->getGroup();
+		for ($i = $firstValue; $i < min($firstValue + $limit, count($this->workspacesLinks)); ++$i) {
+			$workspaces[] = $this->workspacesLinks[$i]->getGroup();
 		}
 
-		return $organisations;
+		return $workspaces;
 	}
 
 

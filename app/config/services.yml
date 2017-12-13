@@ -33,7 +33,7 @@ services:
         arguments: ["@app.images_modifiers"]
 
     app.groups.access:
-        class: WebsiteApi\OrganizationsBundle\Services\Access
+        class: WebsiteApi\WorkspacesBundle\Services\Access
         arguments: ["@doctrine.orm.entity_manager", "@security.token_storage", '@security.authorization_checker']
 
 
@@ -51,14 +51,14 @@ services:
 
     app.contacts:
         class: WebsiteApi\UsersBundle\Services\Contacts
-        arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer"]
+        arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer", "%SERVER_NAME%"]
 
     app.deleteUser:
         class: WebsiteApi\UsersBundle\Services\deleteUser
         arguments: ["@doctrine.orm.entity_manager"]
 
     app.updateGroup:
-        class: WebsiteApi\OrganizationsBundle\Services\UpdateGroup
+        class: WebsiteApi\WorkspacesBundle\Services\UpdateGroup
         arguments: ['@gos_web_socket.zmq.pusher']
 
     app.messages:
@@ -102,7 +102,7 @@ services:
         arguments : ["@doctrine.orm.entity_manager","@app.notifications","@gos_web_socket.websocket.client_manipulator"]
 
     group.topic:
-        class: WebsiteApi\OrganizationsBundle\Topic\GroupTopic
+        class: WebsiteApi\WorkspacesBundle\Topic\GroupTopic
         tags:
             - { name: gos_web_socket.topic }
 

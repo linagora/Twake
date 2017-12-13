@@ -38,7 +38,7 @@ class DefaultController extends Controller
 				else if ($field == "userImage"){
                     $pimage = $user->getProfileImage();
                     if ($pimage) {
-                        $userData[$field] = "https://twakeapp.com" . $pimage->getPublicURL(2);
+                        $userData[$field] = $this->getParameter('SERVER_NAME') . $pimage->getPublicURL(2);
                     }
                     else{
                         $userData[$field] = "";

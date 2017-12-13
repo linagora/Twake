@@ -1,5 +1,6 @@
 # This file is auto-generated during the composer install
 parameters:
+    SERVER_NAME: https://twakeapp.com
     APPS_SERVER: http://127.0.0.1:8001
     websocket_host: 127.0.0.1
     websocket_port: 8080

@@ -56,11 +56,11 @@ class AccountController extends Controller
                 );
 			}
 
-			$data['data']['orgas'] = Array();
-			foreach ($this->getUser()->getOrganizations() as $orga){
-			    $data['data']['orgas'][] = Array(
-			        'name'=>$orga->getName(),
-                    'id'=> $orga->getId()
+			$data['data']['workspaces'] = Array();
+			foreach ($this->getUser()->getWorkspaces() as $workspace){
+			    $data['data']['workspaces'][] = Array(
+			        'name'=>$workspace->getName(),
+                    'id'=> $workspace->getId()
                 );
             }
 		}
@@ -111,16 +111,16 @@ class AccountController extends Controller
 					}
 				}
 			}
-			if(isset($request->request->get("privacy")["orgas"])) {
+			if(isset($request->request->get("privacy")["workspaces"])) {
 
-				foreach ($request->request->get("privacy")["orgas"] as $orgaId => $privacy) {
+				foreach ($request->request->get("privacy")["workspaces"] as $workspaceId => $privacy) {
 
-					$orgaObject = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$orgaId,"isDeleted"=>false));
+					$workspaceObject = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$workspaceId,"isDeleted"=>false));
 
-					if ($orgaObject == null) {
-						$data['errors'][] = Array("badorga");
+					if ($workspaceObject == null) {
+						$data['errors'][] = Array("badworkspace");
 					} else {
-						$user->setOrgasPrivacy($orgaId, $privacy);
+						$user->setWorkspacesPrivacy($workspaceId, $privacy);
 					}
 				}
 			}

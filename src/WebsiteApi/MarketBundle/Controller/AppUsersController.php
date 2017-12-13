@@ -11,7 +11,7 @@ namespace WebsiteApi\MarketBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
-use WebsiteApi\MarketBundle\Entity\LinkAppOrga;
+use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
 use WebsiteApi\MarketBundle\Entity\LinkAppUser;
 
 class AppUsersController extends Controller
@@ -33,7 +33,7 @@ class AppUsersController extends Controller
     } else {
       // Vérifier que le groupe existe
       $groupId = $request->request->get('groupId');
-      $group = $manager->getRepository('TwakeOrganizationsBundle:Orga')->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+      $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
       if ($group == null){
         $data['errors'][] = "nosuchgroup";
       } else {
@@ -45,11 +45,11 @@ class AppUsersController extends Controller
           if ($app == null) {
             $data['errors'][] = "nosuchapp";
           } else {
-            $applink = $manager->getRepository('TwakeMarketBundle:LinkAppOrga')->findOneBy(Array("organization"=>$group, "application"=>$app));
+            $applink = $manager->getRepository('TwakeMarketBundle:LinkAppWorkspace')->findOneBy(Array("workspace"=>$group, "application"=>$app));
             if ($applink != null){
               $data['errors'][] = "alreadyacquired";
             } else {
-              $link = new linkAppOrga();
+              $link = new linkAppWorkspace();
               $link->setApplication($app);
               $link->setGroup($group);
               $link->setPrice($app->getPrice());
@@ -83,7 +83,7 @@ class AppUsersController extends Controller
         } else {
             // Vérifier que le groupe existe
             $groupId = $request->request->get('groupId');
-            $group = $manager->getRepository('TwakeOrganizationsBundle:Orga')->findOneBy(Array("id" => $groupId, "isDeleted" => false));
+            $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id" => $groupId, "isDeleted" => false));
             if ($group == null) {
                 $data['errors'][] = "nosuchgroup";
             } else {
@@ -95,7 +95,7 @@ class AppUsersController extends Controller
                     if ($app == null) {
                         $data['errors'][] = "nosuchapp";
                     } else {
-                        $applink = $manager->getRepository('TwakeMarketBundle:LinkAppOrga')->findOneBy(Array("organization"=>$group, "application"=>$app));
+                        $applink = $manager->getRepository('TwakeMarketBundle:LinkAppWorkspace')->findOneBy(Array("workspace"=>$group, "application"=>$app));
                         if ($applink == null){
                             $data['errors'][] = "notacquired";
                         } else {
@@ -132,7 +132,7 @@ class AppUsersController extends Controller
         $data['errors'][] = "invalidvote";
       } else {
         $groupId = $request->request->get('groupId');
-        $group = $manager->getRepository('TwakeOrganizationsBundle:Orga')->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+        $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
         if ($group == null){
           $data['errors'][] = "nosuchgroup";
         } else {
@@ -141,8 +141,8 @@ class AppUsersController extends Controller
           if ($app == null){
             $data['errors'][] = "nosuchapp";
           } else {
-            $orgalink = $manager->getRepository('TwakeMarketBundle:LinkAppOrga')->findOneBy(Array("organization"=>$group, "application"=>$app));
-            if ($orgalink == null){
+            $workspacelink = $manager->getRepository('TwakeMarketBundle:LinkAppWorkspace')->findOneBy(Array("workspace"=>$group, "application"=>$app));
+            if ($workspacelink == null){
               $data['errors'][] = "notacquired";
             } else {
               $userlink = $manager->getRepository('TwakeMarketBundle:LinkAppUser')->findOneBy(Array("user"=>$this->getUser(), "application"=>$app));

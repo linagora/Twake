@@ -74,13 +74,13 @@ class CurrentUserController extends BaseController
 			);
 
 		}else {
-			$organisations = $this->getUser()->getOrganizations();
+			$workspaces = $this->getUser()->getWorkspaces();
 
 			$groups = Array();
-			foreach ($organisations as $organization) {
-			    if($organization->getIsDeleted() == false){
+			foreach ($workspaces as $workspace) {
+			    if($workspace->getIsDeleted() == false){
 				    $groups[]
-					    = $organization->getAsSimpleArray();
+					    = $workspace->getAsSimpleArray();
                 }
 			};
 

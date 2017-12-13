@@ -4,7 +4,7 @@ namespace WebsiteApi\CommentsBundle\Entity;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping as ORM;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\StatusBundle\Entity\Status;
 use WebsiteApi\UsersBundle\Entity\User;
 
@@ -31,10 +31,10 @@ class Comment
 	private $user;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\OrganizationsBundle\Entity\Orga")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 * @ORM\JoinColumn(nullable=true)
 	 */
-	private $organization;
+	private $workspace;
 
 	/**
 	 * @ORM\Column(type="text")
@@ -81,7 +81,7 @@ class Comment
 	public function __construct($owner, $content, $commentedEntity, $tempFile = null) {
 
 		$this->setUser($owner instanceof User ? $owner : null);
-		$this->setOrganization($owner instanceof Orga ? $owner : null);
+		$this->setWorkspace($owner instanceof Workspace ? $owner : null);
 		$this->setContent($content);
 		$this->setDate(new \DateTime());
 		$this->setCommentedEntity($commentedEntity);
@@ -99,16 +99,16 @@ class Comment
 		$this->user = $user;
 	}
 
-	public function getOrganization() {
-		return $this->organization;
+	public function getWorkspace() {
+		return $this->workspace;
 	}
 
-	public function setOrganization($organization) {
-		$this->organization = $organization;
+	public function setWorkspace($workspace) {
+		$this->workspace = $workspace;
 	}
 
 	public function getOwner() {
-		return $this->user != null ? $this->user : $this->organization;
+		return $this->user != null ? $this->user : $this->workspace;
 	}
 
 	public function getContent() {
@@ -231,7 +231,7 @@ class Comment
 			"id" => $this->getId(),
 			"ownerId" => $this->getOwner()->getId(),
 			"ownerDetails" => $this->getOwner()->getAsSimpleArray(),
-			"ownerIsGroup" => $this->getOrganization() != null,
+			"ownerIsGroup" => $this->getWorkspace() != null,
 			"content" => $this->getContent(),
 			"fileurl" => $this->getTempFile() != null ? "https://twakeapp.com".$this->getTempFile()->getPublicURL() : "",
 			"date" => $this->getDate()->getTimestamp(),

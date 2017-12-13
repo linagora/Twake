@@ -4,7 +4,7 @@
 namespace WebsiteApi\MarketBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 /**
  * Message
@@ -48,9 +48,9 @@ class Application
 	private $price = 0;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\OrganizationsBundle\Entity\Orga")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
-	private $organization;
+	private $workspace;
 
 	/**
 	 * @ORM\Column(name="userCount", type="integer")
@@ -83,7 +83,7 @@ class Application
 	protected $screenshot = "[]";
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\MarketBundle\Entity\LinkAppOrga", mappedBy="Application")
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\MarketBundle\Entity\LinkAppWorkspace", mappedBy="Application")
 	 */
 	protected $applicationsLinks;
 
@@ -145,7 +145,7 @@ class Application
 
 	public function generePublicKey()
 	{
-		$x = mb_strtoupper(Orga::getKeyFromId($this->getId()));
+		$x = mb_strtoupper(Workspace::getKeyFromId($this->getId()));
 		$this->setPublicKey($x);
 		return $x;
 	}
@@ -365,12 +365,12 @@ class Application
 
 	public function getGroup()
 	{
-		return $this->organization;
+		return $this->workspace;
 	}
 
-	public function setGroup($orga)
+	public function setGroup($workspace)
 	{
-		$this->organization = $orga;
+		$this->workspace = $workspace;
 	}
 
 	public function getPrice()

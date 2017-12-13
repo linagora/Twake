@@ -35,7 +35,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	public function getFreeSpace($group)
 	{
-		$group = $this->convertToEntity($group, "TwakeOrganizationsBundle:Orga");;
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
 		if ($group == null) {
 			return false;
@@ -49,7 +49,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	public function getTotalSpace($group)
 	{
-		$group = $this->convertToEntity($group, "TwakeOrganizationsBundle:Orga");;
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 		if ($group == null) {
 			return false;
 		}
@@ -58,7 +58,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	public function setTotalSpace($group, $space)
 	{
-		$group = $this->convertToEntity($group, "TwakeOrganizationsBundle:Orga");;
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 		if ($group == null) {
 			return false;
 		}
@@ -67,7 +67,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	public function canAccessTo($file, $group, $user = null)
 	{
-		$group = $this->convertToEntity($group, "TwakeOrganizationsBundle:Orga");;
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 		$file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
 		if ($group == null) {
 			return false;
@@ -268,7 +268,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 		}
 
 		$directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
-		$group = $this->convertToEntity($group, "TwakeOrganizationsBundle:Orga");;
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
 		if ($group == null || $this->getFreeSpace($group) <= 0) {
 			return false;
@@ -383,7 +383,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 	{
 
 		$directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
-		$group = $this->convertToEntity($group, "TwakeOrganizationsBundle:Orga");;
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
 		if ($group == null) {
 			return false;
@@ -397,7 +397,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 	public function search($group, $query, $offset = 0, $max = 20)
 	{
 
-		$group = $this->convertToEntity($group, "TwakeOrganizationsBundle:Orga");;
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
 		if ($group == null) {
 			return false;
@@ -410,7 +410,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	public function listTrash($group)
 	{
-		$group = $this->convertToEntity($group, "TwakeOrganizationsBundle:Orga");;
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
 		if ($group == null) {
 			return false;
@@ -512,7 +512,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	public function emptyTrash($group)
 	{
-		$group = $this->convertToEntity($group, "TwakeOrganizationsBundle:Orga");;
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
 		if ($group == null) {
 			return false;
@@ -533,7 +533,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	public function restoreTrash($group)
 	{
-		$group = $this->convertToEntity($group, "TwakeOrganizationsBundle:Orga");;
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
 		if ($group == null) {
 			return false;

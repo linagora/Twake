@@ -57,13 +57,13 @@ class GroupMembersDeleteTest extends WebTestCaseExtended
 		$this->assertEquals(1, count($resDeletion["errors"]), "Test " . $errorLabel . "  (mail : " . $email . ") : mauvais nombre d'erreurs retournées");
 		$this->assertEquals($errorLabel, $resDeletion["errors"][0], "Test " . $errorLabel . "  (mail : " . $email . ") : mauvaise erreur retournée");
 
-		$repoOrgaUser = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:LinkOrgaUser");
+		$repoWorkspaceUser = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser");
 		if ($userFound) {
 			if (!$email) {
-				$link = $repoOrgaUser->findOneBy(Array("Orga" => $this->groupId, "User" => $lastOwner ? $resGroupUserId : $resInvitedUserId));
+				$link = $repoWorkspaceUser->findOneBy(Array("Workspace" => $this->groupId, "User" => $lastOwner ? $resGroupUserId : $resInvitedUserId));
 			}
 			else {
-				$link = $repoOrgaUser->findOneBy(Array("Orga" => $this->groupId, "mail" => "test@email.com"));
+				$link = $repoWorkspaceUser->findOneBy(Array("Workspace" => $this->groupId, "mail" => "test@email.com"));
 			}
 			if ($link == null) {
 				print_r($resDeletion);
@@ -71,7 +71,7 @@ class GroupMembersDeleteTest extends WebTestCaseExtended
 
 			$this->assertNotEquals(null, $link, "Test " . $errorLabel . "  (mail : " . $email . ") : membre supprimé malgré une erreur");
 
-			$memberCount = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:Orga")->findOneById($this->groupId)->getMemberCount();
+			$memberCount = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneById($this->groupId)->getMemberCount();
 			$this->assertEquals(1, $memberCount, "Test " . $errorLabel . "  (mail : " . $email . ") : nombre de membres du groupe mauvais");
 		}
 
@@ -120,15 +120,15 @@ class GroupMembersDeleteTest extends WebTestCaseExtended
 		$this->assertEquals(0, count($resDeletion["errors"]), "Test correct  (mail : " . $email . ") : mauvais nombre d'erreurs retournées");
 
 		if (!$email) {
-			$link = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")->findOneBy(Array("Orga" => $this->groupId, "User" => $resInvitedUserId));
+			$link = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("Workspace" => $this->groupId, "User" => $resInvitedUserId));
 		}
 		else {
-			$link = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")->findOneBy(Array("Orga" => $this->groupId, "mail" => "test@email.com"));
+			$link = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("Workspace" => $this->groupId, "mail" => "test@email.com"));
 		}
 
 		$this->assertEquals(null, $link, "Test correct (mail : " . $email . ") : membre non supprimé du groupe dans la base de données");
 
-		$memberCount = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:Orga")->findOneById($this->groupId)->getMemberCount();
+		$memberCount = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneById($this->groupId)->getMemberCount();
 		$this->assertEquals(1, $memberCount, "Test correct (mail : " . $email . ") : nombre de membres du groupe mauvais");
 
 		// Suppresssion des entités

@@ -5,7 +5,7 @@ namespace WebsiteApi\PaymentsBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class DefaultController extends Controller {
 
@@ -13,7 +13,7 @@ class DefaultController extends Controller {
 
 		if (!in_array($group, $groupsAlreadyThreated)) {
 
-			$childsEntities = $group->getChildrenOrganizations();
+			$childsEntities = $group->getChildrenWorkspaces();
 			$children = Array($group);
 
 			foreach ($childsEntities as $child) {
@@ -36,7 +36,7 @@ class DefaultController extends Controller {
 		if (!in_array($group, $groupsAlreadyThreated)) {
 
 			$childsDetails = Array();
-			$childsEntities = $group->getChildrenOrganizations();
+			$childsEntities = $group->getChildrenWorkspaces();
 
 			foreach ($childsEntities as $entity) {
 
@@ -71,7 +71,7 @@ class DefaultController extends Controller {
     	$groupId = $request->request->has("groupId") ? $request->request->get("groupId") : 0;
 
     	$manager = $this->getDoctrine()->getManager();
-    	$group = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+    	$group = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
 
 	    if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 		    $data["errors"][] = "notconnected";
@@ -176,7 +176,7 @@ class DefaultController extends Controller {
 		$groupsIdToPay = $request->request->has("groupsIdToPay") ? $request->request->get("groupsIdToPay") : Array();
 
 		$manager = $this->getDoctrine()->getManager();
-		$group = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+		$group = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
 
 		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data["errors"][] = "notconnected";
@@ -192,7 +192,7 @@ class DefaultController extends Controller {
 			$groups = Array();
 			$pricesLevels = Array();
 			foreach ($groupsIdToPay as $groupIdToPay => $priceLevelId) {
-				$groupToPay = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$groupIdToPay,"isDeleted"=>false));
+				$groupToPay = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupIdToPay,"isDeleted"=>false));
 				$priceLevel = $manager->getRepository("TwakePaymentsBundle:PriceLevel")->find($priceLevelId);
 				if ($groupToPay == null) {
 					$data["errors"][] = "grouptopaynotfound";
@@ -262,7 +262,7 @@ class DefaultController extends Controller {
 		$groupsIdToPay = $request->request->has("groupsIdToPay") ? $request->request->get("groupsIdToPay") : Array(4358 => 4);
 
 		$manager = $this->getDoctrine()->getManager();
-		$group = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+		$group = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
 
 		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data["errors"][] = "notconnected";
@@ -278,7 +278,7 @@ class DefaultController extends Controller {
 			$groups = Array();
 			$pricesLevels = Array();
 			foreach ($groupsIdToPay as $groupIdToPay => $priceLevelId) {
-				$groupToPay = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$groupIdToPay,"isDeleted"=>false));
+				$groupToPay = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupIdToPay,"isDeleted"=>false));
 				$priceLevel = $manager->getRepository("TwakePaymentsBundle:PriceLevel")->find($priceLevelId);
 				if ($groupToPay == null) {
 					$data["errors"][] = "grouptopaynotfound";
@@ -315,7 +315,7 @@ class DefaultController extends Controller {
 		$groupId = $request->request->has("groupId") ? $request->request->get("groupId") : 0;
 
 		$manager = $this->getDoctrine()->getManager();
-		$group = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+		$group = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
 
 		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data["errors"][] = "notconnected";

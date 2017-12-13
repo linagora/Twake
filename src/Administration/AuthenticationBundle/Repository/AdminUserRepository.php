@@ -1,6 +1,8 @@
 <?php
 
 namespace Administration\AuthenticationBundle\Repository;
+use Symfony\Bridge\Doctrine\RegistryInterface;
+use Administration\AuthenticationBundle\Entity\AdminUser;
 
 /**
  * AdminUserRepository
@@ -10,17 +12,18 @@ namespace Administration\AuthenticationBundle\Repository;
  */
 class AdminUserRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function search($pageNumber,$nbUserByPage, $filters,&$total){
+
+	public function findAllOrderedByName($pageNumber,$nbUserByPage, $filters,&$total){
         $offset = ($pageNumber - 1) * $nbUserByPage;
         $limit = $nbUserByPage;
 
         $req = $this->createQueryBuilder('U')
             ->select('count(U.id)');
-        $req->searchMiddleQueryBuilder($req,$filters);
+        $req = $this->searchMiddleQueryBuilder($req,$filters);
         $total = $req->getQuery()->getSingleScalarResult();
 
         $req1 = $this->createQueryBuilder('U');
-        $req1->searchMiddleQueryBuilder($req1,$filters);
+	    $req1 = $this->searchMiddleQueryBuilder($req1,$filters);
         $req1 = $req1->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()->getResult();

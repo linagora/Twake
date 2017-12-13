@@ -36,7 +36,7 @@ class GroupMembersInviteAcceptTest extends WebTestCaseExtended
 		$this->assertEquals($errorLabel, $resAcceptation["errors"][0], "Test " . $errorLabel . " : mauvaise erreur retournée");
 
 		if (!$wrongGroupId) {
-			$memberCount = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:Orga")->findOneById($groupId)->getMemberCount();
+			$memberCount = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneById($groupId)->getMemberCount();
 			$this->assertEquals(1, $memberCount, "Test " . $errorLabel . " : nombre de membres du groupe mauvais");
 		}
 
@@ -78,10 +78,10 @@ class GroupMembersInviteAcceptTest extends WebTestCaseExtended
 
 		// Tests sur la base de données
 		$userId = $this->api("/ajax/users/current/get", Array())["data"]["uid"];
-		$userGroupLink = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")->findOneBy(Array("Orga" => $groupId, "User" => $userId));
+		$userGroupLink = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("Workspace" => $groupId, "User" => $userId));
 		$this->assertEquals("A", $userGroupLink->getStatus(), "Test correct : membre non accepté");
 
-		$memberCount = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:Orga")->findOneById($groupId)->getMemberCount();
+		$memberCount = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneById($groupId)->getMemberCount();
 		$this->assertEquals(2, $memberCount, "Test correct : nombre de membres du groupe mauvais");
 
 		// Suppression des entités
