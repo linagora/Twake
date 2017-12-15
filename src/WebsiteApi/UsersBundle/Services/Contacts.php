@@ -6,7 +6,7 @@ namespace WebsiteApi\UsersBundle\Services;
 use WebsiteApi\UsersBundle\Entity\User;
 use WebsiteApi\UsersBundle\Entity\Contact;
 use WebsiteApi\UsersBundle\Entity\Mail;
-use WebsiteApi\OrganizationsBundle\Entity\LinkOrgaUser;
+use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\UsersBundle\Services\Notifications;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -31,13 +31,14 @@ class Contacts
 	var $contacts_mailfrom = "twake@proxima.fr";
 	var $contacts_mailsubject = "Invitation de Twake";
 
-	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker,Notifications $notifications, EngineInterface $templating, Swift_Mailer $mailer){
+	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker,Notifications $notifications, EngineInterface $templating, Swift_Mailer $mailer, $server_name){
 		$this->string_cleaner = $string_cleaner;
 		$this->doctrine = $doctrine;
 		$this->security = $authorizationChecker;
 		$this->notifications = $notifications;
 		$this->templating = $templating;
 		$this->mailer = $mailer;
+		$this->server_name = $server_name;
 	}
 
 
@@ -158,7 +159,7 @@ class Contacts
 			//Send a notification to the user
 			$userimage = "";
 			if($current_user->getThumbnail()!=null) {
-				$userimage = "https://twakeapp.com".$current_user->getThumbnail()->getPublicURL(2);
+				$userimage = $this->server_name . $current_user->getThumbnail()->getPublicURL(2);
 			}
 			$this->notifications->push(
 				$userB,
@@ -405,7 +406,7 @@ class Contacts
 
 		$manager = $this->doctrine;
 
-		$repository = $manager->getRepository("TwakeOrganizationsBundle:LinkOrgaUser");
+		$repository = $manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser");
 		$req = $repository->findBy(Array("mail"=>$mail));
 
 		foreach ($req as $request) {

@@ -267,15 +267,15 @@
 
         <form class="form_block contact">
 
-            <div class="input_contener" style="margin-top: 5px;"ng-repeat="orga in accountProfile.data.orgas">
+            <div class="input_contener" style="margin-top: 5px;"ng-repeat="workspace in accountProfile.data.workspaces">
 
                 <div class="input_contener" style="margin-top: 10px;">
 
-                    <input style="max-width: 400px;" class="text_input form-control" type="text" disabled value="" ng-model="orga.name" ng-change="accountProfile.unblockSaveButton()">
+                    <input style="max-width: 400px;" class="text_input form-control" type="text" disabled value="" ng-model="workspace.name" ng-change="accountProfile.unblockSaveButton()">
 
                     <div class="right_label">
                         <div class="input_privacy" data-name="privacy_firstname" data-value="">
-                            <select class='privacy_select' ng-class="accountProfile.privacy.orgas[orga.id]" ng-model="accountProfile.privacy.orgas[orga.id]" ng-change="accountProfile.unblockSaveButton()"><option selected value='public'>Public</option><option value='contacts'>Contacts</option><option value='private'>Privé</option></select>
+                            <select class='privacy_select' ng-class="accountProfile.privacy.workspaces[workspace.id]" ng-model="accountProfile.privacy.workspaces[workspace.id]" ng-change="accountProfile.unblockSaveButton()"><option selected value='public'>Public</option><option value='contacts'>Contacts</option><option value='private'>Privé</option></select>
                         </div>
                     </div>
                 </div>

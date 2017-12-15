@@ -101,9 +101,9 @@ class Messages
 			}
 
 			//Search in user groups
-			$linkOrgaUser =  $this->doctrine->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")->findBy(Array("User" => $user));
-			foreach($linkOrgaUser as $link){
-				if($this->doctrine->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")->findOneBy(Array("User"=>intval($discussionId), "Orga"=>$link->getGroup()))!=null){
+			$linkWorkspaceUser =  $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findBy(Array("User" => $user));
+			foreach($linkWorkspaceUser as $link){
+				if($this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("User"=>intval($discussionId), "Workspace"=>$link->getGroup()))!=null){
 					return true;
 				}
 			}
@@ -485,7 +485,7 @@ class Messages
 			}
 
 			//messagerieAppLink :
-			$linksAppLink = $this->doctrine->getRepository("TwakeMarketBundle:LinkAppOrga")->findBy(Array("organization"=>$channel->getGroup()));
+			$linksAppLink = $this->doctrine->getRepository("TwakeMarketBundle:LinkAppWorkspace")->findBy(Array("workspace"=>$channel->getGroup()));
 			foreach($linksAppLink as $link){
 				if($link->getApplication()->getName()=="Messages"){
 					$messagerieAppLink = $link;

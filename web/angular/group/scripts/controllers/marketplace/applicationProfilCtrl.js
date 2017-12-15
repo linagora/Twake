@@ -87,7 +87,7 @@ angular.module('twake')
     this.acquire = function(){
 	    $api.post('market/group/acquire', {"groupId": $group.groupId, "appId": this.id}, function (res) {
         if (res.errors.length == 0){
-          that.data.linkorga.acquired = true;
+          that.data.linkworkspace.acquired = true;
           $group.update();
         } else {
         }

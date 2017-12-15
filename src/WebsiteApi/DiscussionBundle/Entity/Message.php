@@ -295,7 +295,7 @@ class Message
 		if ($this->getDriveFile() != null) {
 			$fileUrl = $this->getDriveFile()->getDownloadLink();
 		} else if ($this->getTempFile() != null) {
-			$fileUrl = "https://twakeapp.com" . $this->getTempFile()->getPublicURL();
+			$fileUrl = "" . $this->getTempFile()->getPublicURL();
 		} else {
 			$fileUrl = "";
 		}

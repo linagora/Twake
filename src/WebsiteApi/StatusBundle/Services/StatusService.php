@@ -3,7 +3,7 @@
 
 namespace WebsiteApi\StatusBundle\Services;
 
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class StatusService
 {
@@ -18,9 +18,9 @@ class StatusService
 
 		if ($user != null && $statusOwner != null) {
 
-			if ($statusOwner instanceof Orga) {
-				$linkOrgaUser = $this->doctrine->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")->findOneBy(Array("User" => $user, "Orga" => $statusOwner));
-				return $linkOrgaUser != null && $linkOrgaUser->getStatus() == "A";
+			if ($statusOwner instanceof Workspace) {
+				$linkWorkspaceUser = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("User" => $user, "Workspace" => $statusOwner));
+				return $linkWorkspaceUser != null && $linkWorkspaceUser->getStatus() == "A";
 			}
 			else {
 				$contactLink = $this->doctrine->getRepository('TwakeUsersBundle:Contact')->findOneBy(Array("userA" => $user, "userB" => $statusOwner));

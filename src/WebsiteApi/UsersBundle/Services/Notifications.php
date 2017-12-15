@@ -3,10 +3,10 @@
 
 namespace WebsiteApi\UsersBundle\Services;
 
-use WebsiteApi\MarketBundle\Entity\LinkAppOrga;
+use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
 use WebsiteApi\UsersBundle\Entity\Notification;
 use WebsiteApi\UsersBundle\Entity\User;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Routing\Router;
@@ -80,7 +80,7 @@ class Notifications
 			$fromUser = $from;
 			$fromType = "user";
 		}
-		else if ($from instanceof Orga) {
+		else if ($from instanceof Workspace) {
 			$fromGroup = $from;
 			$fromType = "group";
 
@@ -364,10 +364,10 @@ class Notifications
 			if ($from instanceof User) {
 				//$from is User
 				return $repo->findBy(Array("user" => $user, "route" => $route, "fromUser" => $from));
-			} elseif($from instanceof Orga){
+			} elseif($from instanceof Workspace){
 				//$from is type group
 				return $repo->findBy(Array("user" => $user, "route" => $route, "fromGroup" => $from));
-			} elseif($from instanceof LinkAppOrga) {
+			} elseif($from instanceof LinkAppWorkspace) {
 				//$from is type app-group link
 				return $repo->findBy(Array("user" => $user, "route" => $route, "fromGroup" => $from->getGroup(), "fromApp" => $from->getApplication()));
 			} elseif ($from==null){
@@ -377,10 +377,10 @@ class Notifications
 			if ($from instanceof User) {
 				//$from is User
 				return $repo->findBy(Array("user" => $user, "fromUser" => $from));
-			} elseif($from instanceof Orga){
+			} elseif($from instanceof Workspace){
 				//$from is type group
 				return $repo->findBy(Array("user" => $user, "fromGroup" => $from));
-			} elseif($from instanceof LinkAppOrga) {
+			} elseif($from instanceof LinkAppWorkspace) {
 				//$from is type app-group link
 				return $repo->findBy(Array("user" => $user, "fromGroup" => $from->getGroup(), "fromApp" => $from->getApplication()));
 			} elseif ($from==null){

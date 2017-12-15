@@ -43,16 +43,16 @@ class ApplicationController extends Controller
 
         $dt = $app->getAsArray();
         $groupId = $request->request->get("groupId");
-        $linkAppOrga = $manager->getRepository("TwakeMarketBundle:LinkAppOrga")->findOneBy(Array("application"=>$app, "organization"=>$groupId));
-        if ($linkAppOrga == null){
-          $dt['linkorga'] = Array(
+        $linkAppWorkspace = $manager->getRepository("TwakeMarketBundle:LinkAppWorkspace")->findOneBy(Array("application"=>$app, "workspace"=>$groupId));
+        if ($linkAppWorkspace == null){
+          $dt['linkworkspace'] = Array(
             "acquired" => false,
             "price"=>0
           );
         } else {
-          $dt['linkorga'] = Array(
+          $dt['linkworkspace'] = Array(
             "acquired" => true,
-            "price"=>$linkAppOrga->getPrice()
+            "price"=>$linkAppWorkspace->getPrice()
           );
         }
 
@@ -75,8 +75,8 @@ class ApplicationController extends Controller
           foreach($dt['screenshots'] as $screen){
             $scr = $manager->getRepository('TwakeUploadBundle:File')->find($screen);
             $screens[] = Array(
-              "screen"=>"https://twakeapp.com".$scr->getPublicURL(2),
-              "cssscreen" => "background-image: url('"."https://twakeapp.com".$scr->getPublicURL(2)."');"
+              "screen"=>$this->getParameter('SERVER_NAME').$scr->getPublicURL(2),
+              "cssscreen" => "background-image: url('".$this->getParameter('SERVER_NAME').$scr->getPublicURL(2)."');"
             );
           }
         }
@@ -188,7 +188,7 @@ class ApplicationController extends Controller
     } else {
 
       $groupId = $request->request->get('groupId');
-      $group = $manager->getRepository('TwakeOrganizationsBundle:Orga')->find($groupId);
+      $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->find($groupId);
       if ($group == null){
         $data['errors'][] = "nosuchgroup";
       } else {
@@ -249,11 +249,11 @@ class ApplicationController extends Controller
     if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
       $data['errors'][] = "notconnected";
     } else {
-      $group = $manager->getRepository('TwakeOrganizationsBundle:Orga')->find($groupId);
+      $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->find($groupId);
       if ($group == null){
         $data['errors'][] = "nosuchgroup";
       } else {
-        $links = $manager->getRepository('TwakeMarketBundle:LinkAppOrga')->findBy(Array("organization"=>$group));
+        $links = $manager->getRepository('TwakeMarketBundle:LinkAppWorkspace')->findBy(Array("workspace"=>$group));
 
         // TODO continuer la fonction
         $data['errors'][] = "fonction non terminée en back";
@@ -324,15 +324,15 @@ class ApplicationController extends Controller
 			$data['errors'][] = "notconnected";
 		} else {
 
-			$applink = $manager->getRepository("TwakeMarketBundle:LinkAppOrga")
-				->findOneBy(Array("application"=>$appId,"organization"=>$groupId));
+			$applink = $manager->getRepository("TwakeMarketBundle:LinkAppWorkspace")
+				->findOneBy(Array("application"=>$appId,"workspace"=>$groupId));
 
 			if($applink==null){
 				$data['errors'][] = "noapplink";
 			}else{
 
-				$useringroup = $manager->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")
-					->findOneBy(Array("User"=>$this->getUser(),"Orga"=>$groupId));
+				$useringroup = $manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")
+					->findOneBy(Array("User"=>$this->getUser(),"Workspace"=>$groupId));
 
 				if($useringroup==null){
 					$data['errors'][] = "nouseringroup";

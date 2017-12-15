@@ -119,9 +119,9 @@ citi_go_account_save:
     path:     /scripts/account/save
     defaults: { _controller: TwakeUsersBundle:Account:ajaxSave }
 
-citi_go_account_orga_list:
+citi_go_account_workspace_list:
     path:     /account/groups{trailingSlash}
-    defaults: { _controller: TwakeUsersBundle:AccountOrgaList:index }
+    defaults: { _controller: TwakeUsersBundle:AccountWorkspaceList:index }
     requirements: { trailingSlash : "[/]{0,1}" }
 
 citi_go_account_parameters_scripts:

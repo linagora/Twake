@@ -21,7 +21,7 @@ class DriveFile
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\OrganizationsBundle\Entity\Orga")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
 	private $group;
 
@@ -210,12 +210,6 @@ class DriveFile
 	public function getPath()
 	{
 		return $this->group->getId() . "/" . $this->getRealName();
-	}
-
-
-	public function getDownLoadLink()
-	{
-		return 'https://twakeapp.com/ajax/drive/download?groupId=' . $this->getGroup()->getId() . '&fileId=' . $this->getId() . '&download=0';
 	}
 
 	public function getArray()

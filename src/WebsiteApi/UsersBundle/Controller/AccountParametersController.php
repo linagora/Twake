@@ -265,7 +265,7 @@ class AccountParametersController extends Controller
 				$user->setUsername($pseudo);
 				$user->setUsernameClean($this->get('app.string_cleaner')->simplify($pseudo));
 
-				//Change username cache in contacts & linkorgauser
+				//Change username cache in contacts & linkworkspaceuser
 				$usernameclean = $user->getUsernameClean();
 
 				$qb = $this->getDoctrine()->getManager()->createQueryBuilder();
@@ -285,7 +285,7 @@ class AccountParametersController extends Controller
 				$p = $q->execute();
 
 				$qb = $this->getDoctrine()->getManager()->createQueryBuilder();
-				$q = $qb->update('TwakeOrganizationsBundle:LinkOrgaUser', 'o')
+				$q = $qb->update('TwakeWorkspacesBundle:LinkWorkspaceUser', 'o')
 					->set('o.usernamecache', $qb->expr()->literal($usernameclean))
 					->where('o.User = ?1')
 					->setParameter(1, $user)

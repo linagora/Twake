@@ -4,7 +4,7 @@ namespace WebsiteApi\PaymentsBundle\Entity;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping as ORM;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\StatusBundle\Entity\Status;
 use WebsiteApi\UsersBundle\Entity\User;
 
@@ -26,9 +26,9 @@ class PaymentsHistory
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\OrganizationsBundle\Entity\Orga")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
-	private $organization;
+	private $workspace;
 
 	/**
 	 * @ORM\Column(type="datetime")
@@ -41,10 +41,10 @@ class PaymentsHistory
 	private $price;
 
 
-	public function __construct($organization, $price) {
+	public function __construct($workspace, $price) {
 		$this->setPrice($price);
 		$this->setDate(new \DateTime());
-		$this->setOrganization($organization);
+		$this->setWorkspace($workspace);
 	}
 
 	public function getId() {
@@ -59,12 +59,12 @@ class PaymentsHistory
 		return $this->setDate($date);
 	}
 
-	public function getOrganization() {
-		return $this->organization;
+	public function getWorkspace() {
+		return $this->workspace;
 	}
 
-	public function setOrganization($organization) {
-		$this->organization = $organization;
+	public function setWorkspace($workspace) {
+		$this->workspace = $workspace;
 	}
 
 	public function getPrice() {
@@ -81,7 +81,7 @@ class PaymentsHistory
 			"id" => $this->getId(),
 			"price" => $this->getPrice(),
 			"date" => $this->getDate()->getTimestamp(),
-			"groupId" => $this->getOrganization()->getId()
+			"groupId" => $this->getWorkspace()->getId()
 		);
 	}
 }

@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\CommentsBundle\Entity\Comment;
 use WebsiteApi\CommentsBundle\Entity\Like;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\UsersBundle\Entity\User;
 
 /**
@@ -34,10 +34,10 @@ class Status
     private $user;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\OrganizationsBundle\Entity\Orga")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 * @ORM\JoinColumn(nullable=true)
 	 */
-	private $organization;
+	private $workspace;
 
     /**
      * @ORM\Column(type="text")
@@ -90,7 +90,7 @@ class Status
 	public function __construct($owner, $content, $privacy, $tempFile = null, $sharedStatus = null) {
 
 		$this->setUser($owner instanceof User ? $owner : null);
-		$this->setOrganization($owner instanceof Orga ? $owner : null);
+		$this->setWorkspace($owner instanceof Workspace ? $owner : null);
 		$this->setContent($content);
 		$this->setPrivacy($privacy == "P" || $privacy == "I" ? $privacy : "I");
 		$this->setTempFile($tempFile);
@@ -130,16 +130,16 @@ class Status
 		--$this->shares;
 	}
 
-	public function getOrganization() {
-		return $this->organization;
+	public function getWorkspace() {
+		return $this->workspace;
 	}
 
-	public function setOrganization($organization) {
-		$this->organization = $organization;
+	public function setWorkspace($workspace) {
+		$this->workspace = $workspace;
 	}
 
 	public function getOwner() {
-		return $this->user != null ? $this->user : $this->organization;
+		return $this->user != null ? $this->user : $this->workspace;
 	}
 
 	public function getContent() {
@@ -209,7 +209,7 @@ class Status
 			return $this->getUser()->getAsSimpleArray();
 		}
 
-		return $this->getOrganization()->getAsSimpleArray();
+		return $this->getWorkspace()->getAsSimpleArray();
 	}
 
 	public function getLikeEntity(ObjectManager $doctrineManager, $user) {
@@ -245,11 +245,11 @@ class Status
 				"y" => $dateDifference->y, "m" => $dateDifference->m, "d" => $dateDifference->d,
 				"h" => $dateDifference->h, "i" => $dateDifference->i, "s" => $dateDifference->s
 			),
-			"ownerId" => $this->getUser() != null ? $this->getUser()->getId() : $this->getOrganization()->getId(),
-			"ownerIsGroup" => $this->getOrganization() != null,
+			"ownerId" => $this->getUser() != null ? $this->getUser()->getId() : $this->getWorkspace()->getId(),
+			"ownerIsGroup" => $this->getWorkspace() != null,
 			"ownerDetails" => $includesOwnerDetails ? $this->getOwnerDetails() : Array(),
 			"privacy" => $this->getPrivacy(),
-			"fileurl" => $this->getTempFile() != null ? "https://twakeapp.com".$this->getTempFile()->getPublicURL() : "",
+			"fileurl" => $this->getTempFile() != null ? "".$this->getTempFile()->getPublicURL() : "",
 			"likes" => $this->getLikes(),
 			"haveLiked" => $this->getLikeEntity($doctrineManager, $currentUser) != null,
 			"sharedStatus" => $sharedStatusCanBeShown && $this->getSharedStatus() != null ? $this->getSharedStatus()->getArray($doctrineManager, $currentUser, false, true) : null,

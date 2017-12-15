@@ -36,7 +36,7 @@
         protected $fromUser;
 
         /**
-         * @ORM\ManyToOne(targetEntity="WebsiteApi\OrganizationsBundle\Entity\Orga")
+         * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
          * @ORM\JoinColumn(columnDefinition="integer", name="fromGroup", nullable=true)
          */
         protected $fromGroup;

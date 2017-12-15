@@ -21,9 +21,9 @@ class deleteUser
 
     public function deleteUser($uid){
 
-        // Suppression des liens avec les organisations
-        $RLinkOrgaUser = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:LinkOrgaUser");
-        $links = $RLinkOrgaUser->findBy(Array("User" => $uid));
+        // Suppression des liens avec les workspaces
+        $RLinkWorkspaceUser = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser");
+        $links = $RLinkWorkspaceUser->findBy(Array("User" => $uid));
 
         foreach($links as $link){
             $this->getDoctrine()->remove($link);

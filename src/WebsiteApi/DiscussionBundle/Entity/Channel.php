@@ -21,9 +21,9 @@ class Channel
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\OrganizationsBundle\Entity\Orga")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
-    private $organization;
+    private $workspace;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -48,9 +48,9 @@ class Channel
 
 
 
-    public function __construct($organization, $name,$privacy) {
+    public function __construct($workspace, $name,$privacy) {
 
-	    $this->setGroup($organization);
+	    $this->setGroup($workspace);
 	    $this->setName($name);
         $this->setPrivacy($privacy);
 	}
@@ -60,7 +60,7 @@ class Channel
     }
 
 	public function getGroup() {
-		return $this->organization;
+		return $this->workspace;
 	}
 
 	public function getName() {
@@ -90,8 +90,8 @@ class Channel
 		$this->id = $id;
 	}
 
-	public function setGroup($organization) {
-		$this->organization = $organization;
+	public function setGroup($workspace) {
+		$this->workspace = $workspace;
 	}
 
 	public function setName($name) {

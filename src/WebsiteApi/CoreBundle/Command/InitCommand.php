@@ -8,10 +8,10 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\MarketBundle\Entity\Application;
-use WebsiteApi\MarketBundle\Entity\LinkAppOrga;
-use WebsiteApi\OrganizationsBundle\Entity\Level;
-use WebsiteApi\OrganizationsBundle\Entity\LinkOrgaUser;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
+use WebsiteApi\WorkspacesBundle\Entity\Level;
+use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\PaymentsBundle\Entity\PriceLevel;
 use WebsiteApi\UploadBundle\Entity\File;
 use WebsiteApi\MarketBundle\Entity\Category;
@@ -108,11 +108,11 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
      * Récupération des repository, de Twake et des applis de base
      */
 
-    $repoOrga = $manager->getRepository('TwakeOrganizationsBundle:Orga');
-    $repoLinkOrgaUser = $manager->getRepository('TwakeOrganizationsBundle:LinkOrgaUser');
-    $repoLevel = $manager->getRepository('TwakeOrganizationsBundle:Level');
+    $repoWorkspace = $manager->getRepository('TwakeWorkspacesBundle:Workspace');
+    $repoLinkWorkspaceUser = $manager->getRepository('TwakeWorkspacesBundle:LinkWorkspaceUser');
+    $repoLevel = $manager->getRepository('TwakeWorkspacesBundle:Level');
     $repoUser = $manager->getRepository('TwakeUsersBundle:User');
-    $Twake = $repoOrga->findOneBy(Array('name'=>'Twake', 'official'=>true));
+    $Twake = $repoWorkspace->findOneBy(Array('name'=>'Twake', 'official'=>true));
     $admin = $repoUser->findOneBy(Array('username_clean'=>'admin'));
     $addTwake = false;
 
@@ -184,12 +184,12 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
      *  Verification that Admin is an admin of twake group
      */
 
-    $linkAdmin = $repoLinkOrgaUser->findOneBy(Array("Orga"=>$newTwake, "User"=>$admin));
+    $linkAdmin = $repoLinkWorkspaceUser->findOneBy(Array("Workspace"=>$newTwake, "User"=>$admin));
     if ($linkAdmin != null){
       // No prob
     } else {
       // Créer le lien entre l'admin et le groupe
-      $linkAdmin = new LinkOrgaUser();
+      $linkAdmin = new LinkWorkspaceUser();
       $linkAdmin->setUser($admin);
       $linkAdmin->setGroup($newTwake);
       $linkAdmin->setUsernamecache("Admin");
@@ -307,8 +307,8 @@ Fonctionnalités :
     $output = $this->output;
     $doctrine = $this->getContainer()->get('doctrine');
     $manager = $doctrine->getManager();
-    $repoOrga = $manager->getRepository('TwakeOrganizationsBundle:Orga');
-    $orgas = $repoOrga->findAll();
+    $repoWorkspace = $manager->getRepository('TwakeWorkspacesBundle:Workspace');
+    $workspaces = $repoWorkspace->findAll();
 
 
 
@@ -319,7 +319,7 @@ Fonctionnalités :
     // Restauration des liens spécifiques (whiteboard, ...)
     foreach($this->newApps['notall'] as $app){
       foreach($app['groups'] as $group){
-        $link = new LinkAppOrga();
+        $link = new LinkAppWorkspace();
         $link->setGroup($group);
         $link->setApplication($app['app']);
         $app['app']->addUser();
@@ -331,10 +331,10 @@ Fonctionnalités :
 
     // Restauration des liens universels (drive, messagerie)
     $output->write("Restauration des liens universels : ");
-    foreach($orgas as $orga){
+    foreach($workspaces as $workspace){
       foreach($this->newApps['all'] as $app) {
-        $link = new LinkAppOrga();
-        $link->setGroup($orga);
+        $link = new LinkAppWorkspace();
+        $link->setGroup($workspace);
         $link->setApplication($app);
         $app->addUser();
         $manager->persist($link);
@@ -360,7 +360,7 @@ Fonctionnalités :
 
 
     $newApp = new Application();
-    $newApp->setGroup($data['orga']);
+    $newApp->setGroup($data['workspace']);
     $newApp->setName($data['name']);
     $newApp->setUrl($data['url']);
 	  if (isset($data['checkUrl'])) {
@@ -419,7 +419,7 @@ Fonctionnalités :
   }
 
   private function createTwake($manager){
-    $newTwake = new Orga();
+    $newTwake = new Workspace();
     $newTwake->setName("Twake");
     $newTwake->setOfficial(true);
     $newTwake->setCleanName("twake");
@@ -512,7 +512,7 @@ Fonctionnalités :
     $doctrine = $this->getContainer()->get('doctrine');
     $manager = $doctrine->getManager();
     $repoApp = $manager->getRepository("TwakeMarketBundle:Application");
-    $repoLinkAppOrga = $manager->getRepository("TwakeMarketBundle:LinkAppOrga");
+    $repoLinkAppWorkspace = $manager->getRepository("TwakeMarketBundle:LinkAppWorkspace");
     $repoLinkAppUser = $manager->getRepository("TwakeMarketBundle:LinkAppUser");
     $app = $repoApp->findOneBy(Array('name' => $data['name']));
     $appGroups = Array();
@@ -521,7 +521,7 @@ Fonctionnalités :
       if ($this->force){
         // Must delete app and add it anew
         // First, must suppress every link with app;
-        $links = $repoLinkAppOrga->findBy(Array("application" => $app));
+        $links = $repoLinkAppWorkspace->findBy(Array("application" => $app));
         foreach ($links as $link){
           $appGroups[] = $link->getGroup();
           $manager->remove($link);
@@ -543,7 +543,7 @@ Fonctionnalités :
 
     if ($addApp) {
 
-      $data['orga'] = $this->twake;
+      $data['workspace'] = $this->twake;
       $app = $this->createApp($data, $data['rights']);
       if ($data['all']){
         $this->newApps['all'][] = $app;

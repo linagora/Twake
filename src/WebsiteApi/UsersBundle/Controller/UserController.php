@@ -77,14 +77,14 @@ class UserController extends Controller
 
 	        // Groupes
 	        $retour["groups"] = Array();
-	        $organizations = $user->getOrganizations();
+	        $workspaces = $user->getWorkspaces();
 
-	        foreach ($organizations as $organization) {
-		        if ($user->getOrganizationPrivacy($organization->getId()) == "public" || ($user->getOrganizationPrivacy($organization->getId()) == "contacts" && $areContacts)) {
+	        foreach ($workspaces as $workspace) {
+		        if ($user->getWorkspacePrivacy($workspace->getId()) == "public" || ($user->getWorkspacePrivacy($workspace->getId()) == "contacts" && $areContacts)) {
 			        $retour["groups"][] = Array(
-				        "id" => $organization->getId(),
-				        "name" => $organization->getName(),
-				        "description" => $organization->getDescription()
+				        "id" => $workspace->getId(),
+				        "name" => $workspace->getName(),
+				        "description" => $workspace->getDescription()
 			        );
 		        }
 	        }

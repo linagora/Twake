@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\DiscussionBundle\Entity\ChannelMember;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 
 class DiscussionController extends Controller
@@ -28,20 +28,20 @@ class DiscussionController extends Controller
 		}
 		else {
 
-			$organization = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
+			$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
 
 
-			if ($organization == null) {
+			if ($workspace == null) {
 				$data["errors"][] = "groupnotfound";
 
-			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $organization, "Messages:general:view")) {
+			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:view")) {
 				$data["errors"][] = "notallowed";
 			}
 			else {
 
 				$result = Array();
 
-				foreach ($organization->getChannels() as $channel) {
+				foreach ($workspace->getChannels() as $channel) {
 
 					$repoLinks = $manager
 						->getRepository("TwakeDiscussionBundle:ChannelMember");
@@ -132,18 +132,18 @@ class DiscussionController extends Controller
 
 		$manager = $this->getDoctrine()->getManager();
 		$securityContext = $this->get('security.authorization_checker');
-		$organization = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
+		$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
 		$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Channel")->find($request->request->get("channelId"));
 
 		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data['errors'][] = "notconnected";
 		}
-		elseif($organization==null){
+		elseif($workspace==null){
 			$data['errors'][] = "groupnotfound";
 		}
 		elseif($channel==null){
 			$data['errors'][] = "channelnotfound";
-		} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $organization, "Messages:general:create")) {
+		} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:create")) {
 			$data["errors"][] = "notallowed";
 		}
 		else{
@@ -350,7 +350,7 @@ class DiscussionController extends Controller
 
 		$manager = $this->getDoctrine()->getManager();
 		$securityContext = $this->get('security.authorization_checker');
-		$organization = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
+		$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
 		$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Channel")->find($request->request->get("channelId"));
 
 		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
@@ -366,7 +366,7 @@ class DiscussionController extends Controller
 				$uids = $request->request->get("uids");
 				$users = $manager->getRepository("TwakeUsersBundle:User")->findBy(Array("id" => array_keys($uids)));
 				foreach ($users as $user) {
-					if ($manager->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")->findBy(Array("Orga" => $organization, "User" => $user)) == null) {
+					if ($manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findBy(Array("Workspace" => $workspace, "User" => $user)) == null) {
 						$data['data'][] = "usernotingroup" . $user->getId();
 					}
 					if ($uids[$user->getId()] == false) {
@@ -548,14 +548,14 @@ class DiscussionController extends Controller
 			$data['errors'][] = "notconnected";
 		}
 		else{
-			$organization = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$request->request->get("groupId"),"isDeleted"=>false));
-			if ($organization == null) {
+			$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("groupId"),"isDeleted"=>false));
+			if ($workspace == null) {
 				$data["errors"][] = "groupnotfound";
-			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $organization, "Messages:general:create")) {
+			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:create")) {
 				$data["errors"][] = "notallowed";
 			}
 			else {
-				$channel = new Channel($organization, $request->request->get("name"),$request->request->get("privacy"));
+				$channel = new Channel($workspace, $request->request->get("name"),$request->request->get("privacy"));
 		        $link = $channel->addMember($this->getUser());
 				$manager = $this->getDoctrine()->getManager();
 		        $manager->persist($channel);
@@ -596,10 +596,10 @@ class DiscussionController extends Controller
 			$data['errors'][] = "notconnected";
 		}
 		else{
-			$organization = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
-			if ($organization == null) {
+			$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
+			if ($workspace == null) {
 				$data["errors"][] = "groupnotfound";
-			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $organization, "base:discussion:join")) {
+			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "base:discussion:join")) {
 				$data["errors"][] = "notallowed";
 			}
 			else {
