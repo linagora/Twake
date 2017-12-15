@@ -7,3 +7,10 @@ services:
     app.event.EventSystem:
         class: WebsiteApi\CalendarBundle\Services\EventSystem
         arguments: ["@doctrine.orm.entity_manager"]
+
+
+    calendar.topic:
+        class: WebsiteApi\CalendarBundle\Topic\CalendarTopic
+        tags:
+            - { name: gos_web_socket.topic }
+        arguments: [ "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications"]
