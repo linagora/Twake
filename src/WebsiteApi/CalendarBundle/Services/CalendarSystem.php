@@ -5,7 +5,7 @@ namespace WebsiteApi\CalendarBundle\Services;
 
 use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
-use WebsiteApi\CalendarBundle\Entity\LinkCalendarGroup;
+use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
 use WebsiteApi\CalendarBundle\Model\CalendarInterface;
 use WebsiteApi\CalendarBundle\Entity\Calendar;
 
@@ -21,32 +21,32 @@ class CalendarSystem implements CalendarInterface
         $this->doctrine = $doctrine;
     }
 
-    public function createCalendar($group, $title, $description)
+    public function createCalendar($workspace, $title, $description)
     {
-        $organization = $this->doctrine->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id" => $group, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace, "isDeleted" => false));
 
-        if ($organization == null) {
+        if ($workspace == null) {
             return false;
         } else {
             $cal = new Calendar($title, $description);
             $this->doctrine->persist($cal);
 
-            $link = new LinkCalendarGroup($organization, $cal);
+            $link = new LinkCalendarWorkspace($workspace, $cal);
             $this->doctrine->persist($link);
 
             $this->doctrine->flush();
         }
     }
 
-    public function getCalendars($group)
+    public function getCalendars($workspace)
     {
-        $organization = $this->doctrine->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id" => $group, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace, "isDeleted" => false));
         $result = Array();
 
-        if ($organization == null) {
+        if ($workspace == null) {
             return false;
         } else {
-            $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarGroup")->findBy(Array("orga" => $organization));
+            $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("workspace" => $workspace));
             foreach ($links as $link) {
                 $cal = $link->getCalendar()->getArray();
                 $events = $this->doctrine->getRepository("TwakeCalendarBundle:TwakeEvent")->findBy(Array("linkCalendar" => $cal));

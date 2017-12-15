@@ -5,13 +5,13 @@ namespace WebsiteApi\CalendarBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * linkCalendarGroup
+ * linkCalendarWorkspace
  *
- * @ORM\Table(name="linkCalendarGroup",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\LinkCalendarGroupRepository")
+ * @ORM\Table(name="linkCalendarWorkspace",options={"engine":"MyISAM"})
+ * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\LinkCalendarWorkspaceRepository")
  */
 
-class LinkCalendarGroup{
+class LinkCalendarWorkspace{
 
     /**
      * @var int
@@ -23,9 +23,9 @@ class LinkCalendarGroup{
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\OrganizationsBundle\Entity\Orga")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
      */
-    private $orga;
+    private $workspace;
 
     /**
      * @ORM\Column(name="calendarright", type="boolean")
@@ -37,9 +37,9 @@ class LinkCalendarGroup{
      */
     private $calendar;
 
-    public  function __construct($group,$calendar,$calendarRight = true)
+    public  function __construct($workspace,$calendar,$calendarRight = true)
     {
-        $this->setOrga($group);
+        $this->setWorkspace($workspace);
         $this->setCalendar($calendar);
         $this->setCalendarRight($calendarRight);
     }
@@ -63,17 +63,17 @@ class LinkCalendarGroup{
     /**
      * @return mixed
      */
-    public function getOrga()
+    public function getWorkspace()
     {
-        return $this->orga;
+        return $this->workspace;
     }
 
     /**
-     * @param mixed $orga
+     * @param mixed $workspace
      */
-    public function setOrga($orga)
+    public function setWorkspace($workspace)
     {
-        $this->orga = $orga;
+        $this->workspace = $workspace;
     }
 
     /**
@@ -112,7 +112,7 @@ class LinkCalendarGroup{
     public function getArray(){
         return Array(
             "id" => $this->getId(),
-            "orga" => $this->getOrga(),
+            "workspace" => $this->getWorkspace(),
             "calendar" => $this->getCalendar(),
             "right" => $this->getCalendarRight()
         );
