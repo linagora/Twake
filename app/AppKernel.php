@@ -43,6 +43,8 @@ class AppKernel extends Kernel
             new DevelopersApi\DriveBundle\DevelopersApiDriveBundle(),
 	        new DevelopersApi\GroupsBundle\DevelopersApiGroupsBundle(),
             new Administration\AuthenticationBundle\AdministrationAuthenticationBundle(),
+            new WebsiteApi\CalendarBundle\TwakeCalendarBundle(),
+
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

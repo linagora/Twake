@@ -1,0 +1,7 @@
+calendar_topic:
+    channel: calendar/{key}
+    handler:
+        callback: 'calendar.topic'
+    requirements:
+        key:
+            pattern: "[0-9]+(_[0-9]+)?"
