@@ -1,8 +1,0 @@
-{% extends "TwakeUsersBundle:Mail:all.html.twig" %}
-
-{% block body %}
-Bonjour {{ pseudo }} !
-<br><br>
-Pour terminer l'activation de votre compte sur Twake, cliquez ici :<br>
-<a href="{{ SERVER_NAME }}/register/confirm/{{ token }}">{{ SERVER_NAME }}/register/confirm/{{ token }}</a>
-{% endblock %}
