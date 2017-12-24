@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\CoreBundle\Repository;
+namespace WebsiteApi\UsersBundle\Repository;
 
 /**
  * UserRepository

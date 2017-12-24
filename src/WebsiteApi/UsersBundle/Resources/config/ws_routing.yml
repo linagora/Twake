@@ -1,26 +1,7 @@
-#Ces routes sont juste des exemples !!
-notification_topic:
-    channel: notification/{id_user}
-    handler:
-        callback: 'infosNotification.topic' #related to the getName() of your topic
-    requirements:
-         id_user:
-            pattern: "[0-9]+"
-
-
 connections_topic:
     channel: connections/{id_user}
     handler:
         callback: 'connections.topic' #related to the getName() of your topic
-    requirements:
-         id_user:
-            pattern: "[0-9]+"
-
-
-echo_topic:
-    channel: echo/{id_user}
-    handler:
-        callback: 'echo.topic' #related to the getName() of your topic
     requirements:
          id_user:
             pattern: "[0-9]+"

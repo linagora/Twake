@@ -49,13 +49,13 @@ services:
         class: WebsiteApi\UsersBundle\Services\Notifications
         arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", "@templating", "@mailer", "@security.token_storage", '@security.authorization_checker', '@gos_web_socket.zmq.pusher']
 
-    app.contacts:
-        class: WebsiteApi\UsersBundle\Services\Contacts
-        arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer", "%SERVER_NAME%"]
+    #app.contacts:
+    #    class: WebsiteApi\UsersBundle\Services\Contacts
+    #    arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer", "%SERVER_NAME%"]
 
-    app.deleteUser:
-        class: WebsiteApi\UsersBundle\Services\deleteUser
-        arguments: ["@doctrine.orm.entity_manager"]
+    #app.deleteUser:
+    #    class: WebsiteApi\UsersBundle\Services\deleteUser
+    #    arguments: ["@doctrine.orm.entity_manager"]
 
     app.updateGroup:
         class: WebsiteApi\WorkspacesBundle\Services\UpdateGroup
@@ -77,10 +77,6 @@ services:
         class: WebsiteApi\StatusBundle\Services\StatusService
         arguments: ["@doctrine.orm.entity_manager"]
 
-    app.core_remember_me_manager:
-        class: WebsiteApi\UsersBundle\Services\RememberMe
-        arguments: ["@service_container"]
-
     app.before_render:
             class: WebsiteApi\CoreBundle\Services\BeforeRender
             tags: [{ name: kernel.event_listener, event: kernel.response, method: beforeRender }]
@@ -95,11 +91,11 @@ services:
     #################################################################################
     ###################### Topic
     #################################################################################
-    infosNotification.topic:
-        class: WebsiteApi\UsersBundle\Topic\NotificationTopic
-        tags:
-            - { name: gos_web_socket.topic }
-        arguments : ["@doctrine.orm.entity_manager","@app.notifications","@gos_web_socket.websocket.client_manipulator"]
+    #infosNotification.topic:
+    #    class: WebsiteApi\UsersBundle\Topic\NotificationTopic
+    #    tags:
+    #        - { name: gos_web_socket.topic }
+    #    arguments : ["@doctrine.orm.entity_manager","@app.notifications","@gos_web_socket.websocket.client_manipulator"]
 
     group.topic:
         class: WebsiteApi\WorkspacesBundle\Topic\GroupTopic
@@ -112,16 +108,11 @@ services:
             - { name: gos_web_socket.topic }
         arguments: ["@app.messages", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications"]
 
-    connections.topic:
-        class: WebsiteApi\UsersBundle\Topic\ConnectionsTopic
-        tags:
-            - { name: gos_web_socket.topic }
-        arguments: ["@doctrine.orm.entity_manager"]
-
-    echo.topic:
-        class: WebsiteApi\UsersBundle\Topic\EchoTopic
-        tags:
-            - { name: gos_web_socket.topic }
+    #connections.topic:
+    #    class: WebsiteApi\UsersBundle\Topic\ConnectionsTopic
+    #    tags:
+    #        - { name: gos_web_socket.topic }
+    #    arguments: ["@doctrine.orm.entity_manager"]
 
 
     #################################################################################

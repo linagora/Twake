@@ -1,8 +1,13 @@
 services:
-    infosNotification.topic:
-        class: UsersBundle\Topic\NotificationTopic
-        tags:
-            - { name: gos_web_socket.topic }
-#    citi_go_users.example:
-#        class: WebsiteApi\UsersBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+
+    app.core_remember_me_manager:
+        class: WebsiteApi\UsersBundle\Services\RememberMe
+        arguments: ["@service_container"]
+
+    app.user:
+        class: WebsiteApi\UsersBundle\Services\User
+        arguments: ["@doctrine.orm.entity_manager", "@security.encoder_factory", "@security.authorization_checker", "@security.token_storage", "@app.core_remember_me_manager", "@event_dispatcher", "@request_stack", "@app.user_stats", "@app.twake_mailer", "@app.string_cleaner"]
+
+    app.user_stats:
+        class: WebsiteApi\UsersBundle\Services\UserStats
+        arguments: ["@doctrine.orm.entity_manager"]

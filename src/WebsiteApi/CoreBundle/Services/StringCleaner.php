@@ -43,6 +43,10 @@ class StringCleaner
         return preg_replace("/[^a-z0-9@\.\-\_\:]/","",strtolower($this->removeAccents($str)));
     }
 
+	public function simplifyUsername($str){
+		return preg_replace("/[^a-z0-9_-]/","",strtolower($this->removeAccents($str)));
+	}
+
     public function simplifyURL($str){
 	    return preg_replace("/[^a-z0-9@\.\-\_\/\:]/","",strtolower($this->removeAccents($str)));
     }

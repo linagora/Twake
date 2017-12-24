@@ -1,4 +1,5 @@
 services:
-#    citi_go_core.example:
-#        class: WebsiteApi\CoreBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+
+    app.twake_mailer:
+        class: WebsiteApi\CoreBundle\Services\TwakeMailer
+        arguments: ["@mailer", "@templating", "%MAIL_FROM%", "%SERVER_NAME%"]
