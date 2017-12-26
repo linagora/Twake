@@ -18,7 +18,7 @@ use Doctrine\DBAL\Platforms\Keywords\OracleKeywords;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use WebsiteApi\DiscussionBundle\Entity\Channel;
+use WebsiteApi\DiscussionBundle\Entity\Stream;
 
 class WorkspaceStructureController extends Controller
 {
@@ -115,7 +115,7 @@ class WorkspaceStructureController extends Controller
 			$levelDefault->setOwner(0);
 			$levelDefault->setDefault(true);
 
-			$generalChannel = new Channel($workspace, "General", false);
+			$generalChannel = new Stream($workspace, "General", false);
 			$link = $generalChannel->addMember($this->getUser());
 
 			// Création of the link between the group and the basic applications

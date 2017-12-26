@@ -1,50 +1,8 @@
-citi_go_discussion_channels_get:
-    path:     /channels/get
+message_init:
+    path:     /init
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:getInitialisation}
+
+channels_get:
+    path:     /streams/get
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getChannels }
 
-citi_go_discussion_user_getmessages:
-    path:     /user/getmessages
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:getMessagesUser }
-
-citi_go_discussion_channel_set_mute:
-    path:     /channel/mute/set
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:setMute }
-
-citi_go_discussion_homepage:
-    path:     /read
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:read }
-
-citi_go_discussion_upload:
-    path:     /upload
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:upload }
-
-citi_go_discussion_getold:
-    path:     /getOld
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:getOlder }
-citi_go_discussion_creation:
-    path:     /channel/create
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:createChannel }
-
-citi_go_discussion_join:
-    path:     /channel/join
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:joinChannel }
-
-citi_go_discussion_invite:
-    path:     /channel/invite
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:inviteMembersChannel }
-
-citi_go_discussion_quit:
-    path:     /channel/quit
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:exitChannel }
-
-citi_go_discussion_set:
-    path:     /channel/set
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:setChannel }
-
-citi_go_discussion_table:
-    path:     /channel/table
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:tableChannel }
-
-citi_go_discussion_findMessage:
-    path:     /channel/findMessage
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:findMessage }

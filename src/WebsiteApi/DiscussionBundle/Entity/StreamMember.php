@@ -8,10 +8,10 @@ use Symfony\Component\Validator\Constraints\DateTime;
 /**
  * Message
  *
- * @ORM\Table(name="channel_member",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\DiscussionBundle\Repository\ChannelRepository")
+ * @ORM\Table(name="stream_member",options={"engine":"MyISAM"})
+ * @ORM\Entity(repositoryClass="WebsiteApi\DiscussionBundle\Repository\StreamRepository")
  */
-class ChannelMember
+class StreamMember
 {
     /**
      * @ORM\Column(name="id", type="integer")
@@ -26,9 +26,9 @@ class ChannelMember
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Channel")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Stream")
      */
-    private $channel;
+    private $stream;
 
 	/**
 	 * @ORM\Column(type="boolean")
@@ -37,9 +37,9 @@ class ChannelMember
 
 
 
-    public function __construct($channel, $user) {
+    public function __construct($stream, $user) {
 
-	    $this->setChannel($channel);
+	    $this->setStream($stream);
 	    $this->setUser($user);
 	    $this->setMute(false);
 	}
@@ -48,8 +48,8 @@ class ChannelMember
         return $this->id;
     }
 
-	public function getChannel() {
-		return $this->channel;
+	public function getStream() {
+		return $this->stream;
 	}
 
 	public function getUser() {
@@ -64,8 +64,8 @@ class ChannelMember
 		$this->id = $id;
 	}
 
-	public function setChannel($channel) {
-		$this->channel = $channel;
+	public function setStream($stream) {
+		$this->stream = $stream;
 	}
 
 	public function setUser($user) {

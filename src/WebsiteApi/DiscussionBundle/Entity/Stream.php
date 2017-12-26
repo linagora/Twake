@@ -8,10 +8,10 @@ use Symfony\Component\Validator\Constraints\DateTime;
 /**
  * Message
  *
- * @ORM\Table(name="channel",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\DiscussionBundle\Repository\ChannelRepository")
+ * @ORM\Table(name="stream",options={"engine":"MyISAM"})
+ * @ORM\Entity(repositoryClass="WebsiteApi\DiscussionBundle\Repository\StreamRepository")
  */
-class Channel
+class Stream
 {
     /**
      * @ORM\Column(name="id", type="integer")
@@ -37,12 +37,12 @@ class Channel
 
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\ChannelMember", mappedBy="channel")
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\StreamMember", mappedBy="channel")
 	 */
 	private $membersLinks;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message", mappedBy="channelReceiver")
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message", mappedBy="streamReceiver")
 	 */
 	private $messages;
 
@@ -50,7 +50,7 @@ class Channel
 
     public function __construct($workspace, $name,$privacy) {
 
-	    $this->setGroup($workspace);
+	    $this->setWorkspace($workspace);
 	    $this->setName($name);
         $this->setPrivacy($privacy);
 	}
@@ -59,7 +59,7 @@ class Channel
         return $this->id;
     }
 
-	public function getGroup() {
+	public function getWorkspace() {
 		return $this->workspace;
 	}
 
@@ -90,7 +90,7 @@ class Channel
 		$this->id = $id;
 	}
 
-	public function setGroup($workspace) {
+	public function setWorkspace($workspace) {
 		$this->workspace = $workspace;
 	}
 
@@ -100,7 +100,7 @@ class Channel
 
 	public function addMember($user) {
 
-    	$memberLink = new ChannelMember($this, $user);
+    	$memberLink = new StreamMember($this, $user);
 		$this->membersLinks[] = $memberLink;
 		return $memberLink;
 	}
@@ -112,5 +112,15 @@ class Channel
         $this->privacy = $x;
     }
 
+    public function getArray(){
+        return(
+            Array(
+                "id" => $this->getId(),
+                "name" => $this->getName(),
+                "workspace" => $this->getWorkspace()->getId(),
+                "privacy" => $this->getPrivacy(),
+            )
+        );
+    }
 
 }

@@ -34,12 +34,12 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 	//Post d'un message
 	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
 	{
-
+        print_r($event);
 		$operation = $event['type'];
 
 		$key = $request->getAttributes()->get('key');
 		$id = $key;
-		$type = "channel";
+		$type = "S"; //stream
 
 		$currentUser = $this->clientManipulator->getClient($connection);
 
@@ -49,7 +49,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 
 		if (count(explode("_", $key)) == 2) {
 
-			$type = "user";
+			$type = "U";
 
 			//On récupère l'id de l'autre utilisateur
 			$ids = explode("_", $key);
@@ -80,69 +80,32 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 			//We can speak
 
 			//Ask for an initialization
-			if ($operation == 'I') {
+            $operation = $event['type'];
 
-				$this->messagesService->getInit($currentUser, $type, $id, $topic);
-
-			} //Send message
-			elseif ($operation == 'M') {
-				if (isset($event['data']) && isset($event['data']['content'])) {
-					$this->messagesService->sendMessage($currentUser, $type, $id, $event['data']['content'], $topic);
+            if($operation == "C"){
+                $this->messagesService->sendMessage("U", $currentUser->getId(), $type, $id, $event['data']['content'], $topic);
+                if( $request->getAttributes()->get("subject")!=null ){
+                    $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($request->getAttributes()->get("subject"));
+                    if($subject != null){
+                        error_log("subject found");
+                    }
 				}
-			} elseif ($operation == 'U') {
-				if (isset($event['data'])) {
-					$this->messagesService->sendMessageUpload($currentUser, $type, $id, $event['data']['idFile'], $event['data']['fileIsInDrive'], $topic);
-				}
-			} //Edit message
-			elseif ($operation == 'E') {
-
-				if (isset($event['data']) && isset($event['data']['id'])
-					&& isset($event['data']['content'])
-				) {
-
-					$messageId = $event['data']['id'];
-					$content = $event['data']['content'];
-
-					// Modification du message et envoi au channel
-					$this->messagesService->editMessage($currentUser, $type, $id, $messageId, $content, $topic);
-				}
-
-			} //Delete message
-			elseif ($operation == 'D') {
-				if (isset($event['data']) && isset($event['data']['id'])) {
-					$this->messagesService->deleteMessage($currentUser, $type, $id, $event['data']['id'], $topic);
-				}
-
-			} //Like message
-			elseif ($operation == 'L') {
-				if (isset($event['data']) && isset($event['data']['id'])) {
-					$this->messagesService->likeMessage($currentUser, $type, $id, $event['data']['id'], $event['data']['type'], $topic);
-				}
-
-			} //Writing...
-			elseif ($operation == 'W') {
-				if (isset($event['data']) && isset($event['data']['event'])) {
-					$topic->broadcast(Array(
-						'type' => 'W',
-						'data' => Array(
-							"event" => $event['data']['event'],
-							"id" => $currentUser->getId()
-						)
-					));
-				}
-			} //Pinned messages
-			else if ($operation == 'P') {
-
-				if (isset($event['data']) && isset($event['data']['id']) && isset($event['data']['pinned'])) {
-
-					$messageId = $event['data']['id'];
-					$pinned = $event['data']['pinned'];
-
-					// Modification du message et envoi au channel
-					$this->messagesService->pinMessage($currentUser, $type, $id, $messageId, $pinned, $topic);
-				}
+                $message = $this->messagesService->sendMessage("U",$currentUser->getId(), $type, $id, $event['data']['content'], null);
+                $event["data"] = $message->getArray();
 			}
 
+//			elseif ($operation == 'W') {
+//				if (isset($event['data']) && isset($event['data']['event'])) {
+//					$topic->broadcast(Array(
+//						'type' => 'W',
+//						'data' => Array(
+//							"event" => $event['data']['event'],
+//							"id" => $currentUser->getId()
+//						)
+//					));
+//				}
+
+            $topic->broadcast($event);
 		} else {
 			$topic->remove($connection); //Eject the hacker !
 		}
@@ -153,14 +116,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 	public function onPush(Topic $topic, WampRequest $request, $data, $provider)
 	{
 
-		$operation = $data['type'];
-
-		// Remove file from drive
-		if ($operation == 'R') {
-			$this->messagesService->removeFileFromDrive($data['data']['fileId']);
-		} else {
-			$topic->broadcast($data);
-		}
+		$topic->broadcast($data);
 	}
 
 
@@ -185,9 +141,9 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 		$currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
 
 		//Verify that this user is allowed to do this
-		if (!$this->messagesService->isAllowedByKey($currentUser, $key)) {
-			$topic->remove($connection); //Eject the hacker !
-		}
+//		if (!$this->messagesService->isAllowedByKey($currentUser, $key)) {
+//			$topic->remove($connection); //Eject the hacker !
+//		}
 
 	}
 

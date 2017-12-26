@@ -2,29 +2,32 @@
 namespace WebsiteApi\CalendarBundle\Topic;
 
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
+use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\UsersBundle\Entity\User;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
 use Gos\Bundle\WebSocketBundle\Router\WampRequest;
 use Gos\Bundle\WebSocketBundle\Topic\PushableTopicInterface;
 
-class CalendarTopic implements TopicInterface, PushableTopicInterface
+class EventTopic implements TopicInterface, PushableTopicInterface
 {
 
     public function getName()
     {
-        return 'calendar.topic';
+        return 'event.topic';
     }
 
     private $clientManipulator;
     private $doctrine;
     private $notif;
+    private $eventSystem;
 
-    public function __construct($clientManipulator, $doctrine, $notif)
+    public function __construct($clientManipulator, $doctrine, $notif, $event)
     {
         $this->clientManipulator = $clientManipulator;
         $this->doctrine = $doctrine;
         $this->notif = $notif;
+        $this->eventSystem = $event;
     }
 
     /**
@@ -45,7 +48,6 @@ class CalendarTopic implements TopicInterface, PushableTopicInterface
      */
     public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
-        // TODO: Implement onSubscribe() method.
     }
 
     /**
@@ -89,6 +91,28 @@ class CalendarTopic implements TopicInterface, PushableTopicInterface
      */
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
     {
-        // TODO: Implement onPublish() method.
+        error_log("message ".$event["type"]);
+        print_r($event);
+
+        $calendarId = $request->getAttributes()->get('key');
+        $currentUser = $this->clientManipulator->getClient($connection);
+
+        if($event["type"] == "createEvent"){
+            $eventRetour = $this->eventSystem->createEvent($currentUser, $event["data"]["title"], $event["data"]["startDate"], $event["data"]["endDate"], $event["data"]["description"], $event["data"]["location"], $event["data"]["color"], $calendarId,null);
+            $event["data"] = $eventRetour->getArray();
+        }
+        elseif($event["type"] == "updateEvent"){
+            if(!isset($event["data"]["owner"])){
+                $event["data"]["owner"] = null;
+            }
+            if(!isset($event["data"]["appid"])){
+                $event["data"]["appid"] = null;
+            }
+            $eventRetour = $this->eventSystem->updateEvent($event["data"]["id"],$event["data"]["owner"],$event["data"]["title"],$event["data"]["startDate"],$event["data"]["endDate"],$event["data"]["description"],$event["data"]["location"],$event["data"]["borderColor"],$event["data"]["calendar"],$event["data"]['appid']);
+            $event["data"] = $eventRetour->getArray();
+        }
+        error_log("broadcast");
+        print_r($event);
+        $topic->broadcast($event);
     }
 }

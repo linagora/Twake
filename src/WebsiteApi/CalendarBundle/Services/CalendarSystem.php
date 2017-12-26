@@ -49,8 +49,7 @@ class CalendarSystem implements CalendarInterface
             $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("workspace" => $workspace));
             foreach ($links as $link) {
                 $cal = $link->getCalendar()->getArray();
-                $events = $this->doctrine->getRepository("TwakeCalendarBundle:TwakeEvent")->findBy(Array("linkCalendar" => $cal));
-                $events = $this->doctrine->getRepository("TwakeCalendarBundle:TwakeEvent")->findBy(Array("linkCalendar" => $cal));
+                $events = $this->doctrine->getRepository("TwakeCalendarBundle:TwakeEvent")->findBy(Array("calendar" => $cal));
                 $cal["events"] = Array();
                 foreach($events as $event){
                     $cal["events"][] = $event->getArray();
