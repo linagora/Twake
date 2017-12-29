@@ -83,7 +83,6 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             $operation = $event['type'];
 
             if($operation == "C"){
-                $this->messagesService->sendMessage("U", $currentUser->getId(), $type, $id, $event['data']['content'], $topic);
                 if( $request->getAttributes()->get("subject")!=null ){
                     $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($request->getAttributes()->get("subject"));
                     if($subject != null){
@@ -93,6 +92,16 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                 $message = $this->messagesService->sendMessage("U",$currentUser->getId(), $type, $id, $event['data']['content'], null);
                 $event["data"] = $message->getArray();
 			}
+            if($operation == "E"){
+                if( $request->getAttributes()->get("subject")!=null ){
+                    $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($request->getAttributes()->get("subject"));
+                    if($subject != null){
+                        error_log("subject found");
+                    }
+                }
+                $message = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
+                $event["data"] = $message->getArray();
+            }
 
 //			elseif ($operation == 'W') {
 //				if (isset($event['data']) && isset($event['data']['event'])) {

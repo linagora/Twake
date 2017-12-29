@@ -66,20 +66,47 @@ class MessageSystem
         }
     }
 
-   public function getInitialisation($user,$recieverType,$recieverId){
+    public function editMessage($id,$content){
+        $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($id);
+        if($message != null) {
+            $message->setContent($content);
+            $message->setEdited(true);
+            $this->doctrine->persist($message);
+            $this->doctrine->flush();
+            return $message;
+        }
+        return false;
+    }
+
+   public function getMessages($user,$recieverType,$recieverId,$offset){
+	    error_log("reciever type".$recieverType.", revcieverId:".$recieverId);
 	    if($recieverType == "S"){
+	        error_log("stream");
 	        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
 	        if($stream != null){
-                $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("stream" => $stream),Array("date"=>"DESC"), $limit = 30, $offset = 0);
-                return $messages;
+	            error_log("stream found");
+                $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("typeReciever" => "S", "streamReciever" => $stream),Array("date"=>"DESC"), $limit = 15, $offset = $offset);
+                $messages = array_reverse($messages);
+                $retour = [];
+                foreach($messages as $message){
+                    $retour[] = $message->getArray();
+                }
+                return $retour;
             }
         }
         elseif($recieverType == "U"){
+	        error_log("user");
             $otherUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
             if($otherUser != null){
-                $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $otherUser,"userReciever"=>$user),Array("date"=>"DESC"), $limit = 15, $offset = 0);
-                $messages = array_merge($messages,$this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $user,"userReciever"=>$otherUser),Array("date"=>"DESC"), $limit = 15, $offset = 0));
-                return $messages;
+                $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $otherUser,"userReciever"=>$user),Array("date"=>"DESC"), $limit = $offset, $offset = 0);
+                $messages = array_merge($messages,$this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $user,"userReciever"=>$otherUser),Array("date"=>"DESC"), $limit = 30, $offset = $offset));
+                $messages = array_reverse($messages);
+;                $retour = [];
+                foreach($messages as $message){
+                    $retour[] = $message->getArray();
+                }
+                print_r($retour);
+                return $retour;
             }
         }
    }
@@ -308,7 +335,7 @@ class MessageSystem
 	/**
 	 * Edit a message and send modifications to users
 	 */
-	function editMessage($user, $discussionType, $discussionId, $messageId, $content, $topic = null){
+	function editMessage_old($user, $discussionType, $discussionId, $messageId, $content, $topic = null){
 
 		$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneById($messageId);
 

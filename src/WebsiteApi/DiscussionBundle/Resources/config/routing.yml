@@ -1,6 +1,6 @@
 message_init:
-    path:     /init
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:getInitialisation}
+    path:     /getMessage
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:getMessage}
 
 channels_get:
     path:     /streams/get

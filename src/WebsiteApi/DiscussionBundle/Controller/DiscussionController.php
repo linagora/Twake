@@ -13,7 +13,8 @@ use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 class DiscussionController extends Controller
 {
 
-    public function getInitialisationAction(Request $request){
+    public function getMessageAction(Request $request){
+        error_log("init");
         $data = Array(
             'errors' => Array(),
             'data' => Array()
@@ -25,7 +26,7 @@ class DiscussionController extends Controller
         }
         else {
             $discussion = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
-            $messages = $this->get("app.messages")->getInit($this->getUser(),$discussion["type"],$discussion["id"]);
+            $messages = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],intval($request->request->get("offset")));
             $data["data"] = $messages;
         }
         return new JsonResponse($data);
