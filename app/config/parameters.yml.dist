@@ -1,5 +1,6 @@
 # This file is auto-generated during the composer install
 parameters:
+    MAIL_FROM: noreply@twakeapp.com
     SERVER_NAME: https://twakeapp.com
     APPS_SERVER: http://127.0.0.1:8001
     websocket_host: 127.0.0.1

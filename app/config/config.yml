@@ -3,12 +3,9 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: ws_routing.yml }
-    - { resource: "@DevelopersApiUsersBundle/Resources/config/services.yml" }
-    - { resource: "@TwakeStatusBundle/Resources/config/services.yml" }
-    - { resource: "@TwakeCommentsBundle/Resources/config/services.yml" }
-    - { resource: "@DevelopersApiDriveBundle/Resources/config/services.yml" }
-    - { resource: "@AdministrationAuthenticationBundle/Resources/config/services.yml" }
     - { resource: "@TwakeCalendarBundle/Resources/config/services.yml" }
+    - { resource: "@TwakeUsersBundle/Resources/config/services.yml" }
+    - { resource: "@TwakeCoreBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration

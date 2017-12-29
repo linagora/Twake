@@ -1,8 +1,0 @@
-{% extends "TwakeUsersBundle:Mail:all.html.twig" %}
-
-{% block body %}
-Vous avez ajouté un mail à votre compte, cliquez sur ce lien pour confirmer :
-<br>
-<br>
-<a href="{{ SERVER_NAME }}/account/verifymail/{{ token }}">{{ SERVER_NAME }}/account/verifymail/{{ token }}</a>
-{% endblock %}

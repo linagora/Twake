@@ -2,6 +2,5 @@ gos_web_socket:
     server:
         router:
             resources:
-                - '@TwakeUsersBundle/Resources/config/ws_routing.yml'
                 - '@TwakeDiscussionBundle/Resources/config/ws_routing.yml'
                 - '@TwakeWorkspacesBundle/Resources/config/ws_routing.yml'

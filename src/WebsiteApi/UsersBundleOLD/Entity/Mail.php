@@ -33,6 +33,13 @@ class Mail
      */
     private $mail;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="token", type="string", length=255, nullable=true)
+     */
+    private $token = "";
+
 
     /**
      * Get id
@@ -92,5 +99,36 @@ class Mail
         return $this->mail;
     }
 
+    /**
+     * Set token
+     *
+     * @param string $token
+     *
+     * @return Mail
+     */
+    public function setToken($token)
+    {
+	    if($token==""){
+		    $token = null;
+	    }
+        $this->token = $token;
+
+        return $this;
+    }
+
+	public function newToken(){
+		$verification_token = hash("sha256",random_bytes(10));
+		$this->setToken($verification_token);
+	}
+
+    /**
+     * Get token
+     *
+     * @return string
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
 }
 
