@@ -90,6 +90,15 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
                 $event["data"] = $stream->getArray();
             }
         }
+        elseif($event["type"] == "E"){ // edition
+            error_log("edition");
+            if($this->streamService->isAllowed($currentUser->getId(),$key)){
+                if(isset($event["data"]["id"]) && isset($event["data"]["name"]) && isset($event["data"]["privacy"]) && isset($event["data"]["members"]) )
+                $stream = $this->streamService->editStream($event["data"]["id"],$event["data"]["name"],$event["data"]["privacy"],$event["data"]["members"]);
+                $event["data"] = $stream->getArray();
+                error_log("end");
+            }
+        }
         $topic->broadcast($event);
     }
 }

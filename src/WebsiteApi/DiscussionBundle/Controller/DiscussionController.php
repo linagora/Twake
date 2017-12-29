@@ -69,7 +69,7 @@ class DiscussionController extends Controller
 							->findOneBy(Array("user" => $this->getUser(), "stream" => $stream));
 					} else {
 						$membersChannel = $repoLinks
-							->findBy(Array("channel" => $stream));
+							->findBy(Array("stream" => $stream));
 						foreach ($membersChannel as $linkMember) {
 							error_log($stream->getId());
 							error_log($linkMember->getUser()->getId());

@@ -64,4 +64,37 @@ class StreamSystem
             }
         }
     }
+
+    public function editStream($streamId,$name,$privacy,$members){
+        if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $data['errors'][] = "notconnected";
+        } else {
+            $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
+            if($stream != null) {
+                $stream->setName($name);
+                $stream->setPrivacy($privacy);
+                $membersInStream = $stream->getMembers();
+                foreach ($membersInStream as $member) {
+                    if (!in_array($member->getId(), $members)) { // user remove
+                        $link = $stream->getLinkUser($member);
+                        if ($link) {
+                            $this->doctrine->remove($link);
+                        }
+                    } else { // user not remove
+                        $index = array_search($member->getId(), $members);
+                        $member = array_splice($members, $index, 1);
+                    }
+                }
+                foreach ($members as $memberId) { // user to invite
+                    $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($memberId);
+                    if ($user != null) {
+                        $link = $stream->addMember($user);
+                        $this->doctrine->persist($link);
+                    }
+                }
+                $this->doctrine->flush();
+                return $stream;
+            }
+        }
+    }
 }

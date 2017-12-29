@@ -579,8 +579,19 @@ class User extends BaseUser
 			"username" => $this->getUsername(),
 			"susername" => $this->getUsernameClean(),
 			"cssuserimage" => $this->getCssProfileImage(),
-			"connected" => $this->isConnected()
+			"connected" => $this->isConnected(),
+            "userimage" => $this->getUrlProfileImage(),
 		);
 	}
+    public function getArray()
+    {
+        return Array(
+            "id" => $this->getId(),
+            "username" => $this->getUsername(),
+            "susername" => $this->getUsernameClean(),
+            "userimage" => $this->getUrlProfileImage(),
+            "connected" => $this->isConnected()
+        );
+    }
 
 }

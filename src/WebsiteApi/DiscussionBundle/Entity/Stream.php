@@ -37,7 +37,7 @@ class Stream
 
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\StreamMember", mappedBy="channel")
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\StreamMember", mappedBy="stream")
 	 */
 	private $membersLinks;
 
@@ -99,11 +99,19 @@ class Stream
 	}
 
 	public function addMember($user) {
-
     	$memberLink = new StreamMember($this, $user);
 		$this->membersLinks[] = $memberLink;
 		return $memberLink;
 	}
+
+	public function getLinkUser($user){
+        foreach ($this->membersLinks as $memberLink) {
+            if($memberLink->getUser() == $user){
+                return $memberLink;
+            }
+        }
+        return null;
+    }
 
     public function getPrivacy(){
         return $this->privacy;
@@ -113,12 +121,18 @@ class Stream
     }
 
     public function getArray(){
+        $members = [];
+        $membersLink = $this->getMembersLinks();
+        foreach ($membersLink as $link){
+            $members[] = $link->getUser()->getArray();
+        }
         return(
             Array(
                 "id" => $this->getId(),
                 "name" => $this->getName(),
                 "workspace" => $this->getWorkspace()->getId(),
                 "privacy" => $this->getPrivacy(),
+                "members" => $members,
             )
         );
     }
