@@ -18,13 +18,15 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 	}
 
 	private $messagesService;
+	private $subjectService;
 	private $clientManipulator;
 	private $doctrine;
 	private $notif;
 
-	public function __construct($messagesService, $clientManipulator, $doctrine, $notif)
+	public function __construct($messagesService,$subjectService, $clientManipulator, $doctrine, $notif)
 	{
 		$this->messagesService = $messagesService;
+		$this->subjectService = $subjectService;
 		$this->clientManipulator = $clientManipulator;
 		$this->doctrine = $doctrine;
 		$this->notif = $notif;
@@ -83,25 +85,20 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             $operation = $event['type'];
 
             if($operation == "C"){
-                if( $request->getAttributes()->get("subject")!=null ){
-                    $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($request->getAttributes()->get("subject"));
-                    if($subject != null){
-                        error_log("subject found");
-                    }
-				}
+
                 $message = $this->messagesService->sendMessage("U",$currentUser->getId(), $type, $id, $event['data']['content'], null);
                 $event["data"] = $message->getArray();
 			}
             if($operation == "E"){
-                if( $request->getAttributes()->get("subject")!=null ){
-                    $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($request->getAttributes()->get("subject"));
-                    if($subject != null){
-                        error_log("subject found");
-                    }
-                }
                 $message = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
                 $event["data"] = $message->getArray();
             }
+            if($operation == "CS"){ //creation subject
+                if( isset($event["data"]["idMessage"]) && $event["data"]["idMessage"] !=null ){
+                	$subject = $this->subjectService->createSubjectFromMessage($event["data"]["idMessage"]);
+					$event["data"] = $subject->getArray();
+				}
+			}
 
 //			elseif ($operation == 'W') {
 //				if (isset($event['data']) && isset($event['data']['event'])) {

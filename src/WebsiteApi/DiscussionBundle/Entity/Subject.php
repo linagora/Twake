@@ -41,7 +41,10 @@ class Subject
      */
     private $dateUpdate;
 
-
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isOpen = true;
 
     public function __construct($name,$stream,$dateCreate,$dateUpdate)
     {
@@ -131,6 +134,23 @@ class Subject
         $this->dateUpdate = $dateUpdate;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getisOpen()
+    {
+        return $this->isOpen;
+    }
+
+    /**
+     * @param mixed $isOpen
+     */
+    public function setIsOpen($isOpen)
+    {
+        $this->isOpen = $isOpen;
+    }
+
+
 
     public function getArray(){
         return Array(
@@ -139,6 +159,7 @@ class Subject
             "dateCreate" => $this->getDateCreate(),
             "dateUpdate" => $this->getDateUpdate(),
             "stream" => $this->getStream()->getArray(),
+            "isOpen" => $this->getisOpen(),
         );
     }
 

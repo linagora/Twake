@@ -78,14 +78,19 @@ class MessageSystem
         return false;
     }
 
-   public function getMessages($user,$recieverType,$recieverId,$offset){
+   public function getMessages($user,$recieverType,$recieverId,$offset,$subjectId){
 	    error_log("reciever type".$recieverType.", revcieverId:".$recieverId);
 	    if($recieverType == "S"){
 	        error_log("stream");
 	        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
 	        if($stream != null){
-	            error_log("stream found");
-                $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("typeReciever" => "S", "streamReciever" => $stream),Array("date"=>"DESC"), $limit = 15, $offset = $offset);
+	            if(isset($subjectId) && $subjectId!=null ){
+                    $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
+                }
+                else{
+	                $subject = null;
+                }
+	            $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("typeReciever" => "S", "streamReciever" => $stream,"subject"=>$subject),Array("date"=>"DESC"), $limit = 15, $offset = $offset);
                 $messages = array_reverse($messages);
                 $retour = [];
                 foreach($messages as $message){

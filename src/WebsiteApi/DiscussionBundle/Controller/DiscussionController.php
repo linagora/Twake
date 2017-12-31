@@ -26,7 +26,7 @@ class DiscussionController extends Controller
         }
         else {
             $discussion = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
-            $messages = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],intval($request->request->get("offset")));
+            $messages = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],intval($request->request->get("offset")),$request->request->get("subject"));
             $data["data"] = $messages;
         }
         return new JsonResponse($data);

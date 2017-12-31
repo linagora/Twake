@@ -7,11 +7,15 @@ services:
             class: WebsiteApi\DiscussionBundle\Services\StreamSystem
             arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher','@app.groups.access']
 
+    app.subjectSystem:
+            class: WebsiteApi\DiscussionBundle\Services\SubjectSystem
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher','@app.groups.access']
+
     discussion.topic:
           class: WebsiteApi\DiscussionBundle\Topic\DiscussionTopic
           tags:
               - { name: gos_web_socket.topic }
-          arguments: ["@app.messages", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications"]
+          arguments: ["@app.messages","@app.subjectSystem" , "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications"]
 
     discussionspace.topic:
           class: WebsiteApi\DiscussionBundle\Topic\DiscussionSpaceTopic
