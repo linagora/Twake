@@ -90,8 +90,11 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                 $event["data"] = $message->getArray();
 			}
             if($operation == "E"){
-                $message = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
-                $event["data"] = $message->getArray();
+            	$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($event["data"]["id"]);
+            	if($message != null && $message->getTypeSender()=="U" && $message->getUserSender()==$currentUser){
+	                $message = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
+	                $event["data"] = $message->getArray();
+            	}
             }
             if($operation == "CS"){ //creation subject
                 if( isset($event["data"]["idMessage"]) && $event["data"]["idMessage"] !=null ){

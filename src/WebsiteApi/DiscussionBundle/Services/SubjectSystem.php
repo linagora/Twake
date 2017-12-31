@@ -43,6 +43,9 @@ class SubjectSystem
         $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idMessage);
         if($message != null && $message->getSubject() == null){
             $subject = $this->createSubject($message->getCleanContent(),$message->getStreamReciever()->getId());
+            $message->setSubject($subject);
+            $this->doctrine->persist($message);
+            $this->doctrine->flush();
             return $subject;
         }
         return false;

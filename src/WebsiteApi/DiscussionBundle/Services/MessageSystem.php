@@ -50,7 +50,6 @@ class MessageSystem
             elseif($senderType == "A") {
                 $sender = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($senderId);
             }
-
             if($recieverType == "S"){
                 $reciever = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
             }
@@ -79,9 +78,8 @@ class MessageSystem
     }
 
    public function getMessages($user,$recieverType,$recieverId,$offset,$subjectId){
-	    error_log("reciever type".$recieverType.", revcieverId:".$recieverId);
+	    error_log("get message, reciever type".$recieverType.", revcieverId:".$recieverId);
 	    if($recieverType == "S"){
-	        error_log("stream");
 	        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
 	        if($stream != null){
 	            if(isset($subjectId) && $subjectId!=null ){
@@ -90,11 +88,31 @@ class MessageSystem
                 else{
 	                $subject = null;
                 }
-	            $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("typeReciever" => "S", "streamReciever" => $stream,"subject"=>$subject),Array("date"=>"DESC"), $limit = 15, $offset = $offset);
+	            $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("typeReciever" => "S", "streamReciever" => $stream),Array("date"=>"DESC"), $limit = 15, $offset = $offset);
                 $messages = array_reverse($messages);
                 $retour = [];
+                $subjectRed = [];
                 foreach($messages as $message){
-                    $retour[] = $message->getArray();
+                    if($subjectId == null && $message->getSubject() != null) {
+                        if(!in_array($message->getSubject()->getId(), $subjectRed)){
+                            $firstMessage = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("subject" => $message->getSubject()), Array("date" => "ASC"));
+                            if ($firstMessage == $message) { // it's the first message of this subject
+                                error_log($message->getId()." is the first message");
+                                $messageInSubject = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject" => $message->getSubject()), Array("date" => "DESC"));
+                                $nb = count($messageInSubject);
+                                $lastMessage = $messageInSubject[0];
+                                if ($lastMessage != $firstMessage) {
+                                    $retour[] = array_merge($message->getArray(), Array("isSubject" => true,"responseNumber" => $nb, "lastMessage" => $lastMessage->getArray()));
+                                } else {
+                                    $retour[] = array_merge($message->getArray(), Array("isSubject" => true, "responseNumber" => $nb));
+                                }
+                                $subjectRed[] = $message->getSubject()->getId();
+                            }
+                        }
+                    }
+                    else{
+                        $retour[] = $message->getArray();
+                    }
                 }
                 return $retour;
             }
@@ -115,6 +133,7 @@ class MessageSystem
             }
         }
    }
+
 
 
 
