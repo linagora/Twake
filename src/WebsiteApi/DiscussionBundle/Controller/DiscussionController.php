@@ -50,7 +50,12 @@ class DiscussionController extends Controller
         		if($stream != null){
 		            $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$this->getUser(),"stream"=>$stream));	
 		            if($link != null){
-		            	$data["data"] = $this->get("app.subjectSystem")->getSubject($stream);
+		            	$subjects = $this->get("app.subjectSystem")->getSubject($stream);
+		            	$retour = [];
+				        foreach($subjects as $subject){
+				            $retour[] = $subject->getArray();
+				        }
+				        $data["data"] = $retour;
 		            }
 		            else{
 		            	$data['errors'][] = "notindiscussion";
@@ -63,6 +68,41 @@ class DiscussionController extends Controller
         	else if($discussionInfos["type"] == "U"){
         		$data["errors"][] = "userDiscussion"; 
         		// TODO manage user discussion
+        	}
+        }
+        return new JsonResponse($data);
+    }
+
+
+    public function getSubjectMessageAction(Request $request){
+		$data = Array(
+		    		'errors' => Array(),
+		    		'data' => Array()
+		    	);
+
+        $securityContext = $this->get('security.authorization_checker');
+
+        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $data['errors'][] = "notconnected";
+        }
+        else {
+        	$subject = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Subject")->find($request->request->get("subject"));
+        	if($subject == null){
+        		$data["errors"][] = "subjectnotfound";
+        	}
+        	else{
+        		$link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("stream"=>$subject->getStream(),"user"=>$this->getUser()));
+        		if($link == null){
+        			$data["errors"][] = "notallowed";
+        		}
+        		else{
+        			$messages = $this->get("app.subjectSystem")->getMessages($subject);
+        			$retour = [];
+        			foreach ($messages as $message) {
+        				$retour[] = $message->getArray();
+        			}
+        			$data["errors"][] = $retour;
+        		}
         	}
         }
         return new JsonResponse($data);

@@ -56,11 +56,17 @@ class SubjectSystem
         if($stream == null){
             return false;
         }
-        $retour = [];
         $subjects = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->findBy(Array("stream"=>$stream),Array("dateUpdate"=>"DESC"));
-        foreach($subjects as $subject){
-            $retour[] = $subject->getArray();
+        return $subjects;
+    }
+
+    public function getMessages($subject){
+        $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subject);
+        if($subject == null){
+            return false;
         }
-        return $retour;
+        $retour = [];
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject"=>$subject),Array("date"=>"DESC"));
+        return $messages;   
     }
 }

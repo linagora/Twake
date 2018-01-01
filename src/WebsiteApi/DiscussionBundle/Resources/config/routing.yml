@@ -10,3 +10,7 @@ subjectList_get:
     path:     /subject/getList
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getSubject }
 
+subject_get_message:
+    path:     /subject/getMessage
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:getSubjectMessage }
+
