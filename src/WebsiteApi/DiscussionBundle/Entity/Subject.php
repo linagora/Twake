@@ -158,7 +158,7 @@ class Subject
             "name" => $this->getName(),
             "dateCreate" => $this->getDateCreate(),
             "dateUpdate" => $this->getDateUpdate(),
-            "stream" => $this->getStream()->getArray(),
+            "stream" => $this->getStream()->getId(),
             "isOpen" => $this->getisOpen(),
         );
     }

@@ -50,4 +50,17 @@ class SubjectSystem
         }
         return false;
     }
+
+    public function getSubject($stream){
+        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($stream);
+        if($stream == null){
+            return false;
+        }
+        $retour = [];
+        $subjects = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->findBy(Array("stream"=>$stream),Array("dateUpdate"=>"DESC"));
+        foreach($subjects as $subject){
+            $retour[] = $subject->getArray();
+        }
+        return $retour;
+    }
 }

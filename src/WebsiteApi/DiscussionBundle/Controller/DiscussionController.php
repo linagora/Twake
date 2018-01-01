@@ -32,6 +32,42 @@ class DiscussionController extends Controller
         return new JsonResponse($data);
     }
 
+    public function getSubjectAction(Request $request){
+    	$data = Array(
+    		'errors' => Array(),
+    		'data' => Array()
+    	);
+
+        $securityContext = $this->get('security.authorization_checker');
+
+        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $data['errors'][] = "notconnected";
+        }
+        else {
+        	$discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
+        	if($discussionInfos["type"] == "S"){
+        		$stream = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream")->find($discussionInfos["id"]);
+        		if($stream != null){
+		            $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$this->getUser(),"stream"=>$stream));	
+		            if($link != null){
+		            	$data["data"] = $this->get("app.subjectSystem")->getSubject($stream);
+		            }
+		            else{
+		            	$data['errors'][] = "notindiscussion";
+		            }
+        		}
+        		else{
+        			$data['errors'][] = "discussionnotfound";
+        		}
+        	}
+        	else if($discussionInfos["type"] == "U"){
+        		$data["errors"][] = "userDiscussion"; 
+        		// TODO manage user discussion
+        	}
+        }
+        return new JsonResponse($data);
+    }
+
 	public function getChannelsAction(Request $request){
 		$data = Array(
 			'errors' => Array(),

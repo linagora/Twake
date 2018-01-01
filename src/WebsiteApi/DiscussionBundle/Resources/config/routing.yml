@@ -6,3 +6,7 @@ channels_get:
     path:     /streams/get
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getChannels }
 
+subjectList_get:
+    path:     /subject/getList
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:getSubject }
+
