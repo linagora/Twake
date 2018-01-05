@@ -86,7 +86,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 
             if($operation == "C"){
 
-                $message = $this->messagesService->sendMessage("U",$currentUser->getId(), $type, $id, $event['data']['content'], null);
+                $message = $this->messagesService->sendMessage("U",$currentUser->getId(), $type, $id, $event['data']['content'], $event["data"]['subject']);
                 $event["data"] = $message->getArray();
 			}
             if($operation == "E"){

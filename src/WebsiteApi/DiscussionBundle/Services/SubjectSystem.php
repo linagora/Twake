@@ -66,7 +66,7 @@ class SubjectSystem
             return false;
         }
         $retour = [];
-        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject"=>$subject),Array("date"=>"DESC"));
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject"=>$subject),Array("date"=>"ASC"));
         return $messages;   
     }
 }

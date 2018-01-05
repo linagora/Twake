@@ -25,9 +25,18 @@ class DiscussionController extends Controller
             $data['errors'][] = "notconnected";
         }
         else {
-            $discussion = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
-            $messages = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],intval($request->request->get("offset")),$request->request->get("subject"));
-            $data["data"] = $messages;
+            if(($request->request->get("discussionKey")==null && $request->request->get("discussionKey")!=0) ||  ($request->request->get("offset")==null && $request->request->get("offset")!=0) ){
+                $data["errors"][] = "missingargument";
+            }
+            else{
+                $discussion = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
+                $messages = [];
+                while(count($messages)<30){
+                    $messages2 = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],intval($request->request->get("offset")),$request->request->get("subject"));
+                    $messages = array_merge($messages,$messages2);
+                }
+                $data["data"] = $messages;
+            }
         }
         return new JsonResponse($data);
     }
@@ -44,31 +53,36 @@ class DiscussionController extends Controller
             $data['errors'][] = "notconnected";
         }
         else {
-        	$discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
-        	if($discussionInfos["type"] == "S"){
-        		$stream = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream")->find($discussionInfos["id"]);
-        		if($stream != null){
-		            $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$this->getUser(),"stream"=>$stream));	
-		            if($link != null){
-		            	$subjects = $this->get("app.subjectSystem")->getSubject($stream);
-		            	$retour = [];
-				        foreach($subjects as $subject){
-				            $retour[] = $subject->getArray();
-				        }
-				        $data["data"] = $retour;
-		            }
-		            else{
-		            	$data['errors'][] = "notindiscussion";
-		            }
-        		}
-        		else{
-        			$data['errors'][] = "discussionnotfound";
-        		}
-        	}
-        	else if($discussionInfos["type"] == "U"){
-        		$data["errors"][] = "userDiscussion"; 
-        		// TODO manage user discussion
-        	}
+            if($request->request->get("discussionKey")!=null){
+                $discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
+                if($discussionInfos["type"] == "S"){
+                    $stream = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream")->find($discussionInfos["id"]);
+                    if($stream != null){
+                        $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$this->getUser(),"stream"=>$stream));
+                        if($link != null){
+                            $subjects = $this->get("app.subjectSystem")->getSubject($stream);
+                            $retour = [];
+                            foreach($subjects as $subject){
+                                $retour[] = $subject->getArray();
+                            }
+                            $data["data"] = $retour;
+                        }
+                        else{
+                            $data['errors'][] = "notindiscussion";
+                        }
+                    }
+                    else{
+                        $data['errors'][] = "discussionnotfound";
+                    }
+                }
+                else if($discussionInfos["type"] == "U"){
+                    $data["errors"][] = "userDiscussion";
+                    // TODO manage user discussion
+                }
+            }
+            else{
+                $data["errors"][] = "missingarguments";
+            }
         }
         return new JsonResponse($data);
     }
@@ -86,24 +100,29 @@ class DiscussionController extends Controller
             $data['errors'][] = "notconnected";
         }
         else {
-        	$subject = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Subject")->find($request->request->get("subject"));
-        	if($subject == null){
-        		$data["errors"][] = "subjectnotfound";
-        	}
-        	else{
-        		$link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("stream"=>$subject->getStream(),"user"=>$this->getUser()));
-        		if($link == null){
-        			$data["errors"][] = "notallowed";
-        		}
-        		else{
-        			$messages = $this->get("app.subjectSystem")->getMessages($subject);
-        			$retour = [];
-        			foreach ($messages as $message) {
-        				$retour[] = $message->getArray();
-        			}
-        			$data["errors"][] = $retour;
-        		}
-        	}
+            if($request->request->get("subject") != null){
+                $subject = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Subject")->find($request->request->get("subject"));
+                if($subject == null){
+                    $data["errors"][] = "subjectnotfound";
+                }
+                else{
+                    $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("stream"=>$subject->getStream(),"user"=>$this->getUser()));
+                    if($link == null){
+                        $data["errors"][] = "notallowed";
+                    }
+                    else{
+                        $messages = $this->get("app.subjectSystem")->getMessages($subject);
+                        $retour = [];
+                        foreach ($messages as $message) {
+                            $retour[] = $message->getArray();
+                        }
+                        $data["data"] = $retour;
+                    }
+                }
+            }
+            else{
+                $data["errors"][] = "missingarguments";
+            }
         }
         return new JsonResponse($data);
     }
@@ -121,64 +140,68 @@ class DiscussionController extends Controller
 			$data['errors'][] = "notconnected";
 		}
 		else {
+            if($request->request->get("gid")==null ){
+                $data["errors"] = "missingarguments";
+            }
+            else{
+                $workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
+                if ($workspace == null) {
+                    $data["errors"][] = "groupnotfound";
 
-			$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
-			if ($workspace == null) {
-				$data["errors"][] = "groupnotfound";
+                } elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:view")){
+                    $data["errors"][] = "notallowed";
+                }
+                else {
+                    $result = Array();
+                    foreach ($workspace->getStreams() as $stream) {
 
-			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:view")){
-				$data["errors"][] = "notallowed";
-			}
-			else {
-				$result = Array();
-				foreach ($workspace->getStreams() as $stream) {
+                        $repoLinks = $manager
+                            ->getRepository("TwakeDiscussionBundle:StreamMember");
+                        $linkMemberChannel = null;
+                        $members = [];
+                        $show = false;
 
-					$repoLinks = $manager
-						->getRepository("TwakeDiscussionBundle:StreamMember");
-					$linkMemberChannel = null;
-					$members = [];
-					$show = false;
-
-					if (!$stream->getPrivacy()) {
-						$show = true;
-						$linkMemberChannel = $repoLinks
-							->findOneBy(Array("user" => $this->getUser(), "stream" => $stream));
-					} else {
-						$membersChannel = $repoLinks
-							->findBy(Array("stream" => $stream));
-						foreach ($membersChannel as $linkMember) {
-							error_log($stream->getId());
-							error_log($linkMember->getUser()->getId());
-							$members[] = $linkMember->getUser()->getAsSimpleArray();
-							if ($linkMember->getUser()->getId() == $this->getUser()->getId()) {
-								$show = true;
-								$linkMemberChannel = $linkMember;
-							}
-						}
-					}
+                        if (!$stream->getPrivacy()) {
+                            $show = true;
+                            $linkMemberChannel = $repoLinks
+                                ->findOneBy(Array("user" => $this->getUser(), "stream" => $stream));
+                        } else {
+                            $membersChannel = $repoLinks
+                                ->findBy(Array("stream" => $stream));
+                            foreach ($membersChannel as $linkMember) {
+                                error_log($stream->getId());
+                                error_log($linkMember->getUser()->getId());
+                                $members[] = $linkMember->getUser()->getAsSimpleArray();
+                                if ($linkMember->getUser()->getId() == $this->getUser()->getId()) {
+                                    $show = true;
+                                    $linkMemberChannel = $linkMember;
+                                }
+                            }
+                        }
 
 
-					if ($linkMemberChannel == null && !$stream->getPrivacy()) {
-						//Add user to channel
-						$linkMemberChannel = new StreamMember($stream, $this->getUser());
-						$manager->persist($linkMemberChannel);
-						$manager->flush();
-					}
+                        if ($linkMemberChannel == null && !$stream->getPrivacy()) {
+                            //Add user to channel
+                            $linkMemberChannel = new StreamMember($stream, $this->getUser());
+                            $manager->persist($linkMemberChannel);
+                            $manager->flush();
+                        }
 
-					if ($show) {
-						$result[] = Array(
-							'id' => $stream->getId(),
-							'name' => $stream->getName(),
-							'mute' => $linkMemberChannel->getMute(),
-							'privacy' => $stream->getPrivacy(),
-							'members' => $members
-						);
-					}
-				}
-				$data['data'] = $result;
-			}
-		}
+                        if ($show) {
+                            $result[] = Array(
+                                'id' => $stream->getId(),
+                                'name' => $stream->getName(),
+                                'mute' => $linkMemberChannel->getMute(),
+                                'privacy' => $stream->getPrivacy(),
+                                'members' => $members
+                            );
+                        }
+                    }
+                    $data['data'] = $result;
+                }
+            }
 
+        }
 		return new JsonResponse($data);
 	}
 /*

@@ -39,7 +39,7 @@ class MessageSystem
 		$this->levelManager = $levelManager;
 	}
 
-	public function sendMessage($senderType, $senderId, $recieverType, $recieverId, $content, $subject=null ){
+	public function sendMessage($senderType, $senderId, $recieverType, $recieverId, $content, $subjectId=null ){
 	    error_log("send message senderId:".$senderId.", recieverType:".$recieverType.", recieverId:".$recieverId);
         if($senderType=="A" || $senderType=="U"|| $senderType=="S"){
             $sender = null;
@@ -57,7 +57,11 @@ class MessageSystem
                 $reciever = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
             }
             if( ($senderType=="S" || $sender!=null) && $reciever!=null ){
-                $message = new Message($senderType,$sender,$recieverType,$reciever,new \DateTime(),$content,null);
+                $subject = null;
+                if($subjectId != null){
+                    $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
+                }
+                $message = new Message($senderType,$sender,$recieverType,$reciever,new \DateTime(),$content,$subject);
                 $this->doctrine->persist($message);
                 $this->doctrine->flush();
                 return $message;
@@ -88,7 +92,7 @@ class MessageSystem
                 else{
 	                $subject = null;
                 }
-	            $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("typeReciever" => "S", "streamReciever" => $stream),Array("date"=>"DESC"), $limit = 15, $offset = $offset);
+	            $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("typeReciever" => "S", "streamReciever" => $stream),Array("date"=>"DESC"), $limit = 30, $offset = $offset);
                 $messages = array_reverse($messages);
                 $retour = [];
                 $subjectRed = [];
