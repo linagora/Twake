@@ -1,0 +1,3 @@
+twake_message_homepage:
+    path:     /test
+    defaults: { _controller: TwakeMessageBundle:Default:index }

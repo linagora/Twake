@@ -5,3 +5,11 @@ discussion_topic:
     requirements:
         key:
             pattern: "[0-9]+(_[0-9]+)?"
+
+discussionspace_topic:
+    channel: discussionspace/{key}
+    handler:
+        callback: 'discussionspace.topic'
+    requirements:
+        key:
+            pattern: "[0-9]+"

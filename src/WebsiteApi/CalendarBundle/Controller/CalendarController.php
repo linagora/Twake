@@ -24,7 +24,7 @@ class CalendarController extends Controller
         }
         else {
 
-            $organization = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id" => $request->request->get("gid"), "isDeleted" => false));
+            $organization = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $request->request->get("gid"), "isDeleted" => false));
 
 
             if ($organization == null) {
@@ -50,7 +50,7 @@ class CalendarController extends Controller
             $data['errors'][] = "notconnected";
         } else {
 
-            $organization = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id" => $request->request->get("gid"), "isDeleted" => false));
+            $organization = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $request->request->get("gid"), "isDeleted" => false));
 
 
             if ($organization == null) {

@@ -61,10 +61,6 @@ services:
         class: WebsiteApi\WorkspacesBundle\Services\UpdateGroup
         arguments: ['@gos_web_socket.zmq.pusher']
 
-    app.messages:
-            class: WebsiteApi\DiscussionBundle\Services\Messages
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@app.command_executor", "@app.notifications", '@gos_web_socket.zmq.pusher','@app.groups.access']
-
     app.calls:
             class: WebsiteApi\CallsBundle\Services\Calls
             arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@app.messages", "@gos_web_socket.zmq.pusher"]
@@ -102,11 +98,6 @@ services:
         tags:
             - { name: gos_web_socket.topic }
 
-    discussion.topic:
-        class: WebsiteApi\DiscussionBundle\Topic\DiscussionTopic
-        tags:
-            - { name: gos_web_socket.topic }
-        arguments: ["@app.messages", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications"]
 
     #connections.topic:
     #    class: WebsiteApi\UsersBundle\Topic\ConnectionsTopic

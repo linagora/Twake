@@ -15,3 +15,6 @@ calendar_create_event:
     path:     /event/create
     defaults: { _controller: TwakeCalendarBundle:Event:createEvent }
 
+TEST_calendar_create_event:
+    path:     /event/update
+    defaults: { _controller: TwakeCalendarBundle:Event:updateEvent }

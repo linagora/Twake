@@ -1,5 +1,5 @@
 <?php
-namespace WebsiteApi\CalendarBundle\Topic;
+namespace WebsiteApi\DiscussionBundle\Topic;
 
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
 use WebsiteApi\UsersBundle\Entity\User;
@@ -8,23 +8,24 @@ use Ratchet\Wamp\Topic;
 use Gos\Bundle\WebSocketBundle\Router\WampRequest;
 use Gos\Bundle\WebSocketBundle\Topic\PushableTopicInterface;
 
-class CalendarTopic implements TopicInterface, PushableTopicInterface
+class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
 {
 
     public function getName()
     {
-        return 'calendar.topic';
+        return 'discussionspace.topic';
     }
 
+    private $streamService;
     private $clientManipulator;
     private $doctrine;
     private $notif;
 
-    public function __construct($clientManipulator, $doctrine, $notif)
+    public function __construct($streamService, $clientManipulator, $doctrine)
     {
+        $this->streamService = $streamService;
         $this->clientManipulator = $clientManipulator;
         $this->doctrine = $doctrine;
-        $this->notif = $notif;
     }
 
     /**
@@ -55,28 +56,7 @@ class CalendarTopic implements TopicInterface, PushableTopicInterface
      */
     public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
-        $key = $request->getAttributes()->get('key');
-
-        $currentUser = $this->clientManipulator->getClient($connection);
-
-        if (!($currentUser instanceof User)) {
-            return;
-        }
-
-        //Verify user is logged in
-        if ($currentUser == null
-            || is_string($currentUser)
-        ) {
-
-            return; //Cancel operation
-        }
-
-        $currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
-
-//        //Verify that this user is allowed to do this
-//        if (!$this->messagesService->isAllowedByKey($currentUser, $key)) {
-//            $topic->remove($connection); //Eject the hacker !
-//        }
+        // TODO: Implement onUnSubscribe() method.
     }
 
     /**
@@ -89,6 +69,36 @@ class CalendarTopic implements TopicInterface, PushableTopicInterface
      */
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
     {
-        // TODO: Implement onPublish() method.
+        $key = $request->getAttributes()->get('key');
+        $currentUser = $this->clientManipulator->getClient($connection);
+        if (!($currentUser instanceof User)) {
+            return;
+        }
+        //Verify user is logged in
+        if ($currentUser == null
+            || is_string($currentUser)
+        ) {
+            return; //Cancel operation
+        }
+        $currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
+
+
+
+        if($event["type"] == "C"){ // creation
+            if($this->streamService->isAllowed($currentUser->getId(),$key)){
+                $stream = $this->streamService->createStream($currentUser,$key,$event["data"]["name"],$event["data"]["privacy"]);
+                $event["data"] = $stream->getArray();
+            }
+        }
+        elseif($event["type"] == "E"){ // edition
+            error_log("edition");
+            if($this->streamService->isAllowed($currentUser->getId(),$key)){
+                if(isset($event["data"]["id"]) && isset($event["data"]["name"]) && isset($event["data"]["privacy"]) && isset($event["data"]["members"]) )
+                $stream = $this->streamService->editStream($event["data"]["id"],$event["data"]["name"],$event["data"]["privacy"],$event["data"]["members"]);
+                $event["data"] = $stream->getArray();
+                error_log("end");
+            }
+        }
+        $topic->broadcast($event);
     }
 }

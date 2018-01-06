@@ -60,4 +60,15 @@ class EventController extends Controller
         }
         return new JsonResponse($data);
     }
+
+
+    public function updateEventAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array()
+        );
+        $retour = $this->get('app.event.EventSystem')->updateEvent($request->request->get("id"),$request->request->get("owner"),$request->request->get("title"),$request->request->get("startDate"),$request->request->get("endDate"),$request->request->get("description"),$request->request->get("location"),$request->request->get("color"),$request->request->get("cid"),$request->request->get('appid'));
+        $data["errors"] = !$retour;
+        return new JsonResponse($data);
+    }
 }

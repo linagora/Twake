@@ -1,4 +1,20 @@
 services:
-#    citi_go_discussion.example:
-#        class: WebsiteApi\DiscussionBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    app.messages:
+            class: WebsiteApi\DiscussionBundle\Services\MessageSystem
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@app.command_executor", "@app.notifications", '@gos_web_socket.zmq.pusher','@app.groups.access']
+
+    app.streamSystem:
+            class: WebsiteApi\DiscussionBundle\Services\StreamSystem
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher','@app.groups.access']
+
+    discussion.topic:
+          class: WebsiteApi\DiscussionBundle\Topic\DiscussionTopic
+          tags:
+              - { name: gos_web_socket.topic }
+          arguments: ["@app.messages", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications"]
+
+    discussionspace.topic:
+          class: WebsiteApi\DiscussionBundle\Topic\DiscussionSpaceTopic
+          tags:
+              - { name: gos_web_socket.topic }
+          arguments: ["@app.streamSystem", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager",]

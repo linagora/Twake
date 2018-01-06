@@ -186,8 +186,8 @@ class WorkspaceMembersController extends Controller
 
 					$link = $manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("User" => $uid, "Workspace" => $group));
 					$manager->remove($link);
-					$linksWorkspace = $manager->getRepository("TwakeDiscussionBundle:Channel")->findBy(Array("workspace" => $group));
-					$linksChannel = $manager->getRepository("TwakeDiscussionBundle:ChannelMember")->findBy(Array("user"=>$uid,"channel"=>$linksWorkspace));
+					$linksWorkspace = $manager->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace" => $group));
+					$linksChannel = $manager->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$uid,"stream"=>$linksWorkspace));
 					foreach($linksChannel as $l){
 						$manager->remove($l);
 					}
@@ -443,7 +443,7 @@ class WorkspaceMembersController extends Controller
 					$member->setStatus("A");
 					$manager->persist($member);
 					$workspace->setMemberCount($workspace->getMemberCount()+1);
-					$generalChannel = $manager->getRepository("TwakeDiscussionBundle:Channel")->findOneBy(Array("name"=>"General", "workspace" => $workspace));
+					$generalChannel = $manager->getRepository("TwakeDiscussionBundle:Stream")->findOneBy(Array("name"=>"General", "workspace" => $workspace));
 					$link = $generalChannel->addMember($this->getUser());
 					$manager->persist($link);
 					$manager->persist($workspace);

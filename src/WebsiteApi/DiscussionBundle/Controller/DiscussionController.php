@@ -5,19 +5,37 @@ namespace WebsiteApi\DiscussionBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use WebsiteApi\DiscussionBundle\Entity\Channel;
-use WebsiteApi\DiscussionBundle\Entity\ChannelMember;
+use WebsiteApi\DiscussionBundle\Entity\Stream;
+use WebsiteApi\DiscussionBundle\Entity\StreamMember;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 
 class DiscussionController extends Controller
 {
-	public function getChannelsAction(Request $request)
-	{
 
+    public function getMessageAction(Request $request){
+        error_log("init");
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+        $securityContext = $this->get('security.authorization_checker');
+
+        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $data['errors'][] = "notconnected";
+        }
+        else {
+            $discussion = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
+            $messages = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],intval($request->request->get("offset")));
+            $data["data"] = $messages;
+        }
+        return new JsonResponse($data);
+    }
+
+	public function getChannelsAction(Request $request){
 		$data = Array(
 			'errors' => Array(),
-			'data' => Array('channels' => Array())
+			'data' => Array()
 		);
 
 		$manager = $this->getDoctrine()->getManager();
@@ -29,35 +47,31 @@ class DiscussionController extends Controller
 		else {
 
 			$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
-
-
 			if ($workspace == null) {
 				$data["errors"][] = "groupnotfound";
 
-			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:view")) {
+			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:view")){
 				$data["errors"][] = "notallowed";
 			}
 			else {
-
 				$result = Array();
-
-				foreach ($workspace->getChannels() as $channel) {
+				foreach ($workspace->getStreams() as $stream) {
 
 					$repoLinks = $manager
-						->getRepository("TwakeDiscussionBundle:ChannelMember");
+						->getRepository("TwakeDiscussionBundle:StreamMember");
 					$linkMemberChannel = null;
 					$members = [];
 					$show = false;
 
-					if (!$channel->getPrivacy()) {
+					if (!$stream->getPrivacy()) {
 						$show = true;
 						$linkMemberChannel = $repoLinks
-							->findOneBy(Array("user" => $this->getUser(), "channel" => $channel));
+							->findOneBy(Array("user" => $this->getUser(), "stream" => $stream));
 					} else {
 						$membersChannel = $repoLinks
-							->findBy(Array("channel" => $channel));
+							->findBy(Array("stream" => $stream));
 						foreach ($membersChannel as $linkMember) {
-							error_log($channel->getId());
+							error_log($stream->getId());
 							error_log($linkMember->getUser()->getId());
 							$members[] = $linkMember->getUser()->getAsSimpleArray();
 							if ($linkMember->getUser()->getId() == $this->getUser()->getId()) {
@@ -68,32 +82,30 @@ class DiscussionController extends Controller
 					}
 
 
-					if ($linkMemberChannel == null && !$channel->getPrivacy()) {
+					if ($linkMemberChannel == null && !$stream->getPrivacy()) {
 						//Add user to channel
-						$linkMemberChannel = new ChannelMember($channel, $this->getUser());
+						$linkMemberChannel = new StreamMember($stream, $this->getUser());
 						$manager->persist($linkMemberChannel);
 						$manager->flush();
 					}
 
 					if ($show) {
-						$result[$channel->getId()] = Array(
-							'id' => $channel->getId(),
-							'name' => $channel->getName(),
+						$result[] = Array(
+							'id' => $stream->getId(),
+							'name' => $stream->getName(),
 							'mute' => $linkMemberChannel->getMute(),
-							'privacy' => $channel->getPrivacy(),
+							'privacy' => $stream->getPrivacy(),
 							'members' => $members
 						);
 					}
-
 				}
-
-				$data['data']['channels'] = $result;
+				$data['data'] = $result;
 			}
 		}
 
 		return new JsonResponse($data);
 	}
-
+/*
 	public function uploadAction(Request $request) {
 
 		$securityContext = $this->get('security.authorization_checker');
@@ -133,7 +145,7 @@ class DiscussionController extends Controller
 		$manager = $this->getDoctrine()->getManager();
 		$securityContext = $this->get('security.authorization_checker');
 		$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
-		$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Channel")->find($request->request->get("channelId"));
+		$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream")->find($request->request->get("channelId"));
 
 		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data['errors'][] = "notconnected";
@@ -178,7 +190,7 @@ class DiscussionController extends Controller
 				$userId = intval(explode("_", $request->request->get("channelId"))[0]);
 			}
 		}else{
-			$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Channel")->find($request->request->get("channelId"));
+			$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream")->find($request->request->get("channelId"));
 		}
 
 		$request = $request->request->get("model");
@@ -287,7 +299,7 @@ class DiscussionController extends Controller
 		);
 		$manager = $this->getDoctrine()->getManager();
 		$securityContext = $this->get('security.authorization_checker');
-		$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Channel")->find($request->request->get("channelId"));
+		$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream")->find($request->request->get("channelId"));
 		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data['errors'][] = "notconnected";
 		}
@@ -295,7 +307,7 @@ class DiscussionController extends Controller
 			$data['errors'][] = "channelnotfound";
 		}
 		else {
-			$links = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:ChannelMember")->findBy(Array("channel"=>$channel));
+			$links = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("channel"=>$channel));
 			foreach($links as $link){
 				$data['data'][] = $link->getUser()->getAsSimpleArray();
 			}
@@ -313,7 +325,7 @@ class DiscussionController extends Controller
 
 		$manager = $this->getDoctrine()->getManager();
 		$securityContext = $this->get('security.authorization_checker');
-		$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Channel")->find($request->request->get("channelId"));
+		$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream")->find($request->request->get("channelId"));
 
 		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data['errors'][] = "notconnected";
@@ -322,12 +334,12 @@ class DiscussionController extends Controller
 			$data['errors'][] = "channelnotfound";
 		}
 		else {
-			$link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:ChannelMember")->findOneBy(Array("channel"=>$channel, "user"=>$this->getUser()));
+			$link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("channel"=>$channel, "user"=>$this->getUser()));
 			if($link==null){
 				$data['errors'][] = "usernotinchannel";
 			}
 			else{
-				$count = count($this->getDoctrine()->getRepository("TwakeDiscussionBundle:ChannelMember")->findOneBy(Array("channel"=>$channel)));
+				$count = count($this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("channel"=>$channel)));
 				if($count<=1){
 					$manager->remove($channel);
 				}
@@ -339,10 +351,6 @@ class DiscussionController extends Controller
 	}
 
 
-	/**
-	 * @param Request $request
-	 * @return JsonResponse
-	 */
 	public function inviteMembersChannelAction(Request $request){
 		$data = Array(
 			'errors' => Array(),
@@ -351,12 +359,12 @@ class DiscussionController extends Controller
 		$manager = $this->getDoctrine()->getManager();
 		$securityContext = $this->get('security.authorization_checker');
 		$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
-		$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Channel")->find($request->request->get("channelId"));
+		$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream")->find($request->request->get("channelId"));
 
 		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data['errors'][] = "notconnected";
 		}
-		elseif($manager->getRepository("TwakeDiscussionBundle:ChannelMember")->findOneBy(Array("user" => $this->getUser(), "channel" => $channel)) == null){
+		elseif($manager->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user" => $this->getUser(), "channel" => $channel)) == null){
 			$data['errors'][] = "notallowed";
 		}
 		else{
@@ -371,7 +379,7 @@ class DiscussionController extends Controller
 					}
 					if ($uids[$user->getId()] == false) {
 						// on supprime le membre
-						$link = $manager->getRepository("TwakeDiscussionBundle:ChannelMember")->findOneBy(Array("channel" => $channel, "user" => $user));
+						$link = $manager->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("channel" => $channel, "user" => $user));
 						if ($link != null) {
 							$data = Array(
 								'type' => 'B',
@@ -386,7 +394,7 @@ class DiscussionController extends Controller
 						}
 					} else {
 
-						if ($manager->getRepository("TwakeDiscussionBundle:ChannelMember")->findBy(Array("channel" => $channel, "user" => $user)) != null) {
+						if ($manager->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("channel" => $channel, "user" => $user)) != null) {
 							$data['data'][] = "alreadyinchannel" . $user->getId();
 						} else {
 							$link = $channel->addMember($user);
@@ -480,7 +488,7 @@ class DiscussionController extends Controller
 					$this->get("app.notifications")->read($this->getUser(), $user, "private_message");
 				}
 			}else if($type == "channel"){
-				$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Channel")->find($id);
+				$channel = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream")->find($id);
 				if($channel==null){
 					$data['errors'][] = "badid";
 				}else {
@@ -514,13 +522,13 @@ class DiscussionController extends Controller
 		}
 		else {
 
-			$channel = $manager->getRepository("TwakeDiscussionBundle:Channel")->findOneById($request->request->get("channelId"));
+			$channel = $manager->getRepository("TwakeDiscussionBundle:Stream")->findOneById($request->request->get("channelId"));
 
 			if ($channel == null) {
 				$data['errors'][] = "channelnotfound";
 			}
 			else {
-				$linkMemberChannel = $manager->getRepository("TwakeDiscussionBundle:ChannelMember")->findOneBy(Array("user" => $this->getUser(), "channel" => $channel));
+				$linkMemberChannel = $manager->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user" => $this->getUser(), "channel" => $channel));
 
 				if ($linkMemberChannel == null) {
 					$data['errors'][] = "notinchannel";
@@ -555,7 +563,7 @@ class DiscussionController extends Controller
 				$data["errors"][] = "notallowed";
 			}
 			else {
-				$channel = new Channel($workspace, $request->request->get("name"),$request->request->get("privacy"));
+				$channel = new Stream($workspace, $request->request->get("name"),$request->request->get("privacy"));
 		        $link = $channel->addMember($this->getUser());
 				$manager = $this->getDoctrine()->getManager();
 		        $manager->persist($channel);
@@ -610,11 +618,11 @@ class DiscussionController extends Controller
 						$data['errors'][] = "nochannel";
 				}
 				else{
-					$channels = $manager->getRepository("TwakeDiscussionBundle:Channel")->findBy(Array("id" => $channelIds));
+					$channels = $manager->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("id" => $channelIds));
 
 					foreach( $channels as $channel){
 						if($channel != null){
-							$link = $manager->getRepository("TwakeDiscussionBundle:ChannelMember")->findby(Array("user"=>$this->getUser(),"channel"=>$channel));
+							$link = $manager->getRepository("TwakeDiscussionBundle:StreamMember")->findby(Array("user"=>$this->getUser(),"channel"=>$channel));
 							if($link != null){
 								$data['data'][] = $channel->getId().":alreadyJoined";
 							}
@@ -635,5 +643,5 @@ class DiscussionController extends Controller
 			}
 			return new JsonResponse($data);
 		}
-	}
+	}*/
 }

@@ -1,3 +1,7 @@
+twake_message:
+    resource: "@TwakeMessageBundle/Resources/config/routing.yml"
+    prefix:   /
+
 administration_authentication:
     resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
     prefix:   /administration/ajax/authentication

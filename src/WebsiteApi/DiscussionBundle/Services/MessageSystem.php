@@ -3,10 +3,12 @@
 
 namespace WebsiteApi\DiscussionBundle\Services;
 
+use MessagesSystemInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\DiscussionBundle\Entity\MessageLike;
+use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Services\Notifications;
 use WebsiteApi\UsersBundle\Entity\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -14,7 +16,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 /**
  * Manage contacts
  */
-class Messages
+class MessageSystem
 {
 
 	var $string_cleaner;
@@ -37,10 +39,107 @@ class Messages
 		$this->levelManager = $levelManager;
 	}
 
+	public function sendMessage($senderType, $senderId, $recieverType, $recieverId, $content, $subject=null ){
+	    error_log("send message senderId:".$senderId.", recieverType:".$recieverType.", recieverId:".$recieverId);
+        if($senderType=="A" || $senderType=="U"|| $senderType=="S"){
+            $sender = null;
+            $reciever = null;
+            if($senderType == "U"){
+                $sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
+            }
+            elseif($senderType == "A") {
+                $sender = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($senderId);
+            }
+
+            if($recieverType == "S"){
+                $reciever = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
+            }
+            elseif($recieverType == "U"){
+                $reciever = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
+            }
+            if( ($senderType=="S" || $sender!=null) && $reciever!=null ){
+                $message = new Message($senderType,$sender,$recieverType,$reciever,new \DateTime(),$content,null);
+                $this->doctrine->persist($message);
+                $this->doctrine->flush();
+                return $message;
+            }
+        }
+    }
+
+    public function editMessage($id,$content){
+        $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($id);
+        if($message != null) {
+            $message->setContent($content);
+            $message->setEdited(true);
+            $this->doctrine->persist($message);
+            $this->doctrine->flush();
+            return $message;
+        }
+        return false;
+    }
+
+   public function getMessages($user,$recieverType,$recieverId,$offset){
+	    error_log("reciever type".$recieverType.", revcieverId:".$recieverId);
+	    if($recieverType == "S"){
+	        error_log("stream");
+	        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
+	        if($stream != null){
+	            error_log("stream found");
+                $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("typeReciever" => "S", "streamReciever" => $stream),Array("date"=>"DESC"), $limit = 15, $offset = $offset);
+                $messages = array_reverse($messages);
+                $retour = [];
+                foreach($messages as $message){
+                    $retour[] = $message->getArray();
+                }
+                return $retour;
+            }
+        }
+        elseif($recieverType == "U"){
+	        error_log("user");
+            $otherUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
+            if($otherUser != null){
+                $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $otherUser,"userReciever"=>$user),Array("date"=>"DESC"), $limit = $offset, $offset = 0);
+                $messages = array_merge($messages,$this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $user,"userReciever"=>$otherUser),Array("date"=>"DESC"), $limit = 30, $offset = $offset));
+                $messages = array_reverse($messages);
+;                $retour = [];
+                foreach($messages as $message){
+                    $retour[] = $message->getArray();
+                }
+                print_r($retour);
+                return $retour;
+            }
+        }
+   }
+
+
+
+
+    function isAllowed($sender,$recieverType,$recieverId){
+        return true;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /***** old *******/
+
+
 	/**
 	 * Verify that the user is allowed to send messages in this discussion
 	 */
-	function isAllowed(User $user, $discussionType, $discussionId){
+	function isAllowed_old(User $user, $discussionType, $discussionId){
 
 		//Verify user is logged in
 		if ($user == null
@@ -57,15 +156,15 @@ class Messages
 		}
 
 
-		if($discussionType=='channel'){
+		if($discussionType=='stream'){
 
 
 			//Verify that the user is in the channel
-			$channelMember = $this->doctrine->getRepository("TwakeDiscussionBundle:ChannelMember");
+			$channelMember = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember");
 			$channelMemberEntity = $channelMember->findOneBy(
 				Array(
 					"user"=>$user,
-					"channel"=>$discussionId
+					"stream"=>$discussionId
 				)
 			);
 			if(
@@ -74,9 +173,9 @@ class Messages
 
 				return false;
 			}else{
-				if(!$this->levelManager->hasRight($user, $channelMemberEntity->getChannel()->getGroup(), 'Messages:general:view')){
+				/*if(!$this->levelManager->hasRight($user, $channelMemberEntity->getChannel()->getGroup(), 'Messages:general:view')){
 					return false;
-				}
+				}*/
 				return true;
 			}
 
@@ -127,7 +226,7 @@ class Messages
 				$discussionId = $ids[0];
 			}
 		}else{
-			$discussionType = "channel";
+			$discussionType = "stream";
 			$discussionId = intval($discussionKey);
 		}
 
@@ -141,7 +240,7 @@ class Messages
    */
 	function convertKey($discussionKey, $user){
 	    if(count(explode("_", $discussionKey))==2){
-	      $discussionType = "user";
+	      $discussionType = "U"; //user
 	      $ids = explode("_", $discussionKey);
 	      if($ids[0] == $user->getId()){
 	        $discussionId = $ids[1];
@@ -149,7 +248,7 @@ class Messages
 	        $discussionId = $ids[0];
 	      }
 	    }else{
-	      $discussionType = "channel";
+	      $discussionType = "S"; // Stream
 	      $discussionId = intval($discussionKey);
 	    }
 	    return Array(
@@ -236,7 +335,7 @@ class Messages
 	/**
 	 * Edit a message and send modifications to users
 	 */
-	function editMessage($user, $discussionType, $discussionId, $messageId, $content, $topic = null){
+	function editMessage_old($user, $discussionType, $discussionId, $messageId, $content, $topic = null){
 
 		$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneById($messageId);
 
@@ -467,7 +566,7 @@ class Messages
 	/**
 	 * Send a message to a discussion
 	 */
-	function sendMessage($user, $discussionType, $discussionId, $content, $topic = null){
+	function sendMessage_old($user, $discussionType, $discussionId, $content, $topic = null){
 
 		//First datas
 
@@ -476,9 +575,9 @@ class Messages
 		$messagerieAppLink = null;
 		$receiverUser = null;
 		if($discussionType=='channel'){
-			$channel = $this->doctrine->getRepository("TwakeDiscussionBundle:Channel")->find($discussionId);
+			$channel = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussionId);
 
-			$linkMemberRepo = $this->doctrine->getRepository("TwakeDiscussionBundle:ChannelMember");
+			$linkMemberRepo = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember");
 
 			if(!$this->levelManager->hasRight($user, $channel->getGroup(), 'Messages:general:post')){
 				return;
@@ -637,13 +736,14 @@ class Messages
 
 	}
 
-	function sendMessageUpload($user, $discussionType, $discussionId, $idFile, $fileIsInDrive, $topic = null){
+
+/*	function sendMessageUpload($user, $discussionType, $discussionId, $idFile, $fileIsInDrive, $topic = null){
 		$channel = null;
 		$linkMemberRepo = null;
 		$receiverUser = null;
 		if($discussionType=='channel'){
-			$channel = $this->doctrine->getRepository("TwakeDiscussionBundle:Channel")->find($discussionId);
-			$linkMemberRepo = $this->doctrine->getRepository("TwakeDiscussionBundle:ChannelMember");
+			$channel = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussionId);
+			$linkMemberRepo = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember");
 			if(!$this->levelManager->hasRight($user, $channel->getGroup(), 'Messages:general:post')){
 				return;
 			}
@@ -761,7 +861,7 @@ class Messages
 
 
 	}
-
+*/
 	function removeFileFromDrive($fileId) {
 
 		$messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("driveFile" => $fileId));
@@ -788,7 +888,7 @@ class Messages
 			}
 			$members = Array($user, $other);
 		}elseif($discussionType=='channel'){
-			$channel = $this->doctrine->getRepository("TwakeDiscussionBundle:Channel")->find($discussionId);
+			$channel = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussionId);
 			if($channel==null){
 				return; //no such channel, shouln't append
 			}
