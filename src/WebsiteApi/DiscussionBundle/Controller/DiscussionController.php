@@ -14,7 +14,6 @@ class DiscussionController extends Controller
 {
 
     public function getMessageAction(Request $request){
-        error_log("init");
         $data = Array(
             'errors' => Array(),
             'data' => Array()
@@ -31,11 +30,14 @@ class DiscussionController extends Controller
             else{
                 $discussion = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
                 $messages = [];
-                while(count($messages)<30){
-                    $messages2 = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],intval($request->request->get("offset")),$request->request->get("subject"));
-                    $messages = array_merge($messages,$messages2);
-                }
-                $data["data"] = $messages;
+                $messages1 = Array();
+                do{
+                    $messages1 = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],intval($request->request->get("offset")),$request->request->get("subject"));
+                    $messages = array_merge($messages,$messages1);
+                    error_log(count($messages1));
+                }while(count($messages)<30 && count($messages1)>0);
+
+                    $data["data"] = $messages;
             }
         }
         return new JsonResponse($data);

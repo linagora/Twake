@@ -89,30 +89,24 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                 $message = $this->messagesService->sendMessage("U",$currentUser->getId(), $type, $id, $event['data']['content'], $event["data"]['subject']);
                 $event["data"] = $message->getArray();
 			}
-            if($operation == "E"){
+            else if($operation == "E"){
             	$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($event["data"]["id"]);
             	if($message != null && $message->getTypeSender()=="U" && $message->getUserSender()==$currentUser){
 	                $message = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
 	                $event["data"] = $message->getArray();
             	}
             }
-            if($operation == "CS"){ //creation subject
+            else if($operation == "CS"){ //creation subject
                 if( isset($event["data"]["idMessage"]) && $event["data"]["idMessage"] !=null ){
                 	$subject = $this->subjectService->createSubjectFromMessage($event["data"]["idMessage"]);
 					$event["data"] = $subject->getArray();
 				}
 			}
-
-//			elseif ($operation == 'W') {
-//				if (isset($event['data']) && isset($event['data']['event'])) {
-//					$topic->broadcast(Array(
-//						'type' => 'W',
-//						'data' => Array(
-//							"event" => $event['data']['event'],
-//							"id" => $currentUser->getId()
-//						)
-//					));
-//				}
+			elseif ($operation == 'W') { // is writing
+                if (isset($event['data']) && isset($event['data']['isWriting'])) {
+                    $event["data"]["id"] = $currentUser->getId();
+                }
+            }
 
             $topic->broadcast($event);
 		} else {
