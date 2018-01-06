@@ -270,7 +270,7 @@
 //
 //
 //
-//    public function getArray(){
+//    public function getAsArray(){
 //        return Array(
 //            "id" => $this->getId(),
 //            'senderId' => $this->getSender()->getId(),

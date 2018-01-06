@@ -23,7 +23,7 @@ class Upload
 		$this->imagesModifiers = $imagesModifiers;
 	}
 
-	private function getArraySizes($sizes){
+	private function getAsArraySizes($sizes){
 		$res = Array();
 
 		$reallimit_sizes = Array(64,128,256,512,1000000000000);

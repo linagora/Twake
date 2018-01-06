@@ -269,7 +269,7 @@ class DefaultController extends Controller
 				$data["ownerDetails"] = $status[0]->getOwnerDetails();
 
 				foreach ($status as $singleStatus) {
-					$data["data"][] = $singleStatus->getArray($manager, $this->getUser(), $this->get("app.status")->canAccessStatus($this->getUser(), $singleStatus->getOwner()));
+					$data["data"][] = $singleStatus->getAsArray($manager, $this->getUser(), $this->get("app.status")->canAccessStatus($this->getUser(), $singleStatus->getOwner()));
 				}
 			}
 		}
@@ -300,7 +300,7 @@ class DefaultController extends Controller
 
 			foreach ($likes as $like) {
 				if (in_array($like->getUser(), $contactsLinks)) {
-					$data['data'][] = $like->getUser()->getAsSimpleArray();
+					$data['data'][] = $like->getUser()->getAsArray();
 				}
 			}
 		}
@@ -358,7 +358,7 @@ class DefaultController extends Controller
 				->getResult();
 
 			foreach ($status as $singleStatus) {
-				$data["data"][] = $singleStatus->getArray($manager, $this->getUser(), $this->get("app.status")->canAccessStatus($this->getUser(), $singleStatus->getOwner()), true);
+				$data["data"][] = $singleStatus->getAsArray($manager, $this->getUser(), $this->get("app.status")->canAccessStatus($this->getUser(), $singleStatus->getOwner()), true);
 			}
 		}
 

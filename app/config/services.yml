@@ -99,11 +99,11 @@ services:
             - { name: gos_web_socket.topic }
 
 
-    #connections.topic:
-    #    class: WebsiteApi\UsersBundle\Topic\ConnectionsTopic
-    #    tags:
-    #        - { name: gos_web_socket.topic }
-    #    arguments: ["@doctrine.orm.entity_manager"]
+    connections.topic:
+        class: WebsiteApi\UsersBundle\Topic\ConnectionsTopic
+        tags:
+            - { name: gos_web_socket.topic }
+        arguments: ["@doctrine.orm.entity_manager"]
 
 
     #################################################################################

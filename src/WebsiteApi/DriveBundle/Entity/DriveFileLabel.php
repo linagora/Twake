@@ -6,72 +6,91 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
- * DriveFile
+ * DriveFileLabel
  *
- * @ORM\Table(name="drive_activity",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveActivityRepository")
+ * @ORM\Table(name="drive_file_label",options={"engine":"MyISAM"})
+ * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileLabelRepository")
  */
-class DriveActivity
+class DriveFileLabel
 {
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile",cascade={"persist"})
+	 * @ORM\Column(name="id", type="integer")
+	 * @ORM\Id
+	 * @ORM\GeneratedValue(strategy="AUTO")
+	 */
+	private $id;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+	 * @ORM\JoinColumn(nullable=false)
+	 */
+	private $group;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
+	 * @ORM\JoinColumn(nullable=true)
+	 */
+	private $file_parent;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	private $file;
 
 	/**
-	 * @ORM\Column(type="string", length=10)
-	 */
-	private $type;
-
-	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=true)
+	 * @ORM\JoinColumn(nullable=false)
 	 */
-	private $user;
+	private $label;
 
-	/**
-	 * @ORM\Column(type="string", length=256)
-	 */
-	private $message;
-
-
-	public function __construct($file, $type, $message, $user=null)
-	{
+	public function __construct($file, $label){
+		$this->label = $label;
 		$this->file = $file;
-		$this->message = $message;
-		$this->type = ($type=="system")?$type:"comment";
-		$this->user = $user;
 
+		$this->group = $file->getGroup();
+		$this->file_parent = $file->getParent();
 	}
 
+	/**
+	 * @return mixed
+	 */
 	public function getId()
 	{
 		return $this->id;
 	}
 
-	public function getAsArray(){
+	/**
+	 * @return mixed
+	 */
+	public function getFile()
+	{
+		return $this->file;
+	}
 
-		$array = Array(
-			"id" => $this->id,
-			"type" => $this->type,
-			"message" => $this->message,
-			"file" => $this->file->getAsArray(),
-			"user" => null
-		);
+	/**
+	 * @param mixed $file
+	 */
+	public function setFile($file)
+	{
+		$this->file = $file;
+	}
 
-		if($this->user){
-			$array["user"] = $this->user->getAsArray();
-		}
+	/**
+	 * @return mixed
+	 */
+	public function getLabel()
+	{
+		return $this->label;
+	}
 
-		return $array;
+	/**
+	 * @param mixed $label
+	 */
+	public function setLabel($label)
+	{
+		$this->label = $label;
 	}
 
 }

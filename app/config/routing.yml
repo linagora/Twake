@@ -1,7 +1,3 @@
-twake_message:
-    resource: "@TwakeMessageBundle/Resources/config/routing.yml"
-    prefix:   /
-
 administration_authentication:
     resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
     prefix:   /administration/ajax/authentication
@@ -107,6 +103,12 @@ twake_comments:
     resource: "@TwakeCommentsBundle/Resources/config/routing.yml"
     prefix:   /ajax/status/comment
     methods: [POST]
+
+twake_api_error:
+    path:     /ajax/{req}
+    defaults: { _controller: TwakeCheckBundle:Error:BadRequest }
+    requirements:
+      req: ".*"
 
 #API pour les developpeurs
 developers_api_users:

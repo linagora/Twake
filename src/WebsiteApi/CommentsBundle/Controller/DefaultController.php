@@ -110,7 +110,7 @@ class DefaultController extends Controller
 	    	$comments = $message->getCommentsEntities($manager, $limit, $offset);
 
 	    	foreach ($comments as $comment) {
-				$data["data"][] = $comment->getArray($manager, $this->getUser(), $limit);
+				$data["data"][] = $comment->getAsArray($manager, $this->getUser(), $limit);
 		    }
 	    }
 

@@ -29,7 +29,7 @@ class DefaultController extends Controller
 		$users = $request["group"]->getMembersUsers();
 
 		foreach ($users as $user) {
-			$userArray = $user->getAsSimpleArray();
+			$userArray = $user->getAsArray();
 			$userData = Array("id" => $user->getId());
 			foreach ($fields as $field) {
 				if (isset($userArray[$field])) {

@@ -90,7 +90,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                     }
 				}
                 $message = $this->messagesService->sendMessage("U",$currentUser->getId(), $type, $id, $event['data']['content'], null);
-                $event["data"] = $message->getArray();
+                $event["data"] = $message->getAsArray();
 			}
             if($operation == "E"){
                 if( $request->getAttributes()->get("subject")!=null ){
@@ -100,7 +100,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                     }
                 }
                 $message = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
-                $event["data"] = $message->getArray();
+                $event["data"] = $message->getAsArray();
             }
 
 //			elseif ($operation == 'W') {

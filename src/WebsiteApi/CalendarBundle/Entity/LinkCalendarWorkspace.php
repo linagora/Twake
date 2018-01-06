@@ -109,7 +109,7 @@ class LinkCalendarWorkspace{
     }
 
 
-    public function getArray(){
+    public function getAsArray(){
         return Array(
             "id" => $this->getId(),
             "workspace" => $this->getWorkspace(),

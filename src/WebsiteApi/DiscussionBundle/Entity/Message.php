@@ -340,19 +340,19 @@ class Message
 
 
 
-    public function getArray(){
+    public function getAsArray(){
         $applicationSender = Array();
         if($this->getApplicationSender() != null){
-            $applicationSender = $this->getApplicationSender()->getArray();
+            $applicationSender = $this->getApplicationSender()->getAsArray();
         }
         return Array(
             "id" => $this->getId(),
             "senderType" => $this->getTypeSender(),
-            "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getArray():null,
-            "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getArray():null,
+            "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getAsArray():null,
+            "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getAsArray():null,
             "recieverType" => $this->getTypeReciever(),
-            "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getArray():null,
-            "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getArray():null,
+            "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getAsArray():null,
+            "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getAsArray():null,
             "content" => $this->getContent(),
             "cleanContent" => $this->getCleanContent(),
             "date" => $this->getDate(),

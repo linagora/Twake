@@ -3,8 +3,8 @@
 namespace WebsiteApi\DriveBundle\Repository;
 
 /**
- * DriveFileLabelRepository
+ * DriveLabelRepository
  */
-class DriveFileLabelRepository extends \Doctrine\ORM\EntityRepository
+class DriveLabelRepository extends \Doctrine\ORM\EntityRepository
 {
 }

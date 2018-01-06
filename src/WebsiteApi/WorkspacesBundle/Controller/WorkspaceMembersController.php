@@ -51,7 +51,7 @@ class WorkspaceMembersController extends Controller
 
 				$membersA = $manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->getSomeUsers($workspace,"A", $request->request->getInt("offset"), $request->request->getInt("limit"));
 				foreach($membersA as $member){
-						$newdata = $member->getUser()->getAsSimpleArray();
+						$newdata = $member->getUser()->getAsArray();
 						$newdata['mail'] = $member->getUser()->getEmail();
 						$newdata['role'] = $member->getLevel()->getName();
 						$data['data']['members'][] = $newdata;
