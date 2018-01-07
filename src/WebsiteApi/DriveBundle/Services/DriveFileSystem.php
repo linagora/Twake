@@ -88,12 +88,6 @@ class DriveFileSystem implements DriveFileSystemInterface
 		return dirname($this->root) . "/" . "drive" . "/";
 	}
 
-	private function getMimeType($path)
-	{
-		$mimetype = mime_content_type($path);
-		return $mimetype;
-	}
-
 	// @improveName updates name of object in case a directory already exists where we want to move it
 	/**
 	 * @param $fileOrDirectory
@@ -396,16 +390,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 		$all = explode(".", $fileOrDirectory->getName());
 		$extension = array_pop($all);
 
-		if (!$fileOrDirectory->getIsDirectory()) {
-			$mimetype = $this->getMimeType($this->getRoot() . $fileOrDirectory->getPath());
-		} else {
-			$mimetype = "";
-		}
-
 		return Array(
 			"name" => $fileOrDirectory->getName(),
 			"extension" => $extension,
-			"mimetype" => $mimetype,
 			"size" => $fileOrDirectory->getSize(),
 			"parentId" => ($fileOrDirectory->getParent()) ? $fileOrDirectory->getParent()->getId() : 0,
 			"isDirectory" => $fileOrDirectory->getIsDirectory(),
