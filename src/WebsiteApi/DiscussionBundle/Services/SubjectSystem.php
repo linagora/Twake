@@ -69,4 +69,22 @@ class SubjectSystem
         $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject"=>$subject),Array("date"=>"ASC"));
         return $messages;   
     }
+
+    public function getFirstMessage($subject){
+        $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subject);
+        if($subject == null){
+            return false;
+        }
+        $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("subject"=>$subject),Array("date"=>"ASC"));
+        return $message;
+    }
+    public function getLastMessage($subject){
+        $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subject);
+        if($subject == null){
+            return false;
+        }
+        $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("subject"=>$subject),Array("date"=>"DESC"));
+        return $message;
+    }
+
 }

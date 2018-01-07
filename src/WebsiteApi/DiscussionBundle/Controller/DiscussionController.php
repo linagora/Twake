@@ -65,7 +65,10 @@ class DiscussionController extends Controller
                             $subjects = $this->get("app.subjectSystem")->getSubject($stream);
                             $retour = [];
                             foreach($subjects as $subject){
+                                $fistMessage = $this->get("app.subjectSystem")->getFirstMessage($subject);
+                                $lastMessage = $this->get("app.subjectSystem")->getLastMessage($subject);
                                 $retour[] = $subject->getArray();
+
                             }
                             $data["data"] = $retour;
                         }
