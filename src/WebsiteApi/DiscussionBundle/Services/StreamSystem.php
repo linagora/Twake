@@ -97,4 +97,28 @@ class StreamSystem
             }
         }
     }
+
+    public function getStreamList($id,$user){
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$id,"isDeleted"=>false));
+        if($workspace == null){
+            return false;
+        }
+        else{
+            $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace"=>$workspace));
+            $retour = [];
+            foreach($streams as $stream){
+                if(!$stream->getPrivacy()){ //public stream
+                    $retour[] = $stream;
+                }
+                else{
+                    $link = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream));
+                    if($link != null){
+                        $retour[] = $stream;
+                    }
+                }
+            }
+            return $streams;
+        }
+
+    }
 }

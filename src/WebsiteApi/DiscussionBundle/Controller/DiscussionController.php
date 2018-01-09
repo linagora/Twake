@@ -132,13 +132,12 @@ class DiscussionController extends Controller
         return new JsonResponse($data);
     }
 
-	public function getChannelsAction(Request $request){
+	public function getStreamAction(Request $request){
 		$data = Array(
 			'errors' => Array(),
 			'data' => Array()
 		);
 
-		$manager = $this->getDoctrine()->getManager();
 		$securityContext = $this->get('security.authorization_checker');
 
 		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
@@ -149,64 +148,39 @@ class DiscussionController extends Controller
                 $data["errors"] = "missingarguments";
             }
             else{
-                $workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
-                if ($workspace == null) {
-                    $data["errors"][] = "groupnotfound";
-
-                } elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:view")){
-                    $data["errors"][] = "notallowed";
-                }
-                else {
-                    $result = Array();
-                    foreach ($workspace->getStreams() as $stream) {
-
-                        $repoLinks = $manager
-                            ->getRepository("TwakeDiscussionBundle:StreamMember");
-                        $linkMemberChannel = null;
-                        $members = [];
-                        $show = false;
-
-                        if (!$stream->getPrivacy()) {
-                            $show = true;
-                            $linkMemberChannel = $repoLinks
-                                ->findOneBy(Array("user" => $this->getUser(), "stream" => $stream));
-                        } else {
-                            $membersChannel = $repoLinks
-                                ->findBy(Array("stream" => $stream));
-                            foreach ($membersChannel as $linkMember) {
-                                error_log($stream->getId());
-                                error_log($linkMember->getUser()->getId());
-                                $members[] = $linkMember->getUser()->getAsSimpleArray();
-                                if ($linkMember->getUser()->getId() == $this->getUser()->getId()) {
-                                    $show = true;
-                                    $linkMemberChannel = $linkMember;
-                                }
-                            }
-                        }
-
-
-                        if ($linkMemberChannel == null && !$stream->getPrivacy()) {
-                            //Add user to channel
-                            $linkMemberChannel = new StreamMember($stream, $this->getUser());
-                            $manager->persist($linkMemberChannel);
-                            $manager->flush();
-                        }
-
-                        if ($show) {
-                            $result[] = Array(
-                                'id' => $stream->getId(),
-                                'name' => $stream->getName(),
-                                'mute' => $linkMemberChannel->getMute(),
-                                'privacy' => $stream->getPrivacy(),
-                                'members' => $members
-                            );
-                        }
-                    }
-                    $data['data'] = $result;
-                }
+            	$streams = $this->get("app.streamSystem")->getStreamList($request->request->get("gid"),$this->getUser());
+            	$retour = [];
+            	foreach ($streams as $stream) {
+            		$retour[] = $stream->getArray();
+            	}
+            	$data["data"] = $retour;
             }
 
         }
+		return new JsonResponse($data);
+	}
+
+
+	public function searchMessageAction(Request $request){
+		$data = Array(
+			'errors' => Array(),
+			'data' => Array()
+		);
+
+		$securityContext = $this->get('security.authorization_checker');
+
+/*		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+			$data['errors'][] = "notconnected";
+		}
+		else {
+*/			$discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
+			$messages = $this->get("app.messages")->searchMessage($discussionInfos["type"],$discussionInfos["id"],$request->request->get("content"),intval($request->request->get("from")),$request->request->get("dateStart"),$request->request->get("dateEnd"));
+			$retour = Array();
+			foreach ($messages as $message) {
+				$retour[] = $message->getArray();
+			}
+			$data["data"] = $retour;
+//		}	
 		return new JsonResponse($data);
 	}
 /*

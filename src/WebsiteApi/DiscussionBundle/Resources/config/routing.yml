@@ -1,10 +1,14 @@
-message_init:
+message_get:
     path:     /getMessage
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getMessage}
 
+message_search:
+    path:     /searchMessage
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:searchMessage}
+
 channels_get:
     path:     /streams/get
-    defaults: { _controller: TwakeDiscussionBundle:Discussion:getChannels }
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:getStream }
 
 subjectList_get:
     path:     /subject/getList

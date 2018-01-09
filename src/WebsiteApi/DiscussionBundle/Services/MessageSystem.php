@@ -147,6 +147,25 @@ class MessageSystem
     }
 
 
+    function searchMessage($type,$idDiscussion,$content,$from,$dateStart,$dateEnd){
+    	if($idDiscussion == null || $type == null){
+    		return false;
+    	}
+    	if($type == "S"){
+	    	$stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($idDiscussion);
+	    	if($stream == null){
+	    		return false;
+	    	}
+	    	$messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findMessageBy(Array(
+	    		"idDiscussion" => $idDiscussion,
+	    		"content" => $content,
+	    		"from" => $from,
+	    		"dateStart" => $dateStart,
+	    		"dateEnd" => $dateEnd
+	    	));
+	    	return $messages;
+    	}
+    }
 
 
 
