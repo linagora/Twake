@@ -14,7 +14,7 @@ interface AdministrationTwakeUserManagementInterface
     public function listTwakeUsers($pageNumber,$nbUserByPage,$filters=null,&$total=null);
 
     //@setEnableTwakeUser block or unblock twake user
-    public function setEnableTwakeUser($idTwakeUser,$bool);
+    public function setBannedTwakeUser($idTwakeUser,$bool);
 
     //@getInfoUser return associative array with all user info
     public function getInfoUser($idTwakeUser);

@@ -28,7 +28,7 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
 
 
 
-    public function setEnableTwakeUser($idTwakeUser,$bool)
+    public function setBannedTwakeUser($idTwakeUser,$bool)
     {
         $em = $this->doctrine;
         $repository = $em->getRepository("TwakeUsersBundle:User");
@@ -50,7 +50,7 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
     }
 
     public function searchUser(){
-        
+
     }
 
 
