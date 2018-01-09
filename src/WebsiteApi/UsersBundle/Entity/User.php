@@ -52,6 +52,18 @@ class User extends BaseUser
 	 */
 	protected $workspacesLinks;
 
+	/**
+	 * @var int
+	 * @ORM\Column(name="connections", type="integer")
+	 */
+	protected $connections;
+
+	/**
+	 * @var int
+	 * @ORM\Column(name="connected", type="boolean")
+	 */
+	protected $connected;
+
 
 	public function __construct()
 	{
@@ -133,6 +145,28 @@ class User extends BaseUser
 		return $workspaces;
 	}
 
+	/* Manage connections with websocket */
+	public function getConnections()
+	{
+		return $this->connections;
+	}
+
+	public function isConnected()
+	{
+		return $this->connected;
+	}
+
+	public function addConnection()
+	{
+		$this->connections += 1;
+		$this->connected = true;
+	}
+
+	public function remConnection()
+	{
+		$this->connections = max(0, $this->connections - 1);
+		$this->connected = $this->connections > 0;
+	}
 
 	public function getAsArray()
 	{
@@ -142,19 +176,8 @@ class User extends BaseUser
 			"firstname" => $this->getFirstName(),
 			"lastname" => $this->getLastName(),
 			"thumbnail" => ($this->getThumbnail()==null)?null:$this->getThumbnail()->getPublicURL(2),
-
 		);
 		return $return;
 	}
-    public function getArray()
-    {
-        return Array(
-            "id" => $this->getId(),
-            "username" => $this->getUsername(),
-            "susername" => $this->getUsernameClean(),
-            "userimage" => $this->getUrlProfileImage(),
-            "connected" => $this->isConnected()
-        );
-    }
 
 }

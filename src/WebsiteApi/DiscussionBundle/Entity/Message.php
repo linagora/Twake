@@ -340,10 +340,10 @@ class Message
 
 
 
-    public function getArray(){
+    public function getAsArray(){
         $applicationSender = Array();
         if($this->getApplicationSender() != null){
-            $applicationSender = $this->getApplicationSender()->getArray();
+            $applicationSender = $this->getApplicationSender()->getAsArray();
         }
         return Array(
             "id" => $this->getId(),

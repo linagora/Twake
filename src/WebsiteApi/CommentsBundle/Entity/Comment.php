@@ -217,14 +217,14 @@ class Comment
 		return $doctrineManager->getRepository("TwakeCommentsBundle:Like")->findBy(Array("likedEntityType" => Comment::getClassId($this)));
 	}
 
-	public function getArray(ObjectManager $doctrineManager, $currentUser, $limit) {
+	public function getAsArray(ObjectManager $doctrineManager, $currentUser, $limit) {
 
 		$dateDifference = $this->getDate()->diff(new \DateTime());
 
 		$commentsDetails = Array();
 		$comments = $this->getCommentsEntities($doctrineManager, $limit, 0);
 		foreach ($comments as $comment) {
-			$commentsDetails[] = $comment->getArray($doctrineManager, $currentUser, 0);
+			$commentsDetails[] = $comment->getAsArray($doctrineManager, $currentUser, 0);
 		}
 
 		return Array(

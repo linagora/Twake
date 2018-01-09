@@ -27153,7 +27153,7 @@
 	ExtrudeBufferGeometry.prototype = Object.create(BufferGeometry.prototype);
 	ExtrudeBufferGeometry.prototype.constructor = ExtrudeBufferGeometry;
 
-	ExtrudeBufferGeometry.prototype.getArrays = function () {
+	ExtrudeBufferGeometry.prototype.getAsArrays = function () {
 
 		var positionAttribute = this.getAttribute("position");
 		var verticesArray = positionAttribute ? Array.prototype.slice.call(positionAttribute.array) : [];
@@ -27175,7 +27175,7 @@
 	ExtrudeBufferGeometry.prototype.addShapeList = function (shapes, options) {
 
 		var sl = shapes.length;
-		options.arrays = this.getArrays();
+		options.arrays = this.getAsArrays();
 
 		for (var s = 0; s < sl; s++) {
 
@@ -27192,7 +27192,7 @@
 
 	ExtrudeBufferGeometry.prototype.addShape = function (shape, options) {
 
-		var arrays = options.arrays ? options.arrays : this.getArrays();
+		var arrays = options.arrays ? options.arrays : this.getAsArrays();
 		var verticesArray = arrays.position;
 		var indicesArray = arrays.index;
 		var uvArray = arrays.uv;
@@ -37915,10 +37915,10 @@
 
 		],
 
-		getValue: function getValue_unbound(targetArray, offset) {
+		getValue: function getValue_unbound(targetAsArray, offset) {
 
 			this.bind();
-			this.getValue(targetArray, offset);
+			this.getValue(targetAsArray, offset);
 
 			// Note: This class uses a State pattern on a per-method basis:
 			// 'bind' sets 'this.getValue' / 'setValue' and shadows the

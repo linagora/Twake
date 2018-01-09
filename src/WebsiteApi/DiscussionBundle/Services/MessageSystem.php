@@ -130,7 +130,7 @@ class MessageSystem
                 $messages = array_reverse($messages);
 ;                $retour = [];
                 foreach($messages as $message){
-                    $retour[] = $message->getArray();
+                    $retour[] = $message->getAsArray();
                 }
                 print_r($retour);
                 return $retour;

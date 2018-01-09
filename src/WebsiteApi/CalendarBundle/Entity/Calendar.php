@@ -89,7 +89,7 @@ class Calendar {
 
 
 
-    public function getArray(){
+    public function getAsArray(){
         return Array(
             "id" => $this->getId(),
             "title" => $this->getTitle(),

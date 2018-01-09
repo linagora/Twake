@@ -56,7 +56,7 @@ class Calls
 				if ($member->getUser()->getId() == $user->getId()) {
 					$data["status"] = "joined";
 				}
-				$data["members"][] = $member->getUser()->getAsSimpleArray();
+				$data["members"][] = $member->getUser()->getAsArray();
 			}
 			return $data;
 		}

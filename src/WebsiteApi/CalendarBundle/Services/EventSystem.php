@@ -49,7 +49,7 @@ class EventSystem implements EventCalendarInterface
         } else {
             $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findBy(Array("user" => $user));
             foreach ($links as $link){
-                $result[] = $link->getEvent()->getArray();
+                $result[] = $link->getEvent()->getAsArray();
             }
             return $result;
         }
@@ -65,7 +65,7 @@ class EventSystem implements EventCalendarInterface
         } else {
             $events = $this->doctrine->getRepository("TwakeCalendarBundle:TwakeEvent")->findBy(Array("calendar" => $cal));
             foreach ($events as $event){
-                $result[] = $event->getArray();
+                $result[] = $event->getAsArray();
             }
             return $result;
         }

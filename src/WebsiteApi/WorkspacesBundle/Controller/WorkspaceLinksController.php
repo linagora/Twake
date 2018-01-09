@@ -157,7 +157,7 @@ class WorkspaceLinksController extends Controller
         "child" => $link->getChild()->getAsSimpleArray(),
         "status" => $link->getStatus(),
         "asker" => $link->getAsker(),
-	      "parentToChildLevel" =>  $link->getParentToChildLevel() == null ? Array() : $link->getParentToChildLevel()->getArray()
+	      "parentToChildLevel" =>  $link->getParentToChildLevel() == null ? Array() : $link->getParentToChildLevel()->getAsArray()
       );
       $dlinks[] = $dlink;
     }

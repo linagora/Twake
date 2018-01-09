@@ -206,7 +206,7 @@ class Status
 	public function getOwnerDetails() {
 
 		if ($this->getUser() != null) {
-			return $this->getUser()->getAsSimpleArray();
+			return $this->getUser()->getAsArray();
 		}
 
 		return $this->getWorkspace()->getAsSimpleArray();
@@ -226,7 +226,7 @@ class Status
 		);
 	}
 
-	public function getArray(ObjectManager $doctrineManager, $currentUser, $sharedStatusCanBeShown, $includesOwnerDetails = false) {
+	public function getAsArray(ObjectManager $doctrineManager, $currentUser, $sharedStatusCanBeShown, $includesOwnerDetails = false) {
 
 		$dateDifference = $this->getDate()->diff(new \DateTime());
 
@@ -252,8 +252,8 @@ class Status
 			"fileurl" => $this->getTempFile() != null ? "".$this->getTempFile()->getPublicURL() : "",
 			"likes" => $this->getLikes(),
 			"haveLiked" => $this->getLikeEntity($doctrineManager, $currentUser) != null,
-			"sharedStatus" => $sharedStatusCanBeShown && $this->getSharedStatus() != null ? $this->getSharedStatus()->getArray($doctrineManager, $currentUser, false, true) : null,
-			"initialSharedStatus" => $sharedStatusCanBeShown && $oldInitialSharedStatus != null ? $oldInitialSharedStatus->getArray($doctrineManager, $currentUser, false, true) : null,
+			"sharedStatus" => $sharedStatusCanBeShown && $this->getSharedStatus() != null ? $this->getSharedStatus()->getAsArray($doctrineManager, $currentUser, false, true) : null,
+			"initialSharedStatus" => $sharedStatusCanBeShown && $oldInitialSharedStatus != null ? $oldInitialSharedStatus->getAsArray($doctrineManager, $currentUser, false, true) : null,
 			"shares" => $this->getShares(),
 			"comments" => $this->getComments()
 		);

@@ -120,11 +120,11 @@ class Stream
         $this->privacy = $x;
     }
 
-    public function getArray(){
+    public function getAsArray(){
         $members = [];
         $membersLink = $this->getMembersLinks();
         foreach ($membersLink as $link){
-            $members[] = $link->getUser()->getArray();
+            $members[] = $link->getUser()->getAsArray();
         }
         return(
             Array(

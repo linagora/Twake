@@ -91,7 +91,7 @@ class LinkEventUser{
     }
 
 
-    public function getArray(){
+    public function getAsArray(){
         return Array(
             "id" => $this->getId(),
             "user" => $this->getUser(),

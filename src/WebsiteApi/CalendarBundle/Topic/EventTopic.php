@@ -99,7 +99,7 @@ class EventTopic implements TopicInterface, PushableTopicInterface
 
         if($event["type"] == "createEvent"){
             $eventRetour = $this->eventSystem->createEvent($currentUser, $event["data"]["title"], $event["data"]["startDate"], $event["data"]["endDate"], $event["data"]["description"], $event["data"]["location"], $event["data"]["color"], $calendarId,null);
-            $event["data"] = $eventRetour->getArray();
+            $event["data"] = $eventRetour->getAsArray();
         }
         elseif($event["type"] == "updateEvent"){
             if(!isset($event["data"]["owner"])){
@@ -109,7 +109,7 @@ class EventTopic implements TopicInterface, PushableTopicInterface
                 $event["data"]["appid"] = null;
             }
             $eventRetour = $this->eventSystem->updateEvent($event["data"]["id"],$event["data"]["owner"],$event["data"]["title"],$event["data"]["startDate"],$event["data"]["endDate"],$event["data"]["description"],$event["data"]["location"],$event["data"]["borderColor"],$event["data"]["calendar"],$event["data"]['appid']);
-            $event["data"] = $eventRetour->getArray();
+            $event["data"] = $eventRetour->getAsArray();
         }
         error_log("broadcast");
         print_r($event);

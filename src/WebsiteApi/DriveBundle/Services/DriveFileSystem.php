@@ -3,7 +3,11 @@
 
 namespace WebsiteApi\DriveBundle\Services;
 
+use AESCryptFileLib;
+use MCryptAES256Implementation;
 use WebsiteApi\DriveBundle\Entity\DriveFile;
+use WebsiteApi\DriveBundle\Entity\DriveFileLabel;
+use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
 use WebsiteApi\DriveBundle\Model\DriveFileSystemInterface;
 
 class DriveFileSystem implements DriveFileSystemInterface
@@ -82,12 +86,6 @@ class DriveFileSystem implements DriveFileSystemInterface
 	private function getRoot()
 	{
 		return dirname($this->root) . "/" . "drive" . "/";
-	}
-
-	private function getMimeType($path)
-	{
-		$mimetype = mime_content_type($path);
-		return $mimetype;
 	}
 
 	// @improveName updates name of object in case a directory already exists where we want to move it
@@ -229,6 +227,14 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 		$this->improveName($newFile);
 
+		//If file copy version (same key currently -> to improve)
+		if(!$newFile->getIsDirectory()) {
+			$newVersion = new DriveFileVersion($newFile);
+			$newVersion->setKey($fileOrDirectory->getLastVersion()->getKey());
+			$newVersion->setSize($fileOrDirectory->getSize());
+			$this->doctrine->persist($newVersion);
+		}
+
 		// Copy real file and sub files (copy entities)
 		$this->recursCopy($fileOrDirectory, $newFile);
 
@@ -281,11 +287,21 @@ class DriveFileSystem implements DriveFileSystemInterface
 			$isDirectory
 		);
 
+		$newFile->setLastModified();
+
 		if (!$isDirectory) {
+
+			$fileVersion = new DriveFileVersion($newFile);
+			$newFile->setLastVersion($fileVersion);
+
 			$path = $this->getRoot() . $newFile->getPath();
 			$this->verifyPath($path);
-			file_put_contents($path, $content);
+			$this->writeEncode($path, $fileVersion->getKey(), $content);
 			$size = filesize($path);
+
+			$fileVersion->setSize($size);
+			$this->doctrine->persist($fileVersion);
+
 		} else {
 			$size = 10;
 		}
@@ -320,11 +336,14 @@ class DriveFileSystem implements DriveFileSystemInterface
 			return null;
 		}
 
-		return file_get_contents($path);
+		return $this->readDecode($path, $file->getLastVersion()->getKey());
 	}
 
-	public function setRawContent($file, $content = null)
+	public function setRawContent($file, $content = null, $newVersion = false)
 	{
+		/**
+		 * @var DriveFile
+		 */
 		$file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
 
 		if ($file == null) {
@@ -334,12 +353,22 @@ class DriveFileSystem implements DriveFileSystemInterface
 		$path = $this->getRoot() . $file->getPath();
 
 		if (file_exists($path)) {
+
+			if($newVersion){
+				$newVersion = new DriveFileVersion($file);
+				$file->setLastVersion($newVersion);
+				$this->doctrine->persist($newVersion);
+			}
+
 			if ($content != null) {
 				$this->verifyPath($path);
-				file_put_contents($path, $content);
+				$this->writeEncode($path, $file->getLastVersion()->getKey(), $content);
 			}
+
 			$file->setSize(filesize($path));
+			$file->setLastModified();
 			$this->updateSize($file->getParent(), $file->getSize());
+
 		} else {
 			$this->delete($file);
 		}
@@ -361,16 +390,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 		$all = explode(".", $fileOrDirectory->getName());
 		$extension = array_pop($all);
 
-		if (!$fileOrDirectory->getIsDirectory()) {
-			$mimetype = $this->getMimeType($this->getRoot() . $fileOrDirectory->getPath());
-		} else {
-			$mimetype = "";
-		}
-
 		return Array(
 			"name" => $fileOrDirectory->getName(),
 			"extension" => $extension,
-			"mimetype" => $mimetype,
 			"size" => $fileOrDirectory->getSize(),
 			"parentId" => ($fileOrDirectory->getParent()) ? $fileOrDirectory->getParent()->getId() : 0,
 			"isDirectory" => $fileOrDirectory->getIsDirectory(),
@@ -571,6 +593,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 		);
 		$errors = $uploader->upload($file, $real, $context);
 
+		$this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey());
+
 		$this->setRawContent($newFile);
 
 		if (count($errors["errors"]) > 0) {
@@ -596,6 +620,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 		} else {
 
 			$completePath = $this->getRoot() . $file->getPath();
+			$completePath = $this->decode($completePath, $file->getLastVersion()->getKey());
+
 			$ext = $this->getInfos($file)['extension'];
 
 			header('Content-Description: File Transfer');
@@ -640,6 +666,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 				$buff = fread($fp, 1024);
 				print $buff;
 			}
+
+			//Delete decoded file
+			@unlink($completePath);
+
 			exit;
 			die();
 		}
@@ -652,6 +682,41 @@ class DriveFileSystem implements DriveFileSystemInterface
 		if (!file_exists($path)) {
 			mkdir($path, 0777, true);
 		}
+	}
+
+	private function encode($path, $key){
+
+		$mcrypt = new MCryptAES256Implementation();
+		$lib = new AESCryptFileLib($mcrypt);
+
+		$lib->encryptFile($path, $key, $path);
+
+	}
+
+	private function decode($path, $key){
+
+		$mcrypt = new MCryptAES256Implementation();
+		$lib = new AESCryptFileLib($mcrypt);
+
+		$tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
+		$this->verifyPath($tmpPath);
+
+		$lib->decryptFile($path, $key, $tmpPath);
+
+		return $tmpPath;
+
+	}
+
+	private function writeEncode($path, $key, $content){
+		file_put_contents($path, $content);
+		$this->encode($path, $key);
+	}
+
+	private function readDecode($path, $key){
+		$path = $this->decode($path, $key);
+		$var = file_get_contents($path);
+		@unlink($path);
+		return $var;
 	}
 
 }
