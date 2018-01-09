@@ -12,7 +12,7 @@ namespace Administration\AuthenticationBundle\Services;
 class AdministrationGroupManagement
 {
     public function listGroup($pageNumber,$nbGroupByPage,$filters=null,&$total){
-        $repository = $this->doctrine->getRepository("TwakeOrganizationsBundle:Orga");
+        $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
         return $repository->search($pageNumber,$nbGroupByPage,$filters,$total);
     }
 }
