@@ -49,5 +49,9 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
         return $twakeUser;
     }
 
+    public function searchUser(){
+        
+    }
+
 
 }
