@@ -10,6 +10,9 @@ namespace WebsiteApi\CoreBundle\Repository;
  */
 class OrgaRepository extends \Doctrine\ORM\EntityRepository
 {
-
-
+        public function search($pageNumber,$nbUserByPage, $filters,&$total)
+        {
+            $offset = ($pageNumber - 1) * $nbUserByPage;
+            $limit = $nbUserByPage;
+        }
 }
