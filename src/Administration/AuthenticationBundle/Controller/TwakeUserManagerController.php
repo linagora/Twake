@@ -88,6 +88,7 @@ class TwakeUserManagerController extends Controller
             $twakeUser = $this->get('admin.TwakeUserManagement')->setBannedTwakeUser($twakeUserId,$banned);
             if($twakeUser != null)
             {
+
                 $data["data"]["id"] = $twakeUserId;
             }
             else
@@ -116,13 +117,18 @@ class TwakeUserManagerController extends Controller
             $firstName = $request->request->get("firstname", "");
             $userName = $request->request->get("username","");
             $email = $request->request->get("email","");
-            $listUser = $this->get('admin.TwakeUserManagement')->searchUser($lastName,$firstName,$userName,$email);
+            $pageNumber = $request->request->get("page","1");
+            $nbUserPage = $request->request->get("per_page","25");
+            $totalNumber = 0;
+
+            $listUser = $this->get('admin.TwakeUserManagement')->searchUser($pageNumber,$nbUserPage,$lastName,$firstName,$userName,$email,$totalNumber);
 
             $listResponse = Array();
             foreach($listUser as $twakeUser)
             {
                 $listResponse[] = $twakeUser->getAsArray();
             }
+            $data["data"]["total"] = $totalNumber;
             $data["data"]["users"] = $listResponse;
         }
         else
