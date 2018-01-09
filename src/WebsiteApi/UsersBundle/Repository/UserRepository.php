@@ -37,7 +37,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
             $req->andWhere('U.first_name LIKE \'%' . $firstName.'%\'');
         }
         if($userName != null){
-            $req->andWhere('U.user_name LIKE \'%' . $userName.'%\'');
+            $req->andWhere('U.username LIKE \'%' . $userName.'%\'');
         }
         if($email != null){
             $req->andWhere('U.email LIKE \'%' . $email.'%\'');
