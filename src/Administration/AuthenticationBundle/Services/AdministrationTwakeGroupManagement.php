@@ -32,8 +32,8 @@ class AdministrationTwakeGroupManagement
         return $twakeWorkspace;
     }
 
-    public function searchWorkspace($pageNumber, $nbWorkspaceByPage,$lastName=null,$firstName=null,$userName=null,$email=null,&$total=null){
+    public function searchWorkspace($pageNumber,$nbWorkspaceByPage,$name=null,$memberCount=null,&$total=null){
         $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-        return $repository->findUsersByFilter($pageNumber, $nbWorkspaceByPage,$lastName,$firstName,$userName,$email,$total);
+        return $repository->findWorspaceByFilter($pageNumber, $nbWorkspaceByPage,$name,$memberCount,$total);
     }
 }
