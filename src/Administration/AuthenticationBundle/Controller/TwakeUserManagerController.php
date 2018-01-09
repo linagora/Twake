@@ -71,4 +71,34 @@ class TwakeUserManagerController extends Controller
         }
         return new JsonResponse($data);
     }
+
+    public function setBannedAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $twakeUserId = $request->request->get("id","");
+            $banned = $request->request->getBoolean("banned",false);
+            $twakeUser = $this->get('admin.TwakeUserManagement')->setBannedTwakeUser($twakeUserId,$banned);
+            if($twakeUser != null)
+            {
+                $data["data"]["id"] = $twakeUserId;
+            }
+            else
+            {
+                $data["errors"][] = "null";
+            }
+        }
+        //else
+        {
+          // $data["errors"][] = "disconnected";
+        }
+        return new JsonResponse($data);
+    }
+
 }
