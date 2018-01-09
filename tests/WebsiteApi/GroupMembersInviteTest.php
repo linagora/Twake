@@ -51,7 +51,7 @@ public function checkError($inviteEmail, $errorLabel, $usernameMember, $memberIn
 		$this->assertEquals(1, count($resInvitation["errors"]), "Test " . $errorLabel . "  (mail : " . $inviteEmail . ") : mauvais nombre d'erreurs retournées");
 		$this->assertEquals($errorLabel, $resInvitation["errors"][0], "Test " . $errorLabel . "  (mail : " . $inviteEmail . ") : mauvaise erreur retournée");
 
-		$memberCount = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:Orga")->findOneById($groupId)->getMemberCount();
+		$memberCount = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneById($groupId)->getMemberCount();
 		$this->assertEquals($memberInvited && $memberAccepted ? 2 : 1, $memberCount, "Test " . $errorLabel . "  (mail : " . $inviteEmail . ") : nombre de membres du groupe mauvais");
 
 		// Suppression des entités
@@ -79,18 +79,18 @@ public function checkError($inviteEmail, $errorLabel, $usernameMember, $memberIn
 
 		// Tests sur la base de données
 		if ($inviteEmail) {
-			$userGroupLink = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")->findOneBy(Array("Orga" => $groupId, "mail" => "test@email.com"));
+			$userGroupLink = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("Workspace" => $groupId, "mail" => "test@email.com"));
 		}
 		else {
 			$this->login("InvitedMember", "Password0");
 			$userId = $this->api("/ajax/users/current/get", Array())["data"]["uid"];
-			$userGroupLink = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")->findOneBy(Array("Orga" => $groupId, "User" => $userId));
+			$userGroupLink = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("Workspace" => $groupId, "User" => $userId));
 		}
 
 		$this->assertNotEquals(null, $userGroupLink, "Test correct (mail : " . $inviteEmail . ") : membre non ajouté au groupe");
 		$this->assertEquals($inviteEmail ? "W" : "P", $userGroupLink->getStatus(), "Test correct  (mail : " . $inviteEmail . ") : membre non ajouté au groupe");
 
-		$memberCount = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:Orga")->findOneById($groupId)->getMemberCount();
+		$memberCount = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneById($groupId)->getMemberCount();
 		$this->assertEquals(1, $memberCount, "Test correct (mail : " . $inviteEmail . ") : nombre de membres du groupe mauvais");
 
 		// Suppression des entités

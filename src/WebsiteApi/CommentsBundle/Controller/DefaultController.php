@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use WebsiteApi\CommentsBundle\Entity\Comment;
 use WebsiteApi\CommentsBundle\Entity\Like;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class DefaultController extends Controller
 {
@@ -23,7 +23,7 @@ class DefaultController extends Controller
 	    $tempFile = isset($_FILES["file"]) ? $_FILES["file"] : null;
 
 	    $manager = $this->getDoctrine()->getManager();
-    $group = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+    $group = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
 	    $status = $manager->getRepository("TwakeStatusBundle:Status")->find($statusId);
 	    $canAccessStatus = $this->get('app.status')->canAccessStatus($this->getUser(), $status->getOwner());
 
@@ -110,7 +110,7 @@ class DefaultController extends Controller
 	    	$comments = $message->getCommentsEntities($manager, $limit, $offset);
 
 	    	foreach ($comments as $comment) {
-				$data["data"][] = $comment->getArray($manager, $this->getUser(), $limit);
+				$data["data"][] = $comment->getAsArray($manager, $this->getUser(), $limit);
 		    }
 	    }
 
@@ -138,7 +138,7 @@ class DefaultController extends Controller
 		}
 		else if ($content == "") {
 			$data["errors"][] = "emptycontent";
-		} else if ($comment->getOrganization() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $comment->getOrganization(), "base:status:post")) {
+		} else if ($comment->getWorkspace() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $comment->getWorkspace(), "base:status:post")) {
 			$data["errors"][] = "notallowed";
 		}
 		else {
@@ -166,10 +166,10 @@ class DefaultController extends Controller
 		}
 		else if ($comment == null) {
 			$data["errors"][] = "commentnotfound";
-		} else if ($comment->getOrganization() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $comment->getOrganization(), "base:status:post")) {
+		} else if ($comment->getWorkspace() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $comment->getWorkspace(), "base:status:post")) {
 			$data["errors"][] = "notallowed";
 		}
-		else if ($comment->getOrganization() == null && $this->getUser() != $comment->getUser()) {
+		else if ($comment->getWorkspace() == null && $this->getUser() != $comment->getUser()) {
 			$data["errors"][] = "notallowed";
 		}
 		else {
@@ -206,7 +206,7 @@ class DefaultController extends Controller
 		$tempFile = isset($_FILES["file"]) ? $_FILES["file"] : null;
 
 		$manager = $this->getDoctrine()->getManager();
-		$group = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+		$group = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
 		$comment = $manager->getRepository("TwakeCommentsBundle:Comment")->find($commentId);
 
 		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {

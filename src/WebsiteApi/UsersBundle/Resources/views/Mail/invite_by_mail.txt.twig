@@ -1,9 +1,0 @@
-{% extends "TwakeUsersBundle:Mail:all.txt.twig" %}
-
-{% block body %}
-L'utilisateur {{ user.username }} vous a invité à devenir l'un de ses contacts.
-Créez un compte avec votre adresse {{ mail }} pour l'ajouter sur Twake.
-
-Si vous avez déjà un compte avec une autre adresse mail, cliquez ici pour ajouter cette adresse en tant que seconde adresse mail :
-https://twakeapp.com/account/verifymail/{{ token }}
-{% endblock %}

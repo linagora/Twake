@@ -36,7 +36,7 @@
                             <div class="score_app_profil">({{apc.data.score | number:2}}/5)</div>
                             <div style="font-size: 10px">{{apc.data.nbvote}} votes</div>
                         </div>
-                        <div ng-show="apc.data.linkorga.acquired">
+                        <div ng-show="apc.data.linkworkspace.acquired">
                           <span class="page-title" style="margin-top: 5px">Votre note</span> <br>
                           <div ng-show="apc.data.linkuser.score<0" style="font-size: 10px;width: 160px;">Vous n'avez pas encore noté cette application</div>
                           <div ng-show="apc.voteRegistered" style="font-size: 10px">Note enregistrée</div>
@@ -104,7 +104,7 @@
 
 
                     <div class="box_right_app_profil">
-                        <div ng-show="!apc.data.linkorga.acquired">
+                        <div ng-show="!apc.data.linkworkspace.acquired">
                             <div ng-show="apc.data.price == 0">
                                 <div class="buy_app_btn btn btn-primary" ng-click="apc.acquire()">Install</div>
                                 <div style="text-align: right; margin-top: 5px">Free</div>
@@ -114,7 +114,7 @@
                                 <div style="text-align: right; margin-top: 5px">{{apc.data.price}} €</div>
                             </div>
                         </div>
-                        <div ng-show="apc.data.linkorga.acquired">
+                        <div ng-show="apc.data.linkworkspace.acquired">
                             <a ui-sref="application({name:apc.data.name,url:apc.data.url})" ng-show="!apc.data.internal">
                                 <span class="buy_app_btn btn btn-primary">Open</span>
                             </a>

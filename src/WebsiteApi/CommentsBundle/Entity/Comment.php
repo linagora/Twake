@@ -4,7 +4,7 @@ namespace WebsiteApi\CommentsBundle\Entity;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping as ORM;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\StatusBundle\Entity\Status;
 use WebsiteApi\UsersBundle\Entity\User;
 
@@ -31,10 +31,10 @@ class Comment
 	private $user;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\OrganizationsBundle\Entity\Orga")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 * @ORM\JoinColumn(nullable=true)
 	 */
-	private $organization;
+	private $workspace;
 
 	/**
 	 * @ORM\Column(type="text")
@@ -81,7 +81,7 @@ class Comment
 	public function __construct($owner, $content, $commentedEntity, $tempFile = null) {
 
 		$this->setUser($owner instanceof User ? $owner : null);
-		$this->setOrganization($owner instanceof Orga ? $owner : null);
+		$this->setWorkspace($owner instanceof Workspace ? $owner : null);
 		$this->setContent($content);
 		$this->setDate(new \DateTime());
 		$this->setCommentedEntity($commentedEntity);
@@ -99,16 +99,16 @@ class Comment
 		$this->user = $user;
 	}
 
-	public function getOrganization() {
-		return $this->organization;
+	public function getWorkspace() {
+		return $this->workspace;
 	}
 
-	public function setOrganization($organization) {
-		$this->organization = $organization;
+	public function setWorkspace($workspace) {
+		$this->workspace = $workspace;
 	}
 
 	public function getOwner() {
-		return $this->user != null ? $this->user : $this->organization;
+		return $this->user != null ? $this->user : $this->workspace;
 	}
 
 	public function getContent() {
@@ -217,23 +217,23 @@ class Comment
 		return $doctrineManager->getRepository("TwakeCommentsBundle:Like")->findBy(Array("likedEntityType" => Comment::getClassId($this)));
 	}
 
-	public function getArray(ObjectManager $doctrineManager, $currentUser, $limit) {
+	public function getAsArray(ObjectManager $doctrineManager, $currentUser, $limit) {
 
 		$dateDifference = $this->getDate()->diff(new \DateTime());
 
 		$commentsDetails = Array();
 		$comments = $this->getCommentsEntities($doctrineManager, $limit, 0);
 		foreach ($comments as $comment) {
-			$commentsDetails[] = $comment->getArray($doctrineManager, $currentUser, 0);
+			$commentsDetails[] = $comment->getAsArray($doctrineManager, $currentUser, 0);
 		}
 
 		return Array(
 			"id" => $this->getId(),
 			"ownerId" => $this->getOwner()->getId(),
 			"ownerDetails" => $this->getOwner()->getAsSimpleArray(),
-			"ownerIsGroup" => $this->getOrganization() != null,
+			"ownerIsGroup" => $this->getWorkspace() != null,
 			"content" => $this->getContent(),
-			"fileurl" => $this->getTempFile() != null ? "https://twakeapp.com".$this->getTempFile()->getPublicURL() : "",
+			"fileurl" => $this->getTempFile() != null ? "".$this->getTempFile()->getPublicURL() : "",
 			"date" => $this->getDate()->getTimestamp(),
 			"dateDifference" => Array(
 				"y" => $dateDifference->y, "m" => $dateDifference->m, "d" => $dateDifference->d,

@@ -2,7 +2,7 @@
 namespace DevelopersApi\CheckBundle\Services;
 
 use WebsiteApi\UsersBundle\Entity\User;
-use WebsiteApi\MarketBundle\Entity\LinkAppOrga;
+use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
 
 class CheckRight
 {
@@ -59,7 +59,7 @@ class CheckRight
 
 		$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
 			->findOneBy(Array("publicKey" => $publicKey));
-		$group = $this->doctrine->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+		$group = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
 
 
 		if ($application == null) {
@@ -68,7 +68,7 @@ class CheckRight
 		} elseif ($application->getPrivateKey() != $privateKey) {
 			return Array("errors" => 1002);
 
-		} elseif ($this->doctrine->getRepository("TwakeMarketBundle:LinkAppOrga")->findOneBy(Array("application" => $application, "organization" => $group)) == null) {
+		} elseif ($this->doctrine->getRepository("TwakeMarketBundle:LinkAppWorkspace")->findOneBy(Array("application" => $application, "workspace" => $group)) == null) {
 			return Array("errors" => 1004);
 
 		} else {

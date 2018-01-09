@@ -1,6 +1,8 @@
 <?php
 
 namespace Administration\AuthenticationBundle\Repository;
+use Symfony\Bridge\Doctrine\RegistryInterface;
+use Administration\AuthenticationBundle\Entity\AdminUser;
 
 /**
  * AdminUserRepository
@@ -10,4 +12,49 @@ namespace Administration\AuthenticationBundle\Repository;
  */
 class AdminUserRepository extends \Doctrine\ORM\EntityRepository
 {
+
+	public function findAllOrderedByName($pageNumber,$nbUserByPage, $filters,&$total){
+        $offset = ($pageNumber - 1) * $nbUserByPage;
+        $limit = $nbUserByPage;
+
+        $req = $this->createQueryBuilder('U')
+            ->select('count(U.id)');
+        $req = $this->searchMiddleQueryBuilder($req,$filters);
+        $total = $req->getQuery()->getSingleScalarResult();
+
+        $req1 = $this->createQueryBuilder('U');
+	    $req1 = $this->searchMiddleQueryBuilder($req1,$filters);
+        $req1 = $req1->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()->getResult();
+        return $req1;
+    }
+
+    private function searchMiddleQueryBuilder($req,$filters){
+        if ($filters != null) {
+            if(isset($filters['username'])){
+                $req->where('U.username_clean LIKE \'%' . $filters['username'].'%\'');
+            }
+            if(isset($filters['lastname'])){
+                $req->where('U.lastname LIKE \'%' . $filters['lastname'].'%\'');
+            }
+            if(isset($filters['email'])){
+                $req->where('U.email LIKE \'%' . $filters['email'].'%\'');
+            }
+            if(isset($filters['firstname'])){
+                $req->where('U.firstname LIKE \'%' . $filters['firstname'].'%\'');
+            }
+            if(isset($filters['gender'])){
+                $req->where('U.gender LIKE \'' . $filters['gender'].'\'');
+            }
+            if(isset($filters['enable'])){
+                $req->where('U.enable = \'' . $filters['enable'].'\'');
+            }
+            if(isset($filters['connected'])){
+                $req->where('U.connected = \'' . $filters['connected'].'\'');
+            }
+        }
+        return $req;
+    }
+
 }

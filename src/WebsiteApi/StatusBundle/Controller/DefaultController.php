@@ -6,7 +6,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use WebsiteApi\CommentsBundle\Entity\Like;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\StatusBundle\Entity\Status;
 use WebsiteApi\UsersBundle\Entity\User;
 
@@ -26,7 +26,7 @@ class DefaultController extends Controller
 		}
 		else {
 
-			$groups = $this->getUser()->getOrganizations();
+			$groups = $this->getUser()->getWorkspaces();
 
 			foreach ($groups as $group) {
 				if ($this->get('app.groups.access')->hasRight($this->getUser(), $group, "base:status:post")) {
@@ -51,7 +51,7 @@ class DefaultController extends Controller
 	    $tempFile = isset($_FILES["file"]) ? $_FILES["file"] : null;
 
 	    $manager = $this->getDoctrine()->getManager();
-	    $group = $manager->getRepository("TwakeOrganizationsBundle:Orga")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+	    $group = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
 	    $sharedStatus = $manager->getRepository("TwakeStatusBundle:Status")->find($sharedStatusId);
 
 	    if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
@@ -121,10 +121,10 @@ class DefaultController extends Controller
 		}
 		else if ($status == null) {
 			$data["errors"][] = "statusnotfound";
-		} else if ($status->getOrganization() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $status->getOrganization(), "base:status:post")) {
+		} else if ($status->getWorkspace() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $status->getWorkspace(), "base:status:post")) {
 			$data["errors"][] = "notallowed";
 		}
-		else if ($status->getOrganization() == null && $this->getUser() != $status->getUser()) {
+		else if ($status->getWorkspace() == null && $this->getUser() != $status->getUser()) {
 			$data["errors"][] = "notallowed";
 		}
 		else {
@@ -177,7 +177,7 @@ class DefaultController extends Controller
 		}
 		else if ($privacy != "P" && $privacy != "I") {
 			$data["errors"][] = "badprivacy";
-		} elseif ($status->getOrganization() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $status->getOrganization(), "base:status:post")) {
+		} elseif ($status->getWorkspace() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $status->getWorkspace(), "base:status:post")) {
 			$data["errors"][] = "notallowed";
 		}
 		else {
@@ -242,7 +242,7 @@ class DefaultController extends Controller
 		$offset = $request->request->has("offset") ? $request->request->get("offset") : 0;
 
 		$manager = $this->getDoctrine()->getManager();
-		$owner = $manager->getRepository($isGroup ? "TwakeOrganizationsBundle:Orga" : "TwakeUsersBundle:User")->find($ownerId);
+		$owner = $manager->getRepository($isGroup ? "TwakeWorkspacesBundle:Workspace" : "TwakeUsersBundle:User")->find($ownerId);
 
 		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data["errors"][] = "notconnected";
@@ -256,7 +256,7 @@ class DefaultController extends Controller
 			}
 		}
 		else {
-			$ownerField = $isGroup ? "organization" : "user";
+			$ownerField = $isGroup ? "workspace" : "user";
 
 			if ($this->get("app.status")->canAccessStatus($this->getUser(), $owner)) {
 				$status = $manager->getRepository("TwakeStatusBundle:Status")->findBy(Array($ownerField => $owner), Array("date" => "desc"), $limit, $offset);
@@ -269,7 +269,7 @@ class DefaultController extends Controller
 				$data["ownerDetails"] = $status[0]->getOwnerDetails();
 
 				foreach ($status as $singleStatus) {
-					$data["data"][] = $singleStatus->getArray($manager, $this->getUser(), $this->get("app.status")->canAccessStatus($this->getUser(), $singleStatus->getOwner()));
+					$data["data"][] = $singleStatus->getAsArray($manager, $this->getUser(), $this->get("app.status")->canAccessStatus($this->getUser(), $singleStatus->getOwner()));
 				}
 			}
 		}
@@ -300,7 +300,7 @@ class DefaultController extends Controller
 
 			foreach ($likes as $like) {
 				if (in_array($like->getUser(), $contactsLinks)) {
-					$data['data'][] = $like->getUser()->getAsSimpleArray();
+					$data['data'][] = $like->getUser()->getAsArray();
 				}
 			}
 		}
@@ -325,7 +325,7 @@ class DefaultController extends Controller
 		else {
 			$users = $this->getUser()->getContacts();
 			$users[] = $this->getUser();
-			$groupsLinks = $manager->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")->findBy(Array("User" => $this->getUser(), "status" => "A"));
+			$groupsLinks = $manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findBy(Array("User" => $this->getUser(), "status" => "A"));
 
 			$groups = Array();
 			foreach ($groupsLinks as $groupLink) {
@@ -344,8 +344,8 @@ class DefaultController extends Controller
 			$status = $manager->createQueryBuilder()
 				->select('s')
 				->from('TwakeStatusBundle:Status', 's')
-				->where('(s.organization IN (:groups))')
-				->orWhere('(s.organization IN (:sub) AND s.privacy = :p)')
+				->where('(s.workspace IN (:groups))')
+				->orWhere('(s.workspace IN (:sub) AND s.privacy = :p)')
 				->orWhere('s.user IN (:users)')
 				->setParameter('groups', array_values($groups))
 				->setParameter('users', array_values($users))
@@ -358,7 +358,7 @@ class DefaultController extends Controller
 				->getResult();
 
 			foreach ($status as $singleStatus) {
-				$data["data"][] = $singleStatus->getArray($manager, $this->getUser(), $this->get("app.status")->canAccessStatus($this->getUser(), $singleStatus->getOwner()), true);
+				$data["data"][] = $singleStatus->getAsArray($manager, $this->getUser(), $this->get("app.status")->canAccessStatus($this->getUser(), $singleStatus->getOwner()), true);
 			}
 		}
 

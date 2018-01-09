@@ -23,7 +23,7 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
     public function listTwakeUsers($pageNumber, $nbUserByPage, $filters = null, &$total=null)
     {
         $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-        return $repository->search($pageNumber,$nbUserByPage,$filters,$total);
+        return $repository->findAllOrderedByName($pageNumber,$nbUserByPage,$filters,$total);
     }
 
 

@@ -1,0 +1,95 @@
+<?php
+
+namespace WebsiteApi\DriveBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints\DateTime;
+
+/**
+ * DriveLabel
+ *
+ * @ORM\Table(name="drive_label",options={"engine":"MyISAM"})
+ * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveLabelRepository")
+ */
+class DriveLabel
+{
+
+
+	/**
+	 * @ORM\Column(name="id", type="integer")
+	 * @ORM\Id
+	 * @ORM\GeneratedValue(strategy="AUTO")
+	 */
+	private $id;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+	 * @ORM\JoinColumn(nullable=false)
+	 */
+	private $group;
+
+	/**
+	 * @ORM\Column(type="string", length=32)
+	 */
+	private $name;
+
+	/**
+	 * @ORM\Column(type="string", length=6)
+	 */
+	private $color;
+
+
+	public function __construct($group, $name, $color="000000"){
+		$this->group = $group;
+		$this->name = $name;
+		$this->color = $color;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getName()
+	{
+		return $this->name;
+	}
+
+	/**
+	 * @param mixed $name
+	 */
+	public function setName($name)
+	{
+		$this->name = $name;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getColor()
+	{
+		return $this->color;
+	}
+
+	/**
+	 * @param mixed $color
+	 */
+	public function setColor($color)
+	{
+		$this->color = $color;
+	}
+
+	public function getAsArray(){
+		return Array(
+			"name" => $this->name,
+			"color" => $this->color
+		);
+	}
+
+}

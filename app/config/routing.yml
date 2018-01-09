@@ -30,6 +30,10 @@ check:
 
 
 #API pour le site (et pas les developpeurs)
+calendar:
+    resource: "@TwakeCalendarBundle/Resources/config/routing.yml"
+    prefix:   /ajax/calendar/
+    methods: [POST]
 
 citi_go_discussion:
     resource: "@TwakeDiscussionBundle/Resources/config/routing.yml"
@@ -51,8 +55,8 @@ citi_go_payments:
     prefix:   /ajax/payments/
     methods: [POST]
 
-citi_go_organizations:
-    resource: "@TwakeOrganizationsBundle/Resources/config/routing.yml"
+citi_go_workspaces:
+    resource: "@TwakeWorkspacesBundle/Resources/config/routing.yml"
     prefix:   /ajax/group/
     methods: [POST]
 
@@ -100,6 +104,12 @@ twake_comments:
     prefix:   /ajax/status/comment
     methods: [POST]
 
+twake_api_error:
+    path:     /ajax/{req}
+    defaults: { _controller: TwakeCheckBundle:Error:BadRequest }
+    requirements:
+      req: ".*"
+
 #API pour les developpeurs
 developers_api_users:
     resource: "@DevelopersApiUsersBundle/Resources/config/routing.yml"
@@ -125,3 +135,4 @@ developers_api_error:
 website_public:
     resource: "@WebsitePublicBundle/Resources/config/routing.yml"
     prefix:   /
+

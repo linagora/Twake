@@ -33,7 +33,7 @@ services:
         arguments: ["@app.images_modifiers"]
 
     app.groups.access:
-        class: WebsiteApi\OrganizationsBundle\Services\Access
+        class: WebsiteApi\WorkspacesBundle\Services\Access
         arguments: ["@doctrine.orm.entity_manager", "@security.token_storage", '@security.authorization_checker']
 
 
@@ -49,21 +49,17 @@ services:
         class: WebsiteApi\UsersBundle\Services\Notifications
         arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", "@templating", "@mailer", "@security.token_storage", '@security.authorization_checker', '@gos_web_socket.zmq.pusher']
 
-    app.contacts:
-        class: WebsiteApi\UsersBundle\Services\Contacts
-        arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer"]
+    #app.contacts:
+    #    class: WebsiteApi\UsersBundle\Services\Contacts
+    #    arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer", "%SERVER_NAME%"]
 
-    app.deleteUser:
-        class: WebsiteApi\UsersBundle\Services\deleteUser
-        arguments: ["@doctrine.orm.entity_manager"]
+    #app.deleteUser:
+    #    class: WebsiteApi\UsersBundle\Services\deleteUser
+    #    arguments: ["@doctrine.orm.entity_manager"]
 
     app.updateGroup:
-        class: WebsiteApi\OrganizationsBundle\Services\UpdateGroup
+        class: WebsiteApi\WorkspacesBundle\Services\UpdateGroup
         arguments: ['@gos_web_socket.zmq.pusher']
-
-    app.messages:
-            class: WebsiteApi\DiscussionBundle\Services\Messages
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@app.command_executor", "@app.notifications", '@gos_web_socket.zmq.pusher','@app.groups.access']
 
     app.calls:
             class: WebsiteApi\CallsBundle\Services\Calls
@@ -76,10 +72,6 @@ services:
     app.status:
         class: WebsiteApi\StatusBundle\Services\StatusService
         arguments: ["@doctrine.orm.entity_manager"]
-
-    app.core_remember_me_manager:
-        class: WebsiteApi\UsersBundle\Services\RememberMe
-        arguments: ["@service_container"]
 
     app.before_render:
             class: WebsiteApi\CoreBundle\Services\BeforeRender
@@ -95,33 +87,23 @@ services:
     #################################################################################
     ###################### Topic
     #################################################################################
-    infosNotification.topic:
-        class: WebsiteApi\UsersBundle\Topic\NotificationTopic
-        tags:
-            - { name: gos_web_socket.topic }
-        arguments : ["@doctrine.orm.entity_manager","@app.notifications","@gos_web_socket.websocket.client_manipulator"]
+    #infosNotification.topic:
+    #    class: WebsiteApi\UsersBundle\Topic\NotificationTopic
+    #    tags:
+    #        - { name: gos_web_socket.topic }
+    #    arguments : ["@doctrine.orm.entity_manager","@app.notifications","@gos_web_socket.websocket.client_manipulator"]
 
     group.topic:
-        class: WebsiteApi\OrganizationsBundle\Topic\GroupTopic
+        class: WebsiteApi\WorkspacesBundle\Topic\GroupTopic
         tags:
             - { name: gos_web_socket.topic }
 
-    discussion.topic:
-        class: WebsiteApi\DiscussionBundle\Topic\DiscussionTopic
-        tags:
-            - { name: gos_web_socket.topic }
-        arguments: ["@app.messages", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications"]
 
     connections.topic:
         class: WebsiteApi\UsersBundle\Topic\ConnectionsTopic
         tags:
             - { name: gos_web_socket.topic }
         arguments: ["@doctrine.orm.entity_manager"]
-
-    echo.topic:
-        class: WebsiteApi\UsersBundle\Topic\EchoTopic
-        tags:
-            - { name: gos_web_socket.topic }
 
 
     #################################################################################

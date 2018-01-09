@@ -12,7 +12,7 @@ angular.module('twake')
     this.data.tags = [];
     this.data.email = "";
     this.data.secondaryEmails = [];
-    this.data.orgas = [];
+    this.data.workspaces = [];
     this.privacy = {
         'firstname': 'public',
         'lastname': 'public',

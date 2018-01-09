@@ -1,0 +1,16 @@
+services:
+
+    app.calendar.CalendarSystem:
+        class: WebsiteApi\CalendarBundle\Services\CalendarSystem
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    app.event.EventSystem:
+        class: WebsiteApi\CalendarBundle\Services\EventSystem
+        arguments: ["@doctrine.orm.entity_manager"]
+
+
+    event.topic:
+        class: WebsiteApi\CalendarBundle\Topic\EventTopic
+        tags:
+            - { name: gos_web_socket.topic }
+        arguments: [ "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications","@app.event.EventSystem"]

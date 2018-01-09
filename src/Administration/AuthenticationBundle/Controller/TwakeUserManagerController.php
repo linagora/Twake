@@ -30,7 +30,7 @@ class TwakeUserManagerController extends Controller
             $listResponse = Array();
             foreach($listTwakeUser as $twakeUser)
             {
-                $listResponse[] = $twakeUser->getAsSimpleArray();
+                $listResponse[] = $twakeUser->getAsArray();
             }
 	        $data["data"]["total"] = $totalNumber;
             $data["data"]["users"] = $listResponse;

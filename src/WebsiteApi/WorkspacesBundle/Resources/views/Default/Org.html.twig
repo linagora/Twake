@@ -1,0 +1,48 @@
+{% extends "TwakeCoreBundle:pagetypes:base_classic.html.twig" %}
+
+{% block title %}{{ org_name }}{% endblock %}
+{% block body %}
+
+    Id : {{ org_id }}<br/>
+    Name : {{ org_name }}<br/>
+    Descr : {{ org_descr }}<br/>
+    Nb of Users : <div id="nbUsers">{{ org_nbuser }}</div><br/>
+
+    <input type="button" style="display:{{ display_join }}" value="Join Workspace" id="Join" onclick="join_org()"> <br/>
+    <input type="button" style="display:{{ display_leave }}" value="Leave Workspace" id="Leave" onclick="leave_org()"> <br/>
+
+    <script type="text/javascript">
+        var nbuser = {{ org_nbuser }};
+        function join_org()
+        {
+            document.getElementById("Join").disabled=true;
+            jQuery.post("/scripts/optionOrg/join",{orgname:"{{ org_name }}"}, function(result) {
+                if (result.status === "Success"){
+                    document.getElementById("Join").style.display = "none";
+                    document.getElementById("Leave").disabled=false;
+                    document.getElementById("Leave").style.display = "block";
+                    nbuser = nbuser +1;
+                    $("#nbUsers").html(nbuser);
+                } else {
+                    document.getElementById("Join").disabled=false;
+                }
+            });
+        }
+
+        function leave_org()
+        {
+            document.getElementById("Leave").disabled=true;
+            jQuery.post("/scripts/optionOrg/leave",{orgname:'{{ org_name }}'}, function(result) {
+                if (result.status === "Success") {
+                    document.getElementById("Leave").style.display = "none";
+                    document.getElementById("Join").disabled=false;
+                    document.getElementById("Join").style.display = "block";
+                    nbuser = nbuser - 1;
+                    $("#nbUsers").html(nbuser);
+                } else {
+                    document.getElementById("Leave").disabled=false;
+                }
+            });
+        }
+    </script>
+{% endblock %}

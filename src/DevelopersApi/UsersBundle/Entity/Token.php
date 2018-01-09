@@ -37,7 +37,7 @@ class Token
 	private $user;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\OrganizationsBundle\Entity\Orga")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
 	private $group;
 

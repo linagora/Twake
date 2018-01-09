@@ -34,7 +34,7 @@ class GroupCreateDeleteTest extends WebTestCaseExtended
 		if ($checkEntity) {
 
 			// Verification de l"entité dans la BDD
-			$groupEntity = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:Orga")->findOneById($resGroup["gid"]);
+			$groupEntity = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneById($resGroup["gid"]);
 			$this->assertNotEquals(null, $groupEntity, "Test création correcte : l'entité du groupe est introuvable dans la base de données");
 			$this->assertEquals("Group name", $groupEntity->getName(), "Test création correcte : mauvais nom");
 			$this->assertEquals("groupname", $groupEntity->getCleanName(), "Test création correcte : mauvais nom clean");
@@ -52,7 +52,7 @@ class GroupCreateDeleteTest extends WebTestCaseExtended
 			$this->assertEquals("Group siret", $groupEntity->getSiret(), "Test création correcte : mauvais siret");
 
 			// Verification du lien entre le createur du groupe et le groupe
-			$membersLinks = $this->getDoctrine()->getRepository("TwakeOrganizationsBundle:LinkOrgaUser")->findBy(Array("Orga" => $groupEntity));
+			$membersLinks = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findBy(Array("Workspace" => $groupEntity));
 			$this->assertEquals(1, count($membersLinks), "Test création correcte : mauvais nombre de membres dans l'entité");
 
 			$resCurrentUser = $this->api("/ajax/users/current/get", Array());

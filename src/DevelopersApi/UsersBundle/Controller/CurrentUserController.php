@@ -38,7 +38,7 @@ class CurrentUserController extends Controller
 	        $data["data"]["userImage"] = "";
 	        $pimage = $t->getUser()->getProfileImage();
 	        if ($pimage) {
-		        $data["data"]["userImage"] = "https://twakeapp.com" . $pimage->getPublicURL(2);
+		        $data["data"]["userImage"] = $this->getParameter('SERVER_NAME') . $pimage->getPublicURL(2);
 	        }
 	        $manager->remove($t);
 	        $manager->flush();

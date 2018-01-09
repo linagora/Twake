@@ -23,7 +23,7 @@ class AppKernel extends Kernel
 			new WebsiteApi\CoreBundle\TwakeCoreBundle(),
 			new WebsiteApi\UsersBundle\TwakeUsersBundle(),
 			new WebsiteApi\EventsBundle\TwakeEventsBundle(),
-			new WebsiteApi\OrganizationsBundle\TwakeOrganizationsBundle(),
+			new WebsiteApi\WorkspacesBundle\TwakeWorkspacesBundle(),
 			new WebsiteApi\PaymentsBundle\TwakePaymentsBundle(),
 			new WebsiteApi\UploadBundle\TwakeUploadBundle(),
 			new WebsiteApi\TagsBundle\TwakeTagsBundle(),
@@ -43,6 +43,8 @@ class AppKernel extends Kernel
             new DevelopersApi\DriveBundle\DevelopersApiDriveBundle(),
 	        new DevelopersApi\GroupsBundle\DevelopersApiGroupsBundle(),
             new Administration\AuthenticationBundle\AdministrationAuthenticationBundle(),
+            new WebsiteApi\CalendarBundle\TwakeCalendarBundle(),
+            new WebsiteApi\MessageBundle\TwakeMessageBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

@@ -21,7 +21,7 @@ class DriveFile
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\OrganizationsBundle\Entity\Orga")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
 	private $group;
 
@@ -37,14 +37,9 @@ class DriveFile
 	private $name;
 
 	/**
-	 * @ORM\Column(type="string", length=255)
+	 * @ORM\Column(type="string", length=2048)
 	 */
-	private $realName;
-
-	/**
-	 * @ORM\Column(type="integer")
-	 */
-	private $size;
+	private $description;
 
 	/**
 	 * @ORM\Column(type="boolean")
@@ -67,16 +62,38 @@ class DriveFile
 	 */
 	private $children;
 
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $added;
+
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $last_modified;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFileVersion")
+	 * @ORM\JoinColumn(nullable=true)
+	 */
+	private $last_version;
+
+	/**
+	 * @ORM\Column(type="integer")
+	 */
+	private $size;
+
+
 	public function __construct($group, $parent, $name, $isDirectory = false)
 	{
 
 		$this->group = $group;
 		$this->setParent($parent);
 		$this->setName($name);
-		$this->resetRealName();
     	$this->setSize(0);
 		$this->isDirectory = $isDirectory;
     	$this->setIsInTrash(false);
+		$this->added = new \DateTime();
 
 	}
 
@@ -122,38 +139,6 @@ class DriveFile
 	public function setName($name)
 	{
 		$this->name = $name;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getRealName()
-	{
-		return $this->realName;
-	}
-
-	/**
-	 * @param mixed $realName
-	 */
-	public function resetRealName()
-	{
-		$this->realName = sha1(microtime() . rand(0, 10000));
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getSize()
-	{
-		return $this->size;
-	}
-
-	/**
-	 * @param mixed $size
-	 */
-	public function setSize($size)
-	{
-		$this->size = $size;
 	}
 
 	/**
@@ -209,18 +194,86 @@ class DriveFile
 	 */
 	public function getPath()
 	{
-		return $this->group->getId() . "/" . $this->getRealName();
+		if($this->getLastVersion() == null){
+			return null;
+		}
+		return $this->group->getId() . "/" . $this->getLastVersion()->getRealName();
 	}
 
-
-	public function getDownLoadLink()
+	/**
+	 * @return mixed
+	 */
+	public function getDescription()
 	{
-		return 'https://twakeapp.com/ajax/drive/download?groupId=' . $this->getGroup()->getId() . '&fileId=' . $this->getId() . '&download=0';
+		return $this->description;
 	}
 
-	public function getArray()
+	/**
+	 * @param mixed $description
+	 */
+	public function setDescription($description)
 	{
+		$this->description = $description;
+	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getAdded()
+	{
+		return $this->added;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getLastModified()
+	{
+		return $this->last_modified;
+	}
+
+	/**
+	 * @param mixed $last_modified
+	 */
+	public function setLastModified()
+	{
+		$this->last_modified = new \DateTime();
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getLastVersion()
+	{
+		return $this->last_version;
+	}
+
+	/**
+	 * @param mixed $last_version
+	 */
+	public function setLastVersion($last_version)
+	{
+		$this->last_version = $last_version;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getSize()
+	{
+		return $this->size;
+	}
+
+	/**
+	 * @param mixed $size
+	 */
+	public function setSize($size)
+	{
+		$this->size = $size;
+	}
+
+	public function getAsArray()
+	{
 		return Array(
 			'id' => $this->getId(),
 			'name' => $this->getName(),

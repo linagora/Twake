@@ -4,7 +4,7 @@ namespace WebsiteApi\PaymentsBundle\Entity;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping as ORM;
-use WebsiteApi\OrganizationsBundle\Entity\Orga;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\StatusBundle\Entity\Status;
 use WebsiteApi\UsersBundle\Entity\User;
 

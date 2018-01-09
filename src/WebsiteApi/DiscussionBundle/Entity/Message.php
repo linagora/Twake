@@ -22,25 +22,36 @@ class Message
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
 	 */
-	private $sender;
+	private $userSender;
+	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
+	 */
+	private $applicationSender;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=true)
 	 */
-	private $userReceiver;
+	private $userReciever;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Channel",cascade={"persist"})
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Stream",cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=true)
 	 */
-	private $channelReceiver;
+	private $streamReciever;
 
 	/**
 	 * @ORM\Column(type="string", length=1)
 	 */
-	private $receiverType;
+	private $typeReciever;
+
+	/**
+	 * @ORM\Column(type="string", length=1)
+	 */
+	private $typeSender;
 
 	/**
 	 * @ORM\Column(type="datetime")
@@ -51,278 +62,308 @@ class Message
 	 * @ORM\Column(type="text", length=20000)
 	 */
 	private $content;
+
 	/**
 	 * @ORM\Column(type="text", length=10000)
 	 */
 	private $cleanContent;
 
-	/**
-	 * @ORM\Column(type="string", length=30)
-	 */
-	private $usernamecache;
 
 	/**
 	 * @ORM\Column(type="boolean")
 	 */
-	private $edited;
+	private $edited = false;
 
 	/**
 	 * @ORM\Column(type="boolean")
 	 */
-	private $pinned;
+	private $pinned = false;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
-	 * @ORM\JoinColumn(nullable=true)
-	 */
-	private $driveFile;
-
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
-	 * @ORM\JoinColumn(nullable=true)
-	 */
-	private $tempFile;
-
-	/**
-	 * @ORM\Column(type="boolean")
-	 */
-	private $isFile;
-
-	/**
-	 * @ORM\Column(type="string")
-	 */
-	private $filename;
-
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message",cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=true)
 	 */
 	private $responseTo = null;
 
 	/**
-	 * @ORM\Column(type="string")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Subject",cascade={"persist"})
+	 * @ORM\JoinColumn(nullable=true)
 	 */
-	private $likeSummary;
+	private $subject = null;
 
 
-	public function __construct($sender, $userReceiver, $channelReceiver, $content, $cleanContent)
-	{
+	public function __construct($typeSender,$sender,$typeReciever,$reciever,$date,$content,$subject){
+        $this->setTypeSender($typeSender);
+	    if($typeSender == "U"){
+            $this->setUserSender($sender);
+        }
+        elseif($typeSender == "A"){
+            $this->setApplicationSender($sender);
+        }
 
-		$this->sender = $sender;
-		$this->usernamecache = $sender->getUsernameClean();
-		$this->userReceiver = $userReceiver;
-		$this->channelReceiver = $channelReceiver;
-		$this->receiverType = $userReceiver == null ? 'C' : 'U';
-		$this->date = new \DateTime("now");
-		$this->setContent($content);
-		$this->setCleanContent($content);
-		$this->setEdited(false);
-		$this->pinned = false;
-		$this->driveFile = null;
-		$this->tempFile = null;
-		$this->isFile = false;
-		$this->filename = "";
-		$this->likeSummary = "{}";
+        $this->setTypeReciever($typeReciever);
+        if($typeReciever == "S"){
+            $this->setStreamReciever($reciever);
+        }
+        elseif($typeReciever == "U"){
+            $this->setUserReciever($reciever);
+        }
+        $this->setDate($date);
+        $this->setContent($content);
+        $this->setCleanContent($content);
+        if($subject != null){
+            $this->setSubject($subject);
+        }
+    }
 
-	}
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	public function getId()
-	{
-		return $this->id;
-	}
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
-	public function setSender($sender)
-	{
-		$this->sender = $sender;
-	}
+    /**
+     * @return mixed
+     */
+    public function getUserSender()
+    {
+        return $this->userSender;
+    }
 
-	public function getSender()
-	{
-		return $this->sender;
-	}
+    /**
+     * @param mixed $userSender
+     */
+    public function setUserSender($userSender)
+    {
+        $this->userSender = $userSender;
+    }
 
-	public function setUserReceiver($userReceiver)
-	{
-		$this->userReceiver = $userReceiver;
-	}
+    /**
+     * @return mixed
+     */
+    public function getApplicationSender()
+    {
+        return $this->applicationSender;
+    }
 
-	public function setChannelReceiver($channelReceiver)
-	{
-		$this->channelReceiver = $channelReceiver;
-	}
+    /**
+     * @param mixed $applicationSender
+     */
+    public function setApplicationSender($applicationSender)
+    {
+        $this->applicationSender = $applicationSender;
+    }
 
-	public function getReceiver()
-	{
-		return $this->userReceiver == null ? $this->channelReceiver : $this->userReceiver;
-	}
+    /**
+     * @return mixed
+     */
+    public function getUserReciever()
+    {
+        return $this->userReciever;
+    }
 
-	public function getEdited()
-	{
-		return $this->edited;
-	}
+    /**
+     * @param mixed $userReciever
+     */
+    public function setUserReciever($userReciever)
+    {
+        $this->userReciever = $userReciever;
+    }
 
-	public function setEdited($edited)
-	{
-		$this->edited = $edited;
-	}
+    /**
+     * @return mixed
+     */
+    public function getStreamReciever()
+    {
+        return $this->streamReciever;
+    }
 
-	public function getPinned()
-	{
-		return $this->pinned;
-	}
+    /**
+     * @param mixed $streamReciever
+     */
+    public function setStreamReciever($streamReciever)
+    {
+        $this->streamReciever = $streamReciever;
+    }
 
-	public function setPinned($pinned)
-	{
-		$this->pinned = $pinned;
-	}
+    /**
+     * @return mixed
+     */
+    public function getTypeReciever()
+    {
+        return $this->typeReciever;
+    }
 
-	public function setDate($date)
-	{
-		$this->date = $date;
-	}
+    /**
+     * @param mixed $typeReciever
+     */
+    public function setTypeReciever($typeReciever)
+    {
+        $this->typeReciever = $typeReciever;
+    }
 
-	public function getDate()
-	{
-		return $this->date;
-	}
+    /**
+     * @return mixed
+     */
+    public function getTypeSender()
+    {
+        return $this->typeSender;
+    }
 
-	public function setContent($content)
-	{
-		$content = substr($content, 0, 10000);
-		$this->content = base64_encode($content);
-	}
+    /**
+     * @param mixed $typeSender
+     */
+    public function setTypeSender($typeSender)
+    {
+        $this->typeSender = $typeSender;
+    }
 
-	public function getContent()
-	{
-		return base64_decode($this->content);
-	}
 
-	public function getCleanContent()
-	{
-		return $this->cleanContent;
-	}
+    /**
+     * @return mixed
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
 
-	public function setCleanContent($content)
-	{
-		$content = substr($content, 0, 10000);
-		$this->cleanContent = $content;
-	}
+    /**
+     * @param mixed $date
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getDriveFile()
-	{
-		return $this->driveFile;
-	}
+    /**
+     * @return mixed
+     */
+    public function getCleanContent()
+    {
+        return $this->cleanContent;
+    }
 
-	/**
-	 * @param mixed $driveFile
-	 */
-	public function setDriveFile($driveFile)
-	{
-		$this->driveFile = $driveFile;
+    /**
+     * @param mixed $cleanContent
+     */
+    public function setCleanContent($cleanContent)
+    {
+        $this->cleanContent =  substr($cleanContent, 0, 10000);
+    }
 
-		if ($driveFile != null) {
-			$this->isFile = true;
-			$this->filename = $driveFile->getName();
-		} else if ($this->tempFile == null) {
-			$this->isFile = false;
-			$this->filename = "";
-		}
-	}
+    public function setContent($content)
+    {
+        $content = substr($content, 0, 10000);
+        $this->content = base64_encode($content);
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getTempFile()
-	{
-		return $this->tempFile;
-	}
+    public function getContent()
+    {
+        return base64_decode($this->content);
+    }
 
-	/**
-	 * @param mixed $tempFile
-	 */
-	public function setTempFile($tempFile)
-	{
-		$this->tempFile = $tempFile;
 
-		if ($tempFile != null) {
-			$this->isFile = true;
-			$this->filename = $tempFile->getRealName();
-		} else if ($this->driveFile == null) {
-			$this->isFile = false;
-			$this->filename = "";
-		}
-	}
 
-	private function fileIsImage()
-	{
+    /**
+     * @return mixed
+     */
+    public function getEdited()
+    {
+        return $this->edited;
+    }
 
-		if ($this->getDriveFile() != null) {
-			$name = $this->getDriveFile()->getName();
-		} else if ($this->getTempFile() != null) {
-			$name = $this->getTempFile()->getName();
-		} else {
-			return false;
-		}
+    /**
+     * @param mixed $edited
+     */
+    public function setEdited($edited)
+    {
+        $this->edited = $edited;
+    }
 
-		$nameParts = explode(".", $name);
+    /**
+     * @return mixed
+     */
+    public function getPinned()
+    {
+        return $this->pinned;
+    }
 
-		if (count($nameParts) == 2) {
-			return in_array($nameParts[1], Array("png", "jpg", "jpeg", "gif", "tiff"));
-		}
+    /**
+     * @param mixed $pinned
+     */
+    public function setPinned($pinned)
+    {
+        $this->pinned = $pinned;
+    }
 
-		return false;
-	}
+    /**
+     * @return mixed
+     */
+    public function getResponseTo()
+    {
+        return $this->responseTo;
+    }
 
-	public function setLikeSummary($summary)
-	{
-		$this->likeSummary = json_encode($summary);
-	}
+    /**
+     * @param mixed $responseTo
+     */
+    public function setResponseTo($responseTo)
+    {
+        $this->responseTo = $responseTo;
+    }
 
-	public function getLikeSummary()
-	{
-		if ($this->likeSummary == "" or $this->likeSummary == null) {
-			return Array();
-		}
-		return json_decode($this->likeSummary, 1);
-	}
+    /**
+     * @return mixed
+     */
+    public function getSubject()
+    {
+        return $this->subject;
+    }
 
-	public function getAsArray()
-	{
+    /**
+     * @param mixed $subject
+     */
+    public function setSubject($subject)
+    {
+        $this->subject = $subject;
+    }
 
-		if ($this->getDriveFile() != null) {
-			$fileUrl = $this->getDriveFile()->getDownloadLink();
-		} else if ($this->getTempFile() != null) {
-			$fileUrl = "https://twakeapp.com" . $this->getTempFile()->getPublicURL();
-		} else {
-			$fileUrl = "";
-		}
 
-		if ($this->getDriveFile() != null) {
-			$fileName = $this->getDriveFile()->getName();
-		} else if ($this->getTempFile() != null) {
-			$fileName = $this->getTempFile()->getRealName();
-		} else {
-			$fileName = "";
-		}
 
-		return Array(
-			'id' => $this->getId(),
-			'sid' => $this->getSender()->getId(),
-			'rid' => $this->getReceiver()->getId(),
-			'content' => $this->getContent(),
-			'date' => $this->getDate()->format('d-m-Y H:i:s'),
-			'timestamp' => $this->getDate()->getTimestamp(),
-			'edited' => $this->getEdited(),
-			'pinned' => $this->getPinned(),
-			'fileurl' => $fileUrl,
-			'fileisimage' => $this->fileIsImage(),
-			'filename' => $fileName,
-			'fileisfromdrive' => $this->getDriveFile() != null,
-			'file' => $this->getDriveFile() != null ? $this->getDriveFile()->getArray() : null,
-			'likes' => $this->getLikeSummary()
-		);
-	}
+    public function getAsArray(){
+        $applicationSender = Array();
+        if($this->getApplicationSender() != null){
+            $applicationSender = $this->getApplicationSender()->getAsArray();
+        }
+        return Array(
+            "id" => $this->getId(),
+            "senderType" => $this->getTypeSender(),
+            "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getId():null,
+            "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getId():null,
+            "recieverType" => $this->getTypeReciever(),
+            "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getId()  :null,
+            "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
+            "content" => $this->getContent(),
+            "cleanContent" => $this->getCleanContent(),
+            "date" => $this->getDate(),
+            "edited" => $this->getEdited(),
+            "pinned" => $this->getPinned(),
+            "subject" => ($this->getSubject()!=null)?$this->getSubject()->getId():null,
+        );
+
+    }
+
+
+
+
 }
