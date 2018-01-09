@@ -79,8 +79,8 @@ class TwakeUserManagerController extends Controller
             "data" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $twakeUserId = $request->request->get("id","");
             $banned = $request->request->getBoolean("banned",false);
@@ -94,9 +94,9 @@ class TwakeUserManagerController extends Controller
                 $data["errors"][] = "null";
             }
         }
-        //else
+        else
         {
-          // $data["errors"][] = "disconnected";
+            $data["errors"][] = "disconnected";
         }
         return new JsonResponse($data);
     }
