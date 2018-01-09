@@ -31,13 +31,13 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         $req = $this->createQueryBuilder('U');
         $req->where('1=1');
         if($lastName != null){
-            $req->andWhere('U.lastName LIKE \'%' . $lastName.'%\'');
+            $req->andWhere('U.last_name LIKE \'%' . $lastName.'%\'');
         }
         if($firstName != null){
-            $req->andWhere('U.firstName LIKE \'%' . $firstName.'%\'');
+            $req->andWhere('U.first_name LIKE \'%' . $firstName.'%\'');
         }
         if($userName != null){
-            $req->andWhere('U.userName LIKE \'%' . $userName.'%\'');
+            $req->andWhere('U.user_name LIKE \'%' . $userName.'%\'');
         }
         if($email != null){
             $req->andWhere('U.email LIKE \'%' . $email.'%\'');
