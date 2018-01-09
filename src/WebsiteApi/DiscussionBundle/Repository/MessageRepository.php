@@ -10,4 +10,46 @@ namespace WebsiteApi\DiscussionBundle\Repository;
  */
 class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
+	public function findMessageBy($param){
+		if($param["dateStart"] != null){
+			$dateStart = new \DateTime($param["dateStart"]." 00:00:00");
+		}
+		else{
+			$dateStart = new \DateTime("1/1/1980 00:00:00");
+		}
+
+		if($param["dateEnd"] != null){
+			$dateEnd = new \DateTime($param["dateEnd"]." 00:00:00");
+		}
+		else{
+			$dateEnd = new \DateTime("1/1/2300 00:00:00");
+		}
+		$qb = $this->createQueryBuilder("e");
+
+		$qb->where('e.streamReciever = :id')
+        ->setParameter('id', $param["idDiscussion"]);
+
+		$qb->andWhere('e.cleanContent LIKE :content')
+        ->setParameter('content', '%'.$param["content"].'%' );
+
+		$qb->andWhere('e.date BETWEEN :from AND :to')
+        ->setParameter('from', $dateStart )
+        ->setParameter('to', $dateEnd);
+
+        if($param["from"] != null){
+        	$qb->andWhere('e.userSender = :idSender')
+        	->setParameter('idSender',$param["from"]);
+        }
+
+        $result = $qb->getQuery()->getResult();
+
+	    return $result;
+	}
+	/*Array(
+	    		"idDiscussion" => $discussion,
+	    		"content" => $content,
+	    		"from" => $from,
+	    		"dateStart" => $dateStart,
+	    		"$dateEnd" => $dateEnd
+	    	));*/
 }

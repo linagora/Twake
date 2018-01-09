@@ -63,9 +63,9 @@ class Workspace
 	 */
 	private $levels;
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\Channel", mappedBy="workspace")
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\Stream", mappedBy="workspace")
 	 */
-	private $channels;
+	private $streams;
 	/**
 	 * @ORM\OneToMany(targetEntity="WebsiteApi\MarketBundle\Entity\LinkAppWorkspace", mappedBy="workspace")
 	 */
@@ -354,10 +354,10 @@ class Workspace
 		return $users;
 	}
 
-	public function getChannels()
+	public function getStreams()
 	{
 
-		return $this->channels;
+		return $this->streams;
 	}
 
 	public function getAsSimpleArray($sendApps = true)

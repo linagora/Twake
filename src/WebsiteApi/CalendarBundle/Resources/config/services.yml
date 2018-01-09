@@ -9,8 +9,8 @@ services:
         arguments: ["@doctrine.orm.entity_manager"]
 
 
-    calendar.topic:
-        class: WebsiteApi\CalendarBundle\Topic\CalendarTopic
+    event.topic:
+        class: WebsiteApi\CalendarBundle\Topic\EventTopic
         tags:
             - { name: gos_web_socket.topic }
-        arguments: [ "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications"]
+        arguments: [ "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications","@app.event.EventSystem"]

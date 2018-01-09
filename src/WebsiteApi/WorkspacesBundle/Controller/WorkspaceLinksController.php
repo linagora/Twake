@@ -17,7 +17,7 @@ use Doctrine\DBAL\Platforms\Keywords\OracleKeywords;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use WebsiteApi\DiscussionBundle\Entity\Channel;
+use WebsiteApi\DiscussionBundle\Entity\Stream;
 
 class WorkspaceLinksController extends Controller
 {

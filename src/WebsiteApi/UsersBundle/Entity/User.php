@@ -142,8 +142,19 @@ class User extends BaseUser
 			"firstname" => $this->getFirstName(),
 			"lastname" => $this->getLastName(),
 			"thumbnail" => ($this->getThumbnail()==null)?null:$this->getThumbnail()->getPublicURL(2),
+
 		);
 		return $return;
 	}
+    public function getArray()
+    {
+        return Array(
+            "id" => $this->getId(),
+            "username" => $this->getUsername(),
+            "susername" => $this->getUsernameClean(),
+            "userimage" => $this->getUrlProfileImage(),
+            "connected" => $this->isConnected()
+        );
+    }
 
 }

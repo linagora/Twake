@@ -62,9 +62,9 @@ class TwakeEvent {
      * @ORM\ManyToOne(targetEntity="WebsiteApi\CalendarBundle\Entity\Calendar")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $linkCalendar;
+    private $calendar;
 
-    public  function __construct($title,$location,$desc,$sDate,$eDate,$color,$linkCal,$linkApp = null)
+    public  function __construct($title,$location,$desc,$sDate,$eDate,$color,$cal,$linkApp = null)
     {
         $this->setTitle($title);
         $this->setLocation($location);
@@ -72,7 +72,7 @@ class TwakeEvent {
         $this->setStartDate($sDate);
         $this->setEndDate($eDate);
         $this->setColor($color);
-        $this->setLinkCalendar($linkCal);
+        $this->setCalendar($cal);
         $this->setLinkApp($linkApp);
     }
 
@@ -207,17 +207,17 @@ class TwakeEvent {
     /**
      * @return mixed
      */
-    public function getLinkCalendar()
+    public function getCalendar()
     {
-        return $this->linkCalendar;
+        return $this->calendar;
     }
 
     /**
      * @param mixed $linkCalendar
      */
-    public function setLinkCalendar(Calendar $linkCalendar)
+    public function setCalendar(Calendar $calendar)
     {
-        $this->linkCalendar = $linkCalendar;
+        $this->calendar = $calendar;
     }
 
 
@@ -229,7 +229,10 @@ class TwakeEvent {
             "description" => $this->getDescription(),
             "startDate" => $this->getStartDate(),
             "endDate" => $this->getEndDate(),
-            "color" => $this->getColor()
+            "borderColor" => $this->getColor(),
+            "textColor" => $this->getColor(),
+            "color" => "white",
+            "calendar" => $this->getCalendar()->getId(),
         );
     }
 
