@@ -27,9 +27,25 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         return $req1;
     }
 
-    public function findUsersByFilter($lastName=null,$firstName=null,$userName=null,$email=null){
-        $req = $this->createQueryBuilder('U');
-        $req->where('1=1');
+    public function findUsersByFilter($pageNumber,$nbUserByPage,$lastName=null,$firstName=null,$userName=null,$email=null,&$total=null){
+        $offset = ($pageNumber - 1) * $nbUserByPage;
+        $limit = $nbUserByPage;
+
+        $req = $this->createQueryBuilder('U')
+            ->select('count(U.id)');
+        $req = $this->middleFindUserQueryBuilder($req,$lastName,$firstName,$userName,$email);
+        $total = $req->getQuery()->getSingleScalarResult();
+
+        $req1 = $this->createQueryBuilder('U');
+        $req1->where('1=1');
+        $req1 = $this->middleFindUserQueryBuilder($req,$lastName,$firstName,$userName,$email);
+        $req1 = $req1->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()->getResult();
+        return $req1;
+    }
+
+    public function middleFindUserQueryBuilder($req,$lastName=null,$firstName=null,$userName=null,$email=null){
         if($lastName != null){
             $req->andWhere('U.last_name LIKE \'%' . $lastName.'%\'');
         }
@@ -42,7 +58,6 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         if($email != null){
             $req->andWhere('U.email LIKE \'%' . $email.'%\'');
         }
-        $req = $req->getQuery()->getResult();
         return $req;
     }
 
