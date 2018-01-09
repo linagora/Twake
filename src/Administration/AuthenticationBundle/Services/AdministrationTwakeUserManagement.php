@@ -38,6 +38,7 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
         $em->flush($twakeUser);
         return $twakeUser;
     }
+
     public function getInfoUser($idTwakeUser){
         $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
         $twakeUser =  $repository->findOnBy(Array("id"=>$idTwakeUser));
