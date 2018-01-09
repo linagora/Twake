@@ -27,7 +27,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         return $req1;
     }
 
-    public function findUsersByFilter($lastName,$firstName,$userName,$email){
+    public function findUsersByFilter($lastName=null,$firstName=null,$userName=null,$email=null){
         $req = $this->createQueryBuilder('U');
         $req->where('1=1');
         if($lastName != null){
