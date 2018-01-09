@@ -42,22 +42,23 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         if($email != null){
             $req->andWhere('U.email LIKE \'%' . $email.'%\'');
         }
+        $req = $req->getQuery()->getResult();
         return $req;
     }
 
     private function searchMiddleQueryBuilder($req,$filters){
         if ($filters != null) {
             if(isset($filters['username'])){
-                $req->where('U.username_clean LIKE \'%' . $filters['username'].'%\'');
+                $req->where('U.username LIKE \'%' . $filters['username'].'%\'');
             }
             if(isset($filters['lastname'])){
-                $req->where('U.lastname LIKE \'%' . $filters['lastname'].'%\'');
+                $req->where('U.last_name LIKE \'%' . $filters['lastname'].'%\'');
             }
             if(isset($filters['email'])){
                 $req->where('U.email LIKE \'%' . $filters['email'].'%\'');
             }
             if(isset($filters['firstname'])){
-                $req->where('U.firstname LIKE \'%' . $filters['firstname'].'%\'');
+                $req->where('U.first_name LIKE \'%' . $filters['firstname'].'%\'');
             }
             if(isset($filters['gender'])){
                 $req->where('U.gender LIKE \'' . $filters['gender'].'\'');
