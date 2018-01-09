@@ -31,6 +31,7 @@ class TwakeUserManagerController extends Controller
             foreach($listTwakeUser as $twakeUser)
             {
                 $listResponse[] = $twakeUser->getAsArray();
+
             }
 	        $data["data"]["total"] = $totalNumber;
             $data["data"]["users"] = $listResponse;
@@ -93,6 +94,36 @@ class TwakeUserManagerController extends Controller
             {
                 $data["errors"][] = "null";
             }
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+        return new JsonResponse($data);
+    }
+
+    public function searchUserAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
+        {
+            $lastName = $request->request->get("lastname","");
+            $firstName = $request->request->get("firstname", "");
+            $userName = $request->request->get("username","");
+            $email = $request->request->get("email","");
+            $listUser = $this->get('admin.TwakeUserManagement')->searchUser($lastName,$firstName,$userName,$email);
+
+            $listResponse = Array();
+            foreach($listUser as $twakeUser)
+            {
+                $listResponse[] = $twakeUser->getAsArray();
+            }
+            $data["data"]["users"] = $listResponse;
         }
         else
         {

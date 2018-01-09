@@ -41,6 +41,11 @@ administration_users_setBanned:
    defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:setBanned}
 
 
+administration_users_searchUser:
+   path: /searchUser
+   defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:searchUser}
+
+
 administration_users_listTwakeGroups:
    path: /listTwakeGroups
    defaults: {_controller: AdministrationAuthenticationBundle:TwakeGroupManager:listTwakeGroups}
