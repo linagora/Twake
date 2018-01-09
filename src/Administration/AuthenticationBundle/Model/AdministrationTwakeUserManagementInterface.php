@@ -20,5 +20,5 @@ interface AdministrationTwakeUserManagementInterface
     public function getInfoUser($idTwakeUser);
 
     //searchUser return array with all twake user order by infos
-    public function searchUser($lastName,$firstName,$userName,$email);
+    public function searchUser($lastName=null,$firstName=null,$userName=null,$email=null);
 }

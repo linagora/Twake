@@ -52,7 +52,7 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
         return $twakeUser;
     }
 
-    public function searchUser($lastName,$firstName,$userName,$email){
+    public function searchUser($lastName=null,$firstName=null,$userName=null,$email=null){
         $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
         return $repository->findUsersByFilter($lastName,$firstName,$userName,$email);
     }

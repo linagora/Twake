@@ -10,7 +10,7 @@ namespace WebsiteApi\UsersBundle\Repository;
  */
 class UserRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function search($pageNumber,$nbUserByPage, $filters,&$total){
+    public function findAllOrderedByName($pageNumber,$nbUserByPage, $filters,&$total){
         $offset = ($pageNumber - 1) * $nbUserByPage;
         $limit = $nbUserByPage;
 
@@ -25,6 +25,24 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
             ->setMaxResults($limit)
             ->getQuery()->getResult();
         return $req1;
+    }
+
+    public function findUsersByFilter($lastName,$firstName,$userName,$email){
+        $req = $this->createQueryBuilder('U');
+        $req->where('1=1');
+        if($lastName != null){
+            $req->andWhere('U.lastName LIKE \'%' . $lastName.'%\'');
+        }
+        if($firstName != null){
+            $req->andWhere('U.firstName LIKE \'%' . $firstName.'%\'');
+        }
+        if($userName != null){
+            $req->andWhere('U.userName LIKE \'%' . $userName.'%\'');
+        }
+        if($email != null){
+            $req->andWhere('U.email LIKE \'%' . $email.'%\'');
+        }
+        return $req;
     }
 
     private function searchMiddleQueryBuilder($req,$filters){
@@ -50,24 +68,6 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
             if(isset($filters['connected'])){
                 $req->where('U.connected = \'' . $filters['connected'].'\'');
             }
-        }
-        return $req;
-    }
-
-    public function findUsersByFilter($lastName,$firstName,$userName,$email){
-        $req = $this->createQueryBuilder('U');
-        $req->where('1=1');
-        if($lastName != null){
-            $req->andWhere('U.lastName LIKE \'%' . $lastName.'%\'');
-        }
-        if($firstName != null){
-            $req->andWhere('U.firstName LIKE \'%' . $firstName.'%\'');
-        }
-        if($userName != null){
-            $req->andWhere('U.userName LIKE \'%' . $userName.'%\'');
-        }
-        if($email != null){
-            $req->andWhere('U.email LIKE \'%' . $email.'%\'');
         }
         return $req;
     }
