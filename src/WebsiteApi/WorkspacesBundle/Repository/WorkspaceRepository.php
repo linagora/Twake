@@ -10,9 +10,9 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  */
 class WorkspaceRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function search($pageNumber,$nbUserByPage, $filters,&$total){
-        $offset = ($pageNumber - 1) * $nbUserByPage;
-        $limit = $nbUserByPage;
+    public function search($pageNumber,$nbGroupByPage, $filters=null,&$total){
+        $offset = ($pageNumber - 1) * $nbGroupByPage;
+        $limit = $nbGroupByPage;
 
         $req = $this->createQueryBuilder('U')
             ->select('count(U.id)');

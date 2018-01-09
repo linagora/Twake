@@ -12,4 +12,10 @@ namespace Administration\AuthenticationBundle\Model;
 interface AdministrationGroupManagementInterface
 {
     public function listGroup($pageNumber,$nbUserByPage,$filters=null,&$total);
+
+    //@getInfoUser return associative array with all user info
+    public function getInfoWorkspace($idTwakeWorkspace);
+
+    //searchUser return array with all twake user order by infos
+    public function searchWorkspace($pageNumber, $nbWorkspaceByPage,$lastName=null,$firstName=null,$userName=null,$email=null,&$total=null);
 }
