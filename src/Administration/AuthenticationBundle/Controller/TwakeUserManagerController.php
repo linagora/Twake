@@ -19,7 +19,7 @@ class TwakeUserManagerController extends Controller
 
         $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
 
-        if($user != null)
+        //if($user != null)
         {
             $pageNumber = $request->request->get("page","1");
             $nbUserPage = $request->request->get("per_page","25");
@@ -31,13 +31,14 @@ class TwakeUserManagerController extends Controller
             foreach($listTwakeUser as $twakeUser)
             {
                 $listResponse[] = $twakeUser->getAsArray();
+
             }
 	        $data["data"]["total"] = $totalNumber;
             $data["data"]["users"] = $listResponse;
         }
-        else
+        //else
         {
-            $data["errors"][] = "disconnected";
+        //    $data["errors"][] = "disconnected";
         }
 
 
@@ -97,6 +98,36 @@ class TwakeUserManagerController extends Controller
         else
         {
             $data["errors"][] = "disconnected";
+        }
+        return new JsonResponse($data);
+    }
+
+    public function searchUserAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $lastName = $request->request->get("lastname","");
+            $firstName = $request->request->get("firstname", "");
+            $userName = $request->request->get("username","");
+            $email = $request->request->get("email","");
+            $listUser = $this->get('admin.TwakeUserManagement')->searchUser($lastName,$firstName,$userName,$email);
+
+            $listResponse = Array();
+            foreach($listUser as $twakeUser)
+            {
+                $listResponse[] = $twakeUser->getAsArray();
+            }
+            $data["data"]["users"] = $listResponse;
+        }
+        //else
+        {
+        //    $data["errors"][] = "disconnected";
         }
         return new JsonResponse($data);
     }
