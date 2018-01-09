@@ -22,15 +22,28 @@ class TwakeGroupManagerController extends Controller
             "data" => Array()
         );
 
-        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
 
-        if($user != null)
+        //if($user != null)
         {
-            //TODO
+            $pageNumber = $request->request->get("page","1");
+            $nbGroupByPage = $request->request->get("per_page","25");
+            $filters = $request->request->get("filters","");
+            $total = 0;
+            $listTwakeGroups = $this->get('admin.TwakeGroupManagement')->listGroup($pageNumber,$nbGroupByPage,$filters,$total);
+
+            $listResponse = Array();
+
+            foreach($listTwakeGroups as $twakeGroup)
+            {
+                $listResponse[] = $twakeGroup->getAsArray();
+            }
+            $data["data"]["total"] = $total;
+            $data["data"]["users"] = $listResponse;
         }
-        else
+        //else
         {
-            $data["errors"][] = "disconnected";
+          //  $data["errors"][] = "disconnected";
         }
         return new JsonResponse($data);
     }

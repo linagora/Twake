@@ -11,3 +11,7 @@ services:
     admin.TwakeUserManagement:
         class: Administration\AuthenticationBundle\Services\AdministrationTwakeUserManagement
         arguments: ["@doctrine.orm.entity_manager"]
+
+    admin.TwakeGroupManagement:
+        class: Administration\AuthenticationBundle\Services\AdministrationTwakeGroupManagement
+        arguments: ["@doctrine.orm.entity_manager"]
