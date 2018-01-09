@@ -32,7 +32,7 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
     {
         $em = $this->doctrine;
         $repository = $em->getRepository("TwakeUsersBundle:User");
-        $twakeUser =  $repository->findOnBy(Array("id"=>$idTwakeUser));
+        $twakeUser =  $repository->findOneBy(Array("id"=>$idTwakeUser));
         $twakeUser->setBanned($bool);
         $em->persist($twakeUser);
         $em->flush($twakeUser);
@@ -41,7 +41,7 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
     public function getInfoUser($idTwakeUser)
     {
         $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-        $twakeUser =  $repository->findOnBy(Array("id"=>$idTwakeUser));
+        $twakeUser =  $repository->findOneBy(Array("id"=>$idTwakeUser));
         if($twakeUser == null)
         {
             return null;
