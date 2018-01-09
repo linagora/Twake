@@ -30,3 +30,13 @@ administration_authentication_listUserAdmin:
 administration_users_listTwakeUsers:
    path: /listTwakeUsers
    defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:listTwakeUsers}
+
+
+administration_users_getInfoUser:
+   path: /getInfoUser
+   defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:getInfoUser}
+
+
+administration_users_listTwakeGroups:
+   path: /listTwakeGroups
+   defaults: {_controller: AdministrationAuthenticationBundle:TwakeGroupManager:listTwakeGroups}

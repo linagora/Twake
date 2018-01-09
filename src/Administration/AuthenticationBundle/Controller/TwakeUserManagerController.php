@@ -44,4 +44,31 @@ class TwakeUserManagerController extends Controller
         return new JSonResponse($data);
     }
 
+    public function getInfoUserAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
+        {
+            $twakeUserId = $request->request->get("id","");
+            $twakeUser = $this->get('admin.TwakeUserManagement')->getInfoUser($twakeUserId);
+            if($twakeUser != null)
+            {
+                $data["data"]["user"] = $twakeUser->getAsArray();
+            }
+            else
+            {
+                $data["errors"][] = "null";
+            }
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+        return new JsonResponse($data);
+    }
 }
