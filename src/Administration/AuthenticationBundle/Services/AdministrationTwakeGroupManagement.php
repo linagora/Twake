@@ -9,8 +9,13 @@
 namespace Administration\AuthenticationBundle\Services;
 
 
-class AdministrationGroupManagement
+class AdministrationTwakeGroupManagement
 {
+    public function __construct($doctrine)
+    {
+        $this->doctrine = $doctrine;
+    }
+
     public function listGroup($pageNumber,$nbGroupByPage,$filters=null,&$total){
         $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
         return $repository->search($pageNumber,$nbGroupByPage,$filters,$total);

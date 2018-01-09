@@ -26,8 +26,6 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
         return $repository->findAllOrderedByName($pageNumber,$nbUserByPage,$filters,$total);
     }
 
-
-
     public function setBannedTwakeUser($idTwakeUser,$bool)
     {
         $em = $this->doctrine;
@@ -41,6 +39,7 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
         $em->flush($twakeUser);
         return $twakeUser;
     }
+
     public function getInfoUser($idTwakeUser)
     {
         $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
