@@ -66,6 +66,12 @@ class MessageSystem
                 $this->doctrine->flush();
                 return $message;
             }
+            else{
+                error_log("not found".$recieverId);
+            }
+        }
+        else{
+            error_log("not send");
         }
     }
 
@@ -106,16 +112,16 @@ class MessageSystem
                                 $nb = count($messageInSubject);
                                 $lastMessage = $messageInSubject[0];
                                 if ($lastMessage != $firstMessage) {
-                                    $retour[] = array_merge($message->getArray(), Array("isSubject" => true,"responseNumber" => $nb, "lastMessage" => $lastMessage->getArray()));
+                                    $retour[] = array_merge($message->getAsArray(), Array("isSubject" => true,"responseNumber" => $nb, "lastMessage" => $lastMessage->getAsArray()));
                                 } else {
-                                    $retour[] = array_merge($message->getArray(), Array("isSubject" => true, "responseNumber" => $nb));
+                                    $retour[] = array_merge($message->getAsArray(), Array("isSubject" => true, "responseNumber" => $nb));
                                 }
                                 $subjectRed[] = $message->getSubject()->getId();
                             }
                         }
                     }
                     else{
-                        $retour[] = $message->getArray();
+                        $retour[] = $message->getAsArray();
                     }
                 }
                 return $retour;
@@ -125,20 +131,38 @@ class MessageSystem
 	        error_log("user");
             $otherUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
             if($otherUser != null){
+                error_log("user found");
                 $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $otherUser,"userReciever"=>$user),Array("date"=>"DESC"), $limit = $offset, $offset = 0);
                 $messages = array_merge($messages,$this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $user,"userReciever"=>$otherUser),Array("date"=>"DESC"), $limit = 30, $offset = $offset));
                 $messages = array_reverse($messages);
-;                $retour = [];
+;               $retour = [];
                 foreach($messages as $message){
                     $retour[] = $message->getAsArray();
                 }
-                print_r($retour);
                 return $retour;
+            }
+            else{
+                error_log("user not found");
             }
         }
    }
 
-
+    function pinMessage($id,$pinned){
+	    if($id == null){
+	        return false;
+        }
+        if($pinned == null){
+	        $pinned = false;
+        }
+        $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($id);
+	    if($message == null){
+	        return false;
+        }
+        $message->setPinned($pinned);
+	    $this->doctrine->persist($message);
+	    $this->doctrine->flush();
+	    return $message;
+    }
 
 
 
@@ -411,44 +435,6 @@ class MessageSystem
 		return;
 	}
 
-	/**
-	 * Pin a message and send modifications to users
-	 */
-	function pinMessage($user, $discussionType, $discussionId, $messageId, $pinned, $topic = null){
-
-		$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneById($messageId);
-
-		$canPin = false;
-		if ($discussionType == "channel") {
-			$channel = $message->getReceiver();
-			$canPin = $this->levelManager->hasRight($user, $channel->getGroup(), 'Messages:general:pin');
-		}
-		else {
-			$canPin = $user == $message->getSender() || $user == $message->getReceiver();
-		}
-
-
-		if ($canPin) {
-
-			$message->setPinned($pinned);
-			$this->doctrine->persist($message);
-			$this->doctrine->flush();
-
-			$data = Array(
-				'type' => 'P',
-				'data' => Array(
-					'id' => $message->getId(),
-					'pinned' => $pinned
-				)
-			);
-
-			if ($topic != null) {
-				$topic->broadcast($data);
-			} else {
-				$this->pusher->push($data, "discussion_topic",Array("key"=>$discussionId));
-			}
-		}
-	}
 
 
 	/**

@@ -30,14 +30,11 @@ class DiscussionController extends Controller
             else{
                 $discussion = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
                 $messages = [];
-                $messages1 = Array();
-                do{
-                    $messages1 = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],intval($request->request->get("offset")),$request->request->get("subject"));
-                    $messages = array_merge($messages,$messages1);
-                    error_log(count($messages1));
-                }while(count($messages)<30 && count($messages1)>0);
-
-                    $data["data"] = $messages;
+                $offset = intval($request->request->get("offset"));
+                $messages = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],$offset,$request->request->get("subject"));
+                error_log(count($messages));
+                $data["data"] = $messages;
+                error_log("nb message : ".count($messages));
             }
         }
         return new JsonResponse($data);
@@ -67,7 +64,7 @@ class DiscussionController extends Controller
                             foreach($subjects as $subject){
                                 $fistMessage = $this->get("app.subjectSystem")->getFirstMessage($subject);
                                 $lastMessage = $this->get("app.subjectSystem")->getLastMessage($subject);
-                                $retour[] = $subject->getArray();
+                                $retour[] = $subject->getAsArray();
 
                             }
                             $data["data"] = $retour;
@@ -119,7 +116,7 @@ class DiscussionController extends Controller
                         $messages = $this->get("app.subjectSystem")->getMessages($subject);
                         $retour = [];
                         foreach ($messages as $message) {
-                            $retour[] = $message->getArray();
+                            $retour[] = $message->getAsArray();
                         }
                         $data["data"] = $retour;
                     }
@@ -151,7 +148,7 @@ class DiscussionController extends Controller
             	$streams = $this->get("app.streamSystem")->getStreamList($request->request->get("gid"),$this->getUser());
             	$retour = [];
             	foreach ($streams as $stream) {
-            		$retour[] = $stream->getArray();
+            		$retour[] = $stream->getAsArray();
             	}
             	$data["data"] = $retour;
             }
@@ -177,7 +174,7 @@ class DiscussionController extends Controller
 			$messages = $this->get("app.messages")->searchMessage($discussionInfos["type"],$discussionInfos["id"],$request->request->get("content"),intval($request->request->get("from")),$request->request->get("dateStart"),$request->request->get("dateEnd"));
 			$retour = Array();
 			foreach ($messages as $message) {
-				$retour[] = $message->getArray();
+				$retour[] = $message->getAsArray();
 			}
 			$data["data"] = $retour;
 //		}	
