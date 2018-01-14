@@ -148,6 +148,7 @@ class MessageSystem
    }
 
     function pinMessage($id,$pinned){
+
 	    if($id == null){
 	        return false;
         }
