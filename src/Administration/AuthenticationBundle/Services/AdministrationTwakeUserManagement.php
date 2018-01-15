@@ -56,5 +56,11 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
         return $repository->findUsersByFilter($pageNumber, $nbUserByPage,$lastName,$firstName,$userName,$email,$total);
     }
 
+    public function getUserWorkspace($idTwakeUser){
+        $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser");
+        $linkWorkspaceUser = $repository->findBy(Array("User"=>$idTwakeUser));
+        return $linkWorkspaceUser->getGroup();
+    }
+
 
 }
