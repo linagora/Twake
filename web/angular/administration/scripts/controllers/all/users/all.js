@@ -6,7 +6,7 @@ angular.module('TwakeAdministration')
       parent : 'general'
   });
 })
-.controller('UsersCtrl', function($api, $scope){
+.controller('UsersCtrl', function($api, $scope, $state){
 
 		var that = this;
 
@@ -44,7 +44,33 @@ angular.module('TwakeAdministration')
 			this.perpage = perpage;
 			this.update();
 		}
+		this.getProfileView = function(userId){
+            $state.go("user-sheet", {id: userId})
+		}
+		this.search = function () {
+			// Declare variables
+			var input, filter, table, tr, td, i, j;
+			input = document.getElementById("search");
+			filter = input.value.toUpperCase();
+			table = document.getElementById("users_table");
+			tr = table.getElementsByTagName("tr");
 
+			// Loop through all table rows, and hide those who don't match the search query
+			for (i = 1; i < table.rows.length; i++) {
+				for(j = 0; j < table.rows[i].cells.length; j++)
+				{
+                    td = table.rows[i].cells[j];
+                    if (td) {
+                        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
+                            tr[i].style.display = "";
+                            break;
+                        } else {
+                            tr[i].style.display = "none";
+                        }
+                    }
+				}
+			}
+		}
 		this.update();
 
 });
