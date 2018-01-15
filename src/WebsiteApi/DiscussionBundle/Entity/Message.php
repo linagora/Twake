@@ -358,7 +358,7 @@ class Message
             "date" => $this->getDate(),
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),
-            "subject" => ($this->getSubject()!=null)?$this->getSubject()->getId():null,
+            "subject" => ($this->getSubject()!=null)?$this->getSubject()->getAsArray():null,
         );
 
     }

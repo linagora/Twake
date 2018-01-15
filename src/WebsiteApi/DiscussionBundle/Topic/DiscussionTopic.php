@@ -111,9 +111,8 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                 if( isset($event["data"]["idMessage"]) && $event["data"]["idMessage"] !=null ){
                 	$subject = $this->subjectService->createSubjectFromMessage($event["data"]["idMessage"]);
                 	if($subject){
-                        $idMessage = $event["data"]["idMessage"];
                         $event["data"] = $subject->getAsArray();
-                        $event["data"]["idMessage"] = $idMessage;
+                        $event["data"]["responseNumber"] = 0;
 					}
 					else{
                 		$canBroadcast = false;
