@@ -23,7 +23,7 @@ class AdministrationTwakeGroupManagement
 
     public function getInfoWorkspace($idTwakeWorkspace)
     {
-        $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+        $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
         $twakeWorkspace =  $repository->findOneBy(Array("id"=>$idTwakeWorkspace));
         if($twakeWorkspace == null)
         {
@@ -36,4 +36,13 @@ class AdministrationTwakeGroupManagement
         $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
         return $repository->findWorspaceByFilter($pageNumber, $nbWorkspaceByPage,$name,$memberCount,$total);
     }
+
+    public function sizeWorkspace($idTwakeWorkspace){
+        return $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize(getInfoWorkspace($idTwakeWorkspace));
+    }
+
+    public function getWorkspaceMembers($idTwakeWorkspace){
+        return $this->getInfoWorkspace($idTwakeWorkspace)->getMembers();
+    }
+
 }
