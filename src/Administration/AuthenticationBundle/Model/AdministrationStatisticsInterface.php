@@ -16,4 +16,7 @@ interface AdministrationStatisticsInterface
 
     //numberOfUsers count the number of twake user
     public function numberOfUsers();
+
+    //numberOfAppUser count the number of user using application
+    public function numberOfAppUser($idApp);
 }

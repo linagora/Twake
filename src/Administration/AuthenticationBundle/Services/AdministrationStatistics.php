@@ -17,12 +17,25 @@ class AdministrationStatistics implements AdministrationStatisticsInterface
     {
         $this->doctrine = $doctrine;
     }
+
     public function numberOfUserCurrentlyConnected(){
         $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
         return $repository->countUsersConnected();
     }
+
     public function numberOfUsers(){
         $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
         return $repository->countUsers();
+    }
+
+    public function numberOfAppUser($idApp){
+        $repository = $this->doctrine->getRepository("MarketBundle:LinkAppUser");
+        return $repository->countUserByApp($idApp);
+    }
+
+
+    public function numberOfWorkspaceByApp($idApp){
+        $repository = $this->doctrine->getRepository("MarketBundle:LinkAppWorkspace");
+        $repository->countWorkspaceByApp($idApp);
     }
 }
