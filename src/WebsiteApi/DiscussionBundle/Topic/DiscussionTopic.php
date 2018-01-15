@@ -37,6 +37,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
 	{
         print_r($event);
+        $canBroadcast = true;
 		$operation = $event['type'];
 
 		$key = $request->getAttributes()->get('key');
@@ -87,21 +88,36 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             if($operation == "C"){
 
                 $message = $this->messagesService->sendMessage("U",$currentUser->getId(), $type, $id, $event['data']['content'], $event["data"]['subject']);
-                $event["data"] = $message->getArray();
+				if($message){
+                    $event["data"] = $message->getAsArray();
+				}
+				else{
+					$canBroadcast = false;
+				}
 			}
             else if($operation == "E"){
             	$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($event["data"]["id"]);
             	if($message != null && $message->getTypeSender()=="U" && $message->getUserSender()==$currentUser){
 	                $message = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
-	                $event["data"] = $message->getArray();
+	                if($message){
+                        $event["data"] = $message->getAsArray();
+					}
+					else{
+	                	$canBroadcast = false;
+					}
             	}
             }
             else if($operation == "CS"){ //creation subject
                 if( isset($event["data"]["idMessage"]) && $event["data"]["idMessage"] !=null ){
                 	$subject = $this->subjectService->createSubjectFromMessage($event["data"]["idMessage"]);
-                	$idMessage = $event["data"]["idMessage"];
-					$event["data"] = $subject->getArray();
-					$event["data"]["idMessage"] = $idMessage;
+                	if($subject){
+                        $idMessage = $event["data"]["idMessage"];
+                        $event["data"] = $subject->getAsArray();
+                        $event["data"]["idMessage"] = $idMessage;
+					}
+					else{
+                		$canBroadcast = false;
+					}
 				}
 			}
 			elseif ($operation == 'W') { // is writing
@@ -109,8 +125,24 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                     $event["data"]["id"] = $currentUser->getId();
                 }
             }
+            elseif ($operation == 'P'){ // pinned message
+            	if(isset($event["data"]) && isset($event["data"]["id"]) && isset($event["data"]["pinned"])){
+            		$message = $this->messagesService->pinMessage($event["data"]["id"],$event["data"]["pinned"]);
+            		if($message){
+                        $event["data"] = $message->getAsArray();
+					}
+					else{
+            			$canBroadcast = false;
+					}
 
-            $topic->broadcast($event);
+				}
+			}
+			if($canBroadcast){
+            	$topic->broadcast($event);
+			}
+			else{
+                error_log("no broadcast");
+            }
 		} else {
 			$topic->remove($connection); //Eject the hacker !
 		}
