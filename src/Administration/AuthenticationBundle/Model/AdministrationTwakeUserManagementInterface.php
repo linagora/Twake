@@ -24,4 +24,7 @@ interface AdministrationTwakeUserManagementInterface
 
     //getUserWorkspace return twakeUser workspaces
     public function getUserWorkspace($idTwakeUser);
+
+    //getUserApp return applications used by the user idTwakeUser
+    public function getUserApp($idTwakeUser);
 }
