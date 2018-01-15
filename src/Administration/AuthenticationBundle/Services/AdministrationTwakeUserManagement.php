@@ -61,6 +61,4 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
         $linkWorkspaceUser = $repository->findBy(Array("User"=>$idTwakeUser));
         return $linkWorkspaceUser->getGroup();
     }
-
-
 }
