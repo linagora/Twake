@@ -36,10 +36,10 @@ class TwakeGroupManagerController extends Controller
 
             foreach($listTwakeGroups as $twakeGroup)
             {
-                $listResponse[] = $twakeGroup->getAsArray();
+                $listResponse[] = $twakeGroup->getAsSimpleArray();
             }
             $data["data"]["total"] = $total;
-            $data["data"]["users"] = $listResponse;
+            $data["data"]["workspaces"] = $listResponse;
         }
         //else
         {

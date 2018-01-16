@@ -1,0 +1,61 @@
+<div ng-controller="WorkspacesCtrl as workspaces">
+	<div class="info-box">
+		<span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+		<div class="info-box-content">
+			<span class="info-box-text">Workspaces count</span>
+			<span class="info-box-number">{{workspaces.total}}</span>
+		</div>
+		<!-- /.info-box-content -->
+	</div>
+	<div class="box">
+		<div class="box-header">
+			<h3 class="box-title">Workspaces</h3>
+		</div>
+		<div class="box-body">
+
+			<ul class="pagination">
+				<li ng-repeat="page in workspaces.pages" ng-class="{'active': workspaces.page == page}"><a ng-click="workspaces.setPage(page)">{{page}}</a></li>
+			</ul>
+
+			<select ng-model="perpage" ng-change="workspaces.setNbPerPage(perpage)" class="form-control" style="width:50px;float:right;">
+				<option value="{{workspaces.perpage}}" disabled selected>{{workspaces.perpage}}</option>
+				<option disabled></option>
+				<option value="25">25</option>
+				<option value="50">50</option>
+				<option value="100">100</option>
+				<option value="250">250</option>
+				<option value="500">500</option>
+			</select>
+
+			<input type="text" id="search" ng-keyup="workspaces.search()" placeholder="Filter ...">
+			<table id= "workspaces_table" class="table table-bordered table-hover">
+				<thead>
+				<tr>
+					<th>ID</th>
+					<th>Image</th>
+					<th>Name</th>
+					<th>Description</th>
+					<th>Operations</th>
+				</tr>
+				</thead>
+				<tbody>
+
+				<tr ng-repeat="workspace in workspaces.list">
+					<td>{{workspace.id}}</td>
+					<td>
+						<div style="background-position: center; background-size: contain; width:50px; height:50px; {{workspace.csslogo}}"></div>
+					</td>
+					<td>{{workspace.name}}</td>
+					<td>{{workspace.description}}</td>
+					<td><button class="btn btn-primary" ng-click="workspaces.getWorkspaceView(workspace.id)">See more infos</button></td>
+				</tr>
+
+				</tbody>
+
+			</table>
+
+
+		</div>
+	</div>
+</div>
