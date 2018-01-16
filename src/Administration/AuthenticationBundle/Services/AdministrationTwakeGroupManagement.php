@@ -34,7 +34,7 @@ class AdministrationTwakeGroupManagement
 
     public function searchWorkspace($pageNumber,$nbWorkspaceByPage,$name=null,$memberCount=null,&$total=null){
         $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-        return $repository->findWorspaceByFilter($pageNumber, $nbWorkspaceByPage,$name,$memberCount,$total);
+        return $repository->search($pageNumber, $nbWorkspaceByPage,$name,$memberCount,$total);
     }
 
     public function sizeWorkspace($idTwakeWorkspace){
