@@ -1,58 +1,42 @@
 <div ng-controller="Workspace_sheetCtrl as workspace">
     <table class="table table-bordered table-hover">
-        <!--<tr>
-            <td>Username</td>
-            <td>{{user.userInfo.username}}</td>
+        <tr>
+            <td>Name</td>
+            <td>{{workspace.workspaceInfo.name}}</td>
         </tr>
         <tr>
-            <td>First Name</td>
-            <td>{{user.userInfo.firstname}}</td>
+            <td>Description</td>
+            <td>{{workspace.workspaceInfo.description}}</td>
         </tr>
         <tr>
-            <td>Last Name</td>
-            <td>{{user.userInfo.lastname}}</td>
+            <td>Image</td>
+            <td><div style="background-position: center; background-size: contain; width:50px; height:50px; {{workspace.workspaceInfo.csslogo}}"></div></td>
         </tr>
-        <tr>
-            <td>Connection Status</td>
-            <td>{{user.userInfo.isConnected ? "Connect" : "Disconnect"}}</td>
-        </tr>
-        <tr>
-            <td>Last Login</td>
-            <td>{{user.userInfo.lastLogin.date}}</td>
-        </tr>
-        <tr>
-            <td>Banned Status</td>
-            <td>{{user.userInfo.banned ? "Ban" : "Not ban"}}</td>
-        </tr>
-        <tr>
-            <td>Thumbnail</td>
-            <td><div style="background-position: center; background-size: contain; width:50px; height:50px; {{user.userInfo.cssuserimage}}"></div></td>
-        </tr>-->
     </table>
     <button class="btn btn-primary" ng-click="workspace.goBack()">Back to the list</button>
-    <!--<h1>Users in {{workspace.userInfo.username}}</h1>
+    <h1>Users in {{workspace.workspaceInfo.name}}</h1>
     <table class="table table-bordered table-hover">
         <thead>
         <tr>
             <th>ID</th>
             <th>Image</th>
-            <th>Name</th>
-            <th>Description</th>
+            <th>Username</th>
+            <th>Mail</th>
             <th>Operations</th>
         </tr>
         </thead>
         <tbody>
 
-        <tr ng-repeat="workspace in user.workspaces">
-            <td>{{workspace.id}}</td>
+        <tr ng-repeat="user in workspace.users">
+            <td>{{user.id}}</td>
             <td>
-                <div style="background-position: center; background-size: contain; width:50px; height:50px; {{workspace.csslogo}}"></div>
+                <div style="background-position: center; background-size: contain; width:50px; height:50px; {{user.cssuserimage}}"></div>
             </td>
-            <td>{{workspace.name}}</td>
-            <td>{{workspace.description}}</td>
-            <td><button class="btn btn-primary" ng-click="">See Workspace</button></td>
+            <td>{{user.username}}{{user.connected?' (online)':''}}</td>
+            <td></td>
+            <td><button class="btn btn-primary" ng-click="workspace.getProfileView(user.id)">See profile</button></td>
         </tr>
 
         </tbody>
-    </table>-->
+    </table>
 </div>

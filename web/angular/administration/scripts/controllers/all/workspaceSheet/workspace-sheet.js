@@ -15,8 +15,8 @@ angular.module('TwakeAdministration')
                 id: this.id
             }, function (res) {
                 console.log(res);
-                that.userInfo = res.data.user;
-                that.workspaces = res.data.workspaces;
+                that.workspaceInfo = res.data.workspace;
+                that.users = res.data.users;
                 $scope.$apply();
             });
         };
@@ -24,6 +24,9 @@ angular.module('TwakeAdministration')
             $state.go("workspace-all")
         }
 
+        this.getProfileView = function(userId){
+            $state.go("user-sheet", {id: userId})
+        }
         this.update();
 
     });
