@@ -13,6 +13,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Matcher\RedirectableUrlMatcher;
+use Symfony\Component\Serializer\Encoder\JsonEncode;
 
 class TwakeGroupManagerController extends Controller
 {
@@ -23,9 +24,9 @@ class TwakeGroupManagerController extends Controller
             "data" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
 
-        //if($user != null)
+        if($user != null)
         {
             $pageNumber = $request->request->get("page","1");
             $nbGroupByPage = $request->request->get("per_page");
@@ -41,14 +42,14 @@ class TwakeGroupManagerController extends Controller
                 $data["data"]["total"] = $total;
                 $data["data"]["workspaces"] = $listResponse;
             }
-         //   else
+            else
             {
-          //      $data["errors"][] = "not found";
+                $data["errors"][] = "not found";
             }
         }
-        //else
+        else
         {
-        //    $data["errors"][] = "disconnected";
+            $data["errors"][] = "disconnected";
         }
         return new JsonResponse($data);
     }
@@ -60,8 +61,8 @@ class TwakeGroupManagerController extends Controller
             "data" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $idTwakeWorkspace = $request->request->get("id","");
             $workspace = $this->get('admin.TwakeGroupManagement')->getInfoWorkspace($idTwakeWorkspace);
@@ -69,12 +70,12 @@ class TwakeGroupManagerController extends Controller
             {
                 $data["data"]["workspace"] = $workspace->getAsSimpleArray();
             }
-            //else
+            else
             {
                 $data["errors"][] = "not found";
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
@@ -89,9 +90,9 @@ class TwakeGroupManagerController extends Controller
             "data" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
 
-        //if($user != null)
+        if($user != null)
         {
             $name = $request->request->get("name","");
             $memberCount = $request->request->get("nombre_membre","");
@@ -110,13 +111,13 @@ class TwakeGroupManagerController extends Controller
                 $data["data"]["total"] = $totalNumber;
                 $data["data"]["workspaces"] = $listResponse;
             }
-            //else
+            else
             {
                 $data["errors"][] = "disconnected";
             }
 
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
