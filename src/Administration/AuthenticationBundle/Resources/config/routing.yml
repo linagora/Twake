@@ -78,3 +78,7 @@ administration_stats_numberOfUsers:
 administration_stats_numberOfAppUser:
     path: /numberOfAppUser
     defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfAppUser}
+
+administration_stats_numberOfWorkspaceByApp:
+    path: /numberOfWorkspaceByApp
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfWorkspaceByApp}

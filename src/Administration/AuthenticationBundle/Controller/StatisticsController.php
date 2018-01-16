@@ -25,8 +25,8 @@ class StatisticsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $nbConnected = $this->get('admin.TwakeStatistics')->numberOfUserCurrentlyConnected();
             if($nbConnected != null)
@@ -34,7 +34,7 @@ class StatisticsController extends Controller
                 $data["data"][] = $nbConnected;
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
@@ -50,8 +50,8 @@ class StatisticsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $nbUser = $this->get('admin.TwakeStatistics')->numberOfUsers();
             if($nbUser != null)
@@ -59,7 +59,7 @@ class StatisticsController extends Controller
                 $data["data"][] = $nbUser;
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
@@ -83,6 +83,36 @@ class StatisticsController extends Controller
             if($nbAppUser != null)
             {
                 $data["data"][] = $nbAppUser;
+            }
+            else
+            {
+                $data["errors"][] = "not found";
+            }
+        }
+        //else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
+
+    public function numberOfWorkspaceByAppAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $idApp = $request->request->get("idapp","");
+            $nbWorkByApp = $this->get('admin.TwakeStatistics')->numberOfWorkspaceByApp($idApp);
+            if($nbWorkByApp != null)
+            {
+                $data["data"][] = $nbWorkByApp;
             }
             else
             {
