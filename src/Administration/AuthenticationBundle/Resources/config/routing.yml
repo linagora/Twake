@@ -70,3 +70,11 @@ administration_groups_getWorkspaceMembers:
 administration_stats_numberOfUserCurrentlyConnected:
     path: /numberOfUserCurrentlyConnected
     defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfUserCurrentlyConnected}
+
+administration_stats_numberOfUsers:
+    path: /numberOfUsers
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfUsers}
+
+administration_stats_numberOfAppUser:
+    path: /numberOfAppUser
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfAppUser}

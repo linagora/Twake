@@ -31,7 +31,62 @@ class StatisticsController extends Controller
             $nbConnected = $this->get('admin.TwakeStatistics')->numberOfUserCurrentlyConnected();
             if($nbConnected != null)
             {
-                $data["data"][] = $nbConnected->getAsArray();
+                $data["data"][] = $nbConnected;
+            }
+        }
+        //else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
+
+    public function numberOfUsersAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $nbUser = $this->get('admin.TwakeStatistics')->numberOfUsers();
+            if($nbUser != null)
+            {
+                $data["data"][] = $nbUser;
+            }
+        }
+        //else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
+
+    public function numberOfAppUserAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $idApp = $request->request->get("idapp","");
+            $nbAppUser = $this->get('admin.TwakeStatistics')->numberOfAppUser($idApp);
+            if($nbAppUser != null)
+            {
+                $data["data"][] = $nbAppUser;
+            }
+            else
+            {
+                $data["errors"][] = "not found";
             }
         }
         //else
