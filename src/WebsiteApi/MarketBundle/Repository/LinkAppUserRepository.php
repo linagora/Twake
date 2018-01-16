@@ -14,8 +14,8 @@ class LinkAppUserRepository extends \Doctrine\ORM\EntityRepository
         if($idApp != null){
             $req = $this->createQueryBuilder('A')
                 ->select('count(A.id)');
-            $req->where('A.id = \'' . $idApp.'\'');
-            $req = $req->getQuery()->getResult();
+            $req->where('A.id = ' . $idApp);
+            $req = $req->getQuery()->getSingleScalarResult();
             return $req;
         }
         else{
