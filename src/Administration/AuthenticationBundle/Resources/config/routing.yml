@@ -49,3 +49,16 @@ administration_users_searchUser:
 administration_users_listTwakeGroups:
    path: /listTwakeGroups
    defaults: {_controller: AdministrationAuthenticationBundle:TwakeGroupManager:listTwakeGroups}
+
+
+administration_users_getInfoWorkspace:
+   path: /getInfoWorkspace
+   defaults: {_controller: AdministrationAuthenticationBundle:TwakeGroupManager:getInfoWorkspace}
+
+administration_users_searchWorkspace:
+    path: /searchWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:TwakeGroupManager:searchWorkspace}
+
+administration_users_sizeWorkspace:
+    path: /sizeWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:TwakeGroupManager:sizeWorkspace}

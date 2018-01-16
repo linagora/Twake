@@ -23,7 +23,7 @@ class TwakeUserManagerController extends Controller
         {
             $pageNumber = $request->request->get("page","1");
             $nbUserPage = $request->request->get("per_page","25");
-            $filter = $request->request->get("filters","");
+            $filter = $request->request->get("filters",null);
             $totalNumber = 0;
             $listTwakeUser = $this->get('admin.TwakeUserManagement')->listTwakeUsers($pageNumber,$nbUserPage,$filter,$totalNumber);
 
@@ -38,7 +38,7 @@ class TwakeUserManagerController extends Controller
         }
         else
         {
-            $data["errors"][] = "disconnected";
+           $data["errors"][] = "disconnected";
         }
 
 
