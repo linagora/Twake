@@ -29,13 +29,17 @@ class AdministrationStatistics implements AdministrationStatisticsInterface
     }
 
     public function numberOfAppUser($idApp){
-        $repository = $this->doctrine->getRepository("MarketBundle:LinkAppUser");
-        return $repository->countUserByApp($idApp);
+        $repository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $app = $repository->findOneBy(Array("id"=>$idApp));
+        if($app != null){
+            return $app->getUserCount();
+        }
+        return null;
     }
 
 
     public function numberOfWorkspaceByApp($idApp){
-        $repository = $this->doctrine->getRepository("MarketBundle:LinkAppWorkspace");
+        $repository = $this->doctrine->getRepository("TwakeMarketBundle:LinkAppWorkspace");
         return $repository->countWorkspaceByApp($idApp);
     }
 }

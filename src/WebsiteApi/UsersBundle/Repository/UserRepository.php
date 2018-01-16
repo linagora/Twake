@@ -38,7 +38,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
 
         $req1 = $this->createQueryBuilder('U');
         $req1->where('1=1');
-        $req1 = $this->middleFindUserQueryBuilder($req,$lastName,$firstName,$userName,$email);
+        $req1 = $this->middleFindUserQueryBuilder($req1,$lastName,$firstName,$userName,$email);
         $req1 = $req1->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()->getResult();
@@ -92,14 +92,14 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         $req = $this->createQueryBuilder('U')
             ->select('count(U.id)');
         $req->where('U.connected = \''. 'true'.'\'');
-        $req->getQuery()->getResult();
+        $req->getQuery()->getSingleScalarResult();
         return $req;
     }
 
     public function countUsers(){
         $req = $this->createQueryBuilder('U')
             ->select('count(U.id)');
-        $req->getQuery()->getResult();
+        $req->getQuery()->getSingleScalarResult();
         return $req;
     }
 

@@ -47,19 +47,19 @@ class WorkspaceRepository extends \Doctrine\ORM\EntityRepository
 
         $req = $this->createQueryBuilder('U')
             ->select('count(U.id)');
-        $req = $this->middleFindUserQueryBuilder($req,$name,$memberCount);
+        $req = $this->middleFindWorspaceQueryBuilder($req,$name,$memberCount);
         $total = $req->getQuery()->getSingleScalarResult();
 
         $req1 = $this->createQueryBuilder('U');
         $req1->where('1=1');
-        $req1 = $this->middleFindUserQueryBuilder($req,$name,$memberCount);
+        $req1 = $this->middleFindWorspaceQueryBuilder($req1,$name,$memberCount);
         $req1 = $req1->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()->getResult();
         return $req1;
     }
 
-    public function middleFindWorspaceQueryBuilder($req,$name=null,$memberCount=null){
+    public function middleFindWorspaceQueryBuilder($req,$name,$memberCount){
         if($name != null){
             $req->andWhere('U.cleanName LIKE \'%' . $name.'%\'');
         }

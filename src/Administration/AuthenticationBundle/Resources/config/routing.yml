@@ -46,6 +46,35 @@ administration_users_searchUser:
    defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:searchUser}
 
 
-administration_users_listTwakeGroups:
+administration_groups_listTwakeGroups:
    path: /listTwakeGroups
    defaults: {_controller: AdministrationAuthenticationBundle:TwakeGroupManager:listTwakeGroups}
+
+
+administration_groups_getInfoWorkspace:
+   path: /getInfoWorkspace
+   defaults: {_controller: AdministrationAuthenticationBundle:TwakeGroupManager:getInfoWorkspace}
+
+administration_groups_searchWorkspace:
+    path: /searchWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:TwakeGroupManager:searchWorkspace}
+
+administration_groups_sizeWorkspace:
+    path: /sizeWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:TwakeGroupManager:sizeWorkspace}
+
+administration_groups_getWorkspaceMembers:
+    path: /getWorkspaceMembers
+    defaults: {_controller: AdministrationAuthenticationBundle:TwakeGroupManager:getWorkspaceMembers}
+
+administration_stats_numberOfUserCurrentlyConnected:
+    path: /numberOfUserCurrentlyConnected
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfUserCurrentlyConnected}
+
+administration_stats_numberOfUsers:
+    path: /numberOfUsers
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfUsers}
+
+administration_stats_numberOfAppUser:
+    path: /numberOfAppUser
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfAppUser}

@@ -17,13 +17,13 @@ class TwakeUserManagerController extends Controller
             "data" => Array()
         );
 
-        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
 
-        if($user != null)
+        //if($user != null)
         {
             $pageNumber = $request->request->get("page","1");
             $nbUserPage = $request->request->get("per_page","25");
-            $filter = $request->request->get("filters","");
+            $filter = $request->request->get("filters",null);
             $totalNumber = 0;
             $listTwakeUser = $this->get('admin.TwakeUserManagement')->listTwakeUsers($pageNumber,$nbUserPage,$filter,$totalNumber);
 
@@ -36,9 +36,9 @@ class TwakeUserManagerController extends Controller
 	        $data["data"]["total"] = $totalNumber;
             $data["data"]["users"] = $listResponse;
         }
-        else
+        //else
         {
-            $data["errors"][] = "disconnected";
+           $data["errors"][] = "disconnected";
         }
 
 
@@ -113,8 +113,8 @@ class TwakeUserManagerController extends Controller
             "errors" => Array()
         );
 
-        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        if($user != null)
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
         {
             $lastName = $request->request->get("lastname","");
             $firstName = $request->request->get("firstname", "");
@@ -134,7 +134,7 @@ class TwakeUserManagerController extends Controller
             $data["data"]["total"] = $totalNumber;
             $data["data"]["users"] = $listResponse;
         }
-        else
+        //else
         {
             $data["errors"][] = "disconnected";
         }
