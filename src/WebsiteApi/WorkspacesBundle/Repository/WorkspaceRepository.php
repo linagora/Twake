@@ -52,7 +52,7 @@ class WorkspaceRepository extends \Doctrine\ORM\EntityRepository
 
         $req1 = $this->createQueryBuilder('U');
         $req1->where('1=1');
-        $req1 = $this->middleFindWorspaceQueryBuilder($req,$name,$memberCount);
+        $req1 = $this->middleFindWorspaceQueryBuilder($req1,$name,$memberCount);
         $req1 = $req1->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()->getResult();
