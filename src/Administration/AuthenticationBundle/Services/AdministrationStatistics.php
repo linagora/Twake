@@ -36,6 +36,6 @@ class AdministrationStatistics implements AdministrationStatisticsInterface
 
     public function numberOfWorkspaceByApp($idApp){
         $repository = $this->doctrine->getRepository("MarketBundle:LinkAppWorkspace");
-        $repository->countWorkspaceByApp($idApp);
+        return $repository->countWorkspaceByApp($idApp);
     }
 }
