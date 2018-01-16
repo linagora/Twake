@@ -14,7 +14,6 @@ class LinkAppWorkspaceRepository extends \Doctrine\ORM\EntityRepository
         $req = $this->createQueryBuilder('A')
             ->select('count(A.id)');
         $req->where('A.id = \'' . $idApp.'\'');
-        $req = $req->getQuery()->getResult();
-        return $req;
+        return $req->getQuery()->getSingleScalarResult();
     }
 }
