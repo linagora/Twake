@@ -155,4 +155,39 @@ class TwakeGroupManagerController extends Controller
 
         return new JsonResponse($data);
     }
+
+    public function getWorkspaceMembersAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+
+        if($user != null)
+        {
+            $idTwakeWorkspace = $request->request->get("id","");
+            $listMembers = $this->get('admin.TwakeGroupManagement')->getWorkspaceMembers($idTwakeWorkspace);
+            if($listMembers != null)
+            {
+                $listResponse = Array();
+                foreach($listMembers as $twakeUser)
+                {
+                    $listResponse[] = $twakeUser->getUser()->getAsArray();
+                }
+                $data["data"]["members"] = $listResponse;
+            }
+            else
+            {
+                $data["errors"][] = "not found";
+            }
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+        return new JsonResponse($data);
+    }
 }
