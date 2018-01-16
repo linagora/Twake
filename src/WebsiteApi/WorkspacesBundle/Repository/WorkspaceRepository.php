@@ -47,7 +47,7 @@ class WorkspaceRepository extends \Doctrine\ORM\EntityRepository
 
         $req = $this->createQueryBuilder('U')
             ->select('count(U.id)');
-        $req = $this->middleFindUserQueryBuilder($req,$name,$memberCount);
+        $req = $this->middleFindWorspaceQueryBuilder($req,$name,$memberCount);
         $total = $req->getQuery()->getSingleScalarResult();
 
         $req1 = $this->createQueryBuilder('U');
