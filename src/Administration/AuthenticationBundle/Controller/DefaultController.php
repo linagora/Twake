@@ -47,7 +47,7 @@ class DefaultController extends Controller
         }
         else
         {
-            $data["data"]["user"] = $user->getUser()->getAsSimpleArray();
+            $data["data"]["user"] = $user->getUser()->getSimpleArray();
             $data["data"]["role"] = "";
         }
 
