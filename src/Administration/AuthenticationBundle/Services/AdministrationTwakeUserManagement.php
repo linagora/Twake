@@ -56,5 +56,20 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
         return $repository->findUsersByFilter($pageNumber, $nbUserByPage,$lastName,$firstName,$userName,$email,$total);
     }
 
+    public function getUserApp($idTwakeUser){
+        $repository = $this->doctrine->getRepository("MarketBundle:LinkAppUserRepository");
+        $linkAppUserRepository = $repository->findBy(Array("User"=>$idTwakeUser));
+        if($linkAppUserRepository == null){
+            return null;
+        }
+        return $linkAppUserRepository->getApplication();
+    }
 
+    public function getSizeUploadedByUser($idTwakeUser){
+        $repository = $this->doctrine->getRepository("UploadBundle:FileRepository");
+        if($idTwakeUser == null){
+            return null;
+        }
+        return $repository->sumAllFileSize($idTwakeUser);
+    }
 }

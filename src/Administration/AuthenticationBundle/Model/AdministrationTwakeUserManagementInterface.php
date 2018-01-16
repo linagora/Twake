@@ -21,4 +21,7 @@ interface AdministrationTwakeUserManagementInterface
 
     //searchUser return array with all twake user order by infos
     public function searchUser($pageNumber, $nbUserByPage,$lastName=null,$firstName=null,$userName=null,$email=null,&$total=null);
+
+    //getUserApp return applications used by the user idTwakeUser
+    public function getUserApp($idTwakeUser);
 }

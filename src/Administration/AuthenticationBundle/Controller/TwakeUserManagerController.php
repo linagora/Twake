@@ -59,7 +59,10 @@ class TwakeUserManagerController extends Controller
             $twakeUser = $this->get('admin.TwakeUserManagement')->getInfoUser($twakeUserId);
             if($twakeUser != null)
             {
-                $data["data"]["user"] = $twakeUser->getAsArray();
+                $data["data"]["user"] = array_merge($twakeUser->getAsArray(), array("banned"=>$twakeUser->getBanned(),"isConnected"=>$twakeUser->isConnected(),"lastLogin"=>$twakeUser->getLastLogin()));
+
+                foreach ($twakeUser->getWorkspaces() as $workspace)
+                    $data["data"]["workspaces"][] = $workspace->getAsSimpleArray();
             }
             else
             {

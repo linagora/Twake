@@ -88,4 +88,19 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         return $req;
     }
 
+    public function countUsersConnected(){
+        $req = $this->createQueryBuilder('U')
+            ->select('count(U.id)');
+        $req->where('U.connected = \''. 'true'.'\'');
+        $req->getQuery()->getResult();
+        return $req;
+    }
+
+    public function countUsers(){
+        $req = $this->createQueryBuilder('U')
+            ->select('count(U.id)');
+        $req->getQuery()->getResult();
+        return $req;
+    }
+
 }

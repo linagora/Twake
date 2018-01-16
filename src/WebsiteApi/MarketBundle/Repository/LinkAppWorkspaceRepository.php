@@ -10,4 +10,11 @@ namespace WebsiteApi\MarketBundle\Repository;
  */
 class LinkAppWorkspaceRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function countWorkspaceByApp($idApp){
+        $req = $this->createQueryBuilder('A')
+            ->select('count(A.id)');
+        $req->where('A.id = \'' . $idApp.'\'');
+        $req = $req->getQuery()->getResult();
+        return $req;
+    }
 }
