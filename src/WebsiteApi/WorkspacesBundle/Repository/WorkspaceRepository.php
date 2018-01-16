@@ -59,7 +59,7 @@ class WorkspaceRepository extends \Doctrine\ORM\EntityRepository
         return $req1;
     }
 
-    public function middleFindWorspaceQueryBuilder($req,$name=null,$memberCount=null){
+    public function middleFindWorspaceQueryBuilder($req,$name,$memberCount){
         if($name != null){
             $req->andWhere('U.cleanName LIKE \'%' . $name.'%\'');
         }
