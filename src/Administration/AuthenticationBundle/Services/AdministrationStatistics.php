@@ -29,8 +29,12 @@ class AdministrationStatistics implements AdministrationStatisticsInterface
     }
 
     public function numberOfAppUser($idApp){
-        $repository = $this->doctrine->getRepository("TwakeMarketBundle:LinkAppUser");
-        return $repository->countUserByApp($idApp);
+        $repository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $app = $repository->findOneBy(Array("id"=>$idApp));
+        if($app != null){
+            return $app->getUserCount();
+        }
+        return null;
     }
 
 
