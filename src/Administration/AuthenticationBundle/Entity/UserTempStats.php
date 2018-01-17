@@ -16,6 +16,7 @@ use FOS\UserBundle\Model\User as BaseUser;
  */
 class UserTempStats
 {
+    
     /**
      * @ORM\Id/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="temp_stat")
