@@ -112,7 +112,7 @@ services:
 
     gos_web_socket_server.client_event.listener:
       class: WebsiteApi\UsersBundle\Services\Connections
-      arguments: ["@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager","@gos_web_socket.zmq.pusher", "@app.calls"]
+      arguments: ["@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager","@gos_web_socket.zmq.pusher", "@app.calls","@admin.TwakeDailyConnection"]
       tags:
           - { name: kernel.event_listener, event: 'gos_web_socket.client_connected', method: onClientConnect }
           - { name: kernel.event_listener, event: 'gos_web_socket.client_disconnected', method: onClientDisconnect }

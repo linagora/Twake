@@ -14,12 +14,14 @@ class Connections
 	var $doctrine;
 	var $pusher;
 	var $calls;
+	var $userConnectionService;
 
-	public function __construct(ClientManipulatorInterface $clientManipulator, $doctrine, $pusher, $calls){
+	public function __construct(ClientManipulatorInterface $clientManipulator, $doctrine, $pusher, $calls, $userConnectionService){
 		$this->clientManipulator = $clientManipulator;
 		$this->doctrine = $doctrine;
 		$this->pusher = $pusher;
 		$this->calls = $calls;
+		$this->userConnectionService = $userConnectionService;
 	}
 
 	public function onServerStart($event){
@@ -68,9 +70,9 @@ class Connections
 		$this->doctrine->persist($user);
 		$this->doctrine->flush();
 
-		/*if($justArrived){
-			echo $user->getUsername() . " just connected" . PHP_EOL;
-		}*/
+		if($justArrived){
+			$this->userConnectionService->newConnection(3);
+		}
 
 		//Send notifications any way
 		$this->pusher->push(true, 'connections_topic', ["id_user"=>$user->getId()]);
