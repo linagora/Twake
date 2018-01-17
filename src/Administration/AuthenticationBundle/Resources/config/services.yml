@@ -20,6 +20,6 @@ services:
         class: Administration\AuthenticationBundle\Services\AdministrationStatistics
         arguments: ["@doctrine.orm.entity_manager"]
 
-    admin.DailyMessageStatistics:
-            class: Administration\AuthenticationBundle\Services\AdministrationMessageStats
-            arguments: ["@doctrine.orm.entity_manager"]
+    admin.TwakeDailyConnection:
+        class: Administration\AuthenticationBundle\Services\AdministrationConnection
+        arguments: ["@doctrine.orm.entity_manager"]

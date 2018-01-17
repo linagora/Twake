@@ -8,6 +8,8 @@
 
 namespace Administration\AuthenticationBundle\Repository;
 
+use Symfony\Bridge\Doctrine\RegistryInterface;
+use Administration\AuthenticationBundle\Entity\WorkspaceDailyStats;
 
 class WorkspaceDailyStatsRepository extends \Doctrine\ORM\EntityRepository
 {

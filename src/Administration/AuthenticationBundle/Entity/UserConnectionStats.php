@@ -17,28 +17,68 @@ use FOS\UserBundle\Model\User as BaseUser;
 /**
  * WorkspaceStats
  *
- * @ORM\Table(name="user_temp_stats",options={"engine":"MyISAM"})
+ * @ORM\Table(name="user_connection_stats",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="Administration\AuthenticationBundle\Repository\UserDailyStatsRepository")
  */
 
 class UserConnectionStats
 {
     /**
-     * @ORM\Id/**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="temp_stat")
      */
     protected $user;
 
     /**
-    * @ORM\Column(name="date", type="datetime")
+    * @ORM\Column(name="date_connection", type="datetime")
     */
-    protected $date;
+    protected $dateConnection;
 
 
     /**
      * @var int
-     * @ORM\Column(name="duree_connection", type="integer")
+     * @ORM\Column(name="duree_connection", type="integer",nullable = true)
      */
     protected $dureeConnection;
+
+
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    public function setDateConnection($date)
+    {
+        $this->dateConnection = $date;
+    }
+
+    public function getDateConnection()
+    {
+        return $this->dateConnection;
+    }
+
+    public function setDureeConnection($duree)
+    {
+        $this->dureeConnection = $duree;
+    }
+
+    public function getDureeConnection()
+    {
+        return $this->dureeConnection;
+    }
 
 }
