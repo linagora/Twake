@@ -65,4 +65,10 @@ class AdministrationConnection
         $em->persist($connection);
         $em->flush();
     }
+
+    public function findConnection($userId,$date)
+    {
+        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserConnectionStats")->getAllConnection($userId,$date);
+
+    }
 }

@@ -15,4 +15,6 @@ interface AdministrationConnectionInterface
 
     public function closeConnection($idTwakeUser);
 
+    public function findConnection($userId,$date);
+
 }
