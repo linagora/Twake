@@ -7,7 +7,6 @@
  */
 
 namespace Administration\AuthenticationBundle\Repository;
-
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Administration\AuthenticationBundle\Entity\UserDailyStats;
 
