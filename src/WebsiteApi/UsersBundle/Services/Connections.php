@@ -43,9 +43,9 @@ class Connections
 
 
 
-		//if($user==null || is_string($user)){
-		//	return;
-		//}
+		if($user==null || is_string($user)){
+			return;
+		}
 
 
 
@@ -56,8 +56,8 @@ class Connections
 		//Get connexions
 		$repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 
-		//$user = $repository->find($user->getId());
-        $user = $repository->find(3);
+		$user = $repository->find($user->getId());
+        //$user = $repository->find(3);
 
 		//Set connections
 		$justArrived = false;
@@ -100,15 +100,15 @@ class Connections
 		$conn = $event->getConnection();
 		$user = $this->clientManipulator->getClient($conn);
 
-		//if($user==null || is_string($user)){
-		//	return;
-		//}
+		if($user==null || is_string($user)){
+			return;
+		}
 
 		//Get connexions
 		$repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 
-		//$user = $repository->find($user->getId());
-        $user = $repository->find(3);
+		$user = $repository->find($user->getId());
+        //$user = $repository->find(3);
 
 		//Set connections and determine user state
 		$disconnected = false;
