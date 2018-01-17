@@ -18,7 +18,7 @@ use FOS\UserBundle\Model\User as BaseUser;
  * WorkspaceStats
  *
  * @ORM\Table(name="user_connection_stats",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="Administration\AuthenticationBundle\Repository\UserTempStatsRepository")
+ * @ORM\Entity(repositoryClass="Administration\AuthenticationBundle\Repository\UserDailyStatsRepository")
  */
 
 class UserConnectionStats
