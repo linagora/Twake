@@ -36,8 +36,7 @@ class AdministrationStatistics implements AdministrationStatisticsInterface
         }
         return null;
     }
-
-
+    
     public function numberOfWorkspaceByApp($idApp){
         $repository = $this->doctrine->getRepository("TwakeMarketBundle:LinkAppWorkspace");
         return $repository->countWorkspaceByApp($idApp);

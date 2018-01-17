@@ -82,3 +82,7 @@ administration_stats_numberOfAppUser:
 administration_stats_numberOfWorkspaceByApp:
     path: /numberOfWorkspaceByApp
     defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfWorkspaceByApp}
+
+administration_stats_countDailyMessage:
+    path: /countDailyMessage
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countDailyMessage}

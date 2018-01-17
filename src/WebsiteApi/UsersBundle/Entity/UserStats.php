@@ -34,4 +34,12 @@ class UserStats
      * @ORM\Column(name="private_msg_count", type="integer")
      */
     protected $privateMsgCount;
+
+    public function getPublicMsgCount(){
+        return $this->publicMsgCount;
+    }
+
+    public function getPrivateMsgCount(){
+        return $this->privateMsgCount;
+    }
 }
