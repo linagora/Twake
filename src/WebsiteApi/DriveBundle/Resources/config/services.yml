@@ -3,3 +3,11 @@ services:
     app.drive.FileSystem:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystem
         arguments: ["@doctrine.orm.entity_manager", %kernel.root_dir%]
+
+    app.drive.SmartFolders:
+        class: WebsiteApi\DriveBundle\Services\DriveSmartFolders
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    app.drive.Labels:
+        class: WebsiteApi\DriveBundle\Services\DriveLabels
+        arguments: ["@doctrine.orm.entity_manager"]

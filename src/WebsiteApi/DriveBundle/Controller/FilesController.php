@@ -120,6 +120,28 @@ class FilesController extends Controller
 
 	}
 
+	public function getDetailsAction(Request $request)
+	{
+		$data = Array(
+			"data" => Array(),
+			"errors" => Array()
+		);
+
+		$groupId = $request->request->get("groupId", 0);
+		$objectId = $request->request->get("id", 0);
+
+		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+
+		if (count($data["errors"]) == 0) {
+
+			$data = $this->get('app.drive.FileSystem')->getInfos($objectId);
+			$data["data"] = $data;
+
+		}
+
+		return new JsonResponse($data);
+	}
+
 	public function listAction(Request $request)
 	{
 		$data = Array(
@@ -235,6 +257,7 @@ class FilesController extends Controller
 
 		$groupId = $request->request->get("groupId", 0);
 		$fileId = $request->request->get("fileToMoveId", 0);
+		$fileIds = $request->request->get("fileToMoveIds", 0);
 		$newParentId = $request->request->get("newParentId", 0);
 
 		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
@@ -243,8 +266,20 @@ class FilesController extends Controller
 
 			if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
 				$data["errors"][] = "notallowed";
-			} else if (!$this->get('app.drive.FileSystem')->move($fileId, $newParentId)) {
-				$data["errors"][] = "unknown";
+			} else {
+
+				$toMove = Array();
+				if($fileId != 0){
+					$toMove[] = $fileId;
+				}
+				if(is_array($fileIds)){
+					$toMove = $fileIds;
+				}
+
+				foreach ($toMove as $id){
+					$this->get('app.drive.FileSystem')->move(intval($id), $newParentId);
+				}
+
 			}
 		}
 
