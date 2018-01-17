@@ -24,7 +24,16 @@ use FOS\UserBundle\Model\User as BaseUser;
 class UserConnectionStats
 {
     /**
-     * @ORM\Id/**
+     * @var int
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="temp_stat")
      */
     protected $user;
@@ -37,7 +46,7 @@ class UserConnectionStats
 
     /**
      * @var int
-     * @ORM\Column(name="duree_connection", type="integer")
+     * @ORM\Column(name="duree_connection", type="integer",nullable = true)
      */
     protected $dureeConnection;
 

@@ -75,8 +75,8 @@ class StatisticsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $idApp = $request->request->get("idapp","");
             $nbAppUser = $this->get('admin.TwakeStatistics')->numberOfAppUser($idApp);
@@ -89,7 +89,7 @@ class StatisticsController extends Controller
                 $data["errors"][] = "not found";
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
@@ -105,8 +105,8 @@ class StatisticsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $idApp = $request->request->get("idapp","");
             $nbWorkByApp = $this->get('admin.TwakeStatistics')->numberOfWorkspaceByApp($idApp);
@@ -119,7 +119,7 @@ class StatisticsController extends Controller
                 $data["errors"][] = "not found";
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }

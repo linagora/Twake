@@ -49,10 +49,6 @@ class Connections
 			return;
 		}
 
-
-
-
-
 		//This is a real logged user, check if he's connected on an other page
 
 		//Get connexions
@@ -127,6 +123,7 @@ class Connections
 		if($disconnected){
 			//echo $user->getUsername() . " is Disconnected" . PHP_EOL;
 			//Send notification to other users
+            $this->userConnectionService->closeConnection(3);
 			$this->calls->exitCalls($user);
 			$this->pusher->push(false, 'connections_topic', ["id_user"=>$user->getId()]);
 		}

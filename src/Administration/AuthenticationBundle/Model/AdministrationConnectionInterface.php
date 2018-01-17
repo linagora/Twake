@@ -13,4 +13,6 @@ interface AdministrationConnectionInterface
 {
     public function newConnection($idTwakeUser);
 
+    public function closeConnection($idTwakeUser);
+
 }
