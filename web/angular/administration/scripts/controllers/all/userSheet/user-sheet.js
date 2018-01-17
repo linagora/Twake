@@ -24,6 +24,9 @@ angular.module('TwakeAdministration')
             $state.go("user-all")
         }
 
+        this.getWorkspaceView = function(workspaceId){
+            $state.go("workspace-sheet", {id: workspaceId})
+        }
         this.update();
 
     });
