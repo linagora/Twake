@@ -203,7 +203,6 @@ class MessageSystem
         if($message->getSubject() != null){
             $firstMessage = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("subject" => $message->getSubject()), Array("date" => "ASC"));
             if ($firstMessage == $message) { // it's the first message of this subject
-                error_log($message->getId()." is the first message");
                 $messageInSubject = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject" => $message->getSubject()), Array("date" => "DESC"));
                 $nb = count($messageInSubject);
                 $lastMessage = $messageInSubject[0];
@@ -214,7 +213,6 @@ class MessageSystem
                 }
             }
             else{
-                error_log("------");
             }
         }
         else{
