@@ -14,14 +14,14 @@ use Symfony\Component\Routing\Matcher\RedirectableUrlMatcher;
 
 class MessageStatsController extends Controller
 {
-        public function countDailyMessageAction($request){
+        public function countDailyMessageAction(Request $request){
             $data = Array(
                 "data" => Array(),
                 "errors" => Array()
             );
 
-            $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-            if($user != null)
+            //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+            //if($user != null)
             {
                 $idTwakeUser = $request->request->get("twakeUser","1");
                 $nbDailyMessage = $this->get('admin.DailyMessageStatistics')->countDailyMessage($idTwakeUser);
@@ -29,8 +29,12 @@ class MessageStatsController extends Controller
                 {
                     $data["data"][] = $nbDailyMessage;
                 }
+                else
+                {
+                    $data["errors"][] ="crappyshit";
+                }
             }
-            else
+            //else
             {
                 $data["errors"][] = "disconnected";
             }

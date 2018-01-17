@@ -42,4 +42,8 @@ class UserStats
     public function getPrivateMsgCount(){
         return $this->privateMsgCount;
     }
+
+    public function getUser(){
+        return $this->user;
+    }
 }

@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\WorkspacesBundle\Entity;
+namespace Administration\AuthenticationBundle\Entity;
 
 use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -16,9 +16,15 @@ use FOS\UserBundle\Model\User as BaseUser;
  */
 class UserDailyStats
 {
-    
+
     /**
-     * @ORM\Id/**
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="temp_stat")
      */
     protected $user;
@@ -48,6 +54,10 @@ class UserDailyStats
 
     public function setDate($date){
         $this->date = $date;
+    }
+
+    public function setUser($u){
+        $this->user = $u;
     }
 
 }

@@ -10,7 +10,7 @@ namespace Administration\AuthenticationBundle\Services;
 
 
 use Administration\AuthenticationBundle\Model\AdministrationMessageStatsInterface;
-use WebsiteApi\WorkspacesBundle\Entity\UserDailyStats;
+use Administration\AuthenticationBundle\Entity\UserDailyStats;
 
 class AdministrationMessageStats implements AdministrationMessageStatsInterface
 {
@@ -27,6 +27,7 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
             return null;
         }
         $userDailyStats = new UserDailyStats();
+        $userDailyStats->setUser($twakeUserStat->getUser());
         $userDailyStats->setPublicMsgCount($twakeUserStat->getPublicMsgCount());
         $userDailyStats->setPrivateMsgCount($twakeUserStat->getPrivateMsgCount());
         $userDailyStats->setDate(new \DateTime("now"));
