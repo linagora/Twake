@@ -11,12 +11,11 @@ use FOS\UserBundle\Model\User as BaseUser;
 /**
  * WorkspaceStats
  *
- * @ORM\Table(name="user_temp_stats",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="Administration\AuthenticationBundle\Repository\UserTempStatsRepository")
+ * @ORM\Table(name="workspace_temp_stats",options={"engine":"MyISAM"})
+ * @ORM\Entity(repositoryClass="Administration\AuthenticationBundle\Repository\WorkspaceTempStatsRepository")
  */
-class UserTempStats
+class WorkspaceDailyStats
 {
-    
     /**
      * @ORM\Id/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="temp_stat")
