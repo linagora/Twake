@@ -96,7 +96,7 @@ class LinkWorkspaceUser
     public function setUser($User)
     {
         $this->User = $User;
-	    $this->usernamecache = $User->getUsernameClean();
+	    $this->usernamecache = $User->getUsername();
     }
 
 

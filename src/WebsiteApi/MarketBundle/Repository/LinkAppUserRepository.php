@@ -10,4 +10,16 @@ namespace WebsiteApi\MarketBundle\Repository;
  */
 class LinkAppUserRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function countUserByApp($idApp){
+        if($idApp != null){
+            $req = $this->createQueryBuilder('A')
+                ->select('count(A.id)');
+            $req->where('A.id = \'' . $idApp.'\'');
+            $req = $req->getQuery()->getResult();
+            return $req;
+        }
+        else{
+            return null;
+        }
+    }
 }

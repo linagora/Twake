@@ -26,23 +26,50 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
         return $repository->findAllOrderedByName($pageNumber,$nbUserByPage,$filters,$total);
     }
 
-
-
-    public function setEnableTwakeUser($idTwakeUser,$bool)
+    public function setBannedTwakeUser($idTwakeUser,$bool)
     {
         $em = $this->doctrine;
         $repository = $em->getRepository("TwakeUsersBundle:User");
-        $twakeUser =  $repository->findOnBy(Array("id"=>$idTwakeUser));
-        $twakeUser->setEnabled($bool);
+        $twakeUser =  $repository->findOneBy(Array("id"=>$idTwakeUser));
+        if($twakeUser == null){
+            return null;
+        }
+        $twakeUser->setBanned($bool);
         $em->persist($twakeUser);
         $em->flush($twakeUser);
         return $twakeUser;
     }
-    public function getInfoUser($idTwakeUser){
-        $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-        $twakeUser =  $repository->findOnBy(Array("id"=>$idTwakeUser));
 
+    public function getInfoUser($idTwakeUser)
+    {
+        $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+        $twakeUser =  $repository->findOneBy(Array("id"=>$idTwakeUser));
+        if($twakeUser == null)
+        {
+            return null;
+        }
+        return $twakeUser;
     }
 
+    public function searchUser($pageNumber, $nbUserByPage,$lastName=null,$firstName=null,$userName=null,$email=null,&$total=null){
+        $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+        return $repository->findUsersByFilter($pageNumber, $nbUserByPage,$lastName,$firstName,$userName,$email,$total);
+    }
 
+    public function getUserApp($idTwakeUser){
+        $repository = $this->doctrine->getRepository("MarketBundle:LinkAppUserRepository");
+        $linkAppUserRepository = $repository->findBy(Array("User"=>$idTwakeUser));
+        if($linkAppUserRepository == null){
+            return null;
+        }
+        return $linkAppUserRepository->getApplication();
+    }
+
+    public function getSizeUploadedByUser($idTwakeUser){
+        $repository = $this->doctrine->getRepository("UploadBundle:FileRepository");
+        if($idTwakeUser == null){
+            return null;
+        }
+        return $repository->sumAllFileSize($idTwakeUser);
+    }
 }

@@ -30,6 +30,24 @@ class AdminUserRepository extends \Doctrine\ORM\EntityRepository
         return $req1;
     }
 
+    public function findUsersByFilter($lastName,$firstName,$userName,$email){
+        $req = $this->createQueryBuilder('U');
+        $req->where('1=1');
+        if($lastName != null){
+            $req->andWhere('U.lastName LIKE \'%' . $lastName.'%\'');
+        }
+        if($firstName != null){
+            $req->andWhere('U.firstName LIKE \'%' . $firstName.'%\'');
+        }
+        if($userName != null){
+            $req->andWhere('U.userName LIKE \'%' . $userName.'%\'');
+        }
+        if($email != null){
+            $req->andWhere('U.email LIKE \'%' . $email.'%\'');
+        }
+        return $req;
+    }
+
     private function searchMiddleQueryBuilder($req,$filters){
         if ($filters != null) {
             if(isset($filters['username'])){

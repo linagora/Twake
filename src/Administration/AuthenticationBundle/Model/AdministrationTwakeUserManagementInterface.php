@@ -14,8 +14,14 @@ interface AdministrationTwakeUserManagementInterface
     public function listTwakeUsers($pageNumber,$nbUserByPage,$filters=null,&$total=null);
 
     //@setEnableTwakeUser block or unblock twake user
-    public function setEnableTwakeUser($idTwakeUser,$bool);
+    public function setBannedTwakeUser($idTwakeUser,$bool);
 
     //@getInfoUser return associative array with all user info
     public function getInfoUser($idTwakeUser);
+
+    //searchUser return array with all twake user order by infos
+    public function searchUser($pageNumber, $nbUserByPage,$lastName=null,$firstName=null,$userName=null,$email=null,&$total=null);
+
+    //getUserApp return applications used by the user idTwakeUser
+    public function getUserApp($idTwakeUser);
 }

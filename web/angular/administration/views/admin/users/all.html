@@ -21,14 +21,15 @@
 			<select ng-model="perpage" ng-change="users.setNbPerPage(perpage)" class="form-control" style="width:50px;float:right;">
 				<option value="{{users.perpage}}" disabled selected>{{users.perpage}}</option>
 				<option disabled></option>
-				<option value="2">25</option>
+				<option value="25">25</option>
 				<option value="50">50</option>
 				<option value="100">100</option>
 				<option value="250">250</option>
 				<option value="500">500</option>
 			</select>
 
-			<table class="table table-bordered table-hover">
+			<input type="text" id="search" ng-keyup="users.search()" placeholder="Filter ...">
+			<table id= "users_table" class="table table-bordered table-hover">
 				<thead>
 				<tr>
 					<th>ID</th>
@@ -41,13 +42,13 @@
 				<tbody>
 
 				<tr ng-repeat="user in users.list">
-					<td>{{user.uid}}</td>
+					<td>{{user.id}}</td>
 					<td>
 						<div style="background-position: center; background-size: contain; width:50px; height:50px; {{user.cssuserimage}}"></div>
 					</td>
 					<td>{{user.username}}{{user.connected?' (online)':''}}</td>
 					<td></td>
-					<td></td>
+					<td><button class="btn btn-primary" ng-click="users.getProfileView(user.id)">See profile</button></td>
 				</tr>
 
 				</tbody>

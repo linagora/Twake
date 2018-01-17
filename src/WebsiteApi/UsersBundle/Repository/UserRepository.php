@@ -10,7 +10,7 @@ namespace WebsiteApi\UsersBundle\Repository;
  */
 class UserRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function search($pageNumber,$nbUserByPage, $filters,&$total){
+    public function findAllOrderedByName($pageNumber,$nbUserByPage, $filters,&$total){
         $offset = ($pageNumber - 1) * $nbUserByPage;
         $limit = $nbUserByPage;
 
@@ -27,19 +27,53 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         return $req1;
     }
 
+    public function findUsersByFilter($pageNumber,$nbUserByPage,$lastName=null,$firstName=null,$userName=null,$email=null,&$total=null){
+        $offset = ($pageNumber - 1) * $nbUserByPage;
+        $limit = $nbUserByPage;
+
+        $req = $this->createQueryBuilder('U')
+            ->select('count(U.id)');
+        $req = $this->middleFindUserQueryBuilder($req,$lastName,$firstName,$userName,$email);
+        $total = $req->getQuery()->getSingleScalarResult();
+
+        $req1 = $this->createQueryBuilder('U');
+        $req1->where('1=1');
+        $req1 = $this->middleFindUserQueryBuilder($req1,$lastName,$firstName,$userName,$email);
+        $req1 = $req1->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getQuery()->getResult();
+        return $req1;
+    }
+
+    public function middleFindUserQueryBuilder($req,$lastName=null,$firstName=null,$userName=null,$email=null){
+        if($lastName != null){
+            $req->andWhere('U.last_name LIKE \'%' . $lastName.'%\'');
+        }
+        if($firstName != null){
+            $req->andWhere('U.first_name LIKE \'%' . $firstName.'%\'');
+        }
+        if($userName != null){
+            $req->andWhere('U.username LIKE \'%' . $userName.'%\'');
+        }
+        if($email != null){
+            $req->andWhere('U.email LIKE \'%' . $email.'%\'');
+        }
+        return $req;
+    }
+
     private function searchMiddleQueryBuilder($req,$filters){
         if ($filters != null) {
             if(isset($filters['username'])){
-                $req->where('U.username_clean LIKE \'%' . $filters['username'].'%\'');
+                $req->where('U.username LIKE \'%' . $filters['username'].'%\'');
             }
             if(isset($filters['lastname'])){
-                $req->where('U.lastname LIKE \'%' . $filters['lastname'].'%\'');
+                $req->where('U.last_name LIKE \'%' . $filters['lastname'].'%\'');
             }
             if(isset($filters['email'])){
                 $req->where('U.email LIKE \'%' . $filters['email'].'%\'');
             }
             if(isset($filters['firstname'])){
-                $req->where('U.firstname LIKE \'%' . $filters['firstname'].'%\'');
+                $req->where('U.first_name LIKE \'%' . $filters['firstname'].'%\'');
             }
             if(isset($filters['gender'])){
                 $req->where('U.gender LIKE \'' . $filters['gender'].'\'');
@@ -51,6 +85,21 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
                 $req->where('U.connected = \'' . $filters['connected'].'\'');
             }
         }
+        return $req;
+    }
+
+    public function countUsersConnected(){
+        $req = $this->createQueryBuilder('U')
+            ->select('count(U.id)');
+        $req->where('U.connected = \''. 'true'.'\'');
+        $req->getQuery()->getSingleScalarResult();
+        return $req;
+    }
+
+    public function countUsers(){
+        $req = $this->createQueryBuilder('U')
+            ->select('count(U.id)');
+        $req->getQuery()->getSingleScalarResult();
         return $req;
     }
 
