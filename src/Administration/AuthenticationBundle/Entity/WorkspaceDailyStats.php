@@ -12,7 +12,7 @@ use FOS\UserBundle\Model\User as BaseUser;
  * WorkspaceStats
  *
  * @ORM\Table(name="workspace_daily_stats",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="Administration\AuthenticationBundle\Repository\WorkspaceTempStatsRepository")
+ * @ORM\Entity(repositoryClass="Administration\AuthenticationBundle\Repository\WorkspaceDailyStatsRepository")
  */
 class WorkspaceDailyStats
 {

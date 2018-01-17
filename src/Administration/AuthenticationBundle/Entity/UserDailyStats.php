@@ -36,4 +36,18 @@ class UserDailyStats
      * @ORM\Column(name="date", type="datetime")
      */
     protected $date;
+
+
+    public function setPublicMsgCount($publicCount){
+        $this->publicMsgCount = $publicCount;
+    }
+
+    public function setPrivateMsgCount($privateCount){
+        $this->privateMsgCount = $privateCount;
+    }
+
+    public function setDate($date){
+        $this->date = $date;
+    }
+
 }
