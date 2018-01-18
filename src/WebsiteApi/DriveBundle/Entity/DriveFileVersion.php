@@ -32,7 +32,7 @@ class DriveFileVersion
 	private $realName;
 
 	/**
-	 * @ORM\Column(type="blob")
+	 * @ORM\Column(name="aes_key", type="string", length=1024)
 	 */
 	private $key;
 
@@ -49,7 +49,7 @@ class DriveFileVersion
 	public function __construct($file)
 	{
 		$this->file = $file;
-		$this->setKey(random_bytes(256));
+		$this->setKey(base64_encode(random_bytes(256)));
 		$this->setSize(0);
 		$this->resetRealName();
 		$this->date_added = new \DateTime();
@@ -92,7 +92,7 @@ class DriveFileVersion
 	 */
 	public function resetRealName()
 	{
-		$this->realName = sha1(microtime() . rand(0, 10000));
+		$this->realName = sha1(microtime() . rand(0, 10000)) . ".tw";
 	}
 
 	/**

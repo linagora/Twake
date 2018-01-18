@@ -92,7 +92,7 @@ class Message
 	private $subject = null;
 
 
-	public function __construct($typeSender,$sender,$typeReciever,$reciever,$date,$content,$subject){
+	public function __construct($typeSender,$sender,$typeReciever,$reciever,$date,$content,$cleanContent,$subject){
         $this->setTypeSender($typeSender);
 	    if($typeSender == "U"){
             $this->setUserSender($sender);
@@ -110,7 +110,7 @@ class Message
         }
         $this->setDate($date);
         $this->setContent($content);
-        $this->setCleanContent($content);
+        $this->setCleanContent($cleanContent);
         if($subject != null){
             $this->setSubject($subject);
         }
@@ -358,7 +358,7 @@ class Message
             "date" => $this->getDate(),
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),
-            "subject" => ($this->getSubject()!=null)?$this->getSubject()->getId():null,
+            "subject" => ($this->getSubject()!=null)?$this->getSubject()->getAsArray():null,
         );
 
     }
