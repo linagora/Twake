@@ -5,11 +5,16 @@ services:
 
     app.streamSystem:
             class: WebsiteApi\DiscussionBundle\Services\StreamSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher','@app.groups.access']
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher','@app.groups.access','@app.messageReadSystem']
 
     app.subjectSystem:
             class: WebsiteApi\DiscussionBundle\Services\SubjectSystem
             arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher','@app.groups.access']
+
+    app.messageReadSystem:
+            class: WebsiteApi\DiscussionBundle\Services\MessageReadSystem
+            arguments: [ "@doctrine.orm.entity_manager", "@app.messages" ]
+
 
     discussion.topic:
           class: WebsiteApi\DiscussionBundle\Topic\DiscussionTopic
