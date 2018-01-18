@@ -25,8 +25,8 @@ class StatisticsController extends Controller
             "errors" => Array()
         );
 
-        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        if($user != null)
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
         {
             $nbConnected = $this->get('admin.TwakeStatistics')->numberOfUserCurrentlyConnected();
             if($nbConnected != null)
@@ -34,7 +34,7 @@ class StatisticsController extends Controller
                 $data["data"][] = $nbConnected;
             }
         }
-        else
+        //else
         {
             $data["errors"][] = "disconnected";
         }
@@ -120,6 +120,34 @@ class StatisticsController extends Controller
             }
         }
         else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
+
+    public function numberOfExtensionsAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $nbOfExtenstion= $this->get('admin.TwakeStatistics')->numberOfExtensions();
+            if($nbOfExtenstion != null)
+            {
+                $data["data"][] = $nbOfExtenstion;
+            }
+            else
+            {
+                $data["errors"][] = "not found";
+            }
+        }
+        //else
         {
             $data["errors"][] = "disconnected";
         }
