@@ -20,8 +20,8 @@ class MessageStatsController extends Controller
                 "errors" => Array()
             );
 
-            //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-            //if($user != null)
+            $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+            if($user != null)
             {
                 $idTwakeUser = $request->request->get("twakeUser","1");
                 $nbDailyMessage = $this->get('admin.TwakeDailyMessage')->countDailyMessage($idTwakeUser);
@@ -34,7 +34,7 @@ class MessageStatsController extends Controller
                     $data["errors"][] ="crappyshit";
                 }
             }
-            //else
+            else
             {
                 $data["errors"][] = "disconnected";
             }
@@ -49,8 +49,8 @@ class MessageStatsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $idTwakeUser = $request->request->get("twakeUser","1");
             $date = $request->request->get("date","2018-01-17");
@@ -64,7 +64,7 @@ class MessageStatsController extends Controller
                 $data["errors"][] ="crappyshit";
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
@@ -79,8 +79,8 @@ class MessageStatsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $idTwakeUser = $request->request->get("twakeUser","1");
             $date = $request->request->get("date","2018-01-17");
@@ -94,7 +94,7 @@ class MessageStatsController extends Controller
                 $data["errors"][] ="crappyshit";
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }

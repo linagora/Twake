@@ -16,8 +16,9 @@ angular.module("TwakeAdministration")
 			$.post($api.getRealRoute("authentication/authenticate"),
 				{username: this.email, password: this.password},
 				function (res) {
-					if (res.data.token) {
+                    if (res.data.token) {
 						$rootScope.api.setToken(res.data.token);
+                        console.log("####"+res.data.token);
 						window.location.href = "/administration/";
 					}
 				});

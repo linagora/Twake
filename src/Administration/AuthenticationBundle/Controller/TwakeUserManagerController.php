@@ -113,8 +113,8 @@ class TwakeUserManagerController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $lastName = $request->request->get("lastname","");
             $firstName = $request->request->get("firstname", "");
@@ -134,7 +134,7 @@ class TwakeUserManagerController extends Controller
             $data["data"]["total"] = $totalNumber;
             $data["data"]["users"] = $listResponse;
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }

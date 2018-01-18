@@ -25,11 +25,11 @@ class AdministrationConnection
         $adminUserRepo  = $em->getRepository("AdministrationAuthenticationBundle:UserConnectionStats"); //Entity Repository
         $repo  = $em->getRepository("TwakeUsersBundle:User"); //Entity Repository
 
+        error_log("----------------------------------------".$idTwakeUser);
         $twakeUser = $repo->findOneBy(Array("id"=>$idTwakeUser));
         if($twakeUser == null){
             return null;
         }
-
         $connection = new UserConnectionStats();
         $connection-> setUser($twakeUser);
         $connection-> setDateConnection(new \DateTime("now"));

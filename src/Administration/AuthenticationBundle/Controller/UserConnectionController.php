@@ -24,9 +24,9 @@ class UserConnectionController extends Controller
             "data" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
 
-        //if($user != null)
+        if($user != null)
         {
             $userId = $request->request->get("user_id","");
             $date = $request->request->get("date","");
@@ -39,7 +39,7 @@ class UserConnectionController extends Controller
             }
            $data["data"] = $listResponse;
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
