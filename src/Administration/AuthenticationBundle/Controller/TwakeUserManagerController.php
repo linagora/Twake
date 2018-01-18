@@ -180,15 +180,15 @@ class TwakeUserManagerController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $idTwakeUser = $request->request->get("idTwakeUser","");
 
             $size = $this->get('admin.TwakeUserManagement')->getSizeUploadedByUser($idTwakeUser);
             $data["data"]["size"] = $size;
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
