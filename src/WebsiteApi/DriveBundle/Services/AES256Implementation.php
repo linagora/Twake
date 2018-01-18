@@ -1,4 +1,5 @@
 <?php
+namespace WebsiteApi\DriveBundle\Services;
 
 interface AES256Implementation
 {

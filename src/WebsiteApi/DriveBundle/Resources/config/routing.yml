@@ -14,6 +14,10 @@ twake_drive_list:
     path:     /list
     defaults: { _controller: TwakeDriveBundle:Files:list }
 
+twake_drive_preview:
+    path:     /preview
+    defaults: { _controller: TwakeDriveBundle:Files:preview }
+
 twake_drive_trash_restore:
     path:     /trash/restore
     defaults: { _controller: TwakeDriveBundle:Files:restoreTrash }

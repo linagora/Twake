@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use WebsiteApi\DriveBundle\Entity\DriveFile;
 
@@ -333,6 +334,24 @@ class FilesController extends Controller
 		}
 
 		return new JsonResponse($data);
+	}
+
+	public function previewAction(Request $request){
+
+		$groupId = $request->request->get("groupId", 0);
+		$fileId = $request->request->get("fileId", 0);
+
+		$errors = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+
+		if (count($errors) == 0) {
+
+			$data = $this->get('app.drive.FileSystem')->getRawContent($fileId);
+			return new Response($data, 200);
+
+		}
+
+		return new Response(json_encode($errors), 404);
+
 	}
 
 }

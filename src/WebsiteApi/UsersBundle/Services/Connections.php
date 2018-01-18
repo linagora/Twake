@@ -38,6 +38,7 @@ class Connections
 	 */
 	public function onClientConnect(ClientEvent $event)
 	{
+
 		$conn = $event->getConnection();
 		$user = $this->clientManipulator->getClient($conn);
 		if($user==null || is_string($user)){
