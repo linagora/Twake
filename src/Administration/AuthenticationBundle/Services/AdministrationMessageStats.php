@@ -19,7 +19,7 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         $this->doctrine = $doctrine;
     }
 
-    //countDailyMessage count the number of public message sent by the $idTwakeUser
+    //countDailyMessage count the number of messages sent by the $idTwakeUser
     public function countDailyMessage($idTwakeUser){
         $repository = $this->doctrine->getRepository("TwakeUsersBundle:UserStats");
         $twakeUserStat =  $repository->findOneBy(Array("user"=>$idTwakeUser));
@@ -33,6 +33,15 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         $userDailyStats->setDate(new \DateTime("now"));
         $this->doctrine->persist($userDailyStats);
         $this->doctrine->flush();
+    }
+
+    public function countPublicMessage($idTwakeUser){
+        $repository = $this->doctrine->getRepository("TwakeUsersBundle:UserStats");
+        $twakeUserStat =  $repository->findOneBy(Array("user"=>$idTwakeUser));
+        if($twakeUserStat == null){
+            return null;
+        }
+        return ;
     }
 
 }

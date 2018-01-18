@@ -67,7 +67,7 @@ class Connections
 		$this->doctrine->flush();
 
 		if($justArrived){
-			$this->userConnectionService->newConnection(3);
+			$this->userConnectionService->newConnection($user->getId());
 		}
 
 		//Send notifications any way
@@ -123,7 +123,7 @@ class Connections
 		if($disconnected){
 			//echo $user->getUsername() . " is Disconnected" . PHP_EOL;
 			//Send notification to other users
-            $this->userConnectionService->closeConnection(3);
+            $this->userConnectionService->closeConnection($user->getId());
 			$this->calls->exitCalls($user);
 			$this->pusher->push(false, 'connections_topic', ["id_user"=>$user->getId()]);
 		}
