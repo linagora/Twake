@@ -11,6 +11,7 @@ namespace Administration\AuthenticationBundle\Services;
 
 use Administration\AuthenticationBundle\Model\AdministrationMessageStatsInterface;
 use Administration\AuthenticationBundle\Entity\UserDailyStats;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class AdministrationMessageStats implements AdministrationMessageStatsInterface
 {
@@ -35,13 +36,22 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         $this->doctrine->flush();
     }
 
-    public function countPublicMessage($idTwakeUser){
-        $repository = $this->doctrine->getRepository("TwakeUsersBundle:UserStats");
-        $twakeUserStat =  $repository->findOneBy(Array("user"=>$idTwakeUser));
+    public function countPublicMessage($idTwakeUser,$date){
+        $repository = $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserDailyStats");
+        $twakeUserStat =  $repository->getStatsPublicMessage($idTwakeUser,$date);
         if($twakeUserStat == null){
             return null;
         }
-        return ;
+        return $twakeUserStat;
+    }
+
+    public function countPrivateMessage($idTwakeUser,$date){
+        $repository = $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserDailyStats");
+        $twakeUserStat =  $repository->getStatsPrivateMessage($idTwakeUser,$date);
+        if($twakeUserStat == null){
+            return null;
+        }
+        return $twakeUserStat;
     }
 
 }

@@ -24,7 +24,7 @@ class MessageStatsController extends Controller
             //if($user != null)
             {
                 $idTwakeUser = $request->request->get("twakeUser","1");
-                $nbDailyMessage = $this->get('admin.DailyMessageStatistics')->countDailyMessage($idTwakeUser);
+                $nbDailyMessage = $this->get('admin.TwakeDailyMessage')->countDailyMessage($idTwakeUser);
                 if($nbDailyMessage != null)
                 {
                     $data["data"][] = $nbDailyMessage;
@@ -42,4 +42,64 @@ class MessageStatsController extends Controller
 
             return new JsonResponse($data);
         }
+
+    public function countPublicMessageAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $idTwakeUser = $request->request->get("twakeUser","1");
+            $date = $request->request->get("date","2018-01-17");
+            $nbDailyPublicMessage = $this->get('admin.TwakeDailyMessage')->countPublicMessage($idTwakeUser,$date);
+            if($nbDailyPublicMessage != null)
+            {
+                $data["data"][] = $nbDailyPublicMessage;
+            }
+            else
+            {
+                $data["errors"][] ="crappyshit";
+            }
+        }
+        //else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
+
+    public function countPrivateMessageAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $idTwakeUser = $request->request->get("twakeUser","1");
+            $date = $request->request->get("date","2018-01-17");
+            $nbDailyPrivateMessage = $this->get('admin.TwakeDailyMessage')->countPrivateMessage($idTwakeUser,$date);
+            if($nbDailyPrivateMessage != null)
+            {
+                $data["data"][] = $nbDailyPrivateMessage;
+            }
+            else
+            {
+                $data["errors"][] ="crappyshit";
+            }
+        }
+        //else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
 }

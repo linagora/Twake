@@ -86,3 +86,11 @@ administration_stats_numberOfWorkspaceByApp:
 administration_stats_countDailyMessage:
     path: /countDailyMessage
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countDailyMessage}
+
+administration_stats_countPublicMessage:
+    path: /countPublicMessage
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countPublicMessage}
+
+administration_stats_countPrivateMessage:
+    path: /countPrivateMessage
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countPrivateMessage}
