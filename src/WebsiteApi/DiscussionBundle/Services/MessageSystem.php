@@ -61,7 +61,7 @@ class MessageSystem
                 if($subjectId != null){
                     $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
                 }
-                $message = new Message($senderType,$sender,$recieverType,$reciever,new \DateTime(),$content,$subject);
+                $message = new Message($senderType,$sender,$recieverType,$reciever,new \DateTime(),$content,$this->string_cleaner->simplifyWithoutRemovingSpaces($content),$subject);
                 $this->doctrine->persist($message);
                 $this->doctrine->flush();
                 return $message;
@@ -213,7 +213,7 @@ class MessageSystem
                 }
             }
             else{
-            }
+             }
         }
         else{
             $retour = $message->getAsArray();
