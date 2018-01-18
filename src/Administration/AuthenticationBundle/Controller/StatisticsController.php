@@ -25,8 +25,8 @@ class StatisticsController extends Controller
             "errors" => Array()
         );
 
-        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        if($user != null)
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
         {
             $nbConnected = $this->get('admin.TwakeStatistics')->numberOfUserCurrentlyConnected();
             if($nbConnected != null)
@@ -34,7 +34,7 @@ class StatisticsController extends Controller
                 $data["data"][] = $nbConnected;
             }
         }
-        else
+        //else
         {
             $data["errors"][] = "disconnected";
         }
