@@ -394,18 +394,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 			return false;
 		}
 
-		$all = explode(".", $fileOrDirectory->getName());
-		$extension = array_pop($all);
+		$data = $fileOrDirectory->getAsArray();
 
-		return Array(
-			"name" => $fileOrDirectory->getName(),
-			"extension" => $extension,
-			"size" => $fileOrDirectory->getSize(),
-			"parentId" => ($fileOrDirectory->getParent()) ? $fileOrDirectory->getParent()->getId() : 0,
-			"isDirectory" => $fileOrDirectory->getIsDirectory(),
-			"id" => $fileOrDirectory->getId(),
-			"groupId" => ($fileOrDirectory->getGroup()) ? $fileOrDirectory->getGroup()->getId() : ""
-		);
+		return $data;
 	}
 
 	public function listDirectory($group, $directory)

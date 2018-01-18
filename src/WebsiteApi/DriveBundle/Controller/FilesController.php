@@ -338,8 +338,8 @@ class FilesController extends Controller
 
 	public function previewAction(Request $request){
 
-		$groupId = $request->request->get("groupId", 0);
-		$fileId = $request->request->get("fileId", 0);
+		$groupId = $request->query->get("groupId", 0);
+		$fileId = $request->query->get("fileId", 0);
 
 		$errors = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
 

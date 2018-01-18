@@ -92,7 +92,7 @@ twake_drive_download:
 twake_drive:
     resource: "@TwakeDriveBundle/Resources/config/routing.yml"
     prefix:   ajax/drive/
-    methods: [POST]
+    methods: [POST, GET]
 
 twake_status:
     resource: "@TwakeStatusBundle/Resources/config/routing.yml"
