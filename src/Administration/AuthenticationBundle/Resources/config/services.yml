@@ -23,3 +23,7 @@ services:
     admin.TwakeDailyConnection:
         class: Administration\AuthenticationBundle\Services\AdministrationConnection
         arguments: ["@doctrine.orm.entity_manager"]
+
+    admin.TwakeDailyMessage:
+        class: Administration\AuthenticationBundle\Services\AdministrationMessageStats
+        arguments: ["@doctrine.orm.entity_manager"]
