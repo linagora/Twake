@@ -19,14 +19,16 @@ class StreamSystem
     var $security;
     var $pusher;
     var $levelManager;
+    var $messageReadSystem;
 
-    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $levelManager)
+    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $levelManager,$messageReadSystem)
     {
         $this->string_cleaner = $string_cleaner;
         $this->doctrine = $doctrine;
         $this->security = $authorizationChecker;
         $this->pusher = $pusher;
         $this->levelManager = $levelManager;
+        $this->messageReadSystem = $messageReadSystem;
     }
 
 
@@ -105,19 +107,20 @@ class StreamSystem
         }
         else{
             $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace"=>$workspace));
-            $retour = [];
+            $retour = Array("stream"=>Array(), "user"=>Array());
             foreach($streams as $stream){
-                if(!$stream->getPrivacy()){ //public stream
-                    $retour[] = $stream;
-                }
-                else{
-                    $link = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream));
-                    if($link != null){
-                        $retour[] = $stream;
-                    }
+                if(!$stream->getPrivacy() || $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream))!=null){ //public stream
+                    $isRead = $this->messageReadSystem->streamIsReadByKey($stream->getId(),$user);
+                    $retour["stream"][] = array_merge($stream->getAsArray(),Array("isRead"=>$isRead));
                 }
             }
-            return $streams;
+            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->getSomeUsers($workspace,"A",null,null);
+            foreach($members as $member){
+                $key = min($user->getId(),$member->getUser()->getId())."_".max($user->getId(),$member->getUser()->getId());
+                $isRead = $isRead = $this->messageReadSystem->streamIsReadByKey($key,$user);
+                $retour['user'][] = array_merge($member->getUser()->getAsArray(),Array("isRead"=>$isRead));
+            }
+            return $retour;
         }
 
     }

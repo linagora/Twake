@@ -1,4 +1,8 @@
 <?php
+namespace WebsiteApi\DriveBundle\Services;
+
+use Exception;
+
 /**
  * Please see https://www.aescrypt.com/aes_file_format.html
  * for the file format used.

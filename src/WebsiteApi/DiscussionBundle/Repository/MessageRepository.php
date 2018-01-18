@@ -45,11 +45,36 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 
 	    return $result;
 	}
-	/*Array(
-	    		"idDiscussion" => $discussion,
-	    		"content" => $content,
-	    		"from" => $from,
-	    		"dateStart" => $dateStart,
-	    		"$dateEnd" => $dateEnd
-	    	));*/
+
+	public function getMessageNotOwner($userId,$streamId,$limit){
+        $qb = $this->createQueryBuilder("m");
+        $qb->where('m.userSender != :idUser');
+        $qb->andWhere("m.streamReciever = :idStream");
+        $qb->setParameter("idUser",$userId);
+        $qb->setParameter("idStream",$streamId);
+        $qb->orderBy("m.date","DESC");
+        $qb->setMaxResults($limit);
+        $result = $qb->getQuery()->getResult();
+        return $result;
+    }
+
+//    public function getMessagesByKey($key,$limit){
+//	    $ids = explode("_",$key);
+//        $qb = $this->createQueryBuilder("m");
+//        if(count($ids)>1){ //user
+//            $qb->where('m.userSender = :idUser1 AND m.userReciever = :idUser2');
+//            $qb->orWhere('m.userSender = :idUser2 AND m.userReciever = :idUser1');
+//            $qb->setParameter('idUser1', $ids[0]);
+//            $qb->setParameter('idUser2', $ids[1]);
+//        }
+//        else{ // stream
+//            $qb->where('m.streamReciever = idStream');
+//            $qb->setParameter("idStream",$ids[0]);
+//        }
+//        $qb->orderBy("m.date","DESC");
+//        $qb->setMaxResults($limit);
+//        $result = $qb->getQuery()->getResult();
+//        return $result;
+//    }
+
 }
