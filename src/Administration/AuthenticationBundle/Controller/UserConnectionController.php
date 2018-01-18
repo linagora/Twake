@@ -35,11 +35,9 @@ class UserConnectionController extends Controller
             $listResponse = Array();
             foreach($listConnection as $Connection)
             {
-                $listResponse[] = $Connection->getAsArray();
-
+                $listResponse[] = date("y-m-d",$Connection->getDateConnection()->getTimeStamp());
             }
-            $data["data"]["connection"] = $listResponse;
-
+           $data["data"] = $listResponse;
         }
         //else
         {
