@@ -141,4 +141,27 @@ class TwakeUserManagerController extends Controller
         return new JsonResponse($data);
     }
 
+    public function getSizeUploadedByUserAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $idTwakeUser = $request->request->get("idTwakeUser","");
+
+            $size = $this->get('admin.TwakeUserManagement')->getSizeUploadedByUser($idTwakeUser);
+            $data["data"]["size"] = $size;
+        }
+        //else
+        {
+            $data["errors"][] = "disconnected";
+        }
+        return new JsonResponse($data);
+    }
+
+
 }
