@@ -24,9 +24,9 @@ class UserConnectionController extends Controller
             "data" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
 
-        //if($user != null)
+        if($user != null)
         {
             $userId = $request->request->get("user_id","");
             $date = $request->request->get("date","");
@@ -36,14 +36,13 @@ class UserConnectionController extends Controller
             $listDuree = Array();
             foreach($listConnection as $connection)
             {
-                //$listResponse[] = date("y-m-d",$Connection->getDateConnection()->getTimeStamp());
-                $listHeure[] = $connection->getDateConnection()->getTimeStamp();
-                $listDuree[] = $connection->getDureeConnection();
+                $listHeure["heure"] = $connection->getDateConnection()->getTimeStamp();
+                $listHeure["duree"] = $connection->getDureeConnection();
+
+                $data["data"][] = $listHeure;
             }
-           $data["data"]["heureConnection"] = $listHeure;
-           $data["data"]["dureeConnection"] = $listDuree;
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }

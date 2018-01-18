@@ -13,6 +13,7 @@ angular.module('TwakeAdministration')
 		this.list = [];
 		this.pages = [1];
 		this.total = 0;
+		this.connectedUser = 0;
 
 		this.page = 1;
 		this.perpage = 50;
@@ -33,6 +34,12 @@ angular.module('TwakeAdministration')
 
 				$scope.$apply();
 			});
+
+            $api.post("authentication/numberOfUserCurrentlyConnected", null, function (res) {
+            	console.log(res);
+            	that.connectedUser = res.data;
+                $scope.$apply();
+            });
 		};
 
 		this.setPage = function(page){

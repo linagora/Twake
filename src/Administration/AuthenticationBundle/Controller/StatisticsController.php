@@ -25,16 +25,17 @@ class StatisticsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
+            $nbConnected = 0;
             $nbConnected = $this->get('admin.TwakeStatistics')->numberOfUserCurrentlyConnected();
             if($nbConnected != null)
             {
-                $data["data"][] = $nbConnected;
+                $data["data"] = $nbConnected;
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
@@ -134,8 +135,8 @@ class StatisticsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $nbOfExtenstion= $this->get('admin.TwakeStatistics')->numberOfExtensions();
             if($nbOfExtenstion != null)
@@ -147,7 +148,7 @@ class StatisticsController extends Controller
                 $data["errors"][] = "not found";
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
