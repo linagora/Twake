@@ -38,6 +38,10 @@ twake_drive_rename:
     path:     /rename
     defaults: { _controller: TwakeDriveBundle:Files:rename }
 
+twake_drive_content_get_details:
+    path:     /details
+    defaults: { _controller: TwakeDriveBundle:Files:getDetails }
+
 twake_drive_content_get:
     path:     /content/get
     defaults: { _controller: TwakeDriveBundle:Files:getContent }
