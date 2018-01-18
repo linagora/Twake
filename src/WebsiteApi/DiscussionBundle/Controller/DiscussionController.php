@@ -146,11 +146,7 @@ class DiscussionController extends Controller
             }
             else{
             	$streams = $this->get("app.streamSystem")->getStreamList($request->request->get("gid"),$this->getUser());
-            	$retour = [];
-            	foreach ($streams as $stream) {
-            		$retour[] = $stream->getAsArray();
-            	}
-            	$data["data"] = $retour;
+            	$data["data"] = $streams;
             }
 
         }

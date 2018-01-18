@@ -61,7 +61,7 @@ class MessageSystem
                 if($subjectId != null){
                     $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
                 }
-                $message = new Message($senderType,$sender,$recieverType,$reciever,new \DateTime(),$content,$subject);
+                $message = new Message($senderType,$sender,$recieverType,$reciever,new \DateTime(),$content,$this->string_cleaner->simplifyWithoutRemovingSpaces($content),$subject);
                 $this->doctrine->persist($message);
                 $this->doctrine->flush();
                 return $message;
@@ -101,48 +101,26 @@ class MessageSystem
 	            $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("typeReciever" => "S", "streamReciever" => $stream),Array("date"=>"DESC"), $limit = 30, $offset = $offset);
                 $messages = array_reverse($messages);
                 $retour = [];
-                $subjectRed = [];
                 foreach($messages as $message){
-                    if($subjectId == null && $message->getSubject() != null) {
-                        if(!in_array($message->getSubject()->getId(), $subjectRed)){
-                            $firstMessage = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("subject" => $message->getSubject()), Array("date" => "ASC"));
-                            if ($firstMessage == $message) { // it's the first message of this subject
-                                error_log($message->getId()." is the first message");
-                                $messageInSubject = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject" => $message->getSubject()), Array("date" => "DESC"));
-                                $nb = count($messageInSubject);
-                                $lastMessage = $messageInSubject[0];
-                                if ($lastMessage != $firstMessage) {
-                                    $retour[] = array_merge($message->getAsArray(), Array("isSubject" => true,"responseNumber" => $nb, "lastMessage" => $lastMessage->getAsArray()));
-                                } else {
-                                    $retour[] = array_merge($message->getAsArray(), Array("isSubject" => true, "responseNumber" => $nb));
-                                }
-                                $subjectRed[] = $message->getSubject()->getId();
-                            }
-                        }
-                    }
-                    else{
-                        $retour[] = $message->getAsArray();
+                    $messageArray = $this->getMessageAsArray($message);
+                    if($messageArray){
+                        $retour[] = $messageArray;
                     }
                 }
                 return $retour;
             }
         }
         elseif($recieverType == "U"){
-	        error_log("user");
             $otherUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
             if($otherUser != null){
-                error_log("user found");
                 $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $otherUser,"userReciever"=>$user),Array("date"=>"DESC"), $limit = $offset, $offset = 0);
                 $messages = array_merge($messages,$this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $user,"userReciever"=>$otherUser),Array("date"=>"DESC"), $limit = 30, $offset = $offset));
                 $messages = array_reverse($messages);
 ;               $retour = [];
                 foreach($messages as $message){
-                    $retour[] = $message->getAsArray();
+                    $retour[] = $this->getMessageAsArray($message);
                 }
                 return $retour;
-            }
-            else{
-                error_log("user not found");
             }
         }
    }
@@ -191,6 +169,68 @@ class MessageSystem
 	    	return $messages;
     	}
     }
+
+
+    public function moveMessageInMessage($idDrop,$idDragged){
+	    $messageDragged = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idDragged);
+	    $messageDrop = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idDrop);
+	    if($messageDragged == null || $messageDrop == null){
+	        return false;
+        }
+        $messageDragged->setResponseTo($messageDrop);
+	    $this->doctrine->persist($messageDragged);
+        $this->setResponseMessage($messageDragged,$messageDrop);
+	    $this->doctrine->flush();
+	    return $this->getMessageAsArray($messageDrop);
+    }
+
+    private function setResponseMessage($messageParent,$messageDroped){
+	    $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo"=>$messageParent));
+	    foreach($messages as $message){
+	        $message->setResponseTo($messageDroped);
+	        $this->doctrine->persist($message);
+            $this->setResponseMessage($message,$messageDroped);
+        }
+    }
+
+
+    public function getMessageAsArray($message){
+	    if($message->getResponseTo()!=null){
+	        error_log("isResponse ".$message->getId());
+	        return false;
+        }
+        $retour = false;
+        if($message->getSubject() != null){
+            $firstMessage = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("subject" => $message->getSubject()), Array("date" => "ASC"));
+            if ($firstMessage == $message) { // it's the first message of this subject
+                $messageInSubject = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject" => $message->getSubject()), Array("date" => "DESC"));
+                $nb = count($messageInSubject);
+                $lastMessage = $messageInSubject[0];
+                if ($lastMessage != $firstMessage) {
+                    $retour = array_merge($message->getAsArray(), Array("isSubject" => true,"responseNumber" => $nb, "lastMessage" => $lastMessage->getAsArray()));
+                } else {
+                    $retour = array_merge($message->getAsArray(), Array("isSubject" => true, "responseNumber" => $nb));
+                }
+            }
+            else{
+             }
+        }
+        else{
+            $retour = $message->getAsArray();
+        }
+        $responses = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo"=>$message),Array("date" => "ASC"));
+        foreach($responses as $response){
+            $retour["responses"][] = $response->getAsArray();
+        }
+        return $retour;
+    }
+
+
+
+
+
+
+
 
 
 

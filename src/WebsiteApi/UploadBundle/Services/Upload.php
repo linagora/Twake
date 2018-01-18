@@ -38,6 +38,8 @@ class Upload
 
 	public function upload($file, $path, $context){
 
+		error_log(json_encode($file));
+
 		$upload_status = Array();
 		$upload_status["status"] = "";
 		$upload_status["errors"] = Array();

@@ -1,6 +1,7 @@
 <?php
+namespace WebsiteApi\DriveBundle\Services;
 
-require_once 'AES256Implementation.php';
+use WebsiteApi\DriveBundle\Services\AES256Implementation;
 
 class MCryptAES256Implementation implements AES256Implementation
 {

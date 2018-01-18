@@ -3,8 +3,8 @@
 
 namespace WebsiteApi\DriveBundle\Services;
 
-use AESCryptFileLib;
-use MCryptAES256Implementation;
+use WebsiteApi\DriveBundle\Services\MCryptAES256Implementation;
+use WebsiteApi\DriveBundle\Services\AESCryptFileLib;
 use WebsiteApi\DriveBundle\Entity\DriveFile;
 use WebsiteApi\DriveBundle\Entity\DriveFileLabel;
 use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
@@ -229,6 +229,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 		//If file copy version (same key currently -> to improve)
 		if(!$newFile->getIsDirectory()) {
+
+			$this->doctrine->persist($newFile);
+			$this->doctrine->flush();
+
 			$newVersion = new DriveFileVersion($newFile);
 			$newVersion->setKey($fileOrDirectory->getLastVersion()->getKey());
 			$newVersion->setSize($fileOrDirectory->getSize());
@@ -290,6 +294,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 		$newFile->setLastModified();
 
 		if (!$isDirectory) {
+
+			$this->doctrine->persist($newFile);
+			$this->doctrine->flush();
 
 			$fileVersion = new DriveFileVersion($newFile);
 			$newFile->setLastVersion($fileVersion);
@@ -689,7 +696,14 @@ class DriveFileSystem implements DriveFileSystemInterface
 		$mcrypt = new MCryptAES256Implementation();
 		$lib = new AESCryptFileLib($mcrypt);
 
-		$lib->encryptFile($path, $key, $path);
+		$pathTemp = $path . ".tmp";
+		rename($path, $pathTemp);
+
+		error_log($key);
+
+		$lib->encryptFile($pathTemp, $key, $path);
+
+		@unlink($pathTemp);
 
 	}
 
@@ -697,6 +711,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 		$mcrypt = new MCryptAES256Implementation();
 		$lib = new AESCryptFileLib($mcrypt);
+
+		error_log($key);
+		error_log($path);
 
 		$tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
 		$this->verifyPath($tmpPath);
@@ -709,7 +726,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	private function writeEncode($path, $key, $content){
 		file_put_contents($path, $content);
-		$this->encode($path, $key);
+		if($content!="") {
+			$this->encode($path, $key);
+		}
 	}
 
 	private function readDecode($path, $key){

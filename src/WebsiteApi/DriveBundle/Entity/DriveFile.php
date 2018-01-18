@@ -37,6 +37,11 @@ class DriveFile
 	private $name;
 
 	/**
+	 * @ORM\Column(type="string", length=16)
+	 */
+	private $extension;
+
+	/**
 	 * @ORM\Column(type="string", length=2048)
 	 */
 	private $description;
@@ -90,6 +95,7 @@ class DriveFile
 		$this->group = $group;
 		$this->setParent($parent);
 		$this->setName($name);
+		$this->setDescription("");
     	$this->setSize(0);
 		$this->isDirectory = $isDirectory;
     	$this->setIsInTrash(false);
@@ -270,6 +276,22 @@ class DriveFile
 	public function setSize($size)
 	{
 		$this->size = $size;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getExtension()
+	{
+		return $this->extension;
+	}
+
+	/**
+	 * @param mixed $extension
+	 */
+	public function setExtension($extension)
+	{
+		$this->extension = $extension;
 	}
 
 	public function getAsArray()

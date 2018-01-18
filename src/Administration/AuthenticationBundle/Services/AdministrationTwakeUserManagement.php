@@ -57,8 +57,8 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
     }
 
     public function getUserApp($idTwakeUser){
-        $repository = $this->doctrine->getRepository("MarketBundle:LinkAppUserRepository");
-        $linkAppUserRepository = $repository->findBy(Array("User"=>$idTwakeUser));
+        $repository = $this->doctrine->getRepository("TwakeMarketBundle:LinkAppUser");
+        $linkAppUserRepository = $repository->findBy(Array("user"=>$idTwakeUser));
         if($linkAppUserRepository == null){
             return null;
         }
@@ -66,7 +66,7 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
     }
 
     public function getSizeUploadedByUser($idTwakeUser){
-        $repository = $this->doctrine->getRepository("UploadBundle:FileRepository");
+        $repository = $this->doctrine->getRepository("TwakeUploadBundle:FileRepository");
         if($idTwakeUser == null){
             return null;
         }
