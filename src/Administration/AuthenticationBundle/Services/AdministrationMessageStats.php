@@ -36,18 +36,18 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         $this->doctrine->flush();
     }
 
-    public function countPublicMessage($idTwakeUser,$date){
+    public function countPublicMessage($idTwakeUser,$startdate,$enddate){
         $repository = $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserDailyStats");
-        $twakeUserStat =  $repository->getStatsPublicMessage($idTwakeUser,$date);
+        $twakeUserStat =  $repository->getStatsPublicMessage($idTwakeUser,$startdate,$enddate);
         if($twakeUserStat == null){
-            return null;
+            return 0;
         }
         return $twakeUserStat;
     }
 
-    public function countPrivateMessage($idTwakeUser,$date){
+    public function countPrivateMessage($idTwakeUser,$startdate,$enddate){
         $repository = $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserDailyStats");
-        $twakeUserStat =  $repository->getStatsPrivateMessage($idTwakeUser,$date);
+        $twakeUserStat =  $repository->getStatsPrivateMessage($idTwakeUser,$startdate,$enddate);
         if($twakeUserStat == null){
             return null;
         }

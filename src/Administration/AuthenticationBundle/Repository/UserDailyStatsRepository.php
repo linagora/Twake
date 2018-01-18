@@ -9,21 +9,28 @@
 namespace Administration\AuthenticationBundle\Repository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Administration\AuthenticationBundle\Entity\UserDailyStats;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getStatsPublicMessage($idUser,$date){
+    public function getStatsPublicMessage($idUser,$startdate,$enddate){
+
         $req = $this->createQueryBuilder('U')
-            ->select('U.publicMsgCount');
+            ->select('SUM(U.publicMsgCount) as fuckyou');
         $req->where('U.user = ' . $idUser);
-        $req->andWhere('SUBSTRING(U.date,1,10) LIKE \''. $date.'\'');
-        return $req->getQuery()->getResult();
+        $req->andWhere('U.date >= :start');
+        $req->andWhere('U.date <= :end');
+        $req->setParameter("start",$startdate);
+        $req->setParameter("end",$enddate);
+
+        return $req->getQuery()->getSingleScalarResult();
     }
-    public function getStatsPrivateMessage($idUser,$date){
+    public function getStatsPrivateMessage($idUser,$startdate,$enddate){
         $req = $this->createQueryBuilder('U')
-            ->select('U.privateMsgCount');
+            ->select('SUM(U.privateMsgCount)');
         $req->where('U.user = ' . $idUser);
-        $req->andWhere('SUBSTRING(U.date,1,10) LIKE \''. $date.'\'');
-        return $req->getQuery()->getResult();
+        $req->andWhere('U.date >= '.$startdate);
+        $req->andWhere('U.date <= '.$enddate);
+        return $req->getQuery()->getSingleScalarResult();
     }
 }
