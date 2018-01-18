@@ -14,7 +14,6 @@ class UserConnectionStatsRepository extends \Doctrine\ORM\EntityRepository
 {
     public function getAllConnection($userId,$date)
     {
-
         $req1 = $this->createQueryBuilder('U');
         $req1 = $req1->Where('U.user = ' . $userId );
         $req1 = $req1->andWhere('SUBSTRING(U.dateConnection,1,10) LIKE \'' . $date .'\'');

@@ -36,6 +36,10 @@ administration_users_getInfoUser:
    path: /getInfoUser
    defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:getInfoUser}
 
+administration_users_getUserApp:
+   path: /getUserApp
+   defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:getUserApp}
+
 administration_users_setBanned:
    path: /setBanned
    defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:setBanned}
