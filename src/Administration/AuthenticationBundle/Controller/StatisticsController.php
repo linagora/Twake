@@ -128,4 +128,32 @@ class StatisticsController extends Controller
         return new JsonResponse($data);
     }
 
+    public function numberOfExtensionsAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $nbOfExtenstion= $this->get('admin.TwakeStatistics')->numberOfExtensions();
+            if($nbOfExtenstion != null)
+            {
+                $data["data"][] = $nbOfExtenstion;
+            }
+            else
+            {
+                $data["errors"][] = "not found";
+            }
+        }
+        //else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
+
 }

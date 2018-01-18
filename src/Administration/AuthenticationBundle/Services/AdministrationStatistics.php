@@ -41,4 +41,13 @@ class AdministrationStatistics implements AdministrationStatisticsInterface
         $repository = $this->doctrine->getRepository("TwakeMarketBundle:LinkAppWorkspace");
         return $repository->countWorkspaceByApp($idApp);
     }
+
+    public function numberOfExtensions(){
+        $repository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $listExtension = $repository->countEachExtension();
+        //if($listExtension == null){
+            //return null;
+        //}
+        return $listExtension;
+    }
 }
