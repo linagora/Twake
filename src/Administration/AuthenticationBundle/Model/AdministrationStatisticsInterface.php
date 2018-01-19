@@ -19,4 +19,10 @@ interface AdministrationStatisticsInterface
 
     //numberOfAppUser count the number of user using application
     public function numberOfAppUser($idApp);
+
+    //numberOfWorkspaceByApp return the number of workspace using one app ($idApp)
+    public function numberOfWorkspaceByApp($idApp);
+
+    //numberOfExtensions return the number of each extension group by extension
+    public function numberOfExtensions();
 }

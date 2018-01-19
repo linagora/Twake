@@ -24,4 +24,7 @@ interface AdministrationTwakeUserManagementInterface
 
     //getUserApp return applications used by the user idTwakeUser
     public function getUserApp($idTwakeUser);
+
+    //getSizeUploadedByUser return the file size uploaded by user ($idTwakeUser)
+    public function getSizeUploadedByUser($idTwakeUser);
 }

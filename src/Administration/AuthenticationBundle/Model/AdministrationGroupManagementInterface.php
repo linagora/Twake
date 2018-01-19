@@ -18,4 +18,11 @@ interface AdministrationGroupManagementInterface
 
     //searchUser return array with all twake user order by infos
     public function searchWorkspace($pageNumber, $nbWorkspaceByPage,$lastName=null,$firstName=null,$userName=null,$email=null,&$total=null);
+
+    //sizeWorkspace get the $idTwakeWorkspace size
+    public function sizeWorkspace($idTwakeWorkspace);
+
+    //getWorkspaceMembers return all the workspaceMembers
+    public function getWorkspaceMembers($idTwakeWorkspace);
+
 }
