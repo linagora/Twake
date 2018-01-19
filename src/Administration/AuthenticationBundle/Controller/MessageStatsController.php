@@ -106,4 +106,35 @@ class MessageStatsController extends Controller
 
         return new JsonResponse($data);
     }
+
+    public function numberOfMessagePrivateByUserByWorkspaceAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
+        {
+            $idTwakeWorkspace = $request->request->get("twakeWorkspace","1");
+            $startdate = $request->request->get("startdate","2018-01-17");
+            $enddate = $request->request->get("enddate","2018-01-17");
+            $nbDailyPrivateMessage = $this->get('admin.TwakeDailyMessage')->numberOfMessagePrivateByUserByWorkspace($idTwakeWorkspace,$startdate, $enddate);
+            if($nbDailyPrivateMessage != null)
+            {
+                $data["data"][] = $nbDailyPrivateMessage;
+            }
+            else
+            {
+                $data["errors"][] ="crappyshit";
+            }
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
 }

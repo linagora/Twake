@@ -45,9 +45,9 @@ class AdministrationStatistics implements AdministrationStatisticsInterface
     public function numberOfExtensions(){
         $repository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
         $listExtension = $repository->countEachExtension();
-        //if($listExtension == null){
-            //return null;
-        //}
+        if($listExtension == null){
+            return null;
+        }
         return $listExtension;
     }
 }

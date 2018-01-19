@@ -16,7 +16,7 @@ class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
     public function getStatsPublicMessage($idUser,$startdate,$enddate){
 
         $req = $this->createQueryBuilder('U')
-            ->select('U.publicMsgCount');
+            ->select('SUM(U.publicMsgCount)');
         $req->where('U.user = ' . $idUser);
         $req->andWhere('U.date >= :start');
         $req->andWhere('U.date <= :end');
@@ -32,5 +32,18 @@ class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
         $req->andWhere('U.date >= '.$startdate);
         $req->andWhere('U.date <= '.$enddate);
         return $req->getQuery()->getSingleScalarResult();
+    }
+
+    public function getStatsPrivateMessageByWorkspace($idUser,$startdate,$enddate){
+
+        $req = $this->createQueryBuilder('U')
+            ->select('U.date, U.privateMsgCount')
+            ->where('U.user = ' . $idUser)
+            ->andWhere('U.date >= :start')
+            ->andWhere('U.date <= :end')
+            ->setParameter("start",$startdate)
+            ->setParameter("end",$enddate);
+
+        return $req->getQuery()->getResult();
     }
 }

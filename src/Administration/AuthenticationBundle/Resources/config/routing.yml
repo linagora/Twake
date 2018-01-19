@@ -98,6 +98,10 @@ administration_stats_countDailyMessage:
     path: /countDailyMessage
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countDailyMessage}
 
+administration_stats_numberOfMessagePrivateByUserByWorkspace:
+    path: /numberOfMessagePrivateByUserByWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:numberOfMessagePrivateByUserByWorkspace}
+
 administration_connection_findConnection:
     path: /findConnection
     defaults: {_controller: AdministrationAuthenticationBundle:UserConnection:findConnection}
