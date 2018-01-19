@@ -36,4 +36,12 @@ class WorkspaceStats
     public function getPublicMsgCount(){
         return $this->publicMsgCount;
     }
+
+    public function getWorkspace(){
+        return $this->workspace;
+    }
+
+    public function getPrivateMsgCount(){
+        return $this->privateMsgCount;
+    }
 }
