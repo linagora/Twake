@@ -29,8 +29,9 @@ class UserConnectionController extends Controller
         if($user != null)
         {
             $userId = $request->request->get("user_id","");
-            $date = $request->request->get("date","");
-            $listConnection = $this->get('admin.TwakeDailyConnection')->findConnection($userId,$date);
+            $startdate = $request->request->get("startdate","");
+            $enddate = $request->request->get("enddate","");
+            $listConnection = $this->get('admin.TwakeDailyConnection')->findConnection($userId,$startdate,$enddate);
 
             $listHeure = Array();
             $listDuree = Array();

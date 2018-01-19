@@ -44,6 +44,6 @@ class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
             ->setParameter("start",$startdate)
             ->setParameter("end",$enddate);
 
-        return $req->getQuery()->getSingleScalarResult();
+        return $req->getQuery()->getResult();
     }
 }

@@ -63,7 +63,7 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         $sum = 0;
         $tabRes = Array();
         foreach ($twakeUser as $user){
-            $tabRes[$sum]= $repository->getStatsPrivateMessageByWorkspace($user,$startdate,$enddate);
+            $tabRes[$sum]= $repository->getStatsPrivateMessageByWorkspace($user->getUser()->getId(),$startdate,$enddate);
             $sum++;
         }
         return $tabRes;

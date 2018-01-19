@@ -117,9 +117,9 @@ class MessageStatsController extends Controller
         if($user != null)
         {
             $idTwakeWorkspace = $request->request->get("twakeWorkspace","1");
-            $startdate = $request->request->get("date","2018-01-17");
-            $enddate = $request->request->get("date","2018-01-17");
-            $nbDailyPrivateMessage = $this->get('admin.TwakeDailyMessage')->countPrivateMessage($idTwakeWorkspace,$startdate, $enddate);
+            $startdate = $request->request->get("startdate","2018-01-17");
+            $enddate = $request->request->get("enddate","2018-01-17");
+            $nbDailyPrivateMessage = $this->get('admin.TwakeDailyMessage')->numberOfMessagePrivateByUserByWorkspace($idTwakeWorkspace,$startdate, $enddate);
             if($nbDailyPrivateMessage != null)
             {
                 $data["data"][] = $nbDailyPrivateMessage;

@@ -12,7 +12,7 @@ namespace Administration\AuthenticationBundle\Repository;
 
 class UserConnectionStatsRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getAllConnection($userId,$date)
+    public function getAllConnection($userId,$startdate,$enddate)
     {
         $req1 = $this->createQueryBuilder('U');
         $req1 = $req1->Where('U.user = ' . $userId );
