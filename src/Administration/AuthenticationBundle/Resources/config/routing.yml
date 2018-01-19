@@ -117,7 +117,3 @@ administration_stats_countPublicMessage:
 administration_stats_countPrivateMessage:
     path: /countPrivateMessage
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countPrivateMessage}
-
-administration_stats_numberOfMessagePublicByWorkspace:
-    path: /numberOfMessagePublicByWorkspace
-    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:numberOfMessagePublicByWorkspace}

@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\WorkspacesBundle\Entity;
+namespace Administration\AuthenticationBundle\Entity;
 
 use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Component\Security\Core\User\UserInterface;
