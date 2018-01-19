@@ -122,7 +122,7 @@ class MessageStatsController extends Controller
             $nbDailyPrivateMessage = $this->get('admin.TwakeDailyMessage')->numberOfMessagePrivateByUserByWorkspace($idTwakeWorkspace,$startdate, $enddate);
             if($nbDailyPrivateMessage != null)
             {
-                $data["data"][] = $nbDailyPrivateMessage;
+                $data["data"] = $nbDailyPrivateMessage;
             }
             else
             {
@@ -153,7 +153,7 @@ class MessageStatsController extends Controller
             $nbDailyPublicMessage = $this->get('admin.TwakeDailyMessage')->numberOfMessagePublicByWorkspace($idTwakeWorkspace,$startdate, $enddate);
             if($nbDailyPublicMessage != null)
             {
-                $data["data"][] = $nbDailyPublicMessage;
+                $data["data"] = $nbDailyPublicMessage;
             }
             else
             {
