@@ -34,10 +34,9 @@ class UserConnectionController extends Controller
             $listConnection = $this->get('admin.TwakeDailyConnection')->findConnection($userId,$startdate,$enddate);
 
             $listHeure = Array();
-            $listDuree = Array();
             foreach($listConnection as $connection)
             {
-                $listHeure["heure"] = $connection->getDateConnection()->getTimeStamp();
+                $listHeure["heure"] = $connection->getDateConnection();
                 $listHeure["duree"] = $connection->getDureeConnection();
 
                 $data["data"][] = $listHeure;

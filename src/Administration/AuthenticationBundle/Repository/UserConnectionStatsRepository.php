@@ -14,10 +14,12 @@ class UserConnectionStatsRepository extends \Doctrine\ORM\EntityRepository
 {
     public function getAllConnection($userId,$startdate,$enddate)
     {
-        $req1 = $this->createQueryBuilder('U');
-        $req1 = $req1->Where('U.user = ' . $userId );
-        $req1 = $req1->andWhere('SUBSTRING(U.dateConnection,1,10) LIKE \'' . $date .'\'');
-        $req1 = $req1->getQuery()->getResult();
-        return $req1;
+        $req1 = $this->createQueryBuilder('U')
+            ->Where('U.user = ' . $userId )
+            ->andWhere('U.dateConnection >= :start')
+            ->andWhere('U.dateConnection <= :end')
+            ->setParameter("start",$startdate)
+            ->setParameter("end",$enddate);
+        return $req1->getQuery()->getResult();
     }
 }
