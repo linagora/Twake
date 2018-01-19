@@ -17,20 +17,23 @@ use FOS\UserBundle\Model\User as BaseUser;
 class WorkspaceDailyStats
 {
     /**
-     * @ORM\Id/**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="temp_stat")
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
      */
-    protected $user;
+    private $id;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace", inversedBy="temp_stat")
+     */
+    protected $workspace;
+
     /**
      * @var int
      * @ORM\Column(name="public_msg_count", type="integer")
      */
     protected $publicMsgCount;
-    /**
-     * @var int
-     * @ORM\Column(name="private_msg_count", type="integer")
-     */
-    protected $privateMsgCount;
+
     /**
      * @ORM\Column(name="date", type="datetime")
      */

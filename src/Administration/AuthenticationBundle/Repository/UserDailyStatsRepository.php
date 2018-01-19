@@ -46,4 +46,6 @@ class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
 
         return $req->getQuery()->getResult();
     }
+
+
 }

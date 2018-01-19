@@ -32,4 +32,8 @@ class WorkspaceStats
      * @ORM\Column(name="private_msg_count", type="integer")
      */
     protected $privateMsgCount;
+
+    public function getPublicMsgCount(){
+        return $this->publicMsgCount;
+    }
 }

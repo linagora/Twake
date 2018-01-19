@@ -70,9 +70,10 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
 
     }
 
-    public function numberOfMessagePublicByWorkspace($idWorkSpace){
-        $repository = $this->doctrine->getRepository("TwakeUserBundle:UserStats");
-
+    public function numberOfMessagePublicByWorkspace($idWorkSpace,$startdate,$enddate){
+        $repository = $this->doctrine->getRepository("AdministrationAuthenticationBundle:WorkspaceDailyStats");
+        $publicMessageByWorkspace =  $repository->getStatsPublicMessageByWorkspace($idWorkSpace,$startdate,$enddate);
+        return $publicMessageByWorkspace;
     }
 
 }

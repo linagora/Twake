@@ -137,4 +137,35 @@ class MessageStatsController extends Controller
 
         return new JsonResponse($data);
     }
+
+    public function numberOfMessagePublicByWorkspaceAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
+        {
+            $idTwakeWorkspace = $request->request->get("twakeWorkspace","1");
+            $startdate = $request->request->get("startdate","2018-01-17");
+            $enddate = $request->request->get("enddate","2018-01-17");
+            $nbDailyPublicMessage = $this->get('admin.TwakeDailyMessage')->numberOfMessagePublicByWorkspace($idTwakeWorkspace,$startdate, $enddate);
+            if($nbDailyPublicMessage != null)
+            {
+                $data["data"][] = $nbDailyPublicMessage;
+            }
+            else
+            {
+                $data["errors"][] ="crappyshit";
+            }
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
 }

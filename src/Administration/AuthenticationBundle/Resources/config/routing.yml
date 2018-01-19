@@ -102,6 +102,10 @@ administration_stats_numberOfMessagePrivateByUserByWorkspace:
     path: /numberOfMessagePrivateByUserByWorkspace
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:numberOfMessagePrivateByUserByWorkspace}
 
+administration_stats_numberOfMessagePublicByWorkspace:
+    path: /numberOfMessagePublicByWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:numberOfMessagePublicByWorkspace}
+
 administration_connection_findConnection:
     path: /findConnection
     defaults: {_controller: AdministrationAuthenticationBundle:UserConnection:findConnection}
@@ -114,4 +118,6 @@ administration_stats_countPrivateMessage:
     path: /countPrivateMessage
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countPrivateMessage}
 
-
+administration_stats_numberOfMessagePublicByWorkspace:
+    path: /numberOfMessagePublicByWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:numberOfMessagePublicByWorkspace}
