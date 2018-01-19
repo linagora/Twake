@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\WorkspacesBundle\Entity;
+namespace Administration\AuthenticationBundle\Entity;
 
 use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -38,4 +38,15 @@ class WorkspaceDailyStats
      * @ORM\Column(name="date", type="datetime")
      */
     protected $date;
+
+    public function setWorkspace($w){
+        $this->workspace = $w;
+    }
+
+    public function setPublicMsgCount($p){
+        $this->publicMsgCount = $p;
+    }
+    public function setDate($d){
+        $this->date = $d;
+    }
 }
