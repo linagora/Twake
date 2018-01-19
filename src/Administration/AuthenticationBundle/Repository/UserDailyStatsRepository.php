@@ -16,7 +16,7 @@ class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
     public function getStatsPublicMessage($idUser,$startdate,$enddate){
 
         $req = $this->createQueryBuilder('U')
-            ->select('SUM(U.publicMsgCount) as fuckyou');
+            ->select('U.publicMsgCount');
         $req->where('U.user = ' . $idUser);
         $req->andWhere('U.date >= :start');
         $req->andWhere('U.date <= :end');

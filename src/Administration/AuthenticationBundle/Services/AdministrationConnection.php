@@ -66,9 +66,9 @@ class AdministrationConnection
         $em->flush();
     }
 
-    public function findConnection($userId,$date)
+    public function findConnection($userId,$startdate, $enddate)
     {
-        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserConnectionStats")->getAllConnection($userId,$date);
+        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserConnectionStats")->getAllConnection($userId,$startdate,$enddate);
 
     }
 }
