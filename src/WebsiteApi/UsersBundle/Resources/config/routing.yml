@@ -11,3 +11,19 @@ twake_user_logout:
 twake_user_get:
     path:     /current/get
     defaults: { _controller: TwakeUsersBundle:UsersConnections:currentUser }
+
+
+# Recover
+
+twake_user_recover_mail:
+    path:     /recover/mail
+    defaults: { _controller: TwakeUsersBundle:UsersRecover:mail }
+
+twake_user_recover_verify:
+    path:     /recover/verify
+    defaults: { _controller: TwakeUsersBundle:UsersRecover:codeVerification }
+
+twake_user_recover_password:
+    path:     /recover/password
+    defaults: { _controller: TwakeUsersBundle:UsersRecover:newPassword }
+

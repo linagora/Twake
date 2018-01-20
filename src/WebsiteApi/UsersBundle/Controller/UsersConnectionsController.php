@@ -14,8 +14,6 @@ class UsersConnectionsController extends Controller
 	public function loginAction(Request $request)
 	{
 
-		$this->get("app.user")->requestNewPassword("romaricm@wanadoo.fr");
-
 		$data = Array(
 			"errors" => Array(),
 			"data" => Array()
