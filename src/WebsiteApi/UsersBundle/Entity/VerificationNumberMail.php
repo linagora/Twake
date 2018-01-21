@@ -65,8 +65,11 @@ class VerificationNumberMail
 	}
 
 	public function getCode(){
-		$code = bin2hex(random_bytes(3));
+		$code = substr(bin2hex(random_bytes(5)), 0, 9);
 		$this->hashCode = $this->hash($code);
+		//Prettify
+		$code = str_split($code, 3);
+		$code = join("-", $code);
 		return $code;
 	}
 
@@ -74,6 +77,7 @@ class VerificationNumberMail
 		if($this->date->format('U') < (new \DateTime())->format('U') - $this->validityTime){
 			return false;
 		}
+		$code = preg_replace("/[^a-z0-9 ]/","",strtolower($code));
 		return $this->hash($code) == $this->hashCode;
 	}
 
