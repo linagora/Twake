@@ -28,6 +28,11 @@ class UsersConnectionsController extends Controller
 
 		if ($loginResult) {
 
+			$device = $request->request->get("device", false);
+			if($device) {
+				$this->get("app.user")->removeDevice($this->getUser()->getId(), $device["type"], $device["value"]);
+			}
+
 			$data["data"]["status"] = "connected";
 
 		} else {
@@ -43,6 +48,10 @@ class UsersConnectionsController extends Controller
 	public function logoutAction(Request $request)
 	{
 
+		$device = $request->request->get("device", false);
+		if($device) {
+			$this->get("app.user")->removeDevice($this->getUser()->getId(), $device["type"], $device["value"]);
+		}
 		$this->get("app.user")->logout();
 		return new JsonResponse(Array());
 

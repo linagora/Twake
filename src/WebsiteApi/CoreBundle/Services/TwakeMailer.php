@@ -66,7 +66,7 @@ class TwakeMailer
 
 	private function html2title($html){
 		$a = explode("<title>", $html, 2)[1];
-		return explode("</title>", $a, 1)[0];
+		return explode("<", $a, 1)[0];
 	}
 
 }
