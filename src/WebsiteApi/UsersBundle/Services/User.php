@@ -349,6 +349,15 @@ class User implements UserInterface
 		return false;
 	}
 
+	public function getSecondaryMails($userId){
+
+		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+		$user = $userRepository->find($userId);
+
+		return $mailRepository->findBy(Array("user" => $user));
+
+	}
 
 	public function addNewMail($userId, $mail)
 	{
@@ -538,9 +547,15 @@ class User implements UserInterface
 
 			$user->setFirstName($firstName);
 			$user->setLastName($lastName);
-			$user->setThumbnail($thumbnail);
+			if($thumbnail!=null) {
+				$user->setThumbnail($thumbnail);
+			}
+			$this->em->persist($user);
+			$this->em->flush();
 
 		}
+
+
 
 	}
 
