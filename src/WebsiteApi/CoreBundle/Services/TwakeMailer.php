@@ -28,6 +28,7 @@ class TwakeMailer
 
 	public function send($mail, $template, $data = Array()){
 
+
 		$data["mail"] = $mail;
 		$data["twakeaddress"] = $this->twakeaddress;
 		$data["twakeurl"] = $this->twakeurl;
@@ -54,8 +55,8 @@ class TwakeMailer
 		$res = $this->mailer->send($message);
 
 		//TODO remove
-		error_log($res);
-		error_log($this->html2txt($html));
+		//error_log($res);
+		//error_log($this->html2txt($html));
 
 	}
 
@@ -66,7 +67,8 @@ class TwakeMailer
 
 	private function html2title($html){
 		$a = explode("<title>", $html, 2)[1];
-		return explode("<", $a, 1)[0];
+		$a = explode("<", $a, 2)[0];
+		return $a;
 	}
 
 }

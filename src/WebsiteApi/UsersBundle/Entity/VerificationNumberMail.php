@@ -66,6 +66,7 @@ class VerificationNumberMail
 
 	public function getCode(){
 		$code = substr(bin2hex(random_bytes(5)), 0, 9);
+		error_log(($code));
 		$this->hashCode = $this->hash($code);
 		//Prettify
 		$code = str_split($code, 3);
@@ -91,6 +92,10 @@ class VerificationNumberMail
 	public function getToken()
 	{
 		return $this->token;
+	}
+
+	public function getMail(){
+		return $this->mail;
 	}
 
 

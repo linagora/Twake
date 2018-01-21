@@ -74,7 +74,7 @@ interface UserInterface
 	public function removeSecondaryMail($userId, $mail);
 
 	// @checkNumberForAddNewMail verify new mail
-	public function checkNumberForAddNewMail($token, $number);
+	public function checkNumberForAddNewMail($userId, $token, $number);
 
 	// @changePassword change password
 	public function changePassword($userId, $oldPassword, $password);

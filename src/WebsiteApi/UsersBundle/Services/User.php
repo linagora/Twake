@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use WebsiteApi\UsersBundle\Entity\Device;
+use WebsiteApi\UsersBundle\Entity\Mail;
 use WebsiteApi\UsersBundle\Entity\VerificationNumberMail;
 use WebsiteApi\UsersBundle\Model\UserInterface;
 
@@ -368,8 +369,10 @@ class User implements UserInterface
 		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
 		$user = $userRepository->find($userId);
 
-		if($user != null) {
-			$mailExists = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
+		$userWithThisMailAsMainMail = $userRepository->findOneBy(Array("email"=>$mail));
+
+		if($user != null && $userWithThisMailAsMainMail==null) {
+			$mailExists = $mailRepository->findOneBy(Array("mail"=>$mail));
 
 			if($mailExists == null) {
 
@@ -386,7 +389,6 @@ class User implements UserInterface
 
 			}
 
-			return true;
 		}
 
 		return false;
@@ -412,27 +414,35 @@ class User implements UserInterface
 		return false;
 	}
 
-	public function checkNumberForAddNewMail($token, $code)
+	public function checkNumberForAddNewMail($userId, $token, $code)
 	{
 
 		$verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
 		$ticket = $verificationRepository->findOneBy(Array("token"=>$token));
+		$user = $userRepository->find($userId);
 
-		if($ticket != null) {
+		if($ticket != null && $user!=null) {
 			if($ticket->verifyCode($code)){
-				$user = $userRepository->findOneBy(Array("email"=>$ticket->getMail()));
-				if($user != null){
+				$userWithMail = $userRepository->findOneBy(Array("email"=>$ticket->getMail()));
 
-					$mail = new Mail();
-					$mail->setMail($ticket->getMail());
-					$mail->setUser($user);
+				if($userWithMail == null){
+					$mailExists = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$ticket->getMail()));
 
-					$this->em->remove($ticket);
-					$this->em->persist($mail);
-					$this->em->flush();
+					if($mailExists == null) {
 
-					return true;
+						$mail = new Mail();
+						$mail->setMail($ticket->getMail());
+						$mail->setUser($user);
+
+						$this->em->remove($ticket);
+						$this->em->persist($mail);
+						$this->em->flush();
+
+						return true;
+
+					}
 				}
 			}
 		}
