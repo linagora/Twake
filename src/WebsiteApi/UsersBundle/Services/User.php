@@ -369,9 +369,9 @@ class User implements UserInterface
 		$user = $userRepository->find($userId);
 
 		if($user != null) {
-			$mail = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
+			$mailExists = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
 
-			if($mail == null) {
+			if($mailExists == null) {
 
 				$verificationNumberMail = new VerificationNumberMail($mail);
 
@@ -517,15 +517,15 @@ class User implements UserInterface
 
 		if($user != null){
 
-			$mail = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
+			$mailObj = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
 
-			if($mail != null){
+			if($mailObj != null){
 
-				$mail->setMail($user->getEmail());
+				$mailObj->setMail($user->getEmail());
 				$user->setEmail($mail);
 
 				$this->em->persist($user);
-				$this->em->persist($mail);
+				$this->em->persist($mailObj);
 				$this->em->flush();
 
 				return true;

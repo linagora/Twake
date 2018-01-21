@@ -105,9 +105,9 @@ class UsersAccountController extends Controller
 
 		if($this->getUser()){
 
-			$mailId = $request->request->get("mailId", 0);
-
-			if(!$this->get("app.user")->changeMainMail($this->getUser()->getId(), $mailId)){
+			$mail = $request->request->get("mail", "");
+			
+			if(!$this->get("app.user")->changeMainMail($this->getUser()->getId(), $mail)){
 				$data["errors"][] = "nosuchid";
 			}
 
