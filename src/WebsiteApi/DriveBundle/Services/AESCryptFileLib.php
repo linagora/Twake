@@ -1,7 +1,7 @@
 <?php
 namespace WebsiteApi\DriveBundle\Services;
 
-use Exception;
+use \Exception;
 
 /**
  * Please see https://www.aescrypt.com/aes_file_format.html
@@ -298,7 +298,7 @@ class AESCryptFileLib
 		$this->debug("PASSPHRASE", $passphrase);
 		$enc_key_1 = $this->createKeyUsingIVAndPassphrase($iv_1, $passphrase);
 		if (self::bin_strlen($enc_key_1) != 32) {
-			throw new Exception("Returned a passphrase which is not 32 bytes long: " . bin2hex($enc_key_1));
+			throw new \Exception("Returned a passphrase which is not 32 bytes long: " . bin2hex($enc_key_1));
 		}
 		$this->debug("KEY1", bin2hex($enc_key_1));
 
@@ -321,7 +321,7 @@ class AESCryptFileLib
 
 		$encrypted_keys = $this->aes_impl->encryptData($file_encryption_keys, $iv_1, $enc_key_1);
 		if (self::bin_strlen($encrypted_keys) != 48) {
-			throw new Exception("Assertion 1 failed");
+			throw new \Exception("Assertion 1 failed");
 		}
 		$this->debug("ENCRYPTED KEYS", bin2hex($encrypted_keys));
 		//$this->assertLength($encrypted_keys, 48);
@@ -329,7 +329,7 @@ class AESCryptFileLib
 		//Calculate HMAC1 using the first enc key
 		$hmac_1 = hash_hmac("sha256", $encrypted_keys, $enc_key_1, true);
 		if (self::bin_strlen($hmac_1) != 32) {
-			throw new Exception("Assertion 2 failed");
+			throw new \Exception("Assertion 2 failed");
 		}
 		$this->debug("HMAC 1", bin2hex($hmac_1));
 		//$this->assertLength($hmac_1, 32);
@@ -383,10 +383,10 @@ class AESCryptFileLib
 			//This file uses version 0 of the standard
 			$file_size_modulos = $this->readChunk($source_fh, 1, "file size modulo", "C", 0);
 			if ($file_size_modulos === false) {
-				throw new Exception("Could not decode file size modulos");
+				throw new \Exception("Could not decode file size modulos");
 			}
 			if ($file_size_modulos < 0 || $file_size_modulos >= 16) {
-				throw new Exception("Invalid file size modulos: " . $file_size_modulos);
+				throw new \Exception("Invalid file size modulos: " . $file_size_modulos);
 			}
 
 			$iv = $this->readChunk($source_fh, 16, "IV");
@@ -421,10 +421,10 @@ class AESCryptFileLib
 
 			$result = fwrite($dest_fh, $decrypted_data);
 			if ($result === false) {
-				throw new Exception("Could not write back file");
+				throw new \Exception("Could not write back file");
 			}
 			if ($result != self::bin_strlen($decrypted_data)) {
-				throw new Exception("Could not write back file");
+				throw new \Exception("Could not write back file");
 			}
 			$this->debug("DECRYPTION", "Completed");
 			return $dest_fh;
@@ -471,10 +471,10 @@ class AESCryptFileLib
 			$file_size_modulos = unpack("C", self::bin_substr($rest_of_data, -33, 1));
 			$file_size_modulos = $file_size_modulos[1];
 			if ($file_size_modulos === false) {
-				throw new Exception("Could not decode file size modulos");
+				throw new \Exception("Could not decode file size modulos");
 			}
 			if ($file_size_modulos < 0 || $file_size_modulos >= 16) {
-				throw new Exception("Invalid file size modulos: " . $file_size_modulos);
+				throw new \Exception("Invalid file size modulos: " . $file_size_modulos);
 			}
 
 			$hmac_2 = self::bin_substr($rest_of_data, -32);
@@ -501,17 +501,17 @@ class AESCryptFileLib
 
 			$result = fwrite($dest_fh, $decrypted_data);
 			if ($result === false) {
-				throw new Exception("Could not write back file");
+				throw new \Exception("Could not write back file");
 			}
 			if ($result != self::bin_strlen($decrypted_data)) {
-				throw new Exception("Could not write back file");
+				throw new \Exception("Could not write back file");
 			}
 			$this->debug("DECRYPTION", "Completed");
 			return $dest_fh;
 		} else {
-			throw new Exception("Invalid version chunk: " . $version_chunk);
+			throw new \Exception("Invalid version chunk: " . $version_chunk);
 		}
-		throw new Exception("Not implemented");
+		throw new \Exception("Not implemented");
 	}
 
 	//Converts the given extension data in to binary data
@@ -621,12 +621,12 @@ class AESCryptFileLib
 
 }
 
-class AESCryptMissingDependencyException extends Exception {} //E.g. missing mcrypt
-class AESCryptCorruptedFileException extends Exception {} //E.g. when file looks corrupted or wont parse
-class AESCryptFileMissingException extends Exception {} //E.g. cant read file to encrypt
-class AESCryptFileAccessException extends Exception {} //E.g. read/write error on files
-class AESCryptFileExistsException extends Exception {} //E.g. when a destination file exists (we never overwrite)
-class AESCryptInvalidExtensionException extends Exception {} //E.g. when an extension array is invalid
-class AESCryptInvalidPassphraseException extends Exception {} //E.g. when the password is wrong
-class AESCryptCannotInferDestinationException extends Exception {} //E.g. when we try to decrypt a 3rd party written file which doesnt have the standard file name convention
-class AESCryptImplementationException extends Exception {} //For generic exceptions by the aes implementation used
+class AESCryptMissingDependencyException extends \Exception {} //E.g. missing mcrypt
+class AESCryptCorruptedFileException extends \Exception {} //E.g. when file looks corrupted or wont parse
+class AESCryptFileMissingException extends \Exception {} //E.g. cant read file to encrypt
+class AESCryptFileAccessException extends \Exception {} //E.g. read/write error on files
+class AESCryptFileExistsException extends \Exception {} //E.g. when a destination file exists (we never overwrite)
+class AESCryptInvalidExtensionException extends \Exception {} //E.g. when an extension array is invalid
+class AESCryptInvalidPassphraseException extends \Exception {} //E.g. when the password is wrong
+class AESCryptCannotInferDestinationException extends \Exception {} //E.g. when we try to decrypt a 3rd party written file which doesnt have the standard file name convention
+class AESCryptImplementationException extends \Exception {} //For generic \Exceptions by the aes implementation used
