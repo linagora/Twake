@@ -41,7 +41,7 @@ class UsersConnectionsController extends Controller
 
 		}
 
-		$response->setContent($data);
+		$response->setContent(json_encode($data));
 
 		return $response;
 
