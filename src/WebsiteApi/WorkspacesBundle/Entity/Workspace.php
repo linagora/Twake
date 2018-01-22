@@ -144,10 +144,19 @@ class Workspace
 	 * @ORM\Column(name="customizationData", type="text")
 	 */
 	private $customizationData = "{}";
-    /**
-     * @ORM\Column(name="isDeleted", type="boolean")
-     */
-    private $isDeleted = false;
+	/**
+	 * @ORM\Column(name="isDeleted", type="boolean")
+	 */
+	private $isDeleted = false;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
+	 */
+	private $group;
+	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+	 */
+	private $privateOwner;
 
 	static function fromAlphabeticalCode($str)
 	{
@@ -571,5 +580,39 @@ class Workspace
 			$this->customizationData = $encoded;
 		}
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getGroup()
+	{
+		return $this->group;
+	}
+
+	/**
+	 * @param mixed $group
+	 */
+	public function setGroup($group)
+	{
+		$this->group = $group;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getPrivateOwner()
+	{
+		return $this->privateOwner;
+	}
+
+	/**
+	 * @param mixed $privateOwner
+	 */
+	public function setPrivateOwner($privateOwner)
+	{
+		$this->privateOwner = $privateOwner;
+	}
+
+
 
 }
