@@ -23,7 +23,7 @@ class UsersConnectionsController extends Controller
 		$password = $request->request->get("_password", "");
 		$rememberMe = $request->request->get("_remember_me", true);
 
-		$response = new Response();
+		$response = new JsonResponse();
 		$loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
 
 		if ($loginResult) {
@@ -41,7 +41,9 @@ class UsersConnectionsController extends Controller
 
 		}
 
-		return new JsonResponse($data);
+		$response->setContent($data);
+
+		return $response;
 
 	}
 

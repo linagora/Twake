@@ -7,7 +7,6 @@ twake_user_logout:
     path:     /logout
     defaults: { _controller: TwakeUsersBundle:UsersConnections:logout }
 
-
 twake_user_get:
     path:     /current/get
     defaults: { _controller: TwakeUsersBundle:UsersConnections:currentUser }
