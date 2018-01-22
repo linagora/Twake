@@ -219,8 +219,8 @@ class User implements UserInterface
 			return false;
 		}
 		$mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-		$mail = $mailsRepository->findOneBy(Array("mail"=>$mail));
-		if($mail != null){
+		$mailExists = $mailsRepository->findOneBy(Array("mail"=>$mail));
+		if($mailExists != null){
 			return false;
 		}
 
@@ -248,11 +248,6 @@ class User implements UserInterface
 
 	public function subscribe($token, $code, $pseudo, $password)
 	{
-
-		if(!$this->string_cleaner->verifyPassword($password))
-		{
-			return false;
-		}
 
 		$pseudo = $this->string_cleaner->simplifyUsername($pseudo);
 

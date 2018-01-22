@@ -49,6 +49,17 @@ twake_user_account_addmailverify:
 
 # Subscribe
 
+twake_user_subscribe_mail:
+    path:     /subscribe/mail
+    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:mail }
+
+twake_user_subscribe_mailverify:
+    path:     /subscribe/verifymail
+    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:verifyMail }
+
+twake_user_subscribe_identity:
+    path:     /subscribe/identity
+    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:subscribe }
 
 
 # Recover
