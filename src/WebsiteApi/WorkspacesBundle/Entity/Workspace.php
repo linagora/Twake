@@ -31,15 +31,15 @@ class Workspace
      */
     private $id;
 	/**
-	 * @ORM\Column(name="name", type="string", length=50)
+	 * @ORM\Column(name="name", type="string", length=50, nullable=true)
 	 */
 	private $name;
 	/**
-	 * @ORM\Column(name="cleanName", type="string", length=50)
+	 * @ORM\Column(name="cleanName", type="string", length=50, nullable=true)
 	 */
 	private $cleanName;
 	/**
-	 * @ORM\Column(name="type", type="string", length=1)
+	 * @ORM\Column(name="type", type="string", length=1, nullable=true)
 	 */
 	private $type;
 	/**
@@ -79,7 +79,7 @@ class Workspace
 	 */
 	private $paymentsHistory;
 	/**
-	 * @ORM\Column(name="privacy", type="string", length=1)
+	 * @ORM\Column(name="privacy", type="string", length=1, nullable=true)
 	 */
 	private $privacy;
 	/**
@@ -369,6 +369,8 @@ class Workspace
 		return $this->streams;
 	}
 
+
+
 	public function getAsSimpleArray($sendApps = true)
 	{
 		return Array(
@@ -381,7 +383,10 @@ class Workspace
 			"customization" => $this->getCustomizationData(),
 			"apps" => $sendApps ? $this->getAppsAsArray() : Array(),
 			"levelId" => $this->getPriceLevel() == null ? 0 : $this->getPriceLevel()->getAsArray(),
-			"abonnement" => $this->getAbonnementRec()
+			"abonnement" => $this->getAbonnementRec(),
+			"isprivate" => $this->privateOwner != null,
+			"isgroup" => $this->group != null,
+			"group" => (($this->group==null)?Array():$this->group->getAsArray())
 		);
 	}
 

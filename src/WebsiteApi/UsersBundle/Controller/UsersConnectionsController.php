@@ -7,6 +7,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
+use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class UsersConnectionsController extends Controller
 {
@@ -75,17 +78,53 @@ class UsersConnectionsController extends Controller
 
 			$data["data"]["status"] = "connected";
 
-			$workspaces = $this->getUser()->getWorkspaces();
+			$workspacesObjs = $this->getUser()->getWorkspaces();
 
-			$groups = Array();
-			foreach ($workspaces as $workspace) {
+			$privateWorkspace = null;
+			$workspaces = Array();
+			foreach ($workspacesObjs as $workspace) {
 				if($workspace->getIsDeleted() == false){
-					$groups[]
-						= $workspace->getAsSimpleArray();
+					if($workspace->getPrivateOwner()!=null) {
+						$privateWorkspace
+							= $workspace->getAsSimpleArray();
+					}else{
+						$workspaces[]
+							= $workspace->getAsSimpleArray();
+					}
 				}
 			};
 
-			$data["data"]["groups"] = $groups;
+			if($privateWorkspace == null){
+				$doctrine = $this->getDoctrine()->getManager();
+
+				//Create private ws
+				$private = new Workspace();
+				$private->setPrivateOwner($this->getUser());
+
+				$doctrine->persist($private);
+				$doctrine->flush();
+
+				$userLink = new LinkWorkspaceUser();
+				$userLink->setUser($this->getUser());
+				$userLink->setGroup($private);
+
+				$doctrine->persist($userLink);
+				$doctrine->flush();
+
+				$driveApp = $doctrine->getRepository('TwakeMarketBundle:Application')->findOneBy(Array('name' => "Drive"));
+
+				$appLink = new LinkAppWorkspace();
+				$appLink->setApplication($driveApp);
+				$appLink->setGroup($private);
+
+				$doctrine->persist($appLink);
+				$doctrine->flush();
+
+				$privateWorkspace = $private->getAsSimpleArray();
+			}
+
+			$data["data"]["workspaces"] = $workspaces;
+			$data["data"]["privateworkspace"] = $privateWorkspace;
 
 		}
 
