@@ -33,7 +33,7 @@ class Workspace
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
 	 */
-	protected $logo;
+	private $logo;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")

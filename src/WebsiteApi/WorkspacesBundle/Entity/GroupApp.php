@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * GroupApp
  *
  * @ORM\Table(name="group_app",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceRepository")
+ * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupAppRepository")
  */
 class GroupApp
 {

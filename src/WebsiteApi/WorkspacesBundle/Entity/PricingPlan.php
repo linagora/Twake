@@ -10,8 +10,8 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Group
  *
- * @ORM\Table(name="group",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupRepository")
+ * @ORM\Table(name="pricing_plan",options={"engine":"MyISAM"})
+ * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\PricingPlanRepository")
  */
 class PricingPlan
 {

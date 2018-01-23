@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * WorkspaceUser
  *
  * @ORM\Table(name="workspace_user",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceRepository")
+ * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceUserRepository")
  */
 class WorkspaceUser
 {

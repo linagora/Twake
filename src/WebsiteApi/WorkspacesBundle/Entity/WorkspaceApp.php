@@ -11,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * WorkspaceApp
  *
  * @ORM\Table(name="workspace_app",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceRepository")
+ * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceAppRepository")
  */
 class WorkspaceApp
 {

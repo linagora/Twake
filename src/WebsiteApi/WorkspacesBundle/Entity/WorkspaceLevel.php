@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
  * WorkspaceLevel
  *
  * @ORM\Table(name="workspace_level",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\LevelRepository")
+ * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceLevelRepository")
  */
 class WorkspaceLevel
 {
