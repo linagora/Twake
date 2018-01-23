@@ -19,7 +19,7 @@ angular.module('TwakeAdministration')
                 that.workspaces = res.data.workspaces;
                 $scope.$apply();
             });
-            this.makeChart();
+            //this.makeChart();
         };
         this.goBack = function () {
             $state.go("user-all")
@@ -28,7 +28,7 @@ angular.module('TwakeAdministration')
         this.getWorkspaceView = function(workspaceId){
             $state.go("workspace-sheet", {id: workspaceId})
         }
-        this.makeChart = function(){
+        /*this.makeChart = function(){
             var startdate = new Date();
             startdate.setDate(startdate.getDate() - 7);
 
@@ -58,8 +58,8 @@ angular.module('TwakeAdministration')
                         });
 
                     }
-                    }
                 }
+            })
             var chart = AmCharts.makeChart( "chartdiv", {
                 "type": "gantt",
                 "theme": "light",
@@ -175,7 +175,7 @@ angular.module('TwakeAdministration')
                         "end": "2016-03-30",
                         "task": "Testing and QA"
                     } ]
-                }*/ ],
+                } ],
                 "valueScrollbar": {
                     "autoGridCount": true
                 },
@@ -193,8 +193,7 @@ angular.module('TwakeAdministration')
                     "enabled": true
                 }
             } );
-        };
-        this.update();
-
+            this.update();
+        }*/
 
     });
