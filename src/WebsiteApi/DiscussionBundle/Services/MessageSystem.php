@@ -223,6 +223,15 @@ class MessageSystem
     }
 
 
+    public function notify($discussionKey,$type,$message){
+        $data = Array(
+            "type" => $type,
+            "data" => $message->getAsArray(),
+        );
+        $this->pusher->push($data, "discussion_topic",Array("key"=>$discussionKey));
+    }
+
+
 
 
 
