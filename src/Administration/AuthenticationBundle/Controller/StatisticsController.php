@@ -190,8 +190,10 @@ class StatisticsController extends Controller
             $workspace = $request->request->get("workspace", "");
             $listNbExtension = $this->get('admin.TwakeStatistics')->numberOfExtensionsByWorkspace($workspace);
             if ($listNbExtension != null) {
-                $data["data"]->$listNbExtension;
-            } else {
+                $data["data"] = $listNbExtension;
+            }
+            else
+            {
                 $data["errors"][] = "not found";
             }
         }
