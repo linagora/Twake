@@ -34,13 +34,73 @@ class GroupManager
 	 */
 	protected $group;
 
+	/**
+	 * @ORM\Column(name="level", type="integer")
+	 */
+	protected $level;
+
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $date_added;
+
 	public function __constructor($group, $user) {
 		$this->group = $group;
 		$this->user = $user;
+		$this->level = 0;
+		$this->date_added = new \DateTime();
 	}
 
 	public function getId(){
 		return $this->id;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getUser()
+	{
+		return $this->user;
+	}
+
+	/**
+	 * @param mixed $user
+	 */
+	public function setUser($user)
+	{
+		$this->user = $user;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getGroup()
+	{
+		return $this->group;
+	}
+
+	/**
+	 * @param mixed $group
+	 */
+	public function setGroup($group)
+	{
+		$this->group = $group;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getLevel()
+	{
+		return $this->level;
+	}
+
+	/**
+	 * @param mixed $level
+	 */
+	public function setLevel($level)
+	{
+		$this->level = $level;
 	}
 
 }
