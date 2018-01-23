@@ -17,17 +17,36 @@
 
 
     <div class="row">
-        <div class="col-md-6 col-sm-6">
-            <h1>Message Activity</h1>
-    <canvas id="myChart" width="400" height="100"></canvas>
-        </div>
+        <div class="col-md-12 col-sm-12">
+            <div class="info-box bg-blue" align="center">
+                <span class="info-box-icon"><i class="ion ion-ios-cloud-download-outline"></i></span>
 
-        <div class="col-md-6 col-sm-6">
-            <h1>Files count by extension</h1>
-    <canvas id="myDonut" width="400" height="100"></canvas>
+                <div class="info-box-content">
+                    <span class="info-box-text">Storage</span>
+                    <span class="info-box-number">{{workspace.total}} {{workspace.unit}}</span>
+                    <span class="progress-description">
+                        The workspace {{workspace.workspaceInfo.name}} use a total of {{workspace.total}} {{workspace.unit}}
+                      </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
         </div>
     </div>
+            <h1>Message Activity</h1>
+    <canvas id="myChart" width="400" height="100"></canvas>
 
+<div class="row">
+    <div class="col-md-6 col-sm-6">
+        <h1>Files size by extension</h1>
+        <canvas id="myDonut2" width="400" height="200"></canvas>
+    </div>
+
+    <div class="col-md-6 col-sm-6">
+        <h1>Files count by extension</h1>
+        <canvas id="myDonut" width="400" height="200"></canvas>
+    </div>
+
+</div>
     <h1>Users in {{workspace.workspaceInfo.name}}</h1>
     <table class="table table-bordered table-hover">
         <thead>
@@ -53,4 +72,6 @@
 
         </tbody>
     </table>
+</div>
+
 </div>
