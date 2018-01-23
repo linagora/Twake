@@ -80,7 +80,7 @@ class Calls
 			$em->persist($call);
 			$em->flush();
 
-			$this->notifyChange($discussionKey);
+			$this->notifyChange($discussionKey,"join");
 
 			return $call->getToken();
 		}
@@ -127,29 +127,33 @@ class Calls
 
 			if($call->getNbclients() <= 1){
 				$em->remove($call);
-				$torefresh[] = $call->getDiscussionKey();
+				$torefresh[] = Array("discussionKey"=>$call->getDiscussionKey(),"type"=>"close");
 			}else{
 				$call->setNbclients($call->getNbclients()-1);
+                $torefresh[] = Array("discussionKey"=>$call->getDiscussionKey(),"type"=>"join");
 				$em->persist($call);
 			}
 		}
 
 		$em->flush();
 
-		foreach ($torefresh as $discussionKey) {
-			$this->notifyChange($discussionKey);
+		foreach ($torefresh as $call) {
+			$this->notifyChange($call["discussionKey"],$call["type"]);
 		}
 
 	}
 
 
 	/* Join Call */
-	private function notifyChange($discussionKey)
+	private function notifyChange($discussionKey,$type)
 	{
-
+	    // $type = "join", "close"
 		$datatopush = Array(
 			"type"=>"CALLS",
-			"data"=>""
+			"data"=>Array(
+			    "type" => $type,
+			    "discussionKey" => $discussionKey,
+            )
 		);
 		$this->pusher->push($datatopush, "discussion_topic",Array("key"=>$discussionKey));
 

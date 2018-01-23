@@ -49,7 +49,7 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 	public function getMessageNotOwner($userId,$streamId,$limit){
         $qb = $this->createQueryBuilder("m");
         $qb->where('m.userSender != :idUser');
-        $qb->andWhere("m.streamReciever = :idStream");
+        $qb->andWhere("m.streamReciever=:idStream");
         $qb->setParameter("idUser",$userId);
         $qb->setParameter("idStream",$streamId);
         $qb->orderBy("m.date","DESC");

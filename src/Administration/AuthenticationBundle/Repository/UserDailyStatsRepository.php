@@ -42,7 +42,8 @@ class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
             ->andWhere('U.date >= :start')
             ->andWhere('U.date <= :end')
             ->setParameter("start",$startdate)
-            ->setParameter("end",$enddate);
+            ->setParameter("end",$enddate)
+            ->orderBy('U.date', 'ASC');
 
         return $req->getQuery()->getResult();
     }

@@ -29,6 +29,8 @@ angular.module('TwakeAdministration')
             $state.go("user-sheet", {id: userId})
         }
         this.drawChart = function () {
+            var publicMsg;
+            var privateMsg;
             var startdate = new Date();
             startdate.setDate(startdate.getDate() - 7);
             $api.post("authentication/numberOfMessagePublicByWorkspace", {
@@ -36,11 +38,17 @@ angular.module('TwakeAdministration')
                 startdate: startdate.toISOString().substring(0, 10),
                 enddate: new Date().toISOString().substring(0, 10)
             }, function (res) {
-                console.log(res);
-                console.log(startdate.toISOString().substring(0, 10));
-                that.workspaceInfo = res.data.workspace;
-                that.users = res.data.users;
-                //$scope.$apply();
+                publicMsg = res;
+                console.log(publicMsg);
+            });
+
+            $api.post("authentication/numberOfMessagePrivateByUserByWorkspace", {
+                twakeWorkspace: this.id,
+                startdate: startdate.toISOString().substring(0, 10),
+                enddate: new Date().toISOString().substring(0, 10)
+            }, function (res2) {
+                privateMsg = res2;
+                console.log(privateMsg);
             });
         }
         this.update();

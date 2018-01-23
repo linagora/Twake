@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
 use WebsiteApi\UsersBundle\Entity\Device;
+use WebsiteApi\UsersBundle\Entity\Mail;
 use WebsiteApi\UsersBundle\Entity\VerificationNumberMail;
 use WebsiteApi\UsersBundle\Model\UserInterface;
 
@@ -218,8 +219,8 @@ class User implements UserInterface
 			return false;
 		}
 		$mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-		$mail = $mailsRepository->findOneBy(Array("mail"=>$mail));
-		if($mail != null){
+		$mailExists = $mailsRepository->findOneBy(Array("mail"=>$mail));
+		if($mailExists != null){
 			return false;
 		}
 
@@ -247,11 +248,6 @@ class User implements UserInterface
 
 	public function subscribe($token, $code, $pseudo, $password)
 	{
-
-		if(!$this->string_cleaner->verifyPassword($password))
-		{
-			return false;
-		}
 
 		$pseudo = $this->string_cleaner->simplifyUsername($pseudo);
 
@@ -349,6 +345,15 @@ class User implements UserInterface
 		return false;
 	}
 
+	public function getSecondaryMails($userId){
+
+		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+		$user = $userRepository->find($userId);
+
+		return $mailRepository->findBy(Array("user" => $user));
+
+	}
 
 	public function addNewMail($userId, $mail)
 	{
@@ -359,10 +364,12 @@ class User implements UserInterface
 		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
 		$user = $userRepository->find($userId);
 
-		if($user != null) {
-			$mail = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
+		$userWithThisMailAsMainMail = $userRepository->findOneBy(Array("email"=>$mail));
 
-			if($mail == null) {
+		if($user != null && $userWithThisMailAsMainMail==null) {
+			$mailExists = $mailRepository->findOneBy(Array("mail"=>$mail));
+
+			if($mailExists == null) {
 
 				$verificationNumberMail = new VerificationNumberMail($mail);
 
@@ -377,7 +384,6 @@ class User implements UserInterface
 
 			}
 
-			return true;
 		}
 
 		return false;
@@ -403,27 +409,35 @@ class User implements UserInterface
 		return false;
 	}
 
-	public function checkNumberForAddNewMail($token, $code)
+	public function checkNumberForAddNewMail($userId, $token, $code)
 	{
 
 		$verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
 		$ticket = $verificationRepository->findOneBy(Array("token"=>$token));
+		$user = $userRepository->find($userId);
 
-		if($ticket != null) {
+		if($ticket != null && $user!=null) {
 			if($ticket->verifyCode($code)){
-				$user = $userRepository->findOneBy(Array("email"=>$ticket->getMail()));
-				if($user != null){
+				$userWithMail = $userRepository->findOneBy(Array("email"=>$ticket->getMail()));
 
-					$mail = new Mail();
-					$mail->setMail($ticket->getMail());
-					$mail->setUser($user);
+				if($userWithMail == null){
+					$mailExists = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$ticket->getMail()));
 
-					$this->em->remove($ticket);
-					$this->em->persist($mail);
-					$this->em->flush();
+					if($mailExists == null) {
 
-					return true;
+						$mail = new Mail();
+						$mail->setMail($ticket->getMail());
+						$mail->setUser($user);
+
+						$this->em->remove($ticket);
+						$this->em->persist($mail);
+						$this->em->flush();
+
+						return true;
+
+					}
 				}
 			}
 		}
@@ -472,8 +486,8 @@ class User implements UserInterface
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$user = $userRepository->find($userId);
 
-		$pseudo = $userRepository->findOneBy(Array("username"=>$pseudo));
-		if($pseudo != null){
+		$otherUser = $userRepository->findOneBy(Array("username"=>$pseudo));
+		if($otherUser != null && $otherUser->getId()!=$userId){
 			return false;
 		}
 
@@ -508,15 +522,15 @@ class User implements UserInterface
 
 		if($user != null){
 
-			$mail = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
+			$mailObj = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
 
-			if($mail != null){
+			if($mailObj != null){
 
-				$mail->setMail($user->getEmail());
+				$mailObj->setMail($user->getEmail());
 				$user->setEmail($mail);
 
 				$this->em->persist($user);
-				$this->em->persist($mail);
+				$this->em->persist($mailObj);
 				$this->em->flush();
 
 				return true;
@@ -538,9 +552,15 @@ class User implements UserInterface
 
 			$user->setFirstName($firstName);
 			$user->setLastName($lastName);
-			$user->setThumbnail($thumbnail);
+			if($thumbnail!=null) {
+				$user->setThumbnail($thumbnail);
+			}
+			$this->em->persist($user);
+			$this->em->flush();
 
 		}
+
+
 
 	}
 

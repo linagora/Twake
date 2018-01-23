@@ -58,7 +58,7 @@ angular.module('TwakeAdministration')
 
 			// Loop through all table rows, and hide those who don't match the search query
 			for (i = 1; i < table.rows.length; i++) {
-				for(j = 0; j < table.rows[i].cells.length; j++)
+				for(j = 0; j < table.rows[i].cells.length - 1; j++)
 				{
                     td = table.rows[i].cells[j];
                     if (td) {

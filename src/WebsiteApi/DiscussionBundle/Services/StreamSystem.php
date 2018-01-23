@@ -20,8 +20,9 @@ class StreamSystem
     var $pusher;
     var $levelManager;
     var $messageReadSystem;
+    var $callSystem;
 
-    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $levelManager,$messageReadSystem)
+    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $levelManager,$messageReadSystem,$callSystem)
     {
         $this->string_cleaner = $string_cleaner;
         $this->doctrine = $doctrine;
@@ -29,6 +30,7 @@ class StreamSystem
         $this->pusher = $pusher;
         $this->levelManager = $levelManager;
         $this->messageReadSystem = $messageReadSystem;
+        $this->callSystem = $callSystem;
     }
 
 
@@ -111,14 +113,16 @@ class StreamSystem
             foreach($streams as $stream){
                 if(!$stream->getPrivacy() || $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream))!=null){ //public stream
                     $isRead = $this->messageReadSystem->streamIsReadByKey($stream->getId(),$user);
-                    $retour["stream"][] = array_merge($stream->getAsArray(),Array("isRead"=>$isRead));
+                    $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
+                    $retour["stream"][] = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
                 }
             }
             $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->getSomeUsers($workspace,"A",null,null);
             foreach($members as $member){
                 $key = min($user->getId(),$member->getUser()->getId())."_".max($user->getId(),$member->getUser()->getId());
                 $isRead = $isRead = $this->messageReadSystem->streamIsReadByKey($key,$user);
-                $retour['user'][] = array_merge($member->getUser()->getAsArray(),Array("isRead"=>$isRead));
+                $callInfos = $this->callSystem->getCallInfo($user,$key);
+                $retour['user'][] = array_merge($member->getUser()->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
             }
             return $retour;
         }

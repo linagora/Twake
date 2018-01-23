@@ -45,7 +45,7 @@ class LinkWorkspaceUser
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="statusUser", type="string", length=1)
+	 * @ORM\Column(name="statusUser", type="string", length=1, nullable=true)
 	 */
 	protected $status;
 

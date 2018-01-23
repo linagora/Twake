@@ -67,6 +67,9 @@ class User extends BaseUser
 
 	public function __construct()
 	{
+		$this->enabled = true;
+		$this->connections = 0;
+		$this->connected = 1;
 	}
 
 	/**

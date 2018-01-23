@@ -24,9 +24,10 @@ class MessageReadSystem
                 return false;
             }
             $messageRead = $this->doctrine->getRepository("TwakeDiscussionBundle:MessageRead")->findOneBy(Array("user"=>$user,"stream"=>$stream));
-            $lastMessages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->getMessageNotOwner($stream->getId(),$user->getId(),1);
+            $lastMessages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->getMessageNotOwner($user->getId(),$stream->getId(),1);
             if($lastMessages!=null){
                 $lastMessage = $lastMessages[0];
+                error_log("lasMessage ".$lastMessage->getId()." for stream ".$lastMessage->getStreamReciever()->getId().", asked ".$stream->getId());
                 if($messageRead == null){
                     $messageRead = new MessageRead();
                     $messageRead->setUser($user);
@@ -36,6 +37,9 @@ class MessageReadSystem
                 $this->doctrine->persist($messageRead);
                 $this->doctrine->flush();
                 return true;
+            }
+            else{
+                error_log("last Message not found");
             }
         }
         else {
@@ -72,7 +76,7 @@ class MessageReadSystem
                 return false;
             }
             $messageRead = $this->doctrine->getRepository("TwakeDiscussionBundle:MessageRead")->findOneBy(Array("user"=>$user,"stream"=>$stream));
-            $lastMessages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->getMessageNotOwner($stream->getId(),$user->getId(),1);
+            $lastMessages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->getMessageNotOwner($user->getId(),$stream->getId(),1);
 
             if($lastMessages==null){ //no message in this stream
                 return true;
@@ -89,6 +93,7 @@ class MessageReadSystem
         }else{
             $otherUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($discussion["id"]);
             if($otherUser == null){
+                error_log("other user not found".$discussion["id"] );
                 return false;
             }
             $messageRead = $this->doctrine->getRepository("TwakeDiscussionBundle:MessageRead")->findOneBy(Array("user"=>$user,"otherUser"=>$otherUser));

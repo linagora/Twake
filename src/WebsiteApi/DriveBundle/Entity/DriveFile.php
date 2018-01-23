@@ -145,6 +145,9 @@ class DriveFile
 	public function setName($name)
 	{
 		$this->name = $name;
+		$array = explode(".", $name);
+		$ext = array_pop($array);
+		$this->setExtension($ext);
 	}
 
 	/**
@@ -300,7 +303,11 @@ class DriveFile
 			'id' => $this->getId(),
 			'name' => $this->getName(),
 			'size' => $this->getSize(),
-			'isDirectory' => $this->getIsDirectory()
+			'added' => $this->getAdded(),
+			'modified' => $this->getLastModified(),
+			'isDirectory' => $this->getIsDirectory(),
+			"extension" => $this->getExtension(),
+			"groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : ""
 		);
 	}
 
