@@ -12,6 +12,7 @@ angular.module('TwakeAdministration')
         this.id = $stateParams.id;
         this.update = function(){
             this.drawChart();
+            this.drawDonut();
             $api.post("authentication/getInfoWorkspace", {
                 id: this.id
             }, function (res) {
@@ -27,6 +28,49 @@ angular.module('TwakeAdministration')
 
         this.getProfileView = function(userId){
             $state.go("user-sheet", {id: userId})
+        }
+        this.drawDonut = function () {
+            $api.post("authentication/sizeByExtensions", {
+                twakeWorkspace: this.id,
+            }, function (res) {
+                console.log(res.data);
+                var labels = [];
+                var datas = [];
+                for (var i = 0; i < res.data.length; i++) {
+                    labels.push(res.data[i].extension);
+                    datas.push(res.data[i].sizes);
+                }
+                var ctx = document.getElementById("myDonut");
+                var myDoughnutChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: data = {
+                        datasets: [{
+                            data: datas
+                        }],
+
+                        // These labels appear in the legend and in the tooltips when hovering different arcs
+                        labels: labels
+                    },
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: true,
+                            position: "top",
+                            text: "Pie Chart",
+                            fontSize: 18,
+                            fontColor: "#111"
+                        },
+                        legend: {
+                            display: true,
+                            position: "bottom",
+                            labels: {
+                                fontColor: "#333",
+                                fontSize: 16
+                            }
+                        }
+                    }
+                });
+            });
         }
         this.drawChart = function () {
             var publicMsg;
@@ -47,8 +91,6 @@ angular.module('TwakeAdministration')
                 enddate: new Date().toISOString().substring(0, 10)
             }, function (res2) {
                 privateMsg = res2.data;
-                console.log(privateMsg);
-                console.log(publicMsg);
                 if(publicMsg.length == privateMsg.length) {
                     var publicData = [];
                     var privateData = [];
@@ -60,9 +102,6 @@ angular.module('TwakeAdministration')
                         labels.push(privateMsg[i].date.date);
                         privateData.push(privateMsg[i].privateMsgCount);
                     }
-                    console.log(labels);
-                    console.log(privateData);
-                    console.log(publicData);
                     var ctx = document.getElementById("myChart");
                     var myChart = new Chart(ctx, {
                         type: 'bar',
