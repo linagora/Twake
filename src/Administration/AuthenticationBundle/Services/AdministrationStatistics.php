@@ -51,12 +51,24 @@ class AdministrationStatistics implements AdministrationStatisticsInterface
         return $listExtension;
     }
 
-    public function sizeByExtension($idWorkspace){
+    public function sizeByExtension($idWorkspace)
+    {
         $repository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
         $listExtension = $repository->sumSizeByExt($idWorkspace);
-        if($listExtension == null){
+        if ($listExtension == null) {
             return null;
         }
         return $listExtension;
+    }
+
+    public function numberOfExtensionsByWorkspace($workspace)
+    {
+        $repository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $listeExtension  = $repository->countEachExtensionByWorkspace($workspace);
+        if($listeExtension == null)
+        {
+            return null;
+        }
+        return $listeExtension;
     }
 }
