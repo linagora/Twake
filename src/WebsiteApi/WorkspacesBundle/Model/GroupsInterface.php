@@ -16,30 +16,18 @@ interface GroupsInterface
 {
 
 	// @create creates a new group
-	public function create($name, $uniquename, $plan);
+	public function create($userId, $name, $uniquename, $planId);
 
 	// @changeData set group data
-	public function changeData($groupId, $userId, $name, $thumbnailFile);
+	public function changeData($groupId, $name, $thumbnailFile, $currentUser = null);
 
 	// @changePlan set a plan id for a group
-	public function changePlan($groupId, $userId, $planId);
-
-	// @addManager add a new manager on this group
-	public function addManager($groupId, $userId, $addedUserId);
-
-	// @removeManager remove a manager from this group
-	public function removeManager($groupId, $userId, $removedUserId);
+	public function changePlan($groupId, $planId, $currentUser = null);
 
 	// @removeUserFromGroup remove an user from all workspaces of this group
-	public function removeUserFromGroup($groupId, $userId, $removedUserId);
+	public function removeUserFromGroup($groupId, $userId, $currentUser = null);
 
-	// @addWorkspace creates a new workspace in a group
-	public function addWorkspace($groupId, $userId, $name);
-
-	// @removeWorkspace removes a workspace from a group
-	public function removeWorkspace($groupId, $userId, $workspaceId);
-
-	// @isInGroup returns true if user is in group
+	// @isInGroup returns true if user is in a workspace of this group
 	public function isInGroup($groupId, $userId);
 
 	// @getWorkspaces returns all workspaces for this group

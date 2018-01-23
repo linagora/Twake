@@ -1,57 +1,30 @@
 <?php
 
 namespace WebsiteApi\WorkspacesBundle\Services;
+
 use WebsiteApi\WorkspacesBundle\Model\GroupsInterface;
 
-/**
- * This services manage groups which are companies and contain workspaces.
- * A group is defined by
- * - an unique name,  a display name and a logo
- * - a pricing plan
- * - some workspaces
- * - managers users
- */
 class Groups implements GroupsInterface
 {
 
-	public function create($name, $uniquename, $plan)
+	public function create($userId, $name, $uniquename, $planId)
 	{
 		// TODO: Implement create() method.
 	}
 
-	public function changeData($groupId, $userId, $name, $thumbnailFile)
+	public function changeData($groupId, $name, $thumbnailFile, $currentUser = null)
 	{
 		// TODO: Implement changeData() method.
 	}
 
-	public function changePlan($groupId, $userId, $planId)
+	public function changePlan($groupId, $planId, $currentUser = null)
 	{
 		// TODO: Implement changePlan() method.
 	}
 
-	public function addManager($groupId, $userId, $addedUserId)
-	{
-		// TODO: Implement addManager() method.
-	}
-
-	public function removeManager($groupId, $userId, $removedUserId)
-	{
-		// TODO: Implement removeManager() method.
-	}
-
-	public function removeUserFromGroup($groupId, $userId, $removedUserId)
+	public function removeUserFromGroup($groupId, $userId, $currentUser = null)
 	{
 		// TODO: Implement removeUserFromGroup() method.
-	}
-
-	public function addWorkspace($groupId, $userId, $name)
-	{
-		// TODO: Implement addWorkspace() method.
-	}
-
-	public function removeWorkspace($groupId, $userId, $workspaceId)
-	{
-		// TODO: Implement removeWorkspace() method.
 	}
 
 	public function isInGroup($groupId, $userId)
@@ -68,5 +41,4 @@ class Groups implements GroupsInterface
 	{
 		// TODO: Implement getUsers() method.
 	}
-
 }
