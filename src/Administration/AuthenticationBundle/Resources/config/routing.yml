@@ -94,11 +94,13 @@ administration_stats_numberOfExtensions:
     path: /numberOfExtensions
     defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfExtensions}
 
+administration_stats_sizeByExtensions:
+    path: /sizeByExtensions
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:sizeByExtensions}
+
 administration_stats_numberOfExtensionsByWorkspace:
     path: /numberOfExtensionsByWorkspace
     defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfExtensionsByWorkspace}
-
-
 
 administration_stats_countDailyMessage:
     path: /countDailyMessage

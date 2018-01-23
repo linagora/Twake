@@ -51,6 +51,16 @@ class AdministrationStatistics implements AdministrationStatisticsInterface
         return $listExtension;
     }
 
+    public function sizeByExtension($idWorkspace)
+    {
+        $repository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $listExtension = $repository->sumSizeByExt($idWorkspace);
+        if ($listExtension == null) {
+            return null;
+        }
+        return $listExtension;
+    }
+
     public function numberOfExtensionsByWorkspace($workspace)
     {
         $repository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");

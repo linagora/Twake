@@ -157,6 +157,26 @@ class StatisticsController extends Controller
         return new JsonResponse($data);
     }
 
+    public function sizeByExtensionsAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null) {
+            $sizeByExtenstion = $this->get('admin.TwakeStatistics')->sizeByExtension($request->request->get("twakeWorkspace", "1"));
+            if ($sizeByExtenstion != null) {
+                $data["data"] = $sizeByExtenstion;
+            } else {
+                $data["errors"][] = "not found";
+            }
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+        return new JsonResponse($data);
+    }
 
     public function numberOfExtensionsByWorkspaceAction(Request $request)
     {
@@ -164,27 +184,23 @@ class StatisticsController extends Controller
             "data" => Array(),
             "errors" => Array()
         );
-
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
-            $workspace = $request->request->get("workspace","");
+            $workspace = $request->request->get("twakeWorkspace", "");
             $listNbExtension = $this->get('admin.TwakeStatistics')->numberOfExtensionsByWorkspace($workspace);
-            if($listNbExtension != null)
-            {
-                $data["data"]->$listNbExtension;
+            if ($listNbExtension != null) {
+                $data["data"] = $listNbExtension;
             }
             else
             {
                 $data["errors"][] = "not found";
             }
-
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
-
         return new JsonResponse($data);
     }
 

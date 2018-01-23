@@ -12,6 +12,7 @@ angular.module('TwakeAdministration')
         this.id = $stateParams.id;
         this.update = function(){
             this.drawChart();
+            this.drawDonut();
             $api.post("authentication/getInfoWorkspace", {
                 id: this.id
             }, function (res) {
@@ -28,6 +29,65 @@ angular.module('TwakeAdministration')
         this.getProfileView = function(userId){
             $state.go("user-sheet", {id: userId})
         }
+        this.drawDonut = function () {
+            $api.post("authentication/numberOfExtensionsByWorkspace", {
+                twakeWorkspace: this.id,
+            }, function (res) {
+                console.log(res.data);
+                var labels = [];
+                var datas = [];
+                for (var i = 0; i < res.data.length; i++) {
+                    labels.push(res.data[i].extension);
+                    datas.push(res.data[i].nb);
+                }
+                var ctx = document.getElementById("myDonut");
+                var myDoughnutChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: data = {
+                        datasets: [{
+                            data: datas,
+                            backgroundColor: poolColors(datas.length)
+                        }],
+
+                        // These labels appear in the legend and in the tooltips when hovering different arcs
+                        labels: labels
+                    },
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: false,
+                            position: "top",
+                            text: "Pie Chart",
+                            fontSize: 18,
+                            fontColor: "#111"
+                        },
+                        legend: {
+                            display: true,
+                            position: "bottom",
+                            labels: {
+                                fontColor: "#333",
+                                fontSize: 16
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        var poolColors = function (a) {
+            var pool = [];
+            for(i=0;i<a;i++){
+                pool.push(dynamicColors());
+            }
+            return pool;
+        }
+
+        var dynamicColors = function() {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+            return "rgb(" + r + "," + g + "," + b + ")";
+        }
+
         this.drawChart = function () {
             var publicMsg;
             var privateMsg;
@@ -47,8 +107,6 @@ angular.module('TwakeAdministration')
                 enddate: new Date().toISOString().substring(0, 10)
             }, function (res2) {
                 privateMsg = res2.data;
-                console.log(privateMsg);
-                console.log(publicMsg);
                 if(publicMsg.length == privateMsg.length) {
                     var publicData = [];
                     var privateData = [];
@@ -57,12 +115,9 @@ angular.module('TwakeAdministration')
                         publicData.push(publicMsg[i].publicMsgCount);
 
                     for(var i = 0;i<privateMsg.length;i++) {
-                        labels.push(privateMsg[i].date.date);
+                        labels.push(privateMsg[i].date.date.substring(0, 10));
                         privateData.push(privateMsg[i].privateMsgCount);
                     }
-                    console.log(labels);
-                    console.log(privateData);
-                    console.log(publicData);
                     var ctx = document.getElementById("myChart");
                     var myChart = new Chart(ctx, {
                         type: 'bar',
@@ -72,19 +127,13 @@ angular.module('TwakeAdministration')
                                 label: 'Number of public message',
                                 data: publicData,
                                 backgroundColor:
-                                    'rgba(255, 99, 132, 0.2)',
-                                borderColor:
-                                    'rgba(255,99,132,1)',
-                                borderWidth: 1
+                                    'rgba(255, 99, 132, 0.5)'
                             },
                                 {
                                     label: 'Number of private message',
                                     data: privateData,
                                     backgroundColor:
-                                        'rgba(0, 255, 0, 0.2)',
-                                    borderColor:
-                                        'rgba(0,255,0,1)',
-                                    borderWidth: 1
+                                        'rgba(0, 255, 0, 0.5)'
                                 }
                             ]
                         },
