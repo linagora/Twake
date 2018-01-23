@@ -30,7 +30,7 @@ angular.module('TwakeAdministration')
             $state.go("user-sheet", {id: userId})
         }
         this.drawDonut = function () {
-            $api.post("authentication/sizeByExtensions", {
+            $api.post("authentication/numberOfExtensionsByWorkspace", {
                 twakeWorkspace: this.id,
             }, function (res) {
                 console.log(res.data);
@@ -38,14 +38,15 @@ angular.module('TwakeAdministration')
                 var datas = [];
                 for (var i = 0; i < res.data.length; i++) {
                     labels.push(res.data[i].extension);
-                    datas.push(res.data[i].sizes);
+                    datas.push(res.data[i].nb);
                 }
                 var ctx = document.getElementById("myDonut");
                 var myDoughnutChart = new Chart(ctx, {
                     type: 'doughnut',
                     data: data = {
                         datasets: [{
-                            data: datas
+                            data: datas,
+                            backgroundColor: poolColors(datas.length)
                         }],
 
                         // These labels appear in the legend and in the tooltips when hovering different arcs
@@ -54,7 +55,7 @@ angular.module('TwakeAdministration')
                     options: {
                         responsive: true,
                         title: {
-                            display: true,
+                            display: false,
                             position: "top",
                             text: "Pie Chart",
                             fontSize: 18,
@@ -72,6 +73,21 @@ angular.module('TwakeAdministration')
                 });
             });
         }
+        var poolColors = function (a) {
+            var pool = [];
+            for(i=0;i<a;i++){
+                pool.push(dynamicColors());
+            }
+            return pool;
+        }
+
+        var dynamicColors = function() {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+            return "rgb(" + r + "," + g + "," + b + ")";
+        }
+
         this.drawChart = function () {
             var publicMsg;
             var privateMsg;
@@ -99,7 +115,7 @@ angular.module('TwakeAdministration')
                         publicData.push(publicMsg[i].publicMsgCount);
 
                     for(var i = 0;i<privateMsg.length;i++) {
-                        labels.push(privateMsg[i].date.date);
+                        labels.push(privateMsg[i].date.date.substring(0, 10));
                         privateData.push(privateMsg[i].privateMsgCount);
                     }
                     var ctx = document.getElementById("myChart");
@@ -111,19 +127,13 @@ angular.module('TwakeAdministration')
                                 label: 'Number of public message',
                                 data: publicData,
                                 backgroundColor:
-                                    'rgba(255, 99, 132, 0.2)',
-                                borderColor:
-                                    'rgba(255,99,132,1)',
-                                borderWidth: 1
+                                    'rgba(255, 99, 132, 0.5)'
                             },
                                 {
                                     label: 'Number of private message',
                                     data: privateData,
                                     backgroundColor:
-                                        'rgba(0, 255, 0, 0.2)',
-                                    borderColor:
-                                        'rgba(0,255,0,1)',
-                                    borderWidth: 1
+                                        'rgba(0, 255, 0, 0.5)'
                                 }
                             ]
                         },

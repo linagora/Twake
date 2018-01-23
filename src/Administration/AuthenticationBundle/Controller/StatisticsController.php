@@ -184,10 +184,10 @@ class StatisticsController extends Controller
             "data" => Array(),
             "errors" => Array()
         );
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
-            $workspace = $request->request->get("workspace", "");
+            $workspace = $request->request->get("twakeWorkspace", "");
             $listNbExtension = $this->get('admin.TwakeStatistics')->numberOfExtensionsByWorkspace($workspace);
             if ($listNbExtension != null) {
                 $data["data"] = $listNbExtension;
@@ -197,7 +197,7 @@ class StatisticsController extends Controller
                 $data["errors"][] = "not found";
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }

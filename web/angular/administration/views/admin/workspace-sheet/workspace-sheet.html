@@ -14,9 +14,19 @@
         </tr>
     </table>
     <button class="btn btn-primary" ng-click="workspace.goBack()">Back to the list</button>
-    <h1>Message Activity</h1>
+
+
+    <div class="row">
+        <div class="col-md-6 col-sm-6">
+            <h1>Message Activity</h1>
     <canvas id="myChart" width="400" height="100"></canvas>
+        </div>
+
+        <div class="col-md-6 col-sm-6">
+            <h1>Files count by extension</h1>
     <canvas id="myDonut" width="400" height="100"></canvas>
+        </div>
+    </div>
 
     <h1>Users in {{workspace.workspaceInfo.name}}</h1>
     <table class="table table-bordered table-hover">
