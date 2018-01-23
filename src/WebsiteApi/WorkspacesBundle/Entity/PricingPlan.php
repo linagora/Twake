@@ -40,7 +40,7 @@ class PricingPlan
 	protected $year_price = 0;
 
 
-	public function __constructor($name) {
+	public function __construct($name) {
 		$this->name = $name;
 	}
 

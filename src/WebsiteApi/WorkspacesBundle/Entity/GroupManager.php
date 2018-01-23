@@ -44,7 +44,7 @@ class GroupManager
 	 */
 	private $date_added;
 
-	public function __constructor($group, $user) {
+	public function __construct($group, $user) {
 		$this->group = $group;
 		$this->user = $user;
 		$this->level = 0;

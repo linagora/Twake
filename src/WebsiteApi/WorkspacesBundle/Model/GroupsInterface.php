@@ -19,13 +19,13 @@ interface GroupsInterface
 	public function create($userId, $name, $uniquename, $planId);
 
 	// @changeData set group data
-	public function changeData($groupId, $name, $thumbnailFile, $currentUser = null);
+	public function changeData($groupId, $name, $thumbnailFile, $currentUserId = null);
 
 	// @changePlan set a plan id for a group
-	public function changePlan($groupId, $planId, $currentUser = null);
+	public function changePlan($groupId, $planId, $currentUserId = null);
 
 	// @removeUserFromGroup remove an user from all workspaces of this group
-	public function removeUserFromGroup($groupId, $userId, $currentUser = null);
+	public function removeUserFromGroup($groupId, $userId, $currentUserId = null);
 
 	// @isInGroup returns true if user is in a workspace of this group
 	public function isInGroup($groupId, $userId);

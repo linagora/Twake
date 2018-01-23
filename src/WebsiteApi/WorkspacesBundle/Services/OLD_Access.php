@@ -66,14 +66,14 @@ class OLDAccess
 		return $possibleRights;
 	}
 
-	public function hasRight($currentuser, $groupe, $rightAsked)
+	public function hasRight($currentUserId, $groupe, $rightAsked)
 	{
 
 
 		$repositoryLink = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser");
 		$repositoryLevel = $this->doctrine->getRepository("TwakeWorkspacesBundle:Level");
 		$link = $repositoryLink->findOneBy(Array(
-			"User" => $currentuser,
+			"User" => $currentUserId,
 			"Workspace" => $groupe
 		));
 		if ($link == null) {
@@ -143,7 +143,7 @@ class OLDAccess
 		}
 	}
 
-	public function getRight($currentUser, $groupe)
+	public function getRight($currentUserId, $groupe)
 	{
 		$res = Array('errors' => Array(), 'data' => Array(
 			'idLevel' => -1,
@@ -152,7 +152,7 @@ class OLDAccess
 		));
 		$repositoryLink = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser");
 		$link = $repositoryLink->findOneBy(Array(
-			"User" => $currentUser,
+			"User" => $currentUserId,
 			"Workspace" => $groupe
 		));
 		if ($link == null) {

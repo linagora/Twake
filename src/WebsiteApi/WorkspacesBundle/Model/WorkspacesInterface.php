@@ -9,15 +9,15 @@ interface WorkspacesInterface
 {
 
 	// @getPrivate return user private workspace (create workspace if not exist)
-	public function getPrivate($currentUser = null);
+	public function getPrivate($currentUserId = null);
 
 	// @create creates a new workspace in group
-	public function create($groupId, $name, $currentUser = null);
+	public function create($groupId, $name, $currentUserId = null);
 
 	// @removeWorkspace removes a workspace from a group
-	public function remove($groupId, $workspaceId, $currentUser = null);
+	public function remove($groupId, $workspaceId, $currentUserId = null);
 
 	// @changeData set workspace data
-	public function changeData($name, $thumbnailFile, $currentUser = null);
+	public function changeData($name, $thumbnailFile, $currentUserId = null);
 
 }

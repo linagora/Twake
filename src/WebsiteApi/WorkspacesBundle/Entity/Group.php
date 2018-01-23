@@ -59,7 +59,7 @@ class Group
 	 */
 	private $date_added;
 
-	public function __constructor($name) {
+	public function __construct($name) {
 		$this->name = $name;
 		$this->date_added = new \DateTime();
 	}

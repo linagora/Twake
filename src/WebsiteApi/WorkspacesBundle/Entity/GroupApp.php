@@ -40,7 +40,7 @@ class GroupApp
 	 */
 	private $date_added;
 
-	public function __constructor($group, $app) {
+	public function __construct($group, $app) {
 		$this->group = $group;
 		$this->app = $app;
 		$this->date_added = new \DateTime();

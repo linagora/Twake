@@ -43,7 +43,7 @@ class WorkspaceUser
 	 */
 	private $date_added;
 
-	public function __constructor($workspace, $user, $level) {
+	public function __construct($workspace, $user, $level) {
 		$this->workspace = $workspace;
 		$this->user = $user;
 		$this->level = $level;
