@@ -39,36 +39,33 @@ class MessageSystem
 		$this->levelManager = $levelManager;
 	}
 
-	public function sendMessage($senderType, $senderId, $recieverType, $recieverId, $content, $subjectId=null ){
+	public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content, $subjectId=null ){
 	    error_log("send message senderId:".$senderId.", recieverType:".$recieverType.", recieverId:".$recieverId);
-        if($senderType=="A" || $senderType=="U"|| $senderType=="S"){
-            $sender = null;
-            $reciever = null;
-            if($senderType == "U"){
-                $sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
+        $sender = null;
+        $reciever = null;
+        if($senderId != null){
+            $sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
+        }
+        if($isApplicationMessage) {
+            $applicationMessage = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($applicationMessage);
+        }
+
+        if($recieverType == "S"){
+            $reciever = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
+        }
+        elseif($recieverType == "U"){
+            $reciever = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
+        }
+        if( ($isApplicationMessage || $isSystemMessage|| $sender!=null) && $reciever!=null ){
+            $subject = null;
+            if($subjectId != null){
+                $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
             }
-            elseif($senderType == "A") {
-                $sender = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($senderId);
-            }
-            if($recieverType == "S"){
-                $reciever = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
-            }
-            elseif($recieverType == "U"){
-                $reciever = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
-            }
-            if( ($senderType=="S" || $sender!=null) && $reciever!=null ){
-                $subject = null;
-                if($subjectId != null){
-                    $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
-                }
-                $message = new Message($senderType,$sender,$recieverType,$reciever,new \DateTime(),$content,$this->string_cleaner->simplifyWithoutRemovingSpaces($content),$subject);
-                $this->doctrine->persist($message);
-                $this->doctrine->flush();
-                return $message;
-            }
-            else{
-                error_log("not found".$recieverId);
-            }
+            $message = new Message($sender, $recieverType, $reciever,$isApplicationMessage ,$applicationMessage,$isSystemMessage, new \DateTime() ,$content,$this->string_cleaner->simplifyWithoutRemovingSpaces($content),$subject);
+            $this->doctrine->persist($message);
+            $this->doctrine->flush();
+            return $message;
+
         }
         else{
             error_log("not send");
