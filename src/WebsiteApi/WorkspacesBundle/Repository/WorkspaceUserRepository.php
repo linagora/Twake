@@ -25,4 +25,29 @@ class WorkspaceUserRepository extends \Doctrine\ORM\EntityRepository
 
 		return $qb->getQuery()->getResult();
 	}
+
+	public function deleteUserFromGroup($workspaces_ids, $user)
+	{
+		$qb = $this->createQueryBuilder("l");
+
+		$qb = $qb->delete('l')
+			->andWhere('l.user = :user')
+			->andWhere('l.workspace_id IN (:ids)')
+			->setParameter('user', $user)
+			->setParameter('ids', $workspaces_ids);
+
+		return $qb->getQuery()->getResult();
+	}
+
+	public function getUserFromGroup($workspaces_ids)
+	{
+		$qb = $this->createQueryBuilder("l");
+
+		$qb = $qb->select('l')
+			->andWhere('l.workspace_id IN (:ids)')
+			->setParameter('ids', $workspaces_ids);
+
+		return $qb->getQuery()->getResult();
+	}
+
 }

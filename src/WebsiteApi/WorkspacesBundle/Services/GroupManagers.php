@@ -32,7 +32,8 @@ class GroupManagers implements GroupManagersInterface
 					"MANAGE_WORKSPACES",
 					"MANAGE_MANAGERS",
 					"MANAGE_PRICINGS",
-					"MANAGE_APPS")
+					"MANAGE_APPS",
+					"MANAGE_DATA")
 	);
 
 	public function __construct($doctrine)
@@ -227,24 +228,19 @@ class GroupManagers implements GroupManagersInterface
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupManager");
 
-		if($userId == null) {
+		$user = $userRepository->find($userId);
+		$groupsLinks = $groupManagerRepository->findBy(Array("user" => $user));
 
-			$user = $userRepository->find($userId);
-			$groupsLinks = $groupManagerRepository->findBy(Array("user" => $user));
-
-			$groups = Array();
-			foreach ($groupsLinks as $groupLink){
-				$groups[] = Array(
-					"grup" => $groupLink->getGroup(),
-					"level" => $groupLink->getLevel()
-				);
-			}
-
-			return $groups;
-
+		$groups = Array();
+		foreach ($groupsLinks as $groupLink){
+			$groups[] = Array(
+				"group" => $groupLink->getGroup(),
+				"level" => $groupLink->getLevel()
+			);
 		}
 
-		return false;
+		return $groups;
+
 	}
 
 }

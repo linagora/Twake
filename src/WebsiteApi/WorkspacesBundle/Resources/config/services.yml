@@ -6,7 +6,7 @@ services:
 
     app.groups:
         class: WebsiteApi\UsersBundle\Services\Groups
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.group_managers"]
 
     app.pricing_plan:
         class: WebsiteApi\UsersBundle\Services\PricingPlan

@@ -27,13 +27,10 @@ interface GroupsInterface
 	// @removeUserFromGroup remove an user from all workspaces of this group
 	public function removeUserFromGroup($groupId, $userId, $currentUserId = null);
 
-	// @isInGroup returns true if user is in a workspace of this group
-	public function isInGroup($groupId, $userId);
-
 	// @getWorkspaces returns all workspaces for this group
-	public function getWorkspaces($groupId, $userId);
+	public function getWorkspaces($groupId, $currentUserId=null);
 
 	// @getUsers returns all members for this group without repetition
-	public function getUsers($groupId, $userId);
+	public function getUsers($groupId, $currentUserId=null);
 
 }
