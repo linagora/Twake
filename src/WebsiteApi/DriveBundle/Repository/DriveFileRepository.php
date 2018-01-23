@@ -51,4 +51,14 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
             ->groupBy('f.extension');
         return $req->getQuery()->getResult();
     }
+
+    public function countEachExtensionByWorkspace($group){
+        $req = $this->createQueryBuilder('f')
+            ->select('f.extension, count(f.extension)')
+            ->where('f.group = \'' . $group . '\'')
+            ->groupBy('f.extension');
+        return $req->getQuery()->getResult();
+    }
+
+
 }

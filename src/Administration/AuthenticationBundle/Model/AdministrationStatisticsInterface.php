@@ -25,4 +25,7 @@ interface AdministrationStatisticsInterface
 
     //numberOfExtensions return the number of each extension group by extension
     public function numberOfExtensions();
+
+    //numberOfExtensions return the number of each extension group by extension by workspace
+    public function numberOfExtensionsByWorkspace($workspace);
 }

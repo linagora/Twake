@@ -75,13 +75,13 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
         $twakeUser =  $repository->findOneBy(Array("id"=>$idWorkSpace))->getMembers();
         $repository = $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserDailyStats");
-        $sum = 0;
-        $tabRes = Array();
+        //$res = null;
+        $users = Array();
         foreach ($twakeUser as $user){
-            $tabRes[$sum]= $repository->getStatsPrivateMessageByWorkspace($user->getUser()->getId(),$startdate,$enddate);
-            $sum++;
+            $users[] = $user->getUser()->getId();
         }
-        return $tabRes;
+        $res= $repository->getStatsPrivateMessageByWorkspace($users,$startdate,$enddate);
+        return $res;
 
     }
 

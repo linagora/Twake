@@ -157,4 +157,35 @@ class StatisticsController extends Controller
         return new JsonResponse($data);
     }
 
+
+    public function numberOfExtensionsByWorkspaceAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $workspace = $request->request->get("workspace","");
+            $listNbExtension = $this->get('admin.TwakeStatistics')->numberOfExtensionsByWorkspace($workspace);
+            if($listNbExtension != null)
+            {
+                $data["data"]->$listNbExtension;
+            }
+            else
+            {
+                $data["errors"][] = "not found";
+            }
+
+        }
+        //else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+        return new JsonResponse($data);
+    }
+
 }
