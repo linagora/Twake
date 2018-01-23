@@ -15,7 +15,7 @@ angular.module('TwakeAdministration')
             $api.post("authentication/getInfoWorkspace", {
                 id: this.id
             }, function (res) {
-                console.log(res);
+                //console.log(res);
                 that.workspaceInfo = res.data.workspace;
                 that.users = res.data.users;
                 $scope.$apply();
@@ -38,8 +38,7 @@ angular.module('TwakeAdministration')
                 startdate: startdate.toISOString().substring(0, 10),
                 enddate: new Date().toISOString().substring(0, 10)
             }, function (res) {
-                publicMsg = res;
-                console.log(publicMsg);
+                    publicMsg = res.data;
             });
 
             $api.post("authentication/numberOfMessagePrivateByUserByWorkspace", {
@@ -47,8 +46,56 @@ angular.module('TwakeAdministration')
                 startdate: startdate.toISOString().substring(0, 10),
                 enddate: new Date().toISOString().substring(0, 10)
             }, function (res2) {
-                privateMsg = res2;
+                privateMsg = res2.data;
                 console.log(privateMsg);
+                console.log(publicMsg);
+                if(publicMsg.length == privateMsg.length) {
+                    var publicData = [];
+                    var privateData = [];
+                    var labels = [];
+                    for(var i = 0;i<publicMsg.length;i++)
+                        publicData.push(publicMsg[i].publicMsgCount);
+
+                    for(var i = 0;i<privateMsg.length;i++) {
+                        labels.push(privateMsg[i].date.date);
+                        privateData.push(privateMsg[i].privateMsgCount);
+                    }
+                    console.log(labels);
+                    console.log(privateData);
+                    console.log(publicData);
+                    var ctx = document.getElementById("myChart");
+                    var myChart = new Chart(ctx, {
+                        type: 'bar',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: 'Number of public message',
+                                data: publicData,
+                                backgroundColor:
+                                    'rgba(255, 99, 132, 0.2)',
+                                borderColor:
+                                    'rgba(255,99,132,1)',
+                                borderWidth: 1
+                            },
+                                {
+                                    label: 'Number of private message',
+                                    data: privateData,
+                                    backgroundColor:
+                                        'rgba(0, 255, 0, 0.2)',
+                                    borderColor:
+                                        'rgba(0,255,0,1)',
+                                    borderWidth: 1
+                                }
+                            ]
+                        },
+                        options: {
+                            scales: {
+                                xAxes: [{stacked: true}],
+                                yAxes: [{stacked: true}]
+                            }
+                        }
+                    });
+                }
             });
         }
         this.update();

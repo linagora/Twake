@@ -34,16 +34,17 @@ class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
         return $req->getQuery()->getSingleScalarResult();
     }
 
-    public function getStatsPrivateMessageByWorkspace($idUser,$startdate,$enddate){
+    public function getStatsPrivateMessageByWorkspace($users,$startdate,$enddate){
 
         $req = $this->createQueryBuilder('U')
-            ->select('U.date, U.privateMsgCount')
-            ->where('U.user = ' . $idUser)
+            ->select('U.date, SUM(U.privateMsgCount) as privateMsgCount')
+            ->where('U.user IN (:users)')
             ->andWhere('U.date >= :start')
             ->andWhere('U.date <= :end')
             ->setParameter("start",$startdate)
             ->setParameter("end",$enddate)
-            ->orderBy('U.date', 'ASC');
+            ->setParameter("users",$users)
+            ->groupBy('U.date');
 
         return $req->getQuery()->getResult();
     }
