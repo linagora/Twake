@@ -172,7 +172,7 @@ class StatisticsController extends Controller
             $listNbExtension = $this->get('admin.TwakeStatistics')->numberOfExtensionsByWorkspace($workspace);
             if($listNbExtension != null)
             {
-                $data["data"]->$listNbExtension;
+                $data["data"]["extension"] = $listNbExtension;
             }
             else
             {
