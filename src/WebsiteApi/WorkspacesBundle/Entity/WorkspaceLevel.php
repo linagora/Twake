@@ -40,6 +40,11 @@ class WorkspaceLevel
 	 */
 	protected $isDefault;
 
+	/**
+	 * @ORM\Column(name="isAdmin", type="boolean", length=1)
+	 */
+	protected $isAdmin;
+
 
 	function __construct()
 	{
@@ -88,7 +93,7 @@ class WorkspaceLevel
 	 */
 	public function getRights()
 	{
-		return $this->rights;
+		return json_decode($this->rights, true);
 	}
 
 	/**
@@ -96,7 +101,7 @@ class WorkspaceLevel
 	 */
 	public function setRights($rights)
 	{
-		$this->rights = $rights;
+		$this->rights = json_encode($rights);
 	}
 
 	/**
@@ -115,12 +120,31 @@ class WorkspaceLevel
 		$this->isDefault = $isDefault;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getisAdmin()
+	{
+		return $this->isAdmin;
+	}
+
+	/**
+	 * @param mixed $isAdmin
+	 */
+	public function setIsAdmin($isAdmin)
+	{
+		$this->isAdmin = $isAdmin;
+	}
+
 
 	public function getAsArray()
 	{
 		return Array(
 			"id" => $this->getId(),
-			"name" => $this->getName()
+			"name" => $this->getName(),
+			"admin" => $this->getisAdmin(),
+			"default" => $this->getisDefault(),
+			"rights" => $this->getRights()
 		);
 	}
 }

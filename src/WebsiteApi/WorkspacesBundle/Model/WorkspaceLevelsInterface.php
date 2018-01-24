@@ -10,8 +10,14 @@ namespace WebsiteApi\WorkspacesBundle\Model;
 interface WorkspaceLevelsInterface
 {
 
+	// @can return a boolean
+	public function can($workspaceId, $userId, $action);
+
 	// @updateLevel change a level in workspace
 	public function updateLevel($workspaceId, $levelId, $label, $rights, $currentUserId=null);
+
+	// @setDefaultLevel change a level to default level
+	public function setDefaultLevel($workspaceId, $levelId, $currentUserId = null);
 
 	// @addLevel add level in workspace
 	public function addLevel($workspaceId, $label, $rights, $currentUserId=null);
