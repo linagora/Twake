@@ -3,7 +3,6 @@
 
 namespace WebsiteApi\DiscussionBundle\Services;
 
-use MessagesSystemInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
@@ -12,11 +11,12 @@ use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Services\Notifications;
 use WebsiteApi\UsersBundle\Entity\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use WebsiteApi\DiscussionBundle\Model\MessagesSystemInterface;
 
 /**
  * Manage contacts
  */
-class MessageSystem
+class MessageSystem implements MessagesSystemInterface
 {
 
 	var $string_cleaner;
@@ -84,7 +84,7 @@ class MessageSystem
         return false;
     }
 
-   public function getMessages($user,$recieverType,$recieverId,$offset,$subjectId){
+    public function getMessages($user,$recieverType,$recieverId,$offset,$subjectId){
 	    error_log("get message, reciever type".$recieverType.", revcieverId:".$recieverId);
 	    if($recieverType == "S"){
 	        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
@@ -122,7 +122,7 @@ class MessageSystem
         }
    }
 
-    function pinMessage($id,$pinned){
+    public function pinMessage($id,$pinned){
 
 	    if($id == null){
 	        return false;
@@ -142,12 +142,12 @@ class MessageSystem
 
 
 
-    function isAllowed($sender,$recieverType,$recieverId){
+    public function isAllowed($sender,$recieverType,$recieverId){
         return true;
     }
 
 
-    function searchMessage($type,$idDiscussion,$content,$from,$dateStart,$dateEnd){
+    public function searchMessage($type,$idDiscussion,$content,$from,$dateStart,$dateEnd){
     	if($idDiscussion == null || $type == null){
     		return false;
     	}

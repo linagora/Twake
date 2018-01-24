@@ -9,11 +9,11 @@ use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\UsersBundle\Services\Notifications;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
-
+use WebsiteApi\CallsBundle\Model\CallSystemInterface;
 /**
  * Manage calls
  */
-class Calls
+class Calls implements CallSystemInterface
 {
 
 	var $string_cleaner;
