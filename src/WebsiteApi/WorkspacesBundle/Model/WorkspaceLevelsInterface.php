@@ -16,6 +16,9 @@ interface WorkspaceLevelsInterface
 	// @updateLevel change a level in workspace
 	public function updateLevel($workspaceId, $levelId, $label, $rights, $currentUserId=null);
 
+	// @getDefaultLevel return default level
+	public function getDefaultLevel($workspaceId);
+
 	// @setDefaultLevel change a level to default level
 	public function setDefaultLevel($workspaceId, $levelId, $currentUserId = null);
 

@@ -120,6 +120,17 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 		return false;
 	}
 
+	public function getDefaultLevel($workspaceId)
+	{
+		$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+
+		$workspace = $workspaceRepository->find($workspaceId);
+
+		return $levelRepository->findOneBy(Array("workspace"=>$workspace, "isDefault"=>true));
+
+	}
+
 	public function setDefaultLevel($workspaceId, $levelId, $currentUserId = null)
 	{
 		if($currentUserId == null

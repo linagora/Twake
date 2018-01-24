@@ -18,8 +18,8 @@ services:
 
     app.workspace_members:
         class: WebsiteApi\UsersBundle\Services\WorkspaceMembers
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels"]
 
     app.workspaces:
         class: WebsiteApi\UsersBundle\Services\Workspaces
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members"]
