@@ -54,7 +54,7 @@ interface MessagesSystemInterface
      * @param $recieverId
      * @return mixed
      */
-    public function isAllowed($sender,$recieverType,$recieverId);
+    public function isAllowed($user,$discussionKey);
 
     /**
      * search message with param
@@ -66,7 +66,7 @@ interface MessagesSystemInterface
      * @param $dateEnd
      * @return mixed
      */
-    public function searchMessage($type,$idDiscussion,$content,$from,$dateStart,$dateEnd);
+    public function searchMessage($type,$idDiscussion,$content,$from,$dateStart,$dateEnd,$application);
 
 
     /**

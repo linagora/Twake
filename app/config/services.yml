@@ -61,7 +61,7 @@ services:
         class: WebsiteApi\WorkspacesBundle\Services\UpdateGroup
         arguments: ['@gos_web_socket.zmq.pusher']
 
-    app.calls:
+    app.callSystem:
             class: WebsiteApi\CallsBundle\Services\Calls
             arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@app.messages", "@gos_web_socket.zmq.pusher"]
 
@@ -112,7 +112,7 @@ services:
 
     gos_web_socket_server.client_event.listener:
       class: WebsiteApi\UsersBundle\Services\Connections
-      arguments: ["@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager","@gos_web_socket.zmq.pusher", "@app.calls"]
+      arguments: ["@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager","@gos_web_socket.zmq.pusher", "@app.callSystem"]
       tags:
           - { name: kernel.event_listener, event: 'gos_web_socket.client_connected', method: onClientConnect }
           - { name: kernel.event_listener, event: 'gos_web_socket.client_disconnected', method: onClientDisconnect }

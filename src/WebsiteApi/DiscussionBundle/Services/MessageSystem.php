@@ -142,12 +142,36 @@ class MessageSystem implements MessagesSystemInterface
 
 
 
-    public function isAllowed($sender,$recieverType,$recieverId){
-        return true;
+    public function isAllowed($user,$discussionKey){
+        $ids = explode("_", $discussionKey);
+        if(count($ids)==1){
+            $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussionKey);
+            $workspace = $stream->getWorkspace();
+            if($workspace != null){
+                $linkWs = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("Workspace"=>$workspace,"User"=>$user));
+                if($linkWs!= null){
+                    if($stream != null){
+                        if(!$stream->getPrivacy()){
+                            return true;
+                        }
+                        $link = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream));
+                        if($link != null){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        if(count($ids)==2){
+            if($ids[0]==$user->getId() || $ids[1]==$user->getId()){
+                return true;
+            }
+        }
+        return false;
     }
 
 
-    public function searchMessage($type,$idDiscussion,$content,$from,$dateStart,$dateEnd){
+    public function searchMessage($type,$idDiscussion,$content,$from,$dateStart,$dateEnd,$application){
     	if($idDiscussion == null || $type == null){
     		return false;
     	}
@@ -161,7 +185,8 @@ class MessageSystem implements MessagesSystemInterface
 	    		"content" => $content,
 	    		"from" => $from,
 	    		"dateStart" => $dateStart,
-	    		"dateEnd" => $dateEnd
+	    		"dateEnd" => $dateEnd,
+                "application" => $application
 	    	));
 	    	return $messages;
     	}
@@ -222,6 +247,16 @@ class MessageSystem implements MessagesSystemInterface
         return $retour;
     }
 
+    public function searchDriveMessage($discussionKey,$user){
+        $discussionInfos = $this->convertKey($discussionKey, $user);
+        $driveApp = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"drive"));
+        $messages = null;
+        if($driveApp != null){
+            $messages = $this->searchMessage($discussionInfos["type"],$discussionInfos["id"],"",null,null,null,$driveApp);
+        }
+        return $messages;
+    }
+
 
     public function notify($discussionKey,$type,$message){
         $data = Array(
@@ -230,6 +265,54 @@ class MessageSystem implements MessagesSystemInterface
         );
         $this->pusher->push($data, "discussion_topic",Array("key"=>$discussionKey));
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
