@@ -1,25 +1,25 @@
 services:
 
     app.group_managers:
-        class: WebsiteApi\UsersBundle\Services\GroupManagers
+        class: WebsiteApi\WorkspacesBundle\Services\GroupManagers
         arguments: ["@doctrine.orm.entity_manager", "@app.twake_mailer"]
 
     app.groups:
-        class: WebsiteApi\UsersBundle\Services\Groups
+        class: WebsiteApi\WorkspacesBundle\Services\Groups
         arguments: ["@doctrine.orm.entity_manager", "@app.group_managers"]
 
     app.pricing_plan:
-        class: WebsiteApi\UsersBundle\Services\PricingPlan
+        class: WebsiteApi\WorkspacesBundle\Services\PricingPlan
         arguments: ["@doctrine.orm.entity_manager"]
 
     app.workspace_levels:
-        class: WebsiteApi\UsersBundle\Services\WorkspaceLevels
+        class: WebsiteApi\WorkspacesBundle\Services\WorkspaceLevels
         arguments: ["@doctrine.orm.entity_manager"]
 
     app.workspace_members:
-        class: WebsiteApi\UsersBundle\Services\WorkspaceMembers
+        class: WebsiteApi\WorkspacesBundle\Services\WorkspaceMembers
         arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.twake_mailer"]
 
     app.workspaces:
-        class: WebsiteApi\UsersBundle\Services\Workspaces
+        class: WebsiteApi\WorkspacesBundle\Services\Workspaces
         arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers"]
