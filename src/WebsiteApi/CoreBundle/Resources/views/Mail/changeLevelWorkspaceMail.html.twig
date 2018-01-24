@@ -1,0 +1,15 @@
+{% extends "TwakeCoreBundle:Mail:all.html.twig" %}
+
+{% block title %}Your status in {{ workspace }} changed{% endblock %}
+
+{% block secondtitle %}Your status in {{ workspace }} changed{% endblock %}
+
+{% block body %}
+
+    <b>Hello {{ username }},</b>
+    <br>
+    Your status in {{ workspace }} was changed to {{ level }}
+    <br>
+    </center>
+
+{% endblock %}

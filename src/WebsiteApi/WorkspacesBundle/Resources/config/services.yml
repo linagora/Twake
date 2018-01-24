@@ -2,7 +2,7 @@ services:
 
     app.group_managers:
         class: WebsiteApi\UsersBundle\Services\GroupManagers
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.twake_mailer"]
 
     app.groups:
         class: WebsiteApi\UsersBundle\Services\Groups
@@ -18,7 +18,7 @@ services:
 
     app.workspace_members:
         class: WebsiteApi\UsersBundle\Services\WorkspaceMembers
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.twake_mailer"]
 
     app.workspaces:
         class: WebsiteApi\UsersBundle\Services\Workspaces

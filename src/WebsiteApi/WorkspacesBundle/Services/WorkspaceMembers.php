@@ -42,6 +42,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$this->doctrine->persist($member);
 			$this->doctrine->flush();
 
+			if($workspace->getUser() != null) {
+				$this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "level"=>$level->getLabel()));
+			}
+
 			return true;
 		}
 
@@ -60,7 +64,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$user = $userRepository->find($userId);
 			$workspace = $workspaceRepository->find($workspaceId);
 
-			if($workspace->getUser() != null){
+			if($workspace->getUser() != null && $workspace->getUser()->getId()!=$userId){
 				return false; //Private workspace, only one user
 			}
 
@@ -75,6 +79,11 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 			$this->doctrine->persist($member);
 			$this->doctrine->flush();
+
+			if($workspace->getUser() != null) {
+				$this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername()));
+			}
+
 
 			return true;
 		}
@@ -107,6 +116,8 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 			$this->doctrine->remove($member);
 			$this->doctrine->flush();
+
+			$this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("workspace"=>$workspace->getName(), "username"=>$user->getUsername()));
 
 			return true;
 		}
