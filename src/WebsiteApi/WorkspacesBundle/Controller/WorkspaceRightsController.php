@@ -68,7 +68,7 @@ class WorkspaceRightsController extends Controller
 			}
 			else {
 
-				if (!$this->get('app.groups.access')->hasRight($user, $workspace, 'base:right:viewOther')) {
+				if (!$this->get('app.workspace_levels')->hasRight($user, $workspace, 'base:right:viewOther')) {
 					$data['errors'][] = "accessdenied";
 				}
 				else {
@@ -89,7 +89,7 @@ class WorkspaceRightsController extends Controller
                             				));
 						foreach($levels as $level){
 							if($level->getOwner()){
-								$right = $this->get('app.groups.access')->getRightsPossible($workspace);
+								$right = $this->get('app.workspace_levels')->getRightsPossible($workspace);
 							}
 							else{
 								$right = $level->getRight();
@@ -139,7 +139,7 @@ class WorkspaceRightsController extends Controller
 		}
 		else if($levelFrom->getOwner()){
 			$data['errors'][] = "notallowed";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, 'base:right:edite')) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, 'base:right:edite')) {
 			$data['errors'][] = "accessDenied";
 		}
 		else{
@@ -169,11 +169,11 @@ class WorkspaceRightsController extends Controller
 		}
 		else if ($workspace == null){
 			$data["errors"][] = "groupnotfound";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, 'base:right:viewOther')) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, 'base:right:viewOther')) {
 			$data['errors'][] = "accessDenied";
 		}
 		else{
-			$data["data"] = $this->get('app.groups.access')->getRightsPossible($workspace);
+			$data["data"] = $this->get('app.workspace_levels')->getRightsPossible($workspace);
 		}
 		return new JsonResponse($data);
 	}
@@ -195,7 +195,7 @@ class WorkspaceRightsController extends Controller
 		}
 		else if ($workspace == null){
 			$data["errors"][] = "groupnotfound";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, 'base:level:create')) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, 'base:level:create')) {
 			$data['errors'][] = "accessDenied";
 		}
 		else{
@@ -235,7 +235,7 @@ class WorkspaceRightsController extends Controller
 		}
 		else if(count($links)<=0){
 			$data["errors"][] = "usersNotFound";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, 'base:right:edite')) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, 'base:right:edite')) {
 			$data['errors'][] = "accessDenied";
 		}
 		else{
@@ -293,7 +293,7 @@ class WorkspaceRightsController extends Controller
 		}
 		else if ($workspace == null){
 			$data["errors"][] = "workspaceNotFound";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, 'base:level:delete')) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, 'base:level:delete')) {
 			$data['errors'][] = "accessDenied";
 		}
 		else{
@@ -348,7 +348,7 @@ class WorkspaceRightsController extends Controller
 		}
 		else if ($workspace == null){
 			$data["errors"][] = "workspaceNotFound";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, 'base:right:edite')) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, 'base:right:edite')) {
 			$data['errors'][] = "accessDenied";
 		}
 		else{
@@ -383,7 +383,7 @@ class WorkspaceRightsController extends Controller
 		}
 		else if ($workspace == null){
 			$data["errors"][] = "workspaceNotFound";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, 'base:right:edite')) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, 'base:right:edite')) {
 			$data['errors'][] = "accessDenied";
 		}
 		else{

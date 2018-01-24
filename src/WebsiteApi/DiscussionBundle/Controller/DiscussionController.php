@@ -226,7 +226,7 @@ class DiscussionController extends Controller
 		}
 		elseif($channel==null){
 			$data['errors'][] = "channelnotfound";
-		} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:create")) {
+		} elseif (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "Messages:general:create")) {
 			$data["errors"][] = "notallowed";
 		}
 		else{
@@ -630,7 +630,7 @@ class DiscussionController extends Controller
 			$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("groupId"),"isDeleted"=>false));
 			if ($workspace == null) {
 				$data["errors"][] = "groupnotfound";
-			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:create")) {
+			} elseif (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "Messages:general:create")) {
 				$data["errors"][] = "notallowed";
 			}
 			else {
@@ -678,7 +678,7 @@ class DiscussionController extends Controller
 			$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
 			if ($workspace == null) {
 				$data["errors"][] = "groupnotfound";
-			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "base:discussion:join")) {
+			} elseif (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "base:discussion:join")) {
 				$data["errors"][] = "notallowed";
 			}
 			else {

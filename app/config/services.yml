@@ -32,11 +32,6 @@ services:
         class: WebsiteApi\UploadBundle\Services\Upload
         arguments: ["@app.images_modifiers"]
 
-    app.groups.access:
-        class: WebsiteApi\WorkspacesBundle\Services\Access
-        arguments: ["@doctrine.orm.entity_manager", "@security.token_storage", '@security.authorization_checker']
-
-
     app.uploader:
         class: WebsiteApi\UploadBundle\Services\Uploader
         arguments: ["@doctrine.orm.entity_manager", "@app.upload", "@app.images_modifiers"]

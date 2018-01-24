@@ -45,7 +45,7 @@ class WorkspaceMembersController extends Controller
 			if($workspace==null){
 				$response["errors"][] = "nosuchgroup";
 
-			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "base:members:view")) {
+			} elseif (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "base:members:view")) {
 				$response["errors"][] = "notallowed";
 			}else {
 
@@ -127,7 +127,7 @@ class WorkspaceMembersController extends Controller
 		if ($group == null) {
 			$response["errors"][] = "nosuchgroup";
 
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, "base:members:remove") && !$canAccess) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:members:remove") && !$canAccess) {
 			$response["errors"][] = "notallowed";
 
 		}
@@ -241,7 +241,7 @@ class WorkspaceMembersController extends Controller
 		if($group==null){
 			$response["errors"][] = "nosuchgroup";
 
-		} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, "base:members:invite")) {
+		} elseif (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:members:invite")) {
 			$response["errors"][] = "notallowed";
 
 		}else {
@@ -520,7 +520,7 @@ class WorkspaceMembersController extends Controller
 				}
 				else if ($member == null) {
 					$data['errors'][] = "notingroup";
-				} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "base:members:view")) {
+				} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "base:members:view")) {
 					$data['errors'][] = "notallowed";
 				}else{
 
@@ -550,7 +550,7 @@ class WorkspaceMembersController extends Controller
 				}
 			}
 
-			if ($groupId > 0 && $this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "base:members:view")) {
+			if ($groupId > 0 && $this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "base:members:view")) {
 
 				$groupMembersLinks = $workspace->getMembers();
 
