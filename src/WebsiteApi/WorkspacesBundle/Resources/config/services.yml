@@ -22,4 +22,4 @@ services:
 
     app.workspaces:
         class: WebsiteApi\UsersBundle\Services\Workspaces
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers"]

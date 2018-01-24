@@ -3,33 +3,105 @@
 namespace WebsiteApi\WorkspacesBundle\Services;
 
 
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Model\WorkspacesInterface;
 
 class Workspaces implements WorkspacesInterface
 {
 
-	public function __construct($doctrine)
+	private $wls;
+	private $wms;
+	private $gms;
+	private $doctrine;
+
+	public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service)
 	{
 		$this->doctrine = $doctrine;
+		$this->wls = $workspaces_levels_service;
+		$this->wms = $workspaces_members_service;
+		$this->gms = $groups_managers_service;
 	}
 
-	public function getPrivate($currentUserId = null)
+	public function getPrivate($userId = null)
 	{
-		// TODO: Implement getPrivate() method.
+		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+		$user = $userRepository->find($userId);
+
+		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+		$workspace = $workspaceRepository->findOneBy(Array("user"=>$user));
+
+		if(!$workspace){
+			$workspace = $this->create("private_workspace", null, $userId);
+			$workspace->setUser($user);
+		}
+
+		return $workspace;
+
 	}
 
-	public function create($groupId, $name, $currentUserId = null)
+	public function create($name, $groupId = null, $userId = null)
 	{
-		// TODO: Implement create() method.
+
+		$workspace = new Workspace($name);
+
+		if($groupId!=null){
+			$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+			$group = $groupRepository->find($groupId);
+
+			$workspace->setGroup($group);
+		}
+
+		$this->doctrine->persist($workspace);
+		$this->doctrine->flush();
+
+		//Create admin level
+		$level = new WorkspaceLevel();
+		$level->setIsAdmin(true);
+		$level->setIsDefault(true);
+
+		$this->doctrine->persist($level);
+		$this->doctrine->flush();
+
+		//Add user in workspace
+		if($userId != null){
+			$this->wms->addMember($workspace->getId(), $userId, $level->getId());
+		}
+
+		return $workspace;
+
 	}
 
 	public function remove($groupId, $workspaceId, $currentUserId = null)
 	{
-		// TODO: Implement remove() method.
+		if($currentUserId == null
+			|| $this->wms->can($workspaceId, $currentUserId, "workspace:edit")
+			|| $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
+		){
+			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+			$workspace = $workspaceRepository->find($workspaceId);
+
+			$this->doctrine->remove($workspace);
+			$this->doctrine->flush();
+		}
 	}
 
-	public function changeData($name, $thumbnailFile, $currentUserId = null)
+	public function changeData($workspaceId, $name, $thumbnailFile, $currentUserId = null)
 	{
-		// TODO: Implement changeData() method.
+		if($currentUserId == null
+			|| $this->wms->can($workspaceId, $currentUserId, "workspace:edit")
+		){
+
+			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+			$workspace = $workspaceRepository->find($workspaceId);
+
+			$workspace->setName($name);
+			$workspace->setLogo($thumbnailFile);
+
+			$this->doctrine->persist($workspace);
+			$this->doctrine->flush();
+
+		}
 	}
+
 }
