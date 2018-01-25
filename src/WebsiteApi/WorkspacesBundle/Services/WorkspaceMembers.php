@@ -3,18 +3,23 @@
 namespace WebsiteApi\WorkspacesBundle\Services;
 
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUserByMail;
 use WebsiteApi\WorkspacesBundle\Model\WorkspaceMembersInterface;
 
 class WorkspaceMembers implements WorkspaceMembersInterface
 {
 
 	private $wls;
+	private $string_cleaner;
+	private $twake_mailer;
 	private $doctrine;
 
-	public function __construct($doctrine, $workspaces_levels_service)
+	public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner)
 	{
 		$this->doctrine = $doctrine;
 		$this->wls = $workspaces_levels_service;
+		$this->string_cleaner = $string_cleaner;
+		$this->twake_mailer = $twake_mailer;
 	}
 
 	public function changeLevel($workspaceId, $userId, $levelId, $currentUserId = null)
@@ -43,13 +48,105 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$this->doctrine->flush();
 
 			if($workspace->getUser() != null) {
-				$this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "level"=>$level->getLabel()));
+				$this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("workspace" => $workspace->getName(), "group" => $workspace->getGroup()->getDisplayName(), "username" => $user->getUsername(), "level"=>$level->getLabel()));
 			}
 
 			return true;
 		}
 
 		return false;
+	}
+
+	public function addMemberByMail($workspaceId, $mail, $currentUserId = null)
+	{
+		if($currentUserId == null
+			|| $this->wls->can($workspaceId, $currentUserId, "members:edit")
+		){
+
+			$mail = $this->string_cleaner->simplifyMail($mail);
+
+			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+			$user = $userRepository->find(Array("email"=>$mail));
+
+			if($user){
+				return $this->addMember($workspaceId, $user->getId());
+			}
+
+			$mailsRepository = $this->doctrine->getRepository("TwakeUsersBundle:Mail");
+			$userMail = $mailsRepository->find(Array("mail"=>$mail));
+
+			if($userMail){
+				return $this->addMember($workspaceId, $userMail->getUser()->getId());
+			}
+
+			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+			$workspace = $workspaceRepository->find($workspaceId);
+
+			//Mail not in tables
+			$userByMail = new WorkspaceUserByMail($workspace, $mail);
+			$this->doctrine->persist($userByMail);
+			$this->doctrine->flush();
+
+			//Send mail
+			$this->twake_mailer->send($mail, "inviteToWorkspaceMail", Array(
+				"mail" => $mail,
+				"workspace" => $workspace->getName(),
+				"group" => $workspace->getGroup()->getDisplayName()
+			));
+
+		}
+
+		return false;
+	}
+
+	public function removeMemberByMail($workspaceId, $mail, $currentUserId = null)
+	{
+		if($currentUserId == null
+			|| $this->wls->can($workspaceId, $currentUserId, "members:edit")
+		){
+
+			$mail = $this->string_cleaner->simplifyMail($mail);
+
+			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+			$user = $userRepository->find(Array("email"=>$mail));
+
+			if($user){
+				return $this->removeMember($workspaceId, $user->getId());
+			}
+
+			$mailsRepository = $this->doctrine->getRepository("TwakeUsersBundle:Mail");
+			$userMail = $mailsRepository->find(Array("mail"=>$mail));
+
+			if($userMail){
+				return $this->removeMember($workspaceId, $userMail->getUser()->getId());
+			}
+
+			$workspaceUerByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
+			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+			$workspace = $workspaceRepository->find($workspaceId);
+			$userByMail = $workspaceUerByMailRepository->findOneBy(Array("workspace"=>$workspace, "mail"=>$mail));
+
+			$this->doctrine->remove($userByMail);
+			$this->doctrine->flush();
+
+		}
+
+		return false;
+	}
+
+	public function autoAddMemberByNewMail($mail, $userId)
+	{
+		$mail = $this->string_cleaner->simplifyMail($mail);
+		$workspaceUerByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
+		$invitations = $workspaceUerByMailRepository->findBy(Array("mail"=>$mail));
+
+		foreach ($invitations as $userByMail) {
+			$this->doctrine->remove($userByMail);
+			$this->doctrine->flush();
+			$this->addMember($userByMail->getWorkspace()->getId(), $userId);
+		}
+
+		return true;
 	}
 
 	public function addMember($workspaceId, $userId, $levelId = null, $currentUserId = null)
@@ -81,7 +178,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$this->doctrine->flush();
 
 			if($workspace->getUser() != null) {
-				$this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername()));
+				$this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 			}
 
 
@@ -117,7 +214,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$this->doctrine->remove($member);
 			$this->doctrine->flush();
 
-			$this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("workspace"=>$workspace->getName(), "username"=>$user->getUsername()));
+			$this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("workspace"=>$workspace->getName(), "username"=>$user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 
 			return true;
 		}

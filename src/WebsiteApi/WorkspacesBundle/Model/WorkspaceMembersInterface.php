@@ -19,6 +19,15 @@ interface WorkspaceMembersInterface
 	// @removeMember remove member from workspace
 	public function removeMember($workspaceId, $userId, $currentUserId=null);
 
+	//@addMemberByMail add an user by e-mail
+	public function addMemberByMail($workspaceId, $mail, $currentUserId = null);
+
+	//@removeMemberByMail remove an user by e-mail
+	public function removeMemberByMail($workspaceId, $mail, $currentUserId = null);
+
+	//@autoAddMemberByNewMail add member invited by mail
+	public function autoAddMemberByNewMail($mail, $userId);
+
 	// @getMembers returns members for workspace ([{user: OBJECT, level: OBJECT}])
 	public function getMembers($workspaceId, $currentUserId=null);
 

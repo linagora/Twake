@@ -8,6 +8,10 @@ services:
         class: WebsiteApi\WorkspacesBundle\Services\Groups
         arguments: ["@doctrine.orm.entity_manager", "@app.group_managers"]
 
+    app.group_apps:
+        class: WebsiteApi\WorkspacesBundle\Services\GroupApps
+        arguments: ["@doctrine.orm.entity_manager", "@app.group_managers"]
+
     app.pricing_plan:
         class: WebsiteApi\WorkspacesBundle\Services\PricingPlan
         arguments: ["@doctrine.orm.entity_manager"]
@@ -18,8 +22,8 @@ services:
 
     app.workspace_members:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceMembers
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.twake_mailer"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner"]
 
     app.workspaces:
         class: WebsiteApi\WorkspacesBundle\Services\Workspaces
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps"]

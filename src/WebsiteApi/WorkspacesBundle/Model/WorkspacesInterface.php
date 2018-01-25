@@ -20,4 +20,7 @@ interface WorkspacesInterface
 	// @changeData set workspace data
 	public function changeData($workspaceId, $name, $thumbnailFile, $currentUserId = null);
 
+	// @getApps get apps for workspace
+	public function getApps($workspaceId, $currentUserId = null);
+
 }
