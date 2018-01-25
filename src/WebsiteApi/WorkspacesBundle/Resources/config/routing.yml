@@ -1,3 +1,11 @@
+twake_workspaces_get:
+    path:     /get
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:get }
+
+twake_workspaces_create:
+    path:     /create
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:create }
+
 #twake_workspace_group_create:
 #    path:     /group/create
 #    defaults: { _controller: TwakeUsersBundle:UsersConnections:login }

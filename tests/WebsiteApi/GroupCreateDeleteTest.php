@@ -52,7 +52,7 @@ class GroupCreateDeleteTest extends WebTestCaseExtended
 			$this->assertEquals("Group siret", $groupEntity->getSiret(), "Test création correcte : mauvais siret");
 
 			// Verification du lien entre le createur du groupe et le groupe
-			$membersLinks = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findBy(Array("Workspace" => $groupEntity));
+			$membersLinks = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("Workspace" => $groupEntity));
 			$this->assertEquals(1, count($membersLinks), "Test création correcte : mauvais nombre de membres dans l'entité");
 
 			$resCurrentUser = $this->api("/ajax/users/current/get", Array());

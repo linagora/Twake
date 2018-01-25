@@ -80,7 +80,7 @@ class Workspaces implements WorkspacesInterface
 	public function remove($groupId, $workspaceId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wms->can($workspaceId, $currentUserId, "workspace:edit")
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:edit")
 			|| $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
 		){
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -94,7 +94,7 @@ class Workspaces implements WorkspacesInterface
 	public function changeData($workspaceId, $name, $thumbnailFile, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wms->can($workspaceId, $currentUserId, "workspace:edit")
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:edit")
 		){
 
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -109,19 +109,47 @@ class Workspaces implements WorkspacesInterface
 		}
 	}
 
+	public function get($workspaceId, $currentUserId = null)
+	{
+
+		if($currentUserId==null
+		  || $this->wls->can($workspaceId, $currentUserId, "")){
+			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+			$workspace = $workspaceRepository->find($workspaceId);
+			return $workspace;
+		}
+
+		return false;
+	}
+
 	public function getApps($workspaceId, $currentUserId = null)
 	{
 		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 		$workspace = $workspaceRepository->find($workspaceId);
 
-		if($workspace->getUser() != null
-			&& ($workspace->getUser()->getId()==$currentUserId || $currentUserId==null)
-		){
-			//TODO
-			return Array();
+		if($workspace==null){
+			return false;
 		}
 
-		return $this->gas->getApps($workspace->getGroup()->getId(), $currentUserId);
+		if($currentUserId==null
+			|| $this->wls->can($workspaceId, $currentUserId, "")) {
+
+			if ($workspace->getUser() != null
+				&& ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
+			) {
+				//Private ws apps
+				//TODO
+				$appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+				return $appRepository->findBy(Array());
+			}
+
+			//Group apps
+			return $this->gas->getApps($workspace->getGroup()->getId(), $currentUserId);
+
+		}
+
+		return false;
+
 	}
 
 }

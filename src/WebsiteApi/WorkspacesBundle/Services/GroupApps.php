@@ -17,8 +17,9 @@ class GroupApps implements GroupAppsInterface
 
 	public function getApps($groupId, $currentUserId = null)
 	{
-		//TODO
-		return Array();
+		//Todo
+		$appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+		return $appRepository->findBy(Array());
 	}
 
 }

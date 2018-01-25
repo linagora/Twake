@@ -41,7 +41,7 @@ class PricingPlan
 
 
 	public function __construct($name) {
-		$this->name = $name;
+		$this->label = $name;
 	}
 
 	public function getId(){

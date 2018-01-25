@@ -7,7 +7,7 @@
  */
 
 namespace WebsiteApi\WorkspacesBundle\Controller;
-use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -23,54 +23,51 @@ class WorkspaceController extends Controller
 
 		$response = Array("errors"=>Array(), "data"=>Array());
 
-		$securityContext = $this->get('security.authorization_checker');
-		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-			$data['errors'][] = "notconnected";
-		}
+		$workspaceId = $request->request->getInt("workspaceId");
 
-		$orgId = $request->request->getInt("groupId");
 
-    $org = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$orgId,"isDeleted"=>false));
+		$ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
 
-		if($org==null){
-			$response["errors"][] = "groupnotfound";
-		}
+		if(!$ws){
+			$response["errors"][] = "notallowed";
+		}else{
+			$response["data"] = $ws->getAsArray();
 
-		if(count($response["errors"])==0){
-			$levelManager = $this->get('app.workspace_levels');
-			$rightData = $levelManager->getRight($this->getUser(),$org);
-
-			$response["data"] = $org->getAsSimpleArray();
-			$response["data"] = array_merge($response["data"],$rightData["data"]);
-			$response["data"] =  array_merge($response["data"],Array("levels" => $levelManager->quickLevel($org)));
+			$apps_obj = $this->get("app.workspaces")->getApps($workspaceId);
+			$apps = Array();
+			foreach ($apps_obj as $app_obj){
+				$apps[] = $app_obj->getAsArray();
+			}
+			$response["data"]["apps"] = $apps;
 		}
 
 		return new JsonResponse($response);
 	}
-
-	public function getByCodeAction(Request $request){
+	/**
+	 * Récupère les informations de base d'un groupe
+	 */
+	public function createAction(Request $request){
 
 		$response = Array("errors"=>Array(), "data"=>Array());
 
-		$securityContext = $this->get('security.authorization_checker');
-		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-			$data['errors'][] = "notconnected";
+		$name = $request->request->get("name");
+		$groupId = $request->request->getInt("groupId", 0);
+
+		if(!$groupId){
+			//Auto create group
+			$uniquename = $this->get("app.string_cleaner")->simplify($name);
+			$plan = $this->get("app.pricing_plan")->getMinimalPricing();
+			$planId = $plan->getId();
+			$group = $this->get("app.groups")->create($this->getUser()->getId(), $name, $uniquename, $planId);
+			$groupId = $group->getId();
 		}
 
-		$orgId = $request->request->get("groupCode");
-		$org = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("keyCode"=>$orgId,"isDeleted"=>false));
+		$ws = $this->get("app.workspaces")->create($name, $groupId, $this->getUser()->getId());
 
-		if($org==null){
-			$response["errors"][] = "groupnotfound";
-		}
-
-		if(count($response["errors"])==0){
-			$levelManager = $this->get('app.workspace_levels');
-			$rightData = $levelManager->getRight($this->getUser(),$org);
-
-			$response["data"] = $org->getAsSimpleArray();
-			$response["data"] = array_merge($response["data"],$rightData["data"]);
-			$response["data"] =  array_merge($response["data"],Array("levels" => $levelManager->quickLevel($org)));
+		if(!$ws){
+			$response["errors"][] = "notallowed";
+		}else{
+			$response["data"] = "success";
 		}
 
 		return new JsonResponse($response);

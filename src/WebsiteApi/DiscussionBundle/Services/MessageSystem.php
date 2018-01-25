@@ -312,9 +312,9 @@ class MessageSystem
 			}
 
 			//Search in user groups
-			$linkWorkspaceUser =  $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findBy(Array("User" => $user));
-			foreach($linkWorkspaceUser as $link){
-				if($this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("User"=>intval($discussionId), "Workspace"=>$link->getGroup()))!=null){
+			$WorkspaceUser =  $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("User" => $user));
+			foreach($WorkspaceUser as $link){
+				if($this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("User"=>intval($discussionId), "Workspace"=>$link->getGroup()))!=null){
 					return true;
 				}
 			}

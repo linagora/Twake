@@ -331,7 +331,7 @@ class ApplicationController extends Controller
 				$data['errors'][] = "noapplink";
 			}else{
 
-				$useringroup = $manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")
+				$useringroup = $manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")
 					->findOneBy(Array("User"=>$this->getUser(),"Workspace"=>$groupId));
 
 				if($useringroup==null){
