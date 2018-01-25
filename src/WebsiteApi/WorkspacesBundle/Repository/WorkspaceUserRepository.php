@@ -14,14 +14,14 @@ class WorkspaceUserRepository extends \Doctrine\ORM\EntityRepository
 	{
 		$qb = $this->createQueryBuilder("l")
 			->select('l')
-			->where('l.Workspace = :workspace')
-			->andWhere('l.status = :type');
+			->where('l.workspace = :workspace');
+			//->andWhere('l.status = :type');
 		if($length>0) {
 			$qb = $qb->setMaxResults($length);
 		}
 		$qb = $qb->setFirstResult($offset)
-			->setParameter('workspace', $workspace)
-			->setParameter('type', $type);
+			->setParameter('workspace', $workspace);
+			//->setParameter('type', $type);
 
 		return $qb->getQuery()->getResult();
 	}

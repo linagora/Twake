@@ -305,15 +305,27 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 
 	// @Depreciated
-	public function hasRight($userId, $workspace, $rightAsked)
+	public function hasRight($userId, $workspaceId, $rightAsked)
 	{
-		return $this->can($workspace->getId(), $userId, $rightAsked);
+		if(!is_int($userId)){
+			$userId = $userId->getId();
+		}
+		if(!is_int($workspaceId)){
+			$workspaceId = $workspaceId->getId();
+		}
+		return $this->can($workspaceId, $userId, $rightAsked);
 	}
 
 	// @Depreciated
-	public function errorsAccess($user, $workspaceId, $right)
+	public function errorsAccess($userId, $workspaceId, $right)
 	{
-		if($this->can($workspaceId, $user->getId(), $right)){
+		if(!is_int($userId)){
+			$userId = $userId->getId();
+		}
+		if(!is_int($workspaceId)){
+			$workspaceId = $workspaceId->getId();
+		}
+		if($this->can($workspaceId, $userId, $right)){
 			return [];
 		}
 		return ["notallowed"];

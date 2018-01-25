@@ -148,7 +148,7 @@ class MessageSystem implements MessagesSystemInterface
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussionKey);
             $workspace = $stream->getWorkspace();
             if($workspace != null){
-                $linkWs = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("Workspace"=>$workspace,"User"=>$user));
+                $linkWs = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace"=>$workspace,"user"=>$user));
                 if($linkWs!= null){
                     if($stream != null){
                         if(!$stream->getPrivacy()){
@@ -401,9 +401,9 @@ class MessageSystem implements MessagesSystemInterface
 			}
 
 			//Search in user groups
-			$WorkspaceUser =  $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("User" => $user));
+			$WorkspaceUser =  $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("user" => $user));
 			foreach($WorkspaceUser as $link){
-				if($this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("User"=>intval($discussionId), "Workspace"=>$link->getGroup()))!=null){
+				if($this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("user"=>intval($discussionId), "workspace"=>$link->getGroup()))!=null){
 					return true;
 				}
 			}

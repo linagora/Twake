@@ -19,7 +19,7 @@ class StatusService
 		if ($user != null && $statusOwner != null) {
 
 			if ($statusOwner instanceof Workspace) {
-				$WorkspaceUser = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("User" => $user, "Workspace" => $statusOwner));
+				$WorkspaceUser = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("user" => $user, "workspace" => $statusOwner));
 				return $WorkspaceUser != null && $WorkspaceUser->getStatus() == "A";
 			}
 			else {

@@ -332,7 +332,7 @@ class ApplicationController extends Controller
 			}else{
 
 				$useringroup = $manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")
-					->findOneBy(Array("User"=>$this->getUser(),"Workspace"=>$groupId));
+					->findOneBy(Array("user"=>$this->getUser(),"workspace"=>$groupId));
 
 				if($useringroup==null){
 					$data['errors'][] = "nouseringroup";

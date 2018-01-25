@@ -79,12 +79,12 @@ public function checkError($inviteEmail, $errorLabel, $usernameMember, $memberIn
 
 		// Tests sur la base de données
 		if ($inviteEmail) {
-			$userGroupLink = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("Workspace" => $groupId, "mail" => "test@email.com"));
+			$userGroupLink = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $groupId, "mail" => "test@email.com"));
 		}
 		else {
 			$this->login("InvitedMember", "Password0");
 			$userId = $this->api("/ajax/users/current/get", Array())["data"]["uid"];
-			$userGroupLink = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("Workspace" => $groupId, "User" => $userId));
+			$userGroupLink = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $groupId, "user" => $userId));
 		}
 
 		$this->assertNotEquals(null, $userGroupLink, "Test correct (mail : " . $inviteEmail . ") : membre non ajouté au groupe");

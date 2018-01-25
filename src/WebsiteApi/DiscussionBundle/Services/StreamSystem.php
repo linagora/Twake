@@ -40,7 +40,7 @@ class StreamSystem
         if($workspace==null || $user==null){
             return false;
         }
-        $link = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("User"=>$user,"Workspace"=>$workspace));
+        $link = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("user"=>$user,"workspace"=>$workspace));
         if($link != null){
             return true;
         }

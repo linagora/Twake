@@ -53,7 +53,7 @@ class Workspace
 	/**
 	 * @ORM\Column(type="boolean")
 	 */
-	private $isDeleted;
+	private $isDeleted = false;
 
 
 
