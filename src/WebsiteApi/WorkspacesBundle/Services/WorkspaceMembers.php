@@ -261,7 +261,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 		}
 
 		$link = $workspaceUserRepository->findBy(Array("user" => $user));
-
+        error_log("---- count:".count($link));
 		$workspaces = Array();
 		foreach($link as $workspace){
 			if($workspace->getWorkspace()->getUser()==null) {

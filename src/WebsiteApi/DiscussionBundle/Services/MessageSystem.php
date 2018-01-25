@@ -92,7 +92,6 @@ class MessageSystem implements MessagesSystemInterface
     }
 
     public function editMessage($id,$content){
-	    if($this->isAllowed())
         $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($id);
         if($message != null) {
             $message->setContent($content);
@@ -169,7 +168,7 @@ class MessageSystem implements MessagesSystemInterface
             if($stream){
                 $workspace = $stream->getWorkspace();
                 if($workspace != null){
-                    $linkWs = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("workspace"=>$workspace,"user"=>$user));
+                    $linkWs = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace"=>$workspace,"user"=>$user));
                     if($linkWs!= null){
                         if($stream != null){
                             if(!$stream->getPrivacy()){
