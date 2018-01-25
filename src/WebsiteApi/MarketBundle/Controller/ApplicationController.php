@@ -192,7 +192,7 @@ class ApplicationController extends Controller
       if ($group == null){
         $data['errors'][] = "nosuchgroup";
       } else {
-	      if (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, "base:apps:create")) {
+	      if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:apps:create")) {
           $response["errors"][] = "notallowed";
         } else {
           $ok = true;
@@ -331,8 +331,8 @@ class ApplicationController extends Controller
 				$data['errors'][] = "noapplink";
 			}else{
 
-				$useringroup = $manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")
-					->findOneBy(Array("User"=>$this->getUser(),"Workspace"=>$groupId));
+				$useringroup = $manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")
+					->findOneBy(Array("user"=>$this->getUser(),"workspace"=>$groupId));
 
 				if($useringroup==null){
 					$data['errors'][] = "nouseringroup";

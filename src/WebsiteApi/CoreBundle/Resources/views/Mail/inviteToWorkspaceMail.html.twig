@@ -1,0 +1,27 @@
+{% extends "TwakeCoreBundle:Mail:all.html.twig" %}
+
+{% block title %}Invitation on Twake in the workspace {{ workspace }}{% endblock %}
+
+{% block secondtitle %}You have been invited in the workspace {{ workspace }} of the group {{ group }}{% endblock %}
+
+{% block body %}
+
+    <b>Hello,</b>
+    <br>
+    You have been invited in the workspace {{ workspace }} of the group {{ group }}.
+    <br><br>
+    This invitation was done using your e-mail address. This e-mail is not in our database and we cannot find the user corresponding to this e-mail.
+    <br>
+    <br>
+    If you already have a Twake account, add the e-mail bellow to your account to be added to the workspace.
+    <br>
+    If you do not have a Twake account, subscribe using the e-mail bellow to be added to the workspace.
+    <br>
+    <br>
+    <center>
+        <div style="display: inline-block; color: #ffffff; background-color: #467eb7; border: solid 1px #467eb7; border-radius: 5px; box-sizing: border-box; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #467eb7;">
+            {{ mail }}
+        </div>
+    </center>
+
+{% endblock %}

@@ -78,7 +78,7 @@ class GroupMembersInviteAcceptTest extends WebTestCaseExtended
 
 		// Tests sur la base de données
 		$userId = $this->api("/ajax/users/current/get", Array())["data"]["uid"];
-		$userGroupLink = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("Workspace" => $groupId, "User" => $userId));
+		$userGroupLink = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $groupId, "user" => $userId));
 		$this->assertEquals("A", $userGroupLink->getStatus(), "Test correct : membre non accepté");
 
 		$memberCount = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneById($groupId)->getMemberCount();

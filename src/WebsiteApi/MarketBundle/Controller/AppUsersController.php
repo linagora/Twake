@@ -37,7 +37,7 @@ class AppUsersController extends Controller
       if ($group == null){
         $data['errors'][] = "nosuchgroup";
       } else {
-	      if (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, "base:apps:acquire")) {
+	      if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:apps:acquire")) {
           $response["errors"][] = "notallowed";
         } else {
           $appId = $request->request->get('appId');
@@ -87,7 +87,7 @@ class AppUsersController extends Controller
             if ($group == null) {
                 $data['errors'][] = "nosuchgroup";
             } else {
-                if (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, "base:apps:acquire")) {
+                if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:apps:acquire")) {
                     $response["errors"][] = "notallowed";
                 } else {
                     $appId = $request->request->get('appId');

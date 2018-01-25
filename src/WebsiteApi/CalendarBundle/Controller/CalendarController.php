@@ -29,7 +29,7 @@ class CalendarController extends Controller
 
             if ($organization == null) {
                 $data["errors"][] = "groupnotfound";
-            } elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $organization, "Calendar:general:view")) {
+            } elseif (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $organization, "Calendar:general:view")) {
                 $data["errors"][] = "notallowed";
                 $data["log"] = $organization;
             } else {
@@ -56,7 +56,7 @@ class CalendarController extends Controller
             if ($organization == null) {
                 $data["errors"][] = "groupnotfound";
 
-            } elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $organization, "Calendar:general:create")) {
+            } elseif (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $organization, "Calendar:general:create")) {
                 $data["errors"][] = "notallowed";
             } else {
 
