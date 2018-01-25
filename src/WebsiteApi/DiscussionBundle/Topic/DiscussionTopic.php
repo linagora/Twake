@@ -78,7 +78,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 		$currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
 
 		//Verify that this user is allowed to do this
-		if ($this->messagesService->isAllowed($currentUser, $type, $id)) {
+		if ($this->messagesService->isAllowed($currentUser, $key)) {
 
 			//We can speak
 
@@ -96,7 +96,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 			}
             else if($operation == "E"){
             	$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($event["data"]["id"]);
-            	if($message != null && $message->getTypeSender()=="U" && $message->getUserSender()==$currentUser){
+            	if($message != null && $message->getUserSender()==$currentUser){
 	                $message = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
 	                if($message){
                         $event["data"] = $message->getAsArray();

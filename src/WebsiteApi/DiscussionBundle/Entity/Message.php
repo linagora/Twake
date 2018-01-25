@@ -383,7 +383,7 @@ class Message
             "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
 
             "isApplicationMessage" => $this->getIsApplicationMessage(),
-            "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getId():null,
+            "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getAsArray():null,
             "isSystemMessage" => $this->getIsSystemMessage(),
 
             "content" => $this->getContent(),

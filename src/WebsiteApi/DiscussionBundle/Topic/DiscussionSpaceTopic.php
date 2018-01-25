@@ -82,12 +82,17 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
         }
         $currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
 
-
+        $canBroadcast = true;
 
         if($event["type"] == "C"){ // creation
             if($this->streamService->isAllowed($currentUser->getId(),$key)){
                 $stream = $this->streamService->createStream($currentUser,$key,$event["data"]["name"],$event["data"]["privacy"]);
-                $event["data"] = $stream->getAsArray();
+                if($stream){
+                    $event["data"] = $stream->getAsArray();
+                }
+                else{
+                    $canBroadcast = false;
+                }
             }
         }
         elseif($event["type"] == "E"){ // edition
@@ -95,10 +100,16 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
             if($this->streamService->isAllowed($currentUser->getId(),$key)){
                 if(isset($event["data"]["id"]) && isset($event["data"]["name"]) && isset($event["data"]["privacy"]) && isset($event["data"]["members"]) )
                 $stream = $this->streamService->editStream($event["data"]["id"],$event["data"]["name"],$event["data"]["privacy"],$event["data"]["members"]);
-                $event["data"] = $stream->getAsArray();
-                error_log("end");
+                if($stream){
+                    $event["data"] = $stream->getAsArray();
+                }
+                else{
+                    $canBroadcast = false;
+                }
             }
         }
-        $topic->broadcast($event);
+        if($canBroadcast){
+            $topic->broadcast($event);
+        }
     }
 }

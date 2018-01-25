@@ -11,14 +11,14 @@ namespace WebsiteApi\DiscussionBundle\Repository;
 class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
 	public function findMessageBy($param){
-		if($param["dateStart"] != null){
+		if(isset($param["dateStart"]) && $param["dateStart"] != null){
 			$dateStart = new \DateTime($param["dateStart"]." 00:00:00");
 		}
 		else{
 			$dateStart = new \DateTime("1/1/1980 00:00:00");
 		}
 
-		if($param["dateEnd"] != null){
+		if(isset($param["dateEnd"]) && $param["dateEnd"] != null){
 			$dateEnd = new \DateTime($param["dateEnd"]." 00:00:00");
 		}
 		else{
@@ -26,17 +26,24 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 		}
 		$qb = $this->createQueryBuilder("e");
 
-		$qb->where('e.streamReciever = :id')
-        ->setParameter('id', $param["idDiscussion"]);
+		if(isset($param["idDiscussion"]) && $param["idDiscussion"]!=null){
+            $qb->where('e.streamReciever = :id')
+            ->setParameter('id', $param["idDiscussion"]);
+        }
 
-		$qb->andWhere('e.cleanContent LIKE :content')
+        if(isset($param["idUser"]) && $param["idUser"]!=null){
+            $qb->where('e.userSender= :id OR e.userReciever=:id')
+            ->setParameter('id', $param["idDiscussion"]);
+        }
+
+        $qb->andWhere('e.cleanContent LIKE :content')
         ->setParameter('content', '%'.$param["content"].'%' );
 
 		$qb->andWhere('e.date BETWEEN :from AND :to')
         ->setParameter('from', $dateStart )
         ->setParameter('to', $dateEnd);
 
-        if($param["from"] != null){
+        if(isset($param["from"]) && $param["from"] != null){
         	$qb->andWhere('e.userSender = :idSender')
         	->setParameter('idSender',$param["from"]);
         }

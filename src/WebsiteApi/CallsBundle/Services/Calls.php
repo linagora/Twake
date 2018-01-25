@@ -36,7 +36,7 @@ class Calls implements CallSystemInterface
 	public function getCallInfo($user, $discussionKey)
 	{
 
-		if (!$this->messageSystem->isAllowedByKey($user, $discussionKey)) {
+		if (!$this->messageSystem->isAllowed($user, $discussionKey)) {
 			return Array("status" => "invalid");
 		}
 
@@ -66,7 +66,7 @@ class Calls implements CallSystemInterface
 
 	public function joinCall($user, $discussionKey)
 	{
-		if ($this->messageSystem->isAllowedByKey($user, $discussionKey)) {
+		if ($this->messageSystem->isAllowed($user, $discussionKey)) {
 
 			$em = $this->doctrine;
 
