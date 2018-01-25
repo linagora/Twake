@@ -36,6 +36,8 @@ class Workspaces implements WorkspacesInterface
 		if(!$workspace){
 			$workspace = $this->create("private_workspace", null, $userId);
 			$workspace->setUser($user);
+			$this->doctrine->persist($workspace);
+			$this->doctrine->flush();
 		}
 
 		return $workspace;
@@ -59,6 +61,7 @@ class Workspaces implements WorkspacesInterface
 
 		//Create admin level
 		$level = new WorkspaceLevel();
+		$level->setLabel("Administrator");
 		$level->setIsAdmin(true);
 		$level->setIsDefault(true);
 

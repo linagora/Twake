@@ -264,7 +264,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 		$workspaces = Array();
 		foreach($link as $workspace){
-			$workspaces[] = $workspace->getWorkspace();
+			if($workspace->getWorkspace()->getUser()==null) {
+				$workspaces[] = $workspace->getWorkspace();
+			}
 		}
 
 		return $workspaces;

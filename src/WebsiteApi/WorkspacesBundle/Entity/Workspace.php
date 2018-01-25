@@ -127,5 +127,10 @@ class Workspace
 		$this->user = $user;
 	}
 
+	public function getAsArray(){
+		return Array(
+			"name"=> $this->getName()
+		);
+	}
 
 }
