@@ -41,7 +41,7 @@ class WorkspaceLinksController extends Controller
 
     $asker = $request->request->get("askerId");
 
-	  if (!$this->get('app.groups.access')->hasRight($this->getUser(), $asker, "base:links:edit")) {
+	  if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $asker, "base:links:edit")) {
 	    $response["errors"][] = "notallowed";
 	    return new JsonResponse($data);
     }
@@ -128,7 +128,7 @@ class WorkspaceLinksController extends Controller
     $workspaceId = $request->request->get("groupId");
     $workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$workspaceId,"isDeleted"=>false));
 
-	  if (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "base:links:view")) {
+	  if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "base:links:view")) {
 	  $response["errors"][] = "notallowed";
 	  return new JsonResponse($data);
 	}
@@ -211,7 +211,7 @@ class WorkspaceLinksController extends Controller
 
     $workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("groupId"),"isDeleted"=>false));
 
-	  if (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "base:links:edit")) {
+	  if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "base:links:edit")) {
 		$response["errors"][] = "notallowed";
 		return new JsonResponse($data);
 	}
@@ -259,7 +259,7 @@ class WorkspaceLinksController extends Controller
 
     $workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("groupId"),"isDeleted"=>false));
 
-	  if (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "base:links:edit")) {
+	  if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "base:links:edit")) {
 		$response["errors"][] = "notallowed";
 		return new JsonResponse($data);
 	}

@@ -182,7 +182,7 @@ class WorkspaceStructureController extends Controller
 
 				$linkWorkspaceUser = $manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("User" => $user, "Workspace" => $workspace));
 
-				if ($linkWorkspaceUser == null || !$this->get('app.groups.access')->hasRight($user, $workspace, 'base:groupe:delete')) {
+				if ($linkWorkspaceUser == null || !$this->get('app.workspace_levels')->hasRight($user, $workspace, 'base:groupe:delete')) {
 
 					$data['errors'][] = "notallowed";
 				} else {
@@ -344,11 +344,11 @@ class WorkspaceStructureController extends Controller
 		$user = $this->getUser();
 		$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->getInt("groupId"),"isDeleted"=>false));
 
-		if (!$this->get('app.groups.access')->workspaceIsFound($workspace)) {
+		if (!$this->get('app.workspace_levels')->workspaceIsFound($workspace)) {
 			$data['errors'][] = "groupnotfound";
 		} else {
 
-			if (!$this->get('app.groups.access')->hasRight($user, $workspace, 'base:groupe:view')) {
+			if (!$this->get('app.workspace_levels')->hasRight($user, $workspace, 'base:groupe:view')) {
 				$data['errors'][] = "accessdenied";
 			} else {
 
@@ -390,13 +390,13 @@ class WorkspaceStructureController extends Controller
 			$user = $this->getUser();
 			$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->getInt("groupId"),"isDeleted"=>false));
 
-			if (!$this->get('app.groups.access')->workspaceIsFound($workspace)) {
+			if (!$this->get('app.workspace_levels')->workspaceIsFound($workspace)) {
 				$data['errors'][] = "groupnotfound";
 			} else if ($request->request->get("data")["name"] == "") {
 				$data['errors'][] = "emptyname";
 			} else {
 
-				if (!$this->get('app.groups.access')->hasRight($user, $workspace, 'base:groupe:edit')) {
+				if (!$this->get('app.workspace_levels')->hasRight($user, $workspace, 'base:groupe:edit')) {
 					$data['errors'][] = "accessdenied";
 				} else {
 					$workspace->setName($request->request->get("data")["name"]);
@@ -446,7 +446,7 @@ class WorkspaceStructureController extends Controller
 			$data['errors'][] = "notconnected";
 		} else if ($workspace == null) {
 			$data['errors'][] = "notallowed";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, 'base:groupe:edit')) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, 'base:groupe:edit')) {
 			$data['errors'][] = "notallowed";
 		} else {
 
@@ -498,7 +498,7 @@ class WorkspaceStructureController extends Controller
 			$data['errors'][] = "notconnected";
 		} else if ($group == null) {
 			$data['errors'][] = "notallowed";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, 'base:groupe:edit')) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, 'base:groupe:edit')) {
 			$data['errors'][] = "notallowed";
 		} else {
 

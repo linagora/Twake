@@ -37,7 +37,7 @@ class WorkspaceController extends Controller
 		}
 
 		if(count($response["errors"])==0){
-			$levelManager = $this->get('app.groups.access');
+			$levelManager = $this->get('app.workspace_levels');
 			$rightData = $levelManager->getRight($this->getUser(),$org);
 
 			$response["data"] = $org->getAsSimpleArray();
@@ -65,7 +65,7 @@ class WorkspaceController extends Controller
 		}
 
 		if(count($response["errors"])==0){
-			$levelManager = $this->get('app.groups.access');
+			$levelManager = $this->get('app.workspace_levels');
 			$rightData = $levelManager->getRight($this->getUser(),$org);
 
 			$response["data"] = $org->getAsSimpleArray();

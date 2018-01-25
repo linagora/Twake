@@ -192,7 +192,7 @@ class ApplicationController extends Controller
       if ($group == null){
         $data['errors'][] = "nosuchgroup";
       } else {
-	      if (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, "base:apps:create")) {
+	      if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:apps:create")) {
           $response["errors"][] = "notallowed";
         } else {
           $ok = true;

@@ -48,9 +48,9 @@ class User extends BaseUser
 	protected $thumbnail;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser", mappedBy="User")
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser", mappedBy="User")
 	 */
-	protected $workspacesLinks;
+	protected $workspaces;
 
 	/**
 	 * @var int
@@ -141,8 +141,8 @@ class User extends BaseUser
 
 		$workspaces = Array();
 
-		for ($i = 0; $i < count($this->workspacesLinks); ++$i) {
-			$workspaces[] = $this->workspacesLinks[$i]->getGroup();
+		for ($i = 0; $i < count($this->workspaces); ++$i) {
+			$workspaces[] = $this->workspaces[$i]->getGroup();
 		}
 
 		return $workspaces;

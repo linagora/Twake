@@ -1,163 +1,167 @@
-citi_go_workspaces_create:
-    path:     /create
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:create }
+#twake_workspace_group_create:
+#    path:     /group/create
+#    defaults: { _controller: TwakeUsersBundle:UsersConnections:login }
 
-citi_go_workspaces_delete:
-    path:     /delete
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:delete }
-
-citi_go_workspaces_fastsearch:
-    path:     /fastsearch
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:get }
-
-citi_go_workspaces_user_list:
-    path:     /user/list
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:getListUser }
-
-citi_go_workspaces_all_user_list:
-    path:     /user/alllist
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:getAllListUser }
-
-citi_go_workspaces_get:
-    path:     /get
-    defaults: { _controller: TwakeWorkspacesBundle:Workspace:get }
-
-citi_go_workspaces_getByCode:
-    path:     /getByCode
-    defaults: { _controller: TwakeWorkspacesBundle:Workspace:getByCode }
-
-citi_go_workspaces_members_table:
-    path:     /members/table
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:table }
-
-citi_go_workspaces_getmore:
-    path:     /getmore
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:getMore }
-
-citi_go_workspaces_askLink:
-    path:     /links/ask
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLinks:askLink }
-
-citi_go_workspaces_getLink:
-    path:     /links/get
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLinks:getLink }
-
-citi_go_workspaces_acceptLink:
-    path:     /links/accept
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLinks:acceptLink }
-
-citi_go_workspaces_removeLink:
-    path:     /links/remove
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLinks:removeLink }
-
-citi_go_workspaces_getAllLink:
-    path:     /links/getall
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLinks:getAllLink }
-
-
-citi_go_workspaces_setmore:
-      path:     /setmore
-      defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:setMore }
-citi_go_workspaces_setlogo:
-      path:     /setlogo
-      defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:setLogo }
-
-citi_go_workspaces_members_verify:
-    path:     /members/verify
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:verify }
-
-citi_go_workspaces_members_changelevel:
-    path:     /members/changelevel
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:changelevelUsers }
-
-citi_go_workspaces_members_has_acces:
-    path:     /hasAcces
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:hasAcces}
-
-citi_go_workspaces_members_accept:
-    path:     /members/accept
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:accept }
-
-citi_go_workspaces_members_invite:
-    path:     /members/invite
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:invite }
-
-citi_go_workspaces_members_invite_accept:
-    path:     /members/invite/accept
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:inviteAccept }
-
-citi_go_workspaces_members_invite_refuse:
-    path:     /members/invite/refuse
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:inviteRefuse }
-
-citi_go_workspaces_members_delete:
-    path:     /members/delete
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:delete }
-
-citi_go_workspaces_members_search:
-    path:     /members/search
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:search }
-
-citi_go_workspaces_rigths_get:
-    path:     /rights/getlevels
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:getLevels }
-
-citi_go_workspaces_rigths_getAllRights:
-    path:     /rights/getAllRights
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:getAllRights }
-
-citi_go_workspaces_rigths_deplaceLevelMembers:
-    path:     /rights/deplaceLevelMembers
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:deplaceLevelMembers }
-
-citi_go_workspaces_level_delete:
-    path:     /rights/deleteLevels
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:deleteLevels }
-
-
-
-citi_go_workspaces_levels_update:
-    path:     /rights/updateLevel
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:updateLevel }
-
-citi_go_workspaces_rights_set_default_level:
-    path:     /rights/setdefaultlevel
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:setDefaultLevel }
-
-citi_go_workspaces_rights_set_level_link:
-    path:     /rights/setLevelLink
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:setLevelLink }
-
-
-citi_go_workspaces_rigths_createlevel:
-    path:     /rights/createlevel
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:createLevel }
-
-
-citi_go_workspaces_search:
-    path:     /search
-    defaults: { _controller: TwakeWorkspacesBundle:Search:index }
-
-citi_go_workspaces_createOrg:
-    path:     /org_create
-    defaults: { _controller: TwakeWorkspacesBundle:CreateOrg:showPage }
-
-citi_go_workspaces_org:
-    path:     /org/{orgname}
-    defaults: { _controller: TwakeWorkspacesBundle:Org:getOrg }
-
-citi_go_workspaces_search_scripts:
-    path:     /scripts/search/{script}
-    defaults: { _controller: TwakeWorkspacesBundle:Search:scripts }
-
-citi_go_workspaces_createOrg_scripts:
-    path:    /scripts/createOrg/{script}
-    defaults: { _controller: TwakeWorkspacesBundle:CreateOrg:scripts }
-
-citi_go_workspaces_Org_scripts:
-    path:    /scripts/optionOrg/{script}
-    defaults: { _controller: TwakeWorkspacesBundle:Org:scripts }
-
-citi_go_workspaces_customize:
-    path:     /customize
-    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:customize }
+#citi_go_workspaces_create:
+#    path:     /create
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:create }
+#
+#citi_go_workspaces_delete:
+#    path:     /delete
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:delete }
+#
+#citi_go_workspaces_fastsearch:
+#    path:     /fastsearch
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:get }
+#
+#citi_go_workspaces_user_list:
+#    path:     /user/list
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:getListUser }
+#
+#citi_go_workspaces_all_user_list:
+#    path:     /user/alllist
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:getAllListUser }
+#
+#citi_go_workspaces_get:
+#    path:     /get
+#    defaults: { _controller: TwakeWorkspacesBundle:Workspace:get }
+#
+#citi_go_workspaces_getByCode:
+#    path:     /getByCode
+#    defaults: { _controller: TwakeWorkspacesBundle:Workspace:getByCode }
+#
+#citi_go_workspaces_members_table:
+#    path:     /members/table
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:table }
+#
+#citi_go_workspaces_getmore:
+#    path:     /getmore
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:getMore }
+#
+#citi_go_workspaces_askLink:
+#    path:     /links/ask
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLinks:askLink }
+#
+#citi_go_workspaces_getLink:
+#    path:     /links/get
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLinks:getLink }
+#
+#citi_go_workspaces_acceptLink:
+#    path:     /links/accept
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLinks:acceptLink }
+#
+#citi_go_workspaces_removeLink:
+#    path:     /links/remove
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLinks:removeLink }
+#
+#citi_go_workspaces_getAllLink:
+#    path:     /links/getall
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLinks:getAllLink }
+#
+#
+#citi_go_workspaces_setmore:
+#      path:     /setmore
+#      defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:setMore }
+#citi_go_workspaces_setlogo:
+#      path:     /setlogo
+#      defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:setLogo }
+#
+#citi_go_workspaces_members_verify:
+#    path:     /members/verify
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:verify }
+#
+#citi_go_workspaces_members_changelevel:
+#    path:     /members/changelevel
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:changelevelUsers }
+#
+#citi_go_workspaces_members_has_acces:
+#    path:     /hasAcces
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:hasAcces}
+#
+#citi_go_workspaces_members_accept:
+#    path:     /members/accept
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:accept }
+#
+#citi_go_workspaces_members_invite:
+#    path:     /members/invite
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:invite }
+#
+#citi_go_workspaces_members_invite_accept:
+#    path:     /members/invite/accept
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:inviteAccept }
+#
+#citi_go_workspaces_members_invite_refuse:
+#    path:     /members/invite/refuse
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:inviteRefuse }
+#
+#citi_go_workspaces_members_delete:
+#    path:     /members/delete
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:delete }
+#
+#citi_go_workspaces_members_search:
+#    path:     /members/search
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:search }
+#
+#citi_go_workspaces_rigths_get:
+#    path:     /rights/getlevels
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:getLevels }
+#
+#citi_go_workspaces_rigths_getAllRights:
+#    path:     /rights/getAllRights
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:getAllRights }
+#
+#citi_go_workspaces_rigths_deplaceLevelMembers:
+#    path:     /rights/deplaceLevelMembers
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:deplaceLevelMembers }
+#
+#citi_go_workspaces_level_delete:
+#    path:     /rights/deleteLevels
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:deleteLevels }
+#
+#
+#
+#citi_go_workspaces_levels_update:
+#    path:     /rights/updateLevel
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:updateLevel }
+#
+#citi_go_workspaces_rights_set_default_level:
+#    path:     /rights/setdefaultlevel
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:setDefaultLevel }
+#
+#citi_go_workspaces_rights_set_level_link:
+#    path:     /rights/setLevelLink
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:setLevelLink }
+#
+#
+#citi_go_workspaces_rigths_createlevel:
+#    path:     /rights/createlevel
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceRights:createLevel }
+#
+#
+#citi_go_workspaces_search:
+#    path:     /search
+#    defaults: { _controller: TwakeWorkspacesBundle:Search:index }
+#
+#citi_go_workspaces_createOrg:
+#    path:     /org_create
+#    defaults: { _controller: TwakeWorkspacesBundle:CreateOrg:showPage }
+#
+#citi_go_workspaces_org:
+#    path:     /org/{orgname}
+#    defaults: { _controller: TwakeWorkspacesBundle:Org:getOrg }
+#
+#citi_go_workspaces_search_scripts:
+#    path:     /scripts/search/{script}
+#    defaults: { _controller: TwakeWorkspacesBundle:Search:scripts }
+#
+#citi_go_workspaces_createOrg_scripts:
+#    path:    /scripts/createOrg/{script}
+#    defaults: { _controller: TwakeWorkspacesBundle:CreateOrg:scripts }
+#
+#citi_go_workspaces_Org_scripts:
+#    path:    /scripts/optionOrg/{script}
+#    defaults: { _controller: TwakeWorkspacesBundle:Org:scripts }
+#
+#citi_go_workspaces_customize:
+#    path:     /customize
+#    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceStructure:customize }

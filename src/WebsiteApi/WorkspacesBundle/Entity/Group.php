@@ -40,7 +40,7 @@ class Group
 	protected $logo;
 
 	/**
-	 * @ORM\Column(name="pricing_plan", type="string", length=10)
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\PricingPlan")
 	 */
 	protected $pricingPlan;
 
@@ -54,8 +54,14 @@ class Group
 	 */
 	private $managers;
 
-	public function __constructor($name) {
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $date_added;
+
+	public function __construct($name) {
 		$this->name = $name;
+		$this->date_added = new \DateTime();
 	}
 
 	public function getId(){
@@ -158,11 +164,27 @@ class Group
 		$this->managers = $managers;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getDateAdded()
+	{
+		return $this->date_added;
+	}
+
+	/**
+	 * @param mixed $date_added
+	 */
+	public function setDateAdded($date_added)
+	{
+		$this->date_added = $date_added;
+	}
+
 	public function getAsArray(){
 		return Array(
 			"unique_name" => $this->getName(),
 			"name" => $this->getDisplayName(),
-			"plan" => $this->getPricingPlan(),
+			"plan" => $this->getPricingPlan()->getLabel(),
 			"id" => $this->getId(),
 			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):"")
 		);
