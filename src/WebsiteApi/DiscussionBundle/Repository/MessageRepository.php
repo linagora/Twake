@@ -40,6 +40,11 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
         	$qb->andWhere('e.userSender = :idSender')
         	->setParameter('idSender',$param["from"]);
         }
+        if(isset($param["application"]) && $param["application"]!=null){
+            $qb->andWhere('e.isApplicationMessage = 1');
+            $qb->andWhere('e.applicationSender = :applicationSender');
+            $qb->setParameter('applicationSender',$param["application"]);
+        }
 
         $result = $qb->getQuery()->getResult();
 

@@ -3,7 +3,6 @@
 
 namespace WebsiteApi\DiscussionBundle\Services;
 
-use MessagesSystemInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
@@ -12,11 +11,12 @@ use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Services\Notifications;
 use WebsiteApi\UsersBundle\Entity\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use WebsiteApi\DiscussionBundle\Model\MessagesSystemInterface;
 
 /**
  * Manage contacts
  */
-class MessageSystem
+class MessageSystem implements MessagesSystemInterface
 {
 
 	var $string_cleaner;
@@ -39,36 +39,33 @@ class MessageSystem
 		$this->levelManager = $levelManager;
 	}
 
-	public function sendMessage($senderType, $senderId, $recieverType, $recieverId, $content, $subjectId=null ){
+	public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content, $subjectId=null ){
 	    error_log("send message senderId:".$senderId.", recieverType:".$recieverType.", recieverId:".$recieverId);
-        if($senderType=="A" || $senderType=="U"|| $senderType=="S"){
-            $sender = null;
-            $reciever = null;
-            if($senderType == "U"){
-                $sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
+        $sender = null;
+        $reciever = null;
+        if($senderId != null){
+            $sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
+        }
+        if($isApplicationMessage) {
+            $applicationMessage = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($applicationMessage);
+        }
+
+        if($recieverType == "S"){
+            $reciever = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
+        }
+        elseif($recieverType == "U"){
+            $reciever = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
+        }
+        if( ($isApplicationMessage || $isSystemMessage|| $sender!=null) && $reciever!=null ){
+            $subject = null;
+            if($subjectId != null){
+                $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
             }
-            elseif($senderType == "A") {
-                $sender = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($senderId);
-            }
-            if($recieverType == "S"){
-                $reciever = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
-            }
-            elseif($recieverType == "U"){
-                $reciever = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
-            }
-            if( ($senderType=="S" || $sender!=null) && $reciever!=null ){
-                $subject = null;
-                if($subjectId != null){
-                    $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
-                }
-                $message = new Message($senderType,$sender,$recieverType,$reciever,new \DateTime(),$content,$this->string_cleaner->simplifyWithoutRemovingSpaces($content),$subject);
-                $this->doctrine->persist($message);
-                $this->doctrine->flush();
-                return $message;
-            }
-            else{
-                error_log("not found".$recieverId);
-            }
+            $message = new Message($sender, $recieverType, $reciever,$isApplicationMessage ,$applicationMessage,$isSystemMessage, new \DateTime() ,$content,$this->string_cleaner->simplifyWithoutRemovingSpaces($content),$subject);
+            $this->doctrine->persist($message);
+            $this->doctrine->flush();
+            return $message;
+
         }
         else{
             error_log("not send");
@@ -87,7 +84,7 @@ class MessageSystem
         return false;
     }
 
-   public function getMessages($user,$recieverType,$recieverId,$offset,$subjectId){
+    public function getMessages($user,$recieverType,$recieverId,$offset,$subjectId){
 	    error_log("get message, reciever type".$recieverType.", revcieverId:".$recieverId);
 	    if($recieverType == "S"){
 	        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
@@ -125,7 +122,7 @@ class MessageSystem
         }
    }
 
-    function pinMessage($id,$pinned){
+    public function pinMessage($id,$pinned){
 
 	    if($id == null){
 	        return false;
@@ -145,12 +142,36 @@ class MessageSystem
 
 
 
-    function isAllowed($sender,$recieverType,$recieverId){
-        return true;
+    public function isAllowed($user,$discussionKey){
+        $ids = explode("_", $discussionKey);
+        if(count($ids)==1){
+            $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussionKey);
+            $workspace = $stream->getWorkspace();
+            if($workspace != null){
+                $linkWs = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("Workspace"=>$workspace,"User"=>$user));
+                if($linkWs!= null){
+                    if($stream != null){
+                        if(!$stream->getPrivacy()){
+                            return true;
+                        }
+                        $link = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream));
+                        if($link != null){
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+        if(count($ids)==2){
+            if($ids[0]==$user->getId() || $ids[1]==$user->getId()){
+                return true;
+            }
+        }
+        return false;
     }
 
 
-    function searchMessage($type,$idDiscussion,$content,$from,$dateStart,$dateEnd){
+    public function searchMessage($type,$idDiscussion,$content,$from,$dateStart,$dateEnd,$application){
     	if($idDiscussion == null || $type == null){
     		return false;
     	}
@@ -164,7 +185,8 @@ class MessageSystem
 	    		"content" => $content,
 	    		"from" => $from,
 	    		"dateStart" => $dateStart,
-	    		"dateEnd" => $dateEnd
+	    		"dateEnd" => $dateEnd,
+                "application" => $application
 	    	));
 	    	return $messages;
     	}
@@ -224,6 +246,73 @@ class MessageSystem
         }
         return $retour;
     }
+
+    public function searchDriveMessage($discussionKey,$user){
+        $discussionInfos = $this->convertKey($discussionKey, $user);
+        $driveApp = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"drive"));
+        $messages = null;
+        if($driveApp != null){
+            $messages = $this->searchMessage($discussionInfos["type"],$discussionInfos["id"],"",null,null,null,$driveApp);
+        }
+        return $messages;
+    }
+
+
+    public function notify($discussionKey,$type,$message){
+        $data = Array(
+            "type" => $type,
+            "data" => $message->getAsArray(),
+        );
+        $this->pusher->push($data, "discussion_topic",Array("key"=>$discussionKey));
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

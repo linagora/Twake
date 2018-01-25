@@ -162,20 +162,43 @@ class DiscussionController extends Controller
 
 		$securityContext = $this->get('security.authorization_checker');
 
-/*		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data['errors'][] = "notconnected";
 		}
 		else {
-*/			$discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
-			$messages = $this->get("app.messages")->searchMessage($discussionInfos["type"],$discussionInfos["id"],$request->request->get("content"),intval($request->request->get("from")),$request->request->get("dateStart"),$request->request->get("dateEnd"));
-			$retour = Array();
+			$discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
+			$messages = $this->get("app.messages")->searchMessage($discussionInfos["type"],$discussionInfos["id"],$request->request->get("content"),intval($request->request->get("from")),$request->request->get("dateStart"),$request->request->get("dateEnd"),null);
 			foreach ($messages as $message) {
 				$retour[] = $message->getAsArray();
 			}
 			$data["data"] = $retour;
-//		}	
+		}
 		return new JsonResponse($data);
 	}
+
+	public function getDriveMessageAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+        $securityContext = $this->get('security.authorization_checker');
+
+        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED') || !$this->get("app.messages")->isAllowed($this->getUser(),$request->request->get("discussionKey"))) {
+            $data['errors'][] = "notconnected";
+        }
+        else {
+            $messages = $this->get("app.messages")->searchDriveMessage($request->request->get("discussionKey"),$this->getUser());
+            foreach ($messages as $message){
+                $data["data"][] = $message->getAsArray();
+            }
+        }
+        return new JsonResponse($data);
+    }
+
+
+
+
+
 /*
 	public function uploadAction(Request $request) {
 

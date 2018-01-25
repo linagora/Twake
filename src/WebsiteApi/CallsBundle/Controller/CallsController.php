@@ -28,7 +28,7 @@ class CallsController extends Controller
 
 		$discussionKey = $request->request->get("discussionKey");
 
-		$token = $this->get("app.calls")->joinCall($this->getUser(), $discussionKey);
+		$token = $this->get("app.callSystem")->joinCall($this->getUser(), $discussionKey);
 
 		if ($token == null) {
 			$data["errors"][] = "Unknown error";
@@ -55,7 +55,7 @@ class CallsController extends Controller
             return new JsonResponse($data);
         }
 
-		$data = $this->get("app.calls")->getCallInfo($this->getUser(), $discussionKey);
+		$data = $this->get("app.callSystem")->getCallInfo($this->getUser(), $discussionKey);
 
 		if ($data == null) {
 			$data["errors"][] = "Unknown error";
@@ -81,8 +81,8 @@ class CallsController extends Controller
             return new JsonResponse($data);
         }
 
-		$this->get("app.calls")->exitCalls($this->getUser());
-
+		$this->get("app.callSystem")->exitCalls($this->getUser());
+        error_log("end exit controler");
         return new JsonResponse($data);
 	}
 

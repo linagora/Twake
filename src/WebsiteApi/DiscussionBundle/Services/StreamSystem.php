@@ -44,6 +44,7 @@ class StreamSystem
         if($link != null){
             return true;
         }
+        error_log("streamSystem : not allowed");
         return false;
     }
 
@@ -51,7 +52,7 @@ class StreamSystem
     public function createStream($user, $workspaceId,$streamName,$streamPrivacy)
     {
         if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            $data['errors'][] = "notconnected";
+            return;
         } else {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
             if ($workspace == null) {
@@ -71,7 +72,7 @@ class StreamSystem
 
     public function editStream($streamId,$name,$privacy,$members){
         if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            $data['errors'][] = "notconnected";
+            return;
         } else {
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
             if($stream != null) {
