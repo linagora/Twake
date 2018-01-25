@@ -20,6 +20,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	{
 		//Load rights for this users
 
+
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 		$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
@@ -31,6 +32,10 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			return false;
 		}
 
+		if($workspace->getUser() != null && $workspace->getUser()->getId()==$userId){
+			return true;
+		}
+
 		$link = $workspaceUserRepository->findOneBy(Array("user"=>$user, "workspace"=>$workspace));
 
 		if(!$link || !$link->getLevel()){
@@ -39,6 +44,10 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 		if($link->getLevel()->getisAdmin()){
 			return true; //Admin can do everything
+		}
+
+		if($action=="" || $action==null){
+			return true;
 		}
 
 		$rights = $link->getLevel()->getRights();
@@ -302,9 +311,9 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	}
 
 	// @Depreciated
-	public function errorsAccess($user, $workspace, $right)
+	public function errorsAccess($user, $workspaceId, $right)
 	{
-		if($this->can($workspace->getId(), $user->getId(), $right)){
+		if($this->can($workspaceId, $user->getId(), $right)){
 			return [];
 		}
 		return ["notallowed"];

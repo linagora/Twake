@@ -57,7 +57,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 		if ($group == null) {
 			return false;
 		}
-		return $group->getDriveSize();
+		return 50000000000;
+		//TODO return $group->getDriveSize();
 	}
 
 	public function setTotalSpace($group, $space)

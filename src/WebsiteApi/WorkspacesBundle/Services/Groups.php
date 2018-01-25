@@ -22,18 +22,24 @@ class Groups implements GroupsInterface
 	{
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+		$planRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
 
 		$user = $userRepository->find($userId);
+		$plan = $planRepository->find($planId);
 
-		$groupUsingThisName = $groupRepository->findOneBy(Array("name" => $uniquename));
-
-		if($groupUsingThisName){
-			return false;
+		//Find a name
+		$groupUsingThisName = 1;
+		$increment = 0;
+		$uniquenameIncremented = $uniquename;
+		while($groupUsingThisName!=null) {
+			$groupUsingThisName = $groupRepository->findOneBy(Array("name" => $uniquenameIncremented));
+			$increment+=1;
+			$uniquenameIncremented = $uniquename."-".$increment;
 		}
 
 		$group = new Group($uniquename);
 		$group->setDisplayName($name);
-		$group->setPricingPlan($planId);
+		$group->setPricingPlan($plan);
 
 		$this->doctrine->persist($group);
 		$this->doctrine->flush();

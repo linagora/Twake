@@ -50,6 +50,13 @@ class Workspace
 	 */
 	private $date_added;
 
+	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	private $isDeleted;
+
+
+
 	public function __construct($name) {
 		$this->name = $name;
 		$this->date_added = new \DateTime();
@@ -127,9 +134,29 @@ class Workspace
 		$this->user = $user;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getisDeleted()
+	{
+		return $this->isDeleted;
+	}
+
+	/**
+	 * @param mixed $isDeleted
+	 */
+	public function setIsDeleted($isDeleted)
+	{
+		$this->isDeleted = $isDeleted;
+	}
+
 	public function getAsArray(){
 		return Array(
-			"name"=> $this->getName()
+			"id"=> $this->getId(),
+			"private" => $this->getUser()!=null,
+			"logo" => (($this->getLogo())?$this->getLogo()->getPublicURL():""),
+			"group" => (($this->getGroup())?$this->getGroup()->getAsArray():null),
+			"name" => $this->getName()
 		);
 	}
 

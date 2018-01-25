@@ -325,7 +325,7 @@ class DefaultController extends Controller
 		else {
 			$users = $this->getUser()->getContacts();
 			$users[] = $this->getUser();
-			$groupsLinks = $manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findBy(Array("User" => $this->getUser(), "status" => "A"));
+			$groupsLinks = $manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("User" => $this->getUser(), "status" => "A"));
 
 			$groups = Array();
 			foreach ($groupsLinks as $groupLink) {

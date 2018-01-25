@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
-use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class UsersConnectionsController extends Controller

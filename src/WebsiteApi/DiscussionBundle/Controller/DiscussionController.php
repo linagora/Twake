@@ -468,7 +468,7 @@ class DiscussionController extends Controller
 				$uids = $request->request->get("uids");
 				$users = $manager->getRepository("TwakeUsersBundle:User")->findBy(Array("id" => array_keys($uids)));
 				foreach ($users as $user) {
-					if ($manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findBy(Array("Workspace" => $workspace, "User" => $user)) == null) {
+					if ($manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("Workspace" => $workspace, "User" => $user)) == null) {
 						$data['data'][] = "usernotingroup" . $user->getId();
 					}
 					if ($uids[$user->getId()] == false) {

@@ -11,4 +11,7 @@ interface PricingPlanInterface
 	// @init pricings
 	public function init();
 
+	// @getMinimalPricing return a pricing plan
+	public function getMinimalPricing();
+
 }

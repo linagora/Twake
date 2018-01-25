@@ -40,7 +40,7 @@ class StreamSystem
         if($workspace==null || $user==null){
             return false;
         }
-        $link = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("User"=>$user,"Workspace"=>$workspace));
+        $link = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("User"=>$user,"Workspace"=>$workspace));
         if($link != null){
             return true;
         }
@@ -118,7 +118,7 @@ class StreamSystem
                     $retour["stream"][] = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
                 }
             }
-            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->getSomeUsers($workspace,"A",null,null);
+            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->getSomeUsers($workspace,"A",null,null);
             foreach($members as $member){
                 $key = min($user->getId(),$member->getUser()->getId())."_".max($user->getId(),$member->getUser()->getId());
                 $isRead = $isRead = $this->messageReadSystem->streamIsReadByKey($key,$user);

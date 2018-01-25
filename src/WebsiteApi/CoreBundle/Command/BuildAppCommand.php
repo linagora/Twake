@@ -12,7 +12,7 @@ use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
 use WebsiteApi\WorkspacesBundle\Entity\Level;
-use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\PaymentsBundle\Entity\PriceLevel;
 use WebsiteApi\UploadBundle\Entity\File;
