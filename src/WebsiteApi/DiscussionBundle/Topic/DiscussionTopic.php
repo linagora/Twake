@@ -136,11 +136,10 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 				}
 			}
             elseif ($operation == 'MM') { // move message in other
-                if (isset($event['data']) && isset($event['data']['idDrop']) && isset($event['data']['idDragged']) && $event['data']['idDragged']!=$event['data']['idDrop']) {
-                    $messageDrop = $this->messagesService->moveMessageInMessage($event["data"]["idDrop"],$event["data"]["idDragged"]);
-                    $idDragged = $event['data']['idDragged'];
-                    if($messageDrop){
-                        $event["data"]["messageDrop"] = array_merge($messageDrop,array("idDragged"=>$idDragged));
+                if (isset($event['data']) && isset($event['data']['idDragged']) && isset($event['data']['idDragged'])  && $event['data']['idDragged']!=$event['data']['idDrop']) {
+                    $messageDropInfos = $this->messagesService->moveMessageInMessage($event["data"]["idDrop"],$event["data"]["idDragged"]);
+                    if($messageDropInfos){
+                        $event["data"] = $messageDropInfos;
                     }
                     else{
                         $canBroadcast = false;
@@ -150,6 +149,24 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                     $canBroadcast = false;
                 }
             }
+			elseif ($operation == 'MMnot') { // remove message from message
+                if (isset($event['data']) && isset($event['data']['idDragged'])) {
+                    $messageInfos= $this->messagesService->moveMessageOutMessage($event["data"]["idDragged"]);
+                    if($messageInfos){
+                        $event["data"]= $messageInfos;
+                    }
+                    else{
+                        $canBroadcast = false;
+                    }
+                }
+                else{
+                    $canBroadcast = false;
+                }
+            }
+            else{
+            	$canBroadcast = false;
+			}
+
 			if($canBroadcast){
             	$topic->broadcast($event);
 			}

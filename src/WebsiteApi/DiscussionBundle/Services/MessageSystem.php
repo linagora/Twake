@@ -236,16 +236,44 @@ class MessageSystem implements MessagesSystemInterface
 
     public function moveMessageInMessage($idDrop,$idDragged){
 	    $messageDragged = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idDragged);
-	    $messageDrop = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idDrop);
-	    if($messageDragged == null || $messageDrop == null){
+        $messageDrop = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idDrop);
+	    if($messageDrop == null || $messageDragged == null){
 	        return false;
         }
+        $from = $messageDragged->getResponseTo();
+
         $messageDragged->setResponseTo($messageDrop);
-	    $this->doctrine->persist($messageDragged);
+        $this->doctrine->persist($messageDragged);
         $this->setResponseMessage($messageDragged,$messageDrop);
-	    $this->doctrine->flush();
-	    return $this->getMessageAsArray($messageDrop);
+        $this->doctrine->flush();
+        if($from != null){
+            $from = $this->getMessageAsArray($from);
+        }
+        $retour = Array(
+            "messageDrop" => $this->getMessageAsArray($messageDrop),
+            "idDragged" => $idDragged,
+            "from" => $from,
+        );
+        return $retour;
+	}
+
+    public function moveMessageOutMessage($idDragged){
+        $messageDragged = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idDragged);
+        if($messageDragged == null )
+            return false;
+        $oldMessage = $messageDragged->getResponseTo();
+        if( $oldMessage == null){
+            return false;
+        }
+        $messageDragged->setResponseTo(null);
+        $this->doctrine->persist($messageDragged);
+        $this->doctrine->flush();
+        if($messageDragged)
+        $message["oldMessage"] = $this->getMessageAsArray($oldMessage);
+        $message["messageDrag"] = $this->getMessageAsArray($messageDragged);
+        return $message;
     }
+
 
     private function setResponseMessage($messageParent,$messageDroped){
 	    $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo"=>$messageParent));
