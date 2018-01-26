@@ -38,7 +38,14 @@ class WorkspaceController extends Controller
 			foreach ($apps_obj as $app_obj){
 				$apps[] = $app_obj->getAsArray();
 			}
-			$response["data"]["apps"] = $apps;
+            $response["data"]["apps"] = $apps;
+
+			$users_obj = $this->get("app.workspace_members")->getMembers($workspaceId,$this->getUser()->getId());
+			$users = Array();
+			foreach($users_obj as $user_obj){
+                $users[] = $user_obj->getAsArray();
+            }
+			$response["data"]["members"] = $users;
 		}
 
 		return new JsonResponse($response);
