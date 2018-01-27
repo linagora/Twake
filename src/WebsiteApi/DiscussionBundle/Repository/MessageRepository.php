@@ -70,6 +70,35 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
         return $result;
     }
 
+    public function findWithOffsetId($typeReciever,$recieverid,$maxId,$subjectId,$userId){
+        $qb = $this->createQueryBuilder("m");
+        $qb->where("m.typeReciever = :type");
+        $qb->setParameter("type",$typeReciever);
+        if($typeReciever=="S"){
+            $qb->andWhere("m.streamReciever = :streamId")
+                ->setParameter("streamId",$recieverid);
+        }
+        else{
+            $qb->andWhere('m.userSender = :id1 AND m.userReciever = :id2 OR m.userSender = :id2 AND m.userReciever = :id1')
+                ->setParameter("id1",$userId)
+                ->setParameter("id2",$recieverid);
+        }
+        if($subjectId){
+        $qb->andWhere("m.subject = :subject")
+            ->setParameter("subject",$subjectId);
+        }
+
+        if($maxId>=0){
+            error_log("maxId");
+            $qb->andWhere("m.id < :max")
+                ->setParameter("max",$maxId);
+        }
+        $qb->orderBy('m.date', 'DESC');
+        $qb->setMaxResults(50);
+        $result = $qb->getQuery()->getResult();
+        return $result;
+    }
+
 //    public function getMessagesByKey($key,$limit){
 //	    $ids = explode("_",$key);
 //        $qb = $this->createQueryBuilder("m");

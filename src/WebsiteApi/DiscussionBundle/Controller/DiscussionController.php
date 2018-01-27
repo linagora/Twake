@@ -30,8 +30,9 @@ class DiscussionController extends Controller
             else{
                 $discussion = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
                 $messages = [];
-                $offset = intval($request->request->get("offset"));
-                $messages = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],$offset,$request->request->get("subject"));
+                $offsetId= intval($request->request->get("offsetId"));
+                $messages = $this->get("app.messages")->getMessages($discussion["type"],$discussion["id"],$offsetId,$request->request->get("subject"),$this->getUser());
+
                 error_log(count($messages));
                 $data["data"] = $messages;
                 error_log("nb message : ".count($messages));

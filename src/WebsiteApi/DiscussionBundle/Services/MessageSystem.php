@@ -103,42 +103,18 @@ class MessageSystem implements MessagesSystemInterface
         return false;
     }
 
-    public function getMessages($user,$recieverType,$recieverId,$offset,$subjectId){
-	    error_log("get message, reciever type".$recieverType.", revcieverId:".$recieverId);
-	    if($recieverType == "S"){
-	        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
-	        if($stream != null){
-	            if(isset($subjectId) && $subjectId!=null ){
-                    $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
-                }
-                else{
-	                $subject = null;
-                }
-	            $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("typeReciever" => "S", "streamReciever" => $stream),Array("date"=>"DESC"), $limit = 30, $offset = $offset);
-                $messages = array_reverse($messages);
-                $retour = [];
-                foreach($messages as $message){
-                    $messageArray = $this->getMessageAsArray($message);
-                    if($messageArray){
-                        $retour[] = $messageArray;
-                    }
-                }
-                return $retour;
+    public function getMessages($recieverType,$recieverId,$maxId,$subjectId,$user){
+	    error_log("get message, reciever type:".$recieverType.", revcieverId:".$recieverId.", maxId:".$maxId);
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverType,$recieverId,intval($maxId),$subjectId,$user->getId());
+        $messages = array_reverse($messages);
+        $retour = [];
+        foreach($messages as $message){
+            $messageArray = $this->getMessageAsArray($message);
+            if($messageArray){
+                $retour[] = $messageArray;
             }
         }
-        elseif($recieverType == "U"){
-            $otherUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
-            if($otherUser != null){
-                $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $otherUser,"userReciever"=>$user),Array("date"=>"DESC"), $limit = $offset, $offset = 0);
-                $messages = array_merge($messages,$this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("userSender" => $user,"userReciever"=>$otherUser),Array("date"=>"DESC"), $limit = 30, $offset = $offset));
-                $messages = array_reverse($messages);
-;               $retour = [];
-                foreach($messages as $message){
-                    $retour[] = $this->getMessageAsArray($message);
-                }
-                return $retour;
-            }
-        }
+        return $retour;
    }
 
     public function pinMessage($id,$pinned){
