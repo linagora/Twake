@@ -30,8 +30,9 @@ class DiscussionController extends Controller
             else{
                 $discussion = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
                 $messages = [];
-                $offset = intval($request->request->get("offset"));
-                $messages = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],$offset,$request->request->get("subject"));
+                $offsetId= intval($request->request->get("offsetId"));
+                $messages = $this->get("app.messages")->getMessages($discussion["type"],$discussion["id"],$offsetId,$request->request->get("subject"),$this->getUser());
+
                 error_log(count($messages));
                 $data["data"] = $messages;
                 error_log("nb message : ".count($messages));
@@ -60,14 +61,7 @@ class DiscussionController extends Controller
                         $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$this->getUser(),"stream"=>$stream));
                         if($link != null){
                             $subjects = $this->get("app.subjectSystem")->getSubject($stream);
-                            $retour = [];
-                            foreach($subjects as $subject){
-                                $fistMessage = $this->get("app.subjectSystem")->getFirstMessage($subject);
-                                $lastMessage = $this->get("app.subjectSystem")->getLastMessage($subject);
-                                $retour[] = $subject->getAsArray();
-
-                            }
-                            $data["data"] = $retour;
+                            $data["data"] = $subjects;
                         }
                         else{
                             $data['errors'][] = "notindiscussion";
@@ -168,6 +162,7 @@ class DiscussionController extends Controller
 		else {
 			$discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
 			$messages = $this->get("app.messages")->searchMessage($discussionInfos["type"],$discussionInfos["id"],$request->request->get("content"),intval($request->request->get("from")),$request->request->get("dateStart"),$request->request->get("dateEnd"),null);
+            $retour = Array();
 			foreach ($messages as $message) {
 				$retour[] = $message->getAsArray();
 			}

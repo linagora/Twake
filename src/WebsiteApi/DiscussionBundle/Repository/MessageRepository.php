@@ -11,14 +11,14 @@ namespace WebsiteApi\DiscussionBundle\Repository;
 class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
 	public function findMessageBy($param){
-		if($param["dateStart"] != null){
+		if(isset($param["dateStart"]) && $param["dateStart"] != null){
 			$dateStart = new \DateTime($param["dateStart"]." 00:00:00");
 		}
 		else{
 			$dateStart = new \DateTime("1/1/1980 00:00:00");
 		}
 
-		if($param["dateEnd"] != null){
+		if(isset($param["dateEnd"]) && $param["dateEnd"] != null){
 			$dateEnd = new \DateTime($param["dateEnd"]." 00:00:00");
 		}
 		else{
@@ -26,17 +26,24 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 		}
 		$qb = $this->createQueryBuilder("e");
 
-		$qb->where('e.streamReciever = :id')
-        ->setParameter('id', $param["idDiscussion"]);
+		if(isset($param["idDiscussion"]) && $param["idDiscussion"]!=null){
+            $qb->where('e.streamReciever = :id')
+            ->setParameter('id', $param["idDiscussion"]);
+        }
 
-		$qb->andWhere('e.cleanContent LIKE :content')
+        if(isset($param["idUser"]) && $param["idUser"]!=null){
+            $qb->where('e.userSender= :id OR e.userReciever=:id')
+            ->setParameter('id', $param["idDiscussion"]);
+        }
+
+        $qb->andWhere('e.cleanContent LIKE :content')
         ->setParameter('content', '%'.$param["content"].'%' );
 
 		$qb->andWhere('e.date BETWEEN :from AND :to')
         ->setParameter('from', $dateStart )
         ->setParameter('to', $dateEnd);
 
-        if($param["from"] != null){
+        if(isset($param["from"]) && $param["from"] != null){
         	$qb->andWhere('e.userSender = :idSender')
         	->setParameter('idSender',$param["from"]);
         }
@@ -59,6 +66,35 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
         $qb->setParameter("idStream",$streamId);
         $qb->orderBy("m.date","DESC");
         $qb->setMaxResults($limit);
+        $result = $qb->getQuery()->getResult();
+        return $result;
+    }
+
+    public function findWithOffsetId($typeReciever,$recieverid,$maxId,$subjectId,$userId){
+        $qb = $this->createQueryBuilder("m");
+        $qb->where("m.typeReciever = :type");
+        $qb->setParameter("type",$typeReciever);
+        if($typeReciever=="S"){
+            $qb->andWhere("m.streamReciever = :streamId")
+                ->setParameter("streamId",$recieverid);
+        }
+        else{
+            $qb->andWhere('m.userSender = :id1 AND m.userReciever = :id2 OR m.userSender = :id2 AND m.userReciever = :id1')
+                ->setParameter("id1",$userId)
+                ->setParameter("id2",$recieverid);
+        }
+        if($subjectId){
+        $qb->andWhere("m.subject = :subject")
+            ->setParameter("subject",$subjectId);
+        }
+
+        if($maxId>=0){
+            error_log("maxId");
+            $qb->andWhere("m.id < :max")
+                ->setParameter("max",$maxId);
+        }
+        $qb->orderBy('m.date', 'DESC');
+        $qb->setMaxResults(10);
         $result = $qb->getQuery()->getResult();
         return $result;
     }

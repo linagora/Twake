@@ -105,6 +105,10 @@ class Message
 	 */
 	private $subject = null;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $applicationData = "{}";
 
 
 	public function __construct($sender,$typeReciever,$reciever,$isApplicationMessage,$applicationMessage,$isSystemMessage,$date,$content,$cleanContent,$subject){
@@ -370,6 +374,22 @@ class Message
         $this->subject = $subject;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getApplicationData()
+    {
+        return json_decode($this->applicationData);
+    }
+
+    /**
+     * @param mixed $applicationData
+     */
+    public function setApplicationData($applicationData)
+    {
+        $this->applicationData = json_encode($applicationData);
+    }
+
 
 
 
@@ -383,7 +403,7 @@ class Message
             "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
 
             "isApplicationMessage" => $this->getIsApplicationMessage(),
-            "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getId():null,
+            "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getAsArray():null,
             "isSystemMessage" => $this->getIsSystemMessage(),
 
             "content" => $this->getContent(),
@@ -392,6 +412,7 @@ class Message
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),
             "subject" => ($this->getSubject()!=null)?$this->getSubject()->getAsArray():null,
+            "applicationData" => $this->getApplicationData(),
         );
 
     }

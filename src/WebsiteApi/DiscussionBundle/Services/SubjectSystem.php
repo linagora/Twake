@@ -58,6 +58,11 @@ class SubjectSystem
             return false;
         }
         $subjects = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->findBy(Array("stream"=>$stream),Array("dateUpdate"=>"DESC"));
+        $retour = [];
+        foreach ($subjects as $subject){
+            $subjectArray = $subject->getAsArray();
+            $subjectArray["lastMessage"] = $this->getLastMessage($subject);
+        }
         return $subjects;
     }
 
