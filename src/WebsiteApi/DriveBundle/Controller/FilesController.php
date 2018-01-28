@@ -204,9 +204,7 @@ class FilesController extends Controller
 		$parentId = $request->request->has("parentId") ? $request->request->get("parentId") : 0;
 		$file = $_FILES["file"];
 
-		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
-
-		if (count($data["errors"]) == 0) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit")) {
 
 			$file = $this->get('app.drive.FileSystem')->upload($groupId, $parentId, $file, $this->get("app.upload"));
 
@@ -320,15 +318,15 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$fileId = $request->request->get("fileId", 0);
 		$filename = $request->request->get("name", "");
+		$description = $request->request->get("description", "");
+		$labels = $request->request->get("labels", Array());
 
-		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
-
-		if (count($data["errors"]) == 0) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit")) {
 			if ($filename == "") {
 				$data["errors"][] = "emptyname";
-			} else if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
+			} else if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())){
 				$data["errors"][] = "notallowed";
-			} else if (!$this->get('app.drive.FileSystem')->rename($fileId, $filename)) {
+			} else if (!$this->get('app.drive.FileSystem')->rename($fileId, $filename, $description, $labels)) {
 				$data["errors"][] = "unknown";
 			}
 		}
@@ -341,9 +339,7 @@ class FilesController extends Controller
 		$groupId = $request->query->get("groupId", 0);
 		$fileId = $request->query->get("fileId", 0);
 
-		$errors = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
-
-		if (count($errors) == 0) {
+		if ($this->get('app.workspace_levels')->can($groupId,$this->getUser()->getId(), "Drive:general:edit")) {
 
 			$data = $this->get('app.drive.FileSystem')->getRawContent($fileId);
 			return new Response($data, 200);

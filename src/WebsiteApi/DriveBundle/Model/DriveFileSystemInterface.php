@@ -33,7 +33,7 @@ interface DriveFileSystemInterface
 	public function copy($fileOrDirectory, $newParent = null); // $fileOrDirectory : entity or id
 
 	// @rename renames a file
-	public function rename($fileOrDirectory, $filename); // $file : entity or id, $filename : string
+	public function rename($fileOrDirectory, $filename, $description=null, $labels=Array()); // $file : entity or id, $filename : string
 
 	// @create creates a file in a directory with optional content
 	public function create($group, $directory, $filename, $content = "", $isDirectory = false); // $file : entity or id
