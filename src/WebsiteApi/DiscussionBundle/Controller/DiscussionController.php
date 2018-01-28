@@ -61,14 +61,7 @@ class DiscussionController extends Controller
                         $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$this->getUser(),"stream"=>$stream));
                         if($link != null){
                             $subjects = $this->get("app.subjectSystem")->getSubject($stream);
-                            $retour = [];
-                            foreach($subjects as $subject){
-                                $fistMessage = $this->get("app.subjectSystem")->getFirstMessage($subject);
-                                $lastMessage = $this->get("app.subjectSystem")->getLastMessage($subject);
-                                $retour[] = $subject->getAsArray();
-
-                            }
-                            $data["data"] = $retour;
+                            $data["data"] = $subjects;
                         }
                         else{
                             $data['errors'][] = "notindiscussion";
