@@ -253,7 +253,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	}
 
-	public function rename($fileOrDirectory, $filename)
+	public function rename($fileOrDirectory, $filename, $description=null, $labels=Array())
 	{
 
 		$fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
@@ -262,9 +262,49 @@ class DriveFileSystem implements DriveFileSystemInterface
 			return false;
 		}
 
+		//Update labels
+		$labelsRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel");
+		$old_labels = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("file"=>$fileOrDirectory));
+
+		foreach ($old_labels as $old_label){
+			$found = false;
+			foreach ($labels as $new_label) {
+				if ($old_label->getId() == $new_label["id"]) {
+					$found = true;
+					break;
+				}
+			}
+			if(!$found) {
+				$this->doctrine->remove($old_label);
+			}
+		}
+
+		foreach ($labels as $new_label){
+			$found = false;
+			foreach ($old_labels as $old_label) {
+				if ($old_label->getId() == $new_label["id"]) {
+					$found = true;
+					break;
+				}
+			}
+			if(!$found) {
+				$l = $labelsRepository->find($new_label["id"]);
+				if($l) {
+					$new_label = new DriveFileLabel($fileOrDirectory, $l);
+					$this->doctrine->persist($new_label);
+				}
+			}
+		}
+
+		//End update label
+
 		$fileOrDirectory->setName($filename);
+		$fileOrDirectory->setDescription($description);
+		$fileOrDirectory->setCache("labels", $labels);
 		$this->improveName($fileOrDirectory);
 		$this->doctrine->persist($fileOrDirectory);
+
+		//Flush
 		$this->doctrine->flush();
 
 		return true;

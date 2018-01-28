@@ -1,3 +1,17 @@
+# Labels
+
+twake_drive_labels_get:
+    path:     /labels/get
+    defaults: { _controller: TwakeDriveBundle:FilesLabels:get }
+    methods: [POST]
+
+twake_drive_labels_update:
+    path:     /labels/update
+    defaults: { _controller: TwakeDriveBundle:FilesLabels:update }
+    methods: [POST]
+
+# Drive
+
 twake_drive_create:
     path:     /create
     defaults: { _controller: TwakeDriveBundle:Files:create }
