@@ -152,24 +152,46 @@ class FilesController extends Controller
 
 		$groupId = $request->request->get("groupId", 0);
 		$parentId = $request->request->get("parentId", 0);
-		$isInTrash = $request->request->get("isInTrash", false);
+		$state = $request->request->get("state", "");
+		$offset = $request->request->get("offset", 0);
+		$max = $request->request->get("max", 50);
 
-		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$isInTrash = false;
+		if($state == "deleted"){
+			$isInTrash = true;
+		}
 
-		if (count($data["errors"]) == 0) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit")) {
 
-			$arbo = [];
-			$parent = $this->get('app.drive.FileSystem')->getObject($parentId);
-			while ($parent != null) {
-				$arbo[] = Array("id" => $parent->getId(), "name" => $parent->getName());
-				$parent = $parent->getParent();
-			}
-			$data["data"]["tree"] = array_reverse($arbo);
+			if($state == "new") {
 
-			if ($isInTrash && $parentId == 0) {
-				$files = $this->get('app.drive.FileSystem')->listTrash($groupId);
+				$files = $this->get('app.drive.FileSystem')->listNew($groupId, $offset, $max);
+
+			} else if($state == "shared") {
+
+				$files = $this->get('app.drive.FileSystem')->listShared($groupId, $offset, $max);
+
+			} else if($state == "search") {
+
+				$query = $request->request->get("query", "");
+				$files = $this->get('app.drive.FileSystem')->search($groupId, $query, $offset, $max);
+
 			} else {
-				$files = $this->get('app.drive.FileSystem')->listDirectory($groupId, $parentId);
+
+				$arbo = [];
+				$parent = $this->get('app.drive.FileSystem')->getObject($parentId);
+				while ($parent != null) {
+					$arbo[] = Array("id" => $parent->getId(), "name" => $parent->getName());
+					$parent = $parent->getParent();
+				}
+				$data["data"]["tree"] = array_reverse($arbo);
+
+				if ($isInTrash && $parentId == 0) {
+					$files = $this->get('app.drive.FileSystem')->listTrash($groupId, $parentId);
+				} else {
+					$files = $this->get('app.drive.FileSystem')->listDirectory($groupId, $parentId);
+				}
+
 			}
 
 			foreach ($files as $file) {
@@ -180,6 +202,7 @@ class FilesController extends Controller
 
 			$data["data"]["maxspace"] = $this->get('app.drive.FileSystem')->getTotalSpace($groupId);
 			$data["data"]["totalsize"] = $data["data"]["maxspace"] - $this->get('app.drive.FileSystem')->getFreeSpace($groupId);
+
 
 		}
 

@@ -39,10 +39,28 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
 
 	}
 
-	public function search($group, $query, $offset = 0, $max = 20)
+	public function search($group, $query, $sorts, $offset = 0, $max = 20)
 	{
-		//TODO implement search method
-		return [];
+		$qb = $this->createQueryBuilder('f')
+			->select('f')
+			->where('f.group = :group');
+
+		foreach ($sorts as $key=>$sort){
+			$qb = $qb->addOrderBy("f.".$key, $sort);
+		}
+
+		//Query search
+		if(is_string($query)) {
+			$qb = $qb->andWhere($qb->expr()->like("f.name", ":query"));
+			$qb = $qb->setParameter("query", $query);
+		}
+
+		$qb = $qb->setParameter("group", $group);
+
+		$qb = $qb->setMaxResults($max);
+		$qb = $qb->setFirstResult($offset);
+
+		return $qb->getQuery()->getResult();
 	}
 
 
