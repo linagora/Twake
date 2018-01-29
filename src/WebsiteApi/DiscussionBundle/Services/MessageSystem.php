@@ -107,7 +107,7 @@ class MessageSystem implements MessagesSystemInterface
 	    error_log("get message, reciever type:".$recieverType.", revcieverId:".$recieverId.", maxId:".$maxId);
         $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverType,$recieverId,intval($maxId),$subjectId,$user->getId());
         error_log("end findWithOffsetId");
-        //$messages = array_reverse($messages);
+        $messages = array_reverse($messages);
         $retour = [];
         error_log("start foreach");
         foreach($messages as $message){
