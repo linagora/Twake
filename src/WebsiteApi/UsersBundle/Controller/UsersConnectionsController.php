@@ -7,14 +7,15 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class UsersConnectionsController extends Controller
 {
 
 	public function loginAction(Request $request)
 	{
-
-		$this->get("app.user")->requestNewPassword("romaricm@wanadoo.fr");
 
 		$data = Array(
 			"errors" => Array(),
@@ -25,10 +26,15 @@ class UsersConnectionsController extends Controller
 		$password = $request->request->get("_password", "");
 		$rememberMe = $request->request->get("_remember_me", true);
 
-		$response = new Response();
+		$response = new JsonResponse();
 		$loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
 
 		if ($loginResult) {
+
+			$device = $request->request->get("device", false);
+			if($device) {
+				$this->get("app.user")->removeDevice($this->getUser()->getId(), $device["type"], $device["value"]);
+			}
 
 			$data["data"]["status"] = "connected";
 
@@ -38,13 +44,19 @@ class UsersConnectionsController extends Controller
 
 		}
 
-		return new JsonResponse($data);
+		$response->setContent(json_encode($data));
+
+		return $response;
 
 	}
 
 	public function logoutAction(Request $request)
 	{
 
+		$device = $request->request->get("device", false);
+		if($device) {
+			$this->get("app.user")->removeDevice($this->getUser()->getId(), $device["type"], $device["value"]);
+		}
 		$this->get("app.user")->logout();
 		return new JsonResponse(Array());
 
@@ -66,17 +78,16 @@ class UsersConnectionsController extends Controller
 
 			$data["data"]["status"] = "connected";
 
-			$workspaces = $this->getUser()->getWorkspaces();
+			$private = $this->get("app.workspaces")->getPrivate($this->getUser()->getId());
+			$workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
 
-			$groups = Array();
-			foreach ($workspaces as $workspace) {
-				if($workspace->getIsDeleted() == false){
-					$groups[]
-						= $workspace->getAsSimpleArray();
-				}
-			};
+			$workspaces = Array();
+			foreach ($workspaces_obj as $workspace_obj){
+				$workspaces[] = $workspace_obj->getAsArray();
+			}
 
-			$data["data"]["groups"] = $groups;
+			$data["data"]["workspaces"] = $workspaces;
+			$data["data"]["privateworkspace"] = $private->getAsArray();
 
 		}
 

@@ -7,6 +7,10 @@ message_search:
     path:     /searchMessage
     defaults: { _controller: TwakeDiscussionBundle:Discussion:searchMessage}
 
+message_get_drive_message:
+    path:     /getDriveMessage
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:getDriveMessage}
+
 message_read:
     path:     /read
     defaults: { _controller: TwakeDiscussionBundle:MessageRead:readMessage}

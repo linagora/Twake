@@ -78,7 +78,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 		$currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
 
 		//Verify that this user is allowed to do this
-		if ($this->messagesService->isAllowed($currentUser, $type, $id)) {
+		if ($this->messagesService->isAllowed($currentUser, $key)) {
 
 			//We can speak
 
@@ -86,8 +86,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             $operation = $event['type'];
 
             if($operation == "C"){
-
-                $message = $this->messagesService->sendMessage("U",$currentUser->getId(), $type, $id, $event['data']['content'], $event["data"]['subject']);
+                $message = $this->messagesService->sendMessage($currentUser->getId(), $type, $id, false, null, false,  $event['data']['content'], $event["data"]['subject']);
 				if($message){
                     $event["data"] = $message->getAsArray();
 				}
@@ -97,7 +96,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 			}
             else if($operation == "E"){
             	$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($event["data"]["id"]);
-            	if($message != null && $message->getTypeSender()=="U" && $message->getUserSender()==$currentUser){
+            	if($message != null && $message->getUserSender()==$currentUser){
 	                $message = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
 	                if($message){
                         $event["data"] = $message->getAsArray();
@@ -137,11 +136,10 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 				}
 			}
             elseif ($operation == 'MM') { // move message in other
-                if (isset($event['data']) && isset($event['data']['idDrop']) && isset($event['data']['idDragged']) && $event['data']['idDragged']!=$event['data']['idDrop']) {
-                    $messageDrop = $this->messagesService->moveMessageInMessage($event["data"]["idDrop"],$event["data"]["idDragged"]);
-                    $idDragged = $event['data']['idDragged'];
-                    if($messageDrop){
-                        $event["data"]["messageDrop"] = array_merge($messageDrop,array("idDragged"=>$idDragged));
+                if (isset($event['data']) && isset($event['data']['idDragged']) && isset($event['data']['idDragged'])  && $event['data']['idDragged']!=$event['data']['idDrop']) {
+                    $messageDropInfos = $this->messagesService->moveMessageInMessage($event["data"]["idDrop"],$event["data"]["idDragged"]);
+                    if($messageDropInfos){
+                        $event["data"] = $messageDropInfos;
                     }
                     else{
                         $canBroadcast = false;
@@ -151,6 +149,24 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                     $canBroadcast = false;
                 }
             }
+			elseif ($operation == 'MMnot') { // remove message from message
+                if (isset($event['data']) && isset($event['data']['idDragged'])) {
+                    $messageInfos= $this->messagesService->moveMessageOutMessage($event["data"]["idDragged"]);
+                    if($messageInfos){
+                        $event["data"]= $messageInfos;
+                    }
+                    else{
+                        $canBroadcast = false;
+                    }
+                }
+                else{
+                    $canBroadcast = false;
+                }
+            }
+            else{
+            	$canBroadcast = false;
+			}
+
 			if($canBroadcast){
             	$topic->broadcast($event);
 			}

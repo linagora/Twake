@@ -56,10 +56,18 @@ class Call
 	 */
 	private $token;
 
-	public function __construct($key){
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message")
+     */
+
+    private $message;
+
+
+    public function __construct($key,$message){
 		$this->since = new \DateTime();
 		$this->nbclients = 0;
 		$this->discussionKey = $key;
+		$this->setMessage($message);
 		$this->token = sha1(bin2hex(random_bytes(20)));
 	}
 
@@ -91,6 +99,24 @@ class Call
 	{
 		return $this->token;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getMessage()
+    {
+        return $this->message;
+    }
+
+    /**
+     * @param mixed $message
+     */
+    public function setMessage($message)
+    {
+        $this->message = $message;
+    }
+
+
 
 }
 

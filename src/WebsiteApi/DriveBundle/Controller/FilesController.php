@@ -27,7 +27,7 @@ class FilesController extends Controller
 	    $content = $request->request->get("content", "");
 	    $isDirectory = $request->request->get("isDirectory", true);
 
-	    $data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+	    $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
 
 	    if (count($data["errors"]) == 0) {
 
@@ -57,7 +57,7 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$fileId = $request->request->get("fileId", 0);
 
-		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
 
 		if (count($data["errors"]) == 0) {
 
@@ -79,7 +79,7 @@ class FilesController extends Controller
 
 		$groupId = $request->request->get("groupId", 0);
 
-		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
 
 		if (count($data["errors"]) == 0) {
 			if (!$this->get('app.drive.FileSystem')->emptyTrash($groupId)) {
@@ -99,7 +99,7 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$fileId = $request->request->get("fileId", 0);
 
-		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
 
 		if (count($data["errors"]) == 0) {
 
@@ -131,7 +131,7 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$objectId = $request->request->get("id", 0);
 
-		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
 
 		if (count($data["errors"]) == 0) {
 
@@ -152,24 +152,46 @@ class FilesController extends Controller
 
 		$groupId = $request->request->get("groupId", 0);
 		$parentId = $request->request->get("parentId", 0);
-		$isInTrash = $request->request->get("isInTrash", false);
+		$state = $request->request->get("state", "");
+		$offset = $request->request->get("offset", 0);
+		$max = $request->request->get("max", 50);
 
-		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$isInTrash = false;
+		if($state == "deleted"){
+			$isInTrash = true;
+		}
 
-		if (count($data["errors"]) == 0) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit")) {
 
-			$arbo = [];
-			$parent = $this->get('app.drive.FileSystem')->getObject($parentId);
-			while ($parent != null) {
-				$arbo[] = Array("id" => $parent->getId(), "name" => $parent->getName());
-				$parent = $parent->getParent();
-			}
-			$data["data"]["tree"] = array_reverse($arbo);
+			if($state == "new") {
 
-			if ($isInTrash && $parentId == 0) {
-				$files = $this->get('app.drive.FileSystem')->listTrash($groupId);
+				$files = $this->get('app.drive.FileSystem')->listNew($groupId, $offset, $max);
+
+			} else if($state == "shared") {
+
+				$files = $this->get('app.drive.FileSystem')->listShared($groupId, $offset, $max);
+
+			} else if($state == "search") {
+
+				$query = $request->request->get("query", "");
+				$files = $this->get('app.drive.FileSystem')->search($groupId, $query, $offset, $max);
+
 			} else {
-				$files = $this->get('app.drive.FileSystem')->listDirectory($groupId, $parentId);
+
+				$arbo = [];
+				$parent = $this->get('app.drive.FileSystem')->getObject($parentId);
+				while ($parent != null) {
+					$arbo[] = Array("id" => $parent->getId(), "name" => $parent->getName());
+					$parent = $parent->getParent();
+				}
+				$data["data"]["tree"] = array_reverse($arbo);
+
+				if ($isInTrash && $parentId == 0) {
+					$files = $this->get('app.drive.FileSystem')->listTrash($groupId, $parentId);
+				} else {
+					$files = $this->get('app.drive.FileSystem')->listDirectory($groupId, $parentId);
+				}
+
 			}
 
 			foreach ($files as $file) {
@@ -180,6 +202,7 @@ class FilesController extends Controller
 
 			$data["data"]["maxspace"] = $this->get('app.drive.FileSystem')->getTotalSpace($groupId);
 			$data["data"]["totalsize"] = $data["data"]["maxspace"] - $this->get('app.drive.FileSystem')->getFreeSpace($groupId);
+
 
 		}
 
@@ -204,9 +227,7 @@ class FilesController extends Controller
 		$parentId = $request->request->has("parentId") ? $request->request->get("parentId") : 0;
 		$file = $_FILES["file"];
 
-		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
-
-		if (count($data["errors"]) == 0) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit")) {
 
 			$file = $this->get('app.drive.FileSystem')->upload($groupId, $parentId, $file, $this->get("app.upload"));
 
@@ -239,7 +260,7 @@ class FilesController extends Controller
 			$download = $request->request->get("download", 1);
 		}
 
-		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
 
 		if (count($data["errors"]) == 0) {
 
@@ -261,7 +282,7 @@ class FilesController extends Controller
 		$fileIds = $request->request->get("fileToMoveIds", 0);
 		$newParentId = $request->request->get("newParentId", 0);
 
-		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
 
 		if (count($data["errors"]) == 0) {
 
@@ -298,7 +319,7 @@ class FilesController extends Controller
 		$fileId = $request->request->get("fileToCopyId", 0);
 		$newParentId = $request->request->get("newParentId", 0);
 
-		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
 
 		if (count($data["errors"]) == 0) {
 			if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
@@ -320,15 +341,15 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$fileId = $request->request->get("fileId", 0);
 		$filename = $request->request->get("name", "");
+		$description = $request->request->get("description", "");
+		$labels = $request->request->get("labels", Array());
 
-		$data["errors"] = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
-
-		if (count($data["errors"]) == 0) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit")) {
 			if ($filename == "") {
 				$data["errors"][] = "emptyname";
-			} else if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
+			} else if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())){
 				$data["errors"][] = "notallowed";
-			} else if (!$this->get('app.drive.FileSystem')->rename($fileId, $filename)) {
+			} else if (!$this->get('app.drive.FileSystem')->rename($fileId, $filename, $description, $labels)) {
 				$data["errors"][] = "unknown";
 			}
 		}
@@ -338,12 +359,10 @@ class FilesController extends Controller
 
 	public function previewAction(Request $request){
 
-		$groupId = $request->request->get("groupId", 0);
-		$fileId = $request->request->get("fileId", 0);
+		$groupId = $request->query->get("groupId", 0);
+		$fileId = $request->query->get("fileId", 0);
 
-		$errors = $this->get('app.groups.access')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
-
-		if (count($errors) == 0) {
+		if ($this->get('app.workspace_levels')->can($groupId,$this->getUser()->getId(), "Drive:general:edit")) {
 
 			$data = $this->get('app.drive.FileSystem')->getRawContent($fileId);
 			return new Response($data, 200);

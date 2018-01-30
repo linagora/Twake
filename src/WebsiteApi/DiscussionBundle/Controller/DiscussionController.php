@@ -30,8 +30,9 @@ class DiscussionController extends Controller
             else{
                 $discussion = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
                 $messages = [];
-                $offset = intval($request->request->get("offset"));
-                $messages = $this->get("app.messages")->getMessages($this->getUser(),$discussion["type"],$discussion["id"],$offset,$request->request->get("subject"));
+                $offsetId= intval($request->request->get("offsetId"));
+                $messages = $this->get("app.messages")->getMessages($discussion["type"],$discussion["id"],$offsetId,$request->request->get("subject"),$this->getUser());
+
                 error_log(count($messages));
                 $data["data"] = $messages;
                 error_log("nb message : ".count($messages));
@@ -60,14 +61,7 @@ class DiscussionController extends Controller
                         $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$this->getUser(),"stream"=>$stream));
                         if($link != null){
                             $subjects = $this->get("app.subjectSystem")->getSubject($stream);
-                            $retour = [];
-                            foreach($subjects as $subject){
-                                $fistMessage = $this->get("app.subjectSystem")->getFirstMessage($subject);
-                                $lastMessage = $this->get("app.subjectSystem")->getLastMessage($subject);
-                                $retour[] = $subject->getAsArray();
-
-                            }
-                            $data["data"] = $retour;
+                            $data["data"] = $subjects;
                         }
                         else{
                             $data['errors'][] = "notindiscussion";
@@ -162,20 +156,44 @@ class DiscussionController extends Controller
 
 		$securityContext = $this->get('security.authorization_checker');
 
-/*		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data['errors'][] = "notconnected";
 		}
 		else {
-*/			$discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
-			$messages = $this->get("app.messages")->searchMessage($discussionInfos["type"],$discussionInfos["id"],$request->request->get("content"),intval($request->request->get("from")),$request->request->get("dateStart"),$request->request->get("dateEnd"));
-			$retour = Array();
+			$discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
+			$messages = $this->get("app.messages")->searchMessage($discussionInfos["type"],$discussionInfos["id"],$request->request->get("content"),intval($request->request->get("from")),$request->request->get("dateStart"),$request->request->get("dateEnd"),null);
+            $retour = Array();
 			foreach ($messages as $message) {
 				$retour[] = $message->getAsArray();
 			}
 			$data["data"] = $retour;
-//		}	
+		}
 		return new JsonResponse($data);
 	}
+
+	public function getDriveMessageAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+        $securityContext = $this->get('security.authorization_checker');
+
+        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED') || !$this->get("app.messages")->isAllowed($this->getUser(),$request->request->get("discussionKey"))) {
+            $data['errors'][] = "notconnected";
+        }
+        else {
+            $messages = $this->get("app.messages")->searchDriveMessage($request->request->get("discussionKey"),$this->getUser());
+            foreach ($messages as $message){
+                $data["data"][] = $message->getAsArray();
+            }
+        }
+        return new JsonResponse($data);
+    }
+
+
+
+
+
 /*
 	public function uploadAction(Request $request) {
 
@@ -226,7 +244,7 @@ class DiscussionController extends Controller
 		}
 		elseif($channel==null){
 			$data['errors'][] = "channelnotfound";
-		} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:create")) {
+		} elseif (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "Messages:general:create")) {
 			$data["errors"][] = "notallowed";
 		}
 		else{
@@ -445,7 +463,7 @@ class DiscussionController extends Controller
 				$uids = $request->request->get("uids");
 				$users = $manager->getRepository("TwakeUsersBundle:User")->findBy(Array("id" => array_keys($uids)));
 				foreach ($users as $user) {
-					if ($manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findBy(Array("Workspace" => $workspace, "User" => $user)) == null) {
+					if ($manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("Workspace" => $workspace, "User" => $user)) == null) {
 						$data['data'][] = "usernotingroup" . $user->getId();
 					}
 					if ($uids[$user->getId()] == false) {
@@ -630,7 +648,7 @@ class DiscussionController extends Controller
 			$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("groupId"),"isDeleted"=>false));
 			if ($workspace == null) {
 				$data["errors"][] = "groupnotfound";
-			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "Messages:general:create")) {
+			} elseif (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "Messages:general:create")) {
 				$data["errors"][] = "notallowed";
 			}
 			else {
@@ -678,7 +696,7 @@ class DiscussionController extends Controller
 			$workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$request->request->get("gid"),"isDeleted"=>false));
 			if ($workspace == null) {
 				$data["errors"][] = "groupnotfound";
-			} elseif (!$this->get('app.groups.access')->hasRight($this->getUser(), $workspace, "base:discussion:join")) {
+			} elseif (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $workspace, "base:discussion:join")) {
 				$data["errors"][] = "notallowed";
 			}
 			else {

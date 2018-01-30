@@ -19,7 +19,7 @@ class MCryptAES256Implementation implements AES256Implementation
 		);
 		foreach ($function_list as $func) {
 			if (!function_exists($func)) {
-				throw new Exception("Missing function dependency: " . $func);
+				throw new \Exception("Missing function dependency: " . $func);
 			}
 		}
 	}

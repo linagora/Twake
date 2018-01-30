@@ -20,8 +20,9 @@ class StreamSystem
     var $pusher;
     var $levelManager;
     var $messageReadSystem;
+    var $callSystem;
 
-    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $levelManager,$messageReadSystem)
+    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $levelManager,$messageReadSystem,$callSystem)
     {
         $this->string_cleaner = $string_cleaner;
         $this->doctrine = $doctrine;
@@ -29,6 +30,7 @@ class StreamSystem
         $this->pusher = $pusher;
         $this->levelManager = $levelManager;
         $this->messageReadSystem = $messageReadSystem;
+        $this->callSystem = $callSystem;
     }
 
 
@@ -38,10 +40,11 @@ class StreamSystem
         if($workspace==null || $user==null){
             return false;
         }
-        $link = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("User"=>$user,"Workspace"=>$workspace));
+        $link = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("user"=>$user,"workspace"=>$workspace));
         if($link != null){
             return true;
         }
+        error_log("streamSystem : not allowed");
         return false;
     }
 
@@ -49,7 +52,7 @@ class StreamSystem
     public function createStream($user, $workspaceId,$streamName,$streamPrivacy)
     {
         if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            $data['errors'][] = "notconnected";
+            return;
         } else {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
             if ($workspace == null) {
@@ -69,7 +72,7 @@ class StreamSystem
 
     public function editStream($streamId,$name,$privacy,$members){
         if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            $data['errors'][] = "notconnected";
+            return;
         } else {
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
             if($stream != null) {
@@ -111,14 +114,16 @@ class StreamSystem
             foreach($streams as $stream){
                 if(!$stream->getPrivacy() || $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream))!=null){ //public stream
                     $isRead = $this->messageReadSystem->streamIsReadByKey($stream->getId(),$user);
-                    $retour["stream"][] = array_merge($stream->getAsArray(),Array("isRead"=>$isRead));
+                    $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
+                    $retour["stream"][] = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
                 }
             }
-            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->getSomeUsers($workspace,"A",null,null);
+            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->getSomeUsers($workspace,"A",null,null);
             foreach($members as $member){
                 $key = min($user->getId(),$member->getUser()->getId())."_".max($user->getId(),$member->getUser()->getId());
                 $isRead = $isRead = $this->messageReadSystem->streamIsReadByKey($key,$user);
-                $retour['user'][] = array_merge($member->getUser()->getAsArray(),Array("isRead"=>$isRead));
+                $callInfos = $this->callSystem->getCallInfo($user,$key);
+                $retour['user'][] = array_merge($member->getUser()->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
             }
             return $retour;
         }

@@ -25,11 +25,15 @@ class Message
      * @ORM\JoinColumn(nullable=true)
 	 */
 	private $userSender;
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application",cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true)
-	 */
-	private $applicationSender;
+
+
+
+
+
+    /**
+     * @ORM\Column(type="string", length=1)
+     */
+    private $typeReciever;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
@@ -43,17 +47,27 @@ class Message
 	 */
 	private $streamReciever;
 
-	/**
-	 * @ORM\Column(type="string", length=1)
-	 */
-	private $typeReciever;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isApplicationMessage = false;
 
-	/**
-	 * @ORM\Column(type="string", length=1)
-	 */
-	private $typeSender;
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $applicationSender;
 
-	/**
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isSystemMessage = false;
+
+
+
+
+
+    /**
 	 * @ORM\Column(type="datetime")
 	 */
 	private $date;
@@ -91,14 +105,17 @@ class Message
 	 */
 	private $subject = null;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $applicationData = "{}";
 
-	public function __construct($typeSender,$sender,$typeReciever,$reciever,$date,$content,$cleanContent,$subject){
-        $this->setTypeSender($typeSender);
-	    if($typeSender == "U"){
-            $this->setUserSender($sender);
-        }
-        elseif($typeSender == "A"){
-            $this->setApplicationSender($sender);
+
+	public function __construct($sender,$typeReciever,$reciever,$isApplicationMessage,$applicationMessage,$isSystemMessage,$date,$content,$cleanContent,$subject){
+        $this->setUserSender($sender);
+        if($isApplicationMessage) {
+            $this->setIsApplicationMessage($isApplicationMessage);
+            $this->setApplicationSender($$applicationMessage);
         }
 
         $this->setTypeReciever($typeReciever);
@@ -108,6 +125,7 @@ class Message
         elseif($typeReciever == "U"){
             $this->setUserReciever($reciever);
         }
+        $this->setIsSystemMessage($isSystemMessage);
         $this->setDate($date);
         $this->setContent($content);
         $this->setCleanContent($cleanContent);
@@ -151,17 +169,17 @@ class Message
     /**
      * @return mixed
      */
-    public function getApplicationSender()
+    public function getTypeReciever()
     {
-        return $this->applicationSender;
+        return $this->typeReciever;
     }
 
     /**
-     * @param mixed $applicationSender
+     * @param mixed $typeReciever
      */
-    public function setApplicationSender($applicationSender)
+    public function setTypeReciever($typeReciever)
     {
-        $this->applicationSender = $applicationSender;
+        $this->typeReciever = $typeReciever;
     }
 
     /**
@@ -199,35 +217,50 @@ class Message
     /**
      * @return mixed
      */
-    public function getTypeReciever()
+    public function getIsApplicationMessage()
     {
-        return $this->typeReciever;
+        return $this->isApplicationMessage;
     }
 
     /**
-     * @param mixed $typeReciever
+     * @param mixed $isApplicationMessage
      */
-    public function setTypeReciever($typeReciever)
+    public function setIsApplicationMessage($isApplicationMessage)
     {
-        $this->typeReciever = $typeReciever;
+        $this->isApplicationMessage = $isApplicationMessage;
     }
 
     /**
      * @return mixed
      */
-    public function getTypeSender()
+    public function getApplicationSender()
     {
-        return $this->typeSender;
+        return $this->applicationSender;
     }
 
     /**
-     * @param mixed $typeSender
+     * @param mixed $applicationSender
      */
-    public function setTypeSender($typeSender)
+    public function setApplicationSender($applicationSender)
     {
-        $this->typeSender = $typeSender;
+        $this->applicationSender = $applicationSender;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getIsSystemMessage()
+    {
+        return $this->isSystemMessage;
+    }
+
+    /**
+     * @param mixed $isSystemMessage
+     */
+    public function setIsSystemMessage($isSystemMessage)
+    {
+        $this->isSystemMessage = $isSystemMessage;
+    }
 
     /**
      * @return mixed
@@ -248,6 +281,22 @@ class Message
     /**
      * @return mixed
      */
+    public function getContent()
+    {
+        return base64_decode($this->content);
+    }
+
+    /**
+     * @param mixed $content
+     */
+    public function setContent($content)
+    {
+        $this->content = base64_encode($content);
+    }
+
+    /**
+     * @return mixed
+     */
     public function getCleanContent()
     {
         return $this->cleanContent;
@@ -258,21 +307,8 @@ class Message
      */
     public function setCleanContent($cleanContent)
     {
-        $this->cleanContent =  substr($cleanContent, 0, 10000);
+        $this->cleanContent = $cleanContent;
     }
-
-    public function setContent($content)
-    {
-        $content = substr($content, 0, 10000);
-        $this->content = base64_encode($content);
-    }
-
-    public function getContent()
-    {
-        return base64_decode($this->content);
-    }
-
-
 
     /**
      * @return mixed
@@ -338,27 +374,45 @@ class Message
         $this->subject = $subject;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getApplicationData()
+    {
+        return json_decode($this->applicationData);
+    }
+
+    /**
+     * @param mixed $applicationData
+     */
+    public function setApplicationData($applicationData)
+    {
+        $this->applicationData = json_encode($applicationData);
+    }
+
+
 
 
     public function getAsArray(){
-        $applicationSender = Array();
-        if($this->getApplicationSender() != null){
-            $applicationSender = $this->getApplicationSender()->getAsArray();
-        }
         return Array(
             "id" => $this->getId(),
-            "senderType" => $this->getTypeSender(),
-            "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getId():null,
             "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getId():null,
+
             "recieverType" => $this->getTypeReciever(),
             "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getId()  :null,
             "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
+
+            "isApplicationMessage" => $this->getIsApplicationMessage(),
+            "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getAsArray():null,
+            "isSystemMessage" => $this->getIsSystemMessage(),
+
             "content" => $this->getContent(),
             "cleanContent" => $this->getCleanContent(),
             "date" => $this->getDate(),
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),
             "subject" => ($this->getSubject()!=null)?$this->getSubject()->getAsArray():null,
+            "applicationData" => $this->applicationData,
         );
 
     }
