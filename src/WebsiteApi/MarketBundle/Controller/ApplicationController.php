@@ -337,7 +337,7 @@ class ApplicationController extends Controller
 			//Ok
 			$tokenE = new Token();
 			$tokenE->setUser($this->getUser());
-			$tokenE->setGroup($useringroup->getGroup());
+			$tokenE->setGroup($useringroup->getWorkspace());
 			$tokenE->setApplication($app);
 
 			$manager->persist($tokenE);
