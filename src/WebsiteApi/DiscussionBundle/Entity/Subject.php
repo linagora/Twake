@@ -46,18 +46,24 @@ class Subject
      */
     private $isOpen = true;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     */
+    private $userOpen;
+
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message")
      */
     private $firstMessage;
 
-    public function __construct($name,$stream,$dateCreate,$dateUpdate)
+    public function __construct($name,$stream,$dateCreate,$dateUpdate,$user)
     {
         $this->setName($name);
         $this->setStream($stream);
         $this->setDateCreate($dateCreate);
         $this->setDateUpdate($dateUpdate);
+        $this->setUserOpen($user);
     }
 
     /**
@@ -172,6 +178,22 @@ class Subject
         $this->firstMessage = $firstMessage;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getUserOpen()
+    {
+        return $this->userOpen;
+    }
+
+    /**
+     * @param mixed $userOpen
+     */
+    public function setUserOpen($userOpen)
+    {
+        $this->userOpen = $userOpen;
+    }
+
 
 
     public function getAsArray(){
@@ -183,8 +205,8 @@ class Subject
             "stream" => $this->getStream()->getId(),
             "isOpen" => $this->getisOpen(),
             "firstMessage" => ($this->getFirstMessage()!=null)?$this->getFirstMessage()->getId():null,
+            "userOpen" => ($this->getUserOpen()!=null)?$this->getUserOpen()->getId():null,
         );
     }
-
 
 }

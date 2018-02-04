@@ -108,7 +108,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             }
             else if($operation == "CS"){ //creation subject
                 if( isset($event["data"]["idMessage"]) && $event["data"]["idMessage"] !=null ){
-                	$subject = $this->subjectService->createSubjectFromMessage($event["data"]["idMessage"]);
+                	$subject = $this->subjectService->createSubjectFromMessage($event["data"]["idMessage"],$currentUser);
                 	if($subject){
                         $event["data"] = $subject->getAsArray();
                         $event["data"]["responseNumber"] = 0;
