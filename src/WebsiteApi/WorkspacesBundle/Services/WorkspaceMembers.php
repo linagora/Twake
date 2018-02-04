@@ -57,6 +57,26 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 		return false;
 	}
 
+	public function addMemberByUsername($workspaceId, $username, $currentUserId = null)
+	{
+		if($currentUserId == null
+			|| $this->wls->can($workspaceId, $currentUserId, "members:edit")
+		){
+
+			$username = $this->string_cleaner->simplifyUsername($username);
+
+			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+			$user = $userRepository->find(Array("username"=>$username));
+
+			if($user){
+				return $this->addMember($workspaceId, $user->getId());
+			}
+
+		}
+
+		return false;
+	}
+
 	public function addMemberByMail($workspaceId, $mail, $currentUserId = null)
 	{
 		if($currentUserId == null
