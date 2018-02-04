@@ -209,7 +209,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$this->doctrine->persist($member);
 			$this->doctrine->flush();
 
-			if($workspace->getUser() != null) {
+			if($workspace->getUser() == null) {
 				$this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 			}
 
