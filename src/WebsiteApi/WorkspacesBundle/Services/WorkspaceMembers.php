@@ -102,10 +102,15 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspace = $workspaceRepository->find($workspaceId);
 
-			//Mail not in tables
-			$userByMail = new WorkspaceUserByMail($workspace, $mail);
-			$this->doctrine->persist($userByMail);
-			$this->doctrine->flush();
+			$workspaceUserByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
+			$mailObj = $workspaceUserByMailRepository->findOneBy(Array("workspace"=>$workspace, "mail"=>$mail));
+
+			if($mailObj==null){
+				//Mail not in tables
+				$userByMail = new WorkspaceUserByMail($workspace, $mail);
+				$this->doctrine->persist($userByMail);
+				$this->doctrine->flush();
+			}
 
 			//Send mail
 			$this->twake_mailer->send($mail, "inviteToWorkspaceMail", Array(
@@ -180,6 +185,13 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 			$user = $userRepository->find($userId);
 			$workspace = $workspaceRepository->find($workspaceId);
+
+			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+			$member = $workspaceUserRepository->findOneBy(Array("workspace"=>$workspace, "user"=>$user));
+
+			if($member!=null){
+				return false; //Already added
+			}
 
 			if($workspace->getUser() != null && $workspace->getUser()->getId()!=$userId){
 				return false; //Private workspace, only one user
