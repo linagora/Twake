@@ -85,6 +85,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 			$mail = $this->string_cleaner->simplifyMail($mail);
 
+			if(!$this->string_cleaner->verifyMail($mail)){
+				return false;
+			}
+
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 			$user = $userRepository->findOneBy(Array("email"=>$mail));
 
