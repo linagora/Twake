@@ -66,7 +66,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$username = $this->string_cleaner->simplifyUsername($username);
 
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-			$user = $userRepository->find(Array("username"=>$username));
+			$user = $userRepository->findOneBy(Array("username"=>$username));
 
 			if($user){
 				return $this->addMember($workspaceId, $user->getId());
@@ -86,14 +86,14 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$mail = $this->string_cleaner->simplifyMail($mail);
 
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-			$user = $userRepository->find(Array("email"=>$mail));
+			$user = $userRepository->findOneBy(Array("email"=>$mail));
 
 			if($user){
 				return $this->addMember($workspaceId, $user->getId());
 			}
 
 			$mailsRepository = $this->doctrine->getRepository("TwakeUsersBundle:Mail");
-			$userMail = $mailsRepository->find(Array("mail"=>$mail));
+			$userMail = $mailsRepository->findOneBy(Array("mail"=>$mail));
 
 			if($userMail){
 				return $this->addMember($workspaceId, $userMail->getUser()->getId());
@@ -128,23 +128,23 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$mail = $this->string_cleaner->simplifyMail($mail);
 
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-			$user = $userRepository->find(Array("email"=>$mail));
+			$user = $userRepository->findOneBy(Array("email"=>$mail));
 
 			if($user){
 				return $this->removeMember($workspaceId, $user->getId());
 			}
 
 			$mailsRepository = $this->doctrine->getRepository("TwakeUsersBundle:Mail");
-			$userMail = $mailsRepository->find(Array("mail"=>$mail));
+			$userMail = $mailsRepository->findOneBy(Array("mail"=>$mail));
 
 			if($userMail){
 				return $this->removeMember($workspaceId, $userMail->getUser()->getId());
 			}
 
-			$workspaceUerByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
+			$workspaceUserByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspace = $workspaceRepository->find($workspaceId);
-			$userByMail = $workspaceUerByMailRepository->findOneBy(Array("workspace"=>$workspace, "mail"=>$mail));
+			$userByMail = $workspaceUserByMailRepository->findOneBy(Array("workspace"=>$workspace, "mail"=>$mail));
 
 			$this->doctrine->remove($userByMail);
 			$this->doctrine->flush();
@@ -260,10 +260,35 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 			$users = Array();
 			foreach($link as $user){
-				$users[] = $user->getUser();
+				$users[] = Array(
+					"user"=> $user->getUser(),
+					"level"=> $user->getLevel()
+				);
 			}
 
 			return $users;
+		}
+
+		return false;
+	}
+
+	public function getPendingMembers($workspaceId, $currentUserId = null)
+	{
+		if($currentUserId == null
+			|| $this->wls->can($workspaceId, $currentUserId, "members:view")
+		){
+			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+			$workspaceUserByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
+
+			$workspace = $workspaceRepository->find($workspaceId);
+
+			if (!$workspace) {
+				return false;
+			}
+
+			$mails = $workspaceUserByMailRepository->findBy(Array("workspace" => $workspace));
+
+			return $mails;
 		}
 
 		return false;

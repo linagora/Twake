@@ -35,7 +35,19 @@ class WorkspaceMembersController extends Controller
 			);
 		}
 
-		$response["data"] = $list;
+		$pendingMails = $this->get("app.workspace_members")->getPendingMembers($workspaceId, $this->getUser()->getId());
+
+		$listMails = Array();
+		foreach ($pendingMails as $mail){
+			$listMails[] = Array(
+				"mail" => $mail->getMail()
+			);
+		}
+
+		$response["data"] = Array(
+			"mails" => $listMails,
+			"members" => $list
+		);
 
 		return new JsonResponse($response);
 	}
