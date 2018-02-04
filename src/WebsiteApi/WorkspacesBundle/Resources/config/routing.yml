@@ -6,6 +6,36 @@ twake_workspaces_create:
     path:     /create
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:create }
 
+# Edit members
+
+twake_workspaces_members_list:
+    path:     /members/list
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:getMembers }
+
+twake_workspaces_members_addlist:
+    path:     /members/addlist
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:addList }
+
+twake_workspaces_members_removemail:
+    path:     /members/removemail
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:removeMail }
+
+twake_workspaces_members_remove:
+    path:     /members/remove
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:removeMembers }
+
+twake_workspaces_members_changelevel:
+    path:     /members/changelevel
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:changeMembersLevel }
+
+# Edit levels
+
+twake_workspaces_levels_list:
+    path:     /levels/list
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:getLevels }
+
+
+
 #twake_workspace_group_create:
 #    path:     /group/create
 #    defaults: { _controller: TwakeUsersBundle:UsersConnections:login }

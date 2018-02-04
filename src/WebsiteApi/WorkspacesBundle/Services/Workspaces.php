@@ -61,6 +61,7 @@ class Workspaces implements WorkspacesInterface
 
 		//Create admin level
 		$level = new WorkspaceLevel();
+		$level->setWorkspace($workspace);
 		$level->setLabel("Administrator");
 		$level->setIsAdmin(true);
 		$level->setIsDefault(true);

@@ -439,6 +439,8 @@ class User implements UserInterface
 						$this->em->persist($mail);
 						$this->em->flush();
 
+						$this->workspace_members_service->autoAddMemberByNewMail($ticket->getMail(), $user->getId());
+
 						return true;
 
 					}

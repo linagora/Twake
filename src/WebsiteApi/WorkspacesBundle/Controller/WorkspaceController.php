@@ -43,7 +43,7 @@ class WorkspaceController extends Controller
 			$users_obj = $this->get("app.workspace_members")->getMembers($workspaceId,$this->getUser()->getId());
 			$users = Array();
 			foreach($users_obj as $user_obj){
-                $users[] = $user_obj->getAsArray();
+                $users[] = $user_obj["user"]->getAsArray();
             }
 			$response["data"]["members"] = $users;
 		}

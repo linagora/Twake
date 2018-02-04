@@ -440,7 +440,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 		return $data;
 	}
 
-	public function listDirectory($group, $directory)
+	public function listDirectory($group, $directory, $trash=false)
 	{
 
 		$directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
@@ -451,13 +451,27 @@ class DriveFileSystem implements DriveFileSystemInterface
 		}
 
 		$list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-			->listDirectory($group, $directory, false);
+			->listDirectory($group, $directory, $trash);
 		return $list;
 	}
 
 	public function search($group, $query, $offset = 0, $max = 20)
 	{
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
+		if ($group == null) {
+			return false;
+		}
+
+		$sort = Array();
+
+		$list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+			->search($group, $query, $sort, $offset, $max);
+		return $list;
+	}
+
+	public function listNew($group, $offset = 0, $max = 20)
+	{
 		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
 		if ($group == null) {
@@ -465,8 +479,14 @@ class DriveFileSystem implements DriveFileSystemInterface
 		}
 
 		$list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-			->search($group, $query, $offset, $max);
+			->search($group, Array(), Array("added"=>"DESC"), $offset, $max);
 		return $list;
+	}
+
+	public function listShared($group, $offset = 0, $max = 20)
+	{
+		//TODO
+		return Array();
 	}
 
 	public function listTrash($group)
@@ -769,5 +789,4 @@ class DriveFileSystem implements DriveFileSystemInterface
 		@unlink($path);
 		return $var;
 	}
-
 }

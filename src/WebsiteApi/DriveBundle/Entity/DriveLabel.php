@@ -23,7 +23,7 @@ class DriveLabel
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	private $workspace;

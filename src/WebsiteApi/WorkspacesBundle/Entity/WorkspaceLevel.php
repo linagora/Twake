@@ -141,7 +141,7 @@ class WorkspaceLevel
 	{
 		return Array(
 			"id" => $this->getId(),
-			"name" => $this->getName(),
+			"name" => $this->getLabel(),
 			"admin" => $this->getisAdmin(),
 			"default" => $this->getisDefault(),
 			"rights" => $this->getRights()
