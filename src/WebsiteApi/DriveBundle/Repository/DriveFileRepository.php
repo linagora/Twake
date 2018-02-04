@@ -51,8 +51,9 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
 
 		//Query search
 		if(is_string($query)) {
+			$query = str_replace(Array("%", "_"),Array("!%","!_"), $query);
 			$qb = $qb->andWhere($qb->expr()->like("f.name", ":query"));
-			$qb = $qb->setParameter("query", $query);
+			$qb = $qb->setParameter("query", "%".$query."%");
 		}
 
 		$qb = $qb->setParameter("group", $group);

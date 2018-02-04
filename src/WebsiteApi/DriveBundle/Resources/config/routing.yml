@@ -17,16 +17,6 @@ twake_drive_create:
     defaults: { _controller: TwakeDriveBundle:Files:create }
     methods: [POST]
 
-twake_drive_delete:
-    path:     /delete
-    defaults: { _controller: TwakeDriveBundle:Files:delete }
-    methods: [POST]
-
-twake_drive_trash_empty:
-    path:     /trash/empty
-    defaults: { _controller: TwakeDriveBundle:Files:emptyTrash }
-    methods: [POST]
-
 twake_drive_list:
     path:     /list
     defaults: { _controller: TwakeDriveBundle:Files:list }
@@ -36,11 +26,6 @@ twake_drive_preview:
     path:     /preview
     defaults: { _controller: TwakeDriveBundle:Files:preview }
     methods: [GET]
-
-twake_drive_trash_restore:
-    path:     /trash/restore
-    defaults: { _controller: TwakeDriveBundle:Files:restoreTrash }
-    methods: [POST]
 
 twake_drive_search:
     path:     /search
@@ -80,4 +65,28 @@ twake_drive_content_get:
 twake_drive_content_set:
     path:     /content/set
     defaults: { _controller: TwakeDriveBundle:Files:setContent }
+    methods: [POST]
+
+# Sharing
+
+twake_drive_share:
+    path: /share
+    defaults: { _controller: TwakeDriveBundle:FilesSharing:share }
+    methods: [POST]
+
+# Trash
+
+twake_drive_delete:
+    path:     /delete
+    defaults: { _controller: TwakeDriveBundle:Files:delete }
+    methods: [POST]
+
+twake_drive_trash_restore:
+    path:     /trash/restore
+    defaults: { _controller: TwakeDriveBundle:Files:restoreTrash }
+    methods: [POST]
+
+twake_drive_trash_empty:
+    path:     /trash/empty
+    defaults: { _controller: TwakeDriveBundle:Files:emptyTrash }
     methods: [POST]

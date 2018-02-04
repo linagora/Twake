@@ -318,50 +318,34 @@ class ApplicationController extends Controller
 		$appId = $request->request->getInt("appId",0);
 		$groupId = $request->request->getInt("groupId",0);
 
-		$securityContext = $this->get('security.authorization_checker');
+		$app = $manager->getRepository("TwakeMarketBundle:Application")
+			->find($appId);
 
-		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-			$data['errors'][] = "notconnected";
+		if (!$this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "")) {
+			$data['errors'][] = "notallowed";
 		} else {
 
-			$applink = $manager->getRepository("TwakeMarketBundle:LinkAppWorkspace")
-				->findOneBy(Array("application"=>$appId,"workspace"=>$groupId));
+			$useringroup = $manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")
+				->findOneBy(Array("user"=>$this->getUser(),"workspace"=>$groupId));
 
-			if($applink==null){
-				$data['errors'][] = "noapplink";
-			}else{
+			//Delete old tokens (1 minutes)
+			$qb = $manager->createQueryBuilder();
+			$qb->delete('DevelopersApiUsersBundle:Token', 't');
+			$qb->where('t.date < :mindate');
+			$qb->setParameter('mindate', (new \DateTime())->modify('-1 minute'));
 
-				$useringroup = $manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")
-					->findOneBy(Array("user"=>$this->getUser(),"workspace"=>$groupId));
+			//Ok
+			$tokenE = new Token();
+			$tokenE->setUser($this->getUser());
+			$tokenE->setGroup($useringroup->getGroup());
+			$tokenE->setApplication($app);
 
-				if($useringroup==null){
-					$data['errors'][] = "nouseringroup";
-				}else{
+			$manager->persist($tokenE);
+			$manager->flush();
 
-					//Delete old tokens (1 minutes)
-					$qb = $manager->createQueryBuilder();
-					$qb->delete('DevelopersApiUsersBundle:Token', 't');
-					$qb->where('t.date < :mindate');
-					$qb->setParameter('mindate', (new \DateTime())->modify('-1 minute'));
+			$token = $tokenE->getToken();
 
-					//Ok
-					$app = $applink->getApplication();
-
-					$tokenE = new Token();
-					$tokenE->setUser($this->getUser());
-					$tokenE->setGroup($useringroup->getGroup());
-					$tokenE->setApplication($app);
-
-					$manager->persist($tokenE);
-					$manager->flush();
-
-					$token = $tokenE->getToken();
-
-					$data["data"]["token"] = $token;
-
-				}
-
-			}
+			$data["data"]["token"] = $token;
 
 		}
 

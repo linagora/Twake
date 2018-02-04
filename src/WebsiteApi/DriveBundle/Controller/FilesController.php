@@ -55,16 +55,13 @@ class FilesController extends Controller
 		);
 
 		$groupId = $request->request->get("groupId", 0);
-		$fileId = $request->request->get("fileId", 0);
+		$fileIds = $request->request->get("fileIds", Array());
 
-		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$can = $this->get('app.workspace_levels')->errorsAccess($groupId, $this->getUser()->getId(), "Drive:general:edit");
 
-		if (count($data["errors"]) == 0) {
-
-			if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
-				$data["errors"][] = "notallowed";
-			} else if (!$this->get('app.drive.FileSystem')->autoDelete($fileId)) {
-				$data["errors"][] = "unknown";
+		if ($can) {
+			foreach ($fileIds as $fileId){
+				$this->get('app.drive.FileSystem')->autoDelete($fileId);
 			}
 		}
 
@@ -79,9 +76,9 @@ class FilesController extends Controller
 
 		$groupId = $request->request->get("groupId", 0);
 
-		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$can = $this->get('app.workspace_levels')->errorsAccess($groupId, $this->getUser()->getId(), "Drive:general:edit");
 
-		if (count($data["errors"]) == 0) {
+		if ($can) {
 			if (!$this->get('app.drive.FileSystem')->emptyTrash($groupId)) {
 				$data["errors"][] = "unknown";
 			}
@@ -97,23 +94,18 @@ class FilesController extends Controller
 		);
 
 		$groupId = $request->request->get("groupId", 0);
-		$fileId = $request->request->get("fileId", 0);
+		$fileIds = $request->request->get("fileIds", null);
 
-		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$can = $this->get('app.workspace_levels')->errorsAccess($groupId, $this->getUser()->getId(), "Drive:general:edit");
 
-		if (count($data["errors"]) == 0) {
+		if ($can) {
 
-			if ($fileId > 0 && !$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
-				$data["errors"][] = "notallowed";
+			if ($fileIds != null) {
+				foreach ($fileIds as $fileId){
+					$this->get('app.drive.FileSystem')->autoDelete($fileId);
+				}
 			} else {
-				if ($fileId > 0) {
-					$action = $this->get('app.drive.FileSystem')->restore($fileId);
-				} else {
-					$action = $this->get('app.drive.FileSystem')->restoreTrash($groupId);
-				}
-				if (!$action) {
-					$data["errors"][] = "unknown";
-				}
+				$this->get('app.drive.FileSystem')->restoreTrash($groupId);
 			}
 		}
 
@@ -131,9 +123,9 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$objectId = $request->request->get("id", 0);
 
-		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$can = $this->get('app.workspace_levels')->errorsAccess($groupId, $this->getUser()->getId(), "Drive:general:view");
 
-		if (count($data["errors"]) == 0) {
+		if ($can) {
 
 			$data = $this->get('app.drive.FileSystem')->getInfos($objectId);
 			$data["data"] = $data;
@@ -207,13 +199,6 @@ class FilesController extends Controller
 		}
 
 		return new JsonResponse($data);
-	}
-
-	// TODO
-	public function searchAction(Request $request)
-	{
-		//TODO
-		return new JsonResponse(Array());
 	}
 
 	public function uploadAction(Request $request)
@@ -369,7 +354,7 @@ class FilesController extends Controller
 
 		}
 
-		return new Response(json_encode($errors), 404);
+		return new Response(json_encode("not found"), 404);
 
 	}
 

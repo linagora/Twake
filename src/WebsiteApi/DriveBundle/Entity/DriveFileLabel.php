@@ -22,7 +22,7 @@ class DriveFileLabel
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile",cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	private $file;
