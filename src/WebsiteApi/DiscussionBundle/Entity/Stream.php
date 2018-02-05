@@ -31,6 +31,11 @@ class Stream
     private $name;
 
     /**
+     * @ORM\Column(type="string")
+     */
+    private $description = "";
+
+    /**
      * @ORM\Column(type="boolean")
      */
     private $privacy;
@@ -48,11 +53,12 @@ class Stream
 
 
 
-    public function __construct($workspace, $name,$privacy) {
+    public function __construct($workspace, $name,$privacy,$description) {
 
 	    $this->setWorkspace($workspace);
 	    $this->setName($name);
         $this->setPrivacy($privacy);
+        $this->setDescription($description);
 	}
 
     public function getId() {
@@ -120,6 +126,24 @@ class Stream
         $this->privacy = $x;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+
+
     public function getAsArray(){
         $members = [];
         $membersLink = $this->getMembersLinks();
@@ -133,6 +157,7 @@ class Stream
                 "workspace" => $this->getWorkspace()->getId(),
                 "privacy" => $this->getPrivacy(),
                 "members" => $members,
+                "description"=>$this->getDescription(),
             )
         );
     }

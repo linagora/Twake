@@ -27,8 +27,9 @@ class MessageSystem implements MessagesSystemInterface
 	var $notificationsService;
 	var $pusher;
 	var $levelManager;
+	var $fileSystem;
 
-	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker,Notifications $notifications, $commandExecutorService, $notificationsService, $pusher, $levelManager){
+	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker,Notifications $notifications, $commandExecutorService, $notificationsService, $pusher, $levelManager,$fileSystem){
 		$this->string_cleaner = $string_cleaner;
 		$this->doctrine = $doctrine;
 		$this->security = $authorizationChecker;
@@ -37,6 +38,7 @@ class MessageSystem implements MessagesSystemInterface
 		$this->notificationsService = $notificationsService;
 		$this->pusher = $pusher;
 		$this->levelManager = $levelManager;
+		$this->fileSystem = $fileSystem;
 	}
 
 	public function convertKey($discussionKey, $user){
@@ -112,7 +114,7 @@ class MessageSystem implements MessagesSystemInterface
         error_log("start foreach");
         foreach($messages as $message){
             error_log("foreach ".$message->getId());
-            $messageArray = $message->getAsArray(); //$this->getMessageAsArray($message);
+            $messageArray = $this->getMessageAsArray($message,$subjectId != null);
             if($messageArray){
                 $retour[] = $messageArray;
             }
@@ -264,26 +266,25 @@ class MessageSystem implements MessagesSystemInterface
     }
 
 
-    public function getMessageAsArray($message){
+    public function getMessageAsArray($message,$isInSubject=false){
 	    if($message->getResponseTo()!=null){
 	        error_log("isResponse ".$message->getId());
 	        return false;
         }
         $retour = false;
         if($message->getSubject() != null){
-            $firstMessage = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("subject" => $message->getSubject()), Array("date" => "ASC"));
-            if ($firstMessage == $message) { // it's the first message of this subject
-                $messageInSubject = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject" => $message->getSubject()), Array("date" => "DESC"));
-                $nb = count($messageInSubject);
-                $lastMessage = $messageInSubject[0];
-                if ($lastMessage != $firstMessage) {
-                    $retour = array_merge($message->getAsArray(), Array("isSubject" => true,"responseNumber" => $nb, "lastMessage" => $lastMessage->getAsArray()));
-                } else {
-                    $retour = array_merge($message->getAsArray(), Array("isSubject" => true, "responseNumber" => $nb));
-                }
+            if($isInSubject){
+                $retour = $message->getAsArray();
             }
             else{
-             }
+                $firstMessage = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("subject" => $message->getSubject()), Array("date" => "ASC"));
+                if ($firstMessage == $message) { // it's the first message of this subject
+                    $messageInSubject = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject" => $message->getSubject()), Array("date" => "DESC"));
+                    $nb = count($messageInSubject);
+                    $lastMessage = $messageInSubject[0];
+                    $retour = array_merge($message->getAsArray(), Array("isSubject" => true,"responseNumber" => $nb, "lastMessage" => $lastMessage->getAsArray()));
+                }
+            }
         }
         else{
             $retour = $message->getAsArray();
@@ -301,15 +302,21 @@ class MessageSystem implements MessagesSystemInterface
         $messages = null;
         if($driveApp != null){
             $messages = $this->searchMessage($discussionInfos["type"],$discussionInfos["id"],"",null,null,null,$driveApp);
+            $retour = [];
+            foreach ($messages as $message){
+                $mess = $message->getAsArray();
+                $mess["file"] = $this->fileSystem->getInfos($message->getApplicationData()["file"]);
+                $retour[] = $mess;
+            }
         }
-        return $messages;
+        return $retour;
     }
 
 
     public function notify($discussionKey,$type,$message){
         $data = Array(
             "type" => $type,
-            "data" => $message->getAsArray(),
+            "²" => $message->getAsArray(),
         );
         $this->pusher->push($data, "discussion_topic",Array("key"=>$discussionKey));
     }

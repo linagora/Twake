@@ -183,9 +183,8 @@ class DiscussionController extends Controller
         }
         else {
             $messages = $this->get("app.messages")->searchDriveMessage($request->request->get("discussionKey"),$this->getUser());
-            foreach ($messages as $message){
-                $data["data"][] = $message->getAsArray();
-            }
+            $data["data"] = $messages;
+
         }
         return new JsonResponse($data);
     }

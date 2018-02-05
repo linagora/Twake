@@ -29,20 +29,20 @@ class SubjectSystem
         $this->levelManager = $levelManager;
     }
 
-    public function createSubject($name,$streamId){
+    public function createSubject($name,$streamId,$user){
         $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
         if($stream != null){
-            $subject = new Subject($name,$stream,new \DateTime(), new \DateTime());
+            $subject = new Subject($name,$stream,new \DateTime(), new \DateTime(),$user);
             $this->doctrine->persist($subject);
             $this->doctrine->flush();
             return $subject;
         }
     }
 
-    public function createSubjectFromMessage($idMessage){
+    public function createSubjectFromMessage($idMessage,$user){
         $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idMessage);
         if($message != null && $message->getSubject() == null){
-            $subject = $this->createSubject($message->getCleanContent(),$message->getStreamReciever()->getId());
+            $subject = $this->createSubject($message->getCleanContent(),$message->getStreamReciever()->getId(),$user);
             $subject->setFirstMessage($message);
             $message->setSubject($subject);
             $this->doctrine->persist($message);
@@ -61,9 +61,12 @@ class SubjectSystem
         $retour = [];
         foreach ($subjects as $subject){
             $subjectArray = $subject->getAsArray();
-            $subjectArray["lastMessage"] = $this->getLastMessage($subject);
+            $subjectArray["firstMessage"] = $this->getFirstMessage($subject)->getAsArray();
+            $subjectArray["lastMessage"] = $this->getLastMessage($subject)->getAsArray();
+            $retour[] = $subjectArray;
         }
-        return $subjects;
+        $retour = array_reverse($retour);
+        return $retour;
     }
 
     public function getMessages($subject){
