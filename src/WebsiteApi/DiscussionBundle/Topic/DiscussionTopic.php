@@ -108,16 +108,28 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             }
             else if($operation == "CS"){ //creation subject
                 if( isset($event["data"]["idMessage"]) && $event["data"]["idMessage"] !=null ){
-                	$subject = $this->subjectService->createSubjectFromMessage($event["data"]["idMessage"],$currentUser);
-                	if($subject){
-                        $event["data"] = $subject->getAsArray();
-                        $event["data"]["responseNumber"] = 0;
+                	$subjectArray = $this->subjectService->createSubjectFromMessage($event["data"]["idMessage"],$currentUser);
+                	if($subjectArray){
+                        $event["data"] = $subjectArray;
 					}
 					else{
                 		$canBroadcast = false;
 					}
 				}
-			}
+			}else if($operation == "ES"){ //edition subject
+                if( isset($event["data"]["idSubject"]) && $event["data"]["idSubject"] !=null ){
+                	$subjectArray = $this->subjectService->editSubject($event["data"]["idSubject"],$event["data"]["name"],$event["data"]["description"],$event["data"]["isOpen"],$currentUser);
+                	if($subjectArray){
+                        $event["data"] = $subjectArray;
+					}
+					else{
+                		$canBroadcast = false;
+					}
+				}
+                else{
+                    $canBroadcast = false;
+                }
+            }
 			elseif ($operation == 'W') { // is writing
                 if (isset($event['data']) && isset($event['data']['isWriting'])) {
                     $event["data"]["id"] = $currentUser->getId();
@@ -132,7 +144,6 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 					else{
             			$canBroadcast = false;
 					}
-
 				}
 			}
             elseif ($operation == 'MM') { // move message in other

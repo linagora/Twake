@@ -57,13 +57,20 @@ class Subject
      */
     private $firstMessage;
 
-    public function __construct($name,$stream,$dateCreate,$dateUpdate,$user)
+    /**
+     * @ORM\Column(type="string")
+     */
+    private $description;
+
+
+    public function __construct($name,$stream,$dateCreate,$dateUpdate,$description,$user)
     {
         $this->setName($name);
         $this->setStream($stream);
         $this->setDateCreate($dateCreate);
         $this->setDateUpdate($dateUpdate);
         $this->setUserOpen($user);
+        $this->setDescription($description);
     }
 
     /**
@@ -194,6 +201,22 @@ class Subject
         $this->userOpen = $userOpen;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
 
 
     public function getAsArray(){
@@ -206,6 +229,7 @@ class Subject
             "isOpen" => $this->getisOpen(),
             "firstMessage" => ($this->getFirstMessage()!=null)?$this->getFirstMessage()->getId():null,
             "userOpen" => ($this->getUserOpen()!=null)?$this->getUserOpen()->getId():null,
+            "description" => $this->getDescription(),
         );
     }
 

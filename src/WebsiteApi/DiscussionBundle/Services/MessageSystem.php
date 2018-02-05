@@ -8,7 +8,6 @@ use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\DiscussionBundle\Entity\MessageLike;
 use WebsiteApi\MarketBundle\Entity\Application;
-use WebsiteApi\UsersBundle\Services\Notifications;
 use WebsiteApi\UsersBundle\Entity\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use WebsiteApi\DiscussionBundle\Model\MessagesSystemInterface;
@@ -22,20 +21,16 @@ class MessageSystem implements MessagesSystemInterface
 	var $string_cleaner;
 	var $doctrine;
 	var $security;
-	var $notifications;
 	var $commandExecutorService;
-	var $notificationsService;
 	var $pusher;
 	var $levelManager;
 	var $fileSystem;
 
-	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker,Notifications $notifications, $commandExecutorService, $notificationsService, $pusher, $levelManager,$fileSystem){
+	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager,$fileSystem){
 		$this->string_cleaner = $string_cleaner;
 		$this->doctrine = $doctrine;
 		$this->security = $authorizationChecker;
-		$this->notifications = $notifications;
 		$this->commandExecutorService = $commandExecutorService;
-		$this->notificationsService = $notificationsService;
 		$this->pusher = $pusher;
 		$this->levelManager = $levelManager;
 		$this->fileSystem = $fileSystem;
@@ -282,7 +277,10 @@ class MessageSystem implements MessagesSystemInterface
                     $messageInSubject = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject" => $message->getSubject()), Array("date" => "DESC"));
                     $nb = count($messageInSubject);
                     $lastMessage = $messageInSubject[0];
-                    $retour = array_merge($message->getAsArray(), Array("isSubject" => true,"responseNumber" => $nb, "lastMessage" => $lastMessage->getAsArray()));
+                    $retour = $message->getAsArray();
+                    $retour["isSubject"] = true;
+                    $retour["subject"]["responseNumber"] = $nb;
+                    $retour["subject"]["lastMessage"] = $lastMessage->getAsArray();
                 }
             }
         }
