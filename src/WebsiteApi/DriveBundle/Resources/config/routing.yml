@@ -37,6 +37,11 @@ twake_drive_upload:
     defaults: { _controller: TwakeDriveBundle:Files:upload }
     methods: [POST]
 
+twake_drive_upload:
+    path:     /download
+    defaults: { _controller: TwakeDriveBundle:Files:download }
+    methods: [GET]
+
 twake_drive_move:
     path:     /move
     defaults: { _controller: TwakeDriveBundle:Files:move }

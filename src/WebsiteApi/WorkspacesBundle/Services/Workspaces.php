@@ -30,6 +30,10 @@ class Workspaces implements WorkspacesInterface
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$user = $userRepository->find($userId);
 
+		if(!$user){
+			return null;
+		}
+
 		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 		$workspace = $workspaceRepository->findOneBy(Array("user"=>$user));
 

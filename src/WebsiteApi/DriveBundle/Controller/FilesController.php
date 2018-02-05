@@ -245,9 +245,9 @@ class FilesController extends Controller
 			$download = $request->request->get("download", 1);
 		}
 
-		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:read");
 
-		if (count($data["errors"]) == 0) {
+		if ($can) {
 
 			$this->get('app.drive.FileSystem')->download($groupId, $fileId, $download);
 

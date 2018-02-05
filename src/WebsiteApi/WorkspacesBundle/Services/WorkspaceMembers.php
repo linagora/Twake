@@ -85,6 +85,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 			$mail = $this->string_cleaner->simplifyMail($mail);
 
+			if(!$this->string_cleaner->verifyMail($mail)){
+				return false;
+			}
+
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 			$user = $userRepository->findOneBy(Array("email"=>$mail));
 
@@ -209,7 +213,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$this->doctrine->persist($member);
 			$this->doctrine->flush();
 
-			if($workspace->getUser() == null) {
+			if($workspace->getGroup() != null) {
 				$this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 			}
 
