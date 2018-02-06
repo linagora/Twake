@@ -76,15 +76,16 @@ angular.module('TwakeAdministration')
         var poolColors = function (a) {
             var pool = [];
             for(i=0;i<a;i++){
-                pool.push(dynamicColors());
+                pool.push(dynamicColors(a,i));
             }
             return pool;
         }
 
-        var dynamicColors = function() {
-            var r = Math.floor(Math.random() * 255);
-            var g = Math.floor(Math.random() * 255);
-            var b = Math.floor(Math.random() * 255);
+        var dynamicColors = function(a,i) {
+            var cpt = 255 / a;
+            var r = Math.floor(Math.random(255/a*i,255/a*(i+1)));
+            var g = Math.floor(Math.random(255/a*i,255/a*(i+1)));
+            var b = Math.floor(Math.random(255/a*i,255/a*(i+1)));
             return "rgb(" + r + "," + g + "," + b + ")";
         }
 
