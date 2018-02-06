@@ -1,7 +1,7 @@
 services:
     app.messages:
             class: WebsiteApi\DiscussionBundle\Services\MessageSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@app.command_executor", "@app.notifications", '@gos_web_socket.zmq.pusher','@app.workspace_levels']
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker', "@app.command_executor", '@gos_web_socket.zmq.pusher','@app.workspace_levels','@app.drive.FileSystem']
 
     app.streamSystem:
             class: WebsiteApi\DiscussionBundle\Services\StreamSystem
@@ -9,7 +9,7 @@ services:
 
     app.subjectSystem:
             class: WebsiteApi\DiscussionBundle\Services\SubjectSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher','@app.workspace_levels']
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher','@app.workspace_levels','@app.messages']
 
     app.messageReadSystem:
             class: WebsiteApi\DiscussionBundle\Services\MessageReadSystem

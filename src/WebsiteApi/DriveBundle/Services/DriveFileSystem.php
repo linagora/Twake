@@ -704,12 +704,6 @@ class DriveFileSystem implements DriveFileSystemInterface
 				if ($ext == "pdf") {
 					header("Content-type: application/pdf");
 				}
-				/*if (in_array($ext, ["wav", "mp3", "midi", "mid", "aac"])) {
-					header('Content-Type: audio; filename="' . $file->getName() . '"');
-				}
-				if (in_array($ext, ["avi", "webm", "mpeg"])) {
-					header('Content-Type: video; filename="' . $file->getName() . '"');
-				}*/
 			}
 
 			header('Expires: 0');

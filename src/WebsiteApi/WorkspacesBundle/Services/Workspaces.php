@@ -30,6 +30,10 @@ class Workspaces implements WorkspacesInterface
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$user = $userRepository->find($userId);
 
+		if(!$user){
+			return null;
+		}
+
 		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 		$workspace = $workspaceRepository->findOneBy(Array("user"=>$user));
 
@@ -61,6 +65,7 @@ class Workspaces implements WorkspacesInterface
 
 		//Create admin level
 		$level = new WorkspaceLevel();
+		$level->setWorkspace($workspace);
 		$level->setLabel("Administrator");
 		$level->setIsAdmin(true);
 		$level->setIsDefault(true);

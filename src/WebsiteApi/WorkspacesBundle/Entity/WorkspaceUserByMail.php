@@ -49,6 +49,16 @@ class WorkspaceUserByMail
 		return $this->workspace;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getMail()
+	{
+		return $this->mail;
+	}
+
+
+
 
 }
 

@@ -115,7 +115,7 @@ class Message
         $this->setUserSender($sender);
         if($isApplicationMessage) {
             $this->setIsApplicationMessage($isApplicationMessage);
-            $this->setApplicationSender($$applicationMessage);
+            $this->setApplicationSender($applicationMessage);
         }
 
         $this->setTypeReciever($typeReciever);
@@ -379,7 +379,7 @@ class Message
      */
     public function getApplicationData()
     {
-        return json_decode($this->applicationData);
+        return json_decode($this->applicationData,true);
     }
 
     /**
