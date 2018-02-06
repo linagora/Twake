@@ -1,79 +1,96 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: benoit
- * Date: 23/12/17
- * Time: 22:54
- */
 
+namespace WebsiteApi\DiscussionBundle\Model;
 
 interface MessagesSystemInterface
 {
     /**
-     * Verify that the user is allowed to send messages in this discussion
+     * Create message to send
+     * @param $senderId
+     * @param $recieverType
+     * @param $recieverId
+     * @param $isApplicationMessage
+     * @param $applicationMessage
+     * @param $isSystemMessage
+     * @param $content
+     * @param null $subjectId
+     * @return mixed
      */
-    function isAllowed(User $user, $discussionType, $discussionId);
+    public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content, $subjectId=null );
 
-    function isAllowedByKey(User $user, $discussionKey);
 
     /**
-     * Convertie une discussionKey en un array contenant le discussion type et le discussion ID
+     * edit message
+     * @param $id
+     * @param $content
+     * @return mixed
+     */
+    public function editMessage($id,$content);
+
+    /**
+     * get list of messages
+     * @param $user
+     * @param $recieverType
+     * @param $recieverId
+     * @param $offset
+     * @param $subjectId
+     * @return mixed
+     */
+    public function getMessages($user,$recieverType,$recieverId,$offset,$subjectId);
+
+
+    /**
+     * pin message
+     * @param $id
+     * @param $pinned
+     * @return mixed
+     */
+    public function pinMessage($id,$pinned);
+
+    /**
+     * ask if user is allowed to do some action
+     * @param $sender
+     * @param $recieverType
+     * @param $recieverId
+     * @return mixed
+     */
+    public function isAllowed($user,$discussionKey);
+
+    /**
+     * search message with param
+     * @param $type
+     * @param $idDiscussion
+     * @param $content
+     * @param $from
+     * @param $dateStart
+     * @param $dateEnd
+     * @return mixed
+     */
+    public function searchMessage($type,$idDiscussion,$content,$from,$dateStart,$dateEnd,$application);
+
+
+    /**
+     * drop message in other message to response
+     * @param $idDrop
+     * @param $idDragged
+     * @return mixed
+     */
+    public function moveMessageInMessage($idDrop,$idDragged);
+
+    /**
+     * get lists of message as array. Sort message by response, subject etc..
+     * @param $message
+     * @return mixed
+     */
+    public function getMessageAsArray($message);
+
+    /**
+     * notify changement of message on discussion
      * @param $discussionKey
-     * @return array
+     * @param $type
+     * @param $message
+     * @return mixed
      */
-    function convertKey($discussionKey, $user);
-
-
-
-    /**
-     * Like a message and send modifications to users
-     */
-    function likeMessage($user, $discussionType, $discussionId, $messageId, $type, $topic = null);
-
-
-    /**
-     * Edit a message and send modifications to users
-     */
-    function editMessage($user, $discussionType, $discussionId, $messageId, $content, $topic = null);
-
-    /**
-     * Pin a message and send modifications to users
-     */
-    function pinMessage($user, $discussionType, $discussionId, $messageId, $pinned, $topic = null);
-
-    /**
-     * Delete a message using message id (verify that it's our message)
-     */
-    function deleteMessage($user, $discussionType, $discussionId, $messageId, $topic = null);
-
-    /**
-     * Get lasts messages and info about users of the discussion
-     */
-    function getInit($user, $discussionType, $discussionId, $topic = null);
-
-    /**
-     * Get older messages in a discussion
-     */
-    function getOlder($user, $discussionKey, $oldest);
-
-
-    /**
-     * Send a message to a discussion
-     */
-    function sendMessage($user, $discussionType, $discussionId, $content, $topic = null);
-
-
-    function sendMessageUpload($user, $discussionType, $discussionId, $idFile, $fileIsInDrive, $topic = null);
-
-    function removeFileFromDrive($fileId);
-
-    /**
-     * Get a discussion members
-     */
-    function getMembers($user, $discussionType, $discussionId);
-
-    function enterCall($user, $discussionKey);
-
-
+    public function notify($discussionKey,$type,$message);
 
 }

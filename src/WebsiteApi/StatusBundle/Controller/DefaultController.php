@@ -29,7 +29,7 @@ class DefaultController extends Controller
 			$groups = $this->getUser()->getWorkspaces();
 
 			foreach ($groups as $group) {
-				if ($this->get('app.groups.access')->hasRight($this->getUser(), $group, "base:status:post")) {
+				if ($this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:status:post")) {
 					$data["data"][] = $group->getAsSimpleArray(false);
 				}
 			}
@@ -68,7 +68,7 @@ class DefaultController extends Controller
 	    }
 	    else if ($sharedStatusId != 0 && $sharedStatus == null) {
 		    $data["errors"][] = "statusnotfound";
-	    } else if ($groupId != 0 && !$this->get('app.groups.access')->hasRight($this->getUser(), $group, "base:status:post")) {
+	    } else if ($groupId != 0 && !$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:status:post")) {
 		    $data["errors"][] = "notallowed";
 	    }
 	    else {
@@ -121,7 +121,7 @@ class DefaultController extends Controller
 		}
 		else if ($status == null) {
 			$data["errors"][] = "statusnotfound";
-		} else if ($status->getWorkspace() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $status->getWorkspace(), "base:status:post")) {
+		} else if ($status->getWorkspace() != null && !$this->get('app.workspace_levels')->hasRight($this->getUser(), $status->getWorkspace(), "base:status:post")) {
 			$data["errors"][] = "notallowed";
 		}
 		else if ($status->getWorkspace() == null && $this->getUser() != $status->getUser()) {
@@ -177,7 +177,7 @@ class DefaultController extends Controller
 		}
 		else if ($privacy != "P" && $privacy != "I") {
 			$data["errors"][] = "badprivacy";
-		} elseif ($status->getWorkspace() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $status->getWorkspace(), "base:status:post")) {
+		} elseif ($status->getWorkspace() != null && !$this->get('app.workspace_levels')->hasRight($this->getUser(), $status->getWorkspace(), "base:status:post")) {
 			$data["errors"][] = "notallowed";
 		}
 		else {
@@ -325,7 +325,7 @@ class DefaultController extends Controller
 		else {
 			$users = $this->getUser()->getContacts();
 			$users[] = $this->getUser();
-			$groupsLinks = $manager->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findBy(Array("User" => $this->getUser(), "status" => "A"));
+			$groupsLinks = $manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("User" => $this->getUser(), "status" => "A"));
 
 			$groups = Array();
 			foreach ($groupsLinks as $groupLink) {

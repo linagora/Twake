@@ -64,6 +64,9 @@ interface UserInterface
 	// @removeDevice remove device
 	public function removeDevice($userId, $type, $value);
 
+	// @getMails get all secondary mails
+	public function getSecondaryMails($userId);
+
 	// @addNewMail send a number by mail to verify new mail
 	public function addNewMail($userId, $mail);
 
@@ -71,7 +74,7 @@ interface UserInterface
 	public function removeSecondaryMail($userId, $mail);
 
 	// @checkNumberForAddNewMail verify new mail
-	public function checkNumberForAddNewMail($token, $number);
+	public function checkNumberForAddNewMail($userId, $token, $number);
 
 	// @changePassword change password
 	public function changePassword($userId, $oldPassword, $password);
@@ -83,6 +86,6 @@ interface UserInterface
 	public function changeMainMail($userId, $mainMailId);
 
 	// @updateUserBasicData change user basic data
-	public function updateUserBasicData($userId, $firstName, $lastName, $imageFile);
+	public function updateUserBasicData($userId, $firstName, $lastName, $imageFile=null);
 
 }

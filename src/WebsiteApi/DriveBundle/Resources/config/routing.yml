@@ -1,55 +1,97 @@
+# Labels
+
+twake_drive_labels_get:
+    path:     /labels/get
+    defaults: { _controller: TwakeDriveBundle:FilesLabels:get }
+    methods: [POST]
+
+twake_drive_labels_update:
+    path:     /labels/update
+    defaults: { _controller: TwakeDriveBundle:FilesLabels:update }
+    methods: [POST]
+
+# Drive
+
 twake_drive_create:
     path:     /create
     defaults: { _controller: TwakeDriveBundle:Files:create }
-
-twake_drive_delete:
-    path:     /delete
-    defaults: { _controller: TwakeDriveBundle:Files:delete }
-
-twake_drive_trash_empty:
-    path:     /trash/empty
-    defaults: { _controller: TwakeDriveBundle:Files:emptyTrash }
+    methods: [POST]
 
 twake_drive_list:
     path:     /list
     defaults: { _controller: TwakeDriveBundle:Files:list }
+    methods: [POST]
 
 twake_drive_preview:
     path:     /preview
     defaults: { _controller: TwakeDriveBundle:Files:preview }
-
-twake_drive_trash_restore:
-    path:     /trash/restore
-    defaults: { _controller: TwakeDriveBundle:Files:restoreTrash }
+    methods: [GET]
 
 twake_drive_search:
     path:     /search
     defaults: { _controller: TwakeDriveBundle:Files:search }
+    methods: [POST]
 
 twake_drive_upload:
     path:     /upload
     defaults: { _controller: TwakeDriveBundle:Files:upload }
+    methods: [POST]
+
+twake_drive_upload:
+    path:     /download
+    defaults: { _controller: TwakeDriveBundle:Files:download }
+    methods: [GET]
 
 twake_drive_move:
     path:     /move
     defaults: { _controller: TwakeDriveBundle:Files:move }
+    methods: [POST]
 
 twake_drive_copy:
     path:     /copy
     defaults: { _controller: TwakeDriveBundle:Files:copy }
+    methods: [POST]
 
 twake_drive_rename:
     path:     /rename
     defaults: { _controller: TwakeDriveBundle:Files:rename }
+    methods: [POST]
 
 twake_drive_content_get_details:
     path:     /details
     defaults: { _controller: TwakeDriveBundle:Files:getDetails }
+    methods: [POST]
 
 twake_drive_content_get:
     path:     /content/get
     defaults: { _controller: TwakeDriveBundle:Files:getContent }
+    methods: [POST]
 
 twake_drive_content_set:
     path:     /content/set
     defaults: { _controller: TwakeDriveBundle:Files:setContent }
+    methods: [POST]
+
+# Sharing
+
+twake_drive_share:
+    path: /share
+    defaults: { _controller: TwakeDriveBundle:FilesSharing:share }
+    methods: [POST]
+
+# Trash
+
+twake_drive_delete:
+    path:     /delete
+    defaults: { _controller: TwakeDriveBundle:Files:delete }
+    methods: [POST]
+
+twake_drive_trash_restore:
+    path:     /trash/restore
+    defaults: { _controller: TwakeDriveBundle:Files:restoreTrash }
+    methods: [POST]
+
+twake_drive_trash_empty:
+    path:     /trash/empty
+    defaults: { _controller: TwakeDriveBundle:Files:emptyTrash }
+    methods: [POST]

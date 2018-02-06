@@ -7,7 +7,71 @@ twake_user_logout:
     path:     /logout
     defaults: { _controller: TwakeUsersBundle:UsersConnections:logout }
 
-
 twake_user_get:
     path:     /current/get
     defaults: { _controller: TwakeUsersBundle:UsersConnections:currentUser }
+
+# Account
+
+twake_user_account_setbasic:
+    path:     /account/identity
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:setIdentity }
+
+twake_user_account_setpseudo:
+    path:     /account/username
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:setUsername }
+
+twake_user_account_setpassword:
+    path:     /account/password
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:setPassword }
+
+twake_user_account_setmainmail:
+    path:     /account/mainmail
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:setMainMail }
+
+twake_user_account_removemail:
+    path:     /account/removemail
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:removeMail }
+
+twake_user_account_addmail:
+    path:     /account/addmail
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:addMail }
+
+twake_user_account_getmails:
+    path:     /account/mails
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:getMails }
+
+twake_user_account_addmailverify:
+    path:     /account/addmailverify
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:addMailVerify }
+
+
+# Subscribe
+
+twake_user_subscribe_mail:
+    path:     /subscribe/mail
+    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:mail }
+
+twake_user_subscribe_mailverify:
+    path:     /subscribe/verifymail
+    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:verifyMail }
+
+twake_user_subscribe_identity:
+    path:     /subscribe/identity
+    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:subscribe }
+
+
+# Recover
+
+twake_user_recover_mail:
+    path:     /recover/mail
+    defaults: { _controller: TwakeUsersBundle:UsersRecover:mail }
+
+twake_user_recover_verify:
+    path:     /recover/verify
+    defaults: { _controller: TwakeUsersBundle:UsersRecover:codeVerification }
+
+twake_user_recover_password:
+    path:     /recover/password
+    defaults: { _controller: TwakeUsersBundle:UsersRecover:newPassword }
+

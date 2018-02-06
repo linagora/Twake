@@ -30,7 +30,7 @@ class WorkspaceRepository extends \Doctrine\ORM\EntityRepository
     private function searchMiddleQueryBuilder($req,$filters){
         if ($filters != null) {
             if(isset($filters['name'])){
-                $req->where('U.cleanName LIKE \'%' . $filters['name'].'%\'');
+                $req->where('U.name LIKE \'%' . $filters['name'].'%\'');
             }
             if(isset($filters['memberCount'])){
                 $req->where('U.memberCount LIKE \'%' . $filters['memberCount'].'%\'');

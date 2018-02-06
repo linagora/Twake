@@ -10,9 +10,14 @@ angular.module('TwakeAdministration')
 
         var that = this;
         this.id = $stateParams.id;
+        this.colors = [];
+        this.total = 0;
+        this.units = ['o','Ko','Mo','Go','To'];
+        this.unit = '';
         this.update = function(){
             this.drawChart();
-            this.drawDonut();
+            this.drawCountDonut();
+            this.drawSizeDonut();
             $api.post("authentication/getInfoWorkspace", {
                 id: this.id
             }, function (res) {
@@ -29,24 +34,75 @@ angular.module('TwakeAdministration')
         this.getProfileView = function(userId){
             $state.go("user-sheet", {id: userId})
         }
-        this.drawDonut = function () {
+        this.drawCountDonut = function () {
             $api.post("authentication/numberOfExtensionsByWorkspace", {
                 twakeWorkspace: this.id,
             }, function (res) {
-                console.log(res.data);
                 var labels = [];
                 var datas = [];
                 for (var i = 0; i < res.data.length; i++) {
                     labels.push(res.data[i].extension);
                     datas.push(res.data[i].nb);
                 }
+                poolColors(datas.length);
                 var ctx = document.getElementById("myDonut");
                 var myDoughnutChart = new Chart(ctx, {
                     type: 'doughnut',
                     data: data = {
                         datasets: [{
                             data: datas,
-                            backgroundColor: poolColors(datas.length)
+                            backgroundColor: that.colors
+                        }],
+
+                        // These labels appear in the legend and in the tooltips when hovering different arcs
+                        labels: labels
+                    },
+                    options: {
+                        responsive: true,
+                        title: {
+                            display: false,
+                            position: "top",
+                            text: "Pie Chart",
+                            fontSize: 18,
+                            fontColor: "#111"
+                        },
+                        legend: {
+                            display: true,
+                            position: "bottom",
+                            labels: {
+                                fontColor: "#333",
+                                fontSize: 16
+                            }
+                        }
+                    }
+                });
+            });
+        }
+        this.drawSizeDonut = function () {
+            $api.post("authentication/sizeByExtensions", {
+                twakeWorkspace: this.id,
+            }, function (res) {
+                var labels = [];
+                var datas = [];
+                for (var i = 0; i < res.data.length; i++) {
+                    labels.push(res.data[i].extension);
+                    datas.push(res.data[i].sizes);
+                    that.total += parseInt(res.data[i].sizes);
+                }
+                var cpt =0;
+                while(that.total / 1000 > 1 && cpt <= that.units.length)
+                {
+                    that.total = that.total / 1000;
+                    cpt++;
+                }
+                that.unit = that.units[cpt];
+                var ctx = document.getElementById("myDonut2");
+                var myDoughnutChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: data = {
+                        datasets: [{
+                            data: datas,
+                            backgroundColor: that.colors
                         }],
 
                         // These labels appear in the legend and in the tooltips when hovering different arcs
@@ -74,18 +130,15 @@ angular.module('TwakeAdministration')
             });
         }
         var poolColors = function (a) {
-            var pool = [];
             for(i=0;i<a;i++){
-                pool.push(dynamicColors(a,i));
+                that.colors.push(dynamicColors());
             }
-            return pool;
         }
 
-        var dynamicColors = function(a,i) {
-            var cpt = 255 / a;
-            var r = Math.floor(Math.random(255/a*i,255/a*(i+1)));
-            var g = Math.floor(Math.random(255/a*i,255/a*(i+1)));
-            var b = Math.floor(Math.random(255/a*i,255/a*(i+1)));
+        var dynamicColors = function() {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
             return "rgb(" + r + "," + g + "," + b + ")";
         }
 

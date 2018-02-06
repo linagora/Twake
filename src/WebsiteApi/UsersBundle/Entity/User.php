@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceParent;
-use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 
 /**
  * User
@@ -48,9 +48,9 @@ class User extends BaseUser
 	protected $thumbnail;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser", mappedBy="User")
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser", mappedBy="User")
 	 */
-	protected $workspacesLinks;
+	protected $workspaces;
 
 	/**
 	 * @var int
@@ -67,6 +67,17 @@ class User extends BaseUser
 
 	public function __construct()
 	{
+		$this->enabled = true;
+		$this->connections = 0;
+		$this->connected = 1;
+	}
+
+	/**
+	 * @return int
+	 */
+	public function getId()
+	{
+		return $this->id;
 	}
 
 	/**
@@ -138,8 +149,8 @@ class User extends BaseUser
 
 		$workspaces = Array();
 
-		for ($i = 0; $i < count($this->workspacesLinks); ++$i) {
-			$workspaces[] = $this->workspacesLinks[$i]->getGroup();
+		for ($i = 0; $i < count($this->workspaces); ++$i) {
+			$workspaces[] = $this->workspaces[$i]->getGroup();
 		}
 
 		return $workspaces;

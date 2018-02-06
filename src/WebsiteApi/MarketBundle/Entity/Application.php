@@ -249,7 +249,8 @@ class Application
 			"isPromoted" => $this->getPromoted(),
 			"screenshots" => $this->getScreenshot(),
 			"url" => $this->getUrl(),
-			"filestypes" => $this->getFilesTypes()
+			"filestypes" => $this->getFilesTypes(),
+			"internal" => ((!(substr( $this->getUrl(), 0, 4 ) === "http"))?true:false)
 		);
 	}
 

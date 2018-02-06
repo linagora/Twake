@@ -57,13 +57,13 @@ class GroupMembersDeleteTest extends WebTestCaseExtended
 		$this->assertEquals(1, count($resDeletion["errors"]), "Test " . $errorLabel . "  (mail : " . $email . ") : mauvais nombre d'erreurs retournées");
 		$this->assertEquals($errorLabel, $resDeletion["errors"][0], "Test " . $errorLabel . "  (mail : " . $email . ") : mauvaise erreur retournée");
 
-		$repoWorkspaceUser = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser");
+		$repoWorkspaceUser = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 		if ($userFound) {
 			if (!$email) {
-				$link = $repoWorkspaceUser->findOneBy(Array("Workspace" => $this->groupId, "User" => $lastOwner ? $resGroupUserId : $resInvitedUserId));
+				$link = $repoWorkspaceUser->findOneBy(Array("workspace" => $this->groupId, "user" => $lastOwner ? $resGroupUserId : $resInvitedUserId));
 			}
 			else {
-				$link = $repoWorkspaceUser->findOneBy(Array("Workspace" => $this->groupId, "mail" => "test@email.com"));
+				$link = $repoWorkspaceUser->findOneBy(Array("workspace" => $this->groupId, "mail" => "test@email.com"));
 			}
 			if ($link == null) {
 				print_r($resDeletion);
@@ -120,10 +120,10 @@ class GroupMembersDeleteTest extends WebTestCaseExtended
 		$this->assertEquals(0, count($resDeletion["errors"]), "Test correct  (mail : " . $email . ") : mauvais nombre d'erreurs retournées");
 
 		if (!$email) {
-			$link = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("Workspace" => $this->groupId, "User" => $resInvitedUserId));
+			$link = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $this->groupId, "user" => $resInvitedUserId));
 		}
 		else {
-			$link = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("Workspace" => $this->groupId, "mail" => "test@email.com"));
+			$link = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $this->groupId, "mail" => "test@email.com"));
 		}
 
 		$this->assertEquals(null, $link, "Test correct (mail : " . $email . ") : membre non supprimé du groupe dans la base de données");

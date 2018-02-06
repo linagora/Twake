@@ -193,8 +193,7 @@ angular.module('TwakeAdministration')
                     "enabled": true
                 }
             } );
-        })};
         this.update();
-
+        }
 
     });

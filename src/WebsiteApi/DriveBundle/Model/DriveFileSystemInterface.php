@@ -33,7 +33,7 @@ interface DriveFileSystemInterface
 	public function copy($fileOrDirectory, $newParent = null); // $fileOrDirectory : entity or id
 
 	// @rename renames a file
-	public function rename($fileOrDirectory, $filename); // $file : entity or id, $filename : string
+	public function rename($fileOrDirectory, $filename, $description=null, $labels=Array()); // $file : entity or id, $filename : string
 
 	// @create creates a file in a directory with optional content
 	public function create($group, $directory, $filename, $content = "", $isDirectory = false); // $file : entity or id
@@ -55,7 +55,13 @@ interface DriveFileSystemInterface
 	public function getInfos($fileOrDirectory); // $fileOrDirectory : entity or id
 
 	// @listDirectory returns objects in directory
-	public function listDirectory($group, $directory); // $directory : entity or id
+	public function listDirectory($group, $directory, $inTrash=false); // $directory : entity or id
+
+	// @listNew returns new objects
+	public function listNew($group, $offset = 0, $max = 20);
+
+	// @listShared returns shared objects
+	public function listShared($group, $offset = 0, $max = 20);
 
 	// @search searches files with such name (given in query)
 	// Query
