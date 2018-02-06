@@ -7,20 +7,25 @@ angular.module('TwakeAdministration')
         });
     })
     .controller('User_sheetCtrl', function($api, $scope, $stateParams, $state){
-
         var that = this;
         this.id = $stateParams.id;
+
+
+
+
         this.update = function(){
             $api.post("authentication/getInfoUser", {
                 id: this.id
             }, function (res) {
-                console.log(res);
+
                 that.userInfo = res.data.user;
                 that.workspaces = res.data.workspaces;
+
                 $scope.$apply();
             });
-            //this.makeChart();
+
         };
+
         this.goBack = function () {
             $state.go("user-all")
         }
@@ -28,39 +33,14 @@ angular.module('TwakeAdministration')
         this.getWorkspaceView = function(workspaceId){
             $state.go("workspace-sheet", {id: workspaceId})
         }
-        /*this.makeChart = function(){
-            var startdate = new Date();
-            startdate.setDate(startdate.getDate() - 7);
 
+        this.makedd = function(){
             $api.post("authentication/findConnection", {
                 user_id: this.id,
-                startdate: startdate.toISOString().substring(0, 10),
-                enddate: new Date().toISOString().substring(0, 10)
-            }, function (res) {
-                console.log(res);
-                var dataset = [];
-                for(var i = 0; i < res.data.length;i++){
-                    console.log();
-                    console.log(res.data[i].fin);
-                    {
-                        dataset.push({
-                            "category": "Module #1",
-                            "segments": [{
-                                "start": "2016-01-01 02:00:00",
-                                "end": "2016-01-01 04:00:00",
-                                "color": "#b9783f",
-                                "task": "Gathering requirements"
-                            }, {
-                                "start": "2016-01-02 06:00:00",
-                                "end": "2016-01-02 08:00:00",
-                                "task": "Producing specifications"
-                            }]
-                        });
+            }, function (res) { 
+                console.log(res.data);
 
-                    }
-                }
-            })
-            var chart = AmCharts.makeChart( "chartdiv", {
+            AmCharts.makeChart( "chartdiv", {
                 "type": "gantt",
                 "theme": "light",
                 "marginRight": 70,
@@ -175,7 +155,7 @@ angular.module('TwakeAdministration')
                         "end": "2016-03-30",
                         "task": "Testing and QA"
                     } ]
-                } ],
+                }*/ ],
                 "valueScrollbar": {
                     "autoGridCount": true
                 },
@@ -193,7 +173,10 @@ angular.module('TwakeAdministration')
                     "enabled": true
                 }
             } );
-            this.update();
-        }*/
+            })
+
+        }
+         this.makedd();
+        this.update();
 
     });
