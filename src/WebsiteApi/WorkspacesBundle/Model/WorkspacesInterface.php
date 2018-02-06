@@ -9,7 +9,7 @@ interface WorkspacesInterface
 {
 
 	// @getPrivate return user private workspace (create workspace if not exist)
-	public function getPrivate($currentUserId = null);
+	public function getPrivate($currentUserId);
 
 	// @create creates a new workspace in group
 	public function create($name, $groupId = null, $userId = null);

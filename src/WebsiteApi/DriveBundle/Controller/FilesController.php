@@ -57,7 +57,7 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$fileIds = $request->request->get("fileIds", Array());
 
-		$can = $this->get('app.workspace_levels')->errorsAccess($groupId, $this->getUser()->getId(), "Drive:general:edit");
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit");
 
 		if ($can) {
 			foreach ($fileIds as $fileId){
@@ -76,7 +76,7 @@ class FilesController extends Controller
 
 		$groupId = $request->request->get("groupId", 0);
 
-		$can = $this->get('app.workspace_levels')->errorsAccess($groupId, $this->getUser()->getId(), "Drive:general:edit");
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit");
 
 		if ($can) {
 			if (!$this->get('app.drive.FileSystem')->emptyTrash($groupId)) {
@@ -96,7 +96,7 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$fileIds = $request->request->get("fileIds", null);
 
-		$can = $this->get('app.workspace_levels')->errorsAccess($groupId, $this->getUser()->getId(), "Drive:general:edit");
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit");
 
 		if ($can) {
 
@@ -123,7 +123,7 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$objectId = $request->request->get("id", 0);
 
-		$can = $this->get('app.workspace_levels')->errorsAccess($groupId, $this->getUser()->getId(), "Drive:general:view");
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:view");
 
 		if ($can) {
 
