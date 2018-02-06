@@ -35,22 +35,60 @@ angular.module('TwakeAdministration')
             }, function (res) {
                 //console.log(res);
                 var dataset = [];
+                var segments = [];
                 var newDate;
                 for(var i = 0; i < res.data.length;i++){
+                    segments = []
                     var test = res.data[i].debut+"".substring(0,19);
                     newDate = new Date(res.data[i].debut.date);
-                    console.log(newDate);
                     newDate.setSeconds(newDate.getSeconds()+res.data[i].fin);
-                    console.log(newDate);
+                    var sameDate = false;
+                    if(i+1 < res.data.length){
+                        if((new Date(res.data[i].debut.date).getDay() == new Date(res.data[i+1].debut.date).getDay()) && (new Date(res.data[i].debut.date).getMonth() == new Date(res.data[i+1].debut.date).getMonth())&& (new Date(res.data[i].debut.date).getFullYear() == new Date(res.data[i+1].debut.date).getFullYear())){
+                            sameDate = true;
+                            while(sameDate == true){
+                                segments.push({
+                                    "start": new Date(res.data[i].debut.date),
+                                    "end": new Date(res.data[i].debut.date).setSeconds((new Date(res.data[i].debut.date).getSeconds())+res.data[i].fin),
+                                    "color": "#b9783f",
+                                    "task": "Gathering requirements"
+                                });
+                                if(i+1 < res.data.length) {
+                                    if ((new Date(res.data[i].debut.date).getDay() == new Date(res.data[i + 1].debut.date).getDay()) && (new Date(res.data[i].debut.date).getMonth() == new Date(res.data[i + 1].debut.date).getMonth()) && (new Date(res.data[i].debut.date).getFullYear() == new Date(res.data[i + 1].debut.date).getFullYear())) {
+                                        sameDate = true;
+                                        i++;
+                                    }
+                                    else{
+                                        sameDate = false;
+                                    }
+                                }
+                                if(i == res.data.length-1){
+                                    sameDate =false;
+                                }
+                            }
+                        }
+                        else{
+                            segments.push({
+                                "start": new Date(res.data[i].debut.date),
+                                "end": new Date(res.data[i].debut.date).setSeconds((new Date(res.data[i].debut.date).getSeconds())+res.data[i].fin),
+                                "color": "#b9783f",
+                                "task": "Gathering requirements"
+                            });
+                        }
+                    }
+                   /* while(i+1 < res.data.length && (new Date(res.data[i].debut.date).getDay() == new Date(res.data[i+1].debut.date).getDay()) && (new Date(res.data[i].debut.date).getMonth() == new Date(res.data[i+1].debut.date).getMonth())&& (new Date(res.data[i].debut.date).getFullYear() == new Date(res.data[i+1].debut.date).getFullYear())){
+                        segments.push({
+                            "start": new Date(res.data[i].debut.date),
+                            "end": new Date(res.data[i].debut.date).setSeconds((new Date(res.data[i].debut.date).getSeconds())+res.data[i].fin),
+                            "color": "#b9783f",
+                            "task": "Gathering requirements"
+                        });
+                        i++;
+                    }*/
                     {
                         dataset.push({
                             "category": new Date(res.data[i].debut.date),
-                            "segments": [{
-                                "start": new Date(res.data[i].debut.date),
-                                "end": newDate,
-                                "color": "#b9783f",
-                                "task": "Gathering requirements"
-                            }]
+                            "segments": segments
                         });
 
                     }
