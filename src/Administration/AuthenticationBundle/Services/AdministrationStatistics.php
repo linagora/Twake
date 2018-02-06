@@ -36,10 +36,39 @@ class AdministrationStatistics implements AdministrationStatisticsInterface
         }
         return null;
     }
-
-
+    
     public function numberOfWorkspaceByApp($idApp){
         $repository = $this->doctrine->getRepository("TwakeMarketBundle:LinkAppWorkspace");
         return $repository->countWorkspaceByApp($idApp);
+    }
+
+    public function numberOfExtensions(){
+        $repository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $listExtension = $repository->countEachExtension();
+        if($listExtension == null){
+            return null;
+        }
+        return $listExtension;
+    }
+
+    public function sizeByExtension($idWorkspace)
+    {
+        $repository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $listExtension = $repository->sumSizeByExt($idWorkspace);
+        if ($listExtension == null) {
+            return null;
+        }
+        return $listExtension;
+    }
+
+    public function numberOfExtensionsByWorkspace($workspace)
+    {
+        $repository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $listeExtension  = $repository->countEachExtensionByWorkspace($workspace);
+        if($listeExtension == null)
+        {
+            return null;
+        }
+        return $listeExtension;
     }
 }

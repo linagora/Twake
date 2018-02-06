@@ -14,12 +14,14 @@ class Connections
 	var $doctrine;
 	var $pusher;
 	var $calls;
+	var $userConnectionService;
 
-	public function __construct(ClientManipulatorInterface $clientManipulator, $doctrine, $pusher, $calls){
+	public function __construct(ClientManipulatorInterface $clientManipulator, $doctrine, $pusher, $calls, $userConnectionService){
 		$this->clientManipulator = $clientManipulator;
 		$this->doctrine = $doctrine;
 		$this->pusher = $pusher;
 		$this->calls = $calls;
+		$this->userConnectionService = $userConnectionService;
 	}
 
 	public function onServerStart($event){
@@ -41,15 +43,20 @@ class Connections
 
 		$conn = $event->getConnection();
 		$user = $this->clientManipulator->getClient($conn);
+		error_log("MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMOOOOOOOOOOOOOOOOOOOOOOOOOMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMM  ".$user);
+		var_dump($user);
+/*
 		if($user==null || is_string($user)){
 			return;
 		}
-
+*/
 		//This is a real logged user, check if he's connected on an other page
 
 		//Get connexions
 		$repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-		$user = $repository->find($user->getId());
+
+		//$user = $repository->find($user->getId());
+        $user = $repository->find(1);
 
 		//Set connections
 		$justArrived = false;
@@ -60,9 +67,10 @@ class Connections
 		$this->doctrine->persist($user);
 		$this->doctrine->flush();
 
-		/*if($justArrived){
-			echo $user->getUsername() . " just connected" . PHP_EOL;
-		}*/
+		if($justArrived){
+			//$this->userConnectionService->newConnection($user->getId());
+            $this->userConnectionService->newConnection(1);
+		}
 
 		//Send notifications any way
 		$this->pusher->push(true, 'connections_topic', ["id_user"=>$user->getId()]);
@@ -91,13 +99,16 @@ class Connections
 
 		$conn = $event->getConnection();
 		$user = $this->clientManipulator->getClient($conn);
+
 		if($user==null || is_string($user)){
 			return;
 		}
 
 		//Get connexions
 		$repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+
 		$user = $repository->find($user->getId());
+        //$user = $repository->find(3);
 
 		//Set connections and determine user state
 		$disconnected = false;
@@ -114,6 +125,7 @@ class Connections
 		if($disconnected){
 			//echo $user->getUsername() . " is Disconnected" . PHP_EOL;
 			//Send notification to other users
+            $this->userConnectionService->closeConnection($user->getId());
 			$this->calls->exitCalls($user);
 			$this->pusher->push(false, 'connections_topic', ["id_user"=>$user->getId()]);
 		}

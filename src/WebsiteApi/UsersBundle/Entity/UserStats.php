@@ -11,7 +11,7 @@ use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceParent;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 
 /**
- * User
+ * UserStats
  *
  * @ORM\Table(name="user_stats",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\UsersBundle\Repository\UserStatsRepository")
@@ -19,13 +19,31 @@ use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 class UserStats
 {
 	/**
-	 * @var int
-	 *
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	protected $id;
+	 * @ORM\Id/**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="stat")
+     */
+	protected $user;
 
+    /**
+     * @var int
+     * @ORM\Column(name="public_msg_count", type="integer")
+     */
+    protected $publicMsgCount;
+    /**
+     * @var int
+     * @ORM\Column(name="private_msg_count", type="integer")
+     */
+    protected $privateMsgCount;
 
+    public function getPublicMsgCount(){
+        return $this->publicMsgCount;
+    }
+
+    public function getPrivateMsgCount(){
+        return $this->privateMsgCount;
+    }
+
+    public function getUser(){
+        return $this->user;
+    }
 }

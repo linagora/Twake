@@ -50,9 +50,18 @@
             </td>
             <td>{{workspace.name}}</td>
             <td>{{workspace.description}}</td>
-            <td><button class="btn btn-primary" ng-click="">See Workspace</button></td>
+            <td><button class="btn btn-primary" ng-click="user.getWorkspaceView(workspace.id)">See Workspace</button></td>
         </tr>
 
         </tbody>
     </table>
+    <div id="chartdiv"></div>
 </div>
+
+<!-- Styles -->
+<style>
+    #chartdiv {
+        width: 100%;
+        height: 500px;
+    }
+</style>

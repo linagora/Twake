@@ -10,7 +10,8 @@ var appadmin = angular.module("TwakeAdministration",
 		'ngRoute',
 		'ngSanitize',
 		'ui.router',
-		'cp.ngConfirm'
+		'cp.ngConfirm',
+		'chart.js'
 	])
 
 	.service("UnId", function () {

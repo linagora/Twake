@@ -13,6 +13,7 @@ angular.module('TwakeAdministration')
 		this.list = [];
 		this.pages = [1];
 		this.total = 0;
+		this.connectedUser = 0;
 
 		this.page = 1;
 		this.perpage = 50;
@@ -33,6 +34,12 @@ angular.module('TwakeAdministration')
 
 				$scope.$apply();
 			});
+
+            $api.post("authentication/numberOfUserCurrentlyConnected", null, function (res) {
+            	console.log(res);
+            	that.connectedUser = res.data;
+                $scope.$apply();
+            });
 		};
 
 		this.setPage = function(page){
@@ -57,7 +64,7 @@ angular.module('TwakeAdministration')
 
 			// Loop through all table rows, and hide those who don't match the search query
 			for (i = 1; i < table.rows.length; i++) {
-				for(j = 0; j < table.rows[i].cells.length; j++)
+				for(j = 0; j < table.rows[i].cells.length - 1; j++)
 				{
                     td = table.rows[i].cells[j];
                     if (td) {

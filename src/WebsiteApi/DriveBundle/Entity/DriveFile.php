@@ -84,7 +84,7 @@ class DriveFile
 	private $last_version;
 
 	/**
-	 * @ORM\Column(type="integer")
+	 * @ORM\Column(type="bigint")
 	 */
 	private $size;
 

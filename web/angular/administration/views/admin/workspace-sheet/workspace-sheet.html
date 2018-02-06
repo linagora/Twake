@@ -1,0 +1,77 @@
+<div ng-controller="Workspace_sheetCtrl as workspace">
+    <table class="table table-bordered table-hover">
+        <tr>
+            <td>Name</td>
+            <td>{{workspace.workspaceInfo.name}}</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>{{workspace.workspaceInfo.description}}</td>
+        </tr>
+        <tr>
+            <td>Image</td>
+            <td><div style="background-position: center; background-size: contain; width:50px; height:50px; {{workspace.workspaceInfo.csslogo}}"></div></td>
+        </tr>
+    </table>
+    <button class="btn btn-primary" ng-click="workspace.goBack()">Back to the list</button>
+
+
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <div class="info-box bg-blue" align="center">
+                <span class="info-box-icon"><i class="ion ion-ios-cloud-download-outline"></i></span>
+
+                <div class="info-box-content">
+                    <span class="info-box-text">Storage</span>
+                    <span class="info-box-number">{{workspace.total}} {{workspace.unit}}</span>
+                    <span class="progress-description">
+                        The workspace {{workspace.workspaceInfo.name}} use a total of {{workspace.total}} {{workspace.unit}}
+                      </span>
+                </div>
+                <!-- /.info-box-content -->
+            </div>
+        </div>
+    </div>
+            <h1>Message Activity</h1>
+    <canvas id="myChart" width="400" height="100"></canvas>
+
+<div class="row">
+    <div class="col-md-6 col-sm-6">
+        <h1>Files size by extension</h1>
+        <canvas id="myDonut2" width="400" height="200"></canvas>
+    </div>
+
+    <div class="col-md-6 col-sm-6">
+        <h1>Files count by extension</h1>
+        <canvas id="myDonut" width="400" height="200"></canvas>
+    </div>
+
+</div>
+    <h1>Users in {{workspace.workspaceInfo.name}}</h1>
+    <table class="table table-bordered table-hover">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Image</th>
+            <th>Username</th>
+            <th>Mail</th>
+            <th>Operations</th>
+        </tr>
+        </thead>
+        <tbody>
+
+        <tr ng-repeat="user in workspace.users">
+            <td>{{user.id}}</td>
+            <td>
+                <div style="background-position: center; background-size: contain; width:50px; height:50px; {{user.cssuserimage}}"></div>
+            </td>
+            <td>{{user.username}}{{user.connected?' (online)':''}}</td>
+            <td></td>
+            <td><button class="btn btn-primary" ng-click="workspace.getProfileView(user.id)">See profile</button></td>
+        </tr>
+
+        </tbody>
+    </table>
+</div>
+
+</div>

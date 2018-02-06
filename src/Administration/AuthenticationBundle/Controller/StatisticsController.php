@@ -25,16 +25,17 @@ class StatisticsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
+            $nbConnected = 0;
             $nbConnected = $this->get('admin.TwakeStatistics')->numberOfUserCurrentlyConnected();
             if($nbConnected != null)
             {
-                $data["data"][] = $nbConnected;
+                $data["data"] = $nbConnected;
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
@@ -50,8 +51,8 @@ class StatisticsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $nbUser = $this->get('admin.TwakeStatistics')->numberOfUsers();
             if($nbUser != null)
@@ -59,7 +60,7 @@ class StatisticsController extends Controller
                 $data["data"][] = $nbUser;
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
@@ -75,8 +76,8 @@ class StatisticsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $idApp = $request->request->get("idapp","");
             $nbAppUser = $this->get('admin.TwakeStatistics')->numberOfAppUser($idApp);
@@ -89,12 +90,117 @@ class StatisticsController extends Controller
                 $data["errors"][] = "not found";
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
 
 
+        return new JsonResponse($data);
+    }
+
+    public function numberOfWorkspaceByAppAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
+        {
+            $idApp = $request->request->get("idapp","");
+            $nbWorkByApp = $this->get('admin.TwakeStatistics')->numberOfWorkspaceByApp($idApp);
+            if($nbWorkByApp != null)
+            {
+                $data["data"][] = $nbWorkByApp;
+            }
+            else
+            {
+                $data["errors"][] = "not found";
+            }
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
+
+    public function numberOfExtensionsAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
+        {
+            $nbOfExtenstion= $this->get('admin.TwakeStatistics')->numberOfExtensions();
+            if($nbOfExtenstion != null)
+            {
+                $data["data"][] = $nbOfExtenstion;
+            }
+            else
+            {
+                $data["errors"][] = "not found";
+            }
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
+
+    public function sizeByExtensionsAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null) {
+            $sizeByExtenstion = $this->get('admin.TwakeStatistics')->sizeByExtension($request->request->get("twakeWorkspace", "1"));
+            if ($sizeByExtenstion != null) {
+                $data["data"] = $sizeByExtenstion;
+            } else {
+                $data["errors"][] = "not found";
+            }
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+        return new JsonResponse($data);
+    }
+
+    public function numberOfExtensionsByWorkspaceAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
+        {
+            $workspace = $request->request->get("twakeWorkspace", "");
+            $listNbExtension = $this->get('admin.TwakeStatistics')->numberOfExtensionsByWorkspace($workspace);
+            if ($listNbExtension != null) {
+                $data["data"] = $listNbExtension;
+            }
+            else
+            {
+                $data["errors"][] = "not found";
+            }
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
         return new JsonResponse($data);
     }
 

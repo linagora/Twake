@@ -37,7 +37,7 @@ class TwakeGroupManagerController extends Controller
                 $listResponse = Array();
 
                 foreach ($listTwakeGroups as $twakeGroup) {
-                    $listResponse[] = $twakeGroup->getAsSimpleArray();
+                    $listResponse[] = $twakeGroup->getAsArray();
                 }
                 $data["data"]["total"] = $total;
                 $data["data"]["workspaces"] = $listResponse;
@@ -69,6 +69,9 @@ class TwakeGroupManagerController extends Controller
             if($workspace != null)
             {
                 $data["data"]["workspace"] = $workspace->getAsSimpleArray();
+
+                foreach ($workspace->getMembers() as $member)
+                    $data["data"]["users"][] = $member->getUser()->getAsArray();
             }
             else
             {

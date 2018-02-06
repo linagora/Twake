@@ -15,6 +15,8 @@ class DefaultController extends Controller
             "data" => Array()
         );
 
+        error_log("hey !");
+
         $username = $request->request->get("username", "");
         $password = $request->request->get("password", "");
 
@@ -28,7 +30,7 @@ class DefaultController extends Controller
         {
             $data["data"]["token"] =  $token;
         }
-
+        error_log("-------".$token);
         return new JsonResponse($data);
     }
 

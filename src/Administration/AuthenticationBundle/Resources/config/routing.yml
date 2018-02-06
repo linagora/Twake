@@ -36,10 +36,17 @@ administration_users_getInfoUser:
    path: /getInfoUser
    defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:getInfoUser}
 
+administration_users_getUserApp:
+   path: /getUserApp
+   defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:getUserApp}
+
 administration_users_setBanned:
    path: /setBanned
    defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:setBanned}
 
+administration_stats_getSizeUploadedByUser:
+    path: /getSizeUploadedByUser
+    defaults: {_controller: AdministrationAuthenticationBundle:TwakeUserManager:getSizeUploadedByUser}
 
 administration_users_searchUser:
    path: /searchUser
@@ -78,3 +85,52 @@ administration_stats_numberOfUsers:
 administration_stats_numberOfAppUser:
     path: /numberOfAppUser
     defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfAppUser}
+
+administration_stats_numberOfWorkspaceByApp:
+    path: /numberOfWorkspaceByApp
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfWorkspaceByApp}
+
+administration_stats_numberOfExtensions:
+    path: /numberOfExtensions
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfExtensions}
+
+administration_stats_sizeByExtensions:
+    path: /sizeByExtensions
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:sizeByExtensions}
+
+administration_stats_numberOfExtensionsByWorkspace:
+    path: /numberOfExtensionsByWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfExtensionsByWorkspace}
+
+administration_stats_countDailyMessage:
+    path: /countDailyMessage
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countDailyMessage}
+
+administration_stats_numberOfMessagePrivateByUserByWorkspace:
+    path: /numberOfMessagePrivateByUserByWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:numberOfMessagePrivateByUserByWorkspace}
+
+administration_stats_numberOfMessagePublicByWorkspace:
+    path: /numberOfMessagePublicByWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:numberOfMessagePublicByWorkspace}
+
+administration_connection_findConnection:
+    path: /findConnection
+    defaults: {_controller: AdministrationAuthenticationBundle:UserConnection:findConnection}
+
+administration_stats_countPublicMessage:
+    path: /countPublicMessage
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countPublicMessage}
+
+administration_stats_countPrivateMessage:
+    path: /countPrivateMessage
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countPrivateMessage}
+
+administration_stats_numberOfMessagePublicByWorkspace:
+    path: /numberOfMessagePublicByWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:numberOfMessagePublicByWorkspace}
+
+administration_stats_countDailyMessageByWorkspace:
+    path: /countDailyMessageByWorkspace
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countDailyMessageByWorkspace}
+

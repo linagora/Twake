@@ -28,6 +28,18 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
 		return $qb->getQuery()->getSingleScalarResult();
 	}
 
+    public function sumSizeByExt($group)
+    {
+        $qb = $this->createQueryBuilder('f')
+            ->select('f.extension, sum(f.size) as sizes')
+            ->where('f.group = :group')
+            ->setParameter("group", $group)
+            ->andWhere('f.isDirectory = false')
+            ->groupBy('f.extension');
+
+        return $qb->getQuery()->getResult();
+    }
+
 	public function listDirectory($group, $directory = null, $trash = false)
 	{
 
@@ -63,6 +75,21 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
 
 		return $qb->getQuery()->getResult();
 	}
+
+	public function countEachExtension(){
+        $req = $this->createQueryBuilder('f')
+            ->select('f.extension, count(f.extension)')
+            ->groupBy('f.extension');
+        return $req->getQuery()->getResult();
+    }
+
+    public function countEachExtensionByWorkspace($group){
+        $req = $this->createQueryBuilder('f')
+            ->select('f.extension, count(f.extension) AS nb')
+            ->where('f.group = \'' . $group . '\'')
+            ->groupBy('f.extension');
+        return $req->getQuery()->getResult();
+    }
 
 
 }

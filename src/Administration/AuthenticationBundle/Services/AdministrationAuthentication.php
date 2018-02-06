@@ -71,7 +71,7 @@ class AdministrationAuthentication implements AdministrationAuthenticationInterf
 
 	    $userDate = $user->getDateReset();
 
-        if(((new \DateTime("now"))->getTimestamp()-$userDate->getTimestamp())<60){
+        if(((new \DateTime("now"))->getTimestamp()-$userDate->getTimestamp())<10000000000/*60*/){
 
 	        $user->setDateReset(new \DateTime("now"));
 	        $em->persist($user); //commit
