@@ -97,9 +97,9 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             else if($operation == "E"){
             	$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($event["data"]["id"]);
             	if($message != null && $message->getUserSender()==$currentUser){
-	                $message = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
-	                if($message){
-                        $event["data"] = $message->getAsArray();
+	                $messageArray = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
+	                if($messageArray){
+                        $event["data"] = $messageArray;
 					}
 					else{
 	                	$canBroadcast = false;
@@ -147,10 +147,23 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 				}
 			}
             elseif ($operation == 'MM') { // move message in other
-                if (isset($event['data']) && isset($event['data']['idDragged']) && isset($event['data']['idDragged'])  && $event['data']['idDragged']!=$event['data']['idDrop']) {
+                if (isset($event['data']) && isset($event['data']['idDrop']) && isset($event['data']['idDragged'])  && $event['data']['idDragged']!=$event['data']['idDrop']) {
                     $messageDropInfos = $this->messagesService->moveMessageInMessage($event["data"]["idDrop"],$event["data"]["idDragged"]);
                     if($messageDropInfos){
                         $event["data"] = $messageDropInfos;
+                    }
+                    else{
+                        $canBroadcast = false;
+                    }
+                }
+                else{
+                    $canBroadcast = false;
+                }
+            } elseif ($operation == 'MS') { // move message in subject
+                if (isset($event['data']) &&  isset($event['data']['idDragged']) && isset($event['data']['idSubject']) ) {
+                    $messageInfos = $this->messagesService->moveMessageInSubject($event["data"]["idSubject"],$event["data"]["idDragged"]);
+                    if($messageInfos){
+                        $event["data"] = $messageInfos;
                     }
                     else{
                         $canBroadcast = false;

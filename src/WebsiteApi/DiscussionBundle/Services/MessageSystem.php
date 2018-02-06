@@ -95,7 +95,7 @@ class MessageSystem implements MessagesSystemInterface
             $message->setEdited(true);
             $this->doctrine->persist($message);
             $this->doctrine->flush();
-            return $message;
+            return $this->getMessageAsArray($message,false,$message->getResponseTo()!=null);
         }
         return false;
     }
@@ -163,6 +163,20 @@ class MessageSystem implements MessagesSystemInterface
         if(count($ids)==2){
             if($ids[0]==$user->getId() || $ids[1]==$user->getId()){
                 return true;
+            }
+        }
+        return false;
+    }
+
+    public function moveMessageInSubject($idSubject,$idMessage){
+        if($idSubject!=null && $idMessage!=null){
+            $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($idSubject);
+            $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idMessage);
+            if($subject!=null && $message!=null){
+                $message->setSubject($subject);
+                $this->doctrine->persist($message);
+                $this->doctrine->flush();
+                return $message->getAsArray();
             }
         }
         return false;
@@ -261,11 +275,17 @@ class MessageSystem implements MessagesSystemInterface
     }
 
 
-    public function getMessageAsArray($message,$isInSubject=false){
+    public function getMessageAsArray($message,$isInSubject=false,$isResponse=false){
 	    if($message->getResponseTo()!=null){
-	        error_log("isResponse ".$message->getId());
-	        return false;
+	        if(!$isResponse){
+                error_log("isResponse ".$message->getId());
+                return false;
+            }
+            else{
+	            return $this->getMessageAsArray($message->getResponseTo());
+            }
         }
+
         $retour = false;
         if($message->getSubject() != null){
             if($isInSubject){
