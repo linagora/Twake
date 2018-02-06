@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceParent;
-use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 
 /**
  * UserStats

@@ -37,7 +37,7 @@ class TwakeGroupManagerController extends Controller
                 $listResponse = Array();
 
                 foreach ($listTwakeGroups as $twakeGroup) {
-                    $listResponse[] = $twakeGroup->getAsSimpleArray();
+                    $listResponse[] = $twakeGroup->getAsArray();
                 }
                 $data["data"]["total"] = $total;
                 $data["data"]["workspaces"] = $listResponse;

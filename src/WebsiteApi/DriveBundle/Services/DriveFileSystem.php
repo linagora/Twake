@@ -57,7 +57,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 		if ($group == null) {
 			return false;
 		}
-		return $group->getDriveSize();
+		return 50000000000;
+		//TODO return $group->getDriveSize();
 	}
 
 	public function setTotalSpace($group, $space)
@@ -252,7 +253,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	}
 
-	public function rename($fileOrDirectory, $filename)
+	public function rename($fileOrDirectory, $filename, $description=null, $labels=Array())
 	{
 
 		$fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
@@ -261,9 +262,49 @@ class DriveFileSystem implements DriveFileSystemInterface
 			return false;
 		}
 
+		//Update labels
+		$labelsRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel");
+		$old_labels = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("file"=>$fileOrDirectory));
+
+		foreach ($old_labels as $old_label){
+			$found = false;
+			foreach ($labels as $new_label) {
+				if ($old_label->getId() == $new_label["id"]) {
+					$found = true;
+					break;
+				}
+			}
+			if(!$found) {
+				$this->doctrine->remove($old_label);
+			}
+		}
+
+		foreach ($labels as $new_label){
+			$found = false;
+			foreach ($old_labels as $old_label) {
+				if ($old_label->getId() == $new_label["id"]) {
+					$found = true;
+					break;
+				}
+			}
+			if(!$found) {
+				$l = $labelsRepository->find($new_label["id"]);
+				if($l) {
+					$new_label = new DriveFileLabel($fileOrDirectory, $l);
+					$this->doctrine->persist($new_label);
+				}
+			}
+		}
+
+		//End update label
+
 		$fileOrDirectory->setName($filename);
+		$fileOrDirectory->setDescription($description);
+		$fileOrDirectory->setCache("labels", $labels);
 		$this->improveName($fileOrDirectory);
 		$this->doctrine->persist($fileOrDirectory);
+
+		//Flush
 		$this->doctrine->flush();
 
 		return true;
@@ -399,7 +440,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 		return $data;
 	}
 
-	public function listDirectory($group, $directory)
+	public function listDirectory($group, $directory, $trash=false)
 	{
 
 		$directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
@@ -410,13 +451,27 @@ class DriveFileSystem implements DriveFileSystemInterface
 		}
 
 		$list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-			->listDirectory($group, $directory, false);
+			->listDirectory($group, $directory, $trash);
 		return $list;
 	}
 
 	public function search($group, $query, $offset = 0, $max = 20)
 	{
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
+		if ($group == null) {
+			return false;
+		}
+
+		$sort = Array();
+
+		$list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+			->search($group, $query, $sort, $offset, $max);
+		return $list;
+	}
+
+	public function listNew($group, $offset = 0, $max = 20)
+	{
 		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
 		if ($group == null) {
@@ -424,8 +479,14 @@ class DriveFileSystem implements DriveFileSystemInterface
 		}
 
 		$list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-			->search($group, $query, $offset, $max);
+			->search($group, Array(), Array("added"=>"DESC"), $offset, $max);
 		return $list;
+	}
+
+	public function listShared($group, $offset = 0, $max = 20)
+	{
+		//TODO
+		return Array();
 	}
 
 	public function listTrash($group)
@@ -643,12 +704,6 @@ class DriveFileSystem implements DriveFileSystemInterface
 				if ($ext == "pdf") {
 					header("Content-type: application/pdf");
 				}
-				/*if (in_array($ext, ["wav", "mp3", "midi", "mid", "aac"])) {
-					header('Content-Type: audio; filename="' . $file->getName() . '"');
-				}
-				if (in_array($ext, ["avi", "webm", "mpeg"])) {
-					header('Content-Type: video; filename="' . $file->getName() . '"');
-				}*/
 			}
 
 			header('Expires: 0');
@@ -728,5 +783,4 @@ class DriveFileSystem implements DriveFileSystemInterface
 		@unlink($path);
 		return $var;
 	}
-
 }

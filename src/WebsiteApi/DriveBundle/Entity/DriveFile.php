@@ -21,7 +21,7 @@ class DriveFile
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
 	 */
 	private $group;
 
@@ -84,9 +84,14 @@ class DriveFile
 	private $last_version;
 
 	/**
-	 * @ORM\Column(type="integer")
+	 * @ORM\Column(type="bigint")
 	 */
 	private $size;
+
+	/**
+	 * @ORM\Column(type="string", length=2048)
+	 */
+	private $cache;
 
 
 	public function __construct($group, $parent, $name, $isDirectory = false)
@@ -100,6 +105,7 @@ class DriveFile
 		$this->isDirectory = $isDirectory;
     	$this->setIsInTrash(false);
 		$this->added = new \DateTime();
+		$this->cache = "{}";
 
 	}
 
@@ -297,17 +303,38 @@ class DriveFile
 		$this->extension = $extension;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getCache()
+	{
+		$cache = json_decode($this->cache, 1);
+		return ($cache)?$cache:Array();
+	}
+
+	/**
+	 * @param mixed $cache
+	 */
+	public function setCache($key, $cache)
+	{
+		$val = $this->getCache();
+		$val[$key] = $cache;
+		$this->cache = json_encode($val);
+	}
+
 	public function getAsArray()
 	{
 		return Array(
 			'id' => $this->getId(),
 			'name' => $this->getName(),
+			'description' => $this->getDescription(),
 			'size' => $this->getSize(),
-			'added' => $this->getAdded(),
-			'modified' => $this->getLastModified(),
+			'added' => $this->getAdded()->getTimestamp(),
+			'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
 			'isDirectory' => $this->getIsDirectory(),
 			"extension" => $this->getExtension(),
-			"groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : ""
+			"groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
+			"cache" => $this->getCache()
 		);
 	}
 

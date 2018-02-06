@@ -22,25 +22,13 @@ class DriveFileLabel
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	private $group;
-
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
-	 * @ORM\JoinColumn(nullable=true)
-	 */
-	private $file_parent;
-
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile",cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	private $file;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveLabel",cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	private $label;
@@ -48,9 +36,6 @@ class DriveFileLabel
 	public function __construct($file, $label){
 		$this->label = $label;
 		$this->file = $file;
-
-		$this->group = $file->getGroup();
-		$this->file_parent = $file->getParent();
 	}
 
 	/**

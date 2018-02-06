@@ -1,16 +1,20 @@
+# Labels
+
+twake_drive_labels_get:
+    path:     /labels/get
+    defaults: { _controller: TwakeDriveBundle:FilesLabels:get }
+    methods: [POST]
+
+twake_drive_labels_update:
+    path:     /labels/update
+    defaults: { _controller: TwakeDriveBundle:FilesLabels:update }
+    methods: [POST]
+
+# Drive
+
 twake_drive_create:
     path:     /create
     defaults: { _controller: TwakeDriveBundle:Files:create }
-    methods: [POST]
-
-twake_drive_delete:
-    path:     /delete
-    defaults: { _controller: TwakeDriveBundle:Files:delete }
-    methods: [POST]
-
-twake_drive_trash_empty:
-    path:     /trash/empty
-    defaults: { _controller: TwakeDriveBundle:Files:emptyTrash }
     methods: [POST]
 
 twake_drive_list:
@@ -23,11 +27,6 @@ twake_drive_preview:
     defaults: { _controller: TwakeDriveBundle:Files:preview }
     methods: [GET]
 
-twake_drive_trash_restore:
-    path:     /trash/restore
-    defaults: { _controller: TwakeDriveBundle:Files:restoreTrash }
-    methods: [POST]
-
 twake_drive_search:
     path:     /search
     defaults: { _controller: TwakeDriveBundle:Files:search }
@@ -37,6 +36,11 @@ twake_drive_upload:
     path:     /upload
     defaults: { _controller: TwakeDriveBundle:Files:upload }
     methods: [POST]
+
+twake_drive_upload:
+    path:     /download
+    defaults: { _controller: TwakeDriveBundle:Files:download }
+    methods: [GET]
 
 twake_drive_move:
     path:     /move
@@ -66,4 +70,28 @@ twake_drive_content_get:
 twake_drive_content_set:
     path:     /content/set
     defaults: { _controller: TwakeDriveBundle:Files:setContent }
+    methods: [POST]
+
+# Sharing
+
+twake_drive_share:
+    path: /share
+    defaults: { _controller: TwakeDriveBundle:FilesSharing:share }
+    methods: [POST]
+
+# Trash
+
+twake_drive_delete:
+    path:     /delete
+    defaults: { _controller: TwakeDriveBundle:Files:delete }
+    methods: [POST]
+
+twake_drive_trash_restore:
+    path:     /trash/restore
+    defaults: { _controller: TwakeDriveBundle:Files:restoreTrash }
+    methods: [POST]
+
+twake_drive_trash_empty:
+    path:     /trash/empty
+    defaults: { _controller: TwakeDriveBundle:Files:emptyTrash }
     methods: [POST]

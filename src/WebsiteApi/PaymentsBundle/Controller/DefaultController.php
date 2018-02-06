@@ -78,7 +78,7 @@ class DefaultController extends Controller {
 	    }
 	    else if ($group == null) {
 		    $data["errors"][] = "groupnotfound";
-	    } else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, "general:payments:view")) {
+	    } else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "general:payments:view")) {
 		    $data["errors"][] = "notallowed";
 	    }
 	    else {
@@ -135,7 +135,7 @@ class DefaultController extends Controller {
 
 		$users = Array();
 		foreach ($groupLevels as $level) {
-			if (/*$this->get('app.groups.access')->levelHasRight($level, $group,  $application->getName() . ':app:access')*/
+			if (/*$this->get('app.workspace_levels')->levelHasRight($level, $group,  $application->getName() . ':app:access')*/
 			true
 			) {  // TODO
 				foreach ($level->getLinksMembers() as $linkMember) {
@@ -183,7 +183,7 @@ class DefaultController extends Controller {
 		}
 		else if ($group == null) {
 			$data["errors"][] = "groupnotfound";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, "general:payments:view")) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "general:payments:view")) {
 			$data["errors"][] = "notallowed";
 		}
 		else {
@@ -269,7 +269,7 @@ class DefaultController extends Controller {
 		}
 		else if ($group == null) {
 			$data["errors"][] = "groupnotfound";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, "general:payments:edit")) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "general:payments:edit")) {
 			$data["errors"][] = "notallowed";
 		}
 		else {
@@ -319,7 +319,7 @@ class DefaultController extends Controller {
 
 		if (!$this->get('security.authorization_checker')->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data["errors"][] = "notconnected";
-		} else if (!$this->get('app.groups.access')->hasRight($this->getUser(), $group, "general:payments:view")) {
+		} else if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "general:payments:view")) {
 			$data["errors"][] = "notallowed";
 		}
 		else {

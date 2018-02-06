@@ -27,8 +27,9 @@ class User implements UserInterface
 	private $twake_mailer;
 	private $string_cleaner;
 	private $token_storage;
+	private $workspace_members_service;
 
-	public function __construct($em, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner){
+	public function __construct($em, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service){
 		$this->em = $em;
 		$this->encoder_factory = $encoder_factory;
 		$this->core_remember_me_manager = $core_remember_me_manager;
@@ -39,6 +40,7 @@ class User implements UserInterface
 		$this->string_cleaner = $string_cleaner;
 		$this->authorization_checker = $authorization_checker;
 		$this->token_storage= $token_storage;
+		$this->workspace_members_service = $workspace_members_service;
 	}
 
 	public function current()
@@ -279,6 +281,8 @@ class User implements UserInterface
 				$this->em->persist($user);
 				$this->em->flush();
 
+				$this->workspace_members_service->autoAddMemberByNewMail($mail, $user->getId());
+
 				return $user;
 
 			}
@@ -434,6 +438,8 @@ class User implements UserInterface
 						$this->em->remove($ticket);
 						$this->em->persist($mail);
 						$this->em->flush();
+
+						$this->workspace_members_service->autoAddMemberByNewMail($ticket->getMail(), $user->getId());
 
 						return true;
 

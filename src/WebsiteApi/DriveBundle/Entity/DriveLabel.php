@@ -23,10 +23,10 @@ class DriveLabel
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=false)
 	 */
-	private $group;
+	private $workspace;
 
 	/**
 	 * @ORM\Column(type="string", length=32)
@@ -39,10 +39,10 @@ class DriveLabel
 	private $color;
 
 
-	public function __construct($group, $name, $color="000000"){
-		$this->group = $group;
+	public function __construct($workspace, $name, $color="000000"){
+		$this->workspace = $workspace;
 		$this->name = $name;
-		$this->color = $color;
+		$this->setColor($color);
 	}
 
 	/**
@@ -74,7 +74,7 @@ class DriveLabel
 	 */
 	public function getColor()
 	{
-		return $this->color;
+		return str_replace("#","", $this->color);
 	}
 
 	/**
@@ -82,13 +82,14 @@ class DriveLabel
 	 */
 	public function setColor($color)
 	{
-		$this->color = $color;
+		$this->color = str_replace("#","", $color);
 	}
 
 	public function getAsArray(){
 		return Array(
+			"id" => $this->id,
 			"name" => $this->name,
-			"color" => $this->color
+			"color" => "#".$this->color
 		);
 	}
 

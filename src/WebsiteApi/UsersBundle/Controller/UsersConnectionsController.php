@@ -8,7 +8,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
-use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class UsersConnectionsController extends Controller
@@ -78,53 +78,16 @@ class UsersConnectionsController extends Controller
 
 			$data["data"]["status"] = "connected";
 
-			$workspacesObjs = $this->getUser()->getWorkspaces();
+			$private = $this->get("app.workspaces")->getPrivate($this->getUser()->getId());
+			$workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
 
-			$privateWorkspace = null;
 			$workspaces = Array();
-			foreach ($workspacesObjs as $workspace) {
-				if($workspace->getIsDeleted() == false){
-					if($workspace->getPrivateOwner()!=null) {
-						$privateWorkspace
-							= $workspace->getAsSimpleArray();
-					}else{
-						$workspaces[]
-							= $workspace->getAsSimpleArray();
-					}
-				}
-			};
-
-			if($privateWorkspace == null){
-				$doctrine = $this->getDoctrine()->getManager();
-
-				//Create private ws
-				$private = new Workspace();
-				$private->setPrivateOwner($this->getUser());
-
-				$doctrine->persist($private);
-				$doctrine->flush();
-
-				$userLink = new LinkWorkspaceUser();
-				$userLink->setUser($this->getUser());
-				$userLink->setGroup($private);
-
-				$doctrine->persist($userLink);
-				$doctrine->flush();
-
-				$driveApp = $doctrine->getRepository('TwakeMarketBundle:Application')->findOneBy(Array('name' => "Drive"));
-
-				$appLink = new LinkAppWorkspace();
-				$appLink->setApplication($driveApp);
-				$appLink->setGroup($private);
-
-				$doctrine->persist($appLink);
-				$doctrine->flush();
-
-				$privateWorkspace = $private->getAsSimpleArray();
+			foreach ($workspaces_obj as $workspace_obj){
+				$workspaces[] = $workspace_obj->getAsArray();
 			}
 
 			$data["data"]["workspaces"] = $workspaces;
-			$data["data"]["privateworkspace"] = $privateWorkspace;
+			$data["data"]["privateworkspace"] = $private->getAsArray();
 
 		}
 

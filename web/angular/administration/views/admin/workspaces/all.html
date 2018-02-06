@@ -33,9 +33,9 @@
 				<thead>
 				<tr>
 					<th>ID</th>
-					<th>Image</th>
+					<th>Logo</th>
 					<th>Name</th>
-					<th>Description</th>
+					<th>Privacy</th>
 					<th>Operations</th>
 				</tr>
 				</thead>
@@ -44,10 +44,10 @@
 				<tr ng-repeat="workspace in workspaces.list">
 					<td>{{workspace.id}}</td>
 					<td>
-						<div style="background-position: center; background-size: contain; width:50px; height:50px; {{workspace.csslogo}}"></div>
+						<div style="background-position: center; background-size: contain; width:50px; height:50px; {{workspace.logo}}"></div>
 					</td>
 					<td>{{workspace.name}}</td>
-					<td>{{workspace.description}}</td>
+					<td>{{workspace.private == false ? 'Public Workspace' : 'Private Workspace'}}</td>
 					<td><button class="btn btn-primary" ng-click="workspaces.getWorkspaceView(workspace.id)">See more infos</button></td>
 				</tr>
 

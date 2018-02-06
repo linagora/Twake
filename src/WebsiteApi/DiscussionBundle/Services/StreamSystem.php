@@ -40,18 +40,19 @@ class StreamSystem
         if($workspace==null || $user==null){
             return false;
         }
-        $link = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->findOneBy(Array("User"=>$user,"Workspace"=>$workspace));
+        $link = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("user"=>$user,"workspace"=>$workspace));
         if($link != null){
             return true;
         }
+        error_log("streamSystem : not allowed");
         return false;
     }
 
 
-    public function createStream($user, $workspaceId,$streamName,$streamPrivacy)
+    public function createStream($user, $workspaceId,$streamName,$streamPrivacy,$streamDescription)
     {
         if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            $data['errors'][] = "notconnected";
+            return;
         } else {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
             if ($workspace == null) {
@@ -59,23 +60,27 @@ class StreamSystem
             } elseif (!$this->levelManager->hasRight($user, $workspace, "Messages:general:create")) {
                 return;
             } else {
-                $stream = new Stream($workspace, $streamName, $streamPrivacy);
+                $stream = new Stream($workspace, $streamName, $streamPrivacy,$streamDescription);
                 $link = $stream->addMember($user);
                 $this->doctrine->persist($stream);
                 $this->doctrine->persist($link);
                 $this->doctrine->flush();
-                return $stream;
+                $isRead = $this->messageReadSystem->streamIsReadByKey($stream->getId(),$user);
+                $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
+                $retour = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
+                return $retour;
             }
         }
     }
 
-    public function editStream($streamId,$name,$privacy,$members){
+    public function editStream($streamId,$name,$privacy,$members,$streamDescription,$user){
         if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            $data['errors'][] = "notconnected";
+            return;
         } else {
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
             if($stream != null) {
                 $stream->setName($name);
+                $stream->setDescription($streamDescription);
                 $stream->setPrivacy($privacy);
                 $membersInStream = $stream->getMembers();
                 foreach ($membersInStream as $member) {
@@ -97,7 +102,10 @@ class StreamSystem
                     }
                 }
                 $this->doctrine->flush();
-                return $stream;
+                $isRead = $this->messageReadSystem->streamIsReadByKey($stream->getId(),$user);
+                $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
+                $retour = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
+                return $retour;
             }
         }
     }
@@ -117,7 +125,7 @@ class StreamSystem
                     $retour["stream"][] = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
                 }
             }
-            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:LinkWorkspaceUser")->getSomeUsers($workspace,"A",null,null);
+            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->getSomeUsers($workspace,"A",null,null);
             foreach($members as $member){
                 $key = min($user->getId(),$member->getUser()->getId())."_".max($user->getId(),$member->getUser()->getId());
                 $isRead = $isRead = $this->messageReadSystem->streamIsReadByKey($key,$user);
@@ -126,6 +134,5 @@ class StreamSystem
             }
             return $retour;
         }
-
     }
 }

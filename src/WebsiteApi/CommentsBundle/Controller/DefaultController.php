@@ -41,7 +41,7 @@ class DefaultController extends Controller
 	    }
 	    else if (!$canAccessStatus && $status->getPrivacy() == 'I') {
 		    $data["errors"][] = "notallowedview";
-	    } else if ($groupId != 0 && !$this->get('app.groups.access')->hasRight($this->getUser(), $group, "base:status:post")) {
+	    } else if ($groupId != 0 && !$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:status:post")) {
 		    $data["errors"][] = "notallowed";
 	    }
 	    else {
@@ -138,7 +138,7 @@ class DefaultController extends Controller
 		}
 		else if ($content == "") {
 			$data["errors"][] = "emptycontent";
-		} else if ($comment->getWorkspace() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $comment->getWorkspace(), "base:status:post")) {
+		} else if ($comment->getWorkspace() != null && !$this->get('app.workspace_levels')->hasRight($this->getUser(), $comment->getWorkspace(), "base:status:post")) {
 			$data["errors"][] = "notallowed";
 		}
 		else {
@@ -166,7 +166,7 @@ class DefaultController extends Controller
 		}
 		else if ($comment == null) {
 			$data["errors"][] = "commentnotfound";
-		} else if ($comment->getWorkspace() != null && !$this->get('app.groups.access')->hasRight($this->getUser(), $comment->getWorkspace(), "base:status:post")) {
+		} else if ($comment->getWorkspace() != null && !$this->get('app.workspace_levels')->hasRight($this->getUser(), $comment->getWorkspace(), "base:status:post")) {
 			$data["errors"][] = "notallowed";
 		}
 		else if ($comment->getWorkspace() == null && $this->getUser() != $comment->getUser()) {
@@ -220,7 +220,7 @@ class DefaultController extends Controller
 		}
 		else if ($content == "") {
 			$data["errors"][] = "emptycontent";
-		} else if ($groupId != 0 && !$this->get('app.groups.access')->hasRight($this->getUser(), $group, "base:status:post")) {
+		} else if ($groupId != 0 && !$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:status:post")) {
 			$data["errors"][] = "notallowed";
 		}
 		else {

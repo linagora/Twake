@@ -1,4 +1,29 @@
 services:
-#    citi_go_workspaces.example:
-#        class: WebsiteApi\WorkspacesBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+
+    app.group_managers:
+        class: WebsiteApi\WorkspacesBundle\Services\GroupManagers
+        arguments: ["@doctrine.orm.entity_manager", "@app.twake_mailer"]
+
+    app.groups:
+        class: WebsiteApi\WorkspacesBundle\Services\Groups
+        arguments: ["@doctrine.orm.entity_manager", "@app.group_managers"]
+
+    app.group_apps:
+        class: WebsiteApi\WorkspacesBundle\Services\GroupApps
+        arguments: ["@doctrine.orm.entity_manager", "@app.group_managers"]
+
+    app.pricing_plan:
+        class: WebsiteApi\WorkspacesBundle\Services\PricingPlan
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    app.workspace_levels:
+        class: WebsiteApi\WorkspacesBundle\Services\WorkspaceLevels
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    app.workspace_members:
+        class: WebsiteApi\WorkspacesBundle\Services\WorkspaceMembers
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner"]
+
+    app.workspaces:
+        class: WebsiteApi\WorkspacesBundle\Services\Workspaces
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps"]

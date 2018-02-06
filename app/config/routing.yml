@@ -57,7 +57,7 @@ citi_go_payments:
 
 citi_go_workspaces:
     resource: "@TwakeWorkspacesBundle/Resources/config/routing.yml"
-    prefix:   /ajax/group/
+    prefix:   /ajax/workspace/
     methods: [POST]
 
 citi_go_events:
