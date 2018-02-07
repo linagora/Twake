@@ -82,7 +82,7 @@ interface MessagesSystemInterface
      * @param $message
      * @return mixed
      */
-    public function getMessageAsArray($message);
+    public function getMessageAsArray($message,$isSubject=false,$isResponse=false);
 
     /**
      * notify changement of message on discussion

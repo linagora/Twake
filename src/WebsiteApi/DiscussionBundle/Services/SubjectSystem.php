@@ -78,6 +78,7 @@ class SubjectSystem
         }
         return false;
     }
+
     public function getSubject($stream){
         $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($stream);
         if($stream == null){
