@@ -28,7 +28,7 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["group"], null)) {
+		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
 			$data["errors"][] = 3004;
 		} else {
 
@@ -75,7 +75,7 @@ class DefaultController extends Controller
 			$url = "https://" . str_replace("https://", "", $url);
 		}
 
-		if (!$url || !$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["group"], null)) {
+		if (!$url || !$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
 			$data["errors"][] = 3004;
 		} else {
 
@@ -104,7 +104,7 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["group"], null)) {
+		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
 			$data["errors"][] = 3004;
 		} else {
 
@@ -137,7 +137,7 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["group"], null)) {
+		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
 			$data["errors"][] = 3004;
 		} else {
 
@@ -170,7 +170,7 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		$file = $this->get("app.drive.FileSystem")->create($request["group"], $directoryId, $filename, $content, $directory);
+		$file = $this->get("app.drive.FileSystem")->create($request["workspace"], $directoryId, $filename, $content, $directory);
 		if (!$file) {
 			$data["errors"][] = 3001;
 		} else {
@@ -200,7 +200,7 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["group"], null)) {
+		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
 			$data["errors"][] = 3004;
 		} else {
 			if ($directoryId != false) {
@@ -233,7 +233,7 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["group"], null)) {
+		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
 			$data["errors"][] = 3004;
 		} else {
 			if (!$this->get("app.drive.FileSystem")->delete($fileId)) {
