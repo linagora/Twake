@@ -36,7 +36,7 @@ class CurrentUserController extends Controller
 	        $data["data"]["groupId"] = $t->getGroup()->getId();
 	        $data["data"]["username"] = $t->getUser()->getUsername();
 	        $data["data"]["userImage"] = "";
-	        $pimage = $t->getUser()->getProfileImage();
+	        $pimage = $t->getUser()->getThumbnail();
 	        if ($pimage) {
 		        $data["data"]["userImage"] = $this->getParameter('SERVER_NAME') . $pimage->getPublicURL(2);
 	        }
