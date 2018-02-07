@@ -55,7 +55,7 @@ class MessageSystem implements MessagesSystemInterface
 	      );
 	  }
 
-	public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content, $subjectId=null ){
+	public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content, $subjectId=null, $messageData=null){
 	    error_log("send message senderId:".$senderId.", recieverType:".$recieverType.", recieverId:".$recieverId);
         $sender = null;
         $reciever = null;
@@ -78,6 +78,9 @@ class MessageSystem implements MessagesSystemInterface
                 $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
             }
             $message = new Message($sender, $recieverType, $reciever,$isApplicationMessage ,$applicationMessage,$isSystemMessage, new \DateTime() ,$content,$this->string_cleaner->simplifyWithoutRemovingSpaces($content),$subject);
+            if($messageData!=null){
+                $message->setApplicationData($messageData);
+            }
             $this->doctrine->persist($message);
             $this->doctrine->flush();
             return $message;
@@ -87,6 +90,17 @@ class MessageSystem implements MessagesSystemInterface
             error_log("not send");
         }
     }
+    public function sendMessageWithFile($senderId, $recieverType, $recieverId,$content, $subjectId=null,$fileId){
+	    $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->find($fileId);
+        $driveApplication = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"drive"));
+        if($file!=null && $driveApplication!=null){
+            $messageData = Array("file" => $file->getId());
+	        return $this->sendMessage($senderId,$recieverType,$recieverId,true,$driveApplication,false,$content,$subjectId,$messageData);
+        }
+        return false;
+    }
+
+
 
     public function editMessage($id,$content){
         $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($id);
