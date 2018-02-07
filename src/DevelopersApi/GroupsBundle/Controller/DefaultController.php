@@ -26,17 +26,21 @@ class DefaultController extends Controller
 
 		$fields = $requestData["fields"];
 
-		$users = $request["group"]->getMembersUsers();
+		$workspaceId = $request["workspace"]->getId();
+		$users = $this->get("app.workspace_members")->getMembers($workspaceId);
 
-		foreach ($users as $user) {
+		foreach ($users as $userObj) {
+			$user = $userObj["user"];
+
 			$userArray = $user->getAsArray();
 			$userData = Array("id" => $user->getId());
+
 			foreach ($fields as $field) {
 				if (isset($userArray[$field])) {
 					$userData[$field] = $userArray[$field];
 				}
 				else if ($field == "userImage"){
-                    $pimage = $user->getProfileImage();
+                    $pimage = $user->getThumbnail();
                     if ($pimage) {
                         $userData[$field] = $this->getParameter('SERVER_NAME') . $pimage->getPublicURL(2);
                     }

@@ -52,14 +52,14 @@ class CheckRight
 		}
 
 		if (isset($requestGlobal["groupId"])) {
-			$groupId = $requestGlobal["groupId"];
+			$workspaceId = $requestGlobal["groupId"];
 		} else {
 			return Array("errors" => [1014]);
 		}
 
 		$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
 			->findOneBy(Array("publicKey" => $publicKey));
-		$group = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+		$workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$workspaceId,"isDeleted"=>false));
 
 
 		if ($application == null) {
@@ -68,7 +68,7 @@ class CheckRight
 		} elseif ($application->getPrivateKey() != $privateKey) {
 			return Array("errors" => 1002);
 
-		} elseif ($this->doctrine->getRepository("TwakeMarketBundle:LinkAppWorkspace")->findOneBy(Array("application" => $application, "workspace" => $group)) == null) {
+		} elseif (false && $this->doctrine->getRepository("TwakeMarketBundle:LinkAppWorkspace")->findOneBy(Array("application" => $application, "workspace" => $workspace)) == null) { //TODO Deactivated
 			return Array("errors" => 1004);
 
 		} else {
@@ -84,7 +84,7 @@ class CheckRight
 			return Array(
 				"data" => $requestData,
 				"application" => $application,
-				"group" => $group
+				"workspace" => $workspace
 			);
 		}
 	}
