@@ -348,7 +348,7 @@ class MessageSystem implements MessagesSystemInterface
     public function notify($discussionKey,$type,$message){
         $data = Array(
             "type" => $type,
-            "²" => $message->getAsArray(),
+            "data" => $message->getAsArray(),
         );
         $this->pusher->push($data, "discussion_topic",Array("key"=>$discussionKey));
     }
