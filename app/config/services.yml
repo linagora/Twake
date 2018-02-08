@@ -40,10 +40,6 @@ services:
         class: WebsiteApi\TagsBundle\Services\Tags
         arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker']
 
-    app.notifications:
-        class: WebsiteApi\UsersBundle\Services\Notifications
-        arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", "@templating", "@mailer", "@security.token_storage", '@security.authorization_checker', '@gos_web_socket.zmq.pusher']
-
     #app.contacts:
     #    class: WebsiteApi\UsersBundle\Services\Contacts
     #    arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer", "%SERVER_NAME%"]

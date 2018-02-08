@@ -6,7 +6,7 @@ use Gos\Bundle\WebSocketBundle\Topic\PushableTopicInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
 use Gos\Bundle\WebSocketBundle\Router\WampRequest;
-use WebsiteApi\UsersBundle\Services\Notifications;
+use WebsiteApi\NotificationsBundle\Services\Notifications;
 use Gos\Bundle\WebSocketBundle\Client\ClientManipulatorInterface;
 
 class ConnectionsTopic implements TopicInterface, PushableTopicInterface
