@@ -299,7 +299,6 @@ class MessageSystem implements MessagesSystemInterface
 	            return $this->getMessageAsArray($message->getResponseTo());
             }
         }
-
         $retour = false;
         if($message->getSubject() != null){
             if($isInSubject){
@@ -321,9 +320,11 @@ class MessageSystem implements MessagesSystemInterface
         else{
             $retour = $message->getAsArray();
         }
-        $responses = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo"=>$message),Array("date" => "ASC"));
-        foreach($responses as $response){
-            $retour["responses"][] = $response->getAsArray();
+        if($retour){
+            $responses = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo"=>$message),Array("date" => "ASC"));
+            foreach($responses as $response){
+                $retour["responses"][] = $response->getAsArray();
+            }
         }
         return $retour;
     }
