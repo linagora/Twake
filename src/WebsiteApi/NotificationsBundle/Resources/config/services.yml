@@ -1,0 +1,5 @@
+services:
+
+    app.notifications:
+        class: WebsiteApi\NotificationsBundle\Services\Notifications
+        arguments: ["@doctrine.orm.entity_manager"]
