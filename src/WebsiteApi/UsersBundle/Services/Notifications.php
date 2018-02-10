@@ -4,7 +4,6 @@
 namespace WebsiteApi\UsersBundle\Services;
 
 use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
-use WebsiteApi\UsersBundle\Entity\Notification;
 use WebsiteApi\UsersBundle\Entity\User;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use Symfony\Component\HttpFoundation\Response;

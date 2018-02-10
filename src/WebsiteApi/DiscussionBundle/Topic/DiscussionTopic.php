@@ -86,7 +86,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             $operation = $event['type'];
 
             if($operation == "C"){
-            	if($event["data"]['fileId']!=null){
+            	if(isset($event["data"]['fileId']) && $event["data"]['fileId']!=null){
                     $message = $this->messagesService->sendMessageWithFile($currentUser->getId(), $type, $id,$event['data']['content'], $event["data"]['subject'],$event["data"]['fileId']);
 				}
 				else{
