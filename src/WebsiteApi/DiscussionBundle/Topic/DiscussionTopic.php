@@ -270,9 +270,6 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 			$route = "group_message_ch" . $route;
 		}
 
-		if ($this->notif != null) {
-			$this->notif->read($currentUser, $from, $route);
-		}
 	}
 
 }

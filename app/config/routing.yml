@@ -1,5 +1,5 @@
 twake_notifications:
-    resource: "@NotificationsBundle/Resources/config/routing.yml"
+    resource: "@TwakeNotificationsBundle/Resources/config/routing.yml"
     prefix:   /
 
 administration_authentication:

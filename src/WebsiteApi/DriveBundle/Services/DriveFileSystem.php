@@ -152,6 +152,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 			return false;
 		}
 
+		if ($fileOrDirectory->getId() == $directory->getId()) {
+			return false;
+		}
+
 		//Update directories size
 		$this->updateSize($fileOrDirectory->getParent(), -$fileOrDirectory->getSize());
 		$this->updateSize($directory, $fileOrDirectory->getSize());
