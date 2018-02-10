@@ -5,7 +5,7 @@ namespace WebsiteApi\DiscussionBundle\Services;
 
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
-use WebsiteApi\UsersBundle\Services\Notifications;
+use WebsiteApi\NotificationsBundle\Services\Notifications;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class CommandExecutor

@@ -6,12 +6,12 @@ use Gos\Bundle\WebSocketBundle\Topic\PushableTopicInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
 use Gos\Bundle\WebSocketBundle\Router\WampRequest;
-use WebsiteApi\UsersBundle\Services\Notifications;
+use WebsiteApi\NotificationsBundle\Services\Notifications;
 use Gos\Bundle\WebSocketBundle\Client\ClientManipulatorInterface;
 
-class ConnectionsTopic implements TopicInterface, PushableTopicInterface
+class NotificationsTopic implements TopicInterface, PushableTopicInterface
 {
-	public function getName(){ return 'connections.topic'; }
+	public function getName(){ return 'notifications.topic'; }
 
 	var $doctrine;
 
@@ -23,20 +23,7 @@ class ConnectionsTopic implements TopicInterface, PushableTopicInterface
 
 	public function onPush(Topic $topic, WampRequest $request, $connected, $provider)
 	{
-		//On server event
-		if($connected){
-			//Send notification user is connected
-			$topic->broadcast(Array(
-					"connected"=>true
-				)
-			);
-		}else{
-			//Send notification user isn't connected
-			$topic->broadcast(Array(
-					"connected"=>false
-				)
-			);
-		}
+		//TODO
 	}
 
 
