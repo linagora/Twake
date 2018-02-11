@@ -1,7 +1,3 @@
-twake_notifications:
-    resource: "@TwakeNotificationsBundle/Resources/config/routing.yml"
-    prefix:   /
-
 administration_authentication:
     resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
     prefix:   /administration/ajax/authentication
@@ -97,6 +93,11 @@ twake_drive:
     resource: "@TwakeDriveBundle/Resources/config/routing.yml"
     prefix:   ajax/drive/
     methods: [POST, GET]
+
+twake_notifications:
+    resource: "@TwakeNotificationsBundle/Resources/config/routing.yml"
+    prefix:   /ajax/notifications/
+    methods: [POST]
 
 twake_status:
     resource: "@TwakeStatusBundle/Resources/config/routing.yml"

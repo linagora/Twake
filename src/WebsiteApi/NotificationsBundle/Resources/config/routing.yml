@@ -1,0 +1,3 @@
+notifications_init:
+    path:     /init
+    defaults: { _controller: TwakeNotificationsBundle:Default:init}

@@ -320,7 +320,9 @@ class User implements UserInterface
 
 		if($user != null) {
 			$device = $devicesRepository->findOneBy(Array("type"=>$type, "value"=>$value));
-			$this->em->remove($device);
+			if($device) {
+				$this->em->remove($device);
+			}
 
 			$newDevice = new Device($user, $type, $value);
 			$this->em->persist($newDevice);
@@ -340,9 +342,10 @@ class User implements UserInterface
 
 		if($user != null) {
 			$device = $devicesRepository->findOneBy(Array("user"=>$user, "type"=>$type, "value"=>$value));
-			$this->em->remove($device);
-			$this->em->flush();
-
+			if($device) {
+				$this->em->remove($device);
+				$this->em->flush();
+			}
 			return true;
 		}
 

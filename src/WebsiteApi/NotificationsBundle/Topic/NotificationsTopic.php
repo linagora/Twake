@@ -1,5 +1,5 @@
 <?php
-namespace WebsiteApi\UsersBundle\Topic;
+namespace WebsiteApi\NotificationsBundle\Topic;
 
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
 use Gos\Bundle\WebSocketBundle\Topic\PushableTopicInterface;
@@ -21,11 +21,10 @@ class NotificationsTopic implements TopicInterface, PushableTopicInterface
 
     public function onSubscribe( ConnectionInterface $connection, Topic $topic, WampRequest $request ){}
 
-	public function onPush(Topic $topic, WampRequest $request, $connected, $provider)
+	public function onPush(Topic $topic, WampRequest $request, $data, $provider)
 	{
-		//TODO
+		$topic->broadcast($data);
 	}
-
 
 
 	/* UNUSED */
