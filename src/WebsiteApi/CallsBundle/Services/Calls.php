@@ -7,7 +7,6 @@ use WebsiteApi\CallsBundle\Entity\Call;
 use WebsiteApi\CallsBundle\Entity\CallMember;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
-use WebsiteApi\NotificationsBundle\Services\Notifications;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use WebsiteApi\CallsBundle\Model\CallSystemInterface;
 /**
@@ -23,12 +22,11 @@ class Calls implements CallSystemInterface
     var $messageSystem;
 	var $pusher;
 
-	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, Notifications $notifications, $messageSystem, $pusher)
+	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $messageSystem, $pusher)
 	{
 		$this->string_cleaner = $string_cleaner;
 		$this->doctrine = $doctrine;
 		$this->security = $authorizationChecker;
-		$this->notifications = $notifications;
         $this->messageSystem = $messageSystem;
 		$this->pusher = $pusher;
 	}
