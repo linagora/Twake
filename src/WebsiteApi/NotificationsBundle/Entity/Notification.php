@@ -127,6 +127,16 @@ class Notification
 		$this->text = $text;
 	}
 
+	public function getAsArray(){
+		return Array(
+			"id" => $this->getId(),
+			"date" => $this->getDate()->getTimestamp(),
+			"code" => $this->getCode(),
+			"workspace_id" => $this->getWorkspace()->getId(),
+			"app_id" => $this->getApplication()->getId(),
+			"text" => $this->getText()
+		);
+	}
 
 }
 

@@ -93,7 +93,8 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                     $message = $this->messagesService->sendMessage($currentUser->getId(), $type, $id, false, null, false,  $event['data']['content'], $event["data"]['subject']);
 				}
 				if($message){
-                    $event["data"] = $message->getAsArray();
+
+					$event["data"] = $message->getAsArray();
 				}
 				else{
 					$canBroadcast = false;
