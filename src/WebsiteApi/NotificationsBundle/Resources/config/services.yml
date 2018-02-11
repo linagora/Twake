@@ -2,4 +2,10 @@ services:
 
     app.notifications:
         class: WebsiteApi\NotificationsBundle\Services\Notifications
+        arguments: ["@doctrine.orm.entity_manager","@gos_web_socket.zmq.pusher"]
+
+    notifications.topic:
+        class: WebsiteApi\NotificationsBundle\Topic\NotificationsTopic
+        tags:
+            - { name: gos_web_socket.topic }
         arguments: ["@doctrine.orm.entity_manager"]

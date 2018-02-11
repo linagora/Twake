@@ -36,6 +36,16 @@ class Notification
 	 */
 	private $user;
 
+	/**
+	 * @ORM\Column(type="text", length=64)
+	 */
+	private $code;
+
+	/**
+	 * @ORM\Column(type="text", length=512)
+	 */
+	private $text;
+
 
 	public function __construct($application, $workspace, $user)
 	{
@@ -70,12 +80,53 @@ class Notification
 	}
 
 	/**
+	 * @return \DateTime
+	 */
+	public function getDate()
+	{
+		return $this->date;
+	}
+
+	/**
 	 * @return mixed
 	 */
 	public function getUser()
 	{
 		return $this->user;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getCode()
+	{
+		return $this->code;
+	}
+
+	/**
+	 * @param mixed $code
+	 */
+	public function setCode($code)
+	{
+		$this->code = $code;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getText()
+	{
+		return $this->text;
+	}
+
+	/**
+	 * @param mixed $text
+	 */
+	public function setText($text)
+	{
+		$this->text = $text;
+	}
+
 
 }
 
