@@ -2,9 +2,6 @@
 
 
 namespace WebsiteApi\NotificationsBundle\Services;
-use ApnsPHP_Abstract;
-use ApnsPHP_Message;
-use ApnsPHP_Push;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
 use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
 
@@ -119,6 +116,9 @@ class Notifications implements NotificationsInterface
 		$devices = $devicesRepo->findBy(Array("user"=>$user));
 		foreach ($devices as $device) {
 			if($device->getType()=="APNS"){
+
+				require_once dirname(__FILE__).'ApnsPHP/Autoload.php';
+
 				$token = $device->getValue();
 
 				$push = new ApnsPHP_Push(
