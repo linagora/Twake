@@ -74,7 +74,7 @@ class MessageSystem implements MessagesSystemInterface
 	        //Send notification
 	        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"messages-auto"));
 	        $workspace = $reciever->getWorkspace();
-	        $users = Array($sender);
+	        $users = $this->getAllUserFromStream($reciever);
 	        $msg = "@".$sender->getUsername()." ".$content;
 	        $this->notificationsService->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));
 
@@ -359,10 +359,22 @@ class MessageSystem implements MessagesSystemInterface
         return $retour;
     }
 
-//    public function getAllUserFromStream($stream){
-//        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($stream);
-//        if($stream->getPricacy())
-//    }
+    public function getAllUserFromStream($stream){
+        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($stream);
+        $retour = [];
+        if($stream->getIsPrivate()){
+            foreach($stream->getMembersLinks() as $link){
+                $retour[] = $link->getUser();
+            }
+        }
+        else{
+            $links = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace"=>$stream->getWorkspace()));
+            foreach($links as $link){
+                $retour[] = $link->getUser();
+            }
+        }
+        return $retour;
+    }
 
     public function notify($discussionKey,$type,$message){
         $data = Array(
