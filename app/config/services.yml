@@ -54,7 +54,7 @@ services:
 
     app.callSystem:
             class: WebsiteApi\CallsBundle\Services\Calls
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@app.messages", "@gos_web_socket.zmq.pusher"]
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker', "@app.messages", "@gos_web_socket.zmq.pusher"]
 
     app.command_executor:
                 class: WebsiteApi\DiscussionBundle\Services\CommandExecutor
