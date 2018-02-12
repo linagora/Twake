@@ -112,7 +112,7 @@ class Notifications implements NotificationsInterface
 	/* Private */
 	private function pushDevice($user, $text, $title){
 		$devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
-		$devices = $devicesRepo->findAllBy(Array("user"=>$user));
+		$devices = $devicesRepo->findBy(Array("user"=>$user));
 		foreach ($devices as $device) {
 			if($device->getType()=="APNS"){
 				$token = $device->getValue();
