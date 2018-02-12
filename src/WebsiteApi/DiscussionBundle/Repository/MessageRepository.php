@@ -91,7 +91,7 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
         if($maxId>=0){
             error_log("maxId");
             $qb->andWhere("m.id < :max")
-                ->setParameter("max",$maxId);
+                ->setParameter("max",($maxId-1));
         }
         $qb->orderBy('m.date', 'DESC');
         $qb->setMaxResults(20);

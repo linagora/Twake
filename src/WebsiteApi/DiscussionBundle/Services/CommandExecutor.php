@@ -5,7 +5,6 @@ namespace WebsiteApi\DiscussionBundle\Services;
 
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
-use WebsiteApi\NotificationsBundle\Services\Notifications;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class CommandExecutor
@@ -14,13 +13,11 @@ class CommandExecutor
 	var $string_cleaner;
 	var $doctrine;
 	var $security;
-	var $notifications;
 
-	public function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker,Notifications $notifications){
+	public function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker){
 		$this->string_cleaner = $string_cleaner;
 		$this->doctrine = $doctrine;
 		$this->security = $authorizationChecker;
-		$this->notifications = $notifications;
 	}
 
 	public function execute($content, $url = '') {

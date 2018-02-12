@@ -17,10 +17,12 @@ class WorkspaceRepository extends \Doctrine\ORM\EntityRepository
         $req = $this->createQueryBuilder('U')
             ->select('count(U.id)');
         $req = $this->searchMiddleQueryBuilder($req,$filters);
+        $req = $req->where('U.user is null');
         $total = $req->getQuery()->getSingleScalarResult();
 
         $req1 = $this->createQueryBuilder('U');
         $req1 = $this->searchMiddleQueryBuilder($req1,$filters);
+        $req1 = $req1->where('U.user is null');
         $req1 = $req1->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()->getResult();
@@ -61,7 +63,7 @@ class WorkspaceRepository extends \Doctrine\ORM\EntityRepository
 
     public function middleFindWorspaceQueryBuilder($req,$name,$memberCount){
         if($name != null){
-            $req->andWhere('U.cleanName LIKE \'%' . $name.'%\'');
+            $req->andWhere('U.name LIKE \'%' . $name.'%\'');
         }
         if($memberCount != null){
             $req->andWhere('U.memberCount LIKE \'%' . $memberCount.'%\'');

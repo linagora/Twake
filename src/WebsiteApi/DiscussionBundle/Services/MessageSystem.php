@@ -87,7 +87,10 @@ class MessageSystem implements MessagesSystemInterface
             if($subjectId != null){
                 $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
             }
-            $message = new Message($sender, $recieverType, $reciever,$isApplicationMessage ,$applicationMessage,$isSystemMessage, new \DateTime() ,$content,$this->string_cleaner->simplifyWithoutRemovingSpaces($content),$subject);
+            $t = microtime(true);
+            $micro = sprintf("%06d",($t - floor($t)) * 1000000);
+            $dateTime = new \DateTime( date('Y-m-d H:i:s.'.$micro, $t) );
+            $message = new Message($sender, $recieverType, $reciever,$isApplicationMessage ,$applicationMessage,$isSystemMessage, $dateTime ,$content,$this->string_cleaner->simplifyWithoutRemovingSpaces($content),$subject);
             if($messageData!=null){
                 $message->setApplicationData($messageData);
             }

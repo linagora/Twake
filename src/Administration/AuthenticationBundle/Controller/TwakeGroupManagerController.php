@@ -68,10 +68,14 @@ class TwakeGroupManagerController extends Controller
             $workspace = $this->get('admin.TwakeGroupManagement')->getInfoWorkspace($idTwakeWorkspace);
             if($workspace != null)
             {
-                $data["data"]["workspace"] = $workspace->getAsSimpleArray();
-
-                foreach ($workspace->getMembers() as $member)
-                    $data["data"]["users"][] = $member->getUser()->getAsArray();
+                $data["data"]["workspace"] = $workspace->getAsArray();
+                if($workspace->getUser() == null) {
+                    $links = $this->get('app.workspace_members')->getMembers($idTwakeWorkspace);
+                    foreach ($links as $link)
+                        $data["data"]["users"][] = $link['user']->getAsArray();
+                } else {
+                    $data["data"]["users"][] = $workspace->getUser()->getAsArray();
+                }
             }
             else
             {
