@@ -175,7 +175,7 @@ class MessageSystem implements MessagesSystemInterface
                     $linkWs = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace"=>$workspace,"user"=>$user));
                     if($linkWs!= null){
                         if($stream != null){
-                            if(!$stream->getPrivacy()){
+                            if(!$stream->getIsPrivate()){
                                 return true;
                             }
                             $link = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream));
@@ -359,6 +359,10 @@ class MessageSystem implements MessagesSystemInterface
         return $retour;
     }
 
+//    public function getAllUserFromStream($stream){
+//        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($stream);
+//        if($stream->getPricacy())
+//    }
 
     public function notify($discussionKey,$type,$message){
         $data = Array(
@@ -367,6 +371,7 @@ class MessageSystem implements MessagesSystemInterface
         );
         $this->pusher->push($data, "discussion_topic",Array("key"=>$discussionKey));
     }
+
 
 
 }

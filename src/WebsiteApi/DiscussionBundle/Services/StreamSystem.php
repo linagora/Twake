@@ -49,7 +49,7 @@ class StreamSystem
     }
 
 
-    public function createStream($user, $workspaceId,$streamName,$streamPrivacy,$streamDescription)
+    public function createStream($user, $workspaceId,$streamName,$streamIsPrivate,$streamDescription)
     {
         if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             return;
@@ -60,7 +60,7 @@ class StreamSystem
             } elseif (!$this->levelManager->hasRight($user, $workspace, "Messages:general:create")) {
                 return;
             } else {
-                $stream = new Stream($workspace, $streamName, $streamPrivacy,$streamDescription);
+                $stream = new Stream($workspace, $streamName, $streamIsPrivate,$streamDescription);
                 $link = $stream->addMember($user);
                 $this->doctrine->persist($stream);
                 $this->doctrine->persist($link);
@@ -73,7 +73,7 @@ class StreamSystem
         }
     }
 
-    public function editStream($streamId,$name,$privacy,$members,$streamDescription,$user){
+    public function editStream($streamId,$name,$isPrivate,$members,$streamDescription,$user){
         if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             return;
         } else {
@@ -81,7 +81,7 @@ class StreamSystem
             if($stream != null) {
                 $stream->setName($name);
                 $stream->setDescription($streamDescription);
-                $stream->setPrivacy($privacy);
+                $stream->setIsPrivate($isPrivate);
                 $membersInStream = $stream->getMembers();
                 foreach ($membersInStream as $member) {
                     if (!in_array($member->getId(), $members)) { // user remove
@@ -119,7 +119,7 @@ class StreamSystem
             $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace"=>$workspace));
             $retour = Array("stream"=>Array(), "user"=>Array());
             foreach($streams as $stream){
-                if(!$stream->getPrivacy() || $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream))!=null){ //public stream
+                if(!$stream->getIsPrivate() || $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream))!=null){ //public stream
                     $isRead = $this->messageReadSystem->streamIsReadByKey($stream->getId(),$user);
                     $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
                     $retour["stream"][] = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
