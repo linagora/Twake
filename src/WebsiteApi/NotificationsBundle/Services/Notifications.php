@@ -117,7 +117,7 @@ class Notifications implements NotificationsInterface
 		foreach ($devices as $device) {
 			if($device->getType()=="APNS"){
 
-				require_once dirname(__FILE__).'ApnsPHP/Autoload.php';
+				require_once dirname(__FILE__).'/ApnsPHP/Autoload.php';
 
 				$token = $device->getValue();
 
@@ -125,7 +125,7 @@ class Notifications implements NotificationsInterface
 					ApnsPHP_Abstract::ENVIRONMENT_SANDBOX,
 					'server_certificates_bundle_sandbox.pem'
 				);
-				$push->setRootCertificationAuthority(dirname(__FILE__).$this->apns_file);
+				$push->setRootCertificationAuthority(dirname(__FILE__)."/".$this->apns_file);
 				$push->connect();
 
 				$message = new ApnsPHP_Message($token);
