@@ -38,7 +38,7 @@ class Stream
     /**
      * @ORM\Column(type="boolean")
      */
-    private $privacy;
+    private $isPrivate;
 
 
 	/**
@@ -53,11 +53,11 @@ class Stream
 
 
 
-    public function __construct($workspace, $name,$privacy,$description) {
+    public function __construct($workspace, $name,$isPrivate,$description) {
 
 	    $this->setWorkspace($workspace);
 	    $this->setName($name);
-        $this->setPrivacy($privacy);
+        $this->setIsPrivate($isPrivate);
         $this->setDescription($description);
 	}
 
@@ -119,11 +119,11 @@ class Stream
         return null;
     }
 
-    public function getPrivacy(){
-        return $this->privacy;
+    public function getIsPrivate(){
+        return $this->isPrivate;
     }
-    public function setPrivacy($x){
-        $this->privacy = $x;
+    public function setIsPrivate($x){
+        $this->isPrivate = $x;
     }
 
     /**
@@ -155,7 +155,7 @@ class Stream
                 "id" => $this->getId(),
                 "name" => $this->getName(),
                 "workspace" => $this->getWorkspace()->getId(),
-                "privacy" => $this->getPrivacy(),
+                "isPrivate" => $this->getIsPrivate(),
                 "members" => $members,
                 "description"=>$this->getDescription(),
             )

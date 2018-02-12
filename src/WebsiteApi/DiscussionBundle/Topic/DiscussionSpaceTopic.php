@@ -86,7 +86,7 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
 
         if($event["type"] == "C"){ // creation
             if($this->streamService->isAllowed($currentUser->getId(),$key)){
-                $stream = $this->streamService->createStream($currentUser,$key,$event["data"]["name"],$event["data"]["privacy"],$event["data"]["description"]);
+                $stream = $this->streamService->createStream($currentUser,$key,$event["data"]["name"],$event["data"]["isPrivate"],$event["data"]["description"]);
                 if($stream){
                     $event["data"] = $stream;
                 }
@@ -98,8 +98,8 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
         elseif($event["type"] == "E"){ // edition
             error_log("edition");
             if($this->streamService->isAllowed($currentUser->getId(),$key)){
-                if(isset($event["data"]["id"]) && isset($event["data"]["name"]) && isset($event["data"]["privacy"]) && isset($event["data"]["members"]) )
-                $stream = $this->streamService->editStream($event["data"]["id"],$event["data"]["name"],$event["data"]["privacy"],$event["data"]["members"],$event["data"]["description"],$currentUser);
+                if(isset($event["data"]["id"]) && isset($event["data"]["name"]) && isset($event["data"]["isPrivate"]) && isset($event["data"]["members"]) )
+                $stream = $this->streamService->editStream($event["data"]["id"],$event["data"]["name"],$event["data"]["isPrivate"],$event["data"]["members"],$event["data"]["description"],$currentUser);
                 if($stream){
                     $event["data"] = $stream;
                 }
