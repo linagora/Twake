@@ -27,10 +27,19 @@ class Notifications implements NotificationsInterface
 	public function pushNotification($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 
+		$title = "";
+		if($workspace->getGroup()){
+			$title .= $workspace->getGroup()->getDisplayName() . " - ";
+		}
+		$title .= $workspace->getName() . " : ";
+		$title .= $application->getName();
+
+
 		$data = Array(
 			"type"=>"add",
 			"workspace_id"=>$workspace->getId(),
 			"app_id"=>$application->getId(),
+			"title" => $title,
 			"text" => $text,
 			"code" => $code,
 			"type" => $type
@@ -47,7 +56,7 @@ class Notifications implements NotificationsInterface
 			$this->doctrine->persist($n);
 
 			if(in_array("push", $type)){
-				$this->pushDevice($application, $workspace, $user, $text);
+				$this->pushDevice($user, $text, $title);
 			}
 			if(in_array("mail", $type)){
 				$this->sendMail($application, $workspace, $user, $text);
@@ -101,14 +110,17 @@ class Notifications implements NotificationsInterface
 
 
 	/* Private */
-	private function pushDevice($application, $workspace, $user, $text){
+	private function pushDevice($user, $text, $title){
 		$devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
 		$devices = $devicesRepo->findAllBy(Array("user"=>$user));
 		foreach ($devices as $device) {
 			if($device->getType()=="APNS"){
 				$token = $device->getValue();
 				$data = array(
-					'alert' => $workspace->getName()." > ".$application->getName()." > ".$text,
+					'alert' => array(
+						"title"=>$title,
+						"body"=>$text
+					),
 					'badge' => 1,
 					'sound' => 'default'
 				);
