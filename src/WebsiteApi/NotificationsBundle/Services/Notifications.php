@@ -2,6 +2,7 @@
 
 
 namespace WebsiteApi\NotificationsBundle\Services;
+use RMS\PushNotificationsBundle\Message\AndroidMessage;
 use RMS\PushNotificationsBundle\Message\iOSMessage;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
 use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
@@ -58,12 +59,13 @@ class Notifications implements NotificationsInterface
 			$this->doctrine->persist($n);
 
 			if(in_array("push", $type)){
-				$this->pushDevice($user, $text, $title);
+				@$this->pushDevice($user, $text, $title);
 			}
 			if(in_array("mail", $type)){
-				$this->sendMail($application, $workspace, $user, $text);
+				@$this->sendMail($application, $workspace, $user, $text);
 			}
 
+			$data["action"] = "add";
 			$this->pusher->push($data, "notifications_topic", Array("id_user" => $user->getId()));
 		}
 
@@ -95,7 +97,7 @@ class Notifications implements NotificationsInterface
 		$this->doctrine->flush();
 
 		$data = Array(
-			"type"=>"remove",
+			"action"=>"remove",
 			"workspace_id"=>$workspace->getId(),
 			"app_id"=>$application->getId()
 		);
@@ -121,8 +123,8 @@ class Notifications implements NotificationsInterface
 
 				$token = $device->getValue();
 				$data = array(
-					"title"=>$title,
-					"body"=>$text
+					"title"=>substr($title, 0, 50),
+					"body"=>substr($text, 0, 100)
 				);
 
 				$message = new iOSMessage();
@@ -135,7 +137,20 @@ class Notifications implements NotificationsInterface
 
 			}
 			if($device->getType()=="GCM"){
-				//TODO
+
+				$token = $device->getValue();
+				$data = array(
+					"title"=>substr($title, 0, 50),
+					"message"=>substr($text, 0, 100)
+				);
+
+				$message = new androidMessage();
+				$message->setMessage($data);
+				$message->setGCM(true);
+				$message->setDeviceIdentifier($token);
+
+				$this->rms_push_notifications->send($message);
+
 			}
 		}
 	}
