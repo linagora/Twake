@@ -37,7 +37,7 @@ class Notification
 	private $user;
 
 	/**
-	 * @ORM\Column(type="text", length=64)
+	 * @ORM\Column(type="text", length=64, nullable=true)
 	 */
 	private $code;
 
