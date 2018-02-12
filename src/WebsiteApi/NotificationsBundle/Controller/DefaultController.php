@@ -9,6 +9,7 @@ class DefaultController extends Controller
 {
     public function initAction()
     {
+
     	$notifs = $this->get("app.notifications")->getAll($this->getUser());
     	$data = Array();
     	foreach ($notifs as $notif){

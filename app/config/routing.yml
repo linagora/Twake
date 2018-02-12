@@ -97,7 +97,7 @@ twake_drive:
 twake_notifications:
     resource: "@TwakeNotificationsBundle/Resources/config/routing.yml"
     prefix:   /ajax/notifications/
-    methods: [POST]
+    methods: [POST, GET]
 
 twake_status:
     resource: "@TwakeStatusBundle/Resources/config/routing.yml"

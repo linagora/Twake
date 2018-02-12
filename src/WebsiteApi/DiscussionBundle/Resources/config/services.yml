@@ -1,7 +1,7 @@
 services:
     app.messages:
             class: WebsiteApi\DiscussionBundle\Services\MessageSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker', "@app.command_executor", '@gos_web_socket.zmq.pusher','@app.workspace_levels','@app.drive.FileSystem']
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker', "@app.command_executor", '@gos_web_socket.zmq.pusher','@app.workspace_levels','@app.drive.FileSystem','@app.notifications']
 
     app.streamSystem:
             class: WebsiteApi\DiscussionBundle\Services\StreamSystem

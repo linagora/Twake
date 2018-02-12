@@ -35,7 +35,6 @@
 					<th>ID</th>
 					<th>Logo</th>
 					<th>Name</th>
-					<th>Privacy</th>
 					<th>Operations</th>
 				</tr>
 				</thead>
@@ -47,7 +46,6 @@
 						<div style="background-position: center; background-size: contain; width:50px; height:50px; {{workspace.logo}}"></div>
 					</td>
 					<td>{{workspace.name}}</td>
-					<td>{{workspace.private == false ? 'Public Workspace' : 'Private Workspace'}}</td>
 					<td><button class="btn btn-primary" ng-click="workspaces.getWorkspaceView(workspace.id)">See more infos</button></td>
 				</tr>
 

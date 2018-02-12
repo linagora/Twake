@@ -114,3 +114,10 @@ gos_web_socket:
             protocol: tcp
 
 nelmio_api_doc: ~
+
+rms_push_notifications:
+  ios:
+      timeout: 60 # Seconds to wait for connection timeout, default is 60
+      sandbox: true
+      pem: "Resources/apns_dev.pem"
+      passphrase: ""

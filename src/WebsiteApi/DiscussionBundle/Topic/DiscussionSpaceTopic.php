@@ -19,7 +19,6 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
     private $streamService;
     private $clientManipulator;
     private $doctrine;
-    private $notif;
 
     public function __construct($streamService, $clientManipulator, $doctrine)
     {

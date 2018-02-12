@@ -25,8 +25,9 @@ class MessageSystem implements MessagesSystemInterface
 	var $pusher;
 	var $levelManager;
 	var $fileSystem;
+	var $notificationsService;
 
-	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager,$fileSystem){
+	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager,$fileSystem, $notificationsService){
 		$this->string_cleaner = $string_cleaner;
 		$this->doctrine = $doctrine;
 		$this->security = $authorizationChecker;
@@ -34,6 +35,7 @@ class MessageSystem implements MessagesSystemInterface
 		$this->pusher = $pusher;
 		$this->levelManager = $levelManager;
 		$this->fileSystem = $fileSystem;
+		$this->notificationsService = $notificationsService;
 	}
 
 	public function convertKey($discussionKey, $user){
@@ -68,6 +70,14 @@ class MessageSystem implements MessagesSystemInterface
 
         if($recieverType == "S"){
             $reciever = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
+
+	        //Send notification
+	        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"messages-auto"));
+	        $workspace = $reciever->getWorkspace();
+	        $users = Array($sender);
+	        $msg = "@".$sender->getUsername()." ".$content;
+	        $this->notificationsService->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));
+
         }
         elseif($recieverType == "U"){
             $reciever = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
@@ -86,6 +96,7 @@ class MessageSystem implements MessagesSystemInterface
             }
             $this->doctrine->persist($message);
             $this->doctrine->flush();
+
             return $message;
 
         }

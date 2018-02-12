@@ -18,7 +18,6 @@ angular.module('TwakeAdministration')
 		this.perpage = 50;
 
 		this.update = function(){
-            console.log("ok");
 			$api.post("authentication/listTwakeGroups", {
 				page: this.page,
 				per_page: this.perpage

@@ -37,7 +37,7 @@ class Notification
 	private $user;
 
 	/**
-	 * @ORM\Column(type="text", length=64)
+	 * @ORM\Column(type="text", length=64, nullable=true)
 	 */
 	private $code;
 
@@ -45,6 +45,11 @@ class Notification
 	 * @ORM\Column(type="text", length=512)
 	 */
 	private $text;
+
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $date;
 
 
 	public function __construct($application, $workspace, $user)

@@ -14,6 +14,7 @@ angular.module('TwakeAdministration')
         this.total = 0;
         this.units = ['o','Ko','Mo','Go','To'];
         this.unit = '';
+        this.userCount = 0;
         this.update = function(){
             this.drawChart();
             this.drawCountDonut();
@@ -21,7 +22,7 @@ angular.module('TwakeAdministration')
             $api.post("authentication/getInfoWorkspace", {
                 id: this.id
             }, function (res) {
-                //console.log(res);
+                console.log(res);
                 that.workspaceInfo = res.data.workspace;
                 that.users = res.data.users;
                 $scope.$apply();
@@ -95,6 +96,7 @@ angular.module('TwakeAdministration')
                     that.total = that.total / 1000;
                     cpt++;
                 }
+                console.log(that.total);
                 that.unit = that.units[cpt];
                 var ctx = document.getElementById("myDonut2");
                 var myDoughnutChart = new Chart(ctx, {
