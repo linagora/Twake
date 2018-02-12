@@ -46,6 +46,11 @@ class Notification
 	 */
 	private $text;
 
+	/**
+	 * @ORM\Column(type="datetime")
+	 */
+	private $date;
+
 
 	public function __construct($application, $workspace, $user)
 	{

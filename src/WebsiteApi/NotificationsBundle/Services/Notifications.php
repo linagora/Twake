@@ -2,6 +2,7 @@
 
 
 namespace WebsiteApi\NotificationsBundle\Services;
+use RMS\PushNotificationsBundle\Message\iOSMessage;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
 use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
 
@@ -14,14 +15,13 @@ use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
 class Notifications implements NotificationsInterface
 {
 
-	var $apns_url = "gateway.sandbox.push.apple.com";
-	var $apns_file = "apns_dev.pem";
-
 	var $doctrine;
-	public function __construct($doctrine, $pusher, $mailer){
+
+	public function __construct($doctrine, $pusher, $mailer, $rms_push_notifications){
 		$this->doctrine = $doctrine;
 		$this->pusher = $pusher;
 		$this->mailer = $mailer;
+		$this->rms_push_notifications = $rms_push_notifications;
 	}
 
 	public function pushNotification($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
@@ -30,8 +30,10 @@ class Notifications implements NotificationsInterface
 		$title = "";
 		if($workspace->getGroup()){
 			$title .= $workspace->getGroup()->getDisplayName() . " - ";
+			$title .= $workspace->getName() . " : ";
+		}else{
+			$title .= "Private - ";
 		}
-		$title .= $workspace->getName() . " : ";
 		$title .= $application->getName();
 
 
@@ -117,26 +119,19 @@ class Notifications implements NotificationsInterface
 		foreach ($devices as $device) {
 			if($device->getType()=="APNS"){
 
-				require_once dirname(__FILE__).'/ApnsPHP/Autoload.php';
-
 				$token = $device->getValue();
-
-				$push = new ApnsPHP_Push(
-					ApnsPHP_Abstract::ENVIRONMENT_SANDBOX,
-					'server_certificates_bundle_sandbox.pem'
+				$data = array(
+					"title"=>$title,
+					"body"=>$text
 				);
-				$push->setRootCertificationAuthority(dirname(__FILE__)."/".$this->apns_file);
-				$push->connect();
 
-				$message = new ApnsPHP_Message($token);
-				$message->setText($text);
-				$message->setTitle($title);
-				$message->setBadge(1);
-				$message->setSound();
+				$message = new iOSMessage();
+				$message->setMessage($data);
+				$message->setAPSBadge(1);
+				$message->setAPSSound("default");
+				$message->setDeviceIdentifier($token);
 
-				$push->add($message);
-				$push->send();
-				$push->disconnect();
+				$this->rms_push_notifications->send($message);
 
 			}
 			if($device->getType()=="GCM"){
