@@ -5,12 +5,16 @@
             <td>{{workspace.workspaceInfo.name}}</td>
         </tr>
         <tr>
-            <td>Description</td>
-            <td>{{workspace.workspaceInfo.description}}</td>
+            <td>Privacy</td>
+            <td>{{workspace.private == false ? 'Public Workspace' : 'Private Workspace'}}</td>
+        </tr>
+        <tr>
+            <td>Member count</td>
+            <td>{{workspace.users.length}}</td>
         </tr>
         <tr>
             <td>Image</td>
-            <td><div style="background-position: center; background-size: contain; width:50px; height:50px; {{workspace.workspaceInfo.csslogo}}"></div></td>
+            <td><div style="background-position: center; background-size: contain; width:50px; height:50px; {{workspace.workspaceInfo.logo}}"></div></td>
         </tr>
     </table>
     <button class="btn btn-primary" ng-click="workspace.goBack()">Back to the list</button>
@@ -54,7 +58,8 @@
             <th>ID</th>
             <th>Image</th>
             <th>Username</th>
-            <th>Mail</th>
+            <th>First name</th>
+            <th>Last name</th>
             <th>Operations</th>
         </tr>
         </thead>
@@ -65,8 +70,9 @@
             <td>
                 <div style="background-position: center; background-size: contain; width:50px; height:50px; {{user.cssuserimage}}"></div>
             </td>
-            <td>{{user.username}}{{user.connected?' (online)':''}}</td>
-            <td></td>
+            <td>{{user.username}}</td>
+            <td>{{user.firstname}}</td>
+            <td>{{user.lastname}}</td>
             <td><button class="btn btn-primary" ng-click="workspace.getProfileView(user.id)">See profile</button></td>
         </tr>
 
