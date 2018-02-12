@@ -121,3 +121,8 @@ rms_push_notifications:
       sandbox: true
       pem: "Resources/apns_dev.pem"
       passphrase: ""
+  android:
+      timeout: 5 # Seconds to wait for connection timeout, default is 5
+      gcm:
+          api_key: "AIzaSyCzcPSX4faHX1ALGcYiOcmSoDpP-M0LrPI"
+          dry_run: true
