@@ -2,6 +2,9 @@
 
 
 namespace WebsiteApi\NotificationsBundle\Services;
+use ApnsPHP_Abstract;
+use ApnsPHP_Message;
+use ApnsPHP_Push;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
 use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
 
@@ -111,33 +114,29 @@ class Notifications implements NotificationsInterface
 
 	/* Private */
 	private function pushDevice($user, $text, $title){
+
 		$devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
 		$devices = $devicesRepo->findBy(Array("user"=>$user));
 		foreach ($devices as $device) {
 			if($device->getType()=="APNS"){
 				$token = $device->getValue();
-				$data = array(
-					'alert' => array(
-						"title"=>$title,
-						"body"=>$text
-					),
-					'badge' => 1,
-					'sound' => 'default'
-				);
 
-				$apnsHost = $this->apns_url;
-				$apnsCert = dirname(__FILE__).$this->apns_file;
-				$apnsPort = 2195;
-				$streamContext = stream_context_create();
-				stream_context_set_option($streamContext, 'ssl', 'local_cert', $apnsCert);
-				$apns = stream_socket_client('ssl://' . $apnsHost . ':' . $apnsPort, $error, $errorString, 2, STREAM_CLIENT_CONNECT, $streamContext);
-				$payload['aps'] = $data;
-				$output = json_encode($payload);
-				$token = pack('H*', str_replace(' ', '', $token));
-				$apnsMessage = chr(0) . chr(0) . chr(32) . $token . chr(0) . chr(strlen($output)) . $output;
-				fwrite($apns, $apnsMessage);
-				socket_close($apns);
-				fclose($apns);
+				$push = new ApnsPHP_Push(
+					ApnsPHP_Abstract::ENVIRONMENT_SANDBOX,
+					'server_certificates_bundle_sandbox.pem'
+				);
+				$push->setRootCertificationAuthority(dirname(__FILE__).$this->apns_file);
+				$push->connect();
+
+				$message = new ApnsPHP_Message($token);
+				$message->setText($text);
+				$message->setTitle($title);
+				$message->setBadge(1);
+				$message->setSound();
+
+				$push->add($message);
+				$push->send();
+				$push->disconnect();
 
 			}
 			if($device->getType()=="GCM"){
