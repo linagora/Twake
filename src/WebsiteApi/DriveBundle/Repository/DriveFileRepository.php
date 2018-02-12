@@ -79,6 +79,7 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
 	public function countEachExtension(){
         $req = $this->createQueryBuilder('f')
             ->select('f.extension, count(f.extension)')
+            ->where('f.isDirectory = false')
             ->groupBy('f.extension');
         return $req->getQuery()->getResult();
     }
@@ -87,6 +88,7 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
         $req = $this->createQueryBuilder('f')
             ->select('f.extension, count(f.extension) AS nb')
             ->where('f.group = \'' . $group . '\'')
+            ->andWhere('f.isDirectory = false')
             ->groupBy('f.extension');
         return $req->getQuery()->getResult();
     }
