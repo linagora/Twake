@@ -68,6 +68,9 @@ class Notifications implements NotificationsInterface
 			if($text){
 				$n->setText($text);
 			}
+			if($title){
+				$n->setTitle($title);
+			}
 			$this->doctrine->persist($n);
 
 			if(in_array("push", $type)){

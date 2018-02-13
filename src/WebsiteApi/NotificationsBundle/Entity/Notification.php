@@ -42,6 +42,11 @@ class Notification
 	private $code;
 
 	/**
+	 * @ORM\Column(type="text", length=64)
+	 */
+	private $title;
+
+	/**
 	 * @ORM\Column(type="text", length=512)
 	 */
 	private $text;
@@ -119,6 +124,22 @@ class Notification
 	/**
 	 * @return mixed
 	 */
+	public function getTitle()
+	{
+		return $this->title;
+	}
+
+	/**
+	 * @param mixed $title
+	 */
+	public function setTitle($title)
+	{
+		$this->title = $title;
+	}
+
+	/**
+	 * @return mixed
+	 */
 	public function getText()
 	{
 		return $this->text;
@@ -139,6 +160,7 @@ class Notification
 			"code" => $this->getCode(),
 			"workspace_id" => $this->getWorkspace()->getId(),
 			"app_id" => $this->getApplication()->getId(),
+			"title" => $this->getTitle(),
 			"text" => $this->getText()
 		);
 	}
