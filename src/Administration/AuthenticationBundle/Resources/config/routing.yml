@@ -122,6 +122,10 @@ administration_stats_countPublicMessage:
     path: /countPublicMessage
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countPublicMessage}
 
+administration_stats_countAllMessageByUser:
+    path: /countAllMessageByUser
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countAllMessageByUser}
+
 administration_stats_countPrivateMessage:
     path: /countPrivateMessage
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countPrivateMessage}
