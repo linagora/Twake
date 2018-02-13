@@ -64,7 +64,7 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         $repository = $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserDailyStats");
         $twakeUserStat =  $repository->getStatsPrivateMessage($idTwakeUser,$startdate,$enddate);
         if($twakeUserStat == null){
-            return null;
+            return 0;
         }
         return $twakeUserStat;
     }

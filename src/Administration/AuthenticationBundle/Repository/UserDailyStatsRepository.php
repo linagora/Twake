@@ -18,10 +18,10 @@ class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
         $req = $this->createQueryBuilder('U')
             ->select('SUM(U.publicMsgCount)');
         $req->where('U.user = ' . $idUser);
-        $req->andWhere('U.date >= :start');
+        /*$req->andWhere('U.date >= :start');
         $req->andWhere('U.date <= :end');
         $req->setParameter("start",$startdate);
-        $req->setParameter("end",$enddate);
+        $req->setParameter("end",$enddate);*/
 
         return $req->getQuery()->getSingleScalarResult();
     }
@@ -29,8 +29,8 @@ class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
         $req = $this->createQueryBuilder('U')
             ->select('SUM(U.privateMsgCount)');
         $req->where('U.user = ' . $idUser);
-        $req->andWhere('U.date >= '.$startdate);
-        $req->andWhere('U.date <= '.$enddate);
+        /*$req->andWhere('U.date >= '.$startdate);
+        $req->andWhere('U.date <= '.$enddate);*/
         return $req->getQuery()->getSingleScalarResult();
     }
 

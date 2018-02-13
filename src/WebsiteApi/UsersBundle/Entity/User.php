@@ -150,7 +150,7 @@ class User extends BaseUser
 		$workspaces = Array();
 
 		for ($i = 0; $i < count($this->workspaces); ++$i) {
-			$workspaces[] = $this->workspaces[$i]->getGroup();
+			$workspaces[] = $this->workspaces[$i]->getWorkspace();
 		}
 
 		return $workspaces;

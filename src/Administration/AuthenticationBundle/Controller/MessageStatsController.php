@@ -53,7 +53,7 @@ class MessageStatsController extends Controller
         if($user != null)
         {
             $idTwakeUser = $request->request->get("twakeUser","1");
-            $startdate = $request->request->get("startdate","2018-01-17");
+            $startdate = $request->request->get("startdate","2017-01-17");
             $enddate = $request->request->get("enddate","2018-01-17");
 
             $nbDailyPublicMessage = 0;
@@ -86,16 +86,16 @@ class MessageStatsController extends Controller
         if($user != null)
         {
             $idTwakeUser = $request->request->get("twakeUser","1");
-            $startdate = $request->request->get("date","2018-01-17");
-            $enddate = $request->request->get("date","2018-01-17");
-            $nbDailyPrivateMessage = $this->get('admin.TwakeDailyMessage')->countPrivateMessage($idTwakeUser,$startdate, $enddate);
+            $startdate = $request->request->get("startdate","2018-01-17");
+            $enddate = $request->request->get("enddate","2018-01-17");
+            $nbDailyPrivateMessage = $this->get('admin.TwakeDailyMessage')->countPublicMessage($idTwakeUser,$startdate, $enddate);
             if($nbDailyPrivateMessage != null)
             {
                 $data["data"][] = $nbDailyPrivateMessage;
             }
             else
             {
-                $data["errors"][] ="crappyshit";
+                $data["errors"][] ="crashit";
             }
         }
         else
