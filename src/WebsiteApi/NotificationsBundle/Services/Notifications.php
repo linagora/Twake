@@ -27,7 +27,7 @@ class Notifications implements NotificationsInterface
 		$this->rms_push_notifications = $rms_push_notifications;
 	}
 
-	public function pushNotificationB($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	public function pushNotification($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 		$this->krlove_async->call(
 			'app.notifications',
@@ -35,7 +35,7 @@ class Notifications implements NotificationsInterface
 			Array($application, $workspace, $users, $levels, $code, $text, $type));
 	}
 
-	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 
 		$title = "";
