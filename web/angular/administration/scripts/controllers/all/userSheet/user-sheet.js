@@ -10,7 +10,10 @@ angular.module('TwakeAdministration')
 
         var that = this;
         this.id = $stateParams.id;
-
+        var divMessage = document.getElementById("piediv");
+        var divConnection = document.getElementById("chartdiv");
+        divMessage.style.display = "none";
+        divConnection.style.display = "none";
         this.update = function(){
             $api.post("authentication/getInfoUser", {
                 id: this.id
@@ -299,10 +302,7 @@ angular.module('TwakeAdministration')
 ;
         }
 
-        this.update();
-        this.makeChart();
-        this.makeColumnMessage();
-        //this.makePieMessage();
+
         this.goBack = function () {
             $state.go("user-all")
         }
@@ -310,6 +310,47 @@ angular.module('TwakeAdministration')
         this.getWorkspaceView = function(workspaceId){
             $state.go("workspace-sheet", {id: workspaceId})
         }
+
+        this.btnMessage = function () {
+            var div = document.getElementById("piediv");
+            var chevron = document.getElementById("chevron1");
+            if(div.style.display=="block") {
+                div.style.display = "none";
+                chevron.className = "glyphicon glyphicon-chevron-down";
+            } else {
+
+                div.style.width =  "100%";
+                div.style.height=  "500px";
+
+                div.style.display = "block";
+                chevron.className = "glyphicon glyphicon-chevron-up";
+                this.makeColumnMessage();
+
+            }
+
+        }
+        this.btnConnection = function () {
+            var div = document.getElementById("chartdiv");
+            var chevron = document.getElementById("chevron2");
+            if(div.style.display=="block") {
+
+                div.style.display = "none";
+                chevron.className = "glyphicon glyphicon-chevron-down";
+            } else {
+
+                div.style.width =  "100%";
+                div.style.height=  "500px";
+                div.style.display = "block";
+                chevron.className = "glyphicon glyphicon-chevron-up";
+                this.makeChart();
+
+
+            }
+
+        }
+        this.update();
+        //this.makeChart();
+        //this.makePieMessage();
         });
 
 
