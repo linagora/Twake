@@ -77,7 +77,7 @@ class MessageSystem implements MessagesSystemInterface
 	        $workspace = $reciever->getWorkspace();
 	        $users = $this->getUserFromStream($sender,$reciever);
             $msg = ($sender!=null?"@".$sender->getUsername()." ":"").$content;
-	        $this->notificationsService->pushNotificationAsync($application, $workspace, $users, null, null, $msg, Array("push"));
+	        $this->notificationsService->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));
             if($sender!=null){ // select only user message and not system or application message without user
                 $this->user_stats->sendMessage($sender, false);
             }
