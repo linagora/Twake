@@ -85,8 +85,6 @@ class User implements UserInterface
 			$event = new InteractiveLoginEvent($request, $token);
 			$this->event_dispatcher->dispatch("security.interactive_login", $event);
 
-			// User stats trigger log in
-			$this->user_stats->login($user->getId());
 
 			return $user;
 
