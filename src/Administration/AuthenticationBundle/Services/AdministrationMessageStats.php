@@ -42,7 +42,7 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         if($twakeWorkspaceStat == null){
             return null;
         }
-        $workspaceDailyStats = new UserDailyStats();
+        $workspaceDailyStats = new WorkspaceDailyStats();
         $workspaceDailyStats->setWorkspace($twakeWorkspaceStat->getWorkspace());
         $workspaceDailyStats->setPublicMsgCount($twakeWorkspaceStat->getPublicMsgCount());
         $workspaceDailyStats->setPrivateMsgCount($twakeWorkspaceStat->getPrivateMsgCount());
