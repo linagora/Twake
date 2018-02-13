@@ -60,8 +60,7 @@ class MessageSystem implements MessagesSystemInterface
 	  }
 
 	public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content, $subjectId=null, $messageData=null){
-	    error_log("send message senderId:".$senderId.", recieverType:".$recieverType.", recieverId:".$recieverId);
-        $sender = null;
+	    $sender = null;
         $reciever = null;
         if($senderId != null){
             $sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
@@ -109,7 +108,6 @@ class MessageSystem implements MessagesSystemInterface
 
         }
         else{
-            error_log("not send");
         }
     }
     public function sendMessageWithFile($senderId, $recieverType, $recieverId,$content, $subjectId=null,$fileId){
@@ -137,14 +135,10 @@ class MessageSystem implements MessagesSystemInterface
     }
 
     public function getMessages($recieverType,$recieverId,$maxId,$subjectId,$user){
-	    error_log("get message, reciever type:".$recieverType.", revcieverId:".$recieverId.", maxId:".$maxId);
         $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverType,$recieverId,intval($maxId),$subjectId,$user->getId());
-        error_log("end findWithOffsetId");
         $messages = array_reverse($messages);
         $retour = [];
-        error_log("start foreach");
         foreach($messages as $message){
-            error_log("foreach ".$message->getId());
             $messageArray = $this->getMessageAsArray($message,$subjectId != null);
             if($messageArray){
                 $retour[] = $messageArray;
@@ -168,7 +162,7 @@ class MessageSystem implements MessagesSystemInterface
         $message->setPinned($pinned);
 	    $this->doctrine->persist($message);
 	    $this->doctrine->flush();
-	    return $message;
+	    return $this->getMessageAsArray($message,true,false);
     }
 
 
@@ -310,11 +304,12 @@ class MessageSystem implements MessagesSystemInterface
         }
     }
 
-
+    /*  isInSubject : if we want only sumup subject or not
+        isResponse : want to return response
+    */
     public function getMessageAsArray($message,$isInSubject=false,$isResponse=false){
 	    if($message->getResponseTo()!=null){
 	        if(!$isResponse){
-                error_log("isResponse ".$message->getId());
                 return false;
             }
             else{
