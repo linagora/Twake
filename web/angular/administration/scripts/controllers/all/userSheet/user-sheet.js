@@ -8,7 +8,7 @@ angular.module('TwakeAdministration')
     })
     .controller('User_sheetCtrl', function($api, $scope, $stateParams, $state){
 
-        /*var that = this;
+        var that = this;
         this.id = $stateParams.id;
         var divMessage = document.getElementById("piediv");
         var divConnection = document.getElementById("chartdiv");
@@ -84,52 +84,7 @@ angular.module('TwakeAdministration')
 
         };
 
-        this.makePieMessage = function () {
-            var startdate = new Date();
-            startdate.setDate(startdate.getDate() - 30);
-            var message = [] ;
-            var that = this;
-            $api.post("authentication/countPublicMessage", {
-                twakeUser: this.id,
-                startdate: startdate.toISOString().substring(0, 10),
-                enddate: new Date().toISOString().substring(0, 10)
-            }, function (res) {
-                message.push({
-                    "country": "Public message",
-                    "litres": res.data
-                });
-                $api.post("authentication/countPrivateMessage", {
-                    twakeUser: that.id,
-                    startdate: startdate.toISOString().substring(0, 10),
-                    enddate: new Date().toISOString().substring(0, 10)
-                }, function (res) {
-                    message.push({
-                        "country": "Private message",
-                        "litres": res.data
-                    });
-                    AmCharts.makeChart("piediv", {/*
-                        "type": "pie",
-                        "theme": "light",
-                        "innerRadius": "40%",
-                        "gradientRatio": [-0.4, -0.4, -0.4, -0.4, -0.4, -0.4, 0, 0.1, 0.2, 0.1, 0, -0.2, -0.5],
-                        "dataProvider": message,
-                        "balloonText": "[[value]]",
-                        "valueField": "litres",
-                        "titleField": "country",
-                        "balloon": {
-                            "drop": true,
-                            "adjustBorderColor": false,
-                            "color": "#FFFFFF",
-                            "fontSize": 16
-                        },
-                        "export": {
-                            "enabled": true
-                        }
-                    });*/
-        
 
-
-        }
         this.makeChart = function(){
             var startdate = new Date();
             startdate.setDate(startdate.getDate() - 30);
@@ -230,12 +185,10 @@ angular.module('TwakeAdministration')
                         "export": {
                             "enabled": true
                         }
-                    } )
+                    } );
             }
 
-            )
-
-;
+            );
         }
 
 
@@ -252,14 +205,14 @@ angular.module('TwakeAdministration')
             var chevron = document.getElementById("chevron1");
             if(div.style.display=="block") {
                 div.style.display = "none";
-                chevron.className = "glyphicon glyphicon-chevron-down";
+                chevron.className = "glyphicon glyphicon-chevron-up";
             } else {
 
                 div.style.width =  "100%";
                 div.style.height=  "500px";
 
                 div.style.display = "block";
-                chevron.className = "glyphicon glyphicon-chevron-up";
+                chevron.className = "glyphicon glyphicon-chevron-down";
                 this.makeColumnMessage();
 
             }
@@ -271,13 +224,13 @@ angular.module('TwakeAdministration')
             if(div.style.display=="block") {
 
                 div.style.display = "none";
-                chevron.className = "glyphicon glyphicon-chevron-down";
+                chevron.className = "glyphicon glyphicon-chevron-up";
             } else {
 
                 div.style.width =  "100%";
                 div.style.height=  "500px";
                 div.style.display = "block";
-                chevron.className = "glyphicon glyphicon-chevron-up";
+                chevron.className = "glyphicon glyphicon-chevron-down";
                 this.makeChart();
 
 
