@@ -187,6 +187,7 @@ class User extends BaseUser
 			"firstname" => $this->getFirstName(),
 			"lastname" => $this->getLastName(),
 			"thumbnail" => ($this->getThumbnail()==null)?null:$this->getThumbnail()->getPublicURL(2),
+            "connected" => $this->isConnected()
 		);
 		return $return;
 	}

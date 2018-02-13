@@ -28,7 +28,7 @@
 		<div class="box-header">
 			<h3 class="box-title">Users</h3>
 		</div>
-		<div class="box-body">
+		<td class="box-body">
 
 			<ul class="pagination">
 				<li ng-repeat="page in users.pages" ng-class="{'active': users.page == page}"><a ng-click="users.setPage(page)">{{page}}</a></li>
@@ -44,14 +44,15 @@
 				<option value="500">500</option>
 			</select>
 
-			<input type="text" id="search" ng-keyup="users.search()" placeholder="Filter ...">
+			<input id="searchText" type="search" placeholder="Search ..." ng-model="searchText" />
 			<table id= "users_table" class="table table-bordered table-hover">
 				<thead>
 				<tr>
 					<th>ID</th>
 					<th>Image</th>
 					<th>Username</th>
-					<th>Mail</th>
+					<th>First name</th>
+					<th>Last name</th>
 					<th>Operations</th>
 				</tr>
 				</thead>
@@ -62,8 +63,9 @@
 					<td>
 						<div style="background-position: center; background-size: contain; width:50px; height:50px; {{user.cssuserimage}}"></div>
 					</td>
-					<td>{{user.username}}{{user.connected?' (online)':''}}</td>
-					<td></td>
+					<td ng-if="user.connected"><i class="fa fa-circle text-success"> {{user.username}}</i></td><td ng-if="!user.connected"><i class="fa fa-circle"></i> {{user.username}}</td>
+					<td>{{user.firstname}}</td>
+					<td>{{user.lastname}}</td>
 					<td><button class="btn btn-primary" ng-click="users.getProfileView(user.id)">See profile</button></td>
 				</tr>
 

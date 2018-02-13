@@ -8,7 +8,7 @@ angular.module('TwakeAdministration')
     })
     .controller('User_sheetCtrl', function($api, $scope, $stateParams, $state){
 
-        var that = this;
+        /*var that = this;
         this.id = $stateParams.id;
         this.update = function(){
             $api.post("authentication/getInfoUser", {
@@ -175,7 +175,7 @@ angular.module('TwakeAdministration')
                         "end": "2016-03-30",
                         "task": "Testing and QA"
                     } ]
-                }*/ ],
+                }*//* ],
                 "valueScrollbar": {
                     "autoGridCount": true
                 },
@@ -194,6 +194,6 @@ angular.module('TwakeAdministration')
                 }
             } );
         this.update();
-        }
+        }*/
 
     });
