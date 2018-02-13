@@ -34,17 +34,19 @@ class Notifications implements NotificationsInterface
 			Array($application, $workspace, $users, $levels, $code, $text, $type));
 	}
 
-	public function pushNotificationAsync($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 
 		$title = "";
-		if($workspace->getGroup()){
+		if ($workspace && $workspace->getGroup()) {
 			$title .= $workspace->getGroup()->getDisplayName() . " - ";
 			$title .= $workspace->getName() . " : ";
-		}else{
-			$title .= "Private - ";
+		} else {
+			$title .= "Private : ";
 		}
-		$title .= $application->getName();
+		if($application){
+			$title .= $application->getName();
+		}
 
 
 		$data = Array(

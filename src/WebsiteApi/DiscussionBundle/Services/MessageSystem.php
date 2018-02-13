@@ -80,6 +80,7 @@ class MessageSystem implements MessagesSystemInterface
 	        $msg = "@".$sender->getUsername()." ".$content;
 	        $this->notificationsService->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));
 	        $this->user_stats->sendMessage($sender, false);
+	        //End send notification
 
         }
         elseif($recieverType == "U"){
