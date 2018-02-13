@@ -53,7 +53,7 @@ class Stream
 
 
 
-    public function __construct($workspace, $name,$isPrivate,$description) {
+    public function __construct($workspace, $name, $isPrivate, $description) {
 
 	    $this->setWorkspace($workspace);
 	    $this->setName($name);
@@ -123,7 +123,7 @@ class Stream
         return $this->isPrivate;
     }
     public function setIsPrivate($x){
-        $this->isPrivate = $x;
+        $this->isPrivate = ($x)?true:false;
     }
 
     /**
