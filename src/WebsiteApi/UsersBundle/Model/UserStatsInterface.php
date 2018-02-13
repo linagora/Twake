@@ -11,9 +11,9 @@ interface UserStatsInterface
 {
 
 	// @login when an user log in
-	public function create($userId);
+	public function create($user);
 
 	// @sendMessage when an user send a message
-	public function sendMessage($userId);
+	public function sendMessage($user, $private=true);
 
 }

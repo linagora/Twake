@@ -18,24 +18,24 @@ class UserStats implements UserStatsInterface
 		$this->em = $em;
 	}
 
-	public function create($userId)
+	public function create($user)
 	{
 		//Verify userstat exists
 		$repo = $this->em->getRepository("TwakeUsersBundle:UserStats");
-		$userStats = $repo->find($userId);
+		$userStats = $repo->find($user);
 
 		if($userStats==null){
-			$userStats = new \WebsiteApi\UsersBundle\Entity\UserStats($userId);
+			$userStats = new \WebsiteApi\UsersBundle\Entity\UserStats($user);
 		}
 
 		$this->em->persist($userStats);
 		$this->em->flush();
 	}
 
-	public function sendMessage($userId, $private=true)
+	public function sendMessage($user, $private=true)
 	{
 		$repo = $this->em->getRepository("TwakeUsersBundle:UserStats");
-		$userStats = $repo->find($userId);
+		$userStats = $repo->find($user);
 
 		if($private){
 			$userStats->addPrivateMsgCount(1);
