@@ -78,13 +78,17 @@ class MessageSystem implements MessagesSystemInterface
 	        $workspace = $reciever->getWorkspace();
 	        $users = $this->getUserFromStream($sender,$reciever);
 	        $msg = "@".$sender->getUsername()." ".$content;
-	        $this->notificationsService->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));
+	        $this->notificationsService->pushNotificationAsync($application, $workspace, $users, null, null, $msg, Array("push"));
 	        $this->user_stats->sendMessage($sender, false);
 	        //End send notification
 
         }
         elseif($recieverType == "U"){
             $reciever = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
+            //Send notification
+            $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"messages-auto"));
+            $msg = "@".$sender->getUsername()." ".$content;
+            $this->notificationsService->pushNotificationAsync($application, null, Array($reciever), null, null, $msg, Array("push"));
         }
         if( ($isApplicationMessage || $isSystemMessage|| $sender!=null) && $reciever!=null ){
             $subject = null;
