@@ -13,7 +13,7 @@ services:
 
     app.messageReadSystem:
             class: WebsiteApi\DiscussionBundle\Services\MessageReadSystem
-            arguments: [ "@doctrine.orm.entity_manager", "@app.messages" ]
+            arguments: [ "@doctrine.orm.entity_manager", "@app.messages","@app.notifications" ]
 
 
     discussion.topic:

@@ -79,7 +79,7 @@ class UsersConnectionsController extends Controller
 
 			$data["data"]["status"] = "connected";
 
-			$this->get("app.user_stats")->create($this->getUser()->getId());
+			$this->get("app.user_stats")->create($this->getUser());
 
 			$private = $this->get("app.workspaces")->getPrivate($this->getUser()->getId());
 			$workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());

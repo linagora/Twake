@@ -10,14 +10,17 @@ class MessageReadSystem
 
     var $doctrine;
     var $messageSystem;
+    var $notificationSystem;
 
-    function __construct($doctrine,$messageSystem){
+    function __construct($doctrine,$messageSystem,$notificationSystem){
         $this->doctrine = $doctrine;
         $this->messageSystem= $messageSystem;
+        $this->notificationSystem= $notificationSystem;
     }
 
     function readByKey($key,$user){
         $discussion = $this->messageSystem->convertKey($key,$user);
+        $messageApplication = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"messages-auto"));
         if($discussion["type"] == "S"){
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussion["id"]);
             if($stream == null){
@@ -36,6 +39,9 @@ class MessageReadSystem
                 $messageRead->setMessage($lastMessage);
                 $this->doctrine->persist($messageRead);
                 $this->doctrine->flush();
+                if($this->allIsRead($stream->getWorkspace(),$user)){
+                    $this->notificationSystem->readAll($messageApplication,$stream->getWorkspace(),$user,null);
+                }
                 return true;
             }
             else{
@@ -109,9 +115,25 @@ class MessageReadSystem
                 return true;
             }
             return false;
-
         }
+    }
 
+    public function allIsRead($workspace,$user){
+        if($workspace != null && $user != null){
+            $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace"=>$workspace));
+            foreach($streams as $stream){
+                if($this->streamIsReadByKey($stream->getId(),$user)){
+                    return false;
+                }
+            }
+            $links = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace"=>$workspace));
+            foreach($links as $link){
+                if($this->streamIsReadByKey($link->getUser()->getId()."_".$user->getId(),$user)){
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
 }
