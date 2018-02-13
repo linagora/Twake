@@ -42,12 +42,12 @@ class Notification
 	private $code;
 
 	/**
-	 * @ORM\Column(type="text", length=64)
+	 * @ORM\Column(type="text", length=64,  nullable=true)
 	 */
 	private $title;
 
 	/**
-	 * @ORM\Column(type="text", length=512)
+	 * @ORM\Column(type="text", length=512,  nullable=true)
 	 */
 	private $text;
 
