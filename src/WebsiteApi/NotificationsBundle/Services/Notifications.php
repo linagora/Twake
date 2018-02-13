@@ -38,6 +38,9 @@ class Notifications implements NotificationsInterface
 	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 
+		$workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
+		$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($application);
+
 		$title = "";
 		if ($workspace && $workspace->getGroup()) {
 			$title .= $workspace->getGroup()->getDisplayName() . " - ";
@@ -61,6 +64,9 @@ class Notifications implements NotificationsInterface
 		);
 
 		foreach ($users as $user) {
+
+			$user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($user);
+
 			$n = new Notification($application, $workspace, $user);
 			if($code){
 				$n->setCode($code);
