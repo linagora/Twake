@@ -2,7 +2,7 @@
 
 
 namespace WebsiteApi\NotificationsBundle\Services;
-use RMS\PushNotificationsBundle\Message\AndroidMessage;
+use b3da\PusherBundle\Model\Message;
 use RMS\PushNotificationsBundle\Message\iOSMessage;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
 use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
@@ -18,12 +18,13 @@ class Notifications implements NotificationsInterface
 
 	var $doctrine;
 
-	public function __construct($doctrine, $pusher, $mailer, $rms_push_notifications, $krlove_async){
+	public function __construct($doctrine, $pusher, $mailer, $krlove_async, $fcm_pusher, $rms_push_notifications){
 		$this->doctrine = $doctrine;
 		$this->pusher = $pusher;
 		$this->mailer = $mailer;
-		$this->rms_push_notifications = $rms_push_notifications;
 		$this->krlove_async = $krlove_async;
+		$this->fcm_pusher = $fcm_pusher;
+		$this->rms_push_notifications = $rms_push_notifications;
 	}
 
 	public function pushNotification($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
@@ -162,7 +163,7 @@ class Notifications implements NotificationsInterface
 			}
 			if($device->getType()=="GCM"){
 
-				//TODO
+				//For now no number
 
 			}
 		}
@@ -176,6 +177,7 @@ class Notifications implements NotificationsInterface
 			if($device->getType()=="APNS"){
 
 				$token = $device->getValue();
+
 				$data = array(
 					"title"=>substr($title, 0, 50),
 					"body"=>substr($text, 0, 100)
@@ -192,20 +194,18 @@ class Notifications implements NotificationsInterface
 				$this->rms_push_notifications->send($message);
 
 			}
-			if($device->getType()=="GCM"){
+			if($device->getType()=="FCM"){
 
 				$token = $device->getValue();
-				$data = array(
-					"title"=>substr($title, 0, 50),
-					"message"=>substr($text, 0, 100)
-				);
 
-				$message = new androidMessage();
-				$message->setMessage($data);
-				$message->setGCM(true);
-				$message->setDeviceIdentifier($token);
-
-				$this->rms_push_notifications->send($message);
+				$notification = $this->fcm_pusher->createDeviceNotification(
+					substr($title, 0, 50),
+					substr($text, 0, 100),
+					$token
+			    );
+				$notification->setSound("default");
+				$notification->setPriority('high');
+				$this->fcm_pusher->sendNotification($notification);
 
 			}
 		}

@@ -115,17 +115,14 @@ gos_web_socket:
 
 nelmio_api_doc: ~
 
+redjan_ym_fcm:
+  firebase_api_key: "AAAAcp1VSak:APA91bFlHysMHpTk5id2Xb1yvF5DTyU46afjD2dYQgoFtH_angryy0QSQRzKvv29gqSb1Js6ze-LebAymKOluAEpIBH7xuQ0k9yaZcKYZ6gn1pBVGUv7YMaDZ_Tl7mC3JD9z9tIgkFAd"
+
 rms_push_notifications:
   ios:
       timeout: 60 # Seconds to wait for connection timeout, default is 60
       sandbox: true
-      pem: "Resources/apns_dev.pem"
-      passphrase: ""
-  android:
-      timeout: 5 # Seconds to wait for connection timeout, default is 5
-      gcm:
-          api_key: "AIzaSyCzcPSX4faHX1ALGcYiOcmSoDpP-M0LrPI"
-          dry_run: true
+      pem: 'Resources/apns_dev.pem' # can be absolute or relative path (from app directory)
 
 krlove_async_service_call:
   console_path: bin/console

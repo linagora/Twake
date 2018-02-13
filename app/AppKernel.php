@@ -33,6 +33,7 @@ class AppKernel extends Kernel
 			new Administration\GeneralBundle\AdministrationGeneralBundle(),
 			new Gos\Bundle\WebSocketBundle\GosWebSocketBundle(),
 			new Gos\Bundle\PubSubRouterBundle\GosPubSubRouterBundle(),
+	        new RedjanYm\FCMBundle\RedjanYmFCMBundle(),
 	        new RMS\PushNotificationsBundle\RMSPushNotificationsBundle(),
 	        new Krlove\AsyncServiceCallBundle\KrloveAsyncServiceCallBundle(),
 	        new Nelmio\ApiDocBundle\NelmioApiDocBundle(),

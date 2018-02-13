@@ -2,7 +2,7 @@ services:
 
     app.notifications:
         class: WebsiteApi\NotificationsBundle\Services\Notifications
-        arguments: ["@doctrine.orm.entity_manager","@gos_web_socket.zmq.pusher", "app.twake_mailer", "@rms_push_notifications", "@krlove.async"]
+        arguments: ["@doctrine.orm.entity_manager","@gos_web_socket.zmq.pusher", "app.twake_mailer", "@krlove.async", "@redjan_ym_fcm.client", "@rms_push_notifications"]
         public: true
 
     notifications.topic:
