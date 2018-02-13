@@ -16,9 +16,9 @@ class AdministrationTwakeGroupManagement
         $this->doctrine = $doctrine;
     }
 
-    public function listGroup($pageNumber,$nbGroupByPage,$filters=null,&$total){
+    public function listGroup($pageNumber,$nbGroupByPage,$filter=null,&$total){
         $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-        return $repository->search($pageNumber,$nbGroupByPage,$filters,$total);
+        return $repository->search($pageNumber,$nbGroupByPage,$filter,$total);
     }
 
     public function getInfoWorkspace($idTwakeWorkspace)

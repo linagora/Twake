@@ -30,9 +30,9 @@ class TwakeGroupManagerController extends Controller
         {
             $pageNumber = $request->request->get("page","1");
             $nbGroupByPage = $request->request->get("per_page");
-            $filters = $request->request->get("filters");
+            $filter = $request->request->get("filter");
             $total = 0;
-            $listTwakeGroups = $this->get('admin.TwakeGroupManagement')->listGroup($pageNumber,$nbGroupByPage,$filters,$total);
+            $listTwakeGroups = $this->get('admin.TwakeGroupManagement')->listGroup($pageNumber,$nbGroupByPage,$filter,$total);
             if($listTwakeGroups !=  null) {
                 $listResponse = Array();
 
@@ -44,7 +44,7 @@ class TwakeGroupManagerController extends Controller
             }
             else
             {
-                $data["errors"][] = "not found";
+                $data["data"]["total"] = $total;
             }
         }
         else

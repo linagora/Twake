@@ -1,34 +1,40 @@
 <div ng-controller="UsersCtrl as users">
-	<div class="row">
-		<div class="col-md-6 col-sm-6">
-			<div class="info-box">
-				<span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
 
-				<div class="info-box-content">
-					<span class="info-box-text">Members count</span>
-					<span class="info-box-number">{{users.total}}</span>
+		<div class="row	">
+
+			<div class="col-md-9">
+				</h1><span class="glyphicon glyphicon-user"></span>User Management</h1>
+			</div>
+
+			<div class="col-md-3">
+				<div class="info-box">
+					<span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+					<div class="info-box-content">
+						<span class="info-box-text">Members online</span>
+						<span class="info-box-number">{{users.connectedUser }}</span>
+					</div>
+					<!-- /.info-box-content -->
 				</div>
-				<!-- /.info-box-content -->
+
+				<div class="info-box">
+					<span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
+
+					<div class="info-box-content">
+						<span class="info-box-text">Members count</span>
+						<span class="info-box-number">{{users.total}}</span>
+					</div>
+					<!-- /.info-box-content -->
+				</div>
+
 			</div>
 		</div>
 
-		<div class="col-md-6 col-sm-6">
-			<div class="info-box">
-				<span class="info-box-icon bg-yellow"><i class="ion ion-ios-people-outline"></i></span>
-
-				<div class="info-box-content">
-					<span class="info-box-text">Members online</span>
-					<span class="info-box-number">{{users.connectedUser }}</span>
-				</div>
-				<!-- /.info-box-content -->
-			</div>
-		</div>
-	</div>
 	<div class="box">
 		<div class="box-header">
 			<h3 class="box-title">Users</h3>
 		</div>
-		<div class="box-body">
+		<div class="box-body" id="center">
 
 			<ul class="pagination">
 				<li ng-repeat="page in users.pages" ng-class="{'active': users.page == page}"><a ng-click="users.setPage(page)">{{page}}</a></li>
@@ -44,14 +50,15 @@
 				<option value="500">500</option>
 			</select>
 
-			<input type="text" id="search" ng-keyup="users.search()" placeholder="Filter ...">
-			<table id= "users_table" class="table table-bordered table-hover">
+			<input id="searchText" type="search" placeholder="Search ..." ng-model="searchText" />
+			<table id= "users_table" class="table table-striped">
 				<thead>
 				<tr>
 					<th>ID</th>
 					<th>Image</th>
 					<th>Username</th>
-					<th>Mail</th>
+					<th>First name</th>
+					<th>Last name</th>
 					<th>Operations</th>
 				</tr>
 				</thead>
@@ -62,8 +69,9 @@
 					<td>
 						<div style="background-position: center; background-size: contain; width:50px; height:50px; {{user.cssuserimage}}"></div>
 					</td>
-					<td>{{user.username}}{{user.connected?' (online)':''}}</td>
-					<td></td>
+					<td ng-if="user.connected"><i class="fa fa-circle text-success"> {{user.username}}</i></td><td ng-if="!user.connected"><i class="fa fa-circle"></i> {{user.username}}</td>
+					<td>{{user.firstname}}</td>
+					<td>{{user.lastname}}</td>
 					<td><button class="btn btn-primary" ng-click="users.getProfileView(user.id)">See profile</button></td>
 				</tr>
 
