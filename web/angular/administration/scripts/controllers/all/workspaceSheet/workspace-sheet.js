@@ -14,6 +14,8 @@ angular.module('TwakeAdministration')
         this.total = 0;
         this.units = ['o','Ko','Mo','Go','To'];
         this.unit = '';
+        this.userCount = 0;
+        this.labels = [];
         this.update = function(){
             this.drawChart();
             this.drawCountDonut();
@@ -21,7 +23,7 @@ angular.module('TwakeAdministration')
             $api.post("authentication/getInfoWorkspace", {
                 id: this.id
             }, function (res) {
-                //console.log(res);
+                console.log(res);
                 that.workspaceInfo = res.data.workspace;
                 that.users = res.data.users;
                 $scope.$apply();
@@ -38,10 +40,10 @@ angular.module('TwakeAdministration')
             $api.post("authentication/numberOfExtensionsByWorkspace", {
                 twakeWorkspace: this.id,
             }, function (res) {
-                var labels = [];
                 var datas = [];
+
                 for (var i = 0; i < res.data.length; i++) {
-                    labels.push(res.data[i].extension);
+                    that.labels.push(res.data[i].extension);
                     datas.push(res.data[i].nb);
                 }
                 poolColors(datas.length);
@@ -55,7 +57,7 @@ angular.module('TwakeAdministration')
                         }],
 
                         // These labels appear in the legend and in the tooltips when hovering different arcs
-                        labels: labels
+                        labels: that.labels
                     },
                     options: {
                         responsive: true,
@@ -85,7 +87,7 @@ angular.module('TwakeAdministration')
                 var labels = [];
                 var datas = [];
                 for (var i = 0; i < res.data.length; i++) {
-                    labels.push(res.data[i].extension);
+                    //labels.push(res.data[i].extension);
                     datas.push(res.data[i].sizes);
                     that.total += parseInt(res.data[i].sizes);
                 }
@@ -95,6 +97,7 @@ angular.module('TwakeAdministration')
                     that.total = that.total / 1000;
                     cpt++;
                 }
+                console.log(that.total);
                 that.unit = that.units[cpt];
                 var ctx = document.getElementById("myDonut2");
                 var myDoughnutChart = new Chart(ctx, {
@@ -106,7 +109,7 @@ angular.module('TwakeAdministration')
                         }],
 
                         // These labels appear in the legend and in the tooltips when hovering different arcs
-                        labels: labels
+                        labels: that.labels
                     },
                     options: {
                         responsive: true,
