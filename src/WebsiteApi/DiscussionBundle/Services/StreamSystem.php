@@ -21,8 +21,9 @@ class StreamSystem
     var $levelManager;
     var $messageReadSystem;
     var $callSystem;
+    var $messageSystem;
 
-    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $levelManager,$messageReadSystem,$callSystem)
+    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $levelManager,$messageReadSystem,$callSystem,$messageSystem)
     {
         $this->string_cleaner = $string_cleaner;
         $this->doctrine = $doctrine;
@@ -31,6 +32,7 @@ class StreamSystem
         $this->levelManager = $levelManager;
         $this->messageReadSystem = $messageReadSystem;
         $this->callSystem = $callSystem;
+        $this->messageSystem = $messageSystem;
     }
 
 
@@ -65,6 +67,9 @@ class StreamSystem
                 $this->doctrine->persist($stream);
                 $this->doctrine->persist($link);
                 $this->doctrine->flush();
+                $message = $this->messageSystem->sendMessage(null,"S",$stream->getId(),false,null,true,"This is the first message of ".$stream->getName(),null,null);
+                $this->messageSystem->notify($stream->getId(),"C",$message);
+
                 $isRead = $this->messageReadSystem->streamIsReadByKey($stream->getId(),$user);
                 $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
                 $retour = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
