@@ -28,20 +28,40 @@ class UserStats
      * @var int
      * @ORM\Column(name="public_msg_count", type="integer")
      */
-    protected $publicMsgCount;
-    /**
-     * @var int
-     * @ORM\Column(name="private_msg_count", type="integer")
-     */
-    protected $privateMsgCount;
+    protected $publicMsgCount = 0;
 
-    public function getPublicMsgCount(){
-        return $this->publicMsgCount;
-    }
+	/**
+	 * @var int
+	 * @ORM\Column(name="private_msg_count", type="integer")
+	 */
+	protected $privateMsgCount = 0;
 
-    public function getPrivateMsgCount(){
-        return $this->privateMsgCount;
-    }
+	/**
+	 * UserStats constructor.
+	 * @param $user
+	 */
+	public function __construct($user)
+	{
+		$this->user = $user;
+	}
+
+	public function getPublicMsgCount(){
+		return $this->publicMsgCount;
+	}
+
+	public function addPublicMsgCount($val=1){
+		$this->publicMsgCount += $val;
+	}
+
+	public function getPrivateMsgCount(){
+		return $this->privateMsgCount;
+	}
+
+	public function addPrivateMsgCount($val=1){
+		$this->privateMsgCount += $val;
+	}
+
+
 
     public function getUser(){
         return $this->user;

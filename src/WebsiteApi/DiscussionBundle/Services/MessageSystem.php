@@ -26,8 +26,9 @@ class MessageSystem implements MessagesSystemInterface
 	var $levelManager;
 	var $fileSystem;
 	var $notificationsService;
+	var $user_stats;
 
-	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager,$fileSystem, $notificationsService){
+	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager,$fileSystem, $notificationsService, $user_stats){
 		$this->string_cleaner = $string_cleaner;
 		$this->doctrine = $doctrine;
 		$this->security = $authorizationChecker;
@@ -36,6 +37,7 @@ class MessageSystem implements MessagesSystemInterface
 		$this->levelManager = $levelManager;
 		$this->fileSystem = $fileSystem;
 		$this->notificationsService = $notificationsService;
+		$this->user_stats = $user_stats;
 	}
 
 	public function convertKey($discussionKey, $user){
@@ -77,6 +79,7 @@ class MessageSystem implements MessagesSystemInterface
 	        $users = $this->getUserFromStream($sender,$reciever);
 	        $msg = "@".$sender->getUsername()." ".$content;
 	        $this->notificationsService->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));
+	        $this->user_stats->sendMessage($sender, false);
 
         }
         elseif($recieverType == "U"){
