@@ -3,6 +3,7 @@
 namespace WebsiteApi\WorkspacesBundle\Services;
 
 
+use WebsiteApi\DiscussionBundle\Entity\Stream;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Model\WorkspacesInterface;
@@ -62,6 +63,14 @@ class Workspaces implements WorkspacesInterface
 
 		$this->doctrine->persist($workspace);
 		$this->doctrine->flush();
+
+		// Create stream
+        $streamGeneral = new Stream($workspace,"General",false,"This is the general stream");
+        $streamRandom = new Stream($workspace,"Random",false,"This is the random stream");
+
+        $this->doctrine->persist($streamGeneral);
+        $this->doctrine->persist($streamRandom);
+
 
 		//Create admin level
 		$level = new WorkspaceLevel();

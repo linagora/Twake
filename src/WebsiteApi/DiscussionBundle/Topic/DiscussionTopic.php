@@ -143,9 +143,9 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             }
             elseif ($operation == 'P'){ // pinned message
             	if(isset($event["data"]) && isset($event["data"]["id"]) && isset($event["data"]["pinned"])){
-            		$message = $this->messagesService->pinMessage($event["data"]["id"],$event["data"]["pinned"]);
-            		if($message){
-                        $event["data"] = $message->getAsArray();
+            		$messageArray = $this->messagesService->pinMessage($event["data"]["id"],$event["data"]["pinned"]);
+            		if($messageArray){
+                        $event["data"] = $messageArray;
 					}
 					else{
             			$canBroadcast = false;

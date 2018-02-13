@@ -60,8 +60,7 @@ class MessageSystem implements MessagesSystemInterface
 	  }
 
 	public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content, $subjectId=null, $messageData=null){
-	    error_log("send message senderId:".$senderId.", recieverType:".$recieverType.", recieverId:".$recieverId);
-        $sender = null;
+	    $sender = null;
         $reciever = null;
         if($senderId != null){
             $sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
@@ -73,22 +72,12 @@ class MessageSystem implements MessagesSystemInterface
         if($recieverType == "S"){
             $reciever = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
 
-	        //Send notification
-	        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"messages-auto"));
-	        $workspace = $reciever->getWorkspace();
-	        $users = $this->getUserFromStream($sender,$reciever);
-	        $msg = "@".$sender->getUsername()." ".$content;
-	        $this->notificationsService->pushNotificationAsync($application, $workspace, $users, null, null, $msg, Array("push"));
-	        $this->user_stats->sendMessage($sender, false);
-	        //End send notification
-
+            if($sender!=null){ // select only user message and not system or application message without user
+                $this->user_stats->sendMessage($sender, false);
+            }
         }
         elseif($recieverType == "U"){
             $reciever = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
-            //Send notification
-            $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"messages-auto"));
-            $msg = "@".$sender->getUsername()." ".$content;
-            $this->notificationsService->pushNotificationAsync($application, null, Array($reciever), null, null, $msg, Array("push"));
         }
         if( ($isApplicationMessage || $isSystemMessage|| $sender!=null) && $reciever!=null ){
             $subject = null;
@@ -105,11 +94,12 @@ class MessageSystem implements MessagesSystemInterface
             $this->doctrine->persist($message);
             $this->doctrine->flush();
 
+            $this->sendNotification($message);
+
             return $message;
 
         }
         else{
-            error_log("not send");
         }
     }
     public function sendMessageWithFile($senderId, $recieverType, $recieverId,$content, $subjectId=null,$fileId){
@@ -137,14 +127,10 @@ class MessageSystem implements MessagesSystemInterface
     }
 
     public function getMessages($recieverType,$recieverId,$maxId,$subjectId,$user){
-	    error_log("get message, reciever type:".$recieverType.", revcieverId:".$recieverId.", maxId:".$maxId);
         $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverType,$recieverId,intval($maxId),$subjectId,$user->getId());
-        error_log("end findWithOffsetId");
         $messages = array_reverse($messages);
         $retour = [];
-        error_log("start foreach");
         foreach($messages as $message){
-            error_log("foreach ".$message->getId());
             $messageArray = $this->getMessageAsArray($message,$subjectId != null);
             if($messageArray){
                 $retour[] = $messageArray;
@@ -168,7 +154,7 @@ class MessageSystem implements MessagesSystemInterface
         $message->setPinned($pinned);
 	    $this->doctrine->persist($message);
 	    $this->doctrine->flush();
-	    return $message;
+	    return $this->getMessageAsArray($message,true,false);
     }
 
 
@@ -310,11 +296,12 @@ class MessageSystem implements MessagesSystemInterface
         }
     }
 
-
+    /*  isInSubject : if we want only sumup subject or not
+        isResponse : want to return response
+    */
     public function getMessageAsArray($message,$isInSubject=false,$isResponse=false){
 	    if($message->getResponseTo()!=null){
 	        if(!$isResponse){
-                error_log("isResponse ".$message->getId());
                 return false;
             }
             else{
@@ -380,10 +367,39 @@ class MessageSystem implements MessagesSystemInterface
         else{
             $links = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace"=>$stream->getWorkspace()));
             foreach($links as $link){
-                $retour[] = $link->getUser();
+                if($link->getUser() != $user) {
+                    $retour[] = $link->getUser();
+                }
             }
         }
         return $retour;
+    }
+
+    public function sendNotification($message){
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"messages-auto"));
+        $workspace = null;
+        if($message->getTypeReciever() == "S"){
+            error_log("stream : ".$message->getStreamReciever()->getName());
+            $workspace = $message->getStreamReciever()->getWorkspace();
+            if($message->getIsSystemMessage()){
+                $users = $this->getUserFromStream(null,$message->getStreamReciever());
+                $msg = "#".$message->getStreamReciever()->getName()." ".$this->getCleanContent();
+            }
+            elseif($message->getIsApplicationMessage()){
+                $users = $this->getUserFromStream(null,$message->getStreamReciever());
+                $msg = "#".$message->getStreamReciever()->getName()." ".$message->getStreamReciever()->getCleanContent();
+            }
+            else{
+                $users = $this->getUserFromStream($message->getUserSender(),$message->getStreamReciever());
+                $msg = "#".$message->getStreamReciever()->getName()." : @".$message->getUserSender()->getUsername()." ".$message->getCleanContent();
+            }
+        }
+        else{
+            $users = Array($message->getUserReciever());
+            $msg = "@".$message->getUserSender()->getUsername()." : ".$message->getCleanContent();
+        }
+        error_log($msg);
+        $this->notificationsService->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));
     }
 
     public function notify($discussionKey,$type,$message){
