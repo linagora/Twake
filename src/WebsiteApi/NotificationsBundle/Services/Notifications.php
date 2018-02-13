@@ -126,7 +126,7 @@ class Notifications implements NotificationsInterface
 
 	public function countAll($user)
 	{
-		$qb = $this->em->createQueryBuilder();
+		$qb = $this->doctrine->createQueryBuilder();
 		$qb = $qb->select('count(n.id)')
 			->where('n.user = :user')
 			->setParameter('user', $user)

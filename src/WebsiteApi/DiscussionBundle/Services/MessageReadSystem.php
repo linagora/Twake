@@ -24,6 +24,7 @@ class MessageReadSystem
         if($discussion["type"] == "S"){
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussion["id"]);
             if($stream == null){
+                error_log("Stream Not found");
                 return false;
             }
             $messageRead = $this->doctrine->getRepository("TwakeDiscussionBundle:MessageRead")->findOneBy(Array("user"=>$user,"stream"=>$stream));
@@ -88,13 +89,14 @@ class MessageReadSystem
                 return true;
             }
             $lastMessage = $lastMessages[0];
-
+            error_log("lastMessageFound ".$lastMessage->getId());
             if($messageRead == null){
                 return false;
             }
             if($lastMessage == $messageRead->getMessage()){
                 return true;
             }
+            error_log("messageRed : ".$messageRead->getMessage()->getId());
             return false;
         }else{
             $otherUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($discussion["id"]);
@@ -122,14 +124,18 @@ class MessageReadSystem
         if($workspace != null && $user != null){
             $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace"=>$workspace));
             foreach($streams as $stream){
-                if($this->streamIsReadByKey($stream->getId(),$user)){
+                if(!$this->streamIsReadByKey($stream->getId(),$user)){
+                    error_log("find activities in ".$stream->getId());
                     return false;
                 }
             }
             $links = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace"=>$workspace));
             foreach($links as $link){
-                if($this->streamIsReadByKey($link->getUser()->getId()."_".$user->getId(),$user)){
-                    return false;
+                if($link->getUser() != $user){
+                    if(!$this->streamIsReadByKey($link->getUser()->getId()."_".$user->getId(),$user)){
+                        error_log("find activities with ".$link->getUser()->getId());
+                        return false;
+                    }
                 }
             }
         }
