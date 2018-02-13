@@ -15,7 +15,6 @@ angular.module('TwakeAdministration')
             $api.post("authentication/getInfoUser", {
                 id: this.id
             }, function (res) {
-                console.log(res);
                 that.userInfo = res.data.user;
                 that.workspaces = res.data.workspaces;
                 $scope.$apply();
@@ -24,6 +23,58 @@ angular.module('TwakeAdministration')
 
 
         };
+
+        this.makePieMessage = function () {
+            var startdate = new Date();
+            startdate.setDate(startdate.getDate() - 30);
+            var message = [] ;
+            var that = this;
+            $api.post("authentication/countPublicMessage", {
+                twakeUser: this.id,
+                startdate: startdate.toISOString().substring(0, 10),
+                enddate: new Date().toISOString().substring(0, 10)
+            }, function (res) {
+                message.push({
+                    "country": "Public message",
+                    "litres": res.data
+                });
+                $api.post("authentication/countPrivateMessage", {
+                    twakeUser: that.id,
+                    startdate: startdate.toISOString().substring(0, 10),
+                    enddate: new Date().toISOString().substring(0, 10)
+                }, function (res) {
+                    console.log(res);
+                    message.push({
+                        "country": "Private message",
+                        "litres": res.data
+                    });
+                    AmCharts.makeChart("piediv", {
+                        "type": "pie",
+                        "theme": "light",
+                        "innerRadius": "40%",
+                        "gradientRatio": [-0.4, -0.4, -0.4, -0.4, -0.4, -0.4, 0, 0.1, 0.2, 0.1, 0, -0.2, -0.5],
+                        "dataProvider": message,
+                        "balloonText": "[[value]]",
+                        "valueField": "litres",
+                        "titleField": "country",
+                        "balloon": {
+                            "drop": true,
+                            "adjustBorderColor": false,
+                            "color": "#FFFFFF",
+                            "fontSize": 16
+                        },
+                        "export": {
+                            "enabled": true
+                        }
+                    });
+
+                });
+
+            });
+
+
+
+        }
         this.makeChart = function(){
             var startdate = new Date();
             startdate.setDate(startdate.getDate() - 30);
@@ -33,7 +84,6 @@ angular.module('TwakeAdministration')
                 startdate: startdate.toISOString().substring(0, 10),
                 enddate: new Date().toISOString().substring(0, 10)
             }, function (res) {
-                //console.log(res);
                 var dataset = [];
                 var segments = [];
                 var newDate;
@@ -50,7 +100,7 @@ angular.module('TwakeAdministration')
                                 segments.push({
                                     "start": new Date(res.data[i].debut.date),
                                     "end": new Date(res.data[i].debut.date).setSeconds((new Date(res.data[i].debut.date).getSeconds())+res.data[i].fin),
-                                    "color": "#b9783f",
+                                    "color": "#ff3b22",
                                     "task": "Gathering requirements"
                                 });
                                 if(i+1 < res.data.length) {
@@ -71,20 +121,11 @@ angular.module('TwakeAdministration')
                             segments.push({
                                 "start": new Date(res.data[i].debut.date),
                                 "end": new Date(res.data[i].debut.date).setSeconds((new Date(res.data[i].debut.date).getSeconds())+res.data[i].fin),
-                                "color": "#b9783f",
+                                "color": "#ff3b22",
                                 "task": "Gathering requirements"
                             });
                         }
                     }
-                   /* while(i+1 < res.data.length && (new Date(res.data[i].debut.date).getDay() == new Date(res.data[i+1].debut.date).getDay()) && (new Date(res.data[i].debut.date).getMonth() == new Date(res.data[i+1].debut.date).getMonth())&& (new Date(res.data[i].debut.date).getFullYear() == new Date(res.data[i+1].debut.date).getFullYear())){
-                        segments.push({
-                            "start": new Date(res.data[i].debut.date),
-                            "end": new Date(res.data[i].debut.date).setSeconds((new Date(res.data[i].debut.date).getSeconds())+res.data[i].fin),
-                            "color": "#b9783f",
-                            "task": "Gathering requirements"
-                        });
-                        i++;
-                    }*/
                     {
                         dataset.push({
                             "category": new Date(res.data[i].debut.date),
@@ -93,99 +134,6 @@ angular.module('TwakeAdministration')
 
                     }
                 }
-                var tess = [ {
-                    "category": "Module #1",
-                    "segments": [ {
-                        "start": "2016-01-01 02:00:00",
-                        "end": "2016-01-01 04:00:00",
-                        "color": "#b9783f",
-                        "task": "Gathering requirements"
-                    }, {
-                        "start": "2016-01-02 06:00:00",
-                        "end": "2016-01-02 08:00:00",
-                        "task": "Producing specifications"
-                    }]
-                }, {
-                    "category": "Module #2",
-                    "segments": [ {
-                        "start": "2016-01-08",
-                        "end": "2016-01-10",
-                        "color": "#cc4748",
-                        "task": "Gathering requirements"
-                    }, {
-                        "start": "2016-01-12",
-                        "end": "2016-01-15",
-                        "task": "Producing specifications"
-                    }, {
-                        "start": "2016-01-16",
-                        "end": "2016-02-05",
-                        "task": "Development"
-                    }, {
-                        "start": "2016-02-10",
-                        "end": "2016-02-18",
-                        "task": "Testing and QA"
-                    } ]
-                }, {
-                    "category": "Module #3",
-                    "segments": [ {
-                        "start": "2016-01-02",
-                        "end": "2016-01-08",
-                        "color": "#cd82ad",
-                        "task": "Gathering requirements"
-                    }, {
-                        "start": "2016-01-08",
-                        "end": "2016-01-16",
-                        "task": "Producing specifications"
-                    }, {
-                        "start": "2016-01-19",
-                        "end": "2016-03-01",
-                        "task": "Development"
-                    }, {
-                        "start": "2016-03-12",
-                        "end": "2016-04-05",
-                        "task": "Testing and QA"
-                    } ]
-                }, {
-                    "category": "Module #4",
-                    "segments": [ {
-                        "start": "2016-01-01",
-                        "end": "2016-01-19",
-                        "color": "#2f4074",
-                        "task": "Gathering requirements"
-                    }, {
-                        "start": "2016-01-19",
-                        "end": "2016-02-03",
-                        "task": "Producing specifications"
-                    }, {
-                        "start": "2016-03-20",
-                        "end": "2016-04-25",
-                        "task": "Development"
-                    }, {
-                        "start": "2016-04-27",
-                        "end": "2016-05-15",
-                        "task": "Testing and QA"
-                    } ]
-                }, {
-                    "category": "Module #5",
-                    "segments": [ {
-                        "start": "2016-01-01",
-                        "end": "2016-01-12",
-                        "color": "#448e4d",
-                        "task": "Gathering requirements"
-                    }, {
-                        "start": "2016-01-12",
-                        "end": "2016-01-19",
-                        "task": "Producing specifications"
-                    }, {
-                        "start": "2016-01-19",
-                        "end": "2016-03-01",
-                        "task": "Development"
-                    }, {
-                        "start": "2016-03-08",
-                        "end": "2016-03-30",
-                        "task": "Testing and QA"
-                    } ]
-                }];
 
                     var chart = AmCharts.makeChart( "chartdiv", {
                         "type": "gantt",
@@ -234,8 +182,10 @@ angular.module('TwakeAdministration')
 
 ;
         }
+
         this.update();
         this.makeChart();
+        this.makePieMessage();
         this.goBack = function () {
             $state.go("user-all")
         }
