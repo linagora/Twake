@@ -34,6 +34,13 @@ class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
         return $req->getQuery()->getSingleScalarResult();
     }
 
+    public function getStatsMessageByUser($idUser){
+        $req = $this->createQueryBuilder('U')
+            ->select('U.privateMsgCount ,U.publicMsgCount, U.date as dat')
+            ->where('U.user = ' . $idUser);
+        return $req->getQuery()->getResult();
+    }
+
     public function getStatsPrivateMessageByWorkspace($users,$startdate,$enddate){
 
         $req = $this->createQueryBuilder('U')

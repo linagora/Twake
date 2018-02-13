@@ -24,6 +24,63 @@ angular.module('TwakeAdministration')
 
         };
 
+        this.makeColumnMessage = function(){
+            $api.post("authentication/countAllMessageByUser", {
+                twakeUser: this.id
+            }, function (res) {
+                console.log(res.data);
+                var dataset = [];
+                for(var i = 0; i < res.data.length;i++){
+                    dataset.push({
+                        "date": res.data[i].dat.date,
+                        "publicMessage": res.data[i].publicMsgCount,
+                        "privateMessage": res.data[i].privateMsgCount
+                    });
+                }
+
+                AmCharts.makeChart("piediv", {
+
+                    "theme": "none",
+                    "type": "serial",
+                    "dataProvider": dataset,
+                    "valueAxes": [{
+                        "position": "left",
+                        "title": "Nombre de messages",
+                    }],
+                    "startDuration": 1,
+                    "graphs": [{
+                        "balloonText": "Messages publics: <b>[[value]]</b>",
+                        "fillAlphas": 0.9,
+                        "lineAlpha": 0.2,
+                        "title": "message public",
+                        "type": "column",
+                        "valueField": "publicMessage"
+                    }, {
+                        "balloonText": "Messages privés : <b>[[value]]</b>",
+                        "fillAlphas": 0.9,
+                        "lineAlpha": 0.2,
+                        "title": "message privée",
+                        "type": "column",
+                        "clustered":false,
+                        "columnWidth":0.5,
+                        "valueField": "privateMessage"
+                    }],
+                    "plotAreaFillAlphas": 0.1,
+                    "categoryField": "date",
+                    "categoryAxis": {
+                        "gridPosition": "start"
+                    },
+                    "export": {
+                        "enabled": true
+                    }
+
+                });
+
+            });
+
+
+        };
+
         this.makePieMessage = function () {
             var startdate = new Date();
             startdate.setDate(startdate.getDate() - 30);
@@ -43,12 +100,11 @@ angular.module('TwakeAdministration')
                     startdate: startdate.toISOString().substring(0, 10),
                     enddate: new Date().toISOString().substring(0, 10)
                 }, function (res) {
-                    console.log(res);
                     message.push({
                         "country": "Private message",
                         "litres": res.data
                     });
-                    AmCharts.makeChart("piediv", {
+                    AmCharts.makeChart("piediv", {/*
                         "type": "pie",
                         "theme": "light",
                         "innerRadius": "40%",
@@ -66,8 +122,68 @@ angular.module('TwakeAdministration')
                         "export": {
                             "enabled": true
                         }
-                    });
+                    });*/
 
+                        "theme": "none",
+                        "type": "serial",
+                        "dataProvider": [{
+                            "country": "USA",
+                            "year2004": 3.5,
+                            "year2005": 4.2
+                        }, {
+                            "country": "UK",
+                            "year2004": 1.7,
+                            "year2005": 3.1
+                        }, {
+                            "country": "Canada",
+                            "year2004": 2.8,
+                            "year2005": 2.9
+                        }, {
+                            "country": "Japan",
+                            "year2004": 2.6,
+                            "year2005": 2.3
+                        }, {
+                            "country": "France",
+                            "year2004": 1.4,
+                            "year2005": 2.1
+                        }, {
+                            "country": "Brazil",
+                            "year2004": 2.6,
+                            "year2005": 4.9
+                        }],
+                        "valueAxes": [{
+                            "unit": "%",
+                            "position": "left",
+                            "title": "GDP growth rate",
+                        }],
+                        "startDuration": 1,
+                        "graphs": [{
+                            "balloonText": "GDP grow in [[category]] (2004): <b>[[value]]</b>",
+                            "fillAlphas": 0.9,
+                            "lineAlpha": 0.2,
+                            "title": "2004",
+                            "type": "column",
+                            "valueField": "year2004"
+                        }, {
+                            "balloonText": "GDP grow in [[category]] (2005): <b>[[value]]</b>",
+                            "fillAlphas": 0.9,
+                            "lineAlpha": 0.2,
+                            "title": "2005",
+                            "type": "column",
+                            "clustered":false,
+                            "columnWidth":0.5,
+                            "valueField": "year2005"
+                        }],
+                        "plotAreaFillAlphas": 0.1,
+                        "categoryField": "country",
+                        "categoryAxis": {
+                            "gridPosition": "start"
+                        },
+                        "export": {
+                            "enabled": true
+                        }
+
+                    });
                 });
 
             });
@@ -185,7 +301,8 @@ angular.module('TwakeAdministration')
 
         this.update();
         this.makeChart();
-        this.makePieMessage();
+        this.makeColumnMessage();
+        //this.makePieMessage();
         this.goBack = function () {
             $state.go("user-all")
         }
