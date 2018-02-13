@@ -377,7 +377,9 @@ class MessageSystem implements MessagesSystemInterface
         else{
             $links = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace"=>$stream->getWorkspace()));
             foreach($links as $link){
-                $retour[] = $link->getUser();
+                if($link->getUser() != $user) {
+                    $retour[] = $link->getUser();
+                }
             }
         }
         return $retour;
