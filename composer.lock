@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "13444ac72d22e73b3dae6ecc788469d2",
+    "content-hash": "b44793e9958d0ab64f351bb79ccabae0",
     "packages": [
         {
             "name": "composer/ca-bundle",
@@ -1890,6 +1890,54 @@
                 "http client"
             ],
             "time": "2018-02-03T19:40:45+00:00"
+        },
+        {
+            "name": "krlove/async-service-call-bundle",
+            "version": "1.0.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/krlove/async-service-call-bundle.git",
+                "reference": "a83daccc129ffc0eb0f948b91560c1cb9e9d4d21"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/krlove/async-service-call-bundle/zipball/a83daccc129ffc0eb0f948b91560c1cb9e9d4d21",
+                "reference": "a83daccc129ffc0eb0f948b91560c1cb9e9d4d21",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^5.5 || ^7.0",
+                "symfony/console": "^2.7 || ^3.0",
+                "symfony/framework-bundle": "^2.7 || ^3.0",
+                "symfony/monolog-bundle": "^2.7 || ^3.0"
+            },
+            "type": "symfony-bundle",
+            "autoload": {
+                "psr-4": {
+                    "Krlove\\AsyncServiceCallBundle\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "krlove",
+                    "email": "mischenkoandrey@gmail.com"
+                }
+            ],
+            "description": "Symfony bundle for asynchronous service methods calls",
+            "keywords": [
+                "async",
+                "command",
+                "service",
+                "symfony"
+            ],
+            "time": "2017-12-10T15:40:59+00:00"
         },
         {
             "name": "leafo/scssphp",

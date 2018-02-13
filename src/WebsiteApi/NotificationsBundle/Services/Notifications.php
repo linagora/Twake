@@ -18,14 +18,23 @@ class Notifications implements NotificationsInterface
 
 	var $doctrine;
 
-	public function __construct($doctrine, $pusher, $mailer, $rms_push_notifications){
+	public function __construct($doctrine, $pusher, $mailer, $rms_push_notifications, $krlove_async){
 		$this->doctrine = $doctrine;
 		$this->pusher = $pusher;
 		$this->mailer = $mailer;
 		$this->rms_push_notifications = $rms_push_notifications;
+		$this->krlove_async = $krlove_async;
 	}
 
 	public function pushNotification($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	{
+		$this->krlove_async->call(
+			'app.notifications',
+			'pushNotificationAsync',
+			Array($application, $workspace, $users, $levels, $code, $text, $type));
+	}
+
+	public function pushNotificationAsync($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 
 		$title = "";
