@@ -126,3 +126,6 @@ rms_push_notifications:
       gcm:
           api_key: "AIzaSyCzcPSX4faHX1ALGcYiOcmSoDpP-M0LrPI"
           dry_run: true
+
+krlove_async_service_call:
+  console_path: bin/console

@@ -34,6 +34,7 @@ class AppKernel extends Kernel
 			new Gos\Bundle\WebSocketBundle\GosWebSocketBundle(),
 			new Gos\Bundle\PubSubRouterBundle\GosPubSubRouterBundle(),
 	        new RMS\PushNotificationsBundle\RMSPushNotificationsBundle(),
+	        new Krlove\AsyncServiceCallBundle\KrloveAsyncServiceCallBundle(),
 	        new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new WebsiteApi\MarketBundle\TwakeMarketBundle(),
             new WebsiteApi\DriveBundle\TwakeDriveBundle(),

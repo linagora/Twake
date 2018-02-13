@@ -18,24 +18,35 @@ class Notifications implements NotificationsInterface
 
 	var $doctrine;
 
-	public function __construct($doctrine, $pusher, $mailer, $rms_push_notifications){
+	public function __construct($doctrine, $pusher, $mailer, $rms_push_notifications, $krlove_async){
 		$this->doctrine = $doctrine;
 		$this->pusher = $pusher;
 		$this->mailer = $mailer;
 		$this->rms_push_notifications = $rms_push_notifications;
+		$this->krlove_async = $krlove_async;
 	}
 
 	public function pushNotification($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
+		$this->krlove_async->call(
+			'app.notifications',
+			'pushNotificationAsync',
+			Array($application, $workspace, $users, $levels, $code, $text, $type));
+	}
+
+	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	{
 
 		$title = "";
-		if($workspace->getGroup()){
+		if ($workspace && $workspace->getGroup()) {
 			$title .= $workspace->getGroup()->getDisplayName() . " - ";
 			$title .= $workspace->getName() . " : ";
-		}else{
-			$title .= "Private - ";
+		} else {
+			$title .= "Private : ";
 		}
-		$title .= $application->getName();
+		if($application){
+			$title .= $application->getName();
+		}
 
 
 		$data = Array(
@@ -59,7 +70,8 @@ class Notifications implements NotificationsInterface
 			$this->doctrine->persist($n);
 
 			if(in_array("push", $type)){
-				@$this->pushDevice($user, $text, $title);
+				$totalNotifications = $this->countAll($user);
+				@$this->pushDevice($user, $text, $title, $totalNotifications);
 			}
 			if(in_array("mail", $type)){
 				@$this->sendMail($application, $workspace, $user, $text);
@@ -91,7 +103,12 @@ class Notifications implements NotificationsInterface
 				"code"=>$code
 			));
 		}
+
+		$totalNotifications = $this->countAll($user);
+
+		$read = $totalNotifications;
 		foreach ($notif as $n) {
+			$read+=-1;
 			$this->doctrine->remove($n);
 		}
 		$this->doctrine->flush();
@@ -102,6 +119,20 @@ class Notifications implements NotificationsInterface
 			"app_id"=>$application->getId()
 		);
 		$this->pusher->push($data, "notifications_topic", Array("id_user" => $user->getId()));
+
+		$this->updateDeviceBadge($user, $read);
+
+	}
+
+	public function countAll($user)
+	{
+		$qb = $this->em->createQueryBuilder();
+		$qb = $qb->select('count(n.id)')
+			->where('n.user = :user')
+			->setParameter('user', $user)
+			->from('TwakeNotificationsBundle:Notification','n');
+
+		return $qb->getQuery()->getSingleScalarResult();
 	}
 
 	public function getAll($user)
@@ -114,7 +145,30 @@ class Notifications implements NotificationsInterface
 
 
 	/* Private */
-	private function pushDevice($user, $text, $title){
+	private function updateDeviceBadge($user, $badge=0){
+		$devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
+		$devices = $devicesRepo->findBy(Array("user"=>$user));
+		foreach ($devices as $device) {
+			if($device->getType()=="APNS"){
+
+				$token = $device->getValue();
+
+				$message = new iOSMessage();
+				$message->setAPSBadge($badge);
+				$message->setDeviceIdentifier($token);
+
+				$this->rms_push_notifications->send($message);
+
+			}
+			if($device->getType()=="GCM"){
+
+				//TODO
+
+			}
+		}
+	}
+
+	private function pushDevice($user, $text, $title, $badge=null){
 
 		$devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
 		$devices = $devicesRepo->findBy(Array("user"=>$user));
@@ -129,7 +183,9 @@ class Notifications implements NotificationsInterface
 
 				$message = new iOSMessage();
 				$message->setMessage($data);
-				$message->setAPSBadge(1);
+				if($badge) {
+					$message->setAPSBadge($badge);
+				}
 				$message->setAPSSound("default");
 				$message->setDeviceIdentifier($token);
 

@@ -74,9 +74,12 @@ class UsersConnectionsController extends Controller
 		if(!$ok){
 			$data["errors"][] = "disconnected";
 		}else{
+
 			$data["data"] = $this->getUser()->getAsArray();
 
 			$data["data"]["status"] = "connected";
+
+			$this->get("app.user_stats")->create($this->getUser()->getId());
 
 			$private = $this->get("app.workspaces")->getPrivate($this->getUser()->getId());
 			$workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());

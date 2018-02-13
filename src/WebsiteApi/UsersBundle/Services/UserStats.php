@@ -18,33 +18,33 @@ class UserStats implements UserStatsInterface
 		$this->em = $em;
 	}
 
-	public function login($userId)
+	public function create($userId)
 	{
-		// TODO: Implement login() method.
+		//Verify userstat exists
+		$repo = $this->em->getRepository("TwakeUsersBundle:UserStats");
+		$userStats = $repo->find($userId);
+
+		if($userStats==null){
+			$userStats = new \WebsiteApi\UsersBundle\Entity\UserStats($userId);
+		}
+
+		$this->em->persist($userStats);
+		$this->em->flush();
 	}
 
-	public function sendMessage($userId)
+	public function sendMessage($userId, $private=true)
 	{
-		// TODO: Implement sendMessage() method.
+		$repo = $this->em->getRepository("TwakeUsersBundle:UserStats");
+		$userStats = $repo->find($userId);
+
+		if($private){
+			$userStats->addPrivateMsgCount(1);
+		}else{
+			$userStats->addPublicMsgCount(1);
+		}
+
+		$this->em->persist($userStats);
+		$this->em->flush();
 	}
 
-	public function addFile($userId, $size)
-	{
-		// TODO: Implement addFile() method.
-	}
-
-	public function downloadFile($userId)
-	{
-		// TODO: Implement downloadFile() method.
-	}
-
-	public function openApp($userId, $appId)
-	{
-		// TODO: Implement openApp() method.
-	}
-
-	public function openWorkspace($userId, $workspaceId)
-	{
-		// TODO: Implement openWorkspace() method.
-	}
 }
