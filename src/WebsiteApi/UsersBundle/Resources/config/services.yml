@@ -16,4 +16,4 @@ services:
         class: WebsiteApi\UsersBundle\Topic\EchoTopic
         tags:
             - { name: gos_web_socket.topic }
-        arguments: ["@gos_web_socket.websocket.client_manipulator","@doctrine.orm.entity_manager"]
+        arguments: ["@gos_web_socket.websocket.client_manipulator"]
