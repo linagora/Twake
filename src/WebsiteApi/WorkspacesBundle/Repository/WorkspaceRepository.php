@@ -10,33 +10,28 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  */
 class WorkspaceRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function search($pageNumber,$nbGroupByPage, $filters=null,&$total){
+    public function search($pageNumber,$nbGroupByPage, $filter=null,&$total){
         $offset = ($pageNumber - 1) * $nbGroupByPage;
         $limit = $nbGroupByPage;
 
         $req = $this->createQueryBuilder('U')
             ->select('count(U.id)');
-        $req = $this->searchMiddleQueryBuilder($req,$filters);
         $req = $req->where('U.user is null');
+        $req = $this->searchMiddleQueryBuilder($req,$filter);
         $total = $req->getQuery()->getSingleScalarResult();
 
         $req1 = $this->createQueryBuilder('U');
-        $req1 = $this->searchMiddleQueryBuilder($req1,$filters);
         $req1 = $req1->where('U.user is null');
+        $req1 = $this->searchMiddleQueryBuilder($req1,$filter);
         $req1 = $req1->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()->getResult();
         return $req1;
     }
 
-    private function searchMiddleQueryBuilder($req,$filters){
-        if ($filters != null) {
-            if(isset($filters['name'])){
-                $req->where('U.name LIKE \'%' . $filters['name'].'%\'');
-            }
-            if(isset($filters['memberCount'])){
-                $req->where('U.memberCount LIKE \'%' . $filters['memberCount'].'%\'');
-            }
+    private function searchMiddleQueryBuilder($req,$filter){
+        if ($filter != null) {
+                $req->andWhere('U.name LIKE \'%' . $filter.'%\'');
         }
         return $req;
     }

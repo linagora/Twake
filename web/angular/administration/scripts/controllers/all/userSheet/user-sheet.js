@@ -10,7 +10,10 @@ angular.module('TwakeAdministration')
 
         var that = this;
         this.id = $stateParams.id;
-
+        var divMessage = document.getElementById("piediv");
+        var divConnection = document.getElementById("chartdiv");
+        divMessage.style.display = "none";
+        divConnection.style.display = "none";
         this.update = function(){
             $api.post("authentication/getInfoUser", {
                 id: this.id
@@ -80,7 +83,6 @@ angular.module('TwakeAdministration')
 
 
         };
-
         this.makePieMessage = function () {
             var startdate = new Date();
             startdate.setDate(startdate.getDate() - 30);
@@ -104,7 +106,7 @@ angular.module('TwakeAdministration')
                         "country": "Private message",
                         "litres": res.data
                     });
-                    AmCharts.makeChart("piediv", {/*
+                    AmCharts.makeChart("piediv", {
                         "type": "pie",
                         "theme": "light",
                         "innerRadius": "40%",
@@ -122,74 +124,9 @@ angular.module('TwakeAdministration')
                         "export": {
                             "enabled": true
                         }
-                    });*/
-
-                        "theme": "none",
-                        "type": "serial",
-                        "dataProvider": [{
-                            "country": "USA",
-                            "year2004": 3.5,
-                            "year2005": 4.2
-                        }, {
-                            "country": "UK",
-                            "year2004": 1.7,
-                            "year2005": 3.1
-                        }, {
-                            "country": "Canada",
-                            "year2004": 2.8,
-                            "year2005": 2.9
-                        }, {
-                            "country": "Japan",
-                            "year2004": 2.6,
-                            "year2005": 2.3
-                        }, {
-                            "country": "France",
-                            "year2004": 1.4,
-                            "year2005": 2.1
-                        }, {
-                            "country": "Brazil",
-                            "year2004": 2.6,
-                            "year2005": 4.9
-                        }],
-                        "valueAxes": [{
-                            "unit": "%",
-                            "position": "left",
-                            "title": "GDP growth rate",
-                        }],
-                        "startDuration": 1,
-                        "graphs": [{
-                            "balloonText": "GDP grow in [[category]] (2004): <b>[[value]]</b>",
-                            "fillAlphas": 0.9,
-                            "lineAlpha": 0.2,
-                            "title": "2004",
-                            "type": "column",
-                            "valueField": "year2004"
-                        }, {
-                            "balloonText": "GDP grow in [[category]] (2005): <b>[[value]]</b>",
-                            "fillAlphas": 0.9,
-                            "lineAlpha": 0.2,
-                            "title": "2005",
-                            "type": "column",
-                            "clustered":false,
-                            "columnWidth":0.5,
-                            "valueField": "year2005"
-                        }],
-                        "plotAreaFillAlphas": 0.1,
-                        "categoryField": "country",
-                        "categoryAxis": {
-                            "gridPosition": "start"
-                        },
-                        "export": {
-                            "enabled": true
-                        }
-
                     });
                 });
-
             });
-
-
-
         }
         this.makeChart = function(){
             var startdate = new Date();
@@ -291,18 +228,13 @@ angular.module('TwakeAdministration')
                         "export": {
                             "enabled": true
                         }
-                    } )
+                    } );
             }
 
-            )
-
-;
+            );
         }
 
-        this.update();
-        this.makeChart();
-        this.makeColumnMessage();
-        //this.makePieMessage();
+
         this.goBack = function () {
             $state.go("user-all")
         }
@@ -310,7 +242,47 @@ angular.module('TwakeAdministration')
         this.getWorkspaceView = function(workspaceId){
             $state.go("workspace-sheet", {id: workspaceId})
         }
-        });
 
+        this.btnMessage = function () {
+            var div = document.getElementById("piediv");
+            var chevron = document.getElementById("chevron1");
+            if(div.style.display=="block") {
+                div.style.display = "none";
+                chevron.className = "glyphicon glyphicon-chevron-up";
+            } else {
+
+                div.style.width =  "100%";
+                div.style.height=  "500px";
+
+                div.style.display = "block";
+                chevron.className = "glyphicon glyphicon-chevron-down";
+                this.makeColumnMessage();
+
+            }
+
+        }
+        this.btnConnection = function () {
+            var div = document.getElementById("chartdiv");
+            var chevron = document.getElementById("chevron2");
+            if(div.style.display=="block") {
+
+                div.style.display = "none";
+                chevron.className = "glyphicon glyphicon-chevron-up";
+            } else {
+
+                div.style.width =  "100%";
+                div.style.height=  "500px";
+                div.style.display = "block";
+                chevron.className = "glyphicon glyphicon-chevron-down";
+                this.makeChart();
+
+
+            }
+
+        }
+        this.update();
+        //this.makeChart();
+        //this.makePieMessage();
+        });
 
 

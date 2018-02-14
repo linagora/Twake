@@ -16,7 +16,17 @@ angular.module('TwakeAdministration')
         this.unit = '';
         this.userCount = 0;
         this.labels = [];
+        this.startdate;
+        this.enddate;
         this.update = function(){
+
+            var startdate = new Date();
+            //document.getElementById("date2").value;
+            this.enddate = startdate.toISOString().substring(0,10);
+            startdate.setDate(startdate.getDate() - 30);
+            //document.getElementById("date1").value
+            this.startdate = startdate.toISOString().substring(0,10);
+
             this.drawChart();
             this.drawCountDonut();
             this.drawSizeDonut();
@@ -41,7 +51,6 @@ angular.module('TwakeAdministration')
                 twakeWorkspace: this.id,
             }, function (res) {
                 var datas = [];
-
                 for (var i = 0; i < res.data.length; i++) {
                     that.labels.push(res.data[i].extension);
                     datas.push(res.data[i].nb);
@@ -148,21 +157,23 @@ angular.module('TwakeAdministration')
         this.drawChart = function () {
             var publicMsg;
             var privateMsg;
-            var startdate = new Date();
-            startdate.setDate(startdate.getDate() - 7);
+            console.log(that.startdate);
+            console.log(that.enddate);
             $api.post("authentication/numberOfMessagePublicByWorkspace", {
                 twakeWorkspace: this.id,
-                startdate: startdate.toISOString().substring(0, 10),
-                enddate: new Date().toISOString().substring(0, 10)
+                startdate: that.startdate,//.toISOString().substring(0, 10),
+                enddate: that.enddate//.toISOString().substring(0, 10)
             }, function (res) {
+                console.log(res);
                     publicMsg = res.data;
             });
 
             $api.post("authentication/numberOfMessagePrivateByUserByWorkspace", {
                 twakeWorkspace: this.id,
-                startdate: startdate.toISOString().substring(0, 10),
-                enddate: new Date().toISOString().substring(0, 10)
+                startdate: that.startdate,//.toISOString().substring(0, 10),
+                enddate: that.enddate//.toISOString().substring(0, 10)
             }, function (res2) {
+                console.log(res2.data);
                 privateMsg = res2.data;
                 if(publicMsg.length == privateMsg.length) {
                     var publicData = [];
