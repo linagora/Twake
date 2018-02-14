@@ -8,7 +8,7 @@ angular.module('TwakeAdministration')
     })
     .controller('User_sheetCtrl', function($api, $scope, $stateParams, $state){
 
-        /*var that = this;
+        var that = this;
         this.id = $stateParams.id;
 
         this.update = function(){
@@ -123,7 +123,7 @@ angular.module('TwakeAdministration')
                             "enabled": true
                         }
                     });*/
-        
+
 
 
         }
