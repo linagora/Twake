@@ -140,7 +140,9 @@ class DiscussionController extends Controller
             }
             else{
             	$streams = $this->get("app.streamSystem")->getStreamList($request->request->get("gid"),$this->getUser());
-            	$data["data"] = $streams;
+            	if($streams){
+                    $data["data"] = $streams;
+                }
             }
 
         }
