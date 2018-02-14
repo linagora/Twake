@@ -145,3 +145,7 @@ administration_stats_countDailyMessageByWorkspace:
 administration_stats_saveCpuUsage:
     path: /saveCpuUsage
     defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:saveCpuUsage}
+
+administration_stats_getStorageSpace:
+    path: /getStorageSpace
+    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getStorageSpace}

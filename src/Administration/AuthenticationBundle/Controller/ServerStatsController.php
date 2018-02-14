@@ -28,4 +28,16 @@ class ServerStatsController extends Controller
 
         return new JsonResponse($data);
     }
+
+    public function getStorageSpaceAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $data["data"] = $this->get('admin.TwakeServerStats')->getStorageSpace();
+
+        return new JsonResponse($data);
+    }
 }

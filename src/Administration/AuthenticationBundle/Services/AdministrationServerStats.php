@@ -23,6 +23,20 @@ class AdministrationServerStats
         return floatval(str_replace(',','.',$str));
     }
 
+    public function getStorageSpace()
+    {
+        $output = shell_exec('df -h /');
+        $words = preg_split("/\s+/",$output);
+        $taille = count($words);
+        $total = $words[$taille - 6];
+        $utilise = $words[$taille - 5];
+
+        $resultat["total"] = $total;
+        $resultat["utilise"] = $utilise;
+
+        return $resultat;
+    }
+
     public function saveCpuUsage()
     {
         $output = shell_exec('mpstat');
