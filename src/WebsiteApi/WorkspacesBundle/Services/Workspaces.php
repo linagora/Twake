@@ -104,7 +104,6 @@ class Workspaces implements WorkspacesInterface
 			$this->doctrine->flush();
 		}
 	}
-
 	public function changeData($workspaceId, $name, $thumbnailFile, $currentUserId = null)
 	{
 		if($currentUserId == null

@@ -26,7 +26,7 @@ class Notifications implements NotificationsInterface
 		$this->rms_push_notifications = $rms_push_notifications;
 	}
 
-	public function pushNotification($application, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	public function pushNotification($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 		$this->krlove_async->call(
 			'app.notifications',
@@ -37,7 +37,10 @@ class Notifications implements NotificationsInterface
 	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 
-		$workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
+	    if($workspace != null){
+            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
+        }
+
 		$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($application);
 
 		$title = "";
@@ -54,7 +57,7 @@ class Notifications implements NotificationsInterface
 
 		$data = Array(
 			"type"=>"add",
-			"workspace_id"=>$workspace->getId(),
+			"workspace_id"=>($workspace!=null?$workspace->getId():null),
 			"app_id"=>$application->getId(),
 			"title" => $title,
 			"text" => $text,
