@@ -26,7 +26,6 @@ class ServerStatsController extends Controller
 
         $data["data"] = $this->get('admin.TwakeServerStats')->saveCpuUsage();
 
-
         return new JsonResponse($data);
     }
 }

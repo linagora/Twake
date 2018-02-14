@@ -115,6 +115,215 @@ class ServerCpuStats
      */
     private $idle;
 
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDateSave()
+    {
+        return $this->dateSave;
+    }
+
+    /**
+     * @param mixed $dateSave
+     */
+    public function setDateSave($dateSave)
+    {
+        $this->dateSave = $dateSave;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCpu()
+    {
+        return $this->cpu;
+    }
+
+    /**
+     * @param mixed $cpu
+     */
+    public function setCpu($cpu)
+    {
+        $this->cpu = $cpu;
+    }
+
+    /**
+     * @return float
+     */
+    public function getUsr()
+    {
+        return $this->usr;
+    }
+
+    /**
+     * @param float $usr
+     */
+    public function setUsr($usr)
+    {
+        $this->usr = $usr;
+    }
+
+    /**
+     * @return float
+     */
+    public function getNice()
+    {
+        return $this->nice;
+    }
+
+    /**
+     * @param float $nice
+     */
+    public function setNice($nice)
+    {
+        $this->nice = $nice;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSys()
+    {
+        return $this->sys;
+    }
+
+    /**
+     * @param float $sys
+     */
+    public function setSys($sys)
+    {
+        $this->sys = $sys;
+    }
+
+    /**
+     * @return float
+     */
+    public function getIowait()
+    {
+        return $this->iowait;
+    }
+
+    /**
+     * @param float $iowait
+     */
+    public function setIowait($iowait)
+    {
+        $this->iowait = $iowait;
+    }
+
+    /**
+     * @return float
+     */
+    public function getIrq()
+    {
+        return $this->irq;
+    }
+
+    /**
+     * @param float $irq
+     */
+    public function setIrq($irq)
+    {
+        $this->irq = $irq;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSoft()
+    {
+        return $this->soft;
+    }
+
+    /**
+     * @param float $soft
+     */
+    public function setSoft($soft)
+    {
+        $this->soft = $soft;
+    }
+
+    /**
+     * @return float
+     */
+    public function getSteal()
+    {
+        return $this->steal;
+    }
+
+    /**
+     * @param float $steal
+     */
+    public function setSteal($steal)
+    {
+        $this->steal = $steal;
+    }
+
+    /**
+     * @return float
+     */
+    public function getGuest()
+    {
+        return $this->guest;
+    }
+
+    /**
+     * @param float $guest
+     */
+    public function setGuest($guest)
+    {
+        $this->guest = $guest;
+    }
+
+    /**
+     * @return float
+     */
+    public function getGnice()
+    {
+        return $this->gnice;
+    }
+
+    /**
+     * @param float $gnice
+     */
+    public function setGnice($gnice)
+    {
+        $this->gnice = $gnice;
+    }
+
+    /**
+     * @return float
+     */
+    public function getIdle()
+    {
+        return $this->idle;
+    }
+
+    /**
+     * @param float $idle
+     */
+    public function setIdle($idle)
+    {
+        $this->idle = $idle;
+    }
+
+
 
 
 

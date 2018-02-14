@@ -9,8 +9,20 @@
 namespace Administration\AuthenticationBundle\Services;
 
 
+use Administration\AuthenticationBundle\Entity\ServerCpuStats;
+
 class AdministrationServerStats
 {
+    public function __construct($doctrine)
+    {
+        $this->doctrine = $doctrine;
+    }
+
+    private function reformateData($str)
+    {
+        return floatval(str_replace(',','.',$str));
+    }
+
     public function saveCpuUsage()
     {
         $output = shell_exec('mpstat');
@@ -26,8 +38,27 @@ class AdministrationServerStats
         $guest = $words[28];
         $gnice = $words[29];
         $idle = $words[30];
-        //return $words;
-        return $words[20]."-" . $words[21]."-".$words[22]."-".$words[23]."-".$words[24]."-".$words[25]."-".$words[26]."-".$words[27]."-".$words[28]."-".$words[29]."-".$words[30];
+
+        $em = $this->doctrine;
+
+        $serverStat = new ServerCpuStats();
+        $serverStat->setDateSave(new \DateTime("now"));
+        $serverStat->setCpu($cpu);
+        $serverStat->setUsr($this->reformateData($usr));
+        $serverStat->setNice($this->reformateData($nice));
+        $serverStat->setSys($this->reformateData($sys));
+        $serverStat->setIowait($this->reformateData($iowait));
+        $serverStat->setIrq($this->reformateData($irq));
+        $serverStat->setSoft($this->reformateData($soft));
+        $serverStat->setSteal($this->reformateData($steal));
+        $serverStat->setGuest($this->reformateData($guest));
+        $serverStat->setGnice($this->reformateData($gnice));
+        $serverStat->setIdle($this->reformateData($idle));
+
+        $em->persist($serverStat);
+        $em->flush();
+
+        return "done";
     }
 
 }
