@@ -102,6 +102,10 @@ administration_stats_numberOfExtensionsByWorkspace:
     path: /numberOfExtensionsByWorkspace
     defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfExtensionsByWorkspace}
 
+administration_stats_getCpuUsed:
+    path: /CpuUsed
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:getCpuUsed}
+
 administration_stats_countDailyMessage:
     path: /countDailyMessage
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countDailyMessage}
@@ -138,3 +142,10 @@ administration_stats_countDailyMessageByWorkspace:
     path: /countDailyMessageByWorkspace
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countDailyMessageByWorkspace}
 
+administration_stats_saveCpuUsage:
+    path: /saveCpuUsage
+    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:saveCpuUsage}
+
+administration_stats_getCpuUsage:
+    path: /getCpuUsage
+    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getCpuUsage}

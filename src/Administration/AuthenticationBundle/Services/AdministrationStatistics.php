@@ -71,4 +71,15 @@ class AdministrationStatistics implements AdministrationStatisticsInterface
         }
         return $listeExtension;
     }
+
+    public function getCpuUsed()
+    {
+        $pos[0] = strpos(exec('uptime'), 'load') + 14;
+        $uptime[0] = substr(exec('uptime'), $pos[0]);
+        $pos[0] = strpos($uptime[0], ',');
+        $uptime[1] = substr($uptime[0], 0, $pos[0]);
+
+        return  "cpu : $uptime[1]%";
+
+    }
 }
