@@ -12,6 +12,8 @@ services:
         class: WebsiteApi\UsersBundle\Services\UserStats
         arguments: ["@doctrine.orm.entity_manager"]
 
-    app.notifications_old:
-        class: WebsiteApi\UsersBundle\Services\Notifications
-        arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", "@templating", "@mailer", "@security.token_storage", '@security.authorization_checker', '@gos_web_socket.zmq.pusher']
+    echo.topic:
+        class: WebsiteApi\UsersBundle\Topic\EchoTopic
+        tags:
+            - { name: gos_web_socket.topic }
+        arguments: ["@gos_web_socket.websocket.client_manipulator","@doctrine.orm.entity_manager"]

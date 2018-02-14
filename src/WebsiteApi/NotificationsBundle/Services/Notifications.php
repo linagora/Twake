@@ -2,7 +2,6 @@
 
 
 namespace WebsiteApi\NotificationsBundle\Services;
-use b3da\PusherBundle\Model\Message;
 use RMS\PushNotificationsBundle\Message\iOSMessage;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
 use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
@@ -27,7 +26,7 @@ class Notifications implements NotificationsInterface
 		$this->rms_push_notifications = $rms_push_notifications;
 	}
 
-	public function pushNotification($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	public function pushNotification($application, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 		$this->krlove_async->call(
 			'app.notifications',

@@ -27,9 +27,24 @@ class Application
 	private $name;
 
 	/**
+	 * @ORM\Column(type="string", length=6)
+	 */
+	private $color; //Header color
+
+	/**
 	 * @ORM\Column(type="string", length=512)
 	 */
 	private $url = "";
+
+	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	private $canCreateFile; //Will be visible in the list of new files in Drive
+
+	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	private $isCapable; //Can be opened as app in window (displayed in the left bar of apps)
 
 
 	/**
@@ -461,5 +476,55 @@ class Application
 	{
 		return json_decode($this->screenshot, 1);
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getColor()
+	{
+		return $this->color;
+	}
+
+	/**
+	 * @param mixed $color
+	 */
+	public function setColor($color)
+	{
+		$this->color = $color;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getCanCreateFile()
+	{
+		return $this->canCreateFile;
+	}
+
+	/**
+	 * @param mixed $canCreateFile
+	 */
+	public function setCanCreateFile($canCreateFile)
+	{
+		$this->canCreateFile = $canCreateFile;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getisCapable()
+	{
+		return $this->isCapable;
+	}
+
+	/**
+	 * @param mixed $isCapable
+	 */
+	public function setIsCapable($isCapable)
+	{
+		$this->isCapable = $isCapable;
+	}
+
+
 
 }
