@@ -18,8 +18,8 @@ class NotificationsTopic implements TopicInterface, PushableTopicInterface
 	var $clientManipulator;
 
     public function __construct($clientManipulator, $doctrine) {
-	    $this->doctrine = $doctrine;
 	    $this->clientManipulator = $clientManipulator;
+	    $this->doctrine = $doctrine;
     }
 
     public function onSubscribe( ConnectionInterface $connection, Topic $topic, WampRequest $request ){

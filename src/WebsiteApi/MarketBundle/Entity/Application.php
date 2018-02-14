@@ -27,6 +27,11 @@ class Application
 	private $name;
 
 	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	private $default;
+
+	/**
 	 * @ORM\Column(type="string", length=6)
 	 */
 	private $color; //Header color
@@ -244,41 +249,6 @@ class Application
 	public function setPublicKey($x)
 	{
 		$this->publicKey = $x;
-	}
-
-	public function getAsArray()
-	{
-		return Array(
-			"id" => $this->id,
-			"name" => $this->name,
-			"score" => $this->score,
-			"nbvote" => $this->voteCount,
-			"nbUsers" => $this->userCount,
-			"description" => $this->description,
-			"shortDescription" => $this->shortDescription,
-			"price" => $this->price,
-			"cssthumbnail" => $this->getCssThumbnail(),
-			"thumbnail" => $this->getUrlThumbnail(),
-			"csscover" => $this->getCssCover(),
-			"cover" => $this->getUrlCover(),
-			"isPromoted" => $this->getPromoted(),
-			"screenshots" => $this->getScreenshot(),
-			"url" => $this->getUrl(),
-			"filestypes" => $this->getFilesTypes(),
-			"internal" => ((!(substr( $this->getUrl(), 0, 4 ) === "http"))?true:false)
-		);
-	}
-
-	public function getAsSimpleArray()
-	{
-		return Array(
-			"id" => $this->id,
-			"name" => $this->name,
-			"cssthumbnail" => $this->getCssThumbnail(),
-			"thumbnail" => $this->getUrlThumbnail(),
-			"url" => $this->getUrl(),
-			"filestypes" => $this->getFilesTypes()
-		);
 	}
 
 	public function newVote($score)
@@ -523,6 +493,61 @@ class Application
 	public function setIsCapable($isCapable)
 	{
 		$this->isCapable = $isCapable;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDefault()
+	{
+		return $this->default;
+	}
+
+	/**
+	 * @param mixed $default
+	 */
+	public function setDefault($default)
+	{
+		$this->default = $default;
+	}
+
+	public function getAsArray()
+	{
+		return Array(
+			"id" => $this->id,
+			"name" => $this->name,
+			"score" => $this->score,
+			"nbvote" => $this->voteCount,
+			"nbUsers" => $this->userCount,
+			"description" => $this->description,
+			"shortDescription" => $this->shortDescription,
+			"price" => $this->price,
+			"cssthumbnail" => $this->getCssThumbnail(),
+			"thumbnail" => $this->getUrlThumbnail(),
+			"csscover" => $this->getCssCover(),
+			"cover" => $this->getUrlCover(),
+			"isPromoted" => $this->getPromoted(),
+			"screenshots" => $this->getScreenshot(),
+			"url" => $this->getUrl(),
+			"filestypes" => $this->getFilesTypes(),
+			"internal" => ((!(substr( $this->getUrl(), 0, 4 ) === "http"))?true:false),
+			"color" => $this->getColor(),
+			"canCreateFile" => $this->getCanCreateFile(),
+			"isCapable" => $this->getisCapable(),
+			"default" => $this->getDefault()
+		);
+	}
+
+	public function getAsSimpleArray()
+	{
+		return Array(
+			"id" => $this->id,
+			"name" => $this->name,
+			"cssthumbnail" => $this->getCssThumbnail(),
+			"thumbnail" => $this->getUrlThumbnail(),
+			"url" => $this->getUrl(),
+			"filestypes" => $this->getFilesTypes()
+		);
 	}
 
 

@@ -83,7 +83,7 @@ class UsersSubscribeController extends Controller
 
 		$res = $this->get("app.user")->subscribe($token, $code, $username, $password);
 
-		if ($res) {
+		if ($res || $this->get("app.user")->current()) {
 
 			$data["data"]["status"] = "success";
 
