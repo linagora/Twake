@@ -402,10 +402,10 @@ class MessageSystem implements MessagesSystemInterface
         $this->notificationsService->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));
     }
 
-    public function notify($discussionKey,$type,$message){
+    public function notify($discussionKey,$type,$messageArray){
         $data = Array(
             "type" => $type,
-            "data" => $message->getAsArray(),
+            "data" => $messageArray,
         );
         $this->pusher->push($data, "discussion_topic",Array("key"=>$discussionKey));
     }

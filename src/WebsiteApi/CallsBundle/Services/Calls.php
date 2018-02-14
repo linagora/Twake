@@ -111,7 +111,8 @@ class Calls implements CallSystemInterface
                     </div>";
 
         $message = $this->messageSystem->sendMessage($user->getId(), $discussionInfos["type"], $discussionInfos["id"], false,null,true, $content, null );
-        $this->messageSystem->notify($discussionKey,"C",$message);
+        $messageArray = $message->getAsArray();
+        $this->messageSystem->notify($discussionKey,"C",$messageArray);
 
         $call = new Call($discussionKey,$message);
 
@@ -149,20 +150,14 @@ class Calls implements CallSystemInterface
                 if($during->s !== 0) {
                     $format = $format."%s s";
                 }
-                error_log("start content ".$format);
                 $content = "<div style=''>
                                 <span style='color:#427FB3'>".$user->getFirstName()." ".$user->getLastName()."</span> called (".$during->format($format).")
                             </div>";
-                error_log("start persist");
                 $message->setContent($content);
-                error_log("start persist");
                 $em->persist($message);
                 $em->flush();
-                error_log("start notify refresh");
                 $this->messageSystem->notify($call->getDiscussionKey(),"E",$message);
-                error_log("start remove");
                 $em->remove($call);
-                error_log("end remove");
 				$torefresh[] = Array("discussionKey"=>$call->getDiscussionKey(),"type"=>"close");
             }else{
 				$call->setNbclients($call->getNbclients()-1);
@@ -170,14 +165,10 @@ class Calls implements CallSystemInterface
 				$em->persist($call);
 			}
 		}
-        error_log("start flush");
-
 		$em->flush();
-        error_log("flush");
 		foreach ($torefresh as $call) {
 			$this->notifyChange($call["discussionKey"],$call["type"]);
 		}
-		error_log("end service");
 	}
 
 
