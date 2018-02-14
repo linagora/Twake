@@ -149,3 +149,8 @@ administration_stats_saveCpuUsage:
 administration_stats_getCpuUsage:
     path: /getCpuUsage
     defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getCpuUsage}
+
+administration_stats_getStorageSpace:
+    path: /getStorageSpace
+    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getStorageSpace}
+

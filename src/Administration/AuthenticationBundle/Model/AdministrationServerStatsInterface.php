@@ -13,4 +13,6 @@ interface AdministrationServerStatsInterface
     //save the CPU usage at the time the function is called
     public function saveCpuUsage();
 
+
+    public function getStorageSpace();
 }
