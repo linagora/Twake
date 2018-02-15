@@ -26,17 +26,17 @@ class WorkspaceStats
      * @var int
      * @ORM\Column(name="public_msg_count", type="integer")
      */
-    protected $publicMsgCount;
+    protected $publicMsgCount = 0;
 	/**
 	 * @var int
 	 * @ORM\Column(name="private_msg_count", type="integer")
 	 */
-	protected $privateMsgCount;
+	protected $privateMsgCount = 0;
 	/**
 	 * @var int
 	 * @ORM\Column(name="private_channel_msg_count", type="integer")
 	 */
-	protected $privateChannelMsgCount;
+	protected $privateChannelMsgCount = 0;
 
 	/**
 	 * WorkspaceStats constructor.
