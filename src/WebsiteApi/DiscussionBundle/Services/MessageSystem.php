@@ -27,8 +27,9 @@ class MessageSystem implements MessagesSystemInterface
 	var $fileSystem;
 	var $notificationsService;
 	var $user_stats;
+	var $workspace_stats;
 
-	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager,$fileSystem, $notificationsService, $user_stats){
+	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager,$fileSystem, $notificationsService, $user_stats, $workspace_stats){
 		$this->string_cleaner = $string_cleaner;
 		$this->doctrine = $doctrine;
 		$this->security = $authorizationChecker;
@@ -38,6 +39,7 @@ class MessageSystem implements MessagesSystemInterface
 		$this->fileSystem = $fileSystem;
 		$this->notificationsService = $notificationsService;
 		$this->user_stats = $user_stats;
+		$this->workspace_stats = $workspace_stats;
 	}
 
 	public function convertKey($discussionKey, $user){
@@ -72,12 +74,16 @@ class MessageSystem implements MessagesSystemInterface
         if($recieverType == "S"){
             $reciever = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
 
-            if($sender!=null){ // select only user message and not system or application message without user
+            if($sender!=null && $reciever!=null){ // select only user message and not system or application message without user
                 $this->user_stats->sendMessage($sender, false);
+	            $this->workspace_stats->sendMessage($reciever->getWorkspace(), false, $reciever->getIsPrivate());
             }
         }
         elseif($recieverType == "U"){
             $reciever = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
+	        if($sender!=null){ // select only user message and not system or application message without user
+		        $this->user_stats->sendMessage($sender, true);
+	        }
         }
         if( ($isApplicationMessage || $isSystemMessage|| $sender!=null) && $reciever!=null ){
             $subject = null;

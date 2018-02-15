@@ -28,25 +28,85 @@ class WorkspaceDailyStats
      */
     protected $workspace;
 
-    /**
-     * @var int
-     * @ORM\Column(name="public_msg_count", type="integer")
-     */
-    protected $publicMsgCount;
+	/**
+	 * @var int
+	 * @ORM\Column(name="public_msg_count", type="integer")
+	 */
+	protected $publicMsgCount;
 
-    /**
-     * @ORM\Column(name="date", type="datetime")
-     */
-    protected $date;
+	/**
+	 * @var int
+	 * @ORM\Column(name="private_msg_count", type="integer")
+	 */
+	protected $privateMsgCount;
 
-    public function setWorkspace($w){
-        $this->workspace = $w;
-    }
+	/**
+	 * @var int
+	 * @ORM\Column(name="private_channel_msg_count", type="integer")
+	 */
+	protected $privateChannelMsgCount;
 
-    public function setPublicMsgCount($p){
-        $this->publicMsgCount = $p;
-    }
-    public function setDate($d){
-        $this->date = $d;
-    }
+
+	/**
+	 * @return mixed
+	 */
+	public function getWorkspace()
+	{
+		return $this->workspace;
+	}
+
+	/**
+	 * @param mixed $workspace
+	 */
+	public function setWorkspace($workspace)
+	{
+		$this->workspace = $workspace;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
+
+
+	public function getPublicMsgCount(){
+		return $this->publicMsgCount;
+	}
+
+	public function getPrivateMsgCount(){
+		return $this->privateMsgCount;
+	}
+
+	public function getPrivateChannelMsgCount(){
+		return $this->privateChannelMsgCount;
+	}
+
+	/**
+	 * @param int $publicMsgCount
+	 */
+	public function setPublicMsgCount($publicMsgCount)
+	{
+		$this->publicMsgCount = $publicMsgCount;
+	}
+
+	/**
+	 * @param int $privateMsgCount
+	 */
+	public function setPrivateMsgCount($privateMsgCount)
+	{
+		$this->privateMsgCount = $privateMsgCount;
+	}
+
+	/**
+	 * @param int $privateChannelMsgCount
+	 */
+	public function setPrivateChannelMsgCount($privateChannelMsgCount)
+	{
+		$this->privateChannelMsgCount = $privateChannelMsgCount;
+	}
+
+
 }

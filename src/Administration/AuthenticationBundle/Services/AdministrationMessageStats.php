@@ -9,6 +9,7 @@
 namespace Administration\AuthenticationBundle\Services;
 
 
+use Administration\AuthenticationBundle\Entity\WorkspaceDailyStats;
 use Administration\AuthenticationBundle\Model\AdministrationMessageStatsInterface;
 use Administration\AuthenticationBundle\Entity\UserDailyStats;
 use Symfony\Component\Validator\Constraints\DateTime;
@@ -46,6 +47,7 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         $workspaceDailyStats->setWorkspace($twakeWorkspaceStat->getWorkspace());
         $workspaceDailyStats->setPublicMsgCount($twakeWorkspaceStat->getPublicMsgCount());
         $workspaceDailyStats->setPrivateMsgCount($twakeWorkspaceStat->getPrivateMsgCount());
+	    $workspaceDailyStats->setPrivateChannelMsgCount($twakeWorkspaceStat->getPrivateChannelMsgCount());
         $workspaceDailyStats->setDate(new \DateTime("now"));
         $this->doctrine->persist($workspaceDailyStats);
         $this->doctrine->flush();

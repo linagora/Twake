@@ -15,15 +15,17 @@ class Workspaces implements WorkspacesInterface
 	private $wms;
 	private $gms;
 	private $gas;
+	private $ws;
 	private $doctrine;
 
-	public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service)
+	public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats)
 	{
 		$this->doctrine = $doctrine;
 		$this->wls = $workspaces_levels_service;
 		$this->wms = $workspaces_members_service;
 		$this->gms = $groups_managers_service;
 		$this->gas = $groups_apps_service;
+		$this->ws = $workspace_stats;
 	}
 
 	public function getPrivate($userId = null)
@@ -87,6 +89,8 @@ class Workspaces implements WorkspacesInterface
 			$this->wms->addMember($workspace->getId(), $userId, $level->getId());
 		}
 
+		$this->ws->create($workspace); //Create workspace stat element
+
 		return $workspace;
 
 	}
@@ -129,6 +133,9 @@ class Workspaces implements WorkspacesInterface
 		  || $this->wls->can($workspaceId, $currentUserId, "")){
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspace = $workspaceRepository->find($workspaceId);
+
+			$this->ws->create($workspace); //Create workspace stat element
+
 			return $workspace;
 		}
 

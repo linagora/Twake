@@ -27,21 +27,62 @@ class WorkspaceStats
      * @ORM\Column(name="public_msg_count", type="integer")
      */
     protected $publicMsgCount;
-    /**
-     * @var int
-     * @ORM\Column(name="private_msg_count", type="integer")
-     */
-    protected $privateMsgCount;
+	/**
+	 * @var int
+	 * @ORM\Column(name="private_msg_count", type="integer")
+	 */
+	protected $privateMsgCount;
+	/**
+	 * @var int
+	 * @ORM\Column(name="private_channel_msg_count", type="integer")
+	 */
+	protected $privateChannelMsgCount;
 
-    public function getPublicMsgCount(){
+	/**
+	 * WorkspaceStats constructor.
+	 * @param $workspace
+	 */
+	public function __construct($workspace)
+	{
+		$this->workspace = $workspace;
+	}
+
+
+	public function getPublicMsgCount(){
         return $this->publicMsgCount;
-    }
-
-    public function getWorkspace(){
-        return $this->workspace;
     }
 
     public function getPrivateMsgCount(){
         return $this->privateMsgCount;
     }
+
+	public function getPrivateChannelMsgCount(){
+		return $this->privateChannelMsgCount;
+	}
+
+	/**
+	 * @param int $publicMsgCount
+	 */
+	public function addPrivateChannelMsg($val=1)
+	{
+		$this->privateChannelMsgCount += $val;
+	}
+
+	/**
+	 * @param int $publicMsgCount
+	 */
+	public function addPublicMsg($val=1)
+	{
+		$this->publicMsgCount += $val;
+	}
+
+	/**
+	 * @param int $privateMsgCount
+	 */
+	public function addPrivateMsg($val=1)
+	{
+		$this->privateMsgCount += $val;
+	}
+
+
 }
