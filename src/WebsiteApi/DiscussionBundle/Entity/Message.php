@@ -68,7 +68,7 @@ class Message
 
 
     /**
-	 * @ORM\Column(type="datetime")
+	 * @ORM\Column(type="datetime",nullable=true)
 	 */
 	private $date;
 
@@ -393,6 +393,7 @@ class Message
 
 
 
+
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
@@ -408,7 +409,7 @@ class Message
 
             "content" => $this->getContent(),
             "cleanContent" => $this->getCleanContent(),
-            "date" => $this->getDate(),
+            "date" => $this->getDate()?$this->getDate()->getTimestamp()*1000:null,
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),
             "subject" => ($this->getSubject()!=null)?$this->getSubject()->getAsArray():null,

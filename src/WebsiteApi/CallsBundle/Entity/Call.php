@@ -44,7 +44,7 @@ class Call
 	 *
 	 * Date of start
 	 *
-	 * @ORM\Column(name="since", type="date")
+	 * @ORM\Column(name="since", type="datetime")
 	 */
 	private $since;
 
