@@ -35,9 +35,7 @@ class CallsController extends Controller
 		} else {
 			$data["data"]["token"] = $token;
 		}
-
 		return new JsonResponse($data);
-
 	}
 
 	public function getAction(Request $request){

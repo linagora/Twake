@@ -65,9 +65,6 @@ class Calls implements CallSystemInterface
 	public function joinCall($user, $discussionKey)
 	{
 		if ($this->messageSystem->isAllowed($user, $discussionKey)) {
-
-			$em = $this->doctrine;
-
 			$this->exitAllCalls($user);
 
 			$call = $this->getCall($discussionKey,$user);
@@ -75,12 +72,11 @@ class Calls implements CallSystemInterface
 			$callMember = new CallMember($call, $user);
 			$call->setNbclients($call->getNbclients() + 1);
 
-			$em->persist($callMember);
-			$em->persist($call);
-			$em->flush();
+            $this->doctrine->persist($call);
+            $this->doctrine->persist($callMember);
+			$this->doctrine->flush();
 
 			$this->notifyChange($discussionKey,"join");
-
 			return $call->getToken();
 		}
 
@@ -113,8 +109,10 @@ class Calls implements CallSystemInterface
         $message = $this->messageSystem->sendMessage($user->getId(), $discussionInfos["type"], $discussionInfos["id"], false,null,true, $content, null );
         $messageArray = $message->getAsArray();
         $this->messageSystem->notify($discussionKey,"C",$messageArray);
-
         $call = new Call($discussionKey,$message);
+
+        $this->doctrine->persist($call);
+        $this->doctrine->flush();
 
         return $call;
 
@@ -156,7 +154,7 @@ class Calls implements CallSystemInterface
                 $message->setContent($content);
                 $em->persist($message);
                 $em->flush();
-                $this->messageSystem->notify($call->getDiscussionKey(),"E",$message);
+                $this->messageSystem->notify($call->getDiscussionKey(),"E",$message->getAsArray());
                 $em->remove($call);
 				$torefresh[] = Array("discussionKey"=>$call->getDiscussionKey(),"type"=>"close");
             }else{

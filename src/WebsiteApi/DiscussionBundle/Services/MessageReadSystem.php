@@ -24,7 +24,6 @@ class MessageReadSystem
         if($discussion["type"] == "S"){
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussion["id"]);
             if($stream == null){
-                error_log("Stream Not found");
                 return false;
             }
             $messageRead = $this->doctrine->getRepository("TwakeDiscussionBundle:MessageRead")->findOneBy(Array("user"=>$user,"stream"=>$stream));
@@ -41,7 +40,11 @@ class MessageReadSystem
                 $this->doctrine->persist($messageRead);
                 $this->doctrine->flush();
                 if($this->allIsRead($stream->getWorkspace(),$user)){
+                    error_log("all read");
                     $this->notificationSystem->readAll($messageApplication,$stream->getWorkspace(),$user,null);
+                }
+                else{
+                    error_log("not all read");
                 }
                 return true;
             }
@@ -124,9 +127,12 @@ class MessageReadSystem
         if($workspace != null && $user != null){
             $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace"=>$workspace));
             foreach($streams as $stream){
-                if(!$this->streamIsReadByKey($stream->getId(),$user)){
-                    error_log("find activities in ".$stream->getId());
-                    return false;
+                if(!$stream->getIsPrivate() || $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("stream"=>$stream,"user"=>$user))!=null)
+                {
+                    if(!$this->streamIsReadByKey($stream->getId(),$user)){
+                        error_log("find activities in ".$stream->getId());
+                        return false;
+                    }
                 }
             }
             $links = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace"=>$workspace));

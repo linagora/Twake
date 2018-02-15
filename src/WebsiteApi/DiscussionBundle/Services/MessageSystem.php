@@ -155,7 +155,7 @@ class MessageSystem implements MessagesSystemInterface
 	    $this->doctrine->persist($message);
 	    $this->doctrine->flush();
 	    return $this->getMessageAsArray($message,true,false);
-    }
+     }
 
 
 
