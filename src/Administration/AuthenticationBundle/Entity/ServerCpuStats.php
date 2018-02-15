@@ -15,7 +15,7 @@ use Doctrine\ORM\Mapping as ORM;
 use FOS\UserBundle\Model\User as BaseUser;
 
 /**
- * WorkspaceStats
+ * ServerCpuStats
  *
  * @ORM\Table(name="server_cpu_stats",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="Administration\AuthenticationBundle\Repository\ServerCpuStatsRepository")

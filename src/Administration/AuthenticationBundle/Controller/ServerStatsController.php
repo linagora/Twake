@@ -52,4 +52,15 @@ class ServerStatsController extends Controller
 
         return new JsonResponse($data);
     }
+
+    public function getRamUsageAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+        $data["data"] = $this->get('admin.TwakeServerStats')->saveRamUsage();
+
+        return new JsonResponse($data);
+    }
 }

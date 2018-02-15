@@ -10,6 +10,7 @@ namespace Administration\AuthenticationBundle\Services;
 
 
 use Administration\AuthenticationBundle\Entity\ServerCpuStats;
+use Administration\AuthenticationBundle\Entity\ServerRamStats;
 
 class AdministrationServerStats
 {
@@ -25,7 +26,7 @@ class AdministrationServerStats
 
     public function getStorageSpace()
     {
-        $output = shell_exec('df -h /');
+        $output = shell_exec('df /');
         $words = preg_split("/\s+/",$output);
         $taille = count($words);
         $total = $words[$taille - 6];
@@ -74,6 +75,31 @@ class AdministrationServerStats
 
         return "done";
     }
+
+    public function saveRamUsage()
+    {
+
+        $free = shell_exec('free');
+        $free = (string)trim($free);
+        $free_arr = explode("\n", $free);
+        $mem = explode(" ", $free_arr[1]);
+        $mem = array_filter($mem);
+        $mem = array_merge($mem);
+        $memory_usage = $mem[2]/$mem[1]*100;
+
+        $em = $this->doctrine;
+
+        $serverStat = new ServerRamStats();
+        $serverStat-> setDateSave(new \DateTime("now"));
+        $serverStat->setUsed($memory_usage);
+
+        $em->persist($serverStat);
+        $em->flush();
+
+        return "done";
+    }
+
+
     public function getCpuUsage()
     {
         $cpuId = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerCpuStats")->getLastId();
