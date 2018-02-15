@@ -25,17 +25,17 @@ class EchoTopic implements TopicInterface, PushableTopicInterface
 	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event=null, array $exclude = Array(), array $eligible = Array()){
 		$currentUser = $this->clientManipulator->getClient($connection);
 		if (!($currentUser instanceof User)) {
-			$topic->broadcast(-1);
+			$topic->broadcast(Array("id"=>-1, "token"=>$event["token"]));
 			return;
 		}
 		//Verify user is logged in
 		if ($currentUser == null
 			|| is_string($currentUser)
 		) {
-			$topic->broadcast(-1);
+			$topic->broadcast(Array("id"=>-1, "token"=>$event["token"]));
 			return; //Cancel operation
 		}
-		$topic->broadcast($currentUser->getId());
+		$topic->broadcast(Array("id"=>$currentUser->getId(), "token"=>$event["token"]));
 	}
 	public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request){
 	}
