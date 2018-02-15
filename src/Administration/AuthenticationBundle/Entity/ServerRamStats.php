@@ -92,7 +92,14 @@ class ServerRamStats
         $this->used = $used;
     }
 
+    public function getAsArray(){
+        return Array(
+            "id" => $this->getId(),
+            "used" => $this->getUsed(),
+            "datesave" => $this->getDateSave()
 
+        );
+    }
 
 
 }
