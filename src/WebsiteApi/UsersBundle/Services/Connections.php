@@ -46,6 +46,7 @@ class Connections
 
 
 		if($user==null || is_string($user)){
+			$conn->close(); //Remove connexion (not connected)
 			return;
 		}
 
@@ -57,6 +58,14 @@ class Connections
 		$justArrived = false;
 		if($user->getConnections()==0){
 			$justArrived = true;
+		}
+		if($user->getConnections()>10){
+			$conn->close(); //Remove connexion (not connected)
+
+			$user->resetConnection();
+			$this->doctrine->persist($user);
+			$this->doctrine->flush();
+			return;
 		}
 		$user->addConnection();
 		$this->doctrine->persist($user);

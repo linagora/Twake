@@ -167,6 +167,12 @@ class User extends BaseUser
 		return $this->connected;
 	}
 
+	public function resetConnection()
+	{
+		$this->connections = 0;
+		$this->connected = false;
+	}
+
 	public function addConnection()
 	{
 		$this->connections += 1;
