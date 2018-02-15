@@ -142,10 +142,6 @@ administration_stats_countDailyMessageByWorkspace:
     path: /countDailyMessageByWorkspace
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countDailyMessageByWorkspace}
 
-administration_stats_saveCpuUsage:
-    path: /saveCpuUsage
-    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:saveCpuUsage}
-
 administration_stats_getCpuUsage:
     path: /getCpuUsage
     defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getCpuUsage}
