@@ -72,8 +72,7 @@ class Connections
 		$this->doctrine->flush();
 
 		if($justArrived){
-			//$this->userConnectionService->newConnection($user->getId());
-            $this->userConnectionService->newConnection(1);
+			$this->userConnectionService->newConnection($user->getId());
 		}
 
 		//Send notifications any way
