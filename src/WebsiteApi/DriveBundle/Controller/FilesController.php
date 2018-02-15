@@ -102,7 +102,7 @@ class FilesController extends Controller
 
 			if ($fileIds != null) {
 				foreach ($fileIds as $fileId){
-					$this->get('app.drive.FileSystem')->restoreTrash($fileId);
+					$this->get('app.drive.FileSystem')->restore($fileId);
 				}
 			} else {
 				$this->get('app.drive.FileSystem')->restoreTrash($groupId);
