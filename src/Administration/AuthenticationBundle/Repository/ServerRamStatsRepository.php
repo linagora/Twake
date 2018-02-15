@@ -14,4 +14,12 @@ use Administration\AuthenticationBundle\Entity\ServerRamStats;
 class ServerRamStatsRepository extends \Doctrine\ORM\EntityRepository
 {
 
+    public function getLastId()
+    {
+        $req1 = $this->createQueryBuilder('U')
+            ->select('U.id')
+            ->orderBy('U.id','DESC')
+            ->setMaxResults(1);
+        return $req1->getQuery()->getSingleScalarResult();
+    }
 }

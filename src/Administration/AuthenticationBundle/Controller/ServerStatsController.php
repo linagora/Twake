@@ -59,7 +59,7 @@ class ServerStatsController extends Controller
             "data" => Array(),
             "errors" => Array()
         );
-        $data["data"] = $this->get('admin.TwakeServerStats')->saveRamUsage();
+        $data["data"] = $this->get('admin.TwakeServerStats')->getRamUsage();
 
         return new JsonResponse($data);
     }
