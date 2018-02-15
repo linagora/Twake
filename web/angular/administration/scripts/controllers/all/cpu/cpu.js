@@ -8,12 +8,73 @@ angular.module('TwakeAdministration')
 	})
     .controller('CpuCtrl', function($api, $scope, $state){
         var that = this;
+
         this.update = function(){
             console.log("test");
             $api.post("authentication/getCpuUsage", null, function (res) {
-                console.log(res.data);
-                $scope.$apply();
+                that.drawCPUDonut(res);
+                $api.post("authentication/getStorageSpace", null, function (res) {
+                    console.log(res.data);
+                    //that.drawStorageDonut(res);
+                    $scope.$apply();
+                });
+            });
+        }
+
+        this.drawCPUDonut = function (res) {
+            var datas = [];
+            var labels = [];
+            var colors = [];
+            for (var i = 3; i<Object.keys(res.data).length;i++) {
+                labels.push(Object.keys(res.data)[i]);
+                datas.push(Object.values(res.data)[i]);
+            }
+            colors = poolColors(datas.length);
+            var ctx = document.getElementById("myDonut");
+            var myDoughnutChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: data = {
+                    datasets: [{
+                        data: datas,
+                        backgroundColor: colors
+                    }],
+
+                    // These labels appear in the legend and in the tooltips when hovering different arcs
+                    labels: labels
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: false,
+                        position: "top",
+                        text: "Pie Chart",
+                        fontSize: 18,
+                        fontColor: "#111"
+                    },
+                    legend: {
+                        display: true,
+                        position: "bottom",
+                        labels: {
+                            fontColor: "#333",
+                            fontSize: 16
+                        }
+                    }
+                }
             });
         };
+        var poolColors = function (a) {
+            var colors = [];
+            for(i=0;i<a;i++){
+                colors.push(dynamicColors());
+            }
+            return colors
+        }
+
+        var dynamicColors = function() {
+            var r = Math.floor(Math.random() * 255);
+            var g = Math.floor(Math.random() * 255);
+            var b = Math.floor(Math.random() * 255);
+            return "rgb(" + r + "," + g + "," + b + ")";
+        }
         this.update();
     });
