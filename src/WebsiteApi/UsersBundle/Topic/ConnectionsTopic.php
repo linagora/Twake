@@ -13,12 +13,6 @@ class ConnectionsTopic implements TopicInterface, PushableTopicInterface
 {
 	public function getName(){ return 'connections.topic'; }
 
-	var $doctrine;
-
-    public function __construct($doctrine) {
-	    $this->doctrine = $doctrine;
-    }
-
     public function onSubscribe( ConnectionInterface $connection, Topic $topic, WampRequest $request ){}
 
 	public function onPush(Topic $topic, WampRequest $request, $connected, $provider)
@@ -39,12 +33,8 @@ class ConnectionsTopic implements TopicInterface, PushableTopicInterface
 		}
 	}
 
+	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible){}
 
-
-	/* UNUSED */
-
-	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible){
-	}
 	public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request){
 	}
 
