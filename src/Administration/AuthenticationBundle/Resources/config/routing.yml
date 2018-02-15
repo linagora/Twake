@@ -102,6 +102,10 @@ administration_stats_numberOfExtensionsByWorkspace:
     path: /numberOfExtensionsByWorkspace
     defaults: {_controller: AdministrationAuthenticationBundle:Statistics:numberOfExtensionsByWorkspace}
 
+administration_stats_getCpuUsed:
+    path: /CpuUsed
+    defaults: {_controller: AdministrationAuthenticationBundle:Statistics:getCpuUsed}
+
 administration_stats_countDailyMessage:
     path: /countDailyMessage
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countDailyMessage}
@@ -122,6 +126,10 @@ administration_stats_countPublicMessage:
     path: /countPublicMessage
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countPublicMessage}
 
+administration_stats_countAllMessageByUser:
+    path: /countAllMessageByUser
+    defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countAllMessageByUser}
+
 administration_stats_countPrivateMessage:
     path: /countPrivateMessage
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countPrivateMessage}
@@ -133,4 +141,20 @@ administration_stats_numberOfMessagePublicByWorkspace:
 administration_stats_countDailyMessageByWorkspace:
     path: /countDailyMessageByWorkspace
     defaults: {_controller: AdministrationAuthenticationBundle:MessageStats:countDailyMessageByWorkspace}
+
+administration_stats_saveCpuUsage:
+    path: /saveCpuUsage
+    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:saveCpuUsage}
+
+administration_stats_getCpuUsage:
+    path: /getCpuUsage
+    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getCpuUsage}
+
+administration_stats_getStorageSpace:
+    path: /getStorageSpace
+    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getStorageSpace}
+
+administration_stats_getRamUsage:
+    path: /getRamUsage
+    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getRamUsage}
 

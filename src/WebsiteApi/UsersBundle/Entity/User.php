@@ -150,7 +150,7 @@ class User extends BaseUser
 		$workspaces = Array();
 
 		for ($i = 0; $i < count($this->workspaces); ++$i) {
-			$workspaces[] = $this->workspaces[$i]->getGroup();
+			$workspaces[] = $this->workspaces[$i]->getWorkspace();
 		}
 
 		return $workspaces;
@@ -193,6 +193,7 @@ class User extends BaseUser
 			"firstname" => $this->getFirstName(),
 			"lastname" => $this->getLastName(),
 			"thumbnail" => ($this->getThumbnail()==null)?null:$this->getThumbnail()->getPublicURL(2),
+            "connected" => $this->isConnected()
 		);
 		return $return;
 	}

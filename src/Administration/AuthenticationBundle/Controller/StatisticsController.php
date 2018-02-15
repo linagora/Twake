@@ -204,4 +204,17 @@ class StatisticsController extends Controller
         return new JsonResponse($data);
     }
 
+    public function getCpuUsedAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $data["data"] = $this->get('admin.TwakeStatistics')->getCpuUsed();
+
+        $data["errors"] = "not found";
+        return new JsonResponse($data);
+    }
+
 }

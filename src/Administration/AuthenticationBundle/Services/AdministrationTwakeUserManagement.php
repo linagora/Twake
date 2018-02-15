@@ -20,10 +20,10 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
         $this->doctrine = $doctrine;
     }
 
-    public function listTwakeUsers($pageNumber, $nbUserByPage, $filters = null, &$total=null)
+    public function listTwakeUsers($pageNumber, $nbUserByPage, $filter = null, &$total=null)
     {
         $repository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-        return $repository->findAllOrderedByName($pageNumber,$nbUserByPage,$filters,$total);
+        return $repository->findAllOrderedByName($pageNumber,$nbUserByPage,$filter,$total);
     }
 
     public function setBannedTwakeUser($idTwakeUser,$bool)

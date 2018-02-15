@@ -42,7 +42,7 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         if($twakeWorkspaceStat == null){
             return null;
         }
-        $workspaceDailyStats = new UserDailyStats();
+        $workspaceDailyStats = new WorkspaceDailyStats();
         $workspaceDailyStats->setWorkspace($twakeWorkspaceStat->getWorkspace());
         $workspaceDailyStats->setPublicMsgCount($twakeWorkspaceStat->getPublicMsgCount());
         $workspaceDailyStats->setPrivateMsgCount($twakeWorkspaceStat->getPrivateMsgCount());
@@ -64,7 +64,16 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         $repository = $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserDailyStats");
         $twakeUserStat =  $repository->getStatsPrivateMessage($idTwakeUser,$startdate,$enddate);
         if($twakeUserStat == null){
-            return null;
+            return 0;
+        }
+        return $twakeUserStat;
+    }
+
+    public function countAllMessageByUser($idTwakeUser){
+        $repository = $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserDailyStats");
+        $twakeUserStat =  $repository->getStatsMessageByUser($idTwakeUser);
+        if($twakeUserStat == null){
+            return 0;
         }
         return $twakeUserStat;
     }
@@ -72,12 +81,12 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
 
     public function numberOfMessagePrivateByUserByWorkspace($idWorkSpace,$startdate,$enddate){
 
-        $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-        $twakeUser =  $repository->findOneBy(Array("id"=>$idWorkSpace))->getMembers();
+        $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+        $link =  $repository->findBy(Array("workspace"=>$idWorkSpace));
         $repository = $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserDailyStats");
         //$res = null;
         $users = Array();
-        foreach ($twakeUser as $user){
+        foreach ($link as $user){
             $users[] = $user->getUser()->getId();
         }
         $res= $repository->getStatsPrivateMessageByWorkspace($users,$startdate,$enddate);

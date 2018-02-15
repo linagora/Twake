@@ -6,7 +6,7 @@ angular.module('TwakeAdministration')
       parent : 'general'
   });
 })
-.controller('UsersCtrl', function($api, $scope, $state){
+.controller('UsersCtrl', function($api, $scope, $state, $timeout){
 
 		var that = this;
 
@@ -21,8 +21,10 @@ angular.module('TwakeAdministration')
 		this.update = function(){
 			$api.post("authentication/listTwakeUsers", {
 				page: this.page,
-				per_page: this.perpage
+				per_page: this.perpage,
+                filter: document.getElementById("searchText").value
 			}, function (res) {
+				console.log(res.data);
 				that.list = res.data.users;
 				that.total = res.data.total;
 
@@ -54,30 +56,17 @@ angular.module('TwakeAdministration')
 		this.getProfileView = function(userId){
             $state.go("user-sheet", {id: userId})
 		}
-		this.search = function () {
-			// Declare variables
-			var input, filter, table, tr, td, i, j;
-			input = document.getElementById("search");
-			filter = input.value.toUpperCase();
-			table = document.getElementById("users_table");
-			tr = table.getElementsByTagName("tr");
-
-			// Loop through all table rows, and hide those who don't match the search query
-			for (i = 1; i < table.rows.length; i++) {
-				for(j = 0; j < table.rows[i].cells.length - 1; j++)
-				{
-                    td = table.rows[i].cells[j];
-                    if (td) {
-                        if (td.innerHTML.toUpperCase().indexOf(filter) > -1) {
-                            tr[i].style.display = "";
-                            break;
-                        } else {
-                            tr[i].style.display = "none";
-                        }
-                    }
-				}
-			}
-		}
 		this.update();
+
+    var tempFilterText = '',
+        filterTextTimeout;
+    $scope.$watch('searchText', function (val) {
+        if (filterTextTimeout) $timeout.cancel(filterTextTimeout);
+
+        tempFilterText = val;
+        filterTextTimeout = $timeout(function() {
+            that.update();
+        }, 500); // delay 500 ms
+    })
 
 });
