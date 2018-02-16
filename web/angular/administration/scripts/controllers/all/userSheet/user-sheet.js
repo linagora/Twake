@@ -134,8 +134,8 @@ angular.module('TwakeAdministration')
 
             $api.post("authentication/findConnection", {
                 user_id: this.id,
-                startdate: startdate.getTime()/1000,
-                enddate: (new Date()).getTime()/1000
+                startdate: parseInt(startdate.getTime()/1000),
+                enddate: parseInt((new Date()).getTime()/1000)
             }, function (res) {
                 var dataset = [];
                 var segments = [];
