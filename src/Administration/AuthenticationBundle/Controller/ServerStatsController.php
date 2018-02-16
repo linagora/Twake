@@ -17,28 +17,20 @@ use Symfony\Component\Routing\Matcher\RedirectableUrlMatcher;
 class ServerStatsController extends Controller
 {
 
-    public function saveCpuUsageAction(Request $request)
-    {
-        $data = Array(
-            "data" => Array(),
-            "errors" => Array()
-        );
-
-        $data["data"] = $this->get('admin.TwakeServerStats')->saveCpuUsage();
-
-        return new JsonResponse($data);
-    }
-
-
     public function getCpuUsageAction(Request $request)
     {
         $data = Array(
             "data" => Array(),
             "errors" => Array()
         );
-
-        $data["data"] = $this->get('admin.TwakeServerStats')->getCpuUsage();
-
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null) {
+            $data["data"] = $this->get('admin.TwakeServerStats')->getCpuUsage();
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
         return new JsonResponse($data);
     }
 
@@ -48,8 +40,16 @@ class ServerStatsController extends Controller
             "data" => Array(),
             "errors" => Array()
         );
-        $data["data"] = $this->get('admin.TwakeServerStats')->getStorageSpace();
 
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null) {
+            $data["data"] = $this->get('admin.TwakeServerStats')->getStorageSpace();
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+        return new JsonResponse($data);
         return new JsonResponse($data);
     }
 
@@ -59,8 +59,53 @@ class ServerStatsController extends Controller
             "data" => Array(),
             "errors" => Array()
         );
-        $data["data"] = $this->get('admin.TwakeServerStats')->getRamUsage();
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null) {
+            $data["data"] = $this->get('admin.TwakeServerStats')->getRamUsage();
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+        return new JsonResponse($data);
+    }
 
+
+    public function getAllCpuUsageAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null) {
+            $startdate = $request->request->get("startdate", "2018-01-17");
+            $enddate = $request->request->get("enddate", "2018-01-17");
+            $data["data"] = $this->get('admin.TwakeServerStats')->getAllCpuUsage($startdate, $enddate);
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+        return new JsonResponse($data);
+    }
+
+    public function getAllRamUsageAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null) {
+            $startdate = $request->request->get("startdate", "2018-01-17");
+            $enddate = $request->request->get("enddate", "2018-01-17");
+            $data["data"] = $this->get('admin.TwakeServerStats')->getAllCpuUsage($startdate, $enddate);
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
         return new JsonResponse($data);
     }
 }

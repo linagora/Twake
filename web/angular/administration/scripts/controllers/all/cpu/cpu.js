@@ -26,12 +26,14 @@ angular.module('TwakeAdministration')
             var datas = [];
             var labels = [];
             var colors = [];
+
+            colors.push("rgba(0,139,0,0.8)");
             for (var i = 3; i<Object.keys(res.data).length;i++) {
                 labels.push(Object.keys(res.data)[i]);
                 datas.push(Object.values(res.data)[i]);
+                colors.push("rgba(205,0,0,0."+ (8-(i-3))+")");
             }
-            colors = poolColors(datas.length);
-            var ctx = document.getElementById("myDonut");
+            var ctx = document.getElementById("CPUDonut");
             var myDoughnutChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: data = {
@@ -57,15 +59,20 @@ angular.module('TwakeAdministration')
                         position: "bottom",
                         labels: {
                             fontColor: "#333",
-                            fontSize: 16
+                            fontSize: 12
                         }
                     }
                 }
             });
         };
+
+        this.drawCPULineChart = function (res) {
+
+        }
+
         this.drawStorageDonut = function (data) {
 
-            var ctx = document.getElementById("myDonut2");
+            var ctx = document.getElementById("StorageDonut");
             var myDoughnutChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: data = {
@@ -97,9 +104,14 @@ angular.module('TwakeAdministration')
                 }
             });
         };
+
+        this.drawStorageLineChart = function (res) {
+
+        }
+
         this.drawRamDonut = function (data) {
 
-            var ctx = document.getElementById("myDonut3");
+            var ctx = document.getElementById("RamDonut");
             var myDoughnutChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: data = {
@@ -131,19 +143,9 @@ angular.module('TwakeAdministration')
                 }
             });
         };
-        var poolColors = function (a) {
-            var colors = [];
-            for(i=0;i<a;i++){
-                colors.push(dynamicColors());
-            }
-            return colors
-        }
 
-        var dynamicColors = function() {
-            var r = Math.floor(Math.random() * 255);
-            var g = Math.floor(Math.random() * 255);
-            var b = Math.floor(Math.random() * 255);
-            return "rgb(" + r + "," + g + "," + b + ")";
+        this.drawRamLineChart = function (res) {
+
         }
         this.update();
     });

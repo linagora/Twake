@@ -327,16 +327,16 @@ class ServerCpuStats
             "id" => $this->getId(),
             "cpu" => $this->getCpu(),
             "datesave" => $this->getDateSave(),
-            "gnice" => $this->getGnice(),
             "idle" => $this->getIdle(),
+            "usr" => $this->getUsr(),
+            "sys" => $this->getSys(),
+            "gnice" => $this->getGnice(),
             "guest" => $this->getGuest(),
             "iowait" => $this->getIowait(),
             "irq" => $this->getIrq(),
             "nice" => $this->getNice(),
             "soft" => $this->getSoft(),
-            "steal" => $this->getSteal(),
-            "sys" => $this->getSys(),
-            "usr" => $this->getUsr(),
+            "steal" => $this->getSteal()
         );
     }
 }
