@@ -92,6 +92,8 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
             $this->doctrine->persist($workspaceDailyStats);
             $this->doctrine->persist($stat);
         }
+
+	    $this->doctrine->flush();
     }
 
     public function countPublicMessage($idTwakeUser,$startdate,$enddate){
