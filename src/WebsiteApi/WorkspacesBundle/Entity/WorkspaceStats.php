@@ -92,5 +92,30 @@ class WorkspaceStats
 		$this->privateMsgCount += $val;
 	}
 
+	/**
+	 * @param int $publicMsgCount
+	 */
+	public function setPublicMsgCount($publicMsgCount)
+	{
+		$this->publicMsgCount = $publicMsgCount;
+	}
+
+	/**
+	 * @param int $privateMsgCount
+	 */
+	public function setPrivateMsgCount($privateMsgCount)
+	{
+		$this->privateMsgCount = $privateMsgCount;
+	}
+
+	/**
+	 * @param int $privateChannelMsgCount
+	 */
+	public function setPrivateChannelMsgCount($privateChannelMsgCount)
+	{
+		$this->privateChannelMsgCount = $privateChannelMsgCount;
+	}
+
+
 
 }
