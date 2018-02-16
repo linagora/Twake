@@ -45,6 +45,10 @@ class WorkspaceDailyStats
 	 * @ORM\Column(name="private_channel_msg_count", type="integer")
 	 */
 	protected $privateChannelMsgCount;
+    /**
+     * @ORM\Column(name="date", type="datetime")
+     */
+    protected $date;
 
 
 	/**
@@ -84,6 +88,10 @@ class WorkspaceDailyStats
 		return $this->privateChannelMsgCount;
 	}
 
+    public function getDate(){
+        return $this->date;
+    }
+
 	/**
 	 * @param int $publicMsgCount
 	 */
@@ -107,6 +115,14 @@ class WorkspaceDailyStats
 	{
 		$this->privateChannelMsgCount = $privateChannelMsgCount;
 	}
+
+    /**
+     * @param date $date
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+    }
 
 
 }

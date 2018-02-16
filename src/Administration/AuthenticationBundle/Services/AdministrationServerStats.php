@@ -112,15 +112,13 @@ class AdministrationServerStats
         return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->findOneBy(Array("id" => $ramId))->getAsArray();
     }
 
-    public function getAllCpuUsage()
+    public function getAllCpuUsage($startdate, $enddate)
     {
-        $cpuId = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerCpuStats")->getLastId();
-        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerCpuStats")->findOneBy(Array("id" => $cpuId))->getAsArray();
+        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerCpuStats")->getAllCpuData($startdate, $enddate);
     }
 
-    public function getAllRamUsage()
+    public function getAllRamUsage($startdate, $enddate)
     {
-        $ramId = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->getLastId();
-        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->findOneBy(Array("id" => $ramId))->getAsArray();
+        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->getAllRamData($startdate, $enddate);
     }
 }
