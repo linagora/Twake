@@ -39,6 +39,7 @@
         <thead>
         <tr>
             <th>ID</th>
+            <th>Privacy</th>
             <th>Image</th>
             <th>Name</th>
             <th>Description</th>
@@ -47,8 +48,19 @@
         </thead>
         <tbody>
 
+        <tr>
+            <td>{{user.private_workspace.id}}</td>
+            <td><i class="fa fa-lock" style="font-size:36px;"></i></td>
+            <td>
+                <div style="background-position: center; background-size: contain; width:50px; height:50px; {{user.private_workspace.csslogo}}"></div>
+            </td>
+            <td>{{user.private_workspace.name}}</td>
+            <td>{{user.private_workspace.description}}</td>
+            <td><button class="btn btn-primary" ng-click="user.getWorkspaceView(user.private_workspace.id)">See Workspace</button></td>
+        </tr>
         <tr ng-repeat="workspace in user.workspaces">
             <td>{{workspace.id}}</td>
+            <td><i class="fa fa-unlock" style="font-size:36px;"></i></td>
             <td>
                 <div style="background-position: center; background-size: contain; width:50px; height:50px; {{workspace.csslogo}}"></div>
             </td>

@@ -115,8 +115,8 @@ class ServerStatsController extends Controller
             "errors" => Array()
         );
 
-        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
-        //if($user != null)
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
         {
             $res = $this->get('admin.TwakeServerStats')->getAllErrors();
             foreach ($res as $r)
@@ -124,7 +124,7 @@ class ServerStatsController extends Controller
                 $data["data"][] = $r->getAsArray();
             }
         }
-        //else
+        else
         {
             $data["errors"][] = "disconnected";
         }
