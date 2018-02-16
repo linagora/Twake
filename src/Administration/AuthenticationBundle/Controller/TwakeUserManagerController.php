@@ -63,7 +63,8 @@ class TwakeUserManagerController extends Controller
                 $data["data"]["user"] = array_merge($twakeUser->getAsArray(), array("banned"=>$twakeUser->getBanned(),"isConnected"=>$twakeUser->isConnected(),"lastLogin"=>$twakeUser->getLastLogin()));
 
                 foreach ($this->get("app.workspace_members")->getWorkspaces($twakeUserId) as $workspace)
-                    $data["data"]["workspaces"][] = $workspace->getAsArray();
+                    $data["data"]["workspaces"]["public"][] = $workspace->getAsArray();
+                $data["data"]["workspaces"]["private"] = $this->get("app.workspaces")->getPrivate($twakeUserId)->getAsArray();
             }
             else
             {
