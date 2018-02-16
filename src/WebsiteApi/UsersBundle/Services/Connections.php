@@ -1,6 +1,7 @@
 <?php
 namespace WebsiteApi\UsersBundle\Services;
 
+use Administration\AuthenticationBundle\Entity\Errors;
 use Gos\Bundle\WebSocketBundle\Event\ClientEvent;
 use Gos\Bundle\WebSocketBundle\Event\ClientErrorEvent;
 use Gos\Bundle\WebSocketBundle\Event\ServerEvent;
@@ -25,12 +26,34 @@ class Connections
 	}
 
 	public function onServerStart($event){
+
 		$update = $this->doctrine->createQueryBuilder();
 		$update->update("TwakeUsersBundle:User","u");
 		$update->set("u.connections","0");
 		$update->set("u.connected","0");
 		$update->where("u.connections>0");
 		$update->getQuery()->execute();
+
+		//Record restart
+		$data = Array(
+			"desc" => "Server restarted",
+			"line" => 0
+		);
+
+		$file = "gos:websockets";
+
+		$repo = $this->doctrine->getRepository("AdministrationAuthenticationBundle:Errors");
+		$record = $repo->findOneBy(Array("file"=>$file));
+
+		if(!$record) {
+			$record = new Errors($file, $data);
+		}else {
+			$record->addData($data);
+		}
+
+		$this->doctrine->persist($record);
+		$this->doctrine->flush();
+
 	}
 
 	/**
@@ -72,8 +95,7 @@ class Connections
 		$this->doctrine->flush();
 
 		if($justArrived){
-			//$this->userConnectionService->newConnection($user->getId());
-            $this->userConnectionService->newConnection(1);
+			$this->userConnectionService->newConnection($user->getId());
 		}
 
 		//Send notifications any way

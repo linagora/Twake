@@ -42,7 +42,34 @@ class MessageStatsController extends Controller
 
             return new JsonResponse($data);
         }
+    public function countAllMessageByUserAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
 
+        $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        if($user != null)
+        {
+            $idTwakeUser = $request->request->get("twakeUser","1");
+            $nbDailyMessage = $this->get('admin.TwakeDailyMessage')->countAllMessageByUser($idTwakeUser);
+            if($nbDailyMessage != null)
+            {
+                $data["data"] = $nbDailyMessage;
+            }
+            else
+            {
+                $data["errors"][] ="crappyshit ".$nbDailyMessage;
+            }
+        }
+        else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
+
+        return new JsonResponse($data);
+    }
     public function countPublicMessageAction(Request $request){
         $data = Array(
             "data" => Array(),
@@ -53,7 +80,7 @@ class MessageStatsController extends Controller
         if($user != null)
         {
             $idTwakeUser = $request->request->get("twakeUser","1");
-            $startdate = $request->request->get("startdate","2018-01-17");
+            $startdate = $request->request->get("startdate","2017-01-17");
             $enddate = $request->request->get("enddate","2018-01-17");
 
             $nbDailyPublicMessage = 0;
@@ -86,8 +113,8 @@ class MessageStatsController extends Controller
         if($user != null)
         {
             $idTwakeUser = $request->request->get("twakeUser","1");
-            $startdate = $request->request->get("date","2018-01-17");
-            $enddate = $request->request->get("date","2018-01-17");
+            $startdate = $request->request->get("startdate","2018-01-17");
+            $enddate = $request->request->get("enddate","2018-01-17");
             $nbDailyPrivateMessage = $this->get('admin.TwakeDailyMessage')->countPrivateMessage($idTwakeUser,$startdate, $enddate);
             if($nbDailyPrivateMessage != null)
             {
@@ -95,7 +122,7 @@ class MessageStatsController extends Controller
             }
             else
             {
-                $data["errors"][] ="crappyshit";
+                $data["errors"][] ="crashit";
             }
         }
         else

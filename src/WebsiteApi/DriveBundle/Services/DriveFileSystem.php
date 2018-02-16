@@ -239,6 +239,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 			$this->doctrine->flush();
 
 			$newVersion = new DriveFileVersion($newFile);
+			$newFile->setLastVersion($newVersion);
+
 			$newVersion->setKey($fileOrDirectory->getLastVersion()->getKey());
 			$newVersion->setSize($fileOrDirectory->getSize());
 			$this->doctrine->persist($newVersion);

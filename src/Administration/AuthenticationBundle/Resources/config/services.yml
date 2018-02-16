@@ -27,3 +27,13 @@ services:
     admin.TwakeDailyMessage:
         class: Administration\AuthenticationBundle\Services\AdministrationMessageStats
         arguments: ["@doctrine.orm.entity_manager"]
+
+    admin.TwakeServerStats:
+        class: Administration\AuthenticationBundle\Services\AdministrationServerStats
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    admin.TwakeErrorsListener:
+        class: Administration\AuthenticationBundle\EventSubscriber\ErrorsListener
+        arguments: ["@doctrine.orm.entity_manager"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.exception }

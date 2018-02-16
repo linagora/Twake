@@ -106,6 +106,7 @@ class DriveFile
     	$this->setIsInTrash(false);
 		$this->added = new \DateTime();
 		$this->cache = "{}";
+		$this->setLastModified();
 
 	}
 

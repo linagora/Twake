@@ -29,6 +29,16 @@ class AdministrationConnection
         if($twakeUser == null){
             return null;
         }
+
+	    $connectionRepo  = $em->getRepository("AdministrationAuthenticationBundle:UserConnectionStats"); //Entity Repository
+	    $connection = $connectionRepo->findOneBy(Array("user"=>$idTwakeUser,"dureeConnection"=>0));
+	    if($connection != null)
+	    {
+		    $connection->setDureeConnection(60);
+		    $em->persist($connection);
+		    $em->flush();
+	    }
+
         $connection = new UserConnectionStats();
         $connection-> setUser($twakeUser);
         $connection-> setDateConnection(new \DateTime("now"));

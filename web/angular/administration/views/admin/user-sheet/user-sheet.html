@@ -1,4 +1,8 @@
 <div ng-controller="User_sheetCtrl as user">
+    <br>
+    <button class="btn btn-success" ng-click="user.goBack()"><span class="glyphicon glyphicon-arrow-left"></span> Users</button>
+
+    <br>
     <table class="table table-bordered table-hover">
         <tr>
             <td>Username</td>
@@ -29,8 +33,8 @@
             <td><div style="background-position: center; background-size: contain; width:50px; height:50px; {{user.userInfo.cssuserimage}}"></div></td>
         </tr>
     </table>
-    <button class="btn btn-primary" ng-click="user.goBack()">Back to the list</button>
-    <h1>Workspaces for {{user.userInfo.username}}</h1>
+
+    <h1>  <span class="glyphicon glyphicon-cloud"></span>  Workspaces for {{user.userInfo.username}}</h1>
     <table class="table table-bordered table-hover">
         <thead>
         <tr>
@@ -55,13 +59,19 @@
 
         </tbody>
     </table>
+    <button class="btn btn-success" ng-click="user.btnMessage()"><span class="glyphicon glyphicon-envelope"></span> Number of messages by date  <span id="chevron1" class="glyphicon glyphicon-chevron-up"></span></button>
+    <button class="btn btn-success" ng-click="user.btnConnection()"><span class="glyphicon glyphicon-calendar"></span> Time of connections by date <span id="chevron2" class="glyphicon glyphicon-chevron-up"></button>
+    <div id="piediv"></div>
     <div id="chartdiv"></div>
+
 </div>
 
 <!-- Styles -->
 <style>
     #chartdiv {
-        width: 100%;
-        height: 500px;
+        display: none;
+    }
+    #piediv {
+        display: none;
     }
 </style>

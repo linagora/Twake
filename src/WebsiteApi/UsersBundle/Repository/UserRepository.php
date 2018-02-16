@@ -10,21 +10,30 @@ namespace WebsiteApi\UsersBundle\Repository;
  */
 class UserRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findAllOrderedByName($pageNumber,$nbUserByPage, $filters,&$total){
+    public function findAllOrderedByName($pageNumber,$nbUserByPage, $filter,&$total){
         $offset = ($pageNumber - 1) * $nbUserByPage;
         $limit = $nbUserByPage;
 
         $req = $this->createQueryBuilder('U')
             ->select('count(U.id)');
-        $req = $this->searchMiddleQueryBuilder($req,$filters);
+        $req = $this->searchMiddleQueryBuilder($req,$filter);
         $total = $req->getQuery()->getSingleScalarResult();
 
         $req1 = $this->createQueryBuilder('U');
-        $req1 = $this->searchMiddleQueryBuilder($req1,$filters);
+        $req1 = $this->searchMiddleQueryBuilder($req1,$filter);
         $req1 = $req1->setFirstResult($offset)
             ->setMaxResults($limit)
             ->getQuery()->getResult();
         return $req1;
+    }
+
+    public function searchMiddleQueryBuilder($req,$filter){
+        if($filter != null) {
+            $req = $req->where('U.username LIKE \'%' . $filter . '%\'');// OR U.first_name LIKE \'%' . $filter . '%\' OR U.username LIKE \'%' . $filter . '%\'');
+            $req = $req->orWhere('U.lastName LIKE \'%' . $filter . '%\'');
+            $req = $req->orWhere('U.firstName LIKE \'%' . $filter . '%\'');
+        }
+        return $req;
     }
 
     public function findUsersByFilter($pageNumber,$nbUserByPage,$lastName=null,$firstName=null,$userName=null,$email=null,&$total=null){
@@ -61,7 +70,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         return $req;
     }
 
-    private function searchMiddleQueryBuilder($req,$filters){
+ /*   private function searchMiddleQueryBuilder($req,$filters){
         if ($filters != null) {
             if(isset($filters['username'])){
                 $req= $req->where('U.username LIKE \'%' . $filters['username'].'%\'');
@@ -86,7 +95,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
             }
         }
         return $req;
-    }
+    }*/
 
     public function countUsersConnected(){
         $req = $this->createQueryBuilder('U')

@@ -7,6 +7,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Matcher\RedirectableUrlMatcher;
 
+
+
 class TwakeUserManagerController extends Controller
 {
 
@@ -23,10 +25,9 @@ class TwakeUserManagerController extends Controller
         {
             $pageNumber = $request->request->get("page","1");
             $nbUserPage = $request->request->get("per_page","25");
-            $filter = $request->request->get("filters",null);
+            $filter = $request->request->get("filter",null);
             $totalNumber = 0;
             $listTwakeUser = $this->get('admin.TwakeUserManagement')->listTwakeUsers($pageNumber,$nbUserPage,$filter,$totalNumber);
-
             $listResponse = Array();
             foreach($listTwakeUser as $twakeUser)
             {
@@ -61,8 +62,8 @@ class TwakeUserManagerController extends Controller
             {
                 $data["data"]["user"] = array_merge($twakeUser->getAsArray(), array("banned"=>$twakeUser->getBanned(),"isConnected"=>$twakeUser->isConnected(),"lastLogin"=>$twakeUser->getLastLogin()));
 
-                foreach ($twakeUser->getWorkspaces() as $workspace)
-                    $data["data"]["workspaces"][] = $workspace->getAsSimpleArray();
+                foreach ($this->get("app.workspace_members")->getWorkspaces($twakeUserId) as $workspace)
+                    $data["data"]["workspaces"][] = $workspace->getAsArray();
             }
             else
             {
