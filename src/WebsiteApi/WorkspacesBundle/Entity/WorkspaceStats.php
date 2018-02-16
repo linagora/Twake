@@ -47,6 +47,14 @@ class WorkspaceStats
 		$this->workspace = $workspace;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getWorkspace()
+	{
+		return $this->workspace;
+	}
+
 
 	public function getPublicMsgCount(){
         return $this->publicMsgCount;
