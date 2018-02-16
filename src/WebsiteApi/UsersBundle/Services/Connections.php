@@ -1,6 +1,7 @@
 <?php
 namespace WebsiteApi\UsersBundle\Services;
 
+use Administration\AuthenticationBundle\Entity\Errors;
 use Gos\Bundle\WebSocketBundle\Event\ClientEvent;
 use Gos\Bundle\WebSocketBundle\Event\ClientErrorEvent;
 use Gos\Bundle\WebSocketBundle\Event\ServerEvent;
