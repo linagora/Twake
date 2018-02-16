@@ -28,7 +28,7 @@ class CronCommand extends ContainerAwareCommand
 			->setName("twake:cron")
 			->setDescription("Stats")
       ;
-  }
+	}
 
 
 	protected function execute(InputInterface $input, OutputInterface $output)

@@ -108,7 +108,7 @@ class Workspaces implements WorkspacesInterface
 			$this->doctrine->flush();
 		}
 	}
-	public function changeData($workspaceId, $name, $thumbnailFile, $currentUserId = null)
+	public function changeName($workspaceId, $name, $currentUserId = null)
 	{
 		if($currentUserId == null
 			|| $this->wls->can($workspaceId, $currentUserId, "workspace:edit")
@@ -118,7 +118,48 @@ class Workspaces implements WorkspacesInterface
 			$workspace = $workspaceRepository->find($workspaceId);
 
 			$workspace->setName($name);
-			$workspace->setLogo($thumbnailFile);
+
+			$this->doctrine->persist($workspace);
+			$this->doctrine->flush();
+
+		}
+	}
+
+	public function changeLogo($workspaceId, $logo, $currentUserId = null)
+	{
+		if($currentUserId == null
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:edit")
+		){
+
+			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+			$workspace = $workspaceRepository->find($workspaceId);
+
+			if($workspace->getLogo()) {
+				$workspace->getLogo()->deleteFromDisk();
+				$this->doctrine->remove($workspace->getLogo());
+			}
+			$workspace->setLogo($logo);
+
+			$this->doctrine->persist($workspace);
+			$this->doctrine->flush();
+
+		}
+	}
+
+	public function changeWallpaper($workspaceId, $wallpaper, $currentUserId = null)
+	{
+		if($currentUserId == null
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:edit")
+		){
+
+			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+			$workspace = $workspaceRepository->find($workspaceId);
+
+			if($workspace->getWallpaper()) {
+				$workspace->getWallpaper()->deleteFromDisk();
+				$this->doctrine->remove($workspace->getWallpaper());
+			}
+			$workspace->setWallpaper($wallpaper);
 
 			$this->doctrine->persist($workspace);
 			$this->doctrine->flush();

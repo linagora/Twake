@@ -6,6 +6,20 @@ twake_workspaces_create:
     path:     /create
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:create }
 
+# Edit workspace data
+
+twake_workspaces_set_name:
+    path:     /data/name
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceData:setName }
+
+twake_workspaces_set_logo:
+    path:     /data/logo
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceData:setLogo }
+
+twake_workspaces_set_wallpaper:
+    path:     /data/wallpaper
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceData:setWallpaper }
+
 # Edit members
 
 twake_workspaces_members_list:

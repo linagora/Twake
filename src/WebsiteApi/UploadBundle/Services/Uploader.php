@@ -66,11 +66,19 @@ class Uploader extends Controller
 				"sizes"=>31, //All !
 				"allowed_ext"=>Array("png","jpg","jpeg","gif","tiff")
 			),
-			"logo"=>Array(
+			"wslogo"=>Array(
 				"is_img"=>1,
 				"max_size" => 2000000, //2mo
 				"min_width"=>256,
 				"min_height"=>256,
+				"sizes"=>31, //All !
+				"allowed_ext"=>Array("png","jpg","jpeg","gif","tiff")
+			),
+			"wswall"=>Array(
+				"is_img"=>1,
+				"max_size" => 4000000, //2mo
+				"min_width"=>0,
+				"min_height"=>0,
 				"sizes"=>31, //All !
 				"allowed_ext"=>Array("png","jpg","jpeg","gif","tiff")
 			),

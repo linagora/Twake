@@ -36,6 +36,11 @@ class Workspace
 	private $logo;
 
 	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
+	 */
+	private $wallpaper;
+
+	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
 	 */
 	private $group;
@@ -105,6 +110,22 @@ class Workspace
 	/**
 	 * @return mixed
 	 */
+	public function getWallpaper()
+	{
+		return $this->wallpaper;
+	}
+
+	/**
+	 * @param mixed $logo
+	 */
+	public function setWallpaper($w)
+	{
+		$this->wallpaper = $w;
+	}
+
+	/**
+	 * @return mixed
+	 */
 	public function getGroup()
 	{
 		return $this->group;
@@ -155,6 +176,7 @@ class Workspace
 			"id"=> $this->getId(),
 			"private" => $this->getUser()!=null,
 			"logo" => (($this->getLogo())?$this->getLogo()->getPublicURL():""),
+			"wallpaper" => (($this->getWallpaper())?$this->getWallpaper()->getPublicURL():""),
 			"group" => (($this->getGroup())?$this->getGroup()->getAsArray():null),
 			"name" => $this->getName()
 		);
