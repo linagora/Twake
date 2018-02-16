@@ -151,8 +151,8 @@ angular.module('TwakeAdministration')
                             sameDate = true;
                             while(sameDate == true){
                                 segments.push({
-                                    "start": new Date(res.data[i].debut.date),
-                                    "end": new Date(res.data[i].debut.date).setSeconds((new Date(res.data[i].debut.date).getSeconds())+res.data[i].fin),
+                                    "start": new Date(res.data[i].debut),
+                                    "end": new Date(res.data[i].fin),
                                     "color": "#ff3b22",
                                     "task": "Gathering requirements"
                                 });

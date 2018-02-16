@@ -37,12 +37,8 @@ class UserConnectionController extends Controller
             foreach($listConnection as $connection)
             {
 
-                $listHeure["debut"] = $connection->getDateConnection();
-                $my_date_time=time($connection->getDateConnection());
-                $my_new_date_time=$my_date_time+$connection->getDureeConnection();
-                $my_new_date=$connection->getDureeConnection();
-                $listHeure["fin"] = $my_new_date;
-
+                $listHeure["debut"] = $connection->getDateConnection()->getTimestamp();
+                $listHeure["fin"] = $listHeure["debut"] + $connection->getDureeConnection();
 
                 $data["data"][] = $listHeure;
             }
