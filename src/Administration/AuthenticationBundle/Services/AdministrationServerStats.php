@@ -111,4 +111,16 @@ class AdministrationServerStats
         $ramId = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->getLastId();
         return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->findOneBy(Array("id" => $ramId))->getAsArray();
     }
+
+    public function getAllCpuUsage()
+    {
+        $cpuId = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerCpuStats")->getLastId();
+        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerCpuStats")->findOneBy(Array("id" => $cpuId))->getAsArray();
+    }
+
+    public function getAllRamUsage()
+    {
+        $ramId = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->getLastId();
+        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->findOneBy(Array("id" => $ramId))->getAsArray();
+    }
 }

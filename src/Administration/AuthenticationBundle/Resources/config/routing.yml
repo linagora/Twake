@@ -154,3 +154,11 @@ administration_stats_getRamUsage:
     path: /getRamUsage
     defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getRamUsage}
 
+administration_stats_getAllCpuUsage:
+    path: /getAllCpuUsage
+    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getAllCpuUsage}
+
+administration_stats_getAllRamUsage:
+    path: /getAllRamUsage
+    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getAllRamUsage}
+
