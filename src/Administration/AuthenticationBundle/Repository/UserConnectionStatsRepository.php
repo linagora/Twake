@@ -18,8 +18,8 @@ class UserConnectionStatsRepository extends \Doctrine\ORM\EntityRepository
             ->Where('U.user = ' . $userId )
             ->andWhere('U.dateConnection >= :start')
             ->andWhere('U.dateConnection <= :end')
-            ->setParameter("start",$startdate)
-            ->setParameter("end",$enddate)
+            ->setParameter("start",date("Y-m-d H:m:s", $startdate))
+            ->setParameter("end",date("Y-m-d H:m:s", $enddate))
             ->orderBy('U.dateConnection', 'ASC');
         return $req1->getQuery()->getResult();
     }
