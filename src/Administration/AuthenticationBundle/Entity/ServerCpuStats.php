@@ -322,6 +322,7 @@ class ServerCpuStats
     {
         $this->idle = $idle;
     }
+
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),

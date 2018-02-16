@@ -162,3 +162,6 @@ administration_stats_getAllRamUsage:
     path: /getAllRamUsage
     defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getAllRamUsage}
 
+administration_stats_getAllErrors:
+    path: /getAllErrors
+    defaults: {_controller: AdministrationAuthenticationBundle:ServerStats:getAllErrors}

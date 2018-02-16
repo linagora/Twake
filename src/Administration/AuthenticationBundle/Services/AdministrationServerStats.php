@@ -99,6 +99,10 @@ class AdministrationServerStats
         return "done";
     }
 
+    public function getAllErrors()
+    {
+        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:Errors")->findAll();
+    }
 
     public function getCpuUsage()
     {

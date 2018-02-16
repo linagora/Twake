@@ -50,7 +50,6 @@ class ServerStatsController extends Controller
             $data["errors"][] = "disconnected";
         }
         return new JsonResponse($data);
-        return new JsonResponse($data);
     }
 
     public function getRamUsageAction(Request $request)
@@ -106,6 +105,30 @@ class ServerStatsController extends Controller
         {
             $data["errors"][] = "disconnected";
         }
+        return new JsonResponse($data);
+    }
+
+    public function getAllErrorsAction(Request $request)
+    {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        //$user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
+        //if($user != null)
+        {
+            $res = $this->get('admin.TwakeServerStats')->getAllErrors();
+            foreach ($res as $r)
+            {
+                $data["data"][] = $r->getAsArray();
+            }
+        }
+        //else
+        {
+            $data["errors"][] = "disconnected";
+        }
+
         return new JsonResponse($data);
     }
 }
