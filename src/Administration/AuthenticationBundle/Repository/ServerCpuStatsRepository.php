@@ -20,4 +20,16 @@ class ServerCpuStatsRepository extends \Doctrine\ORM\EntityRepository
             ->setMaxResults(1);
         return $req1->getQuery()->getSingleScalarResult();
     }
+
+    public function getAllCpuData($startdate, $enddate)
+    {
+        $req1 = $this->createQueryBuilder('U')
+            ->select('U.dateSave, U.idle, U.usr')
+            ->where('U.dateSave >= :start')
+            ->andWhere('U.dateSave <= :end')
+            ->setParameter("start",$startdate)
+            ->setParameter("end",$enddate)
+            ->orderBy('U.dateSave');
+        return $req1->getQuery()->getResult();
+    }
 }

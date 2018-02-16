@@ -11,11 +11,39 @@ angular.module('TwakeAdministration')
 
         this.update = function(){
             $api.post("authentication/getCpuUsage", null, function (res) {
-                that.drawCPUDonut(res);
+                that.drawCPUDonut(res.data);
+                $api.post("authentication/getAllCpuUsage", {
+                    startdate:"1990-01-01 00:00:00",
+                    enddate:"2050-01-01 00:00:00"
+                    }, function (res) {
+                    var labels = [];
+                    var idle = [];
+                    var usr = [];
+                    for(var i=0;i<res.data.length;i++)
+                    {
+                        labels.push(res.data[i].dateSave.date);
+                        idle.push(res.data[i].idle);
+                        usr.push(res.data[i].usr);
+                    }
+                    that.drawCPULineChart(labels,idle,usr);
+                });
                 $api.post("authentication/getStorageSpace", null, function (res) {
                     that.drawStorageDonut(res.data);
                     $api.post("authentication/getRamUsage", null, function (res) {
                         that.drawRamDonut(res.data);
+                        $api.post("authentication/getAllRamUsage",  {
+                            startdate:"1990-01-01 00:00:00",
+                            enddate:"2050-01-01 00:00:00"
+                        }, function (res) {
+                            var labels = [];
+                            var ram = [];
+                            for(var i=0;i<res.data.length;i++)
+                            {
+                                labels.push(res.data[i].dateSave.date);
+                                ram.push(res.data[i].used);
+                            }
+                            that.drawRamLineChart(labels, ram);
+                        });
                     });
                 });
                 $scope.$apply();
@@ -26,12 +54,14 @@ angular.module('TwakeAdministration')
             var datas = [];
             var labels = [];
             var colors = [];
-            for (var i = 3; i<Object.keys(res.data).length;i++) {
-                labels.push(Object.keys(res.data)[i]);
-                datas.push(Object.values(res.data)[i]);
+
+            colors.push("rgba(0,139,0,0.8)");
+            for (var i = 3; i<Object.keys(res).length;i++) {
+                labels.push(Object.keys(res)[i]);
+                datas.push(Object.values(res)[i]);
+                colors.push("rgba(205,0,0,0."+ (8-(i-3))+")");
             }
-            colors = poolColors(datas.length);
-            var ctx = document.getElementById("myDonut");
+            var ctx = document.getElementById("CPUDonut");
             var myDoughnutChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: data = {
@@ -57,15 +87,42 @@ angular.module('TwakeAdministration')
                         position: "bottom",
                         labels: {
                             fontColor: "#333",
-                            fontSize: 16
+                            fontSize: 12
                         }
                     }
                 }
             });
         };
+
+        this.drawCPULineChart = function (labels,idle,user) {
+            var ctx = document.getElementById("CPULineChart");
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: idle,
+                        label: "Idle",
+                        borderColor: "rgba(0,139,0,0.8)"
+                    }, {
+                        data: user,
+                        label: "User",
+                        borderColor: "rgba(205,0,0,0.8)"
+                    }
+                    ]
+                },
+                options: {
+                    title: {
+                        display: false,
+                        text: 'World population per region (in millions)'
+                    }
+                }
+            });
+        }
+
         this.drawStorageDonut = function (data) {
 
-            var ctx = document.getElementById("myDonut2");
+            var ctx = document.getElementById("StorageDonut");
             var myDoughnutChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: data = {
@@ -97,9 +154,14 @@ angular.module('TwakeAdministration')
                 }
             });
         };
+
+        this.drawStorageLineChart = function (labels, ram) {
+
+        }
+
         this.drawRamDonut = function (data) {
 
-            var ctx = document.getElementById("myDonut3");
+            var ctx = document.getElementById("RamDonut");
             var myDoughnutChart = new Chart(ctx, {
                 type: 'doughnut',
                 data: data = {
@@ -131,19 +193,27 @@ angular.module('TwakeAdministration')
                 }
             });
         };
-        var poolColors = function (a) {
-            var colors = [];
-            for(i=0;i<a;i++){
-                colors.push(dynamicColors());
-            }
-            return colors
-        }
 
-        var dynamicColors = function() {
-            var r = Math.floor(Math.random() * 255);
-            var g = Math.floor(Math.random() * 255);
-            var b = Math.floor(Math.random() * 255);
-            return "rgb(" + r + "," + g + "," + b + ")";
+        this.drawRamLineChart = function (labels, ram) {
+            var ctx = document.getElementById("RamLineChart");
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: ram,
+                        label: "Ram usage",
+                        borderColor: "rgba(0,139,0,0.8)"
+                    }
+                    ]
+                },
+                options: {
+                    title: {
+                        display: false,
+                        text: 'World population per region (in millions)'
+                    }
+                }
+            });
         }
         this.update();
     });

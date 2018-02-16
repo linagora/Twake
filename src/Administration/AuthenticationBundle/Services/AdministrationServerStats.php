@@ -11,6 +11,7 @@ namespace Administration\AuthenticationBundle\Services;
 
 use Administration\AuthenticationBundle\Entity\ServerCpuStats;
 use Administration\AuthenticationBundle\Entity\ServerRamStats;
+use phpDocumentor\Reflection\Types\Array_;
 
 class AdministrationServerStats
 {
@@ -99,6 +100,13 @@ class AdministrationServerStats
         return "done";
     }
 
+    public function getAllErrors()
+    {
+        $ids = $this->doctrine->getRepository("AdministrationAuthenticationBundle:Errors")->findAllIdOrderByOcc();
+        foreach ($ids as $id)
+            $errors[] = $this->doctrine->getRepository("AdministrationAuthenticationBundle:Errors")->findOneBy(Array("id" => $id));
+        return $errors;
+    }
 
     public function getCpuUsage()
     {
@@ -110,5 +118,15 @@ class AdministrationServerStats
     {
         $ramId = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->getLastId();
         return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->findOneBy(Array("id" => $ramId))->getAsArray();
+    }
+
+    public function getAllCpuUsage($startdate, $enddate)
+    {
+        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerCpuStats")->getAllCpuData($startdate, $enddate);
+    }
+
+    public function getAllRamUsage($startdate, $enddate)
+    {
+        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->getAllRamData($startdate, $enddate);
     }
 }

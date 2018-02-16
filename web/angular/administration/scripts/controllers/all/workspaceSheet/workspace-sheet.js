@@ -48,7 +48,7 @@ angular.module('TwakeAdministration')
         }
         this.drawCountDonut = function () {
             $api.post("authentication/numberOfExtensionsByWorkspace", {
-                twakeWorkspace: this.id,
+                twakeWorkspace: this.id
             }, function (res) {
                 var datas = [];
                 for (var i = 0; i < res.data.length; i++) {

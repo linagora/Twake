@@ -1,5 +1,29 @@
 <div ng-controller="CpuCtrl as cpu">
-    <canvas id="myDonut" width="400" height="200"></canvas>
-    <canvas id="myDonut2" width="400" height="200"></canvas>
-    <canvas id="myDonut3" width="400" height="200"></canvas>
+    <div class="row">
+        <h1 style="text-align: center">Storage Statistics</h1>
+        <div class="col-md-6">
+            <canvas id="StorageDonut" width="400" height="200"></canvas>
+        </div>
+        <div class="col-md-6">
+        </div>
+    </div>
+    <div class="row">
+        <h1 style="text-align: center">CPU Statistics</h1>
+        <div class="col-md-6">
+            <canvas id="CPUDonut" width="400" height="200"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="CPULineChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+    <div class="row">
+        <h1 style="text-align: center">Ram Statistics</h1>
+        <div class="col-md-6">
+            <canvas id="RamDonut" width="400" height="200"></canvas>
+        </div>
+        <div class="col-md-6">
+            <canvas id="RamLineChart" width="400" height="200"></canvas>
+        </div>
+    </div>
+
 </div>

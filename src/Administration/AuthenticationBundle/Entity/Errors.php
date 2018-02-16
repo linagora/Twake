@@ -126,6 +126,18 @@ class Errors
 		return json_decode($this->data, 1);
 	}
 
+
+    public function getAsArray(){
+        return Array(
+            "id" => $this->getId(),
+            "first_date" => $this->getFirstDate(),
+            "last_date" => $this->getLastDate(),
+            "number" => $this->getNumber(),
+            "file" => $this->getFile(),
+            "data" => $this->getData()
+        );
+    }
+
 	/**
 	 * @param mixed $data
 	 */
