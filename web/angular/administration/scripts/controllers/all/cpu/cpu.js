@@ -11,11 +11,39 @@ angular.module('TwakeAdministration')
 
         this.update = function(){
             $api.post("authentication/getCpuUsage", null, function (res) {
-                that.drawCPUDonut(res);
+                that.drawCPUDonut(res.data);
+                $api.post("authentication/getAllCpuUsage", {
+                    startdate:"1990-01-01 00:00:00",
+                    enddate:"2050-01-01 00:00:00"
+                    }, function (res) {
+                    var labels = [];
+                    var idle = [];
+                    var usr = [];
+                    for(var i=0;i<res.data.length;i++)
+                    {
+                        labels.push(res.data[i].dateSave.date);
+                        idle.push(res.data[i].idle);
+                        usr.push(res.data[i].usr);
+                    }
+                    that.drawCPULineChart(labels,idle,usr);
+                });
                 $api.post("authentication/getStorageSpace", null, function (res) {
                     that.drawStorageDonut(res.data);
                     $api.post("authentication/getRamUsage", null, function (res) {
                         that.drawRamDonut(res.data);
+                        $api.post("authentication/getAllRamUsage",  {
+                            startdate:"1990-01-01 00:00:00",
+                            enddate:"2050-01-01 00:00:00"
+                        }, function (res) {
+                            var labels = [];
+                            var ram = [];
+                            for(var i=0;i<res.data.length;i++)
+                            {
+                                labels.push(res.data[i].dateSave.date);
+                                ram.push(res.data[i].used);
+                            }
+                            that.drawRamLineChart(labels, ram);
+                        });
                     });
                 });
                 $scope.$apply();
@@ -28,9 +56,9 @@ angular.module('TwakeAdministration')
             var colors = [];
 
             colors.push("rgba(0,139,0,0.8)");
-            for (var i = 3; i<Object.keys(res.data).length;i++) {
-                labels.push(Object.keys(res.data)[i]);
-                datas.push(Object.values(res.data)[i]);
+            for (var i = 3; i<Object.keys(res).length;i++) {
+                labels.push(Object.keys(res)[i]);
+                datas.push(Object.values(res)[i]);
                 colors.push("rgba(205,0,0,0."+ (8-(i-3))+")");
             }
             var ctx = document.getElementById("CPUDonut");
@@ -66,8 +94,30 @@ angular.module('TwakeAdministration')
             });
         };
 
-        this.drawCPULineChart = function (res) {
-
+        this.drawCPULineChart = function (labels,idle,user) {
+            var ctx = document.getElementById("CPULineChart");
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: idle,
+                        label: "Idle",
+                        borderColor: "rgba(0,139,0,0.8)"
+                    }, {
+                        data: user,
+                        label: "User",
+                        borderColor: "rgba(205,0,0,0.8)"
+                    }
+                    ]
+                },
+                options: {
+                    title: {
+                        display: false,
+                        text: 'World population per region (in millions)'
+                    }
+                }
+            });
         }
 
         this.drawStorageDonut = function (data) {
@@ -105,7 +155,7 @@ angular.module('TwakeAdministration')
             });
         };
 
-        this.drawStorageLineChart = function (res) {
+        this.drawStorageLineChart = function (labels, ram) {
 
         }
 
@@ -144,8 +194,26 @@ angular.module('TwakeAdministration')
             });
         };
 
-        this.drawRamLineChart = function (res) {
-
+        this.drawRamLineChart = function (labels, ram) {
+            var ctx = document.getElementById("RamLineChart");
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: ram,
+                        label: "Ram usage",
+                        borderColor: "rgba(0,139,0,0.8)"
+                    }
+                    ]
+                },
+                options: {
+                    title: {
+                        display: false,
+                        text: 'World population per region (in millions)'
+                    }
+                }
+            });
         }
         this.update();
     });

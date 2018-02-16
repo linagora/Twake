@@ -99,7 +99,7 @@ class ServerStatsController extends Controller
         if($user != null) {
             $startdate = $request->request->get("startdate", "2018-01-17");
             $enddate = $request->request->get("enddate", "2018-01-17");
-            $data["data"] = $this->get('admin.TwakeServerStats')->getAllCpuUsage($startdate, $enddate);
+            $data["data"] = $this->get('admin.TwakeServerStats')->getAllRamUsage($startdate, $enddate);
         }
         else
         {
