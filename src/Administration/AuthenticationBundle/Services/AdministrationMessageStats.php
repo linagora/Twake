@@ -37,6 +37,25 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         $this->doctrine->flush();
     }
 
+    public function countDailyMessageAll()
+    {
+        $repository = $this->doctrine->getRepository("TwakeUsersBundle:UserStats");
+        $statsUsers = $repository->findAll();
+        foreach ($statsUsers as $stat)
+        {
+            $userDailyStats = new UserDailyStats();
+            $userDailyStats->setUser($stat->getUser());
+            $userDailyStats->setPublicMsgCount($stat->getPublicMsgCount());
+            $userDailyStats->setPrivateMsgCount($stat->getPrivateMsgCount());
+            $userDailyStats->setDate(new \DateTime("now"));
+            $stat->setPublicMsgCount(0);
+            $stat->setPrivateMsgCount(0);
+            $this->doctrine->persist($userDailyStats);
+            $this->doctrine->persist($stat);
+            $this->doctrine->flush();
+        }
+    }
+
     public function countDailyMessageByWorkspace($idWorkspace){
         $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceStats");
         $twakeWorkspaceStat =  $repository->findOneBy(Array("workspace"=>$idWorkspace));
