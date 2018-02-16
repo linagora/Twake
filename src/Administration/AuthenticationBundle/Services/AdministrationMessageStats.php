@@ -52,8 +52,8 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
             $stat->setPrivateMsgCount(0);
             $this->doctrine->persist($userDailyStats);
             $this->doctrine->persist($stat);
-            $this->doctrine->flush();
         }
+        $this->doctrine->flush();
     }
 
     public function countDailyMessageByWorkspace($idWorkspace){
@@ -70,6 +70,28 @@ class AdministrationMessageStats implements AdministrationMessageStatsInterface
         $workspaceDailyStats->setDate(new \DateTime("now"));
         $this->doctrine->persist($workspaceDailyStats);
         $this->doctrine->flush();
+    }
+
+    public function countDailyMessageByWorkspaceAll()
+    {
+        $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceStats");
+        $statsWorkspace = $repository->findAll();
+        foreach ($statsWorkspace as $stat)
+        {
+            $workspaceDailyStats = new WorkspaceDailyStats();
+            $workspaceDailyStats->setWorkspace($stat->getWorkspace());
+            $workspaceDailyStats->setPublicMsgCount($stat->getPublicMsgCount());
+            $workspaceDailyStats->setPrivateMsgCount($stat->getPrivateMsgCount());
+            $workspaceDailyStats->setPrivateChannelMsgCount($stat->getPrivateChannelMsgCount());
+            $workspaceDailyStats->setDate(new \DateTime("now"));
+
+            $stat->setPublicMsgCount(0);
+            $stat->setPrivateMsgCount(0);
+            $stat->setPrivateChannelMsgCount(0);
+
+            $this->doctrine->persist($workspaceDailyStats);
+            $this->doctrine->persist($stat);
+        }
     }
 
     public function countPublicMessage($idTwakeUser,$startdate,$enddate){

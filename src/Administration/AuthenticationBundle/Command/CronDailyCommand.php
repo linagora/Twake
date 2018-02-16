@@ -44,6 +44,6 @@ class CronDailyCommand extends ContainerAwareCommand
         $services->get('admin.TwakeDailyMessage')->countDailyMessageAll();
 
         //Workspace
-        //$services->get('admin.TwakeDailyMessage')->saveRamUsage();
+        $services->get('admin.TwakeDailyMessage')->countDailyMessageByWorkspaceAll();
     }
 }
