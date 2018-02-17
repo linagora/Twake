@@ -25,7 +25,7 @@ class MessageReadController extends Controller
         }
         else {
             if($request->request->get("key") != null){
-                if(!$this->get('app.messageReadSystem')->readByKey($request->request->get("key"),$this->getUser())){
+                if(!$this->get('app.messageReadSystem')->readByKey($request->request->get("key"),$request->request->get("workspace"),$this->getUser())){
                     $data["errors"][] = "errorSystem";
                 }
             }

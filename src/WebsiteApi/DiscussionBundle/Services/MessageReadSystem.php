@@ -18,7 +18,8 @@ class MessageReadSystem
         $this->notificationSystem= $notificationSystem;
     }
 
-    function readByKey($key,$user){
+    function readByKey($key,$workspace,$user){
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         $discussion = $this->messageSystem->convertKey($key,$user);
         $messageApplication = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"messages-auto"));
         if($discussion["type"] == "S"){
@@ -39,9 +40,9 @@ class MessageReadSystem
                 $messageRead->setMessage($lastMessage);
                 $this->doctrine->persist($messageRead);
                 $this->doctrine->flush();
-                if($this->allIsRead($stream->getWorkspace(),$user)){
+                if($this->allIsRead($workspace,$user)){
                     error_log("all read");
-                    $this->notificationSystem->readAll($messageApplication,$stream->getWorkspace(),$user,null);
+                    $this->notificationSystem->readAll($messageApplication,$workspace,$user,null);
                 }
                 else{
                     error_log("not all read");
@@ -70,6 +71,10 @@ class MessageReadSystem
             $messageRead->setMessage($lastMessage);
             $this->doctrine->persist($messageRead);
             $this->doctrine->flush();
+            if($this->allIsRead($workspace,$user)){
+                error_log("all read");
+                $this->notificationSystem->readAll($messageApplication,$workspace,$user,null);
+            }
             return true;
         }
         return false;
