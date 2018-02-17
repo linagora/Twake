@@ -64,7 +64,9 @@ class MessageSystem implements MessagesSystemInterface
 	public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content,$workspace, $subjectId=null, $messageData=null){
 	    $sender = null;
         $reciever = null;
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
+        if($workspace!=null){
+            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
+        }
         if($senderId != null){
             $sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
         }
@@ -77,14 +79,18 @@ class MessageSystem implements MessagesSystemInterface
 
             if($sender!=null && $reciever!=null){ // select only user message and not system or application message without user
                 $this->user_stats->sendMessage($sender, false);
-	            $this->workspace_stats->sendMessage($workspace, false, $reciever->getIsPrivate());
+                if($workspace!=null) {
+                    $this->workspace_stats->sendMessage($workspace, false, $reciever->getIsPrivate());
+                }
             }
         }
         elseif($recieverType == "U"){
             $reciever = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($recieverId);
 	        if($sender!=null){ // select only user message and not system or application message without user
 		        $this->user_stats->sendMessage($sender, true);
-                $this->workspace_stats->sendMessage($workspace, false, true);
+                if($workspace!=null){
+                    $this->workspace_stats->sendMessage($workspace, false, true);
+                }
             }
         }
         if( ($isApplicationMessage || $isSystemMessage|| $sender!=null) && $reciever!=null ){
