@@ -85,6 +85,7 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
 
         if($event["type"] == "C"){ // creation
             if($this->streamService->isAllowed($currentUser->getId(),$key)){
+                error_log("key : ".$key);
                 $stream = $this->streamService->createStream($currentUser,$key,$event["data"]["name"],$event["data"]["isPrivate"],$event["data"]["description"]);
                 if($stream){
                     $event["data"] = $stream;

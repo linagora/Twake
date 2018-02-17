@@ -16,7 +16,7 @@ interface MessagesSystemInterface
      * @param null $subjectId
      * @return mixed
      */
-    public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content, $subjectId=null );
+    public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content,$workspace, $subjectId=null );
 
 
     /**

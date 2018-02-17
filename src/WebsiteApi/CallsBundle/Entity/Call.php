@@ -26,11 +26,6 @@ class Call
 	 */
 	private $discussionKey;
 
-	/**
-	 * @ ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Channel")
-	 * @ ORM\JoinColumn(nullable=true)
-	 */
-	private $channel;
 
 	/**
 	 *

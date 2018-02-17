@@ -48,7 +48,8 @@ class SubjectSystem
     public function createSubjectFromMessage($idMessage,$user){
         $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idMessage);
         if ($message != null && $message->getSubject() == null) {
-            $subject = $this->createSubject($message->getCleanContent(), $message->getStreamReciever()->getId(),($message->getUserSender()?$message->getUserSender():$user) );
+            $name = strlen($message->getCleanContent()) > 100 ? substr($message->getCleanContent(),0,100)."..." : $message->getCleanContent();
+            $subject = $this->createSubject($name, $message->getStreamReciever()->getId(),($message->getUserSender()?$message->getUserSender():$user) );
             $subject->setFirstMessage($message);
             $message->setSubject($subject);
             $this->doctrine->persist($message);
