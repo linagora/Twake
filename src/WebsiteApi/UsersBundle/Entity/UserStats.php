@@ -49,6 +49,24 @@ class UserStats
 		return $this->publicMsgCount;
 	}
 
+    /**
+     * @param int $publicMsgCount
+     */
+    public function setPublicMsgCount($publicMsgCount)
+    {
+        $this->publicMsgCount = $publicMsgCount;
+    }
+
+    /**
+     * @param int $privateMsgCount
+     */
+    public function setPrivateMsgCount($privateMsgCount)
+    {
+        $this->privateMsgCount = $privateMsgCount;
+    }
+
+
+
 	public function addPublicMsgCount($val=1){
 		$this->publicMsgCount += $val;
 	}

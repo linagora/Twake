@@ -80,4 +80,38 @@ class WorkspaceController extends Controller
 		return new JsonResponse($response);
 	}
 
+	public function setIdentityAction(Request $request)
+	{
+
+		$data = Array(
+			"errors" => Array(),
+			"data" => Array()
+		);
+
+		if($this->getUser()){
+
+			$firstname = $request->request->get("firstname", "");
+			$lastname = $request->request->get("lastname", "");
+
+			if(isset($_FILES["thumbnail"])) {
+				$thumbnail = $this->get("app.uploader")->uploadFiles($this->getUser(), $_FILES["thumbnail"], "prfl");
+				$thumbnail = $thumbnail[0];
+
+				if (count($thumbnail["errors"])>0) {
+					$data["errors"][] = "badimage";
+				} else {
+					$this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail["file"]);
+				}
+			}else{
+				$this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname);
+			}
+
+		}else{
+			$data["errors"][] = "unknown";
+		}
+
+		return new JsonResponse($data);
+
+	}
+
 }

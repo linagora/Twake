@@ -18,7 +18,13 @@ interface WorkspacesInterface
 	public function remove($groupId, $workspaceId, $currentUserId = null);
 
 	// @changeData set workspace data
-	public function changeData($workspaceId, $name, $thumbnailFile, $currentUserId = null);
+	public function changeName($workspaceId, $name, $currentUserId = null);
+
+	// @changeData set workspace data
+	public function changeLogo($workspaceId, $logo, $currentUserId = null);
+
+	// @changeData set workspace data
+	public function changeWallpaper($workspaceId, $wallpaper, $currentUserId = null);
 
 	// @getApps get apps for workspace
 	public function getApps($workspaceId, $currentUserId = null);

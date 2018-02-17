@@ -1,4 +1,10 @@
 <?php
+/**
+ * Created by PhpStorm.
+ * User: neoreplay
+ * Date: 16/02/18
+ * Time: 17:38
+ */
 
 namespace Administration\AuthenticationBundle\Command;
 
@@ -18,27 +24,26 @@ use WebsiteApi\UploadBundle\Entity\File;
 use WebsiteApi\MarketBundle\Entity\Category;
 use Symfony\Component\Console\Helper\ProgressBar;
 
-class CronCommand extends ContainerAwareCommand
+class CronDailyCommand extends ContainerAwareCommand
 {
 
+    protected function configure()
+    {
+        $this
+            ->setName("twake:cronDaily")
+            ->setDescription("StatsDaily")
+        ;
+    }
 
-	protected function configure()
-	{
-		$this
-			->setName("twake:cron")
-			->setDescription("Stats")
-      ;
-	}
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
 
+        $services = $this->getApplication()->getKernel()->getContainer();
 
-	protected function execute(InputInterface $input, OutputInterface $output)
-	{
+        //User
+        $services->get('admin.TwakeDailyMessage')->countDailyMessageAll();
 
-		$services = $this->getApplication()->getKernel()->getContainer();
-
-		// Server
-		$services->get('admin.TwakeServerStats')->saveCpuUsage();
-		$services->get('admin.TwakeServerStats')->saveRamUsage();
-
-	}
+        //Workspace
+        $services->get('admin.TwakeDailyMessage')->countDailyMessageByWorkspaceAll();
+    }
 }

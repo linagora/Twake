@@ -18,8 +18,10 @@ angular.module('TwakeAdministration')
             $api.post("authentication/getInfoUser", {
                 id: this.id
             }, function (res) {
+                console.log(res.data);
                 that.userInfo = res.data.user;
-                that.workspaces = res.data.workspaces;
+                that.workspaces = res.data.workspaces.public;
+                that.private_workspace = res.data.workspaces.private;
                 $scope.$apply();
 
             });

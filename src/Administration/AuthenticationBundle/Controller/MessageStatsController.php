@@ -170,7 +170,6 @@ class MessageStatsController extends Controller
             "data" => Array(),
             "errors" => Array()
         );
-
         $user = $this->get('admin.Authentication')->verifyUserConnectionByHttpRequest($request);
         if($user != null)
         {
@@ -186,6 +185,7 @@ class MessageStatsController extends Controller
             {
                 $data["errors"][] ="crappyshit";
             }
+            $data["errors"][] ="crappyshit";
         }
         else
         {
