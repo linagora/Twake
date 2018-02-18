@@ -110,7 +110,10 @@ class DiscussionController extends Controller
                         $messages = $this->get("app.subjectSystem")->getMessages($subject);
                         $retour = [];
                         foreach ($messages as $message) {
-                            $retour[] = $message->getAsArray();
+                            $messageArray = $this->get("app.messages")->getMessageAsArray($message,true);
+                            if($messageArray!=null){
+                                $retour[] = $messageArray;
+                            }
                         }
                         $data["data"] = $retour;
                     }
