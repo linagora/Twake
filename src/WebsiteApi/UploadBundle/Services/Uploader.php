@@ -69,8 +69,8 @@ class Uploader extends Controller
 			"wslogo"=>Array(
 				"is_img"=>1,
 				"max_size" => 2000000, //2mo
-				"min_width"=>256,
-				"min_height"=>256,
+				"min_width"=>100,
+				"min_height"=>100,
 				"sizes"=>31, //All !
 				"allowed_ext"=>Array("png","jpg","jpeg","gif","tiff")
 			),
@@ -122,7 +122,6 @@ class Uploader extends Controller
 		$file = new File();
 
 		$file->setType($context);
-		$file->setOwner($currentUser);
 
 
 		$newfilename = md5(date("U").$realfile["tmp_name"].$realfile["name"]).".".$this->getExtension($realfile["name"]);
