@@ -47,7 +47,7 @@ class SubjectSystem
 
     public function createSubjectFromMessage($idMessage,$user){
         $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idMessage);
-        if ($message != null && $message->getSubject() == null) {
+        if ($message != null && $message->getSubject() == null && $message->getTypeReciever()=="S") {
             $name = strlen($message->getCleanContent()) > 100 ? substr($message->getCleanContent(),0,100)."..." : $message->getCleanContent();
             $subject = $this->createSubject($name, $message->getStreamReciever()->getId(),($message->getUserSender()?$message->getUserSender():$user) );
             $subject->setFirstMessage($message);
@@ -99,7 +99,6 @@ class SubjectSystem
         if($subject == null){
             return false;
         }
-        $retour = [];
         $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject"=>$subject),Array("date"=>"ASC"));
         return $messages;   
     }

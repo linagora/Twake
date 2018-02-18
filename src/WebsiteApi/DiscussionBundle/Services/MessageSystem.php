@@ -275,8 +275,9 @@ class MessageSystem implements MessagesSystemInterface
         if($from != null){
             $from = $this->getMessageAsArray($from);
         }
+        $messageDropArray = $this->getMessageAsArray($messageDrop,$messageDrop->getSubject()!=null);
         $retour = Array(
-            "messageDrop" => $this->getMessageAsArray($messageDrop),
+            "messageDrop" => $messageDropArray,
             "idDragged" => $idDragged,
             "from" => $from,
         );
@@ -294,9 +295,12 @@ class MessageSystem implements MessagesSystemInterface
         $messageDragged->setResponseTo(null);
         $this->doctrine->persist($messageDragged);
         $this->doctrine->flush();
-        if($messageDragged)
-        $message["oldMessage"] = $this->getMessageAsArray($oldMessage);
-        $message["messageDrag"] = $this->getMessageAsArray($messageDragged);
+
+        $oldMessageArray = $this->getMessageAsArray($oldMessage,$oldMessage->getSubject()!=null);
+        $messageDraggedArray = $this->getMessageAsArray($messageDragged,$messageDragged->getSubject()!=null);
+
+        $message["oldMessage"] = $oldMessageArray;
+        $message["messageDrag"] = $messageDraggedArray;
         return $message;
     }
 
