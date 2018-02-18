@@ -122,7 +122,11 @@ class Workspaces implements WorkspacesInterface
 			$this->doctrine->persist($workspace);
 			$this->doctrine->flush();
 
+
+			return true;
 		}
+
+		return false;
 	}
 
 	public function changeLogo($workspaceId, $logo, $currentUserId = null)
@@ -143,7 +147,10 @@ class Workspaces implements WorkspacesInterface
 			$this->doctrine->persist($workspace);
 			$this->doctrine->flush();
 
+			return true;
 		}
+
+		return false;
 	}
 
 	public function changeWallpaper($workspaceId, $wallpaper, $currentUserId = null)
@@ -164,7 +171,10 @@ class Workspaces implements WorkspacesInterface
 			$this->doctrine->persist($workspace);
 			$this->doctrine->flush();
 
+			return true;
 		}
+
+		return false;
 	}
 
 	public function get($workspaceId, $currentUserId = null)

@@ -144,20 +144,20 @@ angular.module('TwakeAdministration')
                 var newDate;
                 for(var i = 0; i < res.data.length;i++){
                     segments = []
-                    newDate = new Date(res.data[i].debut);
+                    newDate = new Date(res.data[i].debut*1000);
                     var sameDate = false;
                     if(i+1 < res.data.length){
-                        if((new Date(res.data[i].debut).getDay() == new Date(res.data[i+1].debut).getDay()) && (new Date(res.data[i].debut).getMonth() == new Date(res.data[i+1].debut).getMonth())&& (new Date(res.data[i].debut).getFullYear() == new Date(res.data[i+1].debut).getFullYear())){
+                        if((new Date(res.data[i].debut*1000).getDay() == new Date(res.data[i+1].debut*1000).getDay()) && (new Date(res.data[i].debut*1000).getMonth() == new Date(res.data[i+1].debut*1000).getMonth())&& (new Date(res.data[i].debut*1000).getFullYear() == new Date(res.data[i+1].debut*1000).getFullYear())){
                             sameDate = true;
                             while(sameDate == true){
                                 segments.push({
-                                    "start": new Date(res.data[i].debut),
-                                    "end": new Date(res.data[i].fin),
+                                    "start": new Date(res.data[i].debut*1000),
+                                    "end": new Date(res.data[i].fin*1000),
                                     "color": "#ff3b22",
                                     "task": "Gathering requirements"
                                 });
                                 if(i+1 < res.data.length) {
-                                    if ((new Date(res.data[i].debut).getDay() == new Date(res.data[i + 1].debut).getDay()) && (new Date(res.data[i].debut).getMonth() == new Date(res.data[i + 1].debut).getMonth()) && (new Date(res.data[i].debut).getFullYear() == new Date(res.data[i + 1].debut).getFullYear())) {
+                                    if ((new Date(res.data[i].debut*1000).getDay() == new Date(res.data[i + 1].debut*1000).getDay()) && (new Date(res.data[i].debut*1000).getMonth() == new Date(res.data[i + 1].debut*1000).getMonth()) && (new Date(res.data[i].debut*1000).getFullYear() == new Date(res.data[i + 1].debut*1000).getFullYear())) {
                                         sameDate = true;
                                         i++;
                                     }
@@ -172,8 +172,8 @@ angular.module('TwakeAdministration')
                         }
                         else{
                             segments.push({
-                                "start": new Date(res.data[i].debut),
-                                "end": new Date(res.data[i].fin),
+                                "start": new Date(res.data[i].debut*1000),
+                                "end": new Date(res.data[i].fin*1000),
                                 "color": "#ff3b22",
                                 "task": "Gathering requirements"
                             });
@@ -181,7 +181,7 @@ angular.module('TwakeAdministration')
                     }
                     {
                         dataset.push({
-                            "category": new Date(res.data[i].debut),
+                            "category": new Date(res.data[i].debut*1000),
                             "segments": segments
                         });
 

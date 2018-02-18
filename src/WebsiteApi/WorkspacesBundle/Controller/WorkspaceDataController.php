@@ -45,9 +45,12 @@ class WorkspaceDataController extends Controller
 		);
 
 		$workspaceId = $request->request->getInt("workspaceId");
-		$name = $request->request->getInt("name");
+		$name = $request->request->get("name", null);
 
-		$ok = $this->get("app.workspaces")->changeName($workspaceId, $name, $this->getUser()->getId());
+		$ok = false;
+		if($name!=null) {
+			$ok = $this->get("app.workspaces")->changeName($workspaceId, $name, $this->getUser()->getId());
+		}
 
 		if(!$ok){
 			$response["errors"][] = "error";
@@ -69,7 +72,7 @@ class WorkspaceDataController extends Controller
 
 		$workspaceId = $request->request->getInt("workspaceId");
 
-		if(!$this->get("app.workspaces_level")->can($workspaceId, $this->getUser()->getId, "workspace:edit")){
+		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:edit")){
 			$data["errors"][] = "notallowed";
 		}else {
 
@@ -80,7 +83,8 @@ class WorkspaceDataController extends Controller
 				if (count($thumbnail["errors"]) > 0) {
 					$data["errors"][] = "badimage";
 				} else {
-					$this->get("app.workspaces")->changeLogo($workspaceId, $thumbnail, $this->getUser()->getId());
+
+					$this->get("app.workspaces")->changeLogo($workspaceId, $thumbnail["file"], $this->getUser()->getId());
 				}
 			} else {
 				$this->get("app.workspaces")->changeLogo($workspaceId, null, $this->getUser()->getId());
@@ -102,18 +106,19 @@ class WorkspaceDataController extends Controller
 
 		$workspaceId = $request->request->getInt("workspaceId");
 
-		if(!$this->get("app.workspaces_level")->can($workspaceId, $this->getUser()->getId, "workspace:edit")){
+		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:edit")){
 			$data["errors"][] = "notallowed";
 		}else {
 
 			if (isset($_FILES["wallpaper"])) {
 				$thumbnail = $this->get("app.uploader")->uploadFiles($this->getUser(), $_FILES["wallpaper"], "wswall");
+
 				$thumbnail = $thumbnail[0];
 
 				if (count($thumbnail["errors"]) > 0) {
 					$data["errors"][] = "badimage";
 				} else {
-					$this->get("app.workspaces")->changeWallpaper($workspaceId, $thumbnail, $this->getUser()->getId());
+					$this->get("app.workspaces")->changeWallpaper($workspaceId, $thumbnail["file"], $this->getUser()->getId());
 				}
 			} else {
 				$this->get("app.workspaces")->changeWallpaper($workspaceId, null, $this->getUser()->getId());

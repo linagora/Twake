@@ -175,7 +175,7 @@ class MessageStatsController extends Controller
         {
             $idTwakeWorkspace = $request->request->get("twakeWorkspace","1");
             $startdate = $request->request->get("startdate","2018-01-17");
-            $enddate = $request->request->get("enddate","2018-01-17");
+            $enddate = $request->request->get("enddate",date("Y-m-d"));
             $nbDailyPublicMessage = $this->get('admin.TwakeDailyMessage')->numberOfMessagePublicByWorkspace($idTwakeWorkspace,$startdate, $enddate);
             if($nbDailyPublicMessage != null)
             {
@@ -185,7 +185,6 @@ class MessageStatsController extends Controller
             {
                 $data["errors"][] ="crappyshit";
             }
-            $data["errors"][] ="crappyshit";
         }
         else
         {

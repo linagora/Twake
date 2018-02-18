@@ -23,12 +23,6 @@ class File
      */
     private $id;
 
-
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-	 */
-	private $owner;
-
 	/**
 	 * @var string
 	 *
@@ -125,7 +119,7 @@ class File
 	public function deleteFromDisk(){ //Delete files from disk
 		for($i=0;$i<=4;$i++){
 			if($this->size_exists($i)){
-				unlink($this->getLocalServerURL($i));
+				@unlink($this->getLocalServerURL($i));
 			}
 		}
 	}
@@ -141,22 +135,6 @@ class File
 			return false;
 		}
 		return true;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getOwner()
-	{
-		return $this->owner;
-	}
-
-	/**
-	 * @param mixed $owner
-	 */
-	public function setOwner($owner)
-	{
-		$this->owner = $owner;
 	}
 
 	/**
