@@ -68,6 +68,8 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
      */
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
     {
+        print_r($event);
+
         $key = $request->getAttributes()->get('key');
         $currentUser = $this->clientManipulator->getClient($connection);
         if (!($currentUser instanceof User)) {
@@ -82,6 +84,7 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
         $currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
 
         $canBroadcast = true;
+
 
         if($event["type"] == "C"){ // creation
             if($this->streamService->isAllowed($currentUser->getId(),$key)){
