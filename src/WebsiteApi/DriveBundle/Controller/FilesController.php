@@ -217,7 +217,7 @@ class FilesController extends Controller
 			$file = $this->get('app.drive.FileSystem')->upload($groupId, $parentId, $file, $this->get("app.upload"));
 
 			if ($file) {
-				$data["data"]["idFile"] = $file->getId();
+				$data["data"] = $file->getAsArray();
 			} else {
 				$data["errors"][] = "unknown";
 			}
