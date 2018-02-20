@@ -11,6 +11,7 @@ namespace Administration\AuthenticationBundle\Services;
 
 use Administration\AuthenticationBundle\Entity\ServerCpuStats;
 use Administration\AuthenticationBundle\Entity\ServerRamStats;
+use Administration\AuthenticationBundle\Entity\ServerUsersStats;
 use phpDocumentor\Reflection\Types\Array_;
 
 class AdministrationServerStats
@@ -77,28 +78,49 @@ class AdministrationServerStats
         return "done";
     }
 
-    public function saveRamUsage()
-    {
+	public function saveRamUsage()
+	{
 
-        $free = shell_exec('free');
-        $free = (string)trim($free);
-        $free_arr = explode("\n", $free);
-        $mem = explode(" ", $free_arr[1]);
-        $mem = array_filter($mem);
-        $mem = array_merge($mem);
-        $memory_usage = $mem[2]/$mem[1]*100;
+		$free = shell_exec('free');
+		$free = (string)trim($free);
+		$free_arr = explode("\n", $free);
+		$mem = explode(" ", $free_arr[1]);
+		$mem = array_filter($mem);
+		$mem = array_merge($mem);
+		$memory_usage = $mem[2]/$mem[1]*100;
 
-        $em = $this->doctrine;
+		$em = $this->doctrine;
 
-        $serverStat = new ServerRamStats();
-        $serverStat-> setDateSave(new \DateTime("now"));
-        $serverStat->setUsed($memory_usage);
+		$serverStat = new ServerRamStats();
+		$serverStat-> setDateSave(new \DateTime("now"));
+		$serverStat->setUsed($memory_usage);
 
-        $em->persist($serverStat);
-        $em->flush();
+		$em->persist($serverStat);
+		$em->flush();
 
-        return "done";
-    }
+		return "done";
+	}
+
+	public function saveUsersConnected()
+	{
+
+		$req1 = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerUsersStats")
+			->createQueryBuilder('U')
+			->select('count(U.id)')
+			->where('U.connected = 1');
+		$connected = $req1->getQuery()->getSingleScalarResult();
+
+		$em = $this->doctrine;
+
+		$serverStat = new ServerUsersStats();
+		$serverStat-> setDateSave(new \DateTime("now"));
+		$serverStat->setConnected($connected);
+
+		$em->persist($serverStat);
+		$em->flush();
+
+		return "done";
+	}
 
     public function getAllErrors()
     {

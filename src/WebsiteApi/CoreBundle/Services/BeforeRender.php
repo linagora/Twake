@@ -23,7 +23,7 @@ class BeforeRender
 
 	public function beforeRender(FilterResponseEvent $event){
 
-        $event->getResponse()->headers->set('Access-Control-Allow-Origin', '*'); //Allow App
+        $event->getResponse()->headers->set('Access-Control-Allow-Origin', 'http://localhost:8001'); //Allow App
         $event->getResponse()->headers->set('Access-Control-Allow-Headers', ' Content-Type, *');
         $event->getResponse()->headers->set('Access-Control-Allow-Credentials', 'true');
         $event->getResponse()->headers->set('Access-Control-Allow-Methods', 'GET, POST');

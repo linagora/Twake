@@ -37,6 +37,7 @@ class CronCommand extends ContainerAwareCommand
 		$services = $this->getApplication()->getKernel()->getContainer();
 
 		// Server
+		$services->get('admin.TwakeServerStats')->saveUsersConnected();
 		$services->get('admin.TwakeServerStats')->saveCpuUsage();
 		$services->get('admin.TwakeServerStats')->saveRamUsage();
 
