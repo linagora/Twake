@@ -101,13 +101,24 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
         elseif($event["type"] == "E"){ // edition
             error_log("edition");
             if($this->streamService->isAllowed($currentUser->getId(),$key)){
-                if(isset($event["data"]["id"]) && isset($event["data"]["name"]) && isset($event["data"]["isPrivate"]) && isset($event["data"]["members"]) )
-                $stream = $this->streamService->editStream($event["data"]["id"],$event["data"]["name"],$event["data"]["isPrivate"],$event["data"]["members"],$event["data"]["description"],$currentUser);
-                if($stream){
-                    $event["data"] = $stream;
+                if(isset($event["data"]["id"]) && isset($event["data"]["name"]) && isset($event["data"]["isPrivate"]) && isset($event["data"]["members"]) ){
+                    $stream = $this->streamService->editStream($event["data"]["id"],$event["data"]["name"],$event["data"]["isPrivate"],$event["data"]["members"],$event["data"]["description"],$currentUser);
+                    if($stream){
+                        $event["data"] = $stream;
+                    }
+                    else{
+                        $canBroadcast = false;
+                    }
                 }
-                else{
-                    $canBroadcast = false;
+            }
+        }elseif($event["type"] == "D"){ // delete
+            error_log("delete");
+            if($this->streamService->isAllowed($currentUser->getId(),$key)){
+                if(isset($event["data"]["id"])){
+                    $isOk = $this->streamService->deleteStream($event["data"]["id"],$currentUser);
+                    if(!$isOk){
+                        $canBroadcast = false;
+                    }
                 }
             }
         }

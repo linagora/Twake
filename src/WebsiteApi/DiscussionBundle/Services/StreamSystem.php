@@ -78,6 +78,22 @@ class StreamSystem
         }
     }
 
+    public function deleteStream($streamId){
+        if($streamId != null){
+            $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
+            if($stream){
+                $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("streamReciever"=>$stream));
+                foreach ($messages as $message){
+                    $this->doctrine->remove($message);
+                }
+                $this->doctrine->remove($stream);
+                $this->doctrine->flush();
+                return true;
+            }
+        }
+        return false;
+    }
+
     public function editStream($streamId,$name,$isPrivate,$members,$streamDescription,$user){
         if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             return;
