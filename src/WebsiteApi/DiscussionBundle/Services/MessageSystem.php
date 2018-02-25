@@ -140,6 +140,29 @@ class MessageSystem implements MessagesSystemInterface
         return false;
     }
 
+    public function deleteMessage($id){
+        $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($id);
+        if($message != null) {
+            if($message->getResponseTo()!=null){
+                $messageParent = $message->getResponseTo();
+                $this->doctrine->remove($message);
+                $this->doctrine->flush();
+                $messageArray = $this->getMessageAsArray($messageParent);
+            }
+            else{
+                $responses = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo"=>$message));
+                foreach ($responses as $response){
+                    $this->doctrine->remove($response);
+                }
+                $messageArray = $message->getAsArray();
+                $this->doctrine->remove($message);
+                $this->doctrine->flush();
+            }
+            return $messageArray ;
+        }
+        return false;
+    }
+
     public function getMessages($recieverType,$recieverId,$maxId,$subjectId,$user){
         $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverType,$recieverId,intval($maxId),$subjectId,$user->getId());
         $messages = array_reverse($messages);

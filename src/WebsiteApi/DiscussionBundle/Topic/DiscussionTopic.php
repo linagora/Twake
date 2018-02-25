@@ -193,6 +193,20 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                     $canBroadcast = false;
                 }
             }
+            elseif ($operation == 'D') { // delete message
+                if (isset($event['data']) && isset($event['data']['id'])) {
+                    $messageInfos = $this->messagesService->deleteMessage($event["data"]["id"]);
+                    if($messageInfos){
+                        $event["data"]= $messageInfos;
+                    }
+                    else{
+                        $canBroadcast = false;
+                    }
+                }
+                else{
+                    $canBroadcast = false;
+                }
+            }
             else{
             	$canBroadcast = false;
 			}
