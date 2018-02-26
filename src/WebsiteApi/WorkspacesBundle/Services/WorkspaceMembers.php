@@ -222,11 +222,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                     "workspaceId" => $workspace->getId(),
                 )
             );
-            error_log("push ".$user->getId());
             $this->pusher->push($datatopush, "notifications_topic",Array("id_user"=>$user->getId()));
 
 			if($workspace->getGroup() != null) {
-				$this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
+				//$this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 			}
 
 
@@ -259,8 +258,21 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 			$member = $workspaceUserRepository->findOneBy(Array("workspace"=>$workspace, "user"=>$user));
 
+            $datatopush = Array(
+                "action" => "RM",
+                "data"=>Array(
+                    "id" => $user->getId(),
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+
+            $this->pusher->push($datatopush, "group_topic",Array("id"=>$workspace->getId()));
+
 			$this->doctrine->remove($member);
 			$this->doctrine->flush();
+
+
+
 
 			//$this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("workspace"=>$workspace->getName(), "username"=>$user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 

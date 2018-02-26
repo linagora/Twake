@@ -21,10 +21,25 @@ class GroupTopic implements TopicInterface, PushableTopicInterface {
   }
 
   public function getName() {return 'group.topic';}
-  //Réception d'un truc (pas utile pour le moment)
+
   public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
   {
-    // TODO: Implement onPublish() method.
+      print_r($event);
+
+      $key = $request->getAttributes()->get('key');
+      $currentUser = $this->clientManipulator->getClient($connection);
+      if (!($currentUser instanceof User)) {
+          return;
+      }
+      //Verify user is logged in
+      if ($currentUser == null
+          || is_string($currentUser)
+      ) {
+          return; //Cancel operation
+      }
+      $currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
+
+      $canBroadcast = true;
   }
 
   //Post d'une update
