@@ -13,13 +13,15 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 	private $string_cleaner;
 	private $twake_mailer;
 	private $doctrine;
+	private $pusher;
 
-	public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner)
+	public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner,$pusher)
 	{
 		$this->doctrine = $doctrine;
 		$this->wls = $workspaces_levels_service;
 		$this->string_cleaner = $string_cleaner;
 		$this->twake_mailer = $twake_mailer;
+		$this->pusher = $pusher;
 	}
 
 	public function changeLevel($workspaceId, $userId, $levelId, $currentUserId = null)
@@ -62,7 +64,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 		if($currentUserId == null
 			|| $this->wls->can($workspaceId, $currentUserId, "members:edit")
 		){
-
 			$username = $this->string_cleaner->simplifyUsername($username);
 
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
@@ -73,7 +74,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			}
 
 		}
-
 		return false;
 	}
 
@@ -194,10 +194,12 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$member = $workspaceUserRepository->findOneBy(Array("workspace"=>$workspace, "user"=>$user));
 
 			if($member!=null){
+			    error_log("already added");
 				return false; //Already added
 			}
 
 			if($workspace->getUser() != null && $workspace->getUser()->getId()!=$userId){
+                error_log("private workspace");
 				return false; //Private workspace, only one user
 			}
 
@@ -212,6 +214,16 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 			$this->doctrine->persist($member);
 			$this->doctrine->flush();
+
+            $datatopush = Array(
+                "type"=>"GROUP",
+                "action" => "addWorkspace",
+                "data"=>Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            error_log("push ".$user->getId());
+            $this->pusher->push($datatopush, "notifications_topic",Array("id_user"=>$user->getId()));
 
 			if($workspace->getGroup() != null) {
 				$this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
@@ -250,7 +262,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$this->doctrine->remove($member);
 			$this->doctrine->flush();
 
-			$this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("workspace"=>$workspace->getName(), "username"=>$user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
+			//$this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("workspace"=>$workspace->getName(), "username"=>$user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 
 			return true;
 		}
