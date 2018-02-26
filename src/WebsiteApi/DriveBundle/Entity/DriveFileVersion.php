@@ -37,6 +37,11 @@ class DriveFileVersion
 	private $key;
 
 	/**
+	 * @ORM\Column(type="string", length=255)
+	 */
+	private $mode = "OpenSSL";
+
+	/**
 	 * @ORM\Column(type="integer")
 	 */
 	private $size;
@@ -110,6 +115,18 @@ class DriveFileVersion
 	{
 		$this->size = $size;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getMode()
+	{
+		if(!$this->mode){
+			return "AES";
+		}
+		return $this->mode;
+	}
+
 
 
 }
