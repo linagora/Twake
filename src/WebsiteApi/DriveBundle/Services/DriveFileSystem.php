@@ -350,7 +350,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 			$path = $this->getRoot() . $newFile->getPath();
 			$this->verifyPath($path);
-			$this->writeEncode($path, $fileVersion->getKey(), $content);
+			$this->writeEncode($path, $fileVersion->getKey(), $content, $fileVersion->getMode());
 			$size = filesize($path);
 
 			$fileVersion->setSize($size);
@@ -390,7 +390,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 			return null;
 		}
 
-		return $this->readDecode($path, $file->getLastVersion()->getKey());
+		return $this->readDecode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
 	}
 
 	public function setRawContent($file, $content = null, $newVersion = false)
@@ -416,7 +416,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 			if ($content != null) {
 				$this->verifyPath($path);
-				$this->writeEncode($path, $file->getLastVersion()->getKey(), $content);
+				$this->writeEncode($path, $file->getLastVersion()->getKey(), $content, $file->getLastVersion()->getMode());
 			}
 
 			$file->setSize(filesize($path));
@@ -658,7 +658,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 		);
 		$errors = $uploader->upload($file, $real, $context);
 
-		$this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey());
+		$this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
 
 		$this->setRawContent($newFile);
 
@@ -685,7 +685,12 @@ class DriveFileSystem implements DriveFileSystemInterface
 		} else {
 
 			$completePath = $this->getRoot() . $file->getPath();
-			$completePath = $this->decode($completePath, $file->getLastVersion()->getKey());
+
+			ini_set('memory_limit', '10M');
+
+			$completePath = $this->decode($completePath, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+
+			error_log("hey !");
 
 			$ext = $this->getInfos($file)['extension'];
 
@@ -697,10 +702,6 @@ class DriveFileSystem implements DriveFileSystemInterface
 				header("Content-type: application/force-download");
 				header('Content-Disposition: attachment; filename="' . $file->getName() . '"');
 			} else {
-
-				if (filesize($completePath) > 5000000) { //5mo
-					die;
-				}
 
 				header('Content-Disposition: inline; filename="' . $file->getName() . '"');
 
@@ -743,10 +744,15 @@ class DriveFileSystem implements DriveFileSystemInterface
 		}
 	}
 
-	private function encode($path, $key){
+	private function encode($path, $key, $mode="AES"){
 
-		$mcrypt = new MCryptAES256Implementation();
-		$lib = new AESCryptFileLib($mcrypt);
+		if($mode=="AES") {
+			$mcrypt = new MCryptAES256Implementation();
+			$lib = new AESCryptFileLib($mcrypt);
+		}
+		if($mode=="OpenSSL") {
+			$lib = new OpenSSLCryptLib();
+		}
 
 		$pathTemp = $path . ".tmp";
 		rename($path, $pathTemp);
@@ -759,13 +765,15 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	}
 
-	private function decode($path, $key){
+	private function decode($path, $key, $mode="AES"){
 
-		$mcrypt = new MCryptAES256Implementation();
-		$lib = new AESCryptFileLib($mcrypt);
-
-		error_log($key);
-		error_log($path);
+		if($mode=="AES") {
+			$mcrypt = new MCryptAES256Implementation();
+			$lib = new AESCryptFileLib($mcrypt);
+		}
+		if($mode=="OpenSSL") {
+			$lib = new OpenSSLCryptLib();
+		}
 
 		$tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
 		$this->verifyPath($tmpPath);
@@ -776,15 +784,15 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	}
 
-	private function writeEncode($path, $key, $content){
+	private function writeEncode($path, $key, $content, $mode="AES"){
 		file_put_contents($path, $content);
 		if($content!="") {
-			$this->encode($path, $key);
+			$this->encode($path, $key, $mode);
 		}
 	}
 
-	private function readDecode($path, $key){
-		$path = $this->decode($path, $key);
+	private function readDecode($path, $key, $mode="AES"){
+		$path = $this->decode($path, $key, $mode);
 		$var = file_get_contents($path);
 		@unlink($path);
 		return $var;

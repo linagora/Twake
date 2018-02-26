@@ -467,6 +467,7 @@ class AESCryptFileLib
 			while (!feof($source_fh)) {
 				$rest_of_data .= fread($source_fh, 8192); //Read in 8K chunks
 			}
+
 			$encrypted_data = self::bin_substr($rest_of_data, 0, -33);
 			$file_size_modulos = unpack("C", self::bin_substr($rest_of_data, -33, 1));
 			$file_size_modulos = $file_size_modulos[1];
