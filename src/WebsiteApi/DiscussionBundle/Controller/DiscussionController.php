@@ -59,7 +59,7 @@ class DiscussionController extends Controller
                     $stream = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream")->find($discussionInfos["id"]);
                     if($stream != null){
                         $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$this->getUser(),"stream"=>$stream));
-                        if($link != null){
+                        if($link != null || !$stream->getIsPrivacy()){
                             $subjects = $this->get("app.subjectSystem")->getSubject($stream);
                             $data["data"] = $subjects;
                         }
