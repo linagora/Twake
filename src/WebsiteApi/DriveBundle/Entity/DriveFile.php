@@ -331,6 +331,7 @@ class DriveFile
 			'description' => $this->getDescription(),
 			'size' => $this->getSize(),
 			'added' => $this->getAdded()->getTimestamp(),
+			'parent' => (($this->getParent())?$this->getParent()->getId():0),
 			'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
 			'isDirectory' => $this->getIsDirectory(),
 			"extension" => $this->getExtension(),
