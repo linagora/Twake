@@ -103,7 +103,7 @@ class DiscussionController extends Controller
                 }
                 else{
                     $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("stream"=>$subject->getStream(),"user"=>$this->getUser()));
-                    if($link == null){
+                    if($subject->getStream()->getIsPrivate() && $link == null){
                         $data["errors"][] = "notallowed";
                     }
                     else{
