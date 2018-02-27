@@ -25,6 +25,7 @@ class FilesController extends Controller
 	    $parentId = $request->request->get("parentId", 0);
 	    $filename = $request->request->get("name", "New");
 	    $content = $request->request->get("content", "");
+	    $model = $request->request->get("model", null);
 	    $isDirectory = $request->request->get("isDirectory", true);
 
 	    $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
@@ -36,6 +37,19 @@ class FilesController extends Controller
 		    } else {
 
 			    $file = $this->get('app.drive.FileSystem')->create($groupId, $parentId, $filename, $content, $isDirectory);
+
+			    if($model){
+				    //IMPORTANT ! Disable local files !!!
+				    if (strpos($model, "http://") !== false) {
+					    $model = "http://" . str_replace("http://", "", $model);
+				    } else {
+					    $model = "https://" . str_replace("https://", "", $model);
+				    }
+				    $content = file_get_contents($model);
+				    $this->get("app.drive.FileSystem")->setRawContent($file->getId(), $content);
+
+			    }
+
 			    if (!$file) {
 				    $data["errors"][] = "unknown";
 			    } else {

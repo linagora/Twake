@@ -293,7 +293,7 @@ class DriveFile
 	 */
 	public function getExtension()
 	{
-		return $this->extension;
+		return strtolower($this->extension);
 	}
 
 	/**

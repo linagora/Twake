@@ -47,6 +47,11 @@ class Application
 	private $canCreateFile; //Will be visible in the list of new files in Drive
 
 	/**
+	 * @ORM\Column(type="text")
+	 */
+	private $createFileData = "{}"; //Will be visible in the list of new files in Drive
+
+	/**
 	 * @ORM\Column(type="boolean")
 	 */
 	private $isCapable; //Can be opened as app in window (displayed in the left bar of apps)
@@ -482,6 +487,22 @@ class Application
 	/**
 	 * @return mixed
 	 */
+	public function getCreateFileData()
+	{
+		return json_decode($this->createFileData, 1);
+	}
+
+	/**
+	 * @param mixed $createFileData
+	 */
+	public function setCreateFileData($createFileData)
+	{
+		$this->createFileData = json_encode($createFileData);
+	}
+
+	/**
+	 * @return mixed
+	 */
 	public function getisCapable()
 	{
 		return $this->isCapable;
@@ -533,6 +554,7 @@ class Application
 			"internal" => ((!(substr( $this->getUrl(), 0, 4 ) === "http"))?true:false),
 			"color" => $this->getColor(),
 			"canCreateFile" => $this->getCanCreateFile(),
+			"createFileData" => $this->getCreateFileData(),
 			"isCapable" => $this->getisCapable(),
 			"default" => $this->getDefault()
 		);
