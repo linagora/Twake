@@ -36,7 +36,7 @@ class Notifications
 	var $pusher;
 
 	/* Configuration */
-	var $notification_mailfrom = "twake@proxima.fr";
+	var $notification_mailfrom = "noreply@twakeapp.com";
 	var $notification_mailsubject = "Notification from Twake";
 
 

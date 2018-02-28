@@ -11,6 +11,36 @@ twake_user_get:
     path:     /current/get
     defaults: { _controller: TwakeUsersBundle:UsersConnections:currentUser }
 
+# Contacts
+
+twake_contact_add:
+    path:     /contacts/add
+    defaults: { _controller: TwakeUsersBundle:Contacts:add }
+
+twake_contact_remove:
+    path:     /contacts/remove
+    defaults: { _controller: TwakeUsersBundle:Contacts:remove }
+
+twake_contact_get:
+    path:     /contacts/get
+    defaults: { _controller: TwakeUsersBundle:Contacts:get }
+
+twake_contact_getAll:
+    path:     /contacts/getAll
+    defaults: { _controller: TwakeUsersBundle:Contacts:getAll }
+
+twake_contact_getAllRequests:
+    path:     /contacts/getAllRequests
+    defaults: { _controller: TwakeUsersBundle:Contacts:getAllRequests }
+
+twake_contact_getAllRequestsFromMe:
+    path:     /contacts/getAllRequestsFromMe
+    defaults: { _controller: TwakeUsersBundle:Contacts:getAllRequestsFromMe }
+
+twake_contact_searchByUsername:
+    path:     /contacts/search
+    defaults: { _controller: TwakeUsersBundle:Contacts:searchByUsername }
+
 # Account
 
 twake_user_account_setbasic:

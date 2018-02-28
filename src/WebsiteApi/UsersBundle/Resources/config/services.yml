@@ -12,6 +12,10 @@ services:
         class: WebsiteApi\UsersBundle\Services\UserStats
         arguments: ["@doctrine.orm.entity_manager"]
 
+    app.contacts:
+        class: WebsiteApi\UsersBundle\Services\Contacts
+        arguments: ["@doctrine.orm.entity_manager"]
+
     ping.rpc:
         class: WebsiteApi\UsersBundle\Topic\PingTopic
         tags:
