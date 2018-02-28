@@ -9,9 +9,11 @@ class Contacts implements ContactsInterface
 {
 
 	private $em;
+	private $notifications;
 
-	public function __construct($em){
+	public function __construct($em, $notifications){
 		$this->em = $em;
+		$this->notifications = $notifications;
 	}
 
 	public function searchByUsername($username)
@@ -33,6 +35,17 @@ class Contacts implements ContactsInterface
 			$link = new Contact($current_user, $user);
 			$this->em->persist($link);
 			$this->em->flush();
+
+			$this->notifications->pushNotification(
+				null,
+				null,
+				Array(),
+				null,
+				"contact_request",
+				"@".$user->getUsername()." want to become your contact.",
+				Array("push", "mail")
+			);
+
 			return true;
 		}
 

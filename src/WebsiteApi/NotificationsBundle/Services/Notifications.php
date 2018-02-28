@@ -26,7 +26,7 @@ class Notifications implements NotificationsInterface
 		$this->rms_push_notifications = $rms_push_notifications;
 	}
 
-	public function pushNotification($application, $workspace, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 		$this->krlove_async->call(
 			'app.notifications',
