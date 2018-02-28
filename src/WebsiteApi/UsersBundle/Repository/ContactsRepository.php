@@ -2,8 +2,9 @@
 
 namespace WebsiteApi\UsersBundle\Repository;
 
+use Doctrine\ORM\EntityRepository;
 
-class ContactsRepository extends \Doctrine\ORM\EntityRepository
+class ContactsRepository extends EntityRepository
 {
 
 }
