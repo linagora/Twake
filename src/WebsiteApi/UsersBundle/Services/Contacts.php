@@ -98,9 +98,9 @@ class Contacts implements ContactsInterface
 	{
 		$contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
 
-		$links = $contactRepository->find(Array("to"=>$current_user, "status"=>1));
+		$links = $contactRepository->findBy(Array("to"=>$current_user, "status"=>1));
 		$links = array_merge($links,
-			$contactRepository->find(Array("from" => $current_user, "status"=>1))
+			$contactRepository->findBy(Array("from" => $current_user, "status"=>1))
 		);
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
@@ -122,7 +122,7 @@ class Contacts implements ContactsInterface
 	{
 		$contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
 
-		$links = $contactRepository->find(Array("to"=>$current_user, "status"=>0));
+		$links = $contactRepository->findBy(Array("to"=>$current_user, "status"=>0));
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$current_user = $userRepository->find($current_user);
@@ -143,7 +143,7 @@ class Contacts implements ContactsInterface
 	{
 		$contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
 
-		$links = $contactRepository->find(Array("from"=>$current_user, "status"=>0));
+		$links = $contactRepository->findBy(Array("from"=>$current_user, "status"=>0));
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$current_user = $userRepository->find($current_user);
