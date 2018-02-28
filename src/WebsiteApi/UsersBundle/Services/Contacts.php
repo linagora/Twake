@@ -109,9 +109,9 @@ class Contacts implements ContactsInterface
 		$list = [];
 		foreach($links as $link){
 			if($link->getFrom()->getId()==$current_user->getId()){
-				$list[] = $link->getTo()->getAsArray();
+				$list[] = $link->getTo();
 			}else{
-				$list[] = $link->getFrom()->getAsArray();
+				$list[] = $link->getFrom();
 			}
 		}
 
@@ -130,9 +130,9 @@ class Contacts implements ContactsInterface
 		$list = [];
 		foreach($links as $link){
 			if($link->getFrom()->getId()==$current_user->getId()){
-				$list[] = $link->getTo()->getAsArray();
+				$list[] = $link->getTo();
 			}else{
-				$list[] = $link->getFrom()->getAsArray();
+				$list[] = $link->getFrom();
 			}
 		}
 
@@ -151,9 +151,9 @@ class Contacts implements ContactsInterface
 		$list = [];
 		foreach($links as $link){
 			if($link->getFrom()->getId()==$current_user->getId()){
-				$list[] = $link->getTo()->getAsArray();
+				$list[] = $link->getTo();
 			}else{
-				$list[] = $link->getFrom()->getAsArray();
+				$list[] = $link->getFrom();
 			}
 		}
 
