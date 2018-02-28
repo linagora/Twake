@@ -180,10 +180,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 	public function addMember($workspaceId, $userId, $levelId = null, $currentUserId = null)
 	{
-		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "members:edit")
-		){
-
+		if($currentUserId == null || $this->wls->can($workspaceId, $currentUserId, "members:edit")){
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 
@@ -203,13 +200,13 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 				return false; //Private workspace, only one user
 			}
 
-			if(!$levelId) {
+			if(!$levelId || $levelId==null) {
 				$level = $this->wls->getDefaultLevel($workspaceId);
 			}else{
 				$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
 				$level = $levelRepository->find($levelId);
 			}
-
+            error_log("level : ".$level->getId());
 			$member = new WorkspaceUser($workspace, $user, $level);
 
 			$this->doctrine->persist($member);
