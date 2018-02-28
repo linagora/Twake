@@ -43,7 +43,7 @@ class Contacts implements ContactsInterface
 			$this->notifications->pushNotification(
 				null,
 				null,
-				Array(),
+				Array($current_user),
 				null,
 				"contact_request",
 				"@".$user->getUsername()." want to become your contact.",
@@ -82,6 +82,16 @@ class Contacts implements ContactsInterface
 			return false;
 		}
 
+		$this->notifications->pushNotification(
+			null,
+			null,
+			Array($user),
+			null,
+			"contact_acceptation",
+			"@".$current_user->getUsername()." accepted to become your contact.",
+			Array("push", "mail")
+		);
+
 		$link->setStatus(1);
 
 		$this->em->remove($link);
@@ -110,6 +120,8 @@ class Contacts implements ContactsInterface
 		$links = array_merge($links,
 			$contactRepository->findBy(Array("from" => $current_user, "status"=>1))
 		);
+
+		$this->notifications->readAll(null, null, $current_user, "contact_acceptation");
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$current_user = $userRepository->find($current_user);
