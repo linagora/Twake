@@ -78,7 +78,10 @@ class Contacts implements ContactsInterface
 	{
 		$link = $this->get($current_user, $user);
 
-		if(!$link){
+		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+		$user = $userRepository->find($user);
+
+		if(!$link || $link->getFrom()->getId()!=$user->getId()){
 			return false;
 		}
 
@@ -94,7 +97,7 @@ class Contacts implements ContactsInterface
 
 		$link->setStatus(1);
 
-		$this->em->remove($link);
+		$this->em->persist($link);
 		$this->em->flush();
 
 		return true;
