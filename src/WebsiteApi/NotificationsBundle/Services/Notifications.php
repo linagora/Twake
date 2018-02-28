@@ -58,7 +58,7 @@ class Notifications implements NotificationsInterface
 		$data = Array(
 			"type"=>"add",
 			"workspace_id"=>($workspace!=null?$workspace->getId():null),
-			"app_id"=>$application->getId(),
+			"app_id"=>($application!=null?$application->getId():null),
 			"title" => $title,
 			"text" => $text,
 			"code" => $code,
