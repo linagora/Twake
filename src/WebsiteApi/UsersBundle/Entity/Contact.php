@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Contact
  *
  * @ORM\Table(name="contact",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\UsersBundle\Repository\ContactRepository")
+ * @ORM\Entity(repositoryClass="WebsiteApi\UsersBundle\Repository\ContactsRepository")
  */
 class Contact
 {
