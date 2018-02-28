@@ -67,7 +67,17 @@ class ContactsController extends Controller
 			$user_id = $request->request->getInt("user_id", 0);
 			$res = $this->get("app.contacts")->get($this->getUser(), $user_id);
 			if($res){
-				$data["data"] = $res->getStatus();
+				if($res->getStatus()){
+					$data["data"] = "friends";
+				}else{
+					if($res->getFrom()->getId() == $user_id){
+						$data["data"] = "fromHim";
+					}else{
+						$data["data"] = "fromMe";
+					}
+				}
+			}else{
+				$data["data"] = "none";
 			}
 		}else{
 			$data["errors"][] = "unknown";
@@ -156,7 +166,7 @@ class ContactsController extends Controller
 
 		if($this->getUser()){
 			$username = $request->request->get("username", "");
-			$res = $this->get("app.contacts")->searchByUsername($this->getUser(), $username);
+			$res = $this->get("app.contacts")->searchByUsername($username);
 			if($res){
 				$data["data"] = $res->getAsArray();
 			}
