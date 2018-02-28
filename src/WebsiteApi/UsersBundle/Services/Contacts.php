@@ -19,7 +19,7 @@ class Contacts implements ContactsInterface
 	public function searchByUsername($username)
 	{
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		return $userRepository->findOneBy(Array("username_canonical"=>$username));
+		return $userRepository->findOneBy(Array("username"=>$username));
 	}
 
 	public function ask($current_user, $user)
