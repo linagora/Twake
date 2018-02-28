@@ -195,6 +195,13 @@ class User implements UserInterface
 					$encoder = $factory->getEncoder($user);
 					$user->setPassword($encoder->encodePassword($password, $user->getSalt()));
 
+					$token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
+					$this->token_storage->setToken($token);
+
+					$request = $this->request_stack->getCurrentRequest();
+					$event = new InteractiveLoginEvent($request, $token);
+					$this->event_dispatcher->dispatch("security.interactive_login", $event);
+
 					$this->em->remove($ticket);
 					$this->em->persist($user);
 					$this->em->flush();

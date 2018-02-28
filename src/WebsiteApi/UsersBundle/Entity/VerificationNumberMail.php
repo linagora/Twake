@@ -61,7 +61,7 @@ class VerificationNumberMail
 		$this->token = bin2hex(random_bytes(128));
 		$this->hashCode = bin2hex(random_bytes(128));
 		$this->date = new \DateTime();
-		$this->validityTime = $validityTime;
+		$this->validityTime = max(3600, $validityTime);
 	}
 
 	public function getCode(){

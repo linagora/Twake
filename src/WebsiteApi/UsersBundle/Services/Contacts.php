@@ -31,6 +31,10 @@ class Contacts implements ContactsInterface
 
 		$link = $this->get($current_user, $user);
 
+		if($current_user->getId()==$user->getId()){
+			return false;
+		}
+
 		if(!$link){
 			$link = new Contact($current_user, $user);
 			$this->em->persist($link);
@@ -73,6 +77,10 @@ class Contacts implements ContactsInterface
 	public function accept($current_user, $user)
 	{
 		$link = $this->get($current_user, $user);
+
+		if(!$link){
+			return false;
+		}
 
 		$link->setStatus(1);
 
@@ -126,6 +134,8 @@ class Contacts implements ContactsInterface
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$current_user = $userRepository->find($current_user);
+
+		$this->notifications->readAll(null, null, $current_user, "contact_request");
 
 		$list = [];
 		foreach($links as $link){
