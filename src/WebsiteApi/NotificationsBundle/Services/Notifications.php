@@ -80,8 +80,8 @@ class Notifications implements NotificationsInterface
 				$useDevices = true;
 			}
 			$currentDate = gmdate("H") + floor(gmdate("i")/30)/2;
-			if($currentDate<$notificationPreference["dont_disturb_before"]
-				|| $currentDate>$notificationPreference["dont_disturb_after"]
+			if(($notificationPreference["dont_disturb_before"]!=null && $currentDate<$notificationPreference["dont_disturb_before"])
+				|| ($notificationPreference["dont_disturb_after"]!=null && $currentDate>$notificationPreference["dont_disturb_after"])
 			){
 				continue;
 			}
