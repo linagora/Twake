@@ -434,7 +434,7 @@ class MessageSystem implements MessagesSystemInterface
         }
         else{
             $users = Array($message->getUserReciever());
-            $msg = "@".$message->getUserSender()->getUsername()." : ".$message->getCleanContent();
+            $msg = "@".$message->getUserSender()->getUsername()." : ".$message->getContent();
         }
         error_log($msg);
         $this->notificationsService->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));

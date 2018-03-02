@@ -79,29 +79,33 @@ class Notifications implements NotificationsInterface
 			if($notificationPreference["devices"]==1 && $user->isConnected()){
 				$useDevices = true;
 			}
-			$currentDate = gmdate("H") + floor(gmdate("i")/30)/2;
-			if($notificationPreference["dont_disturb_between"]!=null && $notificationPreference["dont_disturb_and"]!=null){
+			if($useDevices) {
+				$currentDate = gmdate("H") + floor(gmdate("i") / 30) / 2;
+				if ($notificationPreference["dont_disturb_between"] != null && $notificationPreference["dont_disturb_and"] != null) {
 
-				if($notificationPreference["dont_disturb_between"]<$notificationPreference["dont_disturb_and"]
-					&& $currentDate>=$notificationPreference["dont_disturb_between"]
-					&& $currentDate<$notificationPreference["dont_disturb_and"]
-				) {
-					continue;
-				}
-				if($notificationPreference["dont_disturb_between"]>$notificationPreference["dont_disturb_and"]
-					&& ($currentDate>=$notificationPreference["dont_disturb_between"]
-					|| $currentDate<$notificationPreference["dont_disturb_and"])
-				) {
-					continue;
-				}
+					if ($notificationPreference["dont_disturb_between"] < $notificationPreference["dont_disturb_and"]
+						&& $currentDate >= $notificationPreference["dont_disturb_between"]
+						&& $currentDate < $notificationPreference["dont_disturb_and"]
+					) {
+						$useDevices = false;
+					}
+					if ($notificationPreference["dont_disturb_between"] > $notificationPreference["dont_disturb_and"]
+						&& ($currentDate >= $notificationPreference["dont_disturb_between"]
+							|| $currentDate < $notificationPreference["dont_disturb_and"])
+					) {
+						$useDevices = false;
+					}
 
+				}
 			}
 			if(!$notificationPreference["dont_use_keywords"]){
 				$keywords = explode(",",$notificationPreference["keywords"]);
-				$keywords[] = "@".$user->getUsername();
+				$keywords[] = $user->getUsername();
 				$present = false;
 				foreach($keywords as $keyword){
-					if(strrpos($title." ".$text, $keyword)) {
+					$keyword = trim($keyword);
+					$keyword = " ".$keyword." ";
+					if(strrpos(strtolower($title." ".$text." "), strtolower($keyword))>=0) {
 						$present = true;
 					}
 				}
