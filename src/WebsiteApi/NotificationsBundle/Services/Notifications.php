@@ -80,10 +80,21 @@ class Notifications implements NotificationsInterface
 				$useDevices = true;
 			}
 			$currentDate = gmdate("H") + floor(gmdate("i")/30)/2;
-			if(($notificationPreference["dont_disturb_before"]!=null && $currentDate<$notificationPreference["dont_disturb_before"])
-				|| ($notificationPreference["dont_disturb_after"]!=null && $currentDate>$notificationPreference["dont_disturb_after"])
-			){
-				continue;
+			if($notificationPreference["dont_disturb_between"]!=null && $notificationPreference["dont_disturb_and"]!=null){
+
+				if($notificationPreference["dont_disturb_between"]<$notificationPreference["dont_disturb_and"]
+					&& $currentDate>=$notificationPreference["dont_disturb_between"]
+					&& $currentDate<$notificationPreference["dont_disturb_and"]
+				) {
+					continue;
+				}
+				if($notificationPreference["dont_disturb_between"]>$notificationPreference["dont_disturb_and"]
+					&& ($currentDate>=$notificationPreference["dont_disturb_between"]
+					|| $currentDate<$notificationPreference["dont_disturb_and"])
+				) {
+					continue;
+				}
+
 			}
 			if(!$notificationPreference["dont_use_keywords"]){
 				$keywords = explode(",",$notificationPreference["keywords"]);

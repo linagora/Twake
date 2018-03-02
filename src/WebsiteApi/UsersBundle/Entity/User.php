@@ -218,8 +218,8 @@ class User extends BaseUser
 	{
 		$preferences = json_decode($this->notification_preference, 1);
 		$preferences["devices"] = (isset($preferences["devices"]))?$preferences["devices"]:1;
-		$preferences["dont_disturb_before"] = (isset($preferences["dont_disturb_before"]))?$preferences["dont_disturb_before"]:null;
-		$preferences["dont_disturb_after"] = (isset($preferences["dont_disturb_after"]))?$preferences["dont_disturb_after"]:null;
+		$preferences["dont_disturb_between"] = (isset($preferences["dont_disturb_between"]))?$preferences["dont_disturb_between"]:null;
+		$preferences["dont_disturb_and"] = (isset($preferences["dont_disturb_and"]))?$preferences["dont_disturb_and"]:null;
 		$preferences["privacy"] = (isset($preferences["privacy"]))?$preferences["privacy"]:0;
 		$preferences["dont_use_keywords"] = (isset($preferences["dont_use_keywords"]))?$preferences["dont_use_keywords"]:1;
 		$preferences["keywords"] = (isset($preferences["keywords"]))?$preferences["keywords"]:"";
@@ -233,12 +233,12 @@ class User extends BaseUser
 	public function setNotificationPreference($notification_preference)
 	{
 		$preferences = Array();
-		$preferences["devices"] = intval($notification_preference["devices"]);
-		$preferences["dont_disturb_before"] = intval($notification_preference["disturb_before"]);
-		$preferences["dont_disturb_after"] = intval($notification_preference["disturb_after"]);
-		$preferences["privacy"] = intval($notification_preference["privacy"]);
-		$preferences["dont_use_keywords"] = intval($notification_preference["use_keywords"]);
-		$preferences["keywords"] = substr($notification_preference["keywords"], 0, 512);
+		@$preferences["devices"] = intval($notification_preference["devices"]);
+		@$preferences["dont_disturb_between"] = intval($notification_preference["disturb_before"]);
+		@$preferences["dont_disturb_and"] = intval($notification_preference["disturb_after"]);
+		@$preferences["privacy"] = intval($notification_preference["privacy"]);
+		@$preferences["dont_use_keywords"] = intval($notification_preference["use_keywords"]);
+		@$preferences["keywords"] = substr($notification_preference["keywords"], 0, 512);
 		$this->notification_preference = json_encode($notification_preference);
 	}
 
