@@ -76,7 +76,7 @@ class Notifications implements NotificationsInterface
 			if($notificationPreference["devices"]==0){
 				$useDevices = true;
 			}
-			if($notificationPreference["devices"]==1 && $user->isConnected()){
+			if($notificationPreference["devices"]==1 && !$user->isConnected()){
 				$useDevices = true;
 			}
 			if($useDevices) {
@@ -131,7 +131,7 @@ class Notifications implements NotificationsInterface
 
 			if(in_array("push", $type) && $useDevices){
 				$totalNotifications = $this->countAll($user);
-				@$this->pushDevice($user, $text, $title, $totalNotifications);
+				@$this->pushDevice($user, $data["text"], $title, $totalNotifications);
 			}
 			if(in_array("mail", $type)){
 				@$this->sendMail($application, $workspace, $user, $text);
