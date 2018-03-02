@@ -11,7 +11,68 @@ use Symfony\Component\HttpFoundation\Response;
 class UsersAccountController extends Controller
 {
 
-	
+	public function setLanguageAction(Request $request)
+	{
+
+		$data = Array(
+			"errors" => Array(),
+			"data" => Array()
+		);
+
+		if($this->getUser()){
+
+			$language = $request->request->get("language", "");
+			$this->get("app.user")->updateLanguage($this->getUser()->getId(), $language);
+
+		}else{
+			$data["errors"][] = "unknown";
+		}
+
+		return new JsonResponse($data);
+
+	}
+
+	public function getNotificationPreferencesAction(Request $request)
+	{
+
+		$data = Array(
+			"errors" => Array(),
+			"data" => Array()
+		);
+
+		if($this->getUser()){
+
+			$data["data"] = $this->get("app.user")->getNotificationPreferences($this->getUser()->getId());
+
+		}else{
+			$data["errors"][] = "unknown";
+		}
+
+		return new JsonResponse($data);
+
+	}
+
+	public function setNotificationPreferencesAction(Request $request)
+	{
+
+		$data = Array(
+			"errors" => Array(),
+			"data" => Array()
+		);
+
+		if($this->getUser()){
+
+			$notification = $request->request->get("preferences", Array());
+			$this->get("app.user")->setNotificationPreferences($this->getUser()->getId(), $notification);
+
+		}else{
+			$data["errors"][] = "unknown";
+		}
+
+		return new JsonResponse($data);
+
+	}
+
 	public function setIdentityAction(Request $request)
 	{
 

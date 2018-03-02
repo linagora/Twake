@@ -64,6 +64,16 @@ class User extends BaseUser
 	 */
 	protected $connected;
 
+	/**
+	 * @ORM\Column(name="language", type="string", length=64)
+	 */
+	protected $language = "en";
+
+	/**
+	 * @ORM\Column(name="notification_preference", type="string", length=2048)
+	 */
+	protected $notification_preference = "{}";
+
 
 	public function __construct()
 	{
@@ -185,6 +195,53 @@ class User extends BaseUser
 		$this->connected = $this->connections > 0;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getLanguage()
+	{
+		return $this->language;
+	}
+
+	/**
+	 * @param mixed $language
+	 */
+	public function setLanguage($language)
+	{
+		$this->language = $language;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getNotificationPreference()
+	{
+		$preferences = json_decode($this->notification_preference, 1);
+		$preferences["devices"] = (isset($preferences["devices"]))?$preferences["devices"]:1;
+		$preferences["dont_disturb_before"] = (isset($preferences["dont_disturb_before"]))?$preferences["dont_disturb_before"]:null;
+		$preferences["dont_disturb_after"] = (isset($preferences["dont_disturb_after"]))?$preferences["dont_disturb_after"]:null;
+		$preferences["privacy"] = (isset($preferences["privacy"]))?$preferences["privacy"]:0;
+		$preferences["dont_use_keywords"] = (isset($preferences["dont_use_keywords"]))?$preferences["dont_use_keywords"]:1;
+		$preferences["keywords"] = (isset($preferences["keywords"]))?$preferences["keywords"]:"";
+
+		return $preferences;
+	}
+
+	/**
+	 * @param mixed $notification_preference
+	 */
+	public function setNotificationPreference($notification_preference)
+	{
+		$preferences = Array();
+		$preferences["devices"] = intval($notification_preference["devices"]);
+		$preferences["dont_disturb_before"] = intval($notification_preference["disturb_before"]);
+		$preferences["dont_disturb_after"] = intval($notification_preference["disturb_after"]);
+		$preferences["privacy"] = intval($notification_preference["privacy"]);
+		$preferences["dont_use_keywords"] = intval($notification_preference["use_keywords"]);
+		$preferences["keywords"] = substr($notification_preference["keywords"], 0, 512);
+		$this->notification_preference = json_encode($notification_preference);
+	}
+
 	public function getAsArray()
 	{
 		$return = Array(
@@ -193,7 +250,8 @@ class User extends BaseUser
 			"firstname" => $this->getFirstName(),
 			"lastname" => $this->getLastName(),
 			"thumbnail" => ($this->getThumbnail()==null)?null:$this->getThumbnail()->getPublicURL(2),
-            "connected" => $this->isConnected()
+            "connected" => $this->isConnected(),
+			"language" => $this->getLanguage()
 		);
 		return $return;
 	}

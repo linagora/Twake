@@ -88,4 +88,13 @@ interface UserInterface
 	// @updateUserBasicData change user basic data
 	public function updateUserBasicData($userId, $firstName, $lastName, $imageFile=null);
 
+	// @setNotificationPreferences set notification preferences
+	public function setNotificationPreferences($userId, $notification);
+
+	// @getNotificationPreferences get notification preferences
+	public function getNotificationPreferences($userId);
+
+	// @updateLanguage update language
+	public function updateLanguage($userId, $language);
+
 }

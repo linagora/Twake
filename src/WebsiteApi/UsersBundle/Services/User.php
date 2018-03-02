@@ -574,8 +574,49 @@ class User implements UserInterface
 
 		}
 
+	}
 
+	public function setNotificationPreferences($userId, $notification)
+	{
+		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+
+		$user = $userRepository->find($userId);
+
+		if($user != null){
+
+			$user->setNotificationPreference($notification);
+			$this->em->persist($user);
+			$this->em->flush();
+
+		}
+	}
+
+	public function getNotificationPreferences($userId)
+	{
+		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+
+		$user = $userRepository->find($userId);
+
+		if($user != null){
+			return $user->getNotificationPreference();
+		}
+
+		return false;
 
 	}
 
+	public function updateLanguage($userId, $language)
+	{
+		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+
+		$user = $userRepository->find($userId);
+
+		if($user != null){
+
+			$user->setLanguage($language);
+			$this->em->persist($user);
+			$this->em->flush();
+
+		}
+	}
 }

@@ -75,6 +75,18 @@ twake_user_account_addmailverify:
     path:     /account/addmailverify
     defaults: { _controller: TwakeUsersBundle:UsersAccount:addMailVerify }
 
+twake_user_account_setlanguage:
+    path:     /account/language
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:setLanguage }
+
+twake_user_account_getnotification:
+    path:     /account/get_notifications
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:getNotificationPreferences }
+
+twake_user_account_setnotification:
+    path:     /account/set_notifications
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:setNotificationPreferences }
+
 
 # Subscribe
 

@@ -69,6 +69,39 @@ class Notifications implements NotificationsInterface
 
 			$user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($user);
 
+			//Verify that user want this notification
+
+			$notificationPreference = $user->getNotificationPreference();
+			$useDevices = false;
+			if($notificationPreference["devices"]==0){
+				$useDevices = true;
+			}
+			if($notificationPreference["devices"]==1 && $user->getConnected()){
+				$useDevices = true;
+			}
+			$currentDate = gmdate("H") + floor(gmdate("i")/30)/2;
+			if($currentDate<$notificationPreference["dont_disturb_before"]
+				|| $currentDate>$notificationPreference["dont_disturb_after"]
+			){
+				continue;
+			}
+			if(!$notificationPreference["dont_use_keywords"]){
+				$keywords = explode(",",$notificationPreference["keywords"]);
+				$keywords[] = "@".$user->getUsername();
+				$present = false;
+				foreach($keywords as $keyword){
+					if(strrpos($title." ".$text, $keyword)) {
+						$present = true;
+					}
+				}
+				if(!$present){
+					continue;
+				}
+			}
+			if($notificationPreference["privacy"]){
+				$data["text"] = "[Private]";
+			}
+
 			$n = new Notification($application, $workspace, $user);
 			if($code){
 				$n->setCode($code);
@@ -81,7 +114,7 @@ class Notifications implements NotificationsInterface
 			}
 			$this->doctrine->persist($n);
 
-			if(in_array("push", $type)){
+			if(in_array("push", $type) && $useDevices){
 				$totalNotifications = $this->countAll($user);
 				@$this->pushDevice($user, $text, $title, $totalNotifications);
 			}
