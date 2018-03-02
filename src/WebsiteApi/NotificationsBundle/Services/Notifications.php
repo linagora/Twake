@@ -76,7 +76,7 @@ class Notifications implements NotificationsInterface
 			if($notificationPreference["devices"]==0){
 				$useDevices = true;
 			}
-			if($notificationPreference["devices"]==1 && $user->getConnected()){
+			if($notificationPreference["devices"]==1 && $user->isConnected()){
 				$useDevices = true;
 			}
 			$currentDate = gmdate("H") + floor(gmdate("i")/30)/2;
