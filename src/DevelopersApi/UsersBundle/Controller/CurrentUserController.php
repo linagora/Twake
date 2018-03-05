@@ -35,6 +35,7 @@ class CurrentUserController extends Controller
 	        $data["data"]["userId"] = $t->getUser()->getId();
 	        $data["data"]["groupId"] = $t->getGroup()->getId();
 	        $data["data"]["username"] = $t->getUser()->getUsername();
+	        $data["data"]["language"] = $t->getUser()->getLanguage();
 	        $data["data"]["userImage"] = "";
 	        $pimage = $t->getUser()->getThumbnail();
 	        if ($pimage) {
