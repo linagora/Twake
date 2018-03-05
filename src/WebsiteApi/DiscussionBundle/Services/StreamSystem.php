@@ -54,14 +54,19 @@ class StreamSystem
     public function createStream($user, $workspaceId,$streamName,$streamIsPrivate,$streamDescription)
     {
         if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            return;
+            return false;
         } else {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
             if ($workspace == null) {
-                return ;
-            } elseif (!$this->levelManager->hasRight($user, $workspace, "Messages:general:create")) {
-                return;
-            } else {
+                return false;
+            }
+            if(!$this->isAllowed($user->getId(),$workspace->getId())){
+                return false;
+            }
+            if (!$this->levelManager->hasRight($user, $workspace, "Messages:general:create")) {
+                return false;
+            }
+            else {
                 $stream = new Stream($workspace, $streamName, $streamIsPrivate,$streamDescription);
                 $this->doctrine->persist($stream);
                 $link = $stream->addMember($user);
@@ -78,9 +83,20 @@ class StreamSystem
         }
     }
 
-    public function deleteStream($streamId){
+    public function deleteStream($streamId,$user){
         if($streamId != null){
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
+            if (!$this->security->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+                return false;
+            }
+
+            if(!$this->isAllowed($user->getId(),$stream->getWorkspace()->getId())){
+                return false;
+            }
+            if (!$this->levelManager->hasRight($user, $stream->getWorkspace(), "Messages:general:create")) {
+                return false;
+            }
+
             if($stream){
                 $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("streamReciever"=>$stream));
                 foreach ($messages as $message){
@@ -100,6 +116,16 @@ class StreamSystem
         } else {
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
             if($stream != null) {
+                $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $stream->getWorkspace()->getId(), "isDeleted" => false));
+                if ($workspace == null) {
+                    return false;
+                }
+                if(!$this->isAllowed($user->getId(),$workspace->getId())){
+                    return false;
+                }
+                if (!$this->levelManager->hasRight($user, $workspace, "Messages:general:create")) {
+                    return false;
+                }
                 $stream->setName($name);
                 $stream->setDescription($streamDescription);
                 $stream->setIsPrivate($isPrivate);
@@ -137,6 +163,9 @@ class StreamSystem
             return false;
         }
         else{
+            if(!$this->isAllowed($user->getId(),$workspace->getId())){
+                return false;
+            }
             $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace"=>$workspace));
             $retour = Array("stream"=>Array(), "user"=>Array());
             foreach($streams as $stream){
