@@ -103,7 +103,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             else if($operation == "E"){
             	$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($event["data"]["id"]);
             	if($message != null && $message->getUserSender()==$currentUser){
-	                $messageArray = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"]);
+	                $messageArray = $this->messagesService->editMessage($event["data"]["id"],$event["data"]["content"],$currentUser);
 	                if($messageArray){
                         $event["data"] = $messageArray;
 					}
@@ -143,7 +143,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             }
             elseif ($operation == 'P'){ // pinned message
             	if(isset($event["data"]) && isset($event["data"]["id"]) && isset($event["data"]["pinned"])){
-            		$messageArray = $this->messagesService->pinMessage($event["data"]["id"],$event["data"]["pinned"]);
+            		$messageArray = $this->messagesService->pinMessage($event["data"]["id"],$event["data"]["pinned"],$currentUser);
             		if($messageArray){
                         $event["data"] = $messageArray;
 					}
@@ -154,7 +154,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 			}
             elseif ($operation == 'MM') { // move message in other
                 if (isset($event['data']) && isset($event['data']['idDrop']) && isset($event['data']['idDragged'])  && $event['data']['idDragged']!=$event['data']['idDrop']) {
-                    $messageDropInfos = $this->messagesService->moveMessageInMessage($event["data"]["idDrop"],$event["data"]["idDragged"]);
+                    $messageDropInfos = $this->messagesService->moveMessageInMessage($event["data"]["idDrop"],$event["data"]["idDragged"],$currentUser);
                     if($messageDropInfos){
                         $event["data"] = $messageDropInfos;
                     }
@@ -181,7 +181,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             }
 			elseif ($operation == 'MMnot') { // remove message from message
                 if (isset($event['data']) && isset($event['data']['idDragged'])) {
-                    $messageInfos= $this->messagesService->moveMessageOutMessage($event["data"]["idDragged"]);
+                    $messageInfos= $this->messagesService->moveMessageOutMessage($event["data"]["idDragged"],$currentUser);
                     if($messageInfos){
                         $event["data"]= $messageInfos;
                     }
@@ -195,7 +195,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             }
             elseif ($operation == 'D') { // delete message
                 if (isset($event['data']) && isset($event['data']['id'])) {
-                    $messageInfos = $this->messagesService->deleteMessage($event["data"]["id"]);
+                    $messageInfos = $this->messagesService->deleteMessage($event["data"]["id"],$currentUser);
                     if($messageInfos){
                         $event["data"]= $messageInfos;
                     }

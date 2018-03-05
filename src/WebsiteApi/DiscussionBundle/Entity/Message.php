@@ -390,7 +390,18 @@ class Message
         $this->applicationData = json_encode($applicationData);
     }
 
-
+    public function getDiscussionKey(){
+        $key = "";
+        if($this->getTypeReciever()=="S" && $this->getStreamReciever()!=null){
+            $key = $this->getStreamReciever()->getId();
+        }
+        else{
+            if($this->getUserSender()!=null && $this->getUserReciever()!=null){
+                $key = $this->getUserSender()->getId()."_".$this->getUserReciever()->getId();
+            }
+        }
+        return $key;
+    }
 
 
 
