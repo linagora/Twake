@@ -74,7 +74,7 @@ class MessageSystem implements MessagesSystemInterface
             $applicationMessage = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($applicationMessage);
         }
         $key = ($recieverType == "S"?$recieverId:$senderId."_".$recieverId);
-        if(!$this->isAllowed($sender,$key)){
+        if(!$isApplicationMessage && !$isSystemMessage && !$this->isAllowed($sender,$key)){
             return false;
         }
         if($recieverType == "S"){
