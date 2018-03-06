@@ -95,6 +95,13 @@ interface MessagesSystemInterface
     public function moveMessageOutMessage($idDragged,$user);
 
     /**
+     * @param $idSubject
+     * @param $idMessage
+     * @param $user
+     * @return mixed
+     */
+    public function moveMessageInSubject($idSubject,$idMessage,$user);
+    /**
      * @param $id
      * @param $user
      * @return mixed

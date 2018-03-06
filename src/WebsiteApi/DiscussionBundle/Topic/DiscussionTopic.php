@@ -167,7 +167,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                 }
             } elseif ($operation == 'MS') { // move message in subject
                 if (isset($event['data']) &&  isset($event['data']['idDragged']) && isset($event['data']['idSubject']) ) {
-                    $messageInfos = $this->messagesService->moveMessageInSubject($event["data"]["idSubject"],$event["data"]["idDragged"]);
+                    $messageInfos = $this->messagesService->moveMessageInSubject($event["data"]["idSubject"],$event["data"]["idDragged"],$currentUser);
                     if($messageInfos){
                         $event["data"] = $messageInfos;
                     }
