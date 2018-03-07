@@ -110,9 +110,7 @@ class MessageSystem implements MessagesSystemInterface
             }
             $this->doctrine->persist($message);
             $this->doctrine->flush();
-
             $this->sendNotification($message,$workspace);
-
             return $message;
 
         }
@@ -122,6 +120,10 @@ class MessageSystem implements MessagesSystemInterface
     public function sendMessageWithFile($senderId, $recieverType, $recieverId,$content,$workspace, $subjectId=null,$fileId){
 	    $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->find($fileId);
         $driveApplication = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"drive"));
+        $sender = null;
+        if($senderId!=null){
+            $sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
+        }
         if($file!=null && $driveApplication!=null){
             $messageData = Array("file" => $file->getId());
 	        return $this->sendMessage($senderId,$recieverType,$recieverId,true,$driveApplication,false,$content,$workspace,$subjectId,$messageData);
@@ -461,8 +463,7 @@ class MessageSystem implements MessagesSystemInterface
         $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"messages-auto"));
         if($message->getTypeReciever() == "S"){
             if($message->getIsSystemMessage()){
-                $users = $this->getUserFromStream(null,$message->getStreamReciever());
-                $msg = "#".$message->getStreamReciever()->getName()." ".$message->getCleanContent();
+                return;
             }
             elseif($message->getIsApplicationMessage()){
                 $users = $this->getUserFromStream(null,$message->getStreamReciever());
