@@ -31,12 +31,14 @@ class MessageReadSystem
             $lastMessages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->getMessageNotOwner($user->getId(),$stream->getId(),1);
             if($lastMessages!=null){
                 $lastMessage = $lastMessages[0];
-                error_log("lasMessage ".$lastMessage->getId()." for stream ".$lastMessage->getStreamReciever()->getId().", asked ".$stream->getId());
                 if($messageRead == null){
+                    error_log("message read null");
                     $messageRead = new MessageRead();
                     $messageRead->setUser($user);
                     $messageRead->setStream($stream);
                 }
+                error_log("message read : ".$messageRead->getId());
+                error_log("last message : ".$lastMessage->getId());
                 $messageRead->setMessage($lastMessage);
                 $this->doctrine->persist($messageRead);
                 $this->doctrine->flush();
@@ -77,6 +79,7 @@ class MessageReadSystem
             }
             return true;
         }
+        $this->doctrine->flush();
         return false;
     }
 
@@ -97,7 +100,6 @@ class MessageReadSystem
                 return true;
             }
             $lastMessage = $lastMessages[0];
-            error_log("lastMessageFound ".$lastMessage->getId());
             if($messageRead == null){
                 return false;
             }
