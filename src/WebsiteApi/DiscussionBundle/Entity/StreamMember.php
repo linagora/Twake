@@ -26,7 +26,7 @@ class StreamMember
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Stream")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Stream", cascade={"persist"})
      */
     private $stream;
 
