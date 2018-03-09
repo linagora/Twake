@@ -152,7 +152,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 			return false;
 		}
 
-		if ($fileOrDirectory->getId() == $directory->getId()) {
+		if ($directory!=null && $fileOrDirectory->getId() == $directory->getId()) {
 			return false;
 		}
 

@@ -56,8 +56,10 @@ class StringCleaner
 		return preg_match("/^[A-Za-z0-9.\-_]{3,250}@[A-Za-z0-9.\-_]{2,50}\.[A-Za-z0-9]{2,4}$/",$mail);
 	}
 	public function verifyPassword($password){
+    	//At least 8 chars
+		return strlen($password)>=8;
 		//At least 8 characters, one lower and one uppercase, at least one number
-		return preg_match("/^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/",$password);
+		//return preg_match("/^\S*(?=\S{8,})(?=\S*[a-z])(?=\S*[A-Z])(?=\S*[\d])\S*$/",$password);
 	}
 	public function verifyUsername($username){
 		if (strlen($username) < 4 or strlen($username) > 30) {
