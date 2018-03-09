@@ -80,6 +80,26 @@ class WorkspaceController extends Controller
 		return new JsonResponse($response);
 	}
 
+	public function deleteAction(Request $request)
+	{
+		$data = Array(
+			"errors" => Array(),
+			"data" => Array()
+		);
+
+		if($this->getUser()){
+			$workspaceId = $request->request->getInt("workspaceId");
+			$ok = $this->get("app.workspaces")->remove($workspaceId);
+			if($ok){
+				$data["data"] = "success";
+			}
+		}else{
+			$data["errors"][] = "unknown";
+		}
+
+		return new JsonResponse($data);
+	}
+
 	public function setIdentityAction(Request $request)
 	{
 

@@ -66,9 +66,11 @@ class WorkspaceMembersController extends Controller
 		$list = preg_replace('!\s+!', ' ', $list);
 		$list = explode(" ", $list);
 
-		$added = 0;
+		$added = Array();
+		$not_added = Array();
 		foreach ($list as $element){
-			if(strrpos($element, "@") === false) {
+			$element = trim($element);
+			if(strrpos($element, "@")<=0) { //No mail or "@username"
 				$res = $this->get("app.workspace_members")
 					->addMemberByUsername($workspaceId, $element, $this->getUser()->getId());
 			}else{
@@ -76,11 +78,14 @@ class WorkspaceMembersController extends Controller
 					->addMemberByMail($workspaceId, $element, $this->getUser()->getId());
 			}
 			if($res){
-				$added++;
+				$added[] = $element;
+			}else{
+				$not_added[] = $element;
 			}
 		}
 
 		$response["data"]["added"] = $added;
+		$response["data"]["not_added"] = $not_added;
 
 		return new JsonResponse($response);
 	}

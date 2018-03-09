@@ -98,13 +98,19 @@ class Workspaces implements WorkspacesInterface
 	public function remove($groupId, $workspaceId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "workspace:edit")
+			|| ($this->wls->can($workspaceId, $currentUserId, "workspace:edit")
+				&& count($this->wms->getMembers($workspaceId))<=1
+			)
 			|| $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
 		){
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspace = $workspaceRepository->find($workspaceId);
 
-			$this->doctrine->remove($workspace);
+			$this->wms->removeAllMember($workspaceId);
+
+			$workspace->setIsDeleted(true);
+
+			$this->doctrine->persist($workspace);
 			$this->doctrine->flush();
 		}
 	}
