@@ -89,7 +89,7 @@ class WorkspaceController extends Controller
 
 		if($this->getUser()){
 			$workspaceId = $request->request->getInt("workspaceId");
-			$ok = $this->get("app.workspaces")->remove($workspaceId);
+			$ok = $this->get("app.workspaces")->remove(0, $workspaceId);
 			if($ok){
 				$data["data"] = "success";
 			}

@@ -112,8 +112,12 @@ class Workspaces implements WorkspacesInterface
 
 			$this->doctrine->persist($workspace);
 			$this->doctrine->flush();
+
+			return true;
 		}
+		return false;
 	}
+
 	public function changeName($workspaceId, $name, $currentUserId = null)
 	{
 		if($currentUserId == null
