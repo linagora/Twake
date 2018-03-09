@@ -239,7 +239,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 		){
 
 			if($userId == $currentUserId){
-				return false; // can't remove myself
+				if(count($this->getMembers($workspaceId))==1){
+					return false; // can't remove myself if I'm the last
+				}
 			}
 
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
@@ -268,15 +270,32 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$this->doctrine->remove($member);
 			$this->doctrine->flush();
 
-
-
-
-			//$this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("workspace"=>$workspace->getName(), "username"=>$user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
+			$this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("workspace"=>$workspace->getName(), "username"=>$user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 
 			return true;
 		}
 
 		return false;
+	}
+
+	public function removeAllMember($workspaceId){
+		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+		$workspace = $workspaceRepository->find($workspaceId);
+
+		if(!$workspace){
+			return false; //Private workspace, only one user
+		}
+
+		$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+		$members = $workspaceUserRepository->findBy(Array("workspace"=>$workspace));
+
+		foreach ($members as $member){
+			$this->doctrine->remove($member);
+		}
+
+		$this->doctrine->flush();
+		return true;
+
 	}
 
 	public function getMembers($workspaceId, $currentUserId = null)

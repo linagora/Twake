@@ -31,6 +31,8 @@ class WorkspaceDataController extends Controller
 			$response["errors"][] = "notallowed";
 		}else{
 			$response["data"] = $ws->getAsArray();
+			$mw = $this->get("app.workspace_members");
+			$response["data"]["total_members"] = count($mw->getMembers($workspaceId))+count($mw->getPendingMembers($workspaceId));
 		}
 
 		return new JsonResponse($response);

@@ -19,6 +19,9 @@ interface WorkspaceMembersInterface
 	// @removeMember remove member from workspace
 	public function removeMember($workspaceId, $userId, $currentUserId=null);
 
+	// @removeAllMember remove all members from workspace
+	public function removeAllMember($workspaceId);
+
 	//@addMemberByUsername add an user by username
 	public function addMemberByUsername($workspaceId, $username, $currentUserId = null);
 
