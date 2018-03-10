@@ -219,20 +219,15 @@ class MessageSystem implements MessagesSystemInterface
         if(count($ids)==1){
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussionKey);
             if($stream != null){
-                error_log("stream : OK");
                 $workspace = $stream->getWorkspace();
                 if($workspace != null){
-                    error_log("workspace : OK");
                     $linkWs = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace"=>$workspace,"user"=>$user));
                     if($linkWs!= null){
-                        error_log("link ws : OK");
                         if(!$stream->getIsPrivate()){
-                            error_log("is not private : OK");
                             return true;
                         }
                         $link = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream));
                         if($link != null){
-                            error_log("link found : OK");
                             return true;
                         }
                     }

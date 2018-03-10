@@ -74,7 +74,6 @@ class StreamSystem
                 $this->doctrine->flush();
                 $message = $this->messageSystem->sendMessage(null,"S",$stream->getId(),false,null,true,"This is the first message of ".$stream->getName(),$workspaceId,null,null);
                 $this->messageSystem->notify($stream->getId(),"C",$message->getAsArray());
-
                 $isRead = $this->messageReadSystem->streamIsReadByKey($stream->getId(),$user);
                 $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
                 $retour = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
