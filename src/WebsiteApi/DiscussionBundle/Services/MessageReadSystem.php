@@ -87,7 +87,6 @@ class MessageReadSystem
 
     function streamIsReadByKey($key,$user){
         $discussion = $this->messageSystem->convertKey($key,$user);
-
         if($discussion["type"] == "S"){
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussion["id"]);
             if($stream ==null){
@@ -106,16 +105,14 @@ class MessageReadSystem
             if($lastMessage == $messageRead->getMessage()){
                 return true;
             }
-            error_log("messageRed : ".$messageRead->getMessage()->getId());
             return false;
         }else{
             $otherUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($discussion["id"]);
             if($otherUser == null){
-                error_log("other user not found".$discussion["id"] );
                 return false;
             }
             $messageRead = $this->doctrine->getRepository("TwakeDiscussionBundle:MessageRead")->findOneBy(Array("user"=>$user,"otherUser"=>$otherUser));
-            $lastMessage = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("userSender"=>$otherUser));
+            $lastMessage = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("userSender"=>$otherUser,"userReciever"=>$user),Array("date"=>"DESC"));
 
             if ($lastMessage == null) {
                 return true;
