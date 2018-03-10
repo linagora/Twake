@@ -143,7 +143,7 @@ class MessageSystem implements MessagesSystemInterface
             $message->setEdited(true);
             $this->doctrine->persist($message);
             $this->doctrine->flush();
-            return $this->getMessageAsArray($message,false,$message->getResponseTo()!=null);
+            return $this->getMessageAsArray($message,true,$message->getResponseTo()!=null);
         }
         return false;
     }
