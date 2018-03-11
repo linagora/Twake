@@ -11,6 +11,10 @@ twake_user_get:
     path:     /current/get
     defaults: { _controller: TwakeUsersBundle:UsersConnections:currentUser }
 
+twake_user_alive:
+    path:     /alive
+    defaults: { _controller: TwakeUsersBundle:UsersConnections:alive }
+
 # Contacts
 
 twake_contact_add:

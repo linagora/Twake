@@ -13,6 +13,9 @@ interface UserInterface
 	// @connected return null or current user
 	public function current();
 
+	// @alive set lastActivity for an user
+	public function alive($userId);
+
 	// @login log in an user
 	public function login($usernameOrMail, $password, $rememberMe = false, $request = null, $response = null);
 

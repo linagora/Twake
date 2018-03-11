@@ -14,6 +14,12 @@ use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 class UsersConnectionsController extends Controller
 {
 
+	public function aliveAction(){
+		if($this->getUser()) {
+			$this->get("app.user")->alive($this->getUser()->getId());
+		}
+	}
+
 	public function loginAction(Request $request)
 	{
 

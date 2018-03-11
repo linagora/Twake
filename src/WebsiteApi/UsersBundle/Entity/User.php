@@ -65,6 +65,12 @@ class User extends BaseUser
 	protected $connected;
 
 	/**
+	 * @var int
+	 * @ORM\Column(name="last_activity", type="bigint")
+	 */
+	protected $lastActivity = 0;
+
+	/**
 	 * @ORM\Column(name="language", type="string", length=64)
 	 */
 	protected $language = "en";
@@ -166,6 +172,10 @@ class User extends BaseUser
 		return $workspaces;
 	}
 
+	public function isActive(){
+		$this->lastActivity = date("U");
+	}
+
 	/* Manage connections with websocket */
 	public function getConnections()
 	{
@@ -174,6 +184,10 @@ class User extends BaseUser
 
 	public function isConnected()
 	{
+		if(date("U") - $this->lastActivity > 120){
+			$this->connected = false;
+			return false;
+		}
 		return $this->connected;
 	}
 
@@ -185,6 +199,10 @@ class User extends BaseUser
 
 	public function addConnection()
 	{
+		if(date("U") - $this->lastActivity > 120){
+			$this->connections = 0;
+		}
+		$this->lastActivity = date("U");
 		$this->connections += 1;
 		$this->connected = true;
 	}

@@ -54,6 +54,21 @@ class User implements UserInterface
 		return false;
 	}
 
+	public function alive($userId)
+	{
+		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+
+		$user = $userRepository->find($userId);
+
+		if($user != null){
+
+			$user->isActive();
+			$this->em->persist($user);
+			$this->em->flush();
+
+		}
+	}
+
 	public function login($usernameOrMail, $password, $rememberMe = false, $request = null, $response = null)
 	{
 
