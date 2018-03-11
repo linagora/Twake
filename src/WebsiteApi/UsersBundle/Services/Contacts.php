@@ -43,10 +43,10 @@ class Contacts implements ContactsInterface
 			$this->notifications->pushNotification(
 				null,
 				null,
-				Array($current_user),
+				Array($user),
 				null,
 				"contact_request",
-				"@".$user->getUsername()." want to become your contact.",
+				"@".$current_user->getUsername()." want to become your contact.",
 				Array("push", "mail")
 			);
 
