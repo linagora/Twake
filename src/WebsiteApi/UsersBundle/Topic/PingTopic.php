@@ -8,14 +8,6 @@ use Gos\Bundle\WebSocketBundle\Router\WampRequest;
 
 class PingTopic implements RpcInterface
 {
-
-	var $doctrine;
-
-	public function __construct($doctrine)
-	{
-		$this->doctrine = $doctrine;
-	}
-
 	public function ping(ConnectionInterface $connection, WampRequest $request, $params)
 	{
 		return 1;
