@@ -18,6 +18,7 @@ class UsersConnectionsController extends Controller
 		if($this->getUser()) {
 			$this->get("app.user")->alive($this->getUser()->getId());
 		}
+		return new JsonResponse(Array());
 	}
 
 	public function loginAction(Request $request)
