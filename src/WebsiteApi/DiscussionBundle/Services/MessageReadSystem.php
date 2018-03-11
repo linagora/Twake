@@ -61,7 +61,7 @@ class MessageReadSystem
                 return false;
             }
             $messageRead = $this->doctrine->getRepository("TwakeDiscussionBundle:MessageRead")->findOneBy(Array("user" => $user, "otherUser" => $otherUser));
-            $lastMessage = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("userSender"=>$otherUser));
+            $lastMessage = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("userSender"=>$otherUser,"userReciever"=>$user),Array("date"=>"desc"));
             if ($lastMessage == null) {
                 return true;
             }
