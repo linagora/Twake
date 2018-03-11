@@ -26,7 +26,7 @@ class Notifications implements NotificationsInterface
 		$this->rms_push_notifications = $rms_push_notifications;
 	}
 
-	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 		$this->krlove_async->call(
 			'app.notifications',
@@ -34,14 +34,16 @@ class Notifications implements NotificationsInterface
 			Array($application, $workspace, $users, $levels, $code, $text, $type));
 	}
 
-	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
 	{
 
-	    if($workspace != null){
+		if($workspace != null){
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }
 
-		$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($application);
+		if($application != null) {
+			$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($application);
+		}
 
 		$title = "";
 		if ($workspace && $workspace->getGroup()) {
@@ -139,6 +141,7 @@ class Notifications implements NotificationsInterface
 
 			$data["action"] = "add";
 			$this->pusher->push($data, "notifications_topic", Array("id_user" => $user->getId()));
+
 		}
 
 		$this->doctrine->flush();
@@ -272,8 +275,8 @@ class Notifications implements NotificationsInterface
 
 	private function sendMail($application, $workspace, $user, $text){
 		$this->mailer->send($user->getEmail(), "notification", Array(
-			"application_name"=>$application->getName(),
-			"workspace_name"=>$workspace->getName(),
+			"application_name"=>($application)?$application->getName():"Twake",
+			"workspace_name"=>($workspace)?$workspace->getName():"Account",
 			"username"=>$user->getUsername(),
 			"text"=>$text
 		));

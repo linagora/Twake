@@ -43,6 +43,7 @@ class NotificationsTopic implements TopicInterface, PushableTopicInterface
 
 	public function onPush(Topic $topic, WampRequest $request, $data, $provider)
 	{
+		error_log("IMHERE");
 		$topic->broadcast($data);
 	}
 
