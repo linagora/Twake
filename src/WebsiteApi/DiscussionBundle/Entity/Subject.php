@@ -53,7 +53,8 @@ class Subject
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
      */
     private $firstMessage;
 
