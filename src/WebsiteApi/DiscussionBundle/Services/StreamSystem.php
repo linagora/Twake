@@ -174,13 +174,33 @@ class StreamSystem
                     $retour["stream"][] = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
                 }
             }
-            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->getSomeUsers($workspace,"A",null,null);
+            if($workspace->getUser()!=null){ // this is private ws
+                $contacts = $this->doctrine->getRepository("TwakeUsersBundle:Contact")->findBy(Array("from"=>$user, "status"=>1));
+                $contacts = array_merge($contacts ,$this->doctrine->getRepository("TwakeUsersBundle:Contact")->findBy(Array("to"=>$user, "status"=>1)));
+                $members = Array();
+                foreach($contacts as $contact){
+                    if($contact->getTo()!=$user){
+                        $members[] = $contact->getTo();
+                    }
+                    if($contact->getFrom()!=$user){
+                        $members[] = $contact->getFrom();
+                    }
+                }
+            }
+            else{
+                $membersWs = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->getSomeUsers($workspace,"A",null,null);
+                $members = Array();
+                foreach ($membersWs as $mem){
+                    $members[] = $mem->getUser();
+                }
+            }
             foreach($members as $member){
-                $key = min($user->getId(),$member->getUser()->getId())."_".max($user->getId(),$member->getUser()->getId());
+                $key = min($user->getId(),$member->getId())."_".max($user->getId(),$member->getId());
                 $isRead = $isRead = $this->messageReadSystem->streamIsReadByKey($key,$user);
                 $callInfos = $this->callSystem->getCallInfo($user,$key);
-                $retour['user'][] = array_merge($member->getUser()->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
+                $retour['user'][] = array_merge($member->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
             }
+
             return $retour;
         }
     }
