@@ -33,7 +33,7 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 
         if(isset($param["idUser"]) && $param["idUser"]!=null){
             $qb->where('e.userSender= :id OR e.userReciever=:id')
-            ->setParameter('id', $param["idDiscussion"]);
+            ->setParameter('id', $param["idUser"]);
         }
 
         $qb->andWhere('e.cleanContent LIKE :content')
