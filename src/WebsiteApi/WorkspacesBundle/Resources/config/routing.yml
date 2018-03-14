@@ -6,7 +6,7 @@ twake_workspaces_create:
     path:     /create
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:create }
 
-twake_workspaces_set_name:
+twake_workspaces_delete:
     path:     /delete
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:delete }
 
