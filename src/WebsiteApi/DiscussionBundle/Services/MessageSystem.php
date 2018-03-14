@@ -284,7 +284,7 @@ class MessageSystem implements MessagesSystemInterface
 	    	return $messages;
     	}
     	else if($type == "U"){
-            $otherUser = $this->doctrine->getRepository("TwakeDiscussionBundle:User")->find($idDiscussion);
+            $otherUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($idDiscussion);
             if($otherUser == null){
                 return false;
             }
