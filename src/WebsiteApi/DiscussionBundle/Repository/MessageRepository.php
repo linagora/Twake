@@ -53,7 +53,9 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
             $qb->setParameter('applicationSender',$param["application"]);
         }
 
-        $result = $qb->getQuery()->getResult();
+		$qb->setMaxResults( 50 );
+
+		$result = $qb->getQuery()->getResult();
 
 	    return $result;
 	}

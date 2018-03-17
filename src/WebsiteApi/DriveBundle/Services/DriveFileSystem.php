@@ -463,6 +463,11 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	public function search($group, $query, $offset = 0, $max = 20)
 	{
+
+		if($query==""){
+			return Array();
+		}
+
 		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
 		if ($group == null) {
