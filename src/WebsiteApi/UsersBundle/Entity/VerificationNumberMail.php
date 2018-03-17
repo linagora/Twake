@@ -78,7 +78,7 @@ class VerificationNumberMail
 		if($this->date->format('U') < (new \DateTime())->format('U') - $this->validityTime){
 			return false;
 		}
-		$code = preg_replace("/[^a-z0-9 ]/","",strtolower($code));
+		$code = preg_replace("/[^a-z0-9]/","",strtolower($code));
 		return $this->hash($code) == $this->hashCode;
 	}
 
