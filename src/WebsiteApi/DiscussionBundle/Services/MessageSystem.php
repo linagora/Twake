@@ -466,7 +466,7 @@ class MessageSystem implements MessagesSystemInterface
             }
             else{
                 $users = $this->getUserFromStream($message->getUserSender(),$message->getStreamReciever());
-                $msg = "#".$message->getStreamReciever()->getName()." : @".$message->getUserSender()->getUsername()." ".$message->getCleanContent();
+                $msg = "#".$message->getStreamReciever()->getName()." : @".$message->getUserSender()->getUsername()." ".$message->getContent();
             }
         }
         else{
