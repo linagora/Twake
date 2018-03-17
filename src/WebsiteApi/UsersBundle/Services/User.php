@@ -18,6 +18,7 @@ class User implements UserInterface
 {
 
 	private $em;
+	private $pusher;
 	private $encoder_factory;
 	private $authorization_checker;
 	private $core_remember_me_manager;
@@ -29,8 +30,9 @@ class User implements UserInterface
 	private $token_storage;
 	private $workspace_members_service;
 
-	public function __construct($em, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service){
+	public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service){
 		$this->em = $em;
+		$this->pusher = $pusher;
 		$this->encoder_factory = $encoder_factory;
 		$this->core_remember_me_manager = $core_remember_me_manager;
 		$this->event_dispatcher = $event_dispatcher;
@@ -61,6 +63,8 @@ class User implements UserInterface
 		$user = $userRepository->find($userId);
 
 		if($user != null){
+
+			$this->pusher->push(true, 'connections_topic', ["id_user"=>$user->getId()]);
 
 			$user->isActive();
 			$this->em->persist($user);
