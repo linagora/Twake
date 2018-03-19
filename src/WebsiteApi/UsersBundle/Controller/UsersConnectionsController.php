@@ -40,7 +40,7 @@ class UsersConnectionsController extends Controller
 
 			$device = $request->request->get("device", false);
 			if($device) {
-				$this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"]);
+				$this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], $device["version"]);
 			}
 
 			$data["data"]["status"] = "connected";

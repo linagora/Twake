@@ -336,7 +336,7 @@ class User implements UserInterface
 		return false;
 	}
 
-	public function addDevice($userId, $type, $value)
+	public function addDevice($userId, $type, $value, $version = "?")
 	{
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
@@ -344,11 +344,16 @@ class User implements UserInterface
 
 		if($user != null) {
 			$device = $devicesRepository->findOneBy(Array("type"=>$type, "value"=>$value));
-			if($device) {
+			if(!$device){
+				$newDevice = new Device($user, $type, $value, $version);
+			}else if($device->getUser()!=$user) {
 				$this->em->remove($device);
+				$newDevice = new Device($user, $type, $value, $version);
+			}else{
+				$newDevice = $device;
+				$device->setVersion($version);
 			}
 
-			$newDevice = new Device($user, $type, $value);
 			$this->em->persist($newDevice);
 			$this->em->flush();
 

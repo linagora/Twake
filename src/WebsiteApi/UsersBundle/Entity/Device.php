@@ -26,12 +26,19 @@ class Device
 	 */
     private $user;
 
-    /**
-     * @var string
-     *
-     * @ORM\Column(name="type", type="string", length=16)
-     */
-    private $type;
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="type", type="string", length=16)
+	 */
+	private $type;
+
+	/**
+	 * @var string
+	 *
+	 * @ORM\Column(name="version", type="string", length=16)
+	 */
+	private $version;
 
     /**
      * @var string
@@ -40,11 +47,12 @@ class Device
      */
     private $value = "";
 
-    public function __construct($user, $type, $value)
+    public function __construct($user, $type, $value, $version)
     {
     	$this->user = $user;
     	$this->type = $type;
     	$this->value = $value;
+	    $this->version = $version;
     }
 
 	/**
@@ -102,6 +110,24 @@ class Device
 	{
 		$this->value = $value;
 	}
+
+	/**
+	 * @return string
+	 */
+	public function getVersion()
+	{
+		return $this->version;
+	}
+
+	/**
+	 * @param string $version
+	 */
+	public function setVersion($version)
+	{
+		$this->version = $version;
+	}
+
+
 
 }
 
