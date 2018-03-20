@@ -221,6 +221,9 @@ class MessageSystem implements MessagesSystemInterface
             if($stream != null){
                 $workspace = $stream->getWorkspace();
                 if($workspace != null){
+                	if($workspace->getUser()==$user){
+                		return true;
+	                }
                     $linkWs = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace"=>$workspace,"user"=>$user));
                     if($linkWs!= null){
                         if(!$stream->getIsPrivate()){

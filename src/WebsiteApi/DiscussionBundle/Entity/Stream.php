@@ -13,12 +13,22 @@ use Symfony\Component\Validator\Constraints\DateTime;
  */
 class Stream
 {
-    /**
-     * @ORM\Column(name="id", type="integer")
-     * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
-    private $id;
+	/**
+	 * @ORM\Column(name="id", type="integer")
+	 * @ORM\Id
+	 * @ORM\GeneratedValue(strategy="AUTO")
+	 */
+	private $id;
+
+	/**
+	 * @ORM\Column(name="stream_type", type="string", length=255)
+	 */
+	private $type;
+
+	/**
+	 * @ORM\Column(name="stream_key", type="string", length=255, nullable=true)
+	 */
+	private $key;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
@@ -35,11 +45,10 @@ class Stream
      */
     private $description = "";
 
-    /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isPrivate;
-
+	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	private $isPrivate;
 
 	/**
 	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\StreamMember", mappedBy="stream")
@@ -142,7 +151,37 @@ class Stream
         $this->description = $description;
     }
 
+	/**
+	 * @return mixed
+	 */
+	public function getType()
+	{
+		return $this->type;
+	}
 
+	/**
+	 * @param mixed $type
+	 */
+	public function setType($type)
+	{
+		$this->type = $type;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getKey()
+	{
+		return $this->key;
+	}
+
+	/**
+	 * @param mixed $key
+	 */
+	public function setKey($key)
+	{
+		$this->key = $key;
+	}
 
     public function getAsArray(){
         $members = [];
@@ -150,14 +189,24 @@ class Stream
         foreach ($membersLink as $link){
             $members[] = $link->getUser()->getAsArray();
         }
+        $key = "s:";
+	    if($this->type=="user"){
+		    $key="u:";
+	    }
+	    if($this->type=="public"){
+		    $key="p:";
+	    }
+        $key .= $this->getKey()?$this->getKey():$this->getId();
         return(
             Array(
                 "id" => $this->getId(),
                 "name" => $this->getName(),
-                "workspace" => $this->getWorkspace()->getId(),
+                "workspace" => $this->getWorkspace()?$this->getWorkspace()->getId():null,
                 "isPrivate" => $this->getIsPrivate(),
                 "members" => $members,
                 "description"=>$this->getDescription(),
+	            "key"=>$key,
+	            "type"=>$this->getType()?$this->getType():"stream"
             )
         );
     }

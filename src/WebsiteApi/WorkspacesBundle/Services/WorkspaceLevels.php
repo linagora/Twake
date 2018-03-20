@@ -32,7 +32,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			return false;
 		}
 
-		if($workspace->getUser() != null && $workspace->getUser()->getId()==$userId){
+		if($workspace->getUser() != null && $workspace->getUser()->getId()==$user->getId()){
 			return true;
 		}
 

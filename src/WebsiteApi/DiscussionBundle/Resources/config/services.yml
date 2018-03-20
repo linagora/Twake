@@ -5,7 +5,7 @@ services:
 
     app.streamSystem:
             class: WebsiteApi\DiscussionBundle\Services\StreamSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher','@app.workspace_levels','@app.messageReadSystem','@app.callSystem',"@app.messages"]
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher', '@app.contacts', '@app.workspace_levels', '@app.workspace_members','@app.messageReadSystem','@app.callSystem',"@app.messages"]
 
     app.subjectSystem:
             class: WebsiteApi\DiscussionBundle\Services\SubjectSystem

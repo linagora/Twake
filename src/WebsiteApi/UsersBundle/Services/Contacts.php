@@ -115,8 +115,9 @@ class Contacts implements ContactsInterface
 		return $link;
 	}
 
-	public function getAll($current_user)
+	public function getAll($current_user, $ignore_notifications = false)
 	{
+		error_log("test");
 		$contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
 
 		$links = $contactRepository->findBy(Array("to"=>$current_user, "status"=>1));
@@ -124,7 +125,9 @@ class Contacts implements ContactsInterface
 			$contactRepository->findBy(Array("from" => $current_user, "status"=>1))
 		);
 
-		$this->notifications->readAll(null, null, $current_user, "contact_acceptation");
+		if(!$ignore_notifications) {
+			$this->notifications->readAll(null, null, $current_user, "contact_acceptation");
+		}
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$current_user = $userRepository->find($current_user);
