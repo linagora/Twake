@@ -29,7 +29,7 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		$can = !$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null);
+		$can = $this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null);
 
 		if ($can) {
 
