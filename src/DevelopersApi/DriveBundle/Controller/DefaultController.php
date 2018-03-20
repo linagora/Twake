@@ -21,6 +21,7 @@ class DefaultController extends Controller
 			return new JsonResponse($request["errors"]);
 		}
 
+		$groupId = $requestData["workspace"]->getId();
 		$fileId = isset($requestData["fileId"]) ? $requestData["fileId"] : 0;
 
 		$data = Array(
@@ -28,23 +29,16 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
-			$data["errors"][] = 3004;
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:read");
+
+		if ($can) {
+
+			$this->get('app.drive.FileSystem')->download($groupId, $fileId, true);
+
 		} else {
 
-			$content = $this->get("app.drive.FileSystem")->getRawContent($fileId);
-			if ($content === false) {
-				$data["errors"][] = 3001;
-			} else {
+			$data["errors"][] = 3004;
 
-				$response = new Response();
-				$disposition = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_INLINE, "file");
-				$response->headers->set('Content-Disposition', $disposition);
-				$response->setContent($content);
-
-				return $response;
-
-			}
 		}
 
 		return new JsonResponse($data);
