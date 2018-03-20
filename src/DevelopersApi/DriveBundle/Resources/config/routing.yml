@@ -22,10 +22,6 @@ developers_api_drive_save:
     path:     /save
     defaults: { _controller: DevelopersApiDriveBundle:Default:save }
 
-developers_api_drive_download:
-    path:     /download
-    defaults: { _controller: DevelopersApiDriveBundle:Default:download }
-
 developers_api_drive_create:
     path:     /create
     defaults: { _controller: DevelopersApiDriveBundle:Default:create }
