@@ -21,7 +21,7 @@ class DefaultController extends Controller
 			return new JsonResponse($request["errors"]);
 		}
 
-		$groupId = $requestData["workspace"]->getId();
+		$groupId = $request["workspace"]->getId();
 		$fileId = isset($requestData["fileId"]) ? $requestData["fileId"] : 0;
 
 		$data = Array(
