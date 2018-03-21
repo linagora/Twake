@@ -4,6 +4,21 @@ namespace WebsiteApi\DiscussionBundle\Model;
 
 interface MessagesSystemInterface
 {
+
+	// @getStream returns a stream array object or null
+	// Array(
+	//   "type" : "user", "stream", "public"
+	//   "object" : stream entity entity
+	//   "key" : websocket chamber key
+	// )
+	public function getStream($streamKey, $currentUser=null);
+
+	// @isInPrivate returns true or false if is in private stream
+	public function isInPrivate($streamObject, $currentUser);
+
+	// @isAllowed returns true or false
+	public function isAllowed($streamObject, $currentUser, $action="read");
+
     /**
      * Create message to send
      * @param $senderId
@@ -37,7 +52,7 @@ interface MessagesSystemInterface
      * @param $subjectId
      * @return mixed
      */
-    public function getMessages($user,$recieverType,$recieverId,$offset,$subjectId);
+    public function getMessages($key,$maxId,$subjectId,$user);
 
 
     /**
@@ -49,14 +64,6 @@ interface MessagesSystemInterface
      */
     public function pinMessage($id,$pinned,$user);
 
-    /**
-     * ask if user is allowed to do some action
-     * @param $sender
-     * @param $recieverType
-     * @param $recieverId
-     * @return mixed
-     */
-    public function isAllowed($user,$discussionKey);
 
     /**
      * search message with param

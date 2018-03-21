@@ -32,8 +32,9 @@ class SubjectSystem
     }
 
 
-    public function createSubject($name,$streamId,$user){
-        if($this->messageSystem->isAllowed($user,$streamId)){
+    public function createSubject($name,$streamKey,$user){
+	    $stream = $this->getStream($streamKey, $user->getId());
+	    if($this->messageSystem->isAllowed($stream,$user)){
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
             if($stream != null){
                 $subject = new Subject($name,$stream,new \DateTime(), new \DateTime(),"",$user);
@@ -52,7 +53,7 @@ class SubjectSystem
         	$name = strlen($message->getContent()) > 100 ? substr($message->getContent(),0,100)."..." : $message->getContent();
 	        $name = ucfirst($name);
 
-            $subject = $this->createSubject($name, $message->getStreamReciever()->getId(),($message->getUserSender()?$message->getUserSender():$user) );
+            $subject = $this->createSubject($name, $message->getStreamReciever()->getKey(),($message->getUserSender()?$message->getUserSender():$user) );
             $subject->setFirstMessage($message);
             $message->setSubject($subject);
             $this->doctrine->persist($message);

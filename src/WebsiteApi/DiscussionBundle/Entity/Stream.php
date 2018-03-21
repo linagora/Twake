@@ -156,7 +156,7 @@ class Stream
 	 */
 	public function getType()
 	{
-		return $this->type;
+		return $this->type?$this->type:"stream";
 	}
 
 	/**
@@ -189,12 +189,12 @@ class Stream
         foreach ($membersLink as $link){
             $members[] = $link->getUser()->getAsArray();
         }
-        $key = "s:";
+        $key = "s-";
 	    if($this->type=="user"){
-		    $key="u:";
+		    $key="u-";
 	    }
 	    if($this->type=="public"){
-		    $key="p:";
+		    $key="p-".$this->getId()."_";
 	    }
         $key .= $this->getKey()?$this->getKey():$this->getId();
         return(
@@ -206,7 +206,7 @@ class Stream
                 "members" => $members,
                 "description"=>$this->getDescription(),
 	            "key"=>$key,
-	            "type"=>$this->getType()?$this->getType():"stream"
+	            "type"=>$this->getType()
             )
         );
     }

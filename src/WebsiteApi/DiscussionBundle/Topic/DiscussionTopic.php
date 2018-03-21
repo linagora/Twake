@@ -36,49 +36,20 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 	//Post d'un message
 	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
 	{
-        print_r($event);
         $canBroadcast = true;
-		$operation = $event['type'];
-
 		$key = $request->getAttributes()->get('key');
-		$id = $key;
-		$type = "S"; //stream
-
 		$currentUser = $this->clientManipulator->getClient($connection);
 
-		if (!($currentUser instanceof User)) {
-			return;
-		}
-
-		if (count(explode("_", $key)) == 2) {
-
-			$type = "U";
-
-			//On récupère l'id de l'autre utilisateur
-			$ids = explode("_", $key);
-			if (count($ids) < 2) {
-				return;
-			}
-			if ($ids[0] == $currentUser->getId()) {
-				$id = intval($ids[1]);
-			} else {
-				$id = intval($ids[0]);
-			}
-		}
-
 		//Verify user is logged in
-		if ($currentUser == null
-			|| is_string($currentUser)
-		) {
-
+		if ($currentUser == null || is_string($currentUser)){
 			return; //Cancel operation
-
 		}
 
 		$currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
 
 		//Verify that this user is allowed to do this
-		if ($this->messagesService->isAllowed($currentUser, $key)) {
+		$stream = $this->messagesService->getStream($key, $currentUser->getId());
+		if ($stream && $this->messagesService->isAllowed($stream, $currentUser)) {
 
 			//We can speak
 
@@ -86,11 +57,12 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             $operation = $event['type'];
 
             if($operation == "C"){
-            	if(isset($event["data"]['fileId']) && $event["data"]['fileId']!=null){
-                    $message = $this->messagesService->sendMessageWithFile($currentUser->getId(), $type, $id,$event['data']['content'],$event["data"]['workspace'], $event["data"]['subject'],$event["data"]['fileId']);
+
+	            if(isset($event["data"]['fileId']) && $event["data"]['fileId']!=null){
+                    $message = $this->messagesService->sendMessageWithFile($currentUser->getId(), $key,$event['data']['content'],$event["data"]['workspace'], $event["data"]['subject'],$event["data"]['fileId']);
 				}
 				else{
-                    $message = $this->messagesService->sendMessage($currentUser->getId(), $type, $id, false, null, false,  $event['data']['content'],$event["data"]['workspace'], $event["data"]['subject']);
+                    $message = $this->messagesService->sendMessage($currentUser->getId(), $key, false, null, false,  $event['data']['content'],$event["data"]['workspace'], $event["data"]['subject']);
 				}
 				if($message){
 
@@ -226,14 +198,12 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 	/* Push from server */
 	public function onPush(Topic $topic, WampRequest $request, $data, $provider)
 	{
-
 		$topic->broadcast($data);
 	}
 
 
 	public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
 	{
-		$key = $request->getAttributes()->get('key');
 
 		$currentUser = $this->clientManipulator->getClient($connection);
 
@@ -249,42 +219,15 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 			return; //Cancel operation
 		}
 
-		$currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
-
-		//Verify that this user is allowed to do this
-//		if (!$this->messagesService->isAllowedByKey($currentUser, $key)) {
-//			$topic->remove($connection); //Eject the hacker !
-//		}
-
 	}
 
 	public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
 	{
 		$currentUser = $this->clientManipulator->getClient($connection);
-		$route = $request->getAttributes()->get('key');
 		$from = null;
 		if (!($currentUser instanceof User)) {
 			return;
 		}
-
-		if (count(explode("_", $route)) == 2) {
-
-			$route = "private_message";
-
-			//On récupère l'id de l'autre utilisateur
-			$ids = explode("_", $route);
-			if (count($ids) < 2) {
-				return;
-			}
-			if ($ids[0] == $currentUser->getId()) {
-				$from = intval($ids[1]);
-			} else {
-				$from = intval($ids[0]);
-			}
-		} else {
-			$route = "group_message_ch" . $route;
-		}
-
 	}
 
 }

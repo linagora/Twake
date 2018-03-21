@@ -28,10 +28,9 @@ class DiscussionController extends Controller
                 $data["errors"][] = "missingargument";
             }
             else{
-                $discussion = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
                 $messages = [];
                 $offsetId= intval($request->request->get("offsetId"));
-                $messages = $this->get("app.messages")->getMessages($discussion["type"],$discussion["id"],$offsetId,$request->request->get("subject"),$this->getUser());
+                $messages = $this->get("app.messages")->getMessages($request->request->get("discussionKey"),$offsetId,$request->request->get("subject"),$this->getUser());
 
                 error_log(count($messages));
                 $data["data"] = $messages;
@@ -126,7 +125,7 @@ class DiscussionController extends Controller
         return new JsonResponse($data);
     }
 
-	public function getStreamAction(Request $request){
+	public function getStreamsAction(Request $request){
 		$data = Array(
 			'errors' => Array(),
 			'data' => Array()
@@ -149,6 +148,33 @@ class DiscussionController extends Controller
             }
 
         }
+		return new JsonResponse($data);
+	}
+
+	public function getStreamAction(Request $request){
+		$data = Array(
+			'errors' => Array(),
+			'data' => Array()
+		);
+
+		$securityContext = $this->get('security.authorization_checker');
+
+		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+			$data['errors'][] = "notconnected";
+		}
+		else {
+			if($request->request->get("key")==null ){
+				$data["errors"] = "missingarguments";
+			}
+			else{
+				$stream = $this->get("app.messages")->getStream($request->request->get("key"),$this->getUser());
+				if($this->get("app.messages")->isAllowed($stream, $this->getUser())){
+					$stream = $stream["object"]->getAsArray();
+					$data["data"] = $stream;
+				}
+			}
+
+		}
 		return new JsonResponse($data);
 	}
 
@@ -183,7 +209,8 @@ class DiscussionController extends Controller
         );
         $securityContext = $this->get('security.authorization_checker');
 
-        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED') || !$this->get("app.messages")->isAllowed($this->getUser(),$request->request->get("discussionKey"))) {
+		$stream = $this->get("app.messages")->getStream($request->request->get("discussionKey"), $this->getUser()->getId());
+        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED') || !$this->get("app.messages")->isAllowed($stream, $this->getUser())) {
             $data['errors'][] = "notconnected";
         }
         else {

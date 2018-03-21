@@ -34,7 +34,8 @@ class Calls implements CallSystemInterface
 	public function getCallInfo($user, $discussionKey)
 	{
 
-		if (!$this->messageSystem->isAllowed($user, $discussionKey)) {
+		$stream = $this->messageSystem->getStream($discussionKey, $user->getId());
+		if (!$this->messageSystem->isAllowed($stream, $user)) {
 			return Array("status" => "invalid");
 		}
 
@@ -64,7 +65,8 @@ class Calls implements CallSystemInterface
 
 	public function joinCall($user, $discussionKey)
 	{
-		if ($this->messageSystem->isAllowed($user, $discussionKey)) {
+		$stream = $this->messageSystem->getStream($discussionKey, $user->getId());
+		if ($this->messageSystem->isAllowed($stream, $user)) {
 			$this->exitAllCalls($user);
 
 			$call = $this->getCall($discussionKey,$user);
