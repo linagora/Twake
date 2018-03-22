@@ -113,9 +113,9 @@ class MessageSystem implements MessagesSystemInterface
 		return null;
 	}
 
-	public function convertKey($discussionKey, $user)
+	public function convertKey($discussionKey, $user=null)
 	{
-		$stream_obj = $this->getStream($discussionKey, $user->getId());
+		$stream_obj = $this->getStream($discussionKey, $user?$user->getId():null);
 		if (!$stream_obj) {
 			return false;
 		}
@@ -195,8 +195,11 @@ class MessageSystem implements MessagesSystemInterface
 		if ($workspace != null) {
 			$workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
 		}
+
 		if ($senderId != null) {
 			$sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
+		}else{
+			return null;
 		}
 
 		$vals = $this->convertKey($key, $sender);
@@ -243,19 +246,19 @@ class MessageSystem implements MessagesSystemInterface
 
 	public function sendMessageWithFile($senderId, $key, $content, $workspace, $subjectId = null, $fileId)
 	{
-		$vals = $this->convertKey($key);
-		$recieverId = $vals["id"];
-		$recieverType = $vals["type"];
+		if ($senderId != null) {
+			$sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
+		}else{
+			return null;
+		}
 
 		$file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->find($fileId);
 		$driveApplication = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url" => "drive"));
 		$sender = null;
-		if ($senderId != null) {
-			$sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
-		}
+
 		if ($file != null && $driveApplication != null) {
 			$messageData = Array("file" => $file->getId());
-			return $this->sendMessage($senderId, $recieverType, $recieverId, true, $driveApplication, false, $content, $workspace, $subjectId, $messageData);
+			return $this->sendMessage($senderId, $key, true, $driveApplication, false, $content, $workspace, $subjectId, $messageData);
 		}
 		return false;
 	}
@@ -541,7 +544,7 @@ class MessageSystem implements MessagesSystemInterface
 	public function sendNotification($message, $workspace)
 	{
 		$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url" => "messages-auto"));
-		if ($message->getTypeReciever() == "S") {
+		if ($message->getStreamReciever()->getType() != "user") {
 			if ($message->getIsSystemMessage()) {
 				return;
 			} elseif ($message->getIsApplicationMessage()) {
@@ -555,7 +558,6 @@ class MessageSystem implements MessagesSystemInterface
 			$users = Array($message->getUserReciever());
 			$msg = "@" . $message->getUserSender()->getUsername() . " : " . $message->getContent();
 		}
-		error_log($msg);
 		$this->notificationsService->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));
 	}
 

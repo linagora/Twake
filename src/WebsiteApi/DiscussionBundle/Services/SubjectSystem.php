@@ -33,9 +33,9 @@ class SubjectSystem
 
 
     public function createSubject($name,$streamKey,$user){
-	    $stream = $this->getStream($streamKey, $user->getId());
+	    $stream = $this->messageSystem->getStream($streamKey, $user->getId());
 	    if($this->messageSystem->isAllowed($stream,$user)){
-            $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
+		    $stream = $stream["object"];
             if($stream != null){
                 $subject = new Subject($name,$stream,new \DateTime(), new \DateTime(),"",$user);
                 $this->doctrine->persist($subject);
@@ -53,13 +53,19 @@ class SubjectSystem
         	$name = strlen($message->getContent()) > 100 ? substr($message->getContent(),0,100)."..." : $message->getContent();
 	        $name = ucfirst($name);
 
-            $subject = $this->createSubject($name, $message->getStreamReciever()->getKey(),($message->getUserSender()?$message->getUserSender():$user) );
+            $subject = $this->createSubject($name, $message->getStreamReciever()->getAsArray()["key"],($message->getUserSender()?$message->getUserSender():$user) );
+
+            if(!$subject){
+            	return false;
+            }
+
             $subject->setFirstMessage($message);
             $message->setSubject($subject);
             $this->doctrine->persist($message);
+
             $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo"=>$message));
             foreach($messages as $mess){
-                 $mess->setResponseTo(null);
+            	$mess->setResponseTo(null);
                 $mess->setSubject($subject);
                 $this->doctrine->persist($mess);
             }

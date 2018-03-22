@@ -102,13 +102,11 @@ class Calls implements CallSystemInterface
 			return $call;
 		}
 
-		$discussionInfos = $this->messageSystem->convertKey($discussionKey, $user);
-
 		$content = "<div style=''>
                         ".$user->getFirstName()." ".$user->getLastName()." start a call
                     </div>";
 
-        $message = $this->messageSystem->sendMessage($user->getId(), $discussionInfos["type"], $discussionInfos["id"], false,null,true, $content, null );
+        $message = $this->messageSystem->sendMessage($user->getId(), $discussionKey, false,null,true, $content, null );
         $messageArray = $message->getAsArray();
         $this->messageSystem->notify($discussionKey,"C",$messageArray);
         $call = new Call($discussionKey,$message);
@@ -151,7 +149,7 @@ class Calls implements CallSystemInterface
                     $format = $format."%s s";
                 }
                 $content = "<div style=''>
-                                <span style='color:#427FB3'>".$user->getFirstName()." ".$user->getLastName()."</span> called (".$during->format($format).")
+                                ".$user->getFirstName()." ".$user->getLastName()." called (".$during->format($format).")
                             </div>";
                 $message->setContent($content);
                 $em->persist($message);
