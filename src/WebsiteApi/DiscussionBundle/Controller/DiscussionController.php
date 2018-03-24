@@ -192,7 +192,7 @@ class DiscussionController extends Controller
 		}
 		else {
 			$discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
-			$messages = $this->get("app.messages")->searchMessage($discussionInfos["type"],$discussionInfos["id"],$request->request->get("content"),intval($request->request->get("from")),$request->request->get("dateStart"),$request->request->get("dateEnd"),null,$this->getUser());
+			$messages = $this->get("app.messages")->searchMessage($discussionInfos["id"],$request->request->get("content"),intval($request->request->get("from")),$request->request->get("dateStart"),$request->request->get("dateEnd"),null,$this->getUser());
             $retour = Array();
 			foreach ($messages as $message) {
 				$retour[] = $message->getAsArray();

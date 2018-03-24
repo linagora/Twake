@@ -196,10 +196,9 @@ class MessageSystem implements MessagesSystemInterface
 			$workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
 		}
 
+		$sender = null;
 		if ($senderId != null) {
 			$sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
-		}else{
-			return null;
 		}
 
 		$vals = $this->convertKey($key, $sender);
@@ -210,7 +209,7 @@ class MessageSystem implements MessagesSystemInterface
 			$applicationMessage = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($applicationMessage);
 		}
 
-		$stream = $this->getStream($key, $sender->getId());
+		$stream = $this->getStream($key, $sender?$sender->getId():null);
 		if (!$isApplicationMessage && !$isSystemMessage && !$this->isAllowed($stream, $sender)) {
 			return false;
 		}
@@ -312,6 +311,7 @@ class MessageSystem implements MessagesSystemInterface
 
 	public function getMessages($key, $maxId, $subjectId, $user)
 	{
+
 		$stream = $this->getStream($key, $user->getId());
 		if (!$this->isAllowed($stream, $user)) {
 
@@ -369,33 +369,28 @@ class MessageSystem implements MessagesSystemInterface
 	}
 
 
-	public function searchMessage($type, $idDiscussion, $content, $from, $dateStart, $dateEnd, $application, $user)
+	public function searchMessage($idDiscussion, $content, $from, $dateStart, $dateEnd, $application, $user)
 	{
-		if ($idDiscussion == null || $type == null) {
+		if ($idDiscussion == null ) {
 			return false;
 		}
-		if ($type == "S") {
-			$stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($idDiscussion);
-			if ($stream == null) {
-				return false;
-			}
-			$stream = $this->getStream($stream->getKey(), $user->getId());
-			if (!$this->isAllowed($stream)) {
-				return false;
-			}
-			$messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findMessageBy(Array(
-				"idDiscussion" => $idDiscussion,
-				"content" => $content,
-				"from" => $from,
-				"dateStart" => $dateStart,
-				"dateEnd" => $dateEnd,
-				"application" => $application
-			));
-			return $messages;
-		} else {
+		$stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($idDiscussion);
+		if ($stream == null) {
 			return false;
 		}
-
+		$stream = $this->getStream($stream->getAsArray()["key"], $user->getId());
+		if (!$this->isAllowed($stream, $user)) {
+			return false;
+		}
+		$messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findMessageBy(Array(
+			"idDiscussion" => $idDiscussion,
+			"content" => $content,
+			"from" => $from,
+			"dateStart" => $dateStart,
+			"dateEnd" => $dateEnd,
+			"application" => $application
+		));
+		return $messages;
 	}
 
 
@@ -509,7 +504,7 @@ class MessageSystem implements MessagesSystemInterface
 		$driveApp = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url" => "drive"));
 		$messages = null;
 		if ($driveApp != null) {
-			$messages = $this->searchMessage($discussionInfos["type"], $discussionInfos["id"], "", null, null, null, $driveApp, $user);
+			$messages = $this->searchMessage($discussionInfos["id"], "", null, null, null, $driveApp, $user);
 			$retour = [];
 			foreach ($messages as $message) {
 				$mess = $message->getAsArray();

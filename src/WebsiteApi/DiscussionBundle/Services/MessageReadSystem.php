@@ -86,45 +86,28 @@ class MessageReadSystem
 
 
     function streamIsReadByKey($key,$user){
-        $discussion = $this->messageSystem->convertKey($key,$user);
-        if($discussion["type"] == "S"){
-            $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussion["id"]);
-            if($stream ==null){
-                return false;
-            }
-            $messageRead = $this->doctrine->getRepository("TwakeDiscussionBundle:MessageRead")->findOneBy(Array("user"=>$user,"stream"=>$stream));
-            $lastMessages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->getMessageNotOwner($user->getId(),$stream->getId(),1);
+	    $discussion = $this->messageSystem->convertKey($key,$user);
+	    return;
 
-            if($lastMessages==null){ //no message in this stream
-                return true;
-            }
-            $lastMessage = $lastMessages[0];
-            if($messageRead == null){
-                return false;
-            }
-            if($lastMessage == $messageRead->getMessage()){
-                return true;
-            }
-            return false;
-        }else{
-            $otherUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($discussion["id"]);
-            if($otherUser == null){
-                return false;
-            }
-            $messageRead = $this->doctrine->getRepository("TwakeDiscussionBundle:MessageRead")->findOneBy(Array("user"=>$user,"otherUser"=>$otherUser));
-            $lastMessage = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("userSender"=>$otherUser,"userReciever"=>$user),Array("date"=>"DESC"));
+	    error_log(json_encode($discussion));
+	    $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($discussion["id"]);
+	    if($stream ==null){
+		    return false;
+	    }
+	    $messageRead = $this->doctrine->getRepository("TwakeDiscussionBundle:MessageRead")->findOneBy(Array("user"=>$user,"stream"=>$stream));
+	    $lastMessages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->getMessageNotOwner($user->getId(),$stream->getId(),1);
 
-            if ($lastMessage == null) {
-                return true;
-            }
-            if ($messageRead == null) {
-                return false;
-            }
-            if ($lastMessage == $messageRead->getMessage()) {
-                return true;
-            }
-            return false;
-        }
+	    if($lastMessages==null){ //no message in this stream
+		    return true;
+	    }
+	    $lastMessage = $lastMessages[0];
+	    if($messageRead == null){
+		    return false;
+	    }
+	    if($lastMessage == $messageRead->getMessage()){
+		    return true;
+	    }
+	    return false;
     }
 
     public function allIsRead($workspace,$user){

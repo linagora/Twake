@@ -76,7 +76,7 @@ interface MessagesSystemInterface
      * @param $user
      * @return mixed
      */
-    public function searchMessage($type,$idDiscussion,$content,$from,$dateStart,$dateEnd,$application,$user);
+    public function searchMessage($idDiscussion,$content,$from,$dateStart,$dateEnd,$application,$user);
 
     /**
      * @param $discussionKey

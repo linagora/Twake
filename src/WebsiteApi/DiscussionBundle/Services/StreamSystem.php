@@ -61,13 +61,16 @@ class StreamSystem implements StreamSystemInterface
             $this->doctrine->persist($link);
             $this->doctrine->flush();
 
-            $message = $this->messageSystem->sendMessage(null,"S",$stream->getId(),false,null,true,
+            $this->messageSystem->sendMessage(null,$stream->getAsArray()["key"],false,null,true,
                 "This is the first message of ".$stream->getName(),$workspaceId,null,null);
 
-            $this->messageSystem->notify($stream->getId(),"C",$message->getAsArray());
             $isRead = $this->messageReadSystem->streamIsReadByKey($stream->getId(),$user);
             $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
+
+            error_log(json_encode($stream->getAsArray()));
+
             $retour = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
+
             return $retour;
         }
 
