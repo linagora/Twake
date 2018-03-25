@@ -31,8 +31,9 @@ interface MessagesSystemInterface
      * @param null $subjectId
      * @return mixed
      */
-    public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content,$workspace, $subjectId=null );
+    public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content,$workspace, $subjectId=null, $notify=true);
 
+    public function notifySendMessage($stream, $excepts_array, $message_id);
 
     /**
      * edit message

@@ -33,7 +33,12 @@ class StreamMember
 	/**
 	 * @ORM\Column(type="boolean")
 	 */
-    private $mute;
+	private $mute;
+
+	/**
+	 * @ORM\Column(type="boolean")
+	 */
+	private $unread;
 
 
 
@@ -75,5 +80,22 @@ class StreamMember
 	public function setMute($mute) {
     	$this->mute = $mute;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getUnread()
+	{
+		return $this->unread;
+	}
+
+	/**
+	 * @param mixed $unread
+	 */
+	public function setUnread($unread)
+	{
+		$this->unread = $unread;
+	}
+
 }
 

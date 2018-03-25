@@ -59,7 +59,6 @@ class MessageSystem implements MessagesSystemInterface
 			if (!$s || $s->getType() != "stream") {
 				return null;
 			}
-
 			$streamObject["type"] = "stream";
 			$streamObject["object"] = $s;
 			$streamObject["key"] = "s-" . intval($explode[1]);
@@ -190,7 +189,7 @@ class MessageSystem implements MessagesSystemInterface
 	}
 
 
-	public function sendMessage($senderId, $key, $isApplicationMessage, $applicationMessage, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null)
+	public function sendMessage($senderId, $key, $isApplicationMessage, $applicationMessage, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify=true)
 	{
 
 		if ($workspace != null) {
@@ -237,7 +236,15 @@ class MessageSystem implements MessagesSystemInterface
 			}
 			$this->doctrine->persist($message);
 			$this->doctrine->flush();
-			$this->sendNotification($message, $workspace);
+
+			if($sender != null) {
+				$this->messagesNotificationCenter->read($stream["object"], $sender);
+			}
+
+			if($notify) {
+				$this->messagesNotificationCenter->notify($stream["object"], $sender ? Array($sender->getId()) : Array(), $message);
+			}
+
 			return $message;
 
 		} else {
@@ -261,6 +268,11 @@ class MessageSystem implements MessagesSystemInterface
 			return $this->sendMessage($senderId, $key, true, $driveApplication, false, $content, $workspace, $subjectId, $messageData);
 		}
 		return false;
+	}
+
+	public function notifySendMessage($stream, $except, $message_id){
+		$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($message_id);
+		$this->messagesNotificationCenter->notify($stream["object"], $except, $message);
 	}
 
 
@@ -535,26 +547,6 @@ class MessageSystem implements MessagesSystemInterface
 			}
 		}
 		return $retour;
-	}
-
-	public function sendNotification($message, $workspace)
-	{
-		$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url" => "messages-auto"));
-		if ($message->getStreamReciever()->getType() != "user") {
-			if ($message->getIsSystemMessage()) {
-				return;
-			} elseif ($message->getIsApplicationMessage()) {
-				$users = $this->getUserFromStream(null, $message->getStreamReciever());
-				$msg = "#" . $message->getStreamReciever()->getName();
-			} else {
-				$users = $this->getUserFromStream($message->getUserSender(), $message->getStreamReciever());
-				$msg = "#" . $message->getStreamReciever()->getName() . " : @" . $message->getUserSender()->getUsername() . " " . $message->getContent();
-			}
-		} else {
-			$users = Array($message->getUserReciever());
-			$msg = "@" . $message->getUserSender()->getUsername() . " : " . $message->getContent();
-		}
-		$this->notificationsService->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));
 	}
 
 	public function notify($discussionKey, $type, $messageArray)

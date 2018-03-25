@@ -7,12 +7,14 @@ discussion_topic:
             pattern: "[a-z]-[a-zA-Z0-9_]+"
 
 discussion_notifications_topic:
-    channel: discussion_notifications/{key}
+    channel: discussion_notifications/{user_id}/{stream_id}
     handler:
         callback: 'discussion.notifications.topic'
     requirements:
-        key:
+        user_id:
             pattern: "[0-9]+"
+        stream_id:
+            pattern: "[0-9]*"
 
 discussionspace_topic:
     channel: discussionspace/{key}

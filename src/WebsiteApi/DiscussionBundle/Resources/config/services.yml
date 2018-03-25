@@ -5,15 +5,15 @@ services:
 
     app.streamSystem:
             class: WebsiteApi\DiscussionBundle\Services\StreamSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher', '@app.contacts', '@app.workspace_levels', '@app.workspace_members','@app.messageReadSystem','@app.callSystem',"@app.messages"]
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher', '@app.contacts', '@app.workspace_levels', '@app.workspace_members','@app.messagesNotificationsCenter','@app.callSystem',"@app.messages"]
 
     app.subjectSystem:
             class: WebsiteApi\DiscussionBundle\Services\SubjectSystem
             arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher','@app.workspace_levels','@app.messages']
 
-    app.messageReadSystem:
-            class: WebsiteApi\DiscussionBundle\Services\MessageReadSystem
-            arguments: [ "@doctrine.orm.entity_manager", "@app.messages","@app.notifications" ]
+    app.messagesNotificationsCenter:
+            class: WebsiteApi\DiscussionBundle\Services\MessagesNotificationsCenter
+            arguments: [ "@doctrine.orm.entity_manager","@app.notifications",'@gos_web_socket.zmq.pusher' ]
 
 
     discussion.topic:

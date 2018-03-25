@@ -56,13 +56,21 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 			//Ask for an initialization
             $operation = $event['type'];
 
-            if($operation == "C"){
+            if($operation == "N") { // Send notification
+	            $this->messagesService->notifySendMessage($stream["object"], $event["data"]["except"], $event["data"]["message_id"]);
+	            $canBroadcast = false;
+            }
+            else if($operation == "NR"){ //Notification read relay
+	            $topic->broadcast($event);
+	            $canBroadcast = false;
+            }
+            else if($operation == "C"){
 
 	            if(isset($event["data"]['fileId']) && $event["data"]['fileId']!=null){
-                    $message = $this->messagesService->sendMessageWithFile($currentUser->getId(), $key,$event['data']['content'],$event["data"]['workspace'], $event["data"]['subject'],$event["data"]['fileId']);
+                    $message = $this->messagesService->sendMessageWithFile($currentUser->getId(), $key,$event['data']['content'],$event["data"]['workspace'], $event["data"]['subject'],$event["data"]['fileId'], false);
 				}
 				else{
-                    $message = $this->messagesService->sendMessage($currentUser->getId(), $key, false, null, false,  $event['data']['content'],$event["data"]['workspace'], $event["data"]['subject']);
+                    $message = $this->messagesService->sendMessage($currentUser->getId(), $key, false, null, false,  $event['data']['content'],$event["data"]['workspace'], $event["data"]['subject'], null, false);
 				}
 				if($message){
 
