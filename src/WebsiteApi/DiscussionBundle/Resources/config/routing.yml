@@ -24,6 +24,10 @@ streams_get:
     path:     /streams/get
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getStreams }
 
+streams_mute:
+    path:     /streams/mute
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:mute }
+
 subjectList_get:
     path:     /subject/getList
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getSubject }

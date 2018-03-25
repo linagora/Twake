@@ -221,4 +221,24 @@ class DiscussionController extends Controller
         return new JsonResponse($data);
     }
 
+    public function muteAction(Request $request){
+	    $data = Array(
+		    'errors' => Array(),
+		    'data' => Array()
+	    );
+
+	    $securityContext = $this->get('security.authorization_checker');
+	    if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+		    $data['errors'][] = "notconnected";
+	    }
+	    else {
+		    $streamId = $request->request->getInt("id");
+		    $muteValue = $request->request->getBoolean("mute");
+		    $result = $this->get("app.streamSystem")->mute($this->getUser(), $streamId, $muteValue);
+		    $data["data"]["mute"] = ($result?$muteValue:false);
+	    }
+
+	    return new JsonResponse($data);
+    }
+
 }

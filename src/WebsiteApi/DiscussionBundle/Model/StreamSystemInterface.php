@@ -11,4 +11,6 @@ interface StreamSystemInterface
 
 	public function editStream($user, $streamKey, $name, $description, $isPrivate, $members);
 
+	public function mute($user, $streamId, $mute = true);
+
 }

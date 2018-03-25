@@ -22,8 +22,14 @@ services:
               - { name: gos_web_socket.topic }
           arguments: ["@app.messages","@app.subjectSystem" , "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications"]
 
+    discussion.notifications.topic:
+          class: WebsiteApi\DiscussionBundle\Topic\NotificationsCenterTopic
+          tags:
+              - { name: gos_web_socket.topic }
+          arguments: ["@app.streamSystem", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager"]
+
     discussionspace.topic:
           class: WebsiteApi\DiscussionBundle\Topic\DiscussionSpaceTopic
           tags:
               - { name: gos_web_socket.topic }
-          arguments: ["@app.streamSystem", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager",]
+          arguments: ["@app.streamSystem", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager"]

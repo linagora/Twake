@@ -22,12 +22,7 @@ fos_user_change_password:
     prefix: /password
     methods:  [POST]
 
-twake_translate:
-    path:     /translate
-    defaults: { _controller: TwakeCoreBundle:Translation:get }
+twake_version:
+    path:     /version
+    defaults: { _controller: TwakeCoreBundle:Version:get }
     methods:  [GET]
-
-twake_transtest:
-    path:     /transtest
-    defaults: { _controller: TwakeCoreBundle:Translation:translateTest }
-    methods:  [POST]

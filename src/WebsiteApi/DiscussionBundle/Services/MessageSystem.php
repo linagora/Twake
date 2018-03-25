@@ -59,6 +59,7 @@ class MessageSystem implements MessagesSystemInterface
 			if (!$s || $s->getType() != "stream") {
 				return null;
 			}
+
 			$streamObject["type"] = "stream";
 			$streamObject["object"] = $s;
 			$streamObject["key"] = "s-" . intval($explode[1]);
