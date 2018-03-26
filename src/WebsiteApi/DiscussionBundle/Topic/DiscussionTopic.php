@@ -34,7 +34,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 
 
 	//Post d'un message
-	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
+	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event = Array(), array $exclude = Array(), array $eligible = Array())
 	{
         $canBroadcast = true;
 		$key = $request->getAttributes()->get('key');
@@ -62,6 +62,11 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             }
             else if($operation == "NR"){ //Notification read relay
 	            $topic->broadcast($event);
+	            $this->messagesService->readStream($stream["object"], $currentUser);
+	            $canBroadcast = false;
+            }
+            else if($operation == "RN"){ //Read notifications
+	            $this->messagesService->readStream($stream["object"], $currentUser);
 	            $canBroadcast = false;
             }
             else if($operation == "C"){
@@ -79,7 +84,10 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 				else{
 					$canBroadcast = false;
 				}
-			}
+
+	            $this->messagesService->readStream($stream["object"], $currentUser);
+
+            }
             else if($operation == "E"){
             	$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($event["data"]["id"]);
             	if($message != null && $message->getUserSender()==$currentUser){

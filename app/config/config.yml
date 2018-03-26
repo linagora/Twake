@@ -121,8 +121,8 @@ redjan_ym_fcm:
 rms_push_notifications:
   ios:
       timeout: 60 # Seconds to wait for connection timeout, default is 60
-      sandbox: true
-      pem: 'Resources/apns_dev.pem' # can be absolute or relative path (from app directory)
+      sandbox: false
+      pem: 'Resources/apns_prod.pem' # can be absolute or relative path (from app directory)
 
 krlove_async_service_call:
   console_path: bin/console

@@ -25,10 +25,15 @@ class StreamMember
 	 */
     private $user;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Stream", cascade={"persist"})
-     */
-    private $stream;
+	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Stream", cascade={"persist"})
+	 */
+	private $stream;
+
+	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+	 */
+	private $workspace;
 
 	/**
 	 * @ORM\Column(type="boolean")
@@ -36,14 +41,14 @@ class StreamMember
 	private $mute;
 
 	/**
-	 * @ORM\Column(type="boolean")
+	 * @ORM\Column(type="integer")
 	 */
-	private $unread;
+	private $unread = 0;
 
 
 
     public function __construct($stream, $user) {
-
+    	$this->workspace = $stream->getWorkspace();
 	    $this->setStream($stream);
 	    $this->setUser($user);
 	    $this->setMute(false);
@@ -96,6 +101,24 @@ class StreamMember
 	{
 		$this->unread = $unread;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getWorkspace()
+	{
+		return $this->workspace;
+	}
+
+	/**
+	 * @param mixed $workspace
+	 */
+	public function setWorkspace($workspace)
+	{
+		$this->workspace = $workspace;
+	}
+
+
 
 }
 

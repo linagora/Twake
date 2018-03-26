@@ -7,6 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\DiscussionBundle\Entity\MessageLike;
+use WebsiteApi\DiscussionBundle\Entity\Stream;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Entity\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -25,11 +26,11 @@ class MessageSystem implements MessagesSystemInterface
 	var $pusher;
 	var $levelManager;
 	var $fileSystem;
-	var $notificationsService;
+	var $messagesNotificationCenter;
 	var $user_stats;
 	var $workspace_stats;
 
-	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager, $fileSystem, $notificationsService, $user_stats, $workspace_stats)
+	function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager, $fileSystem, $messagesNotificationCenter, $user_stats, $workspace_stats)
 	{
 		$this->string_cleaner = $string_cleaner;
 		$this->doctrine = $doctrine;
@@ -38,7 +39,7 @@ class MessageSystem implements MessagesSystemInterface
 		$this->pusher = $pusher;
 		$this->levelManager = $levelManager;
 		$this->fileSystem = $fileSystem;
-		$this->notificationsService = $notificationsService;
+		$this->messagesNotificationCenter = $messagesNotificationCenter;
 		$this->user_stats = $user_stats;
 		$this->workspace_stats = $workspace_stats;
 	}
@@ -272,7 +273,11 @@ class MessageSystem implements MessagesSystemInterface
 
 	public function notifySendMessage($stream, $except, $message_id){
 		$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($message_id);
-		$this->messagesNotificationCenter->notify($stream["object"], $except, $message);
+		$this->messagesNotificationCenter->notify($stream, $except, $message);
+	}
+
+	public function readStream($stream, $user){
+		$this->messagesNotificationCenter->read($stream, $user);
 	}
 
 

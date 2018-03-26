@@ -65,12 +65,12 @@ class StreamSystem implements StreamSystemInterface
             $this->messageSystem->sendMessage(null,$stream->getAsArray()["key"],false,null,true,
                 "This is the first message.");
 
-            $isRead = $this->messageReadSystem->streamIsReadByKey($stream,$user);
+            $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
             $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
 
             error_log(json_encode($stream->getAsArray()));
 
-            $retour = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
+            $retour = array_merge($stream->getAsArray(),Array("notifications"=>$notifications,"call"=>$callInfos));
 
             return $retour;
         }
@@ -149,9 +149,9 @@ class StreamSystem implements StreamSystemInterface
                 }
             }
             $this->doctrine->flush();
-            $isRead = $this->messageReadSystem->streamIsReadByKey($stream,$user);
+            $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
             $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
-            $retour = array_merge($stream->getAsArray(),Array("isRead"=>$isRead,"call"=>$callInfos));
+            $retour = array_merge($stream->getAsArray(),Array("notifications"=>$notifications,"call"=>$callInfos));
             return $retour;
         }
     }
@@ -179,10 +179,10 @@ class StreamSystem implements StreamSystemInterface
 		        }
 		        if($linkStream!=null){ //public stream
 
-			        $isRead = $this->messageReadSystem->streamIsReadByKey($stream,$user);
+			        $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
 			        $callInfos = $this->callSystem->getCallInfo($user,$stream->getAsArray()["key"]);
 			        $retour["stream"][] = array_merge($stream->getAsArray(),Array(
-			        	"isRead"=>$isRead,
+			        	"notifications"=>$notifications,
 				        "call"=>$callInfos,
 				        "mute"=>$linkStream->getMute()
 			        ));
@@ -190,7 +190,7 @@ class StreamSystem implements StreamSystemInterface
 	        }
 	        $this->doctrine->flush();
 
-            //Member streams
+	        //Member streams
 	        $members = Array();
             if($workspace->getUser()!=null){ // this is private ws
                 $members = $this->app_contacts->getAll($user, true);
@@ -208,10 +208,10 @@ class StreamSystem implements StreamSystemInterface
 	                $linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream));
 
 	                $stream = $stream["object"];
-	                $isRead = $this->messageReadSystem->streamIsReadByKey($stream,$user);
+	                $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
 	                $callInfos = $this->callSystem->getCallInfo($user,$stream->getAsArray()["key"]);
 	                $retour["stream"][] = array_merge($stream->getAsArray(),Array(
-	                	"isRead"=>$isRead,
+	                	"notifications"=>$notifications,
 		                "call"=>$callInfos,
 		                "contact"=>$member->getAsArray(),
 		                "mute"=>$linkStream->getMute()
