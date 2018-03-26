@@ -57,7 +57,12 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             $operation = $event['type'];
 
             if($operation == "N") { // Send notification
-	            $this->messagesService->notifySendMessage($stream["object"], $event["data"]["except"], $event["data"]["message_id"]);
+	            if(isset($event["data"]["except"])) {
+		            $this->messagesService->notifySendMessage(
+		            	$stream["object"],
+			            $event["data"]["except"],
+			            $event["data"]["message_id"]);
+	            }
 	            $canBroadcast = false;
             }
             else if($operation == "NR"){ //Notification read relay

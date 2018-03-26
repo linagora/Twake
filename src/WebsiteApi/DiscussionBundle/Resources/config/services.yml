@@ -13,7 +13,7 @@ services:
 
     app.messagesNotificationsCenter:
             class: WebsiteApi\DiscussionBundle\Services\MessagesNotificationsCenter
-            arguments: [ "@doctrine.orm.entity_manager","@app.notifications",'@gos_web_socket.zmq.pusher' ]
+            arguments: [ "@doctrine.orm.entity_manager","@app.notifications",'@gos_web_socket.zmq.pusher', "@app.workspaces"]
 
 
     discussion.topic:

@@ -4,6 +4,7 @@
 
 namespace WebsiteApi\DiscussionBundle\Services;
 
+use Exception;
 use WebsiteApi\DiscussionBundle\Entity\Stream;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -156,6 +157,39 @@ class StreamSystem implements StreamSystemInterface
         }
     }
 
+	public function getAllPrivateStreamList($user){
+		$linkStreams = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$user,"workspace"=>null));
+		$list = Array();
+		foreach($linkStreams as $linkStream){
+			try {
+				$stream = $linkStream->getStream();
+				if (!$stream->getWorkspace()) {
+					$notifications = $this->messageReadSystem->streamNotifications($stream, $user);
+					$callInfos = $this->callSystem->getCallInfo($user, $stream->getAsArray()["key"]);
+
+					$stream_array = $stream->getAsArray();
+					$contact = $stream_array["members"][0];
+					if($contact["id"] == $user->getId()){
+						$contact = $stream_array["members"][1];
+					}
+					if($contact["id"] != $user->getId()) {
+						$list[] = array_merge($stream_array, Array(
+							"contact" => $contact,
+							"notifications" => $notifications,
+							"call" => $callInfos,
+							"mute" => $linkStream->getMute()
+						));
+					}
+				}
+			} catch (Exception $err){
+
+			}
+		}
+		error_log("======>".count($list));
+		return $list;
+	}
+
+
     public function getStreamList($workspaceId, $user){
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")
 	        ->findOneBy(Array("id"=>$workspaceId,"isDeleted"=>false));
@@ -193,30 +227,31 @@ class StreamSystem implements StreamSystemInterface
 	        //Member streams
 	        $members = Array();
             if($workspace->getUser()!=null){ // this is private ws
-                $members = $this->app_contacts->getAll($user, true);
+	            $retour["stream"] = array_merge($retour["stream"], $this->getAllPrivateStreamList($user));
             }
-            else{
+            else {
 	            $members_array = $this->app_workspace_members->getMembers($workspaceId);
-                foreach ($members_array as $member){
-	                $members[] = $member["user"];
-                }
-            }
-            foreach($members as $member){
-                $key = "u-".min($user->getId(),$member->getId())."_".max($user->getId(),$member->getId());
-                $stream = $this->messageSystem->getStream($key, $user);
-                if($stream) {
-	                $linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream));
+	            foreach ($members_array as $member) {
+		            $members[] = $member["user"];
+	            }
 
-	                $stream = $stream["object"];
-	                $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
-	                $callInfos = $this->callSystem->getCallInfo($user,$stream->getAsArray()["key"]);
-	                $retour["stream"][] = array_merge($stream->getAsArray(),Array(
-	                	"notifications"=>$notifications,
-		                "call"=>$callInfos,
-		                "contact"=>$member->getAsArray(),
-		                "mute"=>$linkStream->getMute()
-	                ));
-                }
+	            foreach ($members as $member) {
+		            $key = "u-" . min($user->getId(), $member->getId()) . "_" . max($user->getId(), $member->getId());
+		            $stream = $this->messageSystem->getStream($key, $user);
+		            if ($stream) {
+			            $linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user" => $user, "stream" => $stream));
+
+			            $stream = $stream["object"];
+			            $notifications = $this->messageReadSystem->streamNotifications($stream, $user);
+			            $callInfos = $this->callSystem->getCallInfo($user, $stream->getAsArray()["key"]);
+			            $retour["stream"][] = array_merge($stream->getAsArray(), Array(
+				            "notifications" => $notifications,
+				            "call" => $callInfos,
+				            "contact" => $member->getAsArray(),
+				            "mute" => $linkStream->getMute()
+			            ));
+		            }
+	            }
             }
 
             return $retour;
