@@ -23,7 +23,7 @@ class Stream
 	/**
 	 * @ORM\Column(name="stream_type", type="string", length=255)
 	 */
-	private $type;
+	private $type = "stream";
 
 	/**
 	 * @ORM\Column(name="stream_key", type="string", length=255, nullable=true)

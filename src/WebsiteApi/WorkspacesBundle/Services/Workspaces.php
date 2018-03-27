@@ -54,6 +54,10 @@ class Workspaces implements WorkspacesInterface
 	public function create($name, $groupId = null, $userId = null)
 	{
 
+		if($name==""){
+			return false;
+		}
+
 		$workspace = new Workspace($name);
 
 		if($groupId!=null){
@@ -68,13 +72,14 @@ class Workspaces implements WorkspacesInterface
 
 		// Create stream
         $streamGeneral = new Stream($workspace,"General",false,"This is the general stream");
+		$streamGeneral->setType("stream");
         $streamRandom = new Stream($workspace,"Random",false,"This is the random stream");
+		$streamRandom->setType("stream");
 
         $this->doctrine->persist($streamGeneral);
         $this->doctrine->persist($streamRandom);
 
-
-		//Create admin level
+        //Create admin level
 		$level = new WorkspaceLevel();
 		$level->setWorkspace($workspace);
 		$level->setLabel("Administrator");
@@ -83,6 +88,7 @@ class Workspaces implements WorkspacesInterface
 
 		$this->doctrine->persist($level);
 		$this->doctrine->flush();
+
 
 		//Add user in workspace
 		if($userId != null){
