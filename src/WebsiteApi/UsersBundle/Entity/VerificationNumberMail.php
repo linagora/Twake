@@ -55,6 +55,12 @@ class VerificationNumberMail
 	private $validityTime;
 
 
+	/**
+	 * @ORM\Column(name="clean_code", type="integer")
+	 */
+	private $clean_code;
+
+
 	public function __construct($mail, $validityTime = 3600)
 	{
 		$this->mail = $mail;
@@ -66,7 +72,7 @@ class VerificationNumberMail
 
 	public function getCode(){
 		$code = substr(bin2hex(random_bytes(5)), 0, 9);
-		error_log(($code));
+		$this->clean_code = $code;
 		$this->hashCode = $this->hash($code);
 		//Prettify
 		$code = str_split($code, 3);
