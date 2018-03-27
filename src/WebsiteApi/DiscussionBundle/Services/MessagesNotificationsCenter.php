@@ -73,10 +73,9 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 
 		$users = Array();
 		$linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
-			->findby(Array("stream" => $stream));
+			->findby(Array("stream" => $stream, "mute" => false));
 		foreach($linkStream as $link){
-			if(!$link->getMute() && !in_array($link->getUser()->getId(), $except_users_ids)){
-				error_log("==============>ADDED");
+			if(!in_array($link->getUser()->getId(), $except_users_ids)){
 
 				$users[] = $link->getUser();
 

@@ -56,6 +56,11 @@ class Notification
 	 */
 	private $date;
 
+	/**
+	 * @ORM\Column(type="text", length=64, nullable=true)
+	 */
+	private $data;
+
 
 	public function __construct($application, $workspace, $user)
 	{
@@ -153,6 +158,22 @@ class Notification
 		$this->text = $text;
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getData()
+	{
+		return $this->data;
+	}
+
+	/**
+	 * @param mixed $data
+	 */
+	public function setData($data)
+	{
+		$this->data = $data;
+	}
+
 	public function getAsArray(){
 		return Array(
 			"id" => $this->getId(),
@@ -161,7 +182,8 @@ class Notification
 			"workspace_id" => ($this->getWorkspace()?$this->getWorkspace()->getId():null),
 			"app_id" => $this->getApplication()->getId(),
 			"title" => $this->getTitle(),
-			"text" => $this->getText()
+			"text" => $this->getText(),
+			"data" => $this->getData()
 		);
 	}
 

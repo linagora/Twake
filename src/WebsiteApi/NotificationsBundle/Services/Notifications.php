@@ -26,15 +26,15 @@ class Notifications implements NotificationsInterface
 		$this->rms_push_notifications = $rms_push_notifications;
 	}
 
-	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data = null)
 	{
 		$this->krlove_async->call(
 			'app.notifications',
 			'pushNotificationAsync',
-			Array($application, $workspace, $users, $levels, $code, $text, $type));
+			Array($application, $workspace, $users, $levels, $code, $text, $type, $data));
 	}
 
-	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array())
+	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data=null)
 	{
 
 		if($workspace != null){
@@ -120,6 +120,9 @@ class Notifications implements NotificationsInterface
 			}
 
 			$n = new Notification($application, $workspace, $user);
+			if($data){
+				$n->setData($data);
+			}
 			if($code){
 				$n->setCode($code);
 			}
@@ -133,7 +136,7 @@ class Notifications implements NotificationsInterface
 
 			if(in_array("push", $type) && $useDevices){
 				$totalNotifications = $this->countAll($user);
-				@$this->pushDevice($user, $data["text"], $title, $totalNotifications);
+				@$this->pushDevice($user, $data["text"], $title, $totalNotifications, $data);
 			}
 			if(in_array("mail", $type)){
 				@$this->sendMail($application, $workspace, $user, $text);
@@ -231,7 +234,7 @@ class Notifications implements NotificationsInterface
 		}
 	}
 
-	private function pushDevice($user, $text, $title, $badge=null){
+	private function pushDevice($user, $text, $title, $badge=null, $data=null){
 
 		$devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
 		$devices = $devicesRepo->findBy(Array("user"=>$user));
@@ -252,6 +255,8 @@ class Notifications implements NotificationsInterface
 				}
 				$message->setAPSSound("default");
 				$message->setDeviceIdentifier($token);
+
+
 
 				$this->rms_push_notifications->send($message);
 
