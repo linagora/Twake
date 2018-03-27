@@ -153,6 +153,14 @@ class Notifications implements NotificationsInterface
 
 	public function readAll($application, $workspace, $user, $code = null)
 	{
+		$this->krlove_async->call(
+			'app.notifications',
+			'readAllAsync',
+			Array($application, $workspace, $user, $code));
+	}
+
+	public function readAllAsync($application, $workspace, $user, $code = null)
+	{
 
 		$nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
 		if(!$code){
@@ -255,8 +263,6 @@ class Notifications implements NotificationsInterface
 				}
 				$message->setAPSSound("default");
 				$message->setDeviceIdentifier($token);
-
-
 
 				$this->rms_push_notifications->send($message);
 

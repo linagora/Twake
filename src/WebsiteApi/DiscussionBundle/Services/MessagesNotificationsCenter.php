@@ -23,6 +23,8 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 
 	public function read($stream, $user){
 
+    	error_log("======> START READ");
+
 		$linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
 			->findOneBy(Array("user"=>$user,"stream"=>$stream));
 
@@ -66,6 +68,8 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 				->findOneBy(Array("url" => "messages-auto"));
 			$this->notificationSystem->readAll($application, $workspace, $user);
 		}
+
+		error_log("======> END READ");
 
 	}
 

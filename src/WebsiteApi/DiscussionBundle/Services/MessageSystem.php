@@ -193,6 +193,8 @@ class MessageSystem implements MessagesSystemInterface
 	public function sendMessage($senderId, $key, $isApplicationMessage, $applicationMessage, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify=true)
 	{
 
+		error_log("========> START FUNCTION");
+
 		if ($workspace != null) {
 			$workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
 		}
@@ -202,28 +204,29 @@ class MessageSystem implements MessagesSystemInterface
 			$sender = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($senderId);
 		}
 
-		$vals = $this->convertKey($key, $sender);
-		$recieverId = $vals["id"];
-		$recieverType = $vals["type"];
+		$stream_object = $this->getStream($key, $sender?$sender->getId():null);
+
+		if(!$stream_object){
+			return false;
+		}
 
 		if ($isApplicationMessage) {
 			$applicationMessage = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($applicationMessage);
 		}
 
-		$stream = $this->getStream($key, $sender?$sender->getId():null);
-		if (!$isApplicationMessage && !$isSystemMessage && !$this->isAllowed($stream, $sender)) {
+		$stream = $stream_object["object"];
+		if (!$isApplicationMessage && !$isSystemMessage && !$this->isAllowed($stream_object, $sender)) {
 			return false;
 		}
 
-		$reciever = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($recieverId);
-		if ($sender != null && $reciever != null) { // select only user message and not system or application message without user
+		if ($sender != null && $stream != null) { // select only user message and not system or application message without user
 			$this->user_stats->sendMessage($sender, false);
 			if ($workspace != null) {
-				$this->workspace_stats->sendMessage($workspace, false, $reciever->getIsPrivate());
+				$this->workspace_stats->sendMessage($workspace, false, $stream->getIsPrivate());
 			}
 		}
 
-		if (($isApplicationMessage || $isSystemMessage || $sender != null) && $reciever != null) {
+		if (($isApplicationMessage || $isSystemMessage || $sender != null) && $stream != null) {
 			$subject = null;
 			if ($subjectId != null) {
 				$subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
@@ -231,7 +234,7 @@ class MessageSystem implements MessagesSystemInterface
 			$t = microtime(true);
 			$micro = sprintf("%06d", ($t - floor($t)) * 1000000);
 			$dateTime = new \DateTime(date('Y-m-d H:i:s.' . $micro, $t));
-			$message = new Message($sender, $recieverType, $reciever, $isApplicationMessage, $applicationMessage, $isSystemMessage, $dateTime, $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), $subject);
+			$message = new Message($sender, "S", $stream, $isApplicationMessage, $applicationMessage, $isSystemMessage, $dateTime, $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), $subject);
 			if ($messageData != null) {
 				$message->setApplicationData($messageData);
 			}
@@ -239,12 +242,14 @@ class MessageSystem implements MessagesSystemInterface
 			$this->doctrine->flush();
 
 			if($sender != null) {
-				$this->messagesNotificationCenter->read($stream["object"], $sender);
+				$this->messagesNotificationCenter->read($stream, $sender);
 			}
 
 			if($notify) {
-				$this->messagesNotificationCenter->notify($stream["object"], $sender ? Array($sender->getId()) : Array(), $message);
+				$this->messagesNotificationCenter->notify($stream, $sender ? Array($sender->getId()) : Array(), $message);
 			}
+
+			error_log("========> END FUNCTION");
 
 			return $message;
 

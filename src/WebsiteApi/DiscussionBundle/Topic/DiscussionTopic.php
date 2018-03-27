@@ -67,7 +67,6 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
             }
             else if($operation == "NR"){ //Notification read relay
 	            $topic->broadcast($event);
-	            $this->messagesService->readStream($stream["object"], $currentUser);
 	            $canBroadcast = false;
             }
             else if($operation == "RN"){ //Read notifications
@@ -89,8 +88,6 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 				else{
 					$canBroadcast = false;
 				}
-
-	            $this->messagesService->readStream($stream["object"], $currentUser);
 
             }
             else if($operation == "E"){
