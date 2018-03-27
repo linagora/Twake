@@ -193,8 +193,6 @@ class MessageSystem implements MessagesSystemInterface
 	public function sendMessage($senderId, $key, $isApplicationMessage, $applicationMessage, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify=true)
 	{
 
-		error_log("========> START FUNCTION");
-
 		if ($workspace != null) {
 			$workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
 		}
@@ -248,8 +246,6 @@ class MessageSystem implements MessagesSystemInterface
 			if($notify) {
 				$this->messagesNotificationCenter->notify($stream, $sender ? Array($sender->getId()) : Array(), $message);
 			}
-
-			error_log("========> END FUNCTION");
 
 			return $message;
 

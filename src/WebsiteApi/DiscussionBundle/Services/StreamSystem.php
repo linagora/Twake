@@ -185,7 +185,6 @@ class StreamSystem implements StreamSystemInterface
 
 			}
 		}
-		error_log("======>".count($list));
 		return $list;
 	}
 
@@ -236,20 +235,22 @@ class StreamSystem implements StreamSystemInterface
 	            }
 
 	            foreach ($members as $member) {
-		            $key = "u-" . min($user->getId(), $member->getId()) . "_" . max($user->getId(), $member->getId());
-		            $stream = $this->messageSystem->getStream($key, $user);
-		            if ($stream) {
-			            $linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user" => $user, "stream" => $stream));
+		            if ($member->getId() != $user->getId()) {
+			            $key = "u-" . min($user->getId(), $member->getId()) . "_" . max($user->getId(), $member->getId());
+			            $stream = $this->messageSystem->getStream($key, $user);
+			            if ($stream) {
+				            $linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user" => $user, "stream" => $stream));
 
-			            $stream = $stream["object"];
-			            $notifications = $this->messageReadSystem->streamNotifications($stream, $user);
-			            $callInfos = $this->callSystem->getCallInfo($user, $stream->getAsArray()["key"]);
-			            $retour["stream"][] = array_merge($stream->getAsArray(), Array(
-				            "notifications" => $notifications,
-				            "call" => $callInfos,
-				            "contact" => $member->getAsArray(),
-				            "mute" => $linkStream->getMute()
-			            ));
+				            $stream = $stream["object"];
+				            $notifications = $this->messageReadSystem->streamNotifications($stream, $user);
+				            $callInfos = $this->callSystem->getCallInfo($user, $stream->getAsArray()["key"]);
+				            $retour["stream"][] = array_merge($stream->getAsArray(), Array(
+					            "notifications" => $notifications,
+					            "call" => $callInfos,
+					            "contact" => $member->getAsArray(),
+					            "mute" => $linkStream->getMute()
+				            ));
+			            }
 		            }
 	            }
             }
