@@ -28,7 +28,7 @@ class Groups implements GroupsInterface
 		$plan = $planRepository->find($planId);
 
 		//Find a name
-		$groupUsingThisName = 1;
+		$groupUsingThisName = $groupRepository->findOneBy(Array("name" => $uniquename));
 		$increment = 0;
 		$uniquenameIncremented = $uniquename;
 		while($groupUsingThisName!=null) {
@@ -37,7 +37,7 @@ class Groups implements GroupsInterface
 			$uniquenameIncremented = $uniquename."-".$increment;
 		}
 
-		$group = new Group($uniquename);
+		$group = new Group($uniquenameIncremented);
 		$group->setDisplayName($name);
 		$group->setPricingPlan($plan);
 
