@@ -64,7 +64,7 @@ class StreamSystem implements StreamSystemInterface
             $this->doctrine->flush();
 
             $this->messageSystem->sendMessage(null,$stream->getAsArray()["key"],false,null,true,
-                "This is the first message.");
+                "This is the first message.", $workspace);
 
             $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
             $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
@@ -78,13 +78,12 @@ class StreamSystem implements StreamSystemInterface
 
     }
 
-    public function deleteStream($user,$streamKey){
-        if($streamKey != null){
-            $stream = $this->messageSystem->getStream($streamKey);
-            if(!$stream || $stream["type"]!="stream"){
+    public function deleteStream($user,$stream_id){
+        if($stream_id != null){
+	        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($stream_id);
+            if(!$stream || $stream->getType()!="stream"){
             	return false;
             }
-	        $stream = $stream["object"];
 
             if(!$this->levelManager->can($stream->getWorkspace(), $user, "Messages:read")){
                 return false;
