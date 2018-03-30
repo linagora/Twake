@@ -163,7 +163,10 @@ class Notification
 	 */
 	public function getData()
 	{
-		return $this->data;
+		if(!$this->data){
+			return null;
+		}
+		return json_decode($this->data, 1);
 	}
 
 	/**
@@ -171,7 +174,7 @@ class Notification
 	 */
 	public function setData($data)
 	{
-		$this->data = $data;
+		$this->data = json_encode($data);
 	}
 
 	public function getAsArray(){

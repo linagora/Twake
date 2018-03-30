@@ -10,6 +10,14 @@ namespace WebsiteApi\DiscussionBundle\Repository;
  */
 class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
+
+	public function removeStream($stream){
+		$qb = $this->createQueryBuilder();
+		$qb->delete('Message', 's');
+		$qb->where('s.streamReciever = :streamReciever');
+		$qb->setParameter('streamReciever', $stream);
+	}
+
 	public function findMessageBy($param){
 		if(isset($param["dateStart"]) && $param["dateStart"] != null){
 			$dateStart = new \DateTime($param["dateStart"]." 00:00:00");

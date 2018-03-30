@@ -221,7 +221,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             );
             $this->pusher->push($datatopush, "notifications_topic",Array("id_user"=>$user->getId()));
 
-			if($workspace->getGroup() != null) {
+			if($workspace->getGroup() != null && $userId!=$currentUserId) {
 				$this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 			}
 

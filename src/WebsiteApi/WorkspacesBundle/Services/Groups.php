@@ -34,7 +34,9 @@ class Groups implements GroupsInterface
 		while($groupUsingThisName!=null) {
 			$groupUsingThisName = $groupRepository->findOneBy(Array("name" => $uniquenameIncremented));
 			$increment+=1;
-			$uniquenameIncremented = $uniquename."-".$increment;
+			if($groupUsingThisName!=null){
+				$uniquenameIncremented = $uniquename."-".$increment;
+			}
 		}
 
 		$group = new Group($uniquenameIncremented);

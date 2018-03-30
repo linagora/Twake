@@ -93,11 +93,10 @@ class StreamSystem implements StreamSystemInterface
             }
 
             if($stream){
-                $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")
-	                ->findBy(Array("streamReciever"=>$stream));
-                foreach ($messages as $message){
-                    $this->doctrine->remove($message);
-                }
+	            $this->doctrine->getRepository("TwakeDiscussionBundle:Message")
+		            ->removeStream($stream);
+	            $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
+		            ->removeStream($stream);
                 $this->doctrine->remove($stream);
                 $this->doctrine->flush();
                 return true;

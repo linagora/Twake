@@ -23,29 +23,32 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 
 	public function read($stream, $user){
 
-		$linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
-			->findOneBy(Array("user"=>$user,"stream"=>$stream));
+		$linkStreams = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
+			->findBy(Array("user"=>$user,"stream"=>$stream));
 
-		if(!$linkStream){
+		if(count($linkStreams)==0){
 			return true;
 		}
 
-		$linkStream->setUnread(0);
-		$this->doctrine->persist($linkStream);
+		foreach($linkStreams as $linkStream) {
+			$linkStream->setUnread(0);
+			$this->doctrine->persist($linkStream);
+
+			$data = Array(
+				"id" => $stream->getId(),
+				"value" => 0
+			);
+
+			$this->pusher->push($data,
+				"discussion_notifications_topic",
+				Array(
+					"user_id" => $linkStream->getUser()->getId(),
+					"workspace_id"=>($stream->getWorkspace()?$stream->getWorkspace()->getId():"")
+				)
+			);
+		}
+
 		$this->doctrine->flush();
-
-		$data = Array(
-			"id" => $stream->getId(),
-			"value" => 0
-		);
-
-		$this->pusher->push($data,
-			"discussion_notifications_topic",
-			Array(
-				"user_id" => $linkStream->getUser()->getId(),
-				"workspace_id"=>($stream->getWorkspace()?$stream->getWorkspace()->getId():"")
-			)
-		);
 
 		$otherStreams = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
 			->findBy(Array("user"=>$user,"workspace"=>$stream->getWorkspace(),"mute"=>false));

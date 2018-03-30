@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
  * Message
  *
  * @ORM\Table(name="stream_member",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\DiscussionBundle\Repository\StreamRepository")
+ * @ORM\Entity(repositoryClass="WebsiteApi\DiscussionBundle\Repository\StreamMemberRepository")
  */
 class StreamMember
 {
