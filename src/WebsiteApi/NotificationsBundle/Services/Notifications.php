@@ -134,9 +134,13 @@ class Notifications implements NotificationsInterface
 			}
 			$this->doctrine->persist($n);
 
-			if(in_array("push", $type) && $useDevices){
+			if(in_array("push", $type)){
 				$totalNotifications = $this->countAll($user);
-				@$this->pushDevice($user, $data["text"], $title, $totalNotifications, $data);
+				if($useDevices) {
+					@$this->pushDevice($user, $data["text"], $title, $totalNotifications, $data);
+				}else{
+					@$this->updateDeviceBadge($user, $totalNotifications);
+				}
 			}
 			if(in_array("mail", $type)){
 				@$this->sendMail($application, $workspace, $user, $text);
