@@ -135,7 +135,7 @@ class Notifications implements NotificationsInterface
 			$this->doctrine->persist($n);
 
 			if(in_array("push", $type)){
-				$totalNotifications = $this->countAll($user);
+				$totalNotifications = $this->countAll($user) + 1;
 				if($useDevices) {
 					@$this->pushDevice($user, $data["text"], $title, $totalNotifications, $data);
 				}else{
@@ -182,14 +182,12 @@ class Notifications implements NotificationsInterface
 			));
 		}
 
-		$totalNotifications = $this->countAll($user);
-
-		$read = $totalNotifications;
 		foreach ($notif as $n) {
-			$read+=-1;
 			$this->doctrine->remove($n);
 		}
 		$this->doctrine->flush();
+
+		$totalNotifications = $this->countAll($user);
 
 		$data = Array(
 			"action"=>"remove",
@@ -198,7 +196,7 @@ class Notifications implements NotificationsInterface
 		);
 		$this->pusher->push($data, "notifications_topic", Array("id_user" => $user->getId()));
 
-		$this->updateDeviceBadge($user, $read);
+		$this->updateDeviceBadge($user, $totalNotifications);
 
 	}
 
