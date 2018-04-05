@@ -677,11 +677,17 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	}
 
-	public function recursZip(&$zip, $directory, $prefix){
+	public function recursZip($group, &$zip, $directory, $prefix, $working_dir){
 		if($prefix!=""){
 			$zip->addEmptyDir($prefix);
 		}
-		foreach ($directory->getChildren() as $child) {
+		if($directory==null){
+			$children = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+				->listDirectory($group, null, false);
+		}else{
+			$children = $directory->getChildren();
+		}
+		foreach ($children as $child) {
 			if($child->getIsDirectory()){
 				$dirname = $child->getName();
 				$dirname = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $dirname);
@@ -689,7 +695,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 				if($dirname==""){
 					$dirname = "no_name";
 				}
-				$this->recursZip($zip, $child, $prefix.$dirname."/");
+				$this->recursZip($group, $zip, $child, $prefix.$dirname."/", $working_dir);
 			}else{
 				$filename = $child->getName();
 				$filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $filename);
@@ -701,21 +707,35 @@ class DriveFileSystem implements DriveFileSystemInterface
 				$completePath = $this->getRoot() . $child->getPath();
 				$realFile = $this->decode($completePath, $child->getLastVersion()->getKey(), $child->getLastVersion()->getMode());
 
-				$zip -> addFile($realFile, $prefix.$filename);
-				@unlink($realFile);
+				rename($realFile, $working_dir."/".basename($realFile));
+
+				$zip->addFile($working_dir."/".basename($realFile), $prefix.$filename);
 			}
 		}
 	}
 
-	public function generateZip($directory){
-		if ($directory->getIsDirectory() || $directory == null) {
+	public function generateZip($group, $directory){
+		if ($directory == null || $directory->getIsDirectory()) {
 			$zip = new ZipArchive;
-			$tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16)) . ".zip";
+			$name = bin2hex(random_bytes(16));
+			$tmpPath = $this->getRoot() . "/tmp/" . $name . ".zip";
 			if ($zip->open($tmpPath, ZipArchive::CREATE) === TRUE) {
 
-				$this->recursZip($zip, $directory, "");
-
+				$working_dir = $this->getRoot() . "/tmp/".$name;
+				mkdir($working_dir);
+				$this->recursZip($group, $zip, $directory, "", $working_dir);
 				$zip->close();
+
+				$cdir = scandir($working_dir);
+				foreach ($cdir as $key => $value)
+				{
+					if (!in_array($value,array(".","..")))
+					{
+						@unlink($value);
+					}
+				}
+				@rmdir($working_dir);
+
 				return $tmpPath;
 			}
 		}
@@ -725,17 +745,25 @@ class DriveFileSystem implements DriveFileSystemInterface
 	public function download($group, $file, $download)
 	{
 
+		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");
 		$file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
 
 		//Directory : download as zip
-		if ($file->getIsDirectory() || $file == null) { //Directory or root
+		if ($file == null || $file->getIsDirectory()) { //Directory or root
 
-			if($file->getSize()>1000000000) //1Go is too large
+			if($file==null){
+				$totalSize = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize($group);
+				if($totalSize>1000000000) //1Go is too large
+				{
+					return false;
+				}
+			}
+			else if($file->getSize()>1000000000) //1Go is too large
 			{
 				return false;
 			}
 
-			$zip_path = $this->generateZip($file);
+			$zip_path = $this->generateZip($group, $file);
 
 			if(!$zip_path){
 				return false;
