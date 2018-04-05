@@ -18,7 +18,7 @@
                 <span class="info-box-icon bg-orange"><i class="fa fa-coffee"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Workspaces</span>
-                    <span class="info-box-number">{{ workspaces.count }}</span>
+                    <span class="info-box-number">{{ workspaces.count|number_format(0, '.', ',') }}</span>
                 </div>
             </div>
         </div>
@@ -27,7 +27,7 @@
                 <span class="info-box-icon bg-red"><i class="fa fa-building"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Groups</span>
-                    <span class="info-box-number">{{ groups.count }}</span>
+                    <span class="info-box-number">{{ groups.count|number_format(0, '.', ',') }}</span>
                 </div>
             </div>
         </div>
@@ -40,7 +40,7 @@
                 <span class="info-box-icon bg-aqua"><i class="fa fa-user"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">Active/Users</span>
-                    <span class="info-box-number">{{ users.connected }} / {{ users.count }}</span>
+                    <span class="info-box-number">{{ users.connected|number_format(0, '.', ',') }} / {{ users.count|number_format(0, '.', ',') }}</span>
                 </div>
             </div>
         </div>
@@ -49,7 +49,7 @@
                 <span class="info-box-icon bg-green"><i class="fa fa-tachometer"></i></span>
                 <div class="info-box-content">
                     <span class="info-box-text">RAM usage</span>
-                    <span class="info-box-number">{{ ram.percent }}% <small>{{ ram.mo }}mo</small></span>
+                    <span class="info-box-number">{{ ram.percent|number_format(2, '.', ',') }}% <small>{{ ram.mo|number_format(2, '.', ',') }}mo</small></span>
                 </div>
             </div>
         </div>

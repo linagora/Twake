@@ -29,10 +29,11 @@ class DashboardController extends Controller
 		$data["workspaces"]["drive_usage"]= $this->get('admin.TwakeStatistics')->numberOfExtensions();
 		$drive_data = [['Extension', 'Number of files']];
 		foreach ($data["workspaces"]["drive_usage"] as $ext){
-			$drive_data[] = [$ext["extension"], $ext["nb"]];
+			$drive_data[] = [$ext["extension"], intval($ext["nb"])];
 		}
 		$drive_usage_chart = new PieChart();
 		$drive_usage_chart->getData()->setArrayToDataTable($drive_data);
+		$drive_usage_chart->getOptions()->setHeight(500);
 		$data["workspaces"]["drive_usage_chart"] = $drive_usage_chart;
 
 		//groups

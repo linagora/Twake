@@ -67,7 +67,7 @@ easy_admin:
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', {property: 'dateAdded', type: 'date'}, 'group', 'members']
             edit:
                 fields: ['isDeleted']
-            disabled_actions: ['new']
+            disabled_actions: ['new', 'delete']
         Group:
             class: WebsiteApi\WorkspacesBundle\Entity\Group
             label: 'Groups'
@@ -76,7 +76,7 @@ easy_admin:
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'pricingPlan', 'workspaces']
             show:
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'pricingPlan']
-            disabled_actions: ['new', 'edit']
+            disabled_actions: ['new', 'edit', 'delete']
         PricingPlan:
             class: WebsiteApi\WorkspacesBundle\Entity\PricingPlan
             label: 'Pricing plans'

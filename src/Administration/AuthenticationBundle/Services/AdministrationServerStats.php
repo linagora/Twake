@@ -156,7 +156,7 @@ class AdministrationServerStats
 		    $mem = array_merge($mem);
 		    $used = $mem[1];
 	    }
-	    return $used/1024/1024;
+	    return $used/1024;
     }
 
     public function getAllCpuUsage($startdate, $enddate)
