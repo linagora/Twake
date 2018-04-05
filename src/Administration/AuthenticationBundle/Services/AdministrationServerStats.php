@@ -138,8 +138,25 @@ class AdministrationServerStats
 
     public function getRamUsage()
     {
-        $ramId = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->getLastId();
-        return $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->findOneBy(Array("id" => $ramId))->getAsArray();
+        $last_record = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerRamStats")->findOneBy(Array(), array('id' => 'DESC'));
+		if($last_record){
+			return $last_record->getAsArray();
+		}
+		return null;
+    }
+
+    public function getTotalRam(){
+	    $free = shell_exec('free');
+	    $used = 0;
+	    if($free){
+		    $free = (string)trim($free);
+		    $free_arr = explode("\n", $free);
+		    $mem = explode(" ", $free_arr[1]);
+		    $mem = array_filter($mem);
+		    $mem = array_merge($mem);
+		    $used = $mem[1];
+	    }
+	    return $used/1024/1024;
     }
 
     public function getAllCpuUsage($startdate, $enddate)

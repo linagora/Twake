@@ -16,6 +16,23 @@ class AdministrationTwakeGroupManagement
         $this->doctrine = $doctrine;
     }
 
+	public function countWorkspace(){
+		$qb = $this->doctrine->createQueryBuilder();
+		$qb->select($qb->expr()->count('w'))
+			->from('TwakeWorkspacesBundle:Workspace', 'w')
+			->where('w.isDeleted = 0');
+		$query = $qb->getQuery();
+		return $query->getSingleScalarResult();
+	}
+
+	public function countGroup(){
+		$qb = $this->doctrine->createQueryBuilder();
+		$qb->select($qb->expr()->count('g'))
+			->from('TwakeWorkspacesBundle:Group', 'g');
+		$query = $qb->getQuery();
+		return $query->getSingleScalarResult();
+	}
+
     public function listGroup($pageNumber,$nbGroupByPage,$filter=null,&$total){
         $repository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
         return $repository->search($pageNumber,$nbGroupByPage,$filter,$total);

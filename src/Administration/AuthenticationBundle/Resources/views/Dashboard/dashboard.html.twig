@@ -1,0 +1,63 @@
+{% extends 'EasyAdminBundle:default:layout.html.twig' %}
+
+{% block body_id 'easyadmin-dashboard' %}
+{% block body_class 'list dashboard' %}
+
+{% block content_title %}
+    Dashboard
+{% endblock %}
+
+{% block content_header %}
+    <h1>Dashboard</h1>
+{% endblock content_header %}
+
+{% block main %}
+    <div class="row">
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-orange"><i class="fa fa-coffee"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Workspaces</span>
+                    <span class="info-box-number">{{ workspaces.count }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-red"><i class="fa fa-building"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Groups</span>
+                    <span class="info-box-number">{{ groups.count }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- fix for small devices only -->
+        <div class="clearfix visible-sm-block"></div>
+
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-aqua"><i class="fa fa-user"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Active/Users</span>
+                    <span class="info-box-number">{{ users.connected }} / {{ users.count }}</span>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-sm-6 col-xs-12">
+            <div class="info-box">
+                <span class="info-box-icon bg-green"><i class="fa fa-tachometer"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">RAM usage</span>
+                    <span class="info-box-number">{{ ram.percent }}% <small>{{ ram.mo }}mo</small></span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+{% endblock main %}
+
+{% block body_javascript %}
+    {{ parent() }}
+{% endblock %}

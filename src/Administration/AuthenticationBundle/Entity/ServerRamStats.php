@@ -97,7 +97,6 @@ class ServerRamStats
             "id" => $this->getId(),
             "used" => $this->getUsed(),
             "datesave" => $this->getDateSave()
-
         );
     }
 
