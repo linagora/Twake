@@ -9,6 +9,7 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 use WebsiteApi\DriveBundle\Entity\DriveFileLabel;
 use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
 use WebsiteApi\DriveBundle\Model\DriveFileSystemInterface;
+use ZipArchive;
 
 class DriveFileSystem implements DriveFileSystemInterface
 {
@@ -676,16 +677,95 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	}
 
+	public function recursZip(&$zip, $directory, $prefix){
+		if($prefix!=""){
+			$zip->addEmptyDir($prefix);
+		}
+		foreach ($directory->getChildren() as $child) {
+			if($child->getIsDirectory()){
+				$dirname = $child->getName();
+				$dirname = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $dirname);
+				$dirname = mb_ereg_replace("([\.]{2,})", '', $dirname);
+				if($dirname==""){
+					$dirname = "no_name";
+				}
+				$this->recursZip($zip, $child, $prefix.$dirname."/");
+			}else{
+				$filename = $child->getName();
+				$filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $filename);
+				$filename = mb_ereg_replace("([\.]{2,})", '', $filename);
+				if($filename==""){
+					$filename = "no_name";
+				}
+
+				$completePath = $this->getRoot() . $child->getPath();
+				$realFile = $this->decode($completePath, $child->getLastVersion()->getKey(), $child->getLastVersion()->getMode());
+
+				$zip -> addFile($realFile, $prefix.$filename);
+				@unlink($realFile);
+			}
+		}
+	}
+
+	public function generateZip($directory){
+		if ($directory->getIsDirectory() || $directory == null) {
+			$zip = new ZipArchive;
+			$tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16)) . ".zip";
+			if ($zip->open($tmpPath, ZipArchive::CREATE) === TRUE) {
+
+				$this->recursZip($zip, $directory, "");
+
+				$zip->close();
+				return $tmpPath;
+			}
+		}
+		return false;
+	}
+
 	public function download($group, $file, $download)
 	{
 
-		$group = $this->convertToEntity($group, "TwakeDriveBundle:DriveFile");
 		$file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
 
 		//Directory : download as zip
 		if ($file->getIsDirectory() || $file == null) { //Directory or root
 
-			//TODO zip download
+			if($file->getSize()>1000000000) //1Go is too large
+			{
+				return false;
+			}
+
+			$zip_path = $this->generateZip($file);
+
+			if(!$zip_path){
+				return false;
+			}
+
+			$archive_name = ($file?$file->getName():"Documents");
+
+			header('Content-Type: application/octet-stream');
+			header("Content-type: application/force-download");
+			header('Content-Disposition: attachment; filename="' . $archive_name.".zip" . '"');
+
+			header('Expires: 0');
+			header('Cache-Control: must-revalidate');
+			header('Pragma: public');
+			header('Content-Length: ' . filesize($zip_path));
+
+			$fp = fopen($zip_path, "r");
+
+			ob_clean();
+			flush();
+			while (!feof($fp)) {
+				$buff = fread($fp, 1024);
+				print $buff;
+			}
+
+			//Delete decoded file
+			@unlink($zip_path);
+
+			exit;
+			die();
 
 		} else {
 
@@ -695,7 +775,6 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 			$completePath = $this->decode($completePath, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
 
-			error_log("hey !");
 
 			$ext = $this->getInfos($file)['extension'];
 
