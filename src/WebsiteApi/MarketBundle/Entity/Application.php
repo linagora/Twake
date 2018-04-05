@@ -241,6 +241,22 @@ class Application
 		$this->filesTypes = json_encode($filesTypes);
 	}
 
+	/**
+	 * @return mixed
+	 */
+	public function getFilesTypesRaw()
+	{
+		return $this->filesTypes;
+	}
+
+	/**
+	 * @param mixed $filesTypes
+	 */
+	public function setFilesTypesRaw($filesTypes)
+	{
+		$this->filesTypes = $filesTypes;
+	}
+
 	public function changePrivateKey()
 	{
 		$this->privateKey = Application::generatePrivateKey();
@@ -498,6 +514,22 @@ class Application
 	public function setCreateFileData($createFileData)
 	{
 		$this->createFileData = json_encode($createFileData);
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getCreateFileDataRaw()
+	{
+		return $this->createFileData;
+	}
+
+	/**
+	 * @param mixed $createFileData
+	 */
+	public function setCreateFileDataRaw($createFileData)
+	{
+		$this->createFileData = $createFileData;
 	}
 
 	/**

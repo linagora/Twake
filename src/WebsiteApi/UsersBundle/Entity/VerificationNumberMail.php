@@ -104,6 +104,31 @@ class VerificationNumberMail
 		return $this->mail;
 	}
 
+	/**
+	 * @return int
+	 */
+	public function getId()
+	{
+		return $this->id;
+	}
+
+	/**
+	 * @return \DateTime
+	 */
+	public function getDate()
+	{
+		return $this->date;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getCleanCode()
+	{
+		return $this->clean_code;
+	}
+
+
 
 }
 

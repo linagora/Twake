@@ -2,6 +2,11 @@ administration_authentication:
     resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
     prefix:   /administration/ajax/authentication
 
+easy_admin_bundle:
+    resource: "@EasyAdminBundle/Controller/AdminController.php"
+    type:     annotation
+    prefix:   /administration/V2/
+
 #website_group:
 #    resource: "@WebsiteGroupBundle/Resources/config/routing.yml"
 #    prefix:   /group/

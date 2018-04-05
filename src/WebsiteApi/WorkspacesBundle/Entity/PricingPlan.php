@@ -39,6 +39,12 @@ class PricingPlan
 	 */
 	protected $year_price = 0;
 
+	/**
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group", mappedBy="pricingPlan")
+	 */
+	private $groups;
+
+
 
 	public function __construct($name) {
 		$this->label = $name;
@@ -95,5 +101,15 @@ class PricingPlan
 	{
 		$this->label = $label;
 	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getGroups()
+	{
+		return $this->groups;
+	}
+
+
 
 }

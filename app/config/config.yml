@@ -126,3 +126,79 @@ rms_push_notifications:
 
 krlove_async_service_call:
   console_path: bin/console
+
+easy_admin:
+    list:
+        actions: ['show']
+    design:
+        menu:
+            - { entity: 'User', icon: 'user' }
+            - { entity: 'Device', icon: 'phone' }
+            - { entity: 'VerificationNumberMail', label: 'Mail verification', icon: 'envelope' }
+            - { entity: 'Application', icon: 'rocket' }
+            - { entity: 'Workspace', icon: 'coffee' }
+            - { entity: 'Group', icon: 'building' }
+            - { entity: 'PricingPlan', icon: 'dollar' }
+    entities:
+        User:
+            class: WebsiteApi\UsersBundle\Entity\User
+            label: 'Users'
+            list:
+                title: "Most recent users"
+                fields: ['id', { property: 'connected', label: 'Connected', type: 'boolean' }, 'enabled', {property: 'thumbnail.publicURL', label: 'Image', type: 'image'}, 'username', 'first_name', 'last_name', 'email', 'language']
+            form:
+                fields: ['enabled', 'username', 'first_name', 'last_name', 'email']
+            show:
+                fields: ['id', { property: 'connected', label: 'Connected', type: 'boolean' }, 'connections', 'enabled', {property: 'thumbnail.publicURL', label: 'Image', type: 'image'}, 'username', 'first_name', 'last_name', 'email', 'language']
+            disabled_actions: ['new', 'delete', 'edit']
+        VerificationNumberMail:
+            class: WebsiteApi\UsersBundle\Entity\VerificationNumberMail
+            label: 'Number verification by mail'
+            list:
+                title: "Number verification by mail"
+                fields: ['id', 'mail', 'date', 'clean_code']
+            disabled_actions: ['new', 'edit']
+        Device:
+            class: WebsiteApi\UsersBundle\Entity\Device
+            label: 'Devices'
+            disabled_actions: ['new']
+
+        Application:
+            class: WebsiteApi\MarketBundle\Entity\Application
+            label: 'Applications'
+            list:
+                title: "Twake applications"
+                fields: ['id',{property: 'urlThumbnail', label: 'Image', type: 'image'}, 'name', 'enabled', 'default', 'url']
+            edit:
+                fields: ['name', 'color', 'privateKey', 'publicKey', 'enabled', 'default', 'url', 'isCapable', 'canCreateFile', 'createFileDataRaw', 'filesTypesRaw']
+            new:
+                fields: ['name', 'color', 'privateKey', 'publicKey', 'enabled', 'default', 'url', 'isCapable', 'canCreateFile', 'createFileDataRaw', 'filesTypesRaw']
+            show:
+                fields: ['id',{property: 'urlThumbnail', label: 'Image', type: 'image'}, 'name', 'color', 'privateKey', 'publicKey', 'enabled', 'default', 'url', 'isCapable', 'canCreateFile', 'createFileDataRaw', 'filesTypesRaw']
+
+        Workspace:
+            class: WebsiteApi\WorkspacesBundle\Entity\Workspace
+            label: 'Workspaces'
+            list:
+                title: "Twake workspaces"
+                fields: ['id', 'isDeleted', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'dateAdded', 'group', 'members']
+            show:
+                fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'dateAdded', 'group', 'members']
+            edit:
+                fields: ['isDeleted']
+            disabled_actions: ['new']
+        Group:
+            class: WebsiteApi\WorkspacesBundle\Entity\Group
+            label: 'Groups'
+            list:
+                title: "Twake groups"
+                fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', 'dateAdded', 'pricingPlan', 'workspaces']
+            show:
+                fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', 'dateAdded', 'pricingPlan', 'workspaces']
+            disabled_actions: ['new', 'edit']
+        PricingPlan:
+            class: WebsiteApi\WorkspacesBundle\Entity\PricingPlan
+            label: 'Pricing plans'
+            list:
+                title: "Pricing plans"
+

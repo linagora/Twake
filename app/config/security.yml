@@ -29,3 +29,6 @@ security:
                 remember_me_parameter: _remember_me
                 path: /
                 domain: ~
+    access_control:
+        # require ROLE_ADMIN for /admin*
+        - { path: ^/administration/V2, roles: ROLE_ADMIN }

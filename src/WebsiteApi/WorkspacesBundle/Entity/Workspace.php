@@ -51,6 +51,11 @@ class Workspace
 	private $user;
 
 	/**
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser", mappedBy="workspace")
+	 */
+	private $members;
+
+	/**
 	 * @ORM\Column(type="datetime")
 	 */
 	private $date_added;
@@ -73,6 +78,14 @@ class Workspace
 	public function getId()
 	{
 		return $this->id;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getDateAdded()
+	{
+		return $this->date_added;
 	}
 
 	/**
@@ -169,6 +182,14 @@ class Workspace
 	public function setIsDeleted($isDeleted)
 	{
 		$this->isDeleted = $isDeleted;
+	}
+
+	/**
+	 * @return mixed
+	 */
+	public function getMembers()
+	{
+		return $this->members;
 	}
 
 	public function getAsArray(){
