@@ -20,6 +20,7 @@ class AppKernel extends Kernel
 			new FOS\UserBundle\FOSUserBundle(),
 			new Symfony\Bundle\AsseticBundle\AsseticBundle(),
 	        new EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle(),
+	        new CMEN\GoogleChartsBundle\CMENGoogleChartsBundle(),
 
 			new WebsiteApi\CoreBundle\TwakeCoreBundle(),
 			new WebsiteApi\UsersBundle\TwakeUsersBundle(),

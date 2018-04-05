@@ -56,8 +56,23 @@
 
     </div>
 
+    <div class="box box-default">
+        <div class="box-header with-border">
+            <h3 class="box-title">Drive Usage</h3>
+        </div>
+        <div class="box-body">
+            <div id="drive_chart"></div>
+        </div>
+    </div>
+
 {% endblock main %}
 
 {% block body_javascript %}
     {{ parent() }}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+
+    <script type="text/javascript">
+        {{ gc_draw(workspaces.drive_usage_chart, 'drive_chart') }}
+    </script>
 {% endblock %}

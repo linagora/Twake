@@ -3,6 +3,7 @@
 
 namespace Administration\AuthenticationBundle\Controller;
 
+use CMEN\GoogleChartsBundle\GoogleCharts\Charts\PieChart;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -26,6 +27,13 @@ class DashboardController extends Controller
 		//workspaces
 		$data["workspaces"]["count"] = $this->get('admin.TwakeGroupManagement')->countWorkspace();
 		$data["workspaces"]["drive_usage"]= $this->get('admin.TwakeStatistics')->numberOfExtensions();
+		$drive_data = [['Extension', 'Number of files']];
+		foreach ($data["workspaces"]["drive_usage"] as $ext){
+			$drive_data[] = [$ext["extension"], $ext["nb"]];
+		}
+		$drive_usage_chart = new PieChart();
+		$drive_usage_chart->getData()->setArrayToDataTable($drive_data);
+		$data["workspaces"]["drive_usage_chart"] = $drive_usage_chart;
 
 		//groups
 		$data["groups"]["count"] = $this->get('admin.TwakeGroupManagement')->countGroup();
