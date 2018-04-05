@@ -731,7 +731,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 				{
 					if (!in_array($value,array(".","..")))
 					{
-						@unlink($value);
+						@unlink($working_dir."/".$value);
 					}
 				}
 				@rmdir($working_dir);
