@@ -55,6 +55,11 @@ class Workspace
 	 */
 	private $members;
 
+    /**
+     * @ORM\Column(name="member_count", type="integer")
+     */
+    private $member_count = 0;
+
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
@@ -192,6 +197,25 @@ class Workspace
 		return $this->members;
 	}
 
+    /**
+     * @return mixed
+     */
+    public function getMemberCount()
+    {
+        if(!$this->member_count || $this->member_count<0){
+            return 0;
+        }
+        return $this->member_count;
+    }
+
+    /**
+     * @param mixed $member_count
+     */
+    public function setMemberCount($member_count)
+    {
+        $this->member_count = $member_count;
+    }
+
 	public function getAsArray(){
 		return Array(
 			"id"=> $this->getId(),
@@ -199,7 +223,8 @@ class Workspace
 			"logo" => (($this->getLogo())?$this->getLogo()->getPublicURL():""),
 			"wallpaper" => (($this->getWallpaper())?$this->getWallpaper()->getPublicURL():""),
 			"group" => (($this->getGroup())?$this->getGroup()->getAsArray():null),
-			"name" => $this->getName()
+			"name" => $this->getName(),
+            "total_members" => $this->getMemberCount()
 		);
 	}
 
