@@ -209,34 +209,4 @@ class Workspaces implements WorkspacesInterface
 		return false;
 	}
 
-	public function getApps($workspaceId, $currentUserId = null)
-	{
-		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-		$workspace = $workspaceRepository->find($workspaceId);
-
-		if($workspace==null){
-			return false;
-		}
-
-		if($currentUserId==null
-			|| $this->wls->can($workspaceId, $currentUserId, "")) {
-
-			if ($workspace->getUser() != null
-				&& ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
-			) {
-				//Private ws apps
-				//TODO
-				$appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-				return $appRepository->findBy(Array());
-			}
-
-			//Group apps
-			return $this->gas->getApps($workspace->getGroup()->getId(), $currentUserId);
-
-		}
-
-		return false;
-
-	}
-
 }

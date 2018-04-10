@@ -27,13 +27,12 @@ class WorkspaceController extends Controller
 
 
 		$ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
-
 		if(!$ws){
 			$response["errors"][] = "notallowed";
 		}else{
 			$response["data"] = $ws->getAsArray();
 
-			$apps_obj = $this->get("app.workspaces")->getApps($workspaceId);
+			$apps_obj = $this->get("app.workspaces_apps")->getApps($workspaceId);
 			$apps = Array();
 			foreach ($apps_obj as $app_obj){
 				$apps[] = $app_obj->getAsArray();
@@ -133,5 +132,29 @@ class WorkspaceController extends Controller
 		return new JsonResponse($data);
 
 	}
+
+    /**
+     * Récupère les applications d'un workspace
+     */
+    public function getAppsAction(Request $request){
+
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $workspaceId = $request->request->getInt("workspaceId");
+
+        $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
+        if(!$ws){
+            $response["errors"][] = "notallowed";
+        }else{
+            $apps_obj = $this->get("app.workspaces_apps")->getApps($workspaceId);
+            $apps = Array();
+            foreach ($apps_obj as $app_obj){
+                $apps[] = $app_obj->getAsArray();
+            }
+            $response["data"]["apps"] = $apps;
+        }
+
+        return new JsonResponse($response);
+    }
 
 }

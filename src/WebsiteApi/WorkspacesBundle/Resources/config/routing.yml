@@ -28,6 +28,12 @@ twake_workspaces_set_wallpaper:
     path:     /data/wallpaper
     defaults: { _controller: TwakeWorkspacesBundle:WorkspaceData:setWallpaper }
 
+# Apps
+
+twake_workspaces_get_apps:
+    path:     /apps/get
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:getApps }
+
 # Edit members
 
 twake_workspaces_members_list:
