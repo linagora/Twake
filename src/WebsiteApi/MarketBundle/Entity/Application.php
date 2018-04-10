@@ -108,11 +108,6 @@ class Application
 	protected $screenshot = "[]";
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\MarketBundle\Entity\LinkAppWorkspace", mappedBy="Application")
-	 */
-	protected $applicationsLinks;
-
-	/**
 	 * @ORM\Column(type="boolean", options={"default" : false})
 	 */
 	protected $isPromoted = false;

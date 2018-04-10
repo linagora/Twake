@@ -16,7 +16,6 @@ use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\PaymentsBundle\Entity\PriceLevel;
 use WebsiteApi\UploadBundle\Entity\File;
-use WebsiteApi\MarketBundle\Entity\Category;
 use Symfony\Component\Console\Helper\ProgressBar;
 /**
 * Created by PhpStorm.

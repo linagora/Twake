@@ -23,7 +23,45 @@ class WorkspacesApps implements WorkspacesAppsInterface
 		$this->gas = $groups_apps_service;
 	}
 
-	public function getApps($workspaceId, $currentUserId = null)
+    public function getApps($workspaceId, $currentUserId = null)
+    {
+
+        $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $workspaceRepository->find($workspaceId);
+
+        if($workspace==null){
+            return false;
+        }
+
+        if($currentUserId==null
+            || $this->wls->can($workspaceId, $currentUserId, "")) {
+
+            if ($workspace->getUser() != null
+                && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
+            ) {
+                //Private ws apps
+                //TODO ajouter le is default dans le findBy des app par defaut
+                $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+                return $appRepository->findBy(Array());
+            }
+
+            //Group apps
+            $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+            $workspaceapps = $workspaceappsRepository->findBy(Array("workspace" => $workspace));
+
+            $apps = array();
+            foreach ( $workspaceapps as $wa ){
+                $apps[] = $wa->getGroupApp()->getApp();
+            }
+            return $apps;
+
+        }
+
+        return false;
+
+    }
+
+	public function getAllApps($workspaceId, $currentUserId = null)
 	{
 		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 		$workspace = $workspaceRepository->find($workspaceId);
