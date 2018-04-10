@@ -13,7 +13,7 @@
 - Install zip
 - Install php-zip
 - Install php-mbstring
-- Install php-zeromq
+- Install php-zeromq (on mac : brew install zmq; (install pecl); sudo pecl install zmq-beta -> if Operation not permited error : reboot mac, hold command+R, open terminal, type csrutil disable and reboot.)
 - In case step 4 do not work because of not installed package, install remaining package and update this README.md file
 
 ### Step 3 - Configuration
@@ -29,7 +29,17 @@
 - Run "php bin/console doctrine:schema:update --force" or "php bin/console d:s:u --force"
 
 ### Step 6 - Initiate website
-- Run "php bin/console twake:init -r" to create default admin user and Twake official group
+- Run "php bin/console twake:init" to create default admin user and Twake official group
+
+### Step 7 - Add PDO Sessions
+```sql
+CREATE TABLE `sessions` (
+    `sess_id` VARCHAR(128) NOT NULL PRIMARY KEY,
+    `sess_data` BLOB NOT NULL,
+    `sess_time` INTEGER UNSIGNED NOT NULL,
+    `sess_lifetime` MEDIUMINT NOT NULL
+) COLLATE utf8_bin, ENGINE = InnoDB;
+```
 
 ### Run dev server
 - To run the dev server : "php bin/console server:run -vvv" or "php bin/console s:r -vvv"

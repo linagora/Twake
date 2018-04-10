@@ -80,7 +80,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 		foreach($linkStream as $link){
 			if(!in_array($link->getUser()->getId(), $except_users_ids)){
 
-				$users[] = $link->getUser();
+				$users[] = $link->getUser()->getId();
 
 				$link->setUnread($link->getUnread()+1);
 				$this->doctrine->persist($link);
@@ -107,7 +107,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 		$workspace = (
 		$stream->getWorkspace()
 			?$stream->getWorkspace()
-			:$this->workspaces->getPrivate($users[0]->getId())
+			:$this->workspaces->getPrivate($users[0])
 		);
 
 		$this->sendNotification($message, $workspace, $users);
@@ -149,7 +149,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 		} else {
 			$msg = "@" . $message->getUserSender()->getUsername() . " : " . $message->getContent();
 		}
-		$this->notificationSystem->pushNotification($application, $workspace, $users, null, null, $msg, Array("push"));
+		$this->notificationSystem->pushNotification($application->getId(), $workspace->getId(), $users, null, null, $msg, Array("push"));
 	}
 
 }

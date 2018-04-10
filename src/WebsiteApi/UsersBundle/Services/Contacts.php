@@ -43,7 +43,7 @@ class Contacts implements ContactsInterface
 			$this->notifications->pushNotification(
 				null,
 				null,
-				Array($user),
+				Array($user->getId()),
 				null,
 				"contact_request",
 				"@".$current_user->getUsername()." want to become your contact.",
@@ -88,7 +88,7 @@ class Contacts implements ContactsInterface
 		$this->notifications->pushNotification(
 			null,
 			null,
-			Array($user),
+			Array($user->getId()),
 			null,
 			"contact_acceptation",
 			"@".$current_user->getUsername()." accepted to become your contact.",
