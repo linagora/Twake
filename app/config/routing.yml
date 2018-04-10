@@ -146,7 +146,3 @@ developers_api_error:
     requirements:
       req: ".*"
 
-website_public:
-    resource: "@WebsitePublicBundle/Resources/config/routing.yml"
-    prefix:   /
-
