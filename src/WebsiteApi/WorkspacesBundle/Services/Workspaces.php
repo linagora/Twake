@@ -99,7 +99,7 @@ class Workspaces implements WorkspacesInterface
 		$this->ws->create($workspace); //Create workspace stat element
 
         //init default apps
-        $this->init($workspace);
+        //$this->init($workspace);
 
 		return $workspace;
 
@@ -216,9 +216,12 @@ class Workspaces implements WorkspacesInterface
     public function init($workspace){
 
         $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-        $grouppaceapps = $groupappsRepository->findBy(Array("workspace" => $workspace));
+        $grouppaceapps = $groupappsRepository->findBy(Array("group" => $workspace->getGroup()));
 
-        if(count($grouppaceapps) == 0) {
+        $workspaceappRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+        $workspaceapps = $workspaceappRepository->findBy(Array("workspace" => $workspace));
+
+        if(count($grouppaceapps) != 0 && count($workspaceapps) == 0 ) {
 
             foreach ( $grouppaceapps as $ga ){
                 if ($ga->getWorkspaceDefault()){

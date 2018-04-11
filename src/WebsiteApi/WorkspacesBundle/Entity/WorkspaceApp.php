@@ -40,9 +40,9 @@ class WorkspaceApp
 	 */
 	private $date_added;
 
-	public function __construct($group, $app) {
-		$this->group = $group;
-		$this->app = $app;
+	public function __construct($workspace, $groupapp) {
+		$this->workspace = $workspace;
+		$this->groupapp = $groupapp;
 		$this->date_added = new \DateTime();
 	}
 
