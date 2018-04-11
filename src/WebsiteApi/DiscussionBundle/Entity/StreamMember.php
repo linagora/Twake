@@ -35,10 +35,15 @@ class StreamMember
 	 */
 	private $workspace;
 
-	/**
-	 * @ORM\Column(type="boolean")
-	 */
-	private $mute;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $mute;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $last_read;
 
 	/**
 	 * @ORM\Column(type="integer")
@@ -52,6 +57,7 @@ class StreamMember
 	    $this->setStream($stream);
 	    $this->setUser($user);
 	    $this->setMute(false);
+	    $this->setLastRead();
 	}
 
     public function getId() {
@@ -118,6 +124,28 @@ class StreamMember
 		$this->workspace = $workspace;
 	}
 
+    /**
+     * @return mixed
+     */
+    public function getLastRead()
+    {
+        return $this->last_read;
+    }
+
+    /**
+     * @param mixed $last_read
+     */
+    public function setLastRead()
+    {
+        $this->last_read = new \DateTime();
+    }
+
+    public function getAsArray(){
+        return Array(
+            "notifications" => $this->getUnread(),
+            "lastread" => $this->getLastRead()?$this->getLastRead()->getTimestamp():null
+        );
+    }
 
 
 }

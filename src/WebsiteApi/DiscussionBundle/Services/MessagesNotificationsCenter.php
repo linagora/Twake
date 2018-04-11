@@ -31,13 +31,12 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 		}
 
 		foreach($linkStreams as $linkStream) {
-			$linkStream->setUnread(0);
+            $linkStream->setUnread(0);
+            $linkStream->setLastRead();
 			$this->doctrine->persist($linkStream);
 
-			$data = Array(
-				"id" => $stream->getId(),
-				"value" => 0
-			);
+            $data = $linkStream->getAsArray();
+            $data["id"] = $stream->getId();
 
 			$this->pusher->push($data,
 				"discussion_notifications_topic",
@@ -64,7 +63,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 			:$this->workspaces->getPrivate($user->getId())
 		);
 
-		if($totalUnread==0){
+		if($totalUnread<=0){
 			$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
 				->findOneBy(Array("url" => "messages-auto"));
 			$this->notificationSystem->readAll($application, $workspace, $user);
@@ -85,10 +84,8 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 				$link->setUnread($link->getUnread()+1);
 				$this->doctrine->persist($link);
 
-				$data = Array(
-					"id" => $stream->getId(),
-					"value" => $link->getUnread()
-				);
+				$data = $link->getAsArray();
+				$data["id"] = $stream->getId();
 
 				$this->pusher->push($data,
 					"discussion_notifications_topic",
@@ -126,7 +123,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 		    return 0;
 	    }
 
-	    return $linkStream->getUnread();
+	    return $linkStream->getAsArray();
     }
 
 
