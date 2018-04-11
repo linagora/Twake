@@ -95,6 +95,7 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
       foreach ( $groups as $g ){
           $services->get("app.groups")->init($g);
       }
+      error_log("Init group app");
 
       $workspaceAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 
@@ -102,6 +103,7 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
       foreach ( $workspaces as $w ){
           $services->get("app.workspaces")->init($w);
       }
+      error_log("Init workspaces app");
 
   }
 }

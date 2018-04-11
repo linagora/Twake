@@ -2,12 +2,16 @@
 
 namespace Administration\AuthenticationBundle\Tests\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use Tests\WebTestCaseExtended;
 
-class DefaultControllerTest extends WebTestCase
+class DefaultControllerTest extends WebTestCaseExtended
 {
     public function testIndex()
     {
-        $this->assertTrue(true);
+        // $this->getDoctrine(); // Get Doctrine Entity Manager
+        // $this->get("app.service_name")->function(); // Get a service and run function
+        $a = 1;
+        $b = 1;
+        $this->assertTrue($a == $b);
     }
 }

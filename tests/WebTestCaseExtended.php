@@ -7,20 +7,22 @@ use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 class WebTestCaseExtended extends WebTestCase
 {
 
+    static $client;
+
     protected function getDoctrine()
     {
-        if (!isset($this->client)) {
-            $this->client = static::createClient();
+        if (!isset(WebTestCaseExtended::$client)) {
+            WebTestCaseExtended::$client = static::createClient();
         }
-        return $this->client->getContainer()->get('doctrine.orm.entity_manager');
+        return WebTestCaseExtended::$client->getContainer()->get('doctrine.orm.entity_manager');
     }
 
     protected function get($service)
     {
-        if (!isset($this->client)) {
-            $this->client = static::createClient();
+        if (!isset(WebTestCaseExtended::$client)) {
+            WebTestCaseExtended::$client = static::createClient();
         }
-        return $this->client->getContainer()->get($service);
+        return WebTestCaseExtended::$client->getContainer()->get($service);
     }
 
 }
