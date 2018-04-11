@@ -40,7 +40,8 @@
         "krlove/async-service-call-bundle": "^1.0",
         "redjanym/fcm-bundle": "dev-master",
         "richsage/rms-push-notifications-bundle": "^0.2.3",
-        "cmen/google-charts-bundle": "^3.0"
+        "cmen/google-charts-bundle": "^3.0",
+        "easycorp/easyadmin-bundle": "^1.17"
 	},
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

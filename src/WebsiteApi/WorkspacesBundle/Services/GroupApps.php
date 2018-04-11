@@ -17,9 +17,32 @@ class GroupApps implements GroupAppsInterface
 
 	public function getApps($groupId, $currentUserId = null)
 	{
-		//Todo
-		$appRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-		return $appRepository->findBy(Array());
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $group = $groupRepository->find($groupId);
+
+        if($group==null){
+            return false;
+        }
+
+        if($currentUserId == null
+            || $group->hasPrivileges(
+                $group->getLevel($groupId, $currentUserId),
+                "VIEW_APPS"
+            )
+        ){
+            //Group apps
+            $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+            $groupapps = $groupappsRepository->findBy(Array("group" => $group));
+
+            $apps = array();
+            foreach ( $groupapps as $ga ){
+                $apps[] = $ga->getApp();
+            }
+
+            return $apps;
+        }
+
+        return false;
 	}
 
 }
