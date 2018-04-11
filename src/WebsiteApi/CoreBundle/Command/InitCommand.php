@@ -86,5 +86,22 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
 
     $services->get('app.pricing_plan')->init();
 
+    /**
+     * Initialisation des groups apps et worskspace apps
+     */
+      $groupAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Group");
+
+      $groups = $groupAppRepository->findBy(Array());
+      foreach ( $groups as $g ){
+          $services->get("app.groups")->init($g);
+      }
+
+      $workspaceAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+
+      $workspaces = $workspaceAppRepository->findBy(Array());
+      foreach ( $workspaces as $w ){
+          $services->get("app.workspaces")->init($w);
+      }
+
   }
 }

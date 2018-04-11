@@ -99,7 +99,7 @@ class Workspaces implements WorkspacesInterface
 		$this->ws->create($workspace); //Create workspace stat element
 
         //init default apps
-        //$this->init($workspace);
+        $this->init($workspace);
 
 		return $workspace;
 
