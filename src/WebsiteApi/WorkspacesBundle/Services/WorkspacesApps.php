@@ -61,7 +61,9 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
     }
 
-	public function getAllApps($workspaceId, $currentUserId = null)
+
+    //Depreciated
+	public function _getAllApps($workspaceId, $currentUserId = null)
 	{
 		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 		$workspace = $workspaceRepository->find($workspaceId);
