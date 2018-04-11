@@ -40,10 +40,17 @@ class GroupApp
 	 */
 	private $date_added;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $workspaceDefault;
+
+
 	public function __construct($group, $app) {
 		$this->group = $group;
 		$this->app = $app;
 		$this->date_added = new \DateTime();
+		$this->workspaceDefault = false;
 	}
 
 	/**
@@ -77,5 +84,22 @@ class GroupApp
 	{
 		return $this->date_added;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspaceDefault()
+    {
+        return $this->workspaceDefault;
+    }
+
+    /**
+     * @param mixed $workspaceDefault
+     */
+    public function setWorkspaceDefault($workspaceDefault)
+    {
+        $this->workspaceDefault = $workspaceDefault;
+    }
+
 
 }
