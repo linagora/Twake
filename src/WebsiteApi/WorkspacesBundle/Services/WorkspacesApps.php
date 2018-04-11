@@ -124,6 +124,14 @@ class WorkspacesApps implements WorkspacesAppsInterface
                 return false;
             }
 
+            //Search if the App is already enabled
+            $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+            $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace" => $workspace,"groupapp" => $groupapp));
+            if($workspaceapp){
+                return true;
+            }
+
+
             $workspaceapp = new WorkspaceApp($workspace,$groupapp);
             $this->doctrine->persist($workspaceapp);
             $this->doctrine->flush();
@@ -165,7 +173,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
             $this->doctrine->remove($workspaceapp);
             $this->doctrine->flush();
-            
+
             return true;
         }
 
