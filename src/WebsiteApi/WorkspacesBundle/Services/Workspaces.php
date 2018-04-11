@@ -5,6 +5,7 @@ namespace WebsiteApi\WorkspacesBundle\Services;
 
 use WebsiteApi\DiscussionBundle\Entity\Stream;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceApp;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Model\WorkspacesInterface;
 
@@ -96,6 +97,9 @@ class Workspaces implements WorkspacesInterface
 		}
 
 		$this->ws->create($workspace); //Create workspace stat element
+
+        //init default apps
+        $this->init($workspace);
 
 		return $workspace;
 
@@ -208,5 +212,24 @@ class Workspaces implements WorkspacesInterface
 
 		return false;
 	}
+
+    public function init($workspace){
+
+        $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+        $grouppaceapps = $groupappsRepository->findBy(Array("workspace" => $workspace));
+
+        if(count($grouppaceapps) == 0) {
+
+            foreach ( $grouppaceapps as $ga ){
+                if ($ga->getWorkspaceDefault()){
+                    $workspaceapp = new WorkspaceApp($workspace,$ga);
+                    $this->doctrine->persist($workspaceapp);
+                }
+            }
+            $this->doctrine->flush();
+        }
+        //Déjà initialisé
+        return false;
+    }
 
 }
