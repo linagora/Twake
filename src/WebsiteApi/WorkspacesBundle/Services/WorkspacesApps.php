@@ -127,6 +127,8 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $workspaceapp = new WorkspaceApp($workspace,$groupapp);
             $this->doctrine->persist($workspaceapp);
             $this->doctrine->flush();
+
+            return true;
         }
 
         return false;
@@ -163,6 +165,8 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
             $this->doctrine->remove($workspaceapp);
             $this->doctrine->flush();
+            
+            return true;
         }
 
         return false;
