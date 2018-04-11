@@ -41,9 +41,8 @@ class WorkspacesApps implements WorkspacesAppsInterface
                 && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
             ) {
                 //Private ws apps
-                //TODO ajouter le is default dans le findBy des app par defaut
                 $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-                return $appRepository->findBy(Array());
+                return $appRepository->findBy(Array("default"=>true));
             }
 
             //Group apps
