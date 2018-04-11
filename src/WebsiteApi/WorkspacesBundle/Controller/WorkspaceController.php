@@ -157,4 +157,44 @@ class WorkspaceController extends Controller
         return new JsonResponse($response);
     }
 
+    /**
+     * desactive une application d'un workspace
+     */
+    public function disableAppAction(Request $request){
+
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $workspaceId = $request->request->getInt("workspaceId");
+        $appId = $request->request->getInt("appId");
+
+        $res = $this->get("app.workspaces_apps")->disableApp($workspaceId,$appId);
+        if(!$res){
+            $response["errors"][] = "notauthorized";
+        }else{
+            $response["data"][] = "success";
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * Active une application d'un workspace
+     */
+    public function enableAppAction(Request $request){
+
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $workspaceId = $request->request->getInt("workspaceId");
+        $appId = $request->request->getInt("appId");
+
+        $res = $this->get("app.workspaces_apps")->enableApp($workspaceId,$appId);
+        if(!$res){
+            $response["errors"][] = "notauthorized";
+        }else{
+            $response["data"][] = "success";
+        }
+
+        return new JsonResponse($response);
+    }
+
 }
