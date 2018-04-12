@@ -444,16 +444,6 @@ class Application
 		return $this->cover;
 	}
 
-	public function getPromoted()
-	{
-		return $this->isPromoted;
-	}
-
-	public function setPromoted($x)
-	{
-		$this->isPromoted = $x;
-	}
-
 	public function setScreenshot($screen)
 	{
 		$this->screenshot = json_encode($screen);
@@ -591,7 +581,6 @@ class Application
 			"thumbnail" => $this->getUrlThumbnail(),
 			"csscover" => $this->getCssCover(),
 			"cover" => $this->getUrlCover(),
-			"isPromoted" => $this->getPromoted(),
 			"screenshots" => $this->getScreenshot(),
 			"url" => $this->getUrl(),
 			"filestypes" => $this->getFilesTypes(),

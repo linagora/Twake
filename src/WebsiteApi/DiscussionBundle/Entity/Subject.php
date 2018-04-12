@@ -224,8 +224,8 @@ class Subject
         return Array(
             "id" => $this->getId(),
             "name" => $this->getName(),
-            "dateCreate" => $this->getDateCreate(),
-            "dateUpdate" => $this->getDateUpdate(),
+            "dateCreate" => ($this->getDateCreate()?$this->getDateCreate()->getTimestamp():null),
+            "dateUpdate" => ($this->getDateUpdate()?$this->getDateUpdate()->getTimestamp():null),
             "stream" => $this->getStream()->getId(),
             "isOpen" => $this->getisOpen(),
             "firstMessage" => ($this->getFirstMessage()!=null)?$this->getFirstMessage()->getId():null,

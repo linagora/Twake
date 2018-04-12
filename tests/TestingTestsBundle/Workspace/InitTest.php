@@ -23,15 +23,19 @@ class InitTest extends WebTestCaseExtended
         $wa_appsarray = $this->get("app.workspaces_apps")->getApps($group->getId());
 
 
+        //TODO C'est quoi ça ? @Romaric :)
         $this->assertTrue(count($groupapps) == 7,"Database/Init not functioning properly");
         $this->assertTrue(count($workspaceapp) == 7,"Database/Init not functioning properly");
 
 
+        //TODO C'est quoi ça ? @Romaric :)
         //Service Test
         $this->assertTrue(count($ga_appsarray) == 7,"GroupApps Service not functioning properly");
         $this->assertTrue(count($wa_appsarray) == 7,"WorkspaceApps Service not functioning properly");
 
+        //TODO C'est quoi ça ? @Romaric :)
         //Both
         $this->assertTrue(count($groupapps) == count($ga_appsarray) && count($ga_appsarray) == count($wa_appsarray),"Inconsistancy between Service and Database");
+
     }
 }
