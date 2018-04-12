@@ -272,7 +272,7 @@ class User implements UserInterface
 		return false;
 	}
 
-	public function subscribe($token, $code, $pseudo, $password)
+	public function subscribe($token, $code, $pseudo, $password, $force=false)
 	{
 
 		$pseudo = $this->string_cleaner->simplifyUsername($pseudo);
@@ -289,7 +289,7 @@ class User implements UserInterface
 		$factory = $this->encoder_factory;
 
 		if($ticket != null) {
-			if($ticket->verifyCode($code)){
+			if($ticket->verifyCode($code) || $force){
 
 				$mail = $ticket->getMail();
 
