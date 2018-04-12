@@ -28,7 +28,7 @@ class WebTestCaseExtended extends WebTestCase
 
     public function newUser(){
         $userToken = $this->get("app.user")->subscribeMail("PHPUNIT@PHPUNIT.fr");
-        $user = $this->get("app.user")->subscribe($userToken,null, "php unit","php unit",true);
+        $user = $this->get("app.user")->subscribe($userToken,null, "phpunit","phpunit",true);
 
         $this->getDoctrine()->persist($user);
         $this->getDoctrine()->flush();
@@ -37,7 +37,7 @@ class WebTestCaseExtended extends WebTestCase
     }
 
     public function newGroup($userId){
-        $group = $this->get("app.groups")->create($userId,"mon groupe PHP UNIT","PHP UNIT",1);
+        $group = $this->get("app.groups")->create($userId,"phpunit","phpunit",1);
         $this->getDoctrine()->persist($group);
         $this->getDoctrine()->flush();
 
@@ -45,11 +45,33 @@ class WebTestCaseExtended extends WebTestCase
     }
 
     public function newWorkspace($groupId){
-        $work = $this->get("app.workspaces")->create("mon workspace PHPUNIT",$groupId); // Get a service and run function
+        $work = $this->get("app.workspaces")->create("phpunit",$groupId); // Get a service and run function
         $this->getDoctrine()->persist($work);
         $this->getDoctrine()->flush();
 
         return $work;
+    }
+
+    public function destroyTestData(){
+        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("username" => "phpunit"));
+
+        $groupRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group");
+        $group = $groupRepository->findOneBy(Array("name" => "phpunit"));
+
+        $workspaceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $workspaceRepository->findOneBy(Array("name" => "phpunit"));
+
+        if($user != null){
+            $this->getDoctrine()->remove($user);
+        }
+        if($group != null){
+            $this->getDoctrine()->remove($group);
+        }
+        if($workspace != null){
+            $this->getDoctrine()->remove($workspace);
+        }
+        $this->getDoctrine()->flush();
     }
 
 

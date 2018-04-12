@@ -14,20 +14,17 @@ class WorkspaceTest extends WebTestCaseExtended
 {
     public function testIndex()
     {
-        // $this->getDoctrine(); // Get Doctrine Entity Manager
-        $user = $this->newUser();
-
-        $group = $this->newGRoup($user->getId());
-
-        $work = $this->newWorkspace($group->getId());
-
-        $this->assertTrue($work->getName() =="mon workspace PHPUNIT" , "test création workspace" );
-
-        // remove all entity created
-        $this->getDoctrine()->remove($user);
-        $this->getDoctrine()->remove($group);
-        $this->getDoctrine()->remove($work);
-
-        $this->getDoctrine()->flush();
+//        $user = $this->newUser();
+//        $group = $this->newGroup($user->getId());
+//        $work = $this->newWorkspace($group->getId());
+//
+//        $this->assertTrue($work->getName() =="mon workspace PHPUNIT" , "test création workspace" );
+//
+//        // remove all entity created
+//        $this->getDoctrine()->remove($user);
+//        $this->getDoctrine()->remove($group);
+//        $this->getDoctrine()->remove($work);
+//
+//        $this->getDoctrine()->flush();
     }
 }
