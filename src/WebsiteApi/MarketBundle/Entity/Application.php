@@ -108,9 +108,9 @@ class Application
 	protected $screenshot = "[]";
 
 	/**
-	 * @ORM\Column(type="boolean", options={"default" : false})
+	 * @ORM\Column(name="message_module" , type="boolean")
 	 */
-	protected $isPromoted = false;
+	protected $messageModule;
 
 	/**
 	 * @ORM\Column(type="date")
@@ -156,6 +156,7 @@ class Application
 		$this->setFilesTypes(Array());
 		$this->setApplicationRights(Array());
 		$this->enabled = false;
+		$this->messageModule = false;
 	}
 
 	static public function generatePrivateKey()
@@ -559,6 +560,22 @@ class Application
 		$this->default = $default;
 	}
 
+    /**
+     * @return mixed
+     */
+    public function getMessageModule()
+    {
+        return $this->messageModule;
+    }
+
+    /**
+     * @param mixed $messageModule
+     */
+    public function setMessageModule($messageModule)
+    {
+        $this->messageModule = $messageModule;
+    }
+
 	public function getAsArray()
 	{
 		return Array(
@@ -583,7 +600,8 @@ class Application
 			"canCreateFile" => $this->getCanCreateFile(),
 			"createFileData" => $this->getCreateFileData(),
 			"isCapable" => $this->getisCapable(),
-			"default" => $this->getDefault()
+			"default" => $this->getDefault(),
+            "messageModule" => $this->getMessageModule()
 		);
 	}
 
