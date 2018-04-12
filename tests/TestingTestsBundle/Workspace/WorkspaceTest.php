@@ -14,17 +14,32 @@ class WorkspaceTest extends WebTestCaseExtended
 {
     public function testIndex()
     {
-//        $user = $this->newUser();
-//        $group = $this->newGroup($user->getId());
-//        $work = $this->newWorkspace($group->getId());
-//
-//        $this->assertTrue($work->getName() =="mon workspace PHPUNIT" , "test création workspace" );
-//
-//        // remove all entity created
-//        $this->getDoctrine()->remove($user);
-//        $this->getDoctrine()->remove($group);
-//        $this->getDoctrine()->remove($work);
-//
-//        $this->getDoctrine()->flush();
+        $this->destroyTestData();
+
+        $user = $this->newUser();
+        $group = $this->newGroup($user->getId());
+        $work = $this->newWorkspace($group->getId());
+
+        $this->getDoctrine()->flush();
+        $groupappsRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupApp");
+        $groupapps = $groupappsRepository->findBy(Array("group" => $group));
+
+        $workspaceappRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+        $workspaceapp = $workspaceappRepository->findBy(Array("workspace" => $work));
+
+        $npWorkApp = count($workspaceapp);
+
+        // disable
+         $this->get("app.workspaces_apps")->disableApp($work->getId(),34);
+        $workspaceapp = $workspaceappRepository->findBy(Array("workspace" => $work));
+
+        $this->assertTrue($npWorkApp-1 == count($workspaceapp) , "test desactiver appplication" );
+
+        // enable
+        $this->get("app.workspaces_apps")->enableApp($work->getId(),34);
+        $workspaceapp = $workspaceappRepository->findBy(Array("workspace" => $work));
+        $this->assertTrue($npWorkApp == count($workspaceapp) , "test activer appplication" );
+
+        $this->getDoctrine()->flush();
     }
 }
