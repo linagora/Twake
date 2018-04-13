@@ -34,9 +34,10 @@ class GroupApps implements GroupAppsInterface
             $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
             $groupapps = $groupappsRepository->findBy(Array("group" => $group));
 
+
             $apps = array();
             foreach ( $groupapps as $ga ){
-                $apps[] = $ga->getApp();
+                $apps[] = $ga;
             }
 
             return $apps;

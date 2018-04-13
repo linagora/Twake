@@ -33,7 +33,10 @@ class GroupAppsController extends Controller
             //Apps
             $apps = Array();
             foreach ($apps_obj as $app_obj){
-                $apps[] = $app_obj->getAsArray();
+                $tmp = Array(
+                    "app" => $app_obj->getApp()->getAsArray(),
+                    "workspaceDefault" => $app_obj->getWorkspaceDefault());
+                $apps[] = $tmp;
             }
             $response["data"]["apps"] = $apps;
         }
