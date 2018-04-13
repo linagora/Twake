@@ -24,7 +24,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
 		$this->gas = $groups_apps_service;
 	}
 
-    public function getApps($workspaceId, $currentUserId = null)
+    public function getApps($workspaceId, $currentUserId = null, $onlymessageModule = false)
     {
 
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -51,10 +51,16 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
             $apps = array();
             foreach ( $workspaceapps as $wa ){
-                $apps[] = $wa->getGroupApp()->getApp();
+                $app = $wa->getGroupapp()->getApp();
+                if ($onlymessageModule){
+                    if($app->getMessageModule()) {
+                        $apps[] = $app;
+                    }
+                }else{
+                    $apps[] = $app;
+                }
             }
             return $apps;
-
         }
 
         return false;
