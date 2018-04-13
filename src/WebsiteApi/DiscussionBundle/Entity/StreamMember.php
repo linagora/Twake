@@ -45,10 +45,15 @@ class StreamMember
      */
     private $last_read;
 
-	/**
-	 * @ORM\Column(type="integer")
-	 */
-	private $unread = 0;
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $unread = 0;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $subject_unread = 0;
 
 
 
@@ -140,9 +145,26 @@ class StreamMember
         $this->last_read = new \DateTime();
     }
 
+    /**
+     * @return mixed
+     */
+    public function getSubjectUnread()
+    {
+        return $this->subject_unread;
+    }
+
+    /**
+     * @param mixed $subject_unread
+     */
+    public function setSubjectUnread($subject_unread)
+    {
+        $this->subject_unread = $subject_unread;
+    }
+
     public function getAsArray(){
         return Array(
             "notifications" => $this->getUnread(),
+            "subject_notifications" => $this->getSubjectUnread(),
             "lastread" => $this->getLastRead()?$this->getLastRead()->getTimestamp():null
         );
     }

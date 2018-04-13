@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\DiscussionBundle\Services;
 
+use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\DiscussionBundle\Entity\MessageNotification;
 use WebsiteApi\DiscussionBundle\Model\MessagesNotificationsCenterInterface;
 
@@ -32,6 +33,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 
 		foreach($linkStreams as $linkStream) {
             $linkStream->setUnread(0);
+            $linkStream->setSubjectUnread(0);
             $linkStream->setLastRead();
 			$this->doctrine->persist($linkStream);
 
@@ -71,7 +73,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 
 	}
 
-	public function notify($stream, $except_users_ids, $message){
+	public function notify($stream, $except_users_ids, Message $message){
 
 		$users = Array();
 		$linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
@@ -82,6 +84,9 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 				$users[] = $link->getUser()->getId();
 
 				$link->setUnread($link->getUnread()+1);
+				if($message->getSubject()){
+                    $link->setSubjectUnread($link->getSubjectUnread()+1);
+                }
 				$this->doctrine->persist($link);
 
 				$data = $link->getAsArray();

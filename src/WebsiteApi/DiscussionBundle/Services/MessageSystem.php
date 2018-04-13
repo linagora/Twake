@@ -228,6 +228,8 @@ class MessageSystem implements MessagesSystemInterface
 			$subject = null;
 			if ($subjectId != null) {
 				$subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
+                $subject->setDateUpdate(new \DateTime());
+                $this->doctrine->persist($subject);
 			}
 			$t = microtime(true);
 			$micro = sprintf("%06d", ($t - floor($t)) * 1000000);

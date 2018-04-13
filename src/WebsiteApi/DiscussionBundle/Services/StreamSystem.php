@@ -71,7 +71,7 @@ class StreamSystem implements StreamSystemInterface
 
             error_log(json_encode($stream->getAsArray()));
 
-            $retour = array_merge($stream->getAsArray(),Array("notifications"=>$notifications["notifications"], "lastread"=>$notifications["lastread"],"call"=>$callInfos));
+            $retour = array_merge($stream->getAsArray(),Array("notifications"=>$notifications["notifications"], "subject_notifications"=>$notifications["subject_notifications"], "lastread"=>$notifications["lastread"],"call"=>$callInfos));
 
             return $retour;
         }
@@ -150,7 +150,7 @@ class StreamSystem implements StreamSystemInterface
             $this->doctrine->flush();
             $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
             $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
-            $retour = array_merge($stream->getAsArray(),Array("notifications"=>$notifications["notifications"], "lastread"=>$notifications["lastread"],"call"=>$callInfos));
+            $retour = array_merge($stream->getAsArray(),Array("notifications"=>$notifications["notifications"], "subject_notifications"=>$notifications["subject_notifications"], "lastread"=>$notifications["lastread"],"call"=>$callInfos));
             return $retour;
         }
     }
@@ -174,6 +174,7 @@ class StreamSystem implements StreamSystemInterface
 						$list[] = array_merge($stream_array, Array(
 							"contact" => $contact,
 							"notifications" => $notifications["notifications"],
+                            "subject_notifications"=>$notifications["subject_notifications"],
                             "lastread"=>$notifications["lastread"],
 							"call" => $callInfos,
 							"mute" => $linkStream->getMute()
@@ -215,6 +216,7 @@ class StreamSystem implements StreamSystemInterface
 			        $callInfos = $this->callSystem->getCallInfo($user,$stream->getAsArray()["key"]);
 			        $retour["stream"][] = array_merge($stream->getAsArray(),Array(
 			        	"notifications"=>$notifications["notifications"],
+                        "subject_notifications"=>$notifications["subject_notifications"],
                         "lastread"=>$notifications["lastread"],
 				        "call"=>$callInfos,
 				        "mute"=>$linkStream->getMute()
@@ -246,6 +248,7 @@ class StreamSystem implements StreamSystemInterface
 				            $callInfos = $this->callSystem->getCallInfo($user, $stream->getAsArray()["key"]);
 				            $retour["stream"][] = array_merge($stream->getAsArray(), Array(
 					            "notifications" => $notifications["notifications"],
+                                "subject_notifications"=>$notifications["subject_notifications"],
                                 "lastread"=>$notifications["lastread"],
 					            "call" => $callInfos,
 					            "contact" => $member->getAsArray(),

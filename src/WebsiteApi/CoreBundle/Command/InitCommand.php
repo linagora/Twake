@@ -105,5 +105,11 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
       }
       error_log("Init workspaces app");
 
+      $drive = $doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"drive"));
+      $drive->setMessageModule(true);
+      $manager->persist($drive);
+      $manager->flush();
+      error_log("Set drive to messageApp");
+
   }
 }
