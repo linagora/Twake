@@ -158,6 +158,30 @@ class WorkspaceController extends Controller
     }
 
     /**
+     * Récupère les applications d'un workspace
+     */
+    public function getModuleAppsAction(Request $request){
+
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $workspaceId = $request->request->getInt("workspaceId");
+
+        $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
+        if(!$ws){
+            $response["errors"][] = "notallowed";
+        }else{
+            $apps_obj = $this->get("app.workspaces_apps")->getApps($workspaceId,null,true);
+            $apps = Array();
+            foreach ($apps_obj as $app_obj){
+                $apps[] = $app_obj->getAsArray();
+            }
+            $response["data"]["apps"] = $apps;
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
      * desactive une application d'un workspace
      */
     public function disableAppAction(Request $request){

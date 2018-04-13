@@ -30,6 +30,10 @@ twake_workspaces_set_wallpaper:
 
 # Apps
 
+twake_workspaces_get_module_apps:
+    path:     /apps/getModuleApps
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:getModuleApps }
+
 twake_workspaces_get_apps:
     path:     /apps/get
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:getApps }
