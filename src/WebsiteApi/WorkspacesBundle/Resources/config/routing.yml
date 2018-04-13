@@ -46,6 +46,10 @@ twake_groups_get_apps:
     path:     /group/apps/get
     defaults: { _controller: TwakeWorkspacesBundle:GroupApps:getApps }
 
+twake_groups_set_workspace_default:
+    path:     /group/workspacedefault/set
+    defaults: { _controller: TwakeWorkspacesBundle:GroupApps:setWorkspaceDefault }
+
 # Edit members
 
 twake_workspaces_members_list:

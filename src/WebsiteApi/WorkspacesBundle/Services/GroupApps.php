@@ -25,8 +25,8 @@ class GroupApps implements GroupAppsInterface
         }
 
         if($currentUserId == null
-            || $group->hasPrivileges(
-                $group->getLevel($groupId, $currentUserId),
+            || $this->gms->hasPrivileges(
+                $this->gms->getLevel($groupId, $currentUserId),
                 "VIEW_APPS"
             )
         ){
@@ -45,5 +45,38 @@ class GroupApps implements GroupAppsInterface
 
         return false;
 	}
+
+	public function setWorkspaceDefault($groupId, $appId, $boolean, $currentUserId = null){
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $group = $groupRepository->find($groupId);
+
+        if($group==null){
+            return false;
+        }
+
+        if($currentUserId == null
+            || $this->gms->hasPrivileges(
+                $this->gms->getLevel($groupId, $currentUserId),
+                "VIEW_APPS"
+            )
+        ){
+            //Group apps
+            $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+            $groupapps = $groupappsRepository->findBy(Array("group" => $group));
+
+
+
+            foreach ( $groupapps as $ga ){
+               if($ga->getApp()->getId() == $appId){
+                   $ga->setWorkspaceDefault($boolean);
+                   $this->doctrine->persist($ga);
+               }
+            }
+
+            $this->doctrine->flush();
+            return true;
+        }
+        return false;
+    }
 
 }
