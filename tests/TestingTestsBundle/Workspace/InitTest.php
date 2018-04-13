@@ -13,8 +13,15 @@ class InitTest extends WebTestCaseExtended
         $group = $this->newGroup($user->getId());
         $workspace = $this->newWorkspace($group->getId());
 
+        $appsRepository = $this->getDoctrine()->getRepository("TwakeMarketBundle:Application");
+        $defaultapps = $appsRepository->findBy(Array("default" => true));
+        $nbdefaultapps = count($defaultapps);
+
         $groupappsRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupApp");
         $groupapps = $groupappsRepository->findBy(Array("group" => $group));
+        $defaultgroupapps = $groupappsRepository->findBy(Array("group" => $group,"workspaceDefault" => true));
+        $nbdefaultgroupapps = count($defaultgroupapps);
+
 
         $workspaceappRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
         $workspaceapp = $workspaceappRepository->findBy(Array("workspace" => $workspace));
@@ -22,18 +29,15 @@ class InitTest extends WebTestCaseExtended
         $ga_appsarray = $this->get("app.group_apps")->getApps($group->getId());
         $wa_appsarray = $this->get("app.workspaces_apps")->getApps($group->getId());
 
-
-        //TODO C'est quoi ça ? @Romaric :)
-        $this->assertTrue(count($groupapps) == 7,"Database/Init not functioning properly");
-        $this->assertTrue(count($workspaceapp) == 7,"Database/Init not functioning properly");
+        $this->assertTrue(count($groupapps) == $nbdefaultapps,"Database/Init not functioning properly");
+        $this->assertTrue(count($workspaceapp) == $nbdefaultapps,"Database/Init not functioning properly");
 
 
-        //TODO C'est quoi ça ? @Romaric :)
         //Service Test
-        $this->assertTrue(count($ga_appsarray) == 7,"GroupApps Service not functioning properly");
-        $this->assertTrue(count($wa_appsarray) == 7,"WorkspaceApps Service not functioning properly");
+        $this->assertTrue(count($ga_appsarray) == $nbdefaultapps,"GroupApps Service not functioning properly");
+        echo("blabla : ".count($wa_appsarray));
+        $this->assertTrue(count($wa_appsarray) == $nbdefaultgroupapps,"WorkspaceApps Service not functioning properly");
 
-        //TODO C'est quoi ça ? @Romaric :)
         //Both
         $this->assertTrue(count($groupapps) == count($ga_appsarray) && count($ga_appsarray) == count($wa_appsarray),"Inconsistancy between Service and Database");
 
