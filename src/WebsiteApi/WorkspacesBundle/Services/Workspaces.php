@@ -5,6 +5,7 @@ namespace WebsiteApi\WorkspacesBundle\Services;
 
 use WebsiteApi\DiscussionBundle\Entity\Stream;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceApp;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Model\WorkspacesInterface;
 
@@ -96,6 +97,9 @@ class Workspaces implements WorkspacesInterface
 		}
 
 		$this->ws->create($workspace); //Create workspace stat element
+
+        //init default apps
+        $this->init($workspace);
 
 		return $workspace;
 
@@ -209,34 +213,37 @@ class Workspaces implements WorkspacesInterface
 		return false;
 	}
 
-	public function getApps($workspaceId, $currentUserId = null)
-	{
-		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-		$workspace = $workspaceRepository->find($workspaceId);
+    public function init(Workspace $workspace){
 
-		if($workspace==null){
-			return false;
-		}
+        $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+        $grouppaceapps = $groupappsRepository->findBy(Array("group" => $workspace->getGroup()));
 
-		if($currentUserId==null
-			|| $this->wls->can($workspaceId, $currentUserId, "")) {
+        $workspaceappRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+        $workspaceapps = $workspaceappRepository->findBy(Array("workspace" => $workspace));
 
-			if ($workspace->getUser() != null
-				&& ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
-			) {
-				//Private ws apps
-				//TODO
-				$appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-				return $appRepository->findBy(Array());
-			}
+        if(count($grouppaceapps) != 0 && count($workspaceapps) == 0 ) {
 
-			//Group apps
-			return $this->gas->getApps($workspace->getGroup()->getId(), $currentUserId);
+            foreach ( $grouppaceapps as $ga ){
+                if ($ga->getWorkspaceDefault()){
+                    $workspaceapp = new WorkspaceApp($workspace,$ga);
+                    $this->doctrine->persist($workspaceapp);
+                }
+            }
 
-		}
+            $this->doctrine->flush();
+        }
 
-		return false;
+        if($workspace->getMemberCount()==0) {
 
-	}
+            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $workspace));
+            $workspace->setMemberCount(count($members));
+            $this->doctrine->persist($workspace);
+
+            $this->doctrine->flush();
+        }
+
+        //Déjà initialisé
+        return false;
+    }
 
 }

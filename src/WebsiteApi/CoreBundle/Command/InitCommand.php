@@ -14,7 +14,6 @@ use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\PaymentsBundle\Entity\PriceLevel;
 use WebsiteApi\UploadBundle\Entity\File;
-use WebsiteApi\MarketBundle\Entity\Category;
 use Symfony\Component\Console\Helper\ProgressBar;
 /**
  * Created by PhpStorm.
@@ -86,6 +85,31 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
     $services = $this->getApplication()->getKernel()->getContainer();
 
     $services->get('app.pricing_plan')->init();
+
+    /**
+     * Initialisation des groups apps et worskspace apps
+     */
+      $groupAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Group");
+
+      $groups = $groupAppRepository->findBy(Array());
+      foreach ( $groups as $g ){
+          $services->get("app.groups")->init($g);
+      }
+      error_log("Init group app");
+
+      $workspaceAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+
+      $workspaces = $workspaceAppRepository->findBy(Array());
+      foreach ( $workspaces as $w ){
+          $services->get("app.workspaces")->init($w);
+      }
+      error_log("Init workspaces app");
+
+      $drive = $doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("url"=>"drive"));
+      $drive->setMessageModule(true);
+      $manager->persist($drive);
+      $manager->flush();
+      error_log("Set drive to messageApp");
 
   }
 }

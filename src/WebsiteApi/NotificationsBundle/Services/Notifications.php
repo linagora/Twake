@@ -28,10 +28,10 @@ class Notifications implements NotificationsInterface
 
 	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data = null)
 	{
-		$this->krlove_async->call(
-			'app.notifications',
-			'pushNotificationAsync',
-			Array($application, $workspace, $users, $levels, $code, $text, $type, $data));
+        $this->krlove_async->call(
+            'app.notifications',
+            'pushNotificationAsync',
+            Array($application, $workspace, $users, $levels, $code, $text, $type, $data));
 	}
 
 	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data=null)
@@ -67,9 +67,10 @@ class Notifications implements NotificationsInterface
 			"type" => $type
 		);
 
-		foreach ($users as $user) {
+        $count = count($users);
+        for($i = 0; $i < $count; $i++) {
 
-			$user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($user);
+			$user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($users[$i]);
 
 			//Verify that user want this notification
 
@@ -149,9 +150,13 @@ class Notifications implements NotificationsInterface
 			$data["action"] = "add";
 			$this->pusher->push($data, "notifications_topic", Array("id_user" => $user->getId()));
 
+            gc_collect_cycles();
+
 		}
 
 		$this->doctrine->flush();
+
+        gc_collect_cycles();
 
 	}
 
@@ -182,8 +187,10 @@ class Notifications implements NotificationsInterface
 			));
 		}
 
-		foreach ($notif as $n) {
-			$this->doctrine->remove($n);
+        $count = count($notif);
+        for($i = 0; $i < $count; $i++) {
+			$this->doctrine->remove($notif[$i]);
+            gc_collect_cycles();
 		}
 		$this->doctrine->flush();
 
@@ -197,6 +204,8 @@ class Notifications implements NotificationsInterface
 		$this->pusher->push($data, "notifications_topic", Array("id_user" => $user->getId()));
 
 		$this->updateDeviceBadge($user, $totalNotifications);
+
+        gc_collect_cycles();
 
 	}
 
@@ -224,7 +233,10 @@ class Notifications implements NotificationsInterface
 	private function updateDeviceBadge($user, $badge=0){
 		$devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
 		$devices = $devicesRepo->findBy(Array("user"=>$user));
-		foreach ($devices as $device) {
+
+        $count = count($devices);
+        for($i = 0; $i < $count; $i++) {
+            $device = $devices[$i];
 			if($device->getType()=="APNS"){
 
 				$token = $device->getValue();
@@ -241,6 +253,7 @@ class Notifications implements NotificationsInterface
 				//For now no number
 
 			}
+            gc_collect_cycles();
 		}
 	}
 
@@ -248,7 +261,10 @@ class Notifications implements NotificationsInterface
 
 		$devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
 		$devices = $devicesRepo->findBy(Array("user"=>$user));
-		foreach ($devices as $device) {
+
+        $count = count($devices);
+        for($i = 0; $i < $count; $i++) {
+            $device = $devices[$i];
 			if($device->getType()=="APNS"){
 
 				$token = $device->getValue();
@@ -283,6 +299,7 @@ class Notifications implements NotificationsInterface
 				$this->fcm_pusher->sendNotification($notification);
 
 			}
+            gc_collect_cycles();
 		}
 	}
 

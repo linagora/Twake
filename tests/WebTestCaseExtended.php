@@ -3,25 +3,11 @@
 namespace Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-use WebsiteApi\UsersBundle\Services\deleteUser;
 
 class WebTestCaseExtended extends WebTestCase
 {
 
     var $client;
-
-    protected function getClient() {
-    	return $this->client;
-    }
-
-    protected function api($route, $data)
-    {
-        if (!isset($this->client)) {
-            $this->client = static::createClient();
-        }
-        $this->client->request('POST', $route, $data);
-        return json_decode($this->client->getResponse()->getContent(), 1);
-    }
 
     protected function getDoctrine()
     {
@@ -40,143 +26,53 @@ class WebTestCaseExtended extends WebTestCase
     }
 
 
-    /* Create account */
-    protected function createUser($username, $email, $password)
-    {
-        $this->deleteUser($email);
-        $res = $this->api('/ajax/users/register/check', Array(
-            "_username" => $username,
-            "_mail" => $email
-        ));
+    public function newUser(){
+        $userToken = $this->get("app.user")->subscribeMail("PHPUNIT@PHPUNIT.fr");
+        $user = $this->get("app.user")->subscribe($userToken,null, "phpunit","phpunit",true);
 
-        $repoUser = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
-        $token = $repoUser->findOneBy(Array("username" => $username))->getConfirmationToken();
-        $res = $this->api('/ajax/users/register/confirm/' . $token, Array(
-            "token" => $token
-        ));
+        $this->getDoctrine()->persist($user);
+        $this->getDoctrine()->flush();
 
-        $res = $this->api('/ajax/users/register/end/validate', Array(
-            "username" => $username,
-            "password" => $password,
-            "verify" => $password,
-            "token" => $token
-        ));
-
-        return $res["status"];
-
+        return $user;
     }
 
-    /* Delete account */
-    protected function deleteUser($email)
-    {
-        $repo = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
-        $user = $repo->findOneBy(Array("email" => $email));
-        if ($user == null){
-            return "error";
+    public function newGroup($userId){
+        $group = $this->get("app.groups")->create($userId,"phpunit","phpunit",1);
+        $this->getDoctrine()->persist($group);
+        $this->getDoctrine()->flush();
+
+        return $group;
+    }
+
+    public function newWorkspace($groupId){
+        $work = $this->get("app.workspaces")->create("phpunit",$groupId); // Get a service and run function
+        $this->getDoctrine()->persist($work);
+        $this->getDoctrine()->flush();
+
+        return $work;
+    }
+
+    public function destroyTestData(){
+        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("username" => "phpunit"));
+
+        $groupRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group");
+        $group = $groupRepository->findOneBy(Array("name" => "phpunit"));
+
+        $workspaceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $workspaceRepository->findOneBy(Array("name" => "phpunit"));
+
+        if($user != null){
+            $this->getDoctrine()->remove($user);
         }
-
-        $this->get("app.deleteUser")->deleteUser($user->getId());
-        return "success";
+        if($group != null){
+            $this->getDoctrine()->remove($group);
+        }
+        if($workspace != null){
+            $this->getDoctrine()->remove($workspace);
+        }
+        $this->getDoctrine()->flush();
     }
 
 
-	/* Login */
-	protected function login($username = "UnitTest", $password = "UnitTest1")
-	{
-		return $this->api("/ajax/users/login", Array(
-			"_username" => $username,
-			"_password" => $password
-		));
-	}
-
-
-	/* logout */
-	protected function logout()
-	{
-		$res = $this->api("/ajax/users/logout", Array());
-		$this->client = static::createClient();
-		return $res;
-	}
-
-	protected function removeGroup($gid) {
-
-		return $this->api('/ajax/group/delete', Array(
-			"gid" => $gid
-		));
-	}
-
-	/*
-	 * Retourne un array de la forme :
-	 *
-	 * Array(
-	 *    "errors" : liste d'erreurs
-	 *    "gid" : id du groupe créé
-	 * );
-	 * */
-    protected function createGroup($emptyname = false, $type = "O", $privacy = "P", $parents = Array())
-    {
-
-        return $this->api('/ajax/group/create', Array(
-            "name" => $emptyname ? "" : "Group name",
-            "type" => $type,
-            "description" => "Group description",
-            "privacy" => $privacy,
-            "parentsIdList" => $parents,
-            "street" => "Group street",
-            "city" => "Group city",
-            "zipCode" => "ZIP",
-            "country" => "Group country",
-            "phonesList" => Array("0123456789", "9876543210"),
-            "emailsList" => Array("email@email.com", "email2@email.com"),
-            "rna" => "Group RNA",
-            "siret" => "Group siret"
-        ));
-    }
-
-    /*
-     * Retourne un array de la forme :
-	 *
-	 * Array(
-	 *    "errors" : liste d'erreurs
-	 * );
-     */
-	public function inviteUserInGroup($groupId, $request) {
-
-		return $this->api('/ajax/group/members/invite', Array(
-			"request" => $request,
-			"groupId" => $groupId
-		));
-	}
-
-	/*
-     * Retourne un array de la forme :
-	 *
-	 * Array(
-	 *    "errors" : liste d'erreurs
-	 * );
-     */
-	public function acceptGroupInvitation($groupId) {
-
-		return $this->api('/ajax/group/members/invite/accept', Array(
-			"groupId" => $groupId
-		));
-	}
-
-	/*
-	 * $mails et $usersId : de type Array
-	 *
-     * Retourne un array de la forme :
-	 *
-	 * Array(
-	 *    "errors" : liste d'erreurs
-	 * );
-     */
-	public function deleteMemberFromGroup($groupId, $mails, $usersId) {
-
-		return $this->api('/ajax/group/members/delete', Array(
-			"uids" => $usersId,
-			"mails" => $mails,
-			"groupId" => $groupId
-		));
-	}
 }

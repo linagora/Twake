@@ -209,6 +209,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             error_log("level : ".$level->getId());
 			$member = new WorkspaceUser($workspace, $user, $level);
 
+			$workspace->setMemberCount($workspace->getMemberCount()+1);
+
+            $this->doctrine->persist($workspace);
 			$this->doctrine->persist($member);
 			$this->doctrine->flush();
 
@@ -267,7 +270,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $this->pusher->push($datatopush, "group_topic",Array("id"=>$workspace->getId()));
 
-			$this->doctrine->remove($member);
+            $workspace->setMemberCount($workspace->getMemberCount()-1);
+
+            $this->doctrine->persist($workspace);
+            $this->doctrine->remove($member);
 			$this->doctrine->flush();
 
 			$this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("workspace"=>$workspace->getName(), "username"=>$user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));

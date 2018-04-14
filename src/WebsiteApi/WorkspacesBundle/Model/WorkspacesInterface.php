@@ -26,7 +26,4 @@ interface WorkspacesInterface
 	// @changeData set workspace data
 	public function changeWallpaper($workspaceId, $wallpaper, $currentUserId = null);
 
-	// @getApps get apps for workspace
-	public function getApps($workspaceId, $currentUserId = null);
-
 }

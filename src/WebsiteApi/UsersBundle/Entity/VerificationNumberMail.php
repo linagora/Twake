@@ -56,7 +56,7 @@ class VerificationNumberMail
 
 
 	/**
-	 * @ORM\Column(name="clean_code", type="integer")
+	 * @ORM\Column(name="clean_code", type="string")
 	 */
 	private $clean_code;
 

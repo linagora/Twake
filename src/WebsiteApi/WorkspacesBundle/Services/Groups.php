@@ -5,6 +5,7 @@ namespace WebsiteApi\WorkspacesBundle\Services;
 use WebsiteApi\WorkspacesBundle\Entity\Group;
 use WebsiteApi\WorkspacesBundle\Entity\GroupManager;
 use WebsiteApi\WorkspacesBundle\Model\GroupsInterface;
+use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
 
 class Groups implements GroupsInterface
 {
@@ -50,6 +51,8 @@ class Groups implements GroupsInterface
 
 		$this->doctrine->persist($manager);
 		$this->doctrine->flush();
+
+		$this->init($group);
 
 		return $group;
 
@@ -155,4 +158,27 @@ class Groups implements GroupsInterface
 
 		return false;
 	}
+
+    public function init($group){
+        $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+
+        $groupApps = $groupAppRepository->findBy(Array("group" => $group));
+
+        $listApps = $appRepository->findBy(Array("default"=>true));
+
+        if(count($groupApps) != 0){
+            return false;
+        }else{
+            foreach ( $listApps as $app ){
+                $groupApp = new GroupApp($group, $app);
+                if($app->getDefault()) {
+                    $groupApp->setWorkspaceDefault(true);
+                }
+                $this->doctrine->persist($groupApp);
+            }
+            $this->doctrine->flush();
+            return true;
+        }
+    }
 }

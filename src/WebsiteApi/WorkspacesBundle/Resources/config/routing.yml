@@ -28,6 +28,32 @@ twake_workspaces_set_wallpaper:
     path:     /data/wallpaper
     defaults: { _controller: TwakeWorkspacesBundle:WorkspaceData:setWallpaper }
 
+# Apps
+
+twake_workspaces_get_module_apps:
+    path:     /apps/getModuleApps
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:getModuleApps }
+
+twake_workspaces_get_apps:
+    path:     /apps/get
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:getApps }
+
+twake_workspaces_enable_app:
+    path:     /apps/enable
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:enableApp }
+
+twake_workspaces_disable_app:
+    path:     /apps/disable
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:disableApp }
+
+twake_groups_get_apps:
+    path:     /group/apps/get
+    defaults: { _controller: TwakeWorkspacesBundle:GroupApps:getApps }
+
+twake_groups_set_workspace_default:
+    path:     /group/workspacedefault/set
+    defaults: { _controller: TwakeWorkspacesBundle:GroupApps:setWorkspaceDefault }
+
 # Edit members
 
 twake_workspaces_members_list:

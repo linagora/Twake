@@ -27,13 +27,12 @@ class WorkspaceController extends Controller
 
 
 		$ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
-
 		if(!$ws){
 			$response["errors"][] = "notallowed";
 		}else{
 			$response["data"] = $ws->getAsArray();
 
-			$apps_obj = $this->get("app.workspaces")->getApps($workspaceId);
+			$apps_obj = $this->get("app.workspaces_apps")->getApps($workspaceId);
 			$apps = Array();
 			foreach ($apps_obj as $app_obj){
 				$apps[] = $app_obj->getAsArray();
@@ -133,5 +132,93 @@ class WorkspaceController extends Controller
 		return new JsonResponse($data);
 
 	}
+
+    /**
+     * Récupère les applications d'un workspace
+     */
+    public function getAppsAction(Request $request){
+
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $workspaceId = $request->request->getInt("workspaceId");
+
+        $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
+        if(!$ws){
+            $response["errors"][] = "notallowed";
+        }else{
+            $apps_obj = $this->get("app.workspaces_apps")->getApps($workspaceId);
+            $apps = Array();
+            foreach ($apps_obj as $app_obj){
+                $apps[] = $app_obj->getAsArray();
+            }
+            $response["data"]["apps"] = $apps;
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * Récupère les applications d'un workspace
+     */
+    public function getModuleAppsAction(Request $request){
+
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $workspaceId = $request->request->getInt("workspaceId");
+
+        $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
+        if(!$ws){
+            $response["errors"][] = "notallowed";
+        }else{
+            $apps_obj = $this->get("app.workspaces_apps")->getApps($workspaceId,null,true);
+            $apps = Array();
+            foreach ($apps_obj as $app_obj){
+                $apps[] = $app_obj->getAsArray();
+            }
+            $response["data"]["apps"] = $apps;
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * desactive une application d'un workspace
+     */
+    public function disableAppAction(Request $request){
+
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $workspaceId = $request->request->getInt("workspaceId");
+        $appId = $request->request->getInt("appId");
+
+        $res = $this->get("app.workspaces_apps")->disableApp($workspaceId,$appId);
+        if(!$res){
+            $response["errors"][] = "notauthorized";
+        }else{
+            $response["data"][] = "success";
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * Active une application d'un workspace
+     */
+    public function enableAppAction(Request $request){
+
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $workspaceId = $request->request->getInt("workspaceId");
+        $appId = $request->request->getInt("appId");
+
+        $res = $this->get("app.workspaces_apps")->enableApp($workspaceId,$appId);
+        if(!$res){
+            $response["errors"][] = "notauthorized";
+        }else{
+            $response["data"][] = "success";
+        }
+
+        return new JsonResponse($response);
+    }
 
 }

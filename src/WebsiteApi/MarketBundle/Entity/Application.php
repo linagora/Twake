@@ -108,14 +108,9 @@ class Application
 	protected $screenshot = "[]";
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\MarketBundle\Entity\LinkAppWorkspace", mappedBy="Application")
+	 * @ORM\Column(name="message_module" , type="boolean")
 	 */
-	protected $applicationsLinks;
-
-	/**
-	 * @ORM\Column(type="boolean", options={"default" : false})
-	 */
-	protected $isPromoted = false;
+	protected $messageModule;
 
 	/**
 	 * @ORM\Column(type="date")
@@ -161,6 +156,7 @@ class Application
 		$this->setFilesTypes(Array());
 		$this->setApplicationRights(Array());
 		$this->enabled = false;
+		$this->messageModule = false;
 	}
 
 	static public function generatePrivateKey()
@@ -448,16 +444,6 @@ class Application
 		return $this->cover;
 	}
 
-	public function getPromoted()
-	{
-		return $this->isPromoted;
-	}
-
-	public function setPromoted($x)
-	{
-		$this->isPromoted = $x;
-	}
-
 	public function setScreenshot($screen)
 	{
 		$this->screenshot = json_encode($screen);
@@ -564,6 +550,22 @@ class Application
 		$this->default = $default;
 	}
 
+    /**
+     * @return mixed
+     */
+    public function getMessageModule()
+    {
+        return $this->messageModule;
+    }
+
+    /**
+     * @param mixed $messageModule
+     */
+    public function setMessageModule($messageModule)
+    {
+        $this->messageModule = $messageModule;
+    }
+
 	public function getAsArray()
 	{
 		return Array(
@@ -579,7 +581,6 @@ class Application
 			"thumbnail" => $this->getUrlThumbnail(),
 			"csscover" => $this->getCssCover(),
 			"cover" => $this->getUrlCover(),
-			"isPromoted" => $this->getPromoted(),
 			"screenshots" => $this->getScreenshot(),
 			"url" => $this->getUrl(),
 			"filestypes" => $this->getFilesTypes(),
@@ -588,7 +589,8 @@ class Application
 			"canCreateFile" => $this->getCanCreateFile(),
 			"createFileData" => $this->getCreateFileData(),
 			"isCapable" => $this->getisCapable(),
-			"default" => $this->getDefault()
+			"default" => $this->getDefault(),
+            "messageModule" => $this->getMessageModule()
 		);
 	}
 

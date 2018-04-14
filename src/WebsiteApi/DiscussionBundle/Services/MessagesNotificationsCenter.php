@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\DiscussionBundle\Services;
 
+use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\DiscussionBundle\Entity\MessageNotification;
 use WebsiteApi\DiscussionBundle\Model\MessagesNotificationsCenterInterface;
 
@@ -31,13 +32,13 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 		}
 
 		foreach($linkStreams as $linkStream) {
-			$linkStream->setUnread(0);
+            $linkStream->setUnread(0);
+            $linkStream->setSubjectUnread(0);
+            $linkStream->setLastRead();
 			$this->doctrine->persist($linkStream);
 
-			$data = Array(
-				"id" => $stream->getId(),
-				"value" => 0
-			);
+            $data = $linkStream->getAsArray();
+            $data["id"] = $stream->getId();
 
 			$this->pusher->push($data,
 				"discussion_notifications_topic",
@@ -64,7 +65,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 			:$this->workspaces->getPrivate($user->getId())
 		);
 
-		if($totalUnread==0){
+		if($totalUnread<=0){
 			$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
 				->findOneBy(Array("url" => "messages-auto"));
 			$this->notificationSystem->readAll($application, $workspace, $user);
@@ -72,7 +73,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 
 	}
 
-	public function notify($stream, $except_users_ids, $message){
+	public function notify($stream, $except_users_ids, Message $message){
 
 		$users = Array();
 		$linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
@@ -83,12 +84,13 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 				$users[] = $link->getUser()->getId();
 
 				$link->setUnread($link->getUnread()+1);
+				if($message->getSubject()){
+                    $link->setSubjectUnread($link->getSubjectUnread()+1);
+                }
 				$this->doctrine->persist($link);
 
-				$data = Array(
-					"id" => $stream->getId(),
-					"value" => $link->getUnread()
-				);
+				$data = $link->getAsArray();
+				$data["id"] = $stream->getId();
 
 				$this->pusher->push($data,
 					"discussion_notifications_topic",
@@ -126,7 +128,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 		    return 0;
 	    }
 
-	    return $linkStream->getUnread();
+	    return $linkStream->getAsArray();
     }
 
 
