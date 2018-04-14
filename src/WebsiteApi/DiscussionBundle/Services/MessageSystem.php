@@ -294,6 +294,8 @@ class MessageSystem implements MessagesSystemInterface
 
 		if ($message != null) {
 			$message->setContent($content);
+            $cleanContent = $this->string_cleaner->simplifyWithoutRemovingSpaces($content);
+            $this->setCleanContent($cleanContent);
 			$message->setEdited(true);
 			$this->doctrine->persist($message);
 			$this->doctrine->flush();
@@ -403,6 +405,7 @@ class MessageSystem implements MessagesSystemInterface
 		if (!$this->isAllowed($stream, $user)) {
 			return false;
 		}
+        $content = $this->string_cleaner->simplifyWithoutRemovingSpaces($content);
 		$messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findMessageBy(Array(
 			"idDiscussion" => $idDiscussion,
 			"content" => $content,
