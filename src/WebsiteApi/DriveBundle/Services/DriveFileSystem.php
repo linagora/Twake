@@ -656,10 +656,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 		return $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
 	}
 
-	public function upload($group, $directory, $file, $uploader)
+	public function upload($group, $directory, $file, $uploader, $detached=false)
 	{
 
-		$newFile = $this->create($group, $directory, $file["name"], "", false);
+		$newFile = $this->create($group, $directory, $file["name"], "", false, $detached);
 		if (!$file) {
 			return false;
 		}

@@ -225,11 +225,12 @@ class FilesController extends Controller
 
 		$groupId = $request->request->has("groupId") ? $request->request->get("groupId") : 0;
 		$parentId = $request->request->has("parentId") ? $request->request->get("parentId") : 0;
+        $isDetached = $request->request->get("isDetached", false);
 		$file = $_FILES["file"];
 
 		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit")) {
 
-			$file = $this->get('app.drive.FileSystem')->upload($groupId, $parentId, $file, $this->get("app.upload"));
+			$file = $this->get('app.drive.FileSystem')->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached);
 
 			if ($file) {
 				$data["data"] = $file->getAsArray();
