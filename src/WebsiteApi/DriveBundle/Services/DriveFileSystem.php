@@ -341,7 +341,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 			$isDirectory
 		);
 
-		$newFile->setDetachedFile($detached_file);
+        $newFile->setDetachedFile($detached_file);
 
 		$newFile->setLastModified();
 
