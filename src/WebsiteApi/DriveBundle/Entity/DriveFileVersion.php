@@ -39,7 +39,7 @@ class DriveFileVersion
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	private $mode = "OpenSSL";
+	private $mode = "OpenSSL-2";
 
 	/**
 	 * @ORM\Column(type="integer")

@@ -26,7 +26,8 @@ class FilesController extends Controller
 	    $filename = $request->request->get("name", "New");
 	    $content = $request->request->get("content", "");
 	    $model = $request->request->get("model", null);
-	    $isDirectory = $request->request->get("isDirectory", true);
+        $isDetached = $request->request->get("isDetached", false);
+        $isDirectory = $request->request->get("isDirectory", true);
 
 	    $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
 
@@ -36,7 +37,7 @@ class FilesController extends Controller
 			    $data["errors"][] = "notallowed";
 		    } else {
 
-			    $file = $this->get('app.drive.FileSystem')->create($groupId, $parentId, $filename, $content, $isDirectory);
+			    $file = $this->get('app.drive.FileSystem')->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached);
 
 			    if($model){
 				    //IMPORTANT ! Disable local files !!!
