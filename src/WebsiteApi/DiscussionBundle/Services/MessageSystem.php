@@ -295,7 +295,7 @@ class MessageSystem implements MessagesSystemInterface
 		if ($message != null) {
 			$message->setContent($content);
             $cleanContent = $this->string_cleaner->simplifyWithoutRemovingSpaces($content);
-            $this->setCleanContent($cleanContent);
+            $message->setCleanContent($cleanContent);
 			$message->setEdited(true);
 			$this->doctrine->persist($message);
 			$this->doctrine->flush();
