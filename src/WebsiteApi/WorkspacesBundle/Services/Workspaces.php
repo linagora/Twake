@@ -214,36 +214,7 @@ class Workspaces implements WorkspacesInterface
 	}
 
     public function init(Workspace $workspace){
-
-        $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-        $grouppaceapps = $groupappsRepository->findBy(Array("group" => $workspace->getGroup()));
-
-        $workspaceappRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
-        $workspaceapps = $workspaceappRepository->findBy(Array("workspace" => $workspace));
-
-        if(count($grouppaceapps) != 0 && count($workspaceapps) == 0 ) {
-
-            foreach ( $grouppaceapps as $ga ){
-                if ($ga->getWorkspaceDefault()){
-                    $workspaceapp = new WorkspaceApp($workspace,$ga);
-                    $this->doctrine->persist($workspaceapp);
-                }
-            }
-
-            $this->doctrine->flush();
-        }
-
-        if($workspace->getMemberCount()==0) {
-
-            $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $workspace));
-            $workspace->setMemberCount(count($members));
-            $this->doctrine->persist($workspace);
-
-            $this->doctrine->flush();
-        }
-
-        //Déjà initialisé
-        return false;
+        return true;
     }
 
 }

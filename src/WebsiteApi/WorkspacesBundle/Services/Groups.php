@@ -160,25 +160,6 @@ class Groups implements GroupsInterface
 	}
 
     public function init($group){
-        $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-
-        $groupApps = $groupAppRepository->findBy(Array("group" => $group));
-
-        $listApps = $appRepository->findBy(Array("default"=>true));
-
-        if(count($groupApps) != 0){
-            return false;
-        }else{
-            foreach ( $listApps as $app ){
-                $groupApp = new GroupApp($group, $app);
-                if($app->getDefault()) {
-                    $groupApp->setWorkspaceDefault(true);
-                }
-                $this->doctrine->persist($groupApp);
-            }
-            $this->doctrine->flush();
-            return true;
-        }
+        return true;
     }
 }

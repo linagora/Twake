@@ -26,10 +26,15 @@ class Application
 	 */
 	private $name;
 
-	/**
-	 * @ORM\Column(type="boolean")
-	 */
-	private $default;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $default;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $order;
 
 	/**
 	 * @ORM\Column(type="string", length=6)
@@ -566,6 +571,22 @@ class Application
         $this->messageModule = $messageModule;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param mixed $order
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+    }
+
 	public function getAsArray()
 	{
 		return Array(
@@ -590,6 +611,7 @@ class Application
 			"createFileData" => $this->getCreateFileData(),
 			"isCapable" => $this->getisCapable(),
 			"default" => $this->getDefault(),
+            "order" => $this->getOrder(),
             "messageModule" => $this->getMessageModule()
 		);
 	}
