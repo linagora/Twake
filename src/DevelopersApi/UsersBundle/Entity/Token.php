@@ -39,7 +39,7 @@ class Token
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
-	private $group;
+	private $workspace;
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
@@ -85,7 +85,7 @@ class Token
 	/**
 	 * @return mixed
 	 */
-	public function getGroup()
+	public function getWorkspace()
 	{
 		return $this->group;
 	}
@@ -93,9 +93,9 @@ class Token
 	/**
 	 * @param mixed $group
 	 */
-	public function setGroup($group)
+	public function setWorkspace($workspace)
 	{
-		$this->group = $group;
+		$this->workspace = $workspace;
 	}
 
 }
