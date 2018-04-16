@@ -28,7 +28,7 @@ class Notifications implements NotificationsInterface
 
 	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data = null)
 	{
-        $this->krlove_async->call(
+        return $this->krlove_async->call(
             'app.notifications',
             'pushNotificationAsync',
             Array($application, $workspace, $users, $levels, $code, $text, $type, $data));
@@ -158,7 +158,9 @@ class Notifications implements NotificationsInterface
 
         gc_collect_cycles();
 
-	}
+        posix_kill(getmypid(), 9);
+
+    }
 
 	public function readAll($application, $workspace, $user, $code = null)
 	{
@@ -207,7 +209,9 @@ class Notifications implements NotificationsInterface
 
         gc_collect_cycles();
 
-	}
+        posix_kill(getmypid(), 9);
+
+    }
 
 	public function countAll($user)
 	{
