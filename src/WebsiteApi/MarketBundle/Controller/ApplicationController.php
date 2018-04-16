@@ -268,7 +268,7 @@ class ApplicationController extends Controller
 
 
 		$appId = $request->request->getInt("appId",0);
-		$groupId = $request->request->getInt("groupId",0);
+		$groupId = $request->request->getInt("workspaceId",0);
 
 		$app = $manager->getRepository("TwakeMarketBundle:Application")
 			->find($appId);
@@ -289,7 +289,7 @@ class ApplicationController extends Controller
 			//Ok
 			$tokenE = new Token();
 			$tokenE->setUser($this->getUser());
-			$tokenE->setGroup($useringroup->getWorkspace());
+			$tokenE->setWorkspace($useringroup->getWorkspace());
 			$tokenE->setApplication($app);
 
 			$manager->persist($tokenE);

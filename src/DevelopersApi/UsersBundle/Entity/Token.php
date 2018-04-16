@@ -87,7 +87,7 @@ class Token
 	 */
 	public function getWorkspace()
 	{
-		return $this->group;
+		return $this->workspace;
 	}
 
 	/**

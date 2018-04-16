@@ -33,7 +33,7 @@ class CurrentUserController extends Controller
         }
         else{
 	        $data["data"]["userId"] = $t->getUser()->getId();
-	        $data["data"]["groupId"] = $t->getWorkspace()->getGroup()->getId();
+            $t->getWorkspace()->getGroup() == null ? $data["data"]["groupId"] = $t->getWorkspace()->getGroup() : $data["data"]["groupId"] = $t->getWorkspace()->getGroup()->getId();
             $data["data"]["workspaceId"] = $t->getWorkspace()->getId();
 	        $data["data"]["username"] = $t->getUser()->getUsername();
 	        $data["data"]["language"] = $t->getUser()->getLanguage();
