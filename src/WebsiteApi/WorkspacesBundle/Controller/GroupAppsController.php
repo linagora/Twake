@@ -62,4 +62,21 @@ class GroupAppsController extends Controller
         return new JsonResponse($response);
     }
 
+    public function RemoveApplicationAction(Request $request){
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $groupId = $request->request->getInt("groupId");
+        $appId = $request->request->getInt("appId");
+
+        $apps_obj = $this->get("app.group_apps")->RemoveApplication($groupId,$appId);
+
+        if(!$apps_obj){
+            $response["errors"][] = "notallowed";
+        }else{
+            $response["data"][] = true;
+        }
+
+        return new JsonResponse($response);
+    }
+
 }
