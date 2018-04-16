@@ -95,77 +95,29 @@ class ApplicationController extends Controller
   }
 
   public function getAppsAction(Request $request){
-    $manager = $this->getDoctrine()->getManager();
-    $data = array(
-      "data" => Array(),
-      "errors" => Array()
-    );
+      $response = Array("errors"=>Array(), "data"=>Array());
 
-    $securityContext = $this->get('security.authorization_checker');
+      $name = $request->request->get("name");
 
-    if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-      $data['errors'][] = "notconnected";
-    } else {
-      $limit = $request->request->get('limit');
-      $offset = $request->request->get('offset');
-      $sortby = $request->request->get('sortby','score');
-      $name = $request->request->get('name');
-      $promoted = $request->request->get('promoted','false');
-
-      // A compléter avec les différents sort by
-      if ($sortby == "userCount") {
-	      $sortby = "userCount";
-      }else if($sortby == "new"){
-	      $sortby = "date";
+      if(isset($name)){
+          $apps_obj = $this->get("website_api_market.applications")->getAppsByName($name);
       }else{
-        // Invalid sortby, defaulting to score
-        $sortby = "score";
+          $apps_obj = $this->get("website_api_market.applications")->getApps();
       }
 
-      $apps = $manager->createQueryBuilder()
-        ->select('a')
-	      ->from('TwakeMarketBundle:Application', 'a')
-	      ->where("a.enabled=:enabled")
-	      ->setParameter("enabled", true);
+      $apps = array();
 
-        if($name != "" && $promoted=='true'){
-	        $apps = $apps->andWhere("a.isPromoted=:p")
-            ->andwhere("a.name LIKE :n")
-            ->setParameter("p",true)
-            ->setParameter("n","%".$name."%");
-        }
-        elseif($name != ""){
-	        $apps = $apps->andWhere("a.name LIKE :n")
-            ->setParameter("n","%".$name."%");
-        }
-        elseif($promoted=='true'){
-	        $apps = $apps->andWhere("a.isPromoted=:p")
-            ->setParameter("p",true);
-        }
+      foreach ($apps_obj as $app) {
+          $apps[] = $app->getAsArray();
+      }
 
-        $apps = $apps->orderBy('a.'.$sortby, 'DESC')
-                ->setMaxResults($limit)
-                ->setFirstResult($offset)
-                ->getQuery()
-                ->getResult();
+      if(!$apps_obj){
+          $response["errors"][] = "notallowed";
+      }else{
+          $response["data"]["apps"] = $apps;
+      }
 
-        if($name == "" && $promoted=='true' && count($apps)<3){
-            $apps_sup = $manager->createQueryBuilder()
-                    ->select('a')
-                    ->from('TwakeMarketBundle:Application', 'a')
-                    ->orderBy('a.score', 'DESC')
-                    ->setMaxResults(3-count($apps))
-                    ->setFirstResult($offset)
-                    ->getQuery()
-                    ->getResult();
-            $apps = array_merge($apps,$apps_sup);
-        }
-
-        foreach($apps as $app){
-            $data['data'][] = array_merge($app->getAsArray(),Array("group"=>$app->getGroup()->getAsSimpleArray()));
-        }
-    }
-    return new JsonResponse($data);
+      return new JsonResponse($response);
   }
 
 
