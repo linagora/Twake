@@ -42,7 +42,13 @@ class WorkspacesApps implements WorkspacesAppsInterface
             ) {
                 //Private ws apps
                 $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-                return $appRepository->findBy(Array("default"=>true));
+                if ($onlymessageModule){
+                    $apps = $appRepository->findBy(Array("default"=>true, "messageModule"=>true));
+                }else{
+                    $apps = $appRepository->findBy(Array("default"=>true));
+
+                }
+                return $apps;
             }
 
             //Group apps

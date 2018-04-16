@@ -117,6 +117,11 @@ class Application
 	 */
 	protected $messageModule;
 
+    /**
+     * @ORM\Column(type="string", length=512)
+     */
+    private $messageModuleUrl = "";
+
 	/**
 	 * @ORM\Column(type="date")
 	 */
@@ -574,6 +579,22 @@ class Application
     /**
      * @return mixed
      */
+    public function getMessageModuleUrl()
+    {
+        return $this->messageModuleUrl;
+    }
+
+    /**
+     * @param mixed $messageModulUrl
+     */
+    public function setMessageModuleUrl($messageModuleUrl)
+    {
+        $this->messageModuleUrl = $messageModuleUrl;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getOrder()
     {
         return $this->order;
@@ -612,7 +633,8 @@ class Application
 			"isCapable" => $this->getisCapable(),
 			"default" => $this->getDefault(),
             "order" => $this->getOrder(),
-            "messageModule" => $this->getMessageModule()
+            "messageModule" => $this->getMessageModule(),
+            "messageModuleUrl" => $this->getMessageModuleUrl()
 		);
 	}
 
