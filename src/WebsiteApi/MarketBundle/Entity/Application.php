@@ -157,6 +157,11 @@ class Application
 	 */
 	protected $applicationRights;
 
+    /**
+     * @ORM\Column(name="installCount", type="integer")
+     */
+    private $installCount = 0;
+
 
 	public function __construct()
 	{
@@ -421,6 +426,11 @@ class Application
 		return $this->voteCount;
 	}
 
+    public function getInstallCount()
+    {
+        return $this->installCount;
+    }
+
 	public function getThumbnail()
 	{
 		return $this->thumbnail;
@@ -615,6 +625,7 @@ class Application
 			"name" => $this->name,
 			"score" => $this->score,
 			"nbvote" => $this->voteCount,
+            "nbInstall" => $this->installCount,
 			"nbUsers" => $this->userCount,
 			"description" => $this->description,
 			"shortDescription" => $this->shortDescription,
