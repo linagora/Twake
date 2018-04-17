@@ -14,4 +14,7 @@ interface MarketApplicationInterface
     // @getAppsByName use a name and find all applications with like %name%
     public function getAppsByName($name);
 
+    // @addApplication add an application to the given group
+    public function addApplication($groupId,$appId, $currentUserId = null);
+
 }

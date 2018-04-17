@@ -30,32 +30,7 @@ class EventTopic implements TopicInterface, PushableTopicInterface
         $this->eventSystem = $event;
     }
 
-    /**
-     * @param Topic $topic
-     * @param WampRequest $request
-     * @param string|array $data
-     * @param string $provider
-     */
-    public function onPush(Topic $topic, WampRequest $request, $data, $provider)
-    {
-        // TODO: Implement onPush() method.
-    }
-
-    /**
-     * @param  ConnectionInterface $connection
-     * @param  Topic $topic
-     * @param WampRequest $request
-     */
     public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
-    {
-    }
-
-    /**
-     * @param  ConnectionInterface $connection
-     * @param  Topic $topic
-     * @param WampRequest $request
-     */
-    public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
         $key = $request->getAttributes()->get('key');
 
@@ -75,20 +50,15 @@ class EventTopic implements TopicInterface, PushableTopicInterface
 
         $currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
 
-//        //Verify that this user is allowed to do this
-//        if (!$this->messagesService->isAllowedByKey($currentUser, $key)) {
-//            $topic->remove($connection); //Eject the hacker !
-//        }
+        //TODO eject unallowed users
+
     }
 
-    /**
-     * @param  ConnectionInterface $connection
-     * @param  Topic $topic
-     * @param WampRequest $request
-     * @param $event
-     * @param  array $exclude
-     * @param  array $eligible
-     */
+    public function onPush(Topic $topic, WampRequest $request, $data, $provider)
+    {
+        // TODO: Implement onPush() method.
+    }
+
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
     {
         error_log("message ".$event["type"]);
@@ -115,4 +85,7 @@ class EventTopic implements TopicInterface, PushableTopicInterface
         print_r($event);
         $topic->broadcast($event);
     }
+
+    public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request){}
+
 }

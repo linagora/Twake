@@ -120,6 +120,28 @@ class ApplicationController extends Controller
       return new JsonResponse($response);
   }
 
+    /*
+     * Add an application
+     */
+    public function addAppAction(Request $request){
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $groupId = $request->request->get("groupId");
+        $appId = $request->request->get("appId");
+
+        if(isset($groupId) && isset($appId)){
+            $returnVal = $this->get("website_api_market.applications")->addApplication($groupId,$appId,$this->getUser()->getId());
+        }
+
+
+        if(!$returnVal){
+            $response["errors"][] = "notallowed";
+        }else{
+            $response["data"][] = $returnVal;
+        }
+
+        return new JsonResponse($response);
+    }
 
   /*
    *  Create an app
