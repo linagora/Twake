@@ -14,9 +14,15 @@ website_api_app_get_by_cat:
     path:     /app/getAppsByCategory
     defaults: { _controller: TwakeMarketBundle:Application:getByCategory }
 
+website_api_app_add_app:
+    path:     /app/add/application
+    defaults: { _controller: TwakeMarketBundle:Application:addApp }
+
+
 website_api_cat_get:
     path:     /category/get
     defaults: { _controller: TwakeMarketBundle:Application:getCategory }
+
 
 developers_api_users_gettoken:
     path:     /user/gettoken
@@ -29,6 +35,7 @@ website_api_app_acquire:
 website_api_app_remove:
     path:     /group/remove
     defaults: { _controller: TwakeMarketBundle:AppUsers:remove }
+
 
 website_api_app_vote:
     path:     /user/vote

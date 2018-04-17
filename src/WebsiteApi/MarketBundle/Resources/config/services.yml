@@ -5,4 +5,4 @@ services:
 
     website_api_market.applications:
         class: WebsiteApi\MarketBundle\Services\MarketApplication
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.group_managers"]
