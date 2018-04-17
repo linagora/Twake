@@ -140,6 +140,11 @@ developers_api_drive:
     prefix:   /api/drive/
     methods: [POST]
 
+developers_api_messages:
+    resource: "@DevelopersApiMessagesBundle/Resources/config/routing.yml"
+    prefix:   /api/messages/
+    methods: [POST]
+
 developers_api_error:
     path:     /api/{req}
     defaults: { _controller: TwakeCheckBundle:Error:BadRequest }
