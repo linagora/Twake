@@ -130,7 +130,7 @@ class ApplicationController extends Controller
         $appId = $request->request->get("appId");
 
         if(isset($groupId) && isset($appId)){
-            $returnVal = $this->get("website_api_market.applications")->addApplication($groupId,$appId);
+            $returnVal = $this->get("website_api_market.applications")->addApplication($groupId,$appId,$this->getUser()->getId());
         }
 
 

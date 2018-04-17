@@ -51,7 +51,7 @@ class GroupAppsController extends Controller
         $appId = $request->request->getInt("appId");
         $boolean = $request->request->getInt("boolean");
 
-        $apps_obj = $this->get("app.group_apps")->setWorkspaceDefault($groupId,$appId,$boolean);
+        $apps_obj = $this->get("app.group_apps")->setWorkspaceDefault($groupId,$appId,$boolean,$this->getUser()->getId());
 
         if(!$apps_obj){
             $response["errors"][] = "notallowed";
@@ -68,7 +68,7 @@ class GroupAppsController extends Controller
         $groupId = $request->request->getInt("groupId");
         $appId = $request->request->getInt("appId");
 
-        $apps_obj = $this->get("app.group_apps")->RemoveApplication($groupId,$appId);
+        $apps_obj = $this->get("app.group_apps")->RemoveApplication($groupId,$appId,$this->getUser()->getId());
 
         if(!$apps_obj){
             $response["errors"][] = "notallowed";
