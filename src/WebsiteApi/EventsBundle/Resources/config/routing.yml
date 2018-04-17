@@ -1,3 +1,0 @@
-citi_go_events_homepage:
-    path:     /dqfdf
-    defaults: { _controller: TwakeEventsBundle:Default:index }

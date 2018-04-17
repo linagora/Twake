@@ -190,7 +190,7 @@ class MessageSystem implements MessagesSystemInterface
 	}
 
 
-	public function sendMessage($senderId, $key, $isApplicationMessage, $applicationMessage, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify=true)
+	public function sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify=true)
 	{
 
 		if ($workspace != null) {
@@ -209,7 +209,7 @@ class MessageSystem implements MessagesSystemInterface
 		}
 
 		if ($isApplicationMessage) {
-			$applicationMessage = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($applicationMessage);
+			$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($applicationId);
 		}
 
 		$stream = $stream_object["object"];
@@ -234,7 +234,7 @@ class MessageSystem implements MessagesSystemInterface
 			$t = microtime(true);
 			$micro = sprintf("%06d", ($t - floor($t)) * 1000000);
 			$dateTime = new \DateTime(date('Y-m-d H:i:s.' . $micro, $t));
-			$message = new Message($sender, "S", $stream, $isApplicationMessage, $applicationMessage, $isSystemMessage, $dateTime, $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), $subject);
+			$message = new Message($sender, "S", $stream, $isApplicationMessage, $application, $isSystemMessage, $dateTime, $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), $subject);
 			if ($messageData != null) {
 				$message->setApplicationData($messageData);
 			}

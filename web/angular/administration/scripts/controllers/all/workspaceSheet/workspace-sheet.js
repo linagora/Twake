@@ -165,7 +165,36 @@ angular.module('TwakeAdministration')
                 enddate: that.enddate//.toISOString().substring(0, 10)
             }, function (res) {
                 console.log(res);
-                    publicMsg = res.data;
+                publicMsg = res.data;
+
+                var publicData = [];
+                var labels = [];
+
+                for(var i = 0;i<privateMsg.length;i++) {
+                    labels.push(publicMsg[i].date.date.substring(0, 10));
+                    publicData.push(publicMsg[i].publicMsgCount);
+                }
+                var ctx = document.getElementById("myChart2");
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Number of public message',
+                                data: publicData,
+                                backgroundColor:
+                                    'rgba(0, 255, 0, 0.5)'
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{stacked: true}],
+                            yAxes: [{stacked: true}]
+                        }
+                    }
+                });
             });
 
             $api.post("authentication/numberOfMessagePrivateByUserByWorkspace", {
@@ -175,44 +204,35 @@ angular.module('TwakeAdministration')
             }, function (res2) {
                 console.log(res2.data);
                 privateMsg = res2.data;
-                if(publicMsg.length == privateMsg.length) {
-                    var publicData = [];
-                    var privateData = [];
-                    var labels = [];
-                    for(var i = 0;i<publicMsg.length;i++)
-                        publicData.push(publicMsg[i].publicMsgCount);
+                var privateData = [];
+                var labels = [];
 
-                    for(var i = 0;i<privateMsg.length;i++) {
-                        labels.push(privateMsg[i].date.date.substring(0, 10));
-                        privateData.push(privateMsg[i].privateMsgCount);
-                    }
-                    var ctx = document.getElementById("myChart");
-                    var myChart = new Chart(ctx, {
-                        type: 'bar',
-                        data: {
-                            labels: labels,
-                            datasets: [{
-                                label: 'Number of public message',
-                                data: publicData,
-                                backgroundColor:
-                                    'rgba(255, 99, 132, 0.5)'
-                            },
-                                {
-                                    label: 'Number of private message',
-                                    data: privateData,
-                                    backgroundColor:
-                                        'rgba(0, 255, 0, 0.5)'
-                                }
-                            ]
-                        },
-                        options: {
-                            scales: {
-                                xAxes: [{stacked: true}],
-                                yAxes: [{stacked: true}]
-                            }
-                        }
-                    });
+                for(var i = 0;i<privateMsg.length;i++) {
+                    labels.push(privateMsg[i].date.date.substring(0, 10));
+                    privateData.push(privateMsg[i].privateMsgCount);
                 }
+                var ctx = document.getElementById("myChart");
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [
+                            {
+                                label: 'Number of private message',
+                                data: privateData,
+                                backgroundColor:
+                                    'rgba(0, 255, 0, 0.5)'
+                            }
+                        ]
+                    },
+                    options: {
+                        scales: {
+                            xAxes: [{stacked: true}],
+                            yAxes: [{stacked: true}]
+                        }
+                    }
+                });
+
             });
         }
         this.update();

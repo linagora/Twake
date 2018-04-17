@@ -70,7 +70,7 @@
             </div>
         </div>
     </div>
-            <h1 style="text-align:center">Message Activity</h1>
+    <h1 style="text-align:center">Message Activity</h1>
     <div class="row" style="margin: 5px;text-align: center">
         <div class="col-md-3 col-md-offset-2">
             <label>Start Date :</label>
@@ -99,19 +99,20 @@
         })
     </script>
     <canvas id="myChart" width="400" height="100"></canvas>
+    <canvas id="myChartPublic" width="400" height="100"></canvas>
 
-<div class="row">
-    <div class="col-md-6 col-sm-6">
-        <h1 style="text-align:center">Files size by extension</h1>
-        <canvas id="myDonut2" width="400" height="200"></canvas>
+    <div class="row">
+        <div class="col-md-6 col-sm-6">
+            <h1 style="text-align:center">Files size by extension</h1>
+            <canvas id="myDonut2" width="400" height="200"></canvas>
+        </div>
+
+        <div class="col-md-6 col-sm-6">
+            <h1 style="text-align:center">Files count by extension</h1>
+            <canvas id="myDonut" width="400" height="200"></canvas>
+        </div>
+
     </div>
-
-    <div class="col-md-6 col-sm-6">
-        <h1 style="text-align:center">Files count by extension</h1>
-        <canvas id="myDonut" width="400" height="200"></canvas>
-    </div>
-
-</div>
     <h1 style="text-align: center;padding-top: 20px">Users in {{workspace.workspaceInfo.name}}</h1>
     <table class="table table-bordered table-hover">
         <thead>

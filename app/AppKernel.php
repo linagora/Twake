@@ -24,7 +24,6 @@ class AppKernel extends Kernel
 
 			new WebsiteApi\CoreBundle\TwakeCoreBundle(),
 			new WebsiteApi\UsersBundle\TwakeUsersBundle(),
-			new WebsiteApi\EventsBundle\TwakeEventsBundle(),
 			new WebsiteApi\WorkspacesBundle\TwakeWorkspacesBundle(),
 			new WebsiteApi\PaymentsBundle\TwakePaymentsBundle(),
 			new WebsiteApi\UploadBundle\TwakeUploadBundle(),
@@ -49,6 +48,7 @@ class AppKernel extends Kernel
             new Administration\AuthenticationBundle\AdministrationAuthenticationBundle(),
             new WebsiteApi\CalendarBundle\TwakeCalendarBundle(),
             new WebsiteApi\NotificationsBundle\TwakeNotificationsBundle(),
+            new DevelopersApi\MessagesBundle\DevelopersApiMessagesBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

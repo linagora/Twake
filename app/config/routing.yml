@@ -69,11 +69,6 @@ citi_go_workspaces:
     prefix:   /ajax/workspace/
     methods: [POST]
 
-citi_go_events:
-    resource: "@TwakeEventsBundle/Resources/config/routing.yml"
-    prefix:   /ajax/events/
-    methods: [POST]
-
 citi_go_users:
     resource: "@TwakeUsersBundle/Resources/config/routing.yml"
     prefix:   /ajax/users/
@@ -138,6 +133,11 @@ developers_api_groups:
 developers_api_drive:
     resource: "@DevelopersApiDriveBundle/Resources/config/routing.yml"
     prefix:   /api/drive/
+    methods: [POST]
+
+developers_api_messages:
+    resource: "@DevelopersApiMessagesBundle/Resources/config/routing.yml"
+    prefix:   /api/messages/
     methods: [POST]
 
 developers_api_error:

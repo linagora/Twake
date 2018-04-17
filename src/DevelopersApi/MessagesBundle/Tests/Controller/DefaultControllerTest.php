@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\EventsBundle\Tests\Controller;
+namespace DevelopersApi\MessagesBundle\Tests\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
