@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 
-class WorkspaceMembersController extends Controller
+class WorkspaceLevelsController extends Controller
 {
 	/**
 	 * Get list of workspace levels
