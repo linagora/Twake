@@ -46,7 +46,7 @@ class FilesLabelsController extends Controller
 		$labels = $request->request->get("labels", null);
 
 
-		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit")) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
 			$this->get('app.drive.Labels')->update($groupId, $labels);
 
 			$data["data"] = "success";
