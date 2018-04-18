@@ -11,7 +11,7 @@ namespace WebsiteApi\CalendarBundle\Model;
  *
  * This service is responsible of all s regarding the Drive it should be used everytime
  */
-interface EventCalendarInterface
+interface CalendarEventsInterface
 {
     public function createEvent($owner,$title,$startDate,$endDate,$description,$location,$color,$calendar,$appid);
 
