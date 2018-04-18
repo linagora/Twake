@@ -15,21 +15,21 @@ interface CalendarsInterface
 {
 
     // @getCalendars returns calendars for a workspace
-    public function getCalendars($workspace, $currentUserId=null);
+    public function getCalendars($workspaceId, $currentUserId=null);
 
     // @createCalendar creates a calendar
-    public function createCalendar($workspace, $label, $color, $currentUserId = null);
+    public function createCalendar($workspaceId, $label, $color, $currentUserId = null);
 
     // @removeCalendar remove a calendar
-    public function removeCalendar($workspace, $calendarId, $currentUserId = null);
+    public function removeCalendar($workspaceId, $calendarId, $currentUserId = null);
 
     // @shareCalendar share a calendar with an other workspace
-    public function shareCalendar($workspace, $calendarId, $other_workspace, $currentUserId = null);
+    public function shareCalendar($workspaceId, $calendarId, $other_workspaceId, $hasAllRights = true, $currentUserId = null);
 
     // @unshareCalendar cancel calendar sharing
-    public function unshareCalendar($workspace, $calendarId, $other_workspace, $currentUserId = null);
+    public function unshareCalendar($workspaceId, $calendarId, $other_workspaceId, $currentUserId = null);
 
     // @getCalendarShare return list of other workspaces sharing the same calendar
-    public function getCalendarShare($workspace, $calendarId, $currentUserId = null);
+    public function getCalendarShare($workspaceId, $calendarId, $currentUserId = null);
 
 }

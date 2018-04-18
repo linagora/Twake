@@ -25,9 +25,9 @@ class Calendars implements CalendarsInterface
         $this->workspaceLevels = $workspaceLevels;
     }
 
-    public function getCalendars($workspace, $currentUserId=null)
+    public function getCalendars($workspaceId, $currentUserId=null)
     {
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
         $result = Array();
 
         if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
@@ -58,9 +58,9 @@ class Calendars implements CalendarsInterface
         }
     }
 
-    public function createCalendar($workspace, $title, $color, $currentUserId=null)
+    public function createCalendar($workspaceId, $title, $color, $currentUserId=null)
     {
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
@@ -78,47 +78,133 @@ class Calendars implements CalendarsInterface
 
             $this->doctrine->flush();
 
+            $data = Array(
+                "type" => "update",
+                "calendar" => $cal->getAsArray()
+            );
+            $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$workspaceId));
+
             return $cal;
         }
     }
 
-    public function removeCalendar($workspace, $calendarId, $currentUserId = null)
+    public function removeCalendar($workspaceId, $calendarId, $currentUserId = null)
     {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
 
         $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+
+        if(!$calendarLink || !$calendarLink->getCalendarRight()){
+            return null;
+        }
+
         $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->removeAllByCalendar($calendar);
+        $this->doctrine->remove($calendarLink);
         $this->doctrine->remove($calendar);
         $this->doctrine->flush();
+
+        $data = Array(
+            "type" => "delete",
+            "calendar_id" => $calendarId
+        );
+        $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$workspaceId));
+
     }
 
-    public function shareCalendar($workspace, $calendarId, $other_workspace, $currentUserId = null)
+    public function shareCalendar($workspaceId, $calendarId, $other_workspaceId, $hasAllRights = true, $currentUserId = null)
     {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
-        // TODO: Implement shareCalendar() method.
+
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+
+        if(!$calendarLink || !$calendarLink->getCalendarRight()){
+            return null;
+        }
+
+        $other_workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $other_workspaceId, "isDeleted" => false));
+        $shareLink = new LinkCalendarWorkspace($other_workspace, $calendar, $hasAllRights);
+
+        $calendar->setWorkspacesNumber($calendar->getWorkspacesNumber()+1);
+        $this->doctrine->persist($calendar);
+
+        $this->doctrine->persist($shareLink);
+        $this->doctrine->push();
+
+        $data = Array(
+            "type" => "update",
+            "calendar" => $calendar->getAsArray()
+        );
+        $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$workspaceId));
+        $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$other_workspaceId));
+
+
     }
 
-    public function unshareCalendar($workspace, $calendarId, $other_workspace, $currentUserId = null)
+    public function unshareCalendar($workspaceId, $calendarId, $other_workspaceId, $currentUserId = null)
     {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
-        // TODO: Implement unshareCalendar() method.
+
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+
+        if(!$calendarLink || !$calendarLink->getCalendarRight()){
+            return null;
+        }
+
+        $other_workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $other_workspaceId, "isDeleted" => false));
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$other_workspace));
+
+        $calendar->setWorkspacesNumber($calendar->getWorkspacesNumber()-1);
+        $this->doctrine->persist($calendar);
+
+        $this->doctrine->remove($calendarLink);
+        $this->doctrine->flush();
+
+        if($workspaceId!=$other_workspaceId) {
+            $data = Array(
+                "type" => "update",
+                "calendar" => $calendar->getAsArray()
+            );
+            $this->pusher->push($data, "calendar_workspace_topic", Array("id" => $workspaceId));
+        }
+
+        $data = Array(
+            "type" => "delete",
+            "calendar_id" => $calendarId
+        );
+        $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$other_workspaceId));
+
     }
 
-    public function getCalendarShare($workspace, $calendarId, $currentUserId = null)
+    public function getCalendarShare($workspaceId, $calendarId, $currentUserId = null)
     {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
             return null;
         }
-        // TODO: Implement getCalendarShare() method.
+
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+
+        if(!$calendarLink || !$calendarLink->getCalendarRight()){
+            return null;
+        }
+
+        return $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
     }
 }
