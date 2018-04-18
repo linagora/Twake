@@ -1,7 +1,15 @@
-event_topic:
-    channel: calendar/{key}
+calendar_topic:
+    channel: calendar/{id}
     handler:
-        callback: 'event.topic'
+        callback: 'calendar.topic'
     requirements:
-        key:
-            pattern: "[0-9]+(_[0-9]+)?"
+        id:
+            pattern: "[0-9]+"
+
+calendar_workspace_topic:
+    channel: calendar/workspace/{id}
+    handler:
+        callback: 'calendar_workspace.topic'
+    requirements:
+        id:
+            pattern: "[0-9]+"

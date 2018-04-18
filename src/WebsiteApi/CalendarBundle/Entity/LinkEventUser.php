@@ -30,7 +30,7 @@ class LinkEventUser{
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\CalendarBundle\Entity\TwakeEvent")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\CalendarBundle\Entity\Event")
      * @ORM\JoinColumn(nullable=true)
      */
 

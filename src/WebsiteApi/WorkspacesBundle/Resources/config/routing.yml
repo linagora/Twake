@@ -86,6 +86,18 @@ twake_workspaces_levels_list:
     path:     /levels/list
     defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLevels:getLevels }
 
+twake_workspaces_levels_create:
+    path:     /levels/create
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLevels:createLevel }
+
+twake_workspaces_levels_delete:
+    path:     /levels/delete
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLevels:deleteLevel }
+
+twake_workspaces_levels_default:
+    path:     /levels/default
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLevels:makeDefaulLevel }
+
 
 
 #twake_workspace_group_create:

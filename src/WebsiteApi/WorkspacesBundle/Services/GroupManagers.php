@@ -44,8 +44,6 @@ class GroupManagers implements GroupManagersInterface
 	}
 
 	public function hasPrivileges($level, $privilege){
-	    error_log($level);
-        error_log($privilege);
 		$privileges = $this->getPrivileges($level);
 		if($privileges == null){
 			return false;

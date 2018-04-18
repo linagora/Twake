@@ -28,14 +28,19 @@ class Calendar {
     private $title;
 
     /**
-     * @ORM\Column(name="description", type="string", nullable=true)
+     * @ORM\Column(name="color", type="string", nullable=true)
      */
-    private $description;
+    private $color;
 
-    public  function __construct($title,$description)
+    /**
+     * @ORM\Column(name="workspaces_number", type="integer", nullable=true)
+     */
+    private $workspacesNumber = 1;
+
+    public  function __construct($title,$color)
     {
         $this->setTitle($title);
-        $this->setDescription($description);
+        $this->setCoplor($color);
     }
 
     /**
@@ -70,30 +75,44 @@ class Calendar {
         $this->title = $title;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getColor()
+    {
+        return $this->color;
+    }
+
+    /**
+     * @param mixed $color
+     */
+    public function setColor($color)
+    {
+        $this->color = $color;
+    }
 
     /**
      * @return mixed
      */
-    public function getDescription()
+    public function getWorkspacesNumber()
     {
-        return $this->description;
+        return $this->workspacesNumber;
     }
 
     /**
-     * @param mixed $description
+     * @param mixed $workspacesNumber
      */
-    public function setDescription($description)
+    public function setWorkspacesNumber($workspacesNumber)
     {
-        $this->description = $description;
+        $this->workspacesNumber = $workspacesNumber;
     }
-
-
 
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
             "title" => $this->getTitle(),
-            "description" => $this->getDescription(),
+            "color" => $this->getColor(),
+            "workspaces_number" => $this->getWorkspacesNumber(),
         );
     }
 

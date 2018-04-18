@@ -47,10 +47,7 @@ class Groups implements GroupsInterface
 		$this->doctrine->persist($group);
 		$this->doctrine->flush();
 
-		$manager = new GroupManager($group, $user);
-
-		$this->doctrine->persist($manager);
-		$this->doctrine->flush();
+		$this->gms->addManager($group->getId(), $userId, 2);
 
 		$this->init($group);
 
