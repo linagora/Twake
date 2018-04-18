@@ -43,8 +43,13 @@ class MarketApplication implements MarketApplicationInterface
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
         $application = $applicationRepository->find($appId);
 
+        $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+        $groupApplication = $groupAppRepository->findOneBy(Array("group" => $group, "app" => $application));
 
-        if ($currentUserId == null
+        if($groupApplication!=null){
+            return "app déjà existante";
+        }
+        if ( $currentUserId == null
             || $this->gms->hasPrivileges(
                 $this->gms->getLevel($groupId, $currentUserId),
                 "MANAGE_APPS"
