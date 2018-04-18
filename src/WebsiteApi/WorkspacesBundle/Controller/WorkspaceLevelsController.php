@@ -38,17 +38,64 @@ class WorkspaceLevelsController extends Controller
 	}
 
     /**
-     * Get list of workspace levels
+     * Create a workspace level
      */
     public function createLevelAction(Request $request){
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
         $workspaceId = $request->request->getInt("workspaceId");
-        $label = $request->request->get("label");
+        $label = $request->request->get("label","");
+        if ($label == null){
+            $response["errors"] = "emptylabel";
+            return new JsonResponse($response);
+        }
+
         $rights = $this->get("app.workspace_levels")->getDefaultLevel($workspaceId)->getRights();
 
         $res = $this->get("app.workspace_levels")->addLevel($workspaceId,$label,$rights, $this->getUser()->getId());
+
+        if ($res){
+            $response["data"] = "success";
+        }else{
+            $response["errors"] = "notauthorized";
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * Delete a workspace level
+     */
+    public function deleteLevelAction(Request $request){
+
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $workspaceId = $request->request->getInt("workspaceId");
+        $levelId = $request->request->getInt("levelId");
+
+        $res = $this->get("app.workspace_levels")->removeLevel($workspaceId,$levelId, $this->getUser()->getId());
+
+        if ($res){
+            $response["data"] = "success";
+        }else{
+            $response["errors"] = "notauthorized";
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * Make a workspace levels default
+     */
+    public function makeDefaulLevelAction(Request $request){
+
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $workspaceId = $request->request->getInt("workspaceId");
+        $levelId = $request->request->getInt("levelId");
+
+        $res = $this->get("app.workspace_levels")->setDefaultLevel($workspaceId,$levelId, $this->getUser()->getId());
 
         if ($res){
             $response["data"] = "success";

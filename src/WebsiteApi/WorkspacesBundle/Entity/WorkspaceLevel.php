@@ -38,12 +38,12 @@ class WorkspaceLevel
 	/**
 	 * @ORM\Column(name="isDefault", type="boolean", length=1)
 	 */
-	protected $isDefault;
+	protected $isDefault = false;
 
 	/**
 	 * @ORM\Column(name="isAdmin", type="boolean", length=1)
 	 */
-	protected $isAdmin;
+	protected $isAdmin = false;
 
 
 	function __construct()
