@@ -120,6 +120,29 @@ class ApplicationController extends Controller
       return new JsonResponse($response);
   }
 
+    public function getAppByNameAction(Request $request){
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $name = $request->request->get("name");
+
+        if(isset($name)){
+            $apps_obj = $this->get("website_api_market.applications")->getAppByName($name);
+        }
+
+        $apps = array();
+
+        foreach ($apps_obj as $app) {
+            $apps[] = $app->getAsSimpleArray();
+        }
+
+        if(!$apps_obj){
+            $response["errors"][] = "notallowed";
+        }else{
+            $response["data"]["apps"] = $apps;
+        }
+
+        return new JsonResponse($response);
+    }
     /*
      * Add an application
      */
