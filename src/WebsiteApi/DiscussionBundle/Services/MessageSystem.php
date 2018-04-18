@@ -208,6 +208,7 @@ class MessageSystem implements MessagesSystemInterface
 			return false;
 		}
 
+        $application = null;
 		if ($isApplicationMessage) {
 			$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($applicationId);
 		}
@@ -241,6 +242,8 @@ class MessageSystem implements MessagesSystemInterface
 			$this->doctrine->persist($message);
 			$this->doctrine->flush();
 
+			$this->notify($key, "C", $message->getAsArray());
+
 			if($sender != null) {
 				$this->messagesNotificationCenter->read($stream, $sender);
 			}
@@ -252,6 +255,7 @@ class MessageSystem implements MessagesSystemInterface
 			return $message;
 
 		} else {
+		    return null;
 		}
 	}
 

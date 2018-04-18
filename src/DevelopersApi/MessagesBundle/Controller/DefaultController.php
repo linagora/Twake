@@ -24,14 +24,13 @@ class DefaultController extends Controller
         $url = isset($requestData["url"]) ? $requestData["url"] : "";
         $appId = $request["application"]->getId();
 
-        error_log(json_encode($requestData));
-
         $data = Array(
             "data" => Array(),
             "errors" => Array()
         );
 
         $file = $this->get("app.messages")->sendMessage($userId, $streamId, true, $appId, false, null, $workspaceId, $subjectId, Array("iframe" => $url));
+
         if (!$file) {
             $data["errors"][] = 3001;
         } else {

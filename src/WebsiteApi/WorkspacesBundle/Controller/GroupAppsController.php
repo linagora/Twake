@@ -27,7 +27,7 @@ class GroupAppsController extends Controller
 
         $apps_obj = $this->get("app.group_apps")->getApps($groupId);
 
-        if(!$apps_obj){
+        if(!is_array($apps_obj)){
             $response["errors"][] = "notallowed";
         }else{
             //Apps
@@ -53,7 +53,7 @@ class GroupAppsController extends Controller
 
         $apps_obj = $this->get("app.group_apps")->setWorkspaceDefault($groupId,$appId,$boolean,$this->getUser()->getId());
 
-        if(!$apps_obj){
+        if(!is_array($apps_obj)){
             $response["errors"][] = "notallowed";
         }else{
             $response["data"][] = true;
@@ -70,7 +70,7 @@ class GroupAppsController extends Controller
 
         $apps_obj = $this->get("app.group_apps")->RemoveApplication($groupId,$appId,$this->getUser()->getId());
 
-        if(!$apps_obj){
+        if(!is_array($apps_obj)){
             $response["errors"][] = "notallowed";
         }else{
             $response["data"][] = true;

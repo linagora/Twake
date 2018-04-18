@@ -37,6 +37,7 @@ class Notifications implements NotificationsInterface
 	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data=null)
 	{
 
+
 		if($workspace != null){
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }

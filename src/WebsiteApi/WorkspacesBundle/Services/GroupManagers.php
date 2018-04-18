@@ -44,6 +44,8 @@ class GroupManagers implements GroupManagersInterface
 	}
 
 	public function hasPrivileges($level, $privilege){
+	    error_log($level);
+        error_log($privilege);
 		$privileges = $this->getPrivileges($level);
 		if($privileges == null){
 			return false;
@@ -70,7 +72,8 @@ class GroupManagers implements GroupManagersInterface
 		 * If we are the current user we can access our data
 		 * Else we verify that we can look rights
 		 */
-		if($currentUserId == null
+
+        if($currentUserId == null
 			|| $currentUserId == $userId
 			|| $this->hasPrivileges(
 				$this->getLevel($groupId, $currentUserId, $currentUserId),
