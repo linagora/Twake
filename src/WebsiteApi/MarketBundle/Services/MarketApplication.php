@@ -19,7 +19,7 @@ class MarketApplication implements MarketApplicationInterface
     public function getApps()
     {
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $applications = $applicationRepository->findBy(Array(),array('name' => 'ASC'), 18);
+        $applications = $applicationRepository->findBy(Array(),array('name' => 'ASC','enabled'=>true), 18);
 
         return $applications;
     }
@@ -27,6 +27,13 @@ class MarketApplication implements MarketApplicationInterface
     {
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
         $applications = $applicationRepository->findApplicationByName($name);
+
+        return $applications;
+    }
+
+    public function getAppByPublicKey($publicKey){
+        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $applications = $applicationRepository->findOneBy(Array("publicKey" => $publicKey));
 
         return $applications;
     }
