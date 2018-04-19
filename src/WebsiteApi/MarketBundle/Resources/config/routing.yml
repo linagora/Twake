@@ -7,8 +7,8 @@ website_api_app_getapps:
     defaults: { _controller: TwakeMarketBundle:Application:getapps }
 
 website_api_app_get_app_by_name:
-    path:     /app/getAppByName
-    defaults: { _controller: TwakeMarketBundle:Application:getAppByName }
+    path:     /app/getAppByPublicKey
+    defaults: { _controller: TwakeMarketBundle:Application:getAppByPublicKey }
 
 website_api_app_create:
     path:     /app/create

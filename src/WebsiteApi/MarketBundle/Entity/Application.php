@@ -167,8 +167,13 @@ class Application
      */
     private $installCount = 0;
 
+    /**
+     * @ORM\Column(name="cgu", type="text")
+     */
+    private $cgu ;
 
-	public function __construct()
+
+    public function __construct()
 	{
 		$this->date = new \DateTime();
 		$this->privateKey = Application::generatePrivateKey();
@@ -375,6 +380,16 @@ class Application
 	{
 		$this->description = $descr;
 	}
+
+    public function getCgu()
+    {
+        return $this->cgu;
+    }
+
+    public function setCgu($cgu)
+    {
+        $this->cgu = $cgu;
+    }
 
 	public function getShortDescription()
 	{
@@ -659,6 +674,7 @@ class Application
 			"url" => $this->getUrl(),
 			"filestypes" => $this->getFilesTypes(),
 			"userRights" => $this->getUserRights(),
+            "applicationRights" => $this->getApplicationRights(),
 			"internal" => ((!(substr( $this->getUrl(), 0, 4 ) === "http"))?true:false),
 			"color" => $this->getColor(),
 			"canCreateFile" => $this->getCanCreateFile(),
@@ -668,8 +684,10 @@ class Application
             "order" => $this->getOrder(),
             "messageModule" => $this->getMessageModule(),
             "messageModuleUrl" => $this->getMessageModuleUrl(),
+            "publicKey" => $this->getPublicKey(),
+            "cgu"=> $this->getCgu(),
             "editableRights" => $this->getEditableRights()
-		);
+        );
 	}
 
 	public function getAsSimpleArray()

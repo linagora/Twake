@@ -120,25 +120,17 @@ class ApplicationController extends Controller
       return new JsonResponse($response);
   }
 
-    public function getAppByNameAction(Request $request){
+    public function getAppByPublicKeyAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $name = $request->request->get("name");
+        $publicKey = $request->request->get("publicKey");
 
-        if(isset($name)){
-            $apps_obj = $this->get("website_api_market.applications")->getAppByName($name);
-        }
+        $apps_obj = $this->get("website_api_market.applications")->getAppByPublicKey($publicKey);
 
-        $apps = array();
-
-        foreach ($apps_obj as $app) {
-            $apps[] = $app->getAsSimpleArray();
-        }
-
-        if(!$apps_obj){
+        if($apps_obj == null){
             $response["errors"][] = "notallowed";
         }else{
-            $response["data"]["apps"] = $apps;
+            $response["data"] = $apps_obj->getAsSimpleArray();
         }
 
         return new JsonResponse($response);
