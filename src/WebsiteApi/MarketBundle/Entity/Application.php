@@ -637,6 +637,7 @@ class Application
 			"screenshots" => $this->getScreenshot(),
 			"url" => $this->getUrl(),
 			"filestypes" => $this->getFilesTypes(),
+			"userRights" => $this->getUserRights(),
 			"internal" => ((!(substr( $this->getUrl(), 0, 4 ) === "http"))?true:false),
 			"color" => $this->getColor(),
 			"canCreateFile" => $this->getCanCreateFile(),
