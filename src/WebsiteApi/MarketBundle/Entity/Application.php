@@ -122,6 +122,11 @@ class Application
      */
     private $messageModuleUrl = "";
 
+    /**
+     * @ORM\Column(name="editable_rights" , type="boolean")
+     */
+    protected $editableRights;
+
 	/**
 	 * @ORM\Column(type="date")
 	 */
@@ -605,6 +610,22 @@ class Application
     /**
      * @return mixed
      */
+    public function getEditableRights()
+    {
+        return $this->editableRights;
+    }
+
+    /**
+     * @param mixed $editableRights
+     */
+    public function setEditableRights($editableRights)
+    {
+        $this->editableRights = $editableRights;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getOrder()
     {
         return $this->order;
@@ -646,7 +667,8 @@ class Application
 			"default" => $this->getDefault(),
             "order" => $this->getOrder(),
             "messageModule" => $this->getMessageModule(),
-            "messageModuleUrl" => $this->getMessageModuleUrl()
+            "messageModuleUrl" => $this->getMessageModuleUrl(),
+            "editableRights" => $this->getEditableRights()
 		);
 	}
 

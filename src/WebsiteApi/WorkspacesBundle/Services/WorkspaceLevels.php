@@ -301,6 +301,36 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 		return false;
 	}
 
+    public function fixLevels($levels, $workspaceApps)
+    {
+        $list = Array();
+        $list["levels"] = Array();
+        foreach ($levels as $level) {
+            $list["levels"][] = $level->getAsArray();
+        }
+
+        foreach ($list["levels"] as $k => $levelvalue) {
+            //for each level, get the workspace'apps and check differencies between rights and apps
+            if ($levelvalue["rights"] == null) {
+                $levelvalue["rights"] = Array();
+            }
+            $rights_fixed = Array();
+            foreach ($workspaceApps as $app) {
+                if (!array_key_exists("workspace",$levelvalue["rights"])){
+                    $rights_fixed["workspace"] = "none";
+                }
+                if(!array_key_exists($app->getPublicKey(),$levelvalue["rights"])){
+                    $rights_fixed[$app->getPublicKey()] = "manage";
+                }else{
+                    $rights_fixed[$app->getPublicKey()] = $levelvalue["rights"][$app->getPublicKey()]  ;
+                }
+            }
+            $list["levels"][$k]["rights"] = $rights_fixed;
+        }
+
+        return $list;
+    }
+
 
 
 	// @Depreciated
