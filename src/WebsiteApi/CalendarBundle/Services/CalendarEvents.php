@@ -11,7 +11,7 @@ use WebsiteApi\CalendarBundle\Model\CalendarEventsInterface;
 /**
  * Manage calendar
  */
-class CalendarEventsEvents implements CalendarEventsInterface
+class CalendarEvents implements CalendarEventsInterface
 {
 
     var $doctrine;
