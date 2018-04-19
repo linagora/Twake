@@ -183,7 +183,6 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 		if($currentUserId == null
 			|| $this->can($workspaceId, $currentUserId, "levels:edit")
 		){
-
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspace = $workspaceRepository->find($workspaceId);
 
