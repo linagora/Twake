@@ -16,27 +16,19 @@ class Notifications implements NotificationsInterface
 {
 
 	var $doctrine;
+	var $circle;
+	var $pushNotificationServer;
 
-	public function __construct($doctrine, $pusher, $mailer, $krlove_async, $fcm_pusher, $rms_push_notifications){
+	public function __construct($doctrine, $pusher, $mailer, $circle, $pushNotificationServer){
 		$this->doctrine = $doctrine;
 		$this->pusher = $pusher;
 		$this->mailer = $mailer;
-		$this->krlove_async = $krlove_async;
-		$this->fcm_pusher = $fcm_pusher;
-		$this->rms_push_notifications = $rms_push_notifications;
+		$this->circle = $circle;
+        $this->pushNotificationServer = $pushNotificationServer;
 	}
 
-	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data = null)
+	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data=null)
 	{
-        return $this->krlove_async->call(
-            'app.notifications',
-            'pushNotificationAsync',
-            Array($application, $workspace, $users, $levels, $code, $text, $type, $data));
-	}
-
-	public function pushNotificationAsync($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data=null)
-	{
-
 
 		if($workspace != null){
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
@@ -56,7 +48,6 @@ class Notifications implements NotificationsInterface
 		if($application){
 			$title .= $application->getName();
 		}
-
 
 		$data = Array(
 			"type"=>"add",
@@ -159,19 +150,9 @@ class Notifications implements NotificationsInterface
 
         gc_collect_cycles();
 
-        posix_kill(getmypid(), 9);
-
     }
 
 	public function readAll($application, $workspace, $user, $code = null)
-	{
-		$this->krlove_async->call(
-			'app.notifications',
-			'readAllAsync',
-			Array($application, $workspace, $user, $code));
-	}
-
-	public function readAllAsync($application, $workspace, $user, $code = null)
 	{
 
 		$nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
@@ -210,8 +191,6 @@ class Notifications implements NotificationsInterface
 
         gc_collect_cycles();
 
-        posix_kill(getmypid(), 9);
-
     }
 
 	public function countAll($user)
@@ -242,22 +221,16 @@ class Notifications implements NotificationsInterface
         $count = count($devices);
         for($i = 0; $i < $count; $i++) {
             $device = $devices[$i];
-			if($device->getType()=="APNS"){
 
-				$token = $device->getValue();
+            $token = $device->getValue();
 
-				$message = new iOSMessage();
-				$message->setAPSBadge($badge);
-				$message->setDeviceIdentifier($token);
+            $this->pushDeviceInternal($device->getType(), $token,
+                null,
+                null,
+                $badge,
+                null
+            );
 
-				$this->rms_push_notifications->send($message);
-
-			}
-			if($device->getType()=="GCM"){
-
-				//For now no number
-
-			}
             gc_collect_cycles();
 		}
 	}
@@ -270,43 +243,42 @@ class Notifications implements NotificationsInterface
         $count = count($devices);
         for($i = 0; $i < $count; $i++) {
             $device = $devices[$i];
-			if($device->getType()=="APNS"){
 
-				$token = $device->getValue();
+            $token = $device->getValue();
 
-				$data = array(
-					"title"=>substr($title, 0, 50),
-					"body"=>substr($text, 0, 100)
-				);
+            $this->pushDeviceInternal($device->getType(), $token,
+                substr($text, 0, 100),
+                substr($title, 0, 50),
+                $badge,
+                $data
+            );
 
-				$message = new iOSMessage();
-				$message->setMessage($data);
-				if($badge) {
-					$message->setAPSBadge($badge);
-				}
-				$message->setAPSSound("default");
-				$message->setDeviceIdentifier($token);
-
-				$this->rms_push_notifications->send($message);
-
-			}
-			if($device->getType()=="FCM"){
-
-				$token = $device->getValue();
-
-				$notification = $this->fcm_pusher->createDeviceNotification(
-					substr($title, 0, 50),
-					substr($text, 0, 100),
-					$token
-			    );
-				$notification->setSound("default");
-				$notification->setPriority('high');
-				$this->fcm_pusher->sendNotification($notification);
-
-			}
             gc_collect_cycles();
 		}
 	}
+
+	private function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $data){
+
+        $data = Array(
+            "message" => $message,
+            "title" => $title,
+            "data" => $data,
+            "badge" => $badge,
+            "device_id" => $deviceId
+        );
+        try {
+            if ($type == "FCM") {
+                $data["type"] = "fcm";
+                $this->circle->post($this->pushNotificationServer, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1));
+            }
+            if ($type == "APNS") {
+                $data["type"] = "apns";
+                $this->circle->post($this->pushNotificationServer, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1));
+            }
+        } catch (\Exception $exception) {
+            error_log("ERROR");
+        }
+    }
 
 	private function sendMail($application, $workspace, $user, $text){
 		$this->mailer->send($user->getEmail(), "notification", Array(

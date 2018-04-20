@@ -40,10 +40,8 @@ class WorkspaceLevelsController extends Controller
         $list["apps"] = Array();
         $list["apps"]["workspace"] = "Workspace";
         if ($workspaceApps != null){
-            foreach ($list as $level){
-                foreach ($workspaceApps as $workspaceApp){
-                    $list["apps"][$workspaceApp->getPublicKey()] = $workspaceApp->getName();
-                }
+            foreach ($workspaceApps as $workspaceApp){
+                $list["apps"][$workspaceApp->getPublicKey()] = $workspaceApp->getName();
             }
         }
 
