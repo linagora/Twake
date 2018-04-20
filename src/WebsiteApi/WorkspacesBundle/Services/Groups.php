@@ -12,11 +12,13 @@ class Groups implements GroupsInterface
 
 	private $doctrine;
 	private $gms;
+    private $market;
 
-	public function __construct($doctrine, $group_managers_service)
+	public function __construct($doctrine, $group_managers_service, $market_service)
 	{
 		$this->doctrine = $doctrine;
 		$this->gms = $group_managers_service;
+		$this->market = $market_service;
 	}
 
 	public function create($userId, $name, $uniquename, $planId)
@@ -157,6 +159,21 @@ class Groups implements GroupsInterface
 	}
 
     public function init($group){
-        return true;
+        $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+
+        $groupApps = $groupAppRepository->findBy(Array("group" => $group));
+
+        $listApps = $appRepository->findBy(Array("default"=>true));
+
+        if(count($groupApps) != 0){
+            return false;
+        }else{
+            foreach ( $listApps as $app ){
+                $this->market->addApplication($group->getId(),$app->getId(),null,true);
+            }
+            $this->doctrine->flush();
+            return true;
+        }
     }
 }

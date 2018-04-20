@@ -15,6 +15,6 @@ interface MarketApplicationInterface
     public function getAppsByName($name);
 
     // @addApplication add an application to the given group
-    public function addApplication($groupId,$appId, $currentUserId = null);
+    public function addApplication($groupId,$appId, $currentUserId = null, $init);
 
 }

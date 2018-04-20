@@ -38,7 +38,7 @@ class MarketApplication implements MarketApplicationInterface
         return $applications;
     }
 
-    public function addApplication($groupId,$appId, $currentUserId = null){
+    public function addApplication($groupId,$appId, $currentUserId = null, $init = null){
 
         if($groupId == null || $appId == null){
             return false;
@@ -63,7 +63,15 @@ class MarketApplication implements MarketApplicationInterface
             )
         ) {
             $groupapp = new GroupApp($group, $application);
+            if($init){
+                if($application->getDefault()) {
+                    $groupapp->setWorkspaceDefault(true);
+                }
+            }
             $this->doctrine->persist($groupapp);
+
+            $application->increaseInstall();
+            $this->doctrine->persist($application);
 
             $this->doctrine->flush();
 

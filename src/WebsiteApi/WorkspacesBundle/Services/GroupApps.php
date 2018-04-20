@@ -111,7 +111,8 @@ class GroupApps implements GroupAppsInterface
             foreach ($groupapps as $ga) {
                 $this->doctrine->remove($ga);
             }
-
+            $application->decreaseInstall();
+            $this->doctrine->persist($application);
             $this->doctrine->flush();
             return true;
         }
