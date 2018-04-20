@@ -707,6 +707,7 @@ class Application
 			"cssthumbnail" => $this->getCssThumbnail(),
 			"thumbnail" => $this->getUrlThumbnail(),
 			"url" => $this->getUrl(),
+            "publicKey" => $this->getPublicKey(),
 			"filestypes" => $this->getFilesTypes()
 		);
 	}

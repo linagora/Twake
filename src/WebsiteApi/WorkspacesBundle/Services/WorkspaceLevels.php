@@ -308,16 +308,15 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
         foreach ($levels as $level) {
             $list["levels"][] = $level->getAsArray();
         }
-
         foreach ($list["levels"] as $k => $levelvalue) {
             //for each level, get the workspace'apps and check differencies between rights and apps
-            if ($levelvalue["rights"] == null) {
+            if ($levelvalue["rights"] == null || $levelvalue["admin"]) {
                 $levelvalue["rights"] = Array();
             }
             $rights_fixed = Array();
             foreach ($workspaceApps as $app) {
                 if (!array_key_exists("workspace",$levelvalue["rights"])){
-                    $rights_fixed["workspace"] = "none";
+                    $rights_fixed["workspace"] = $levelvalue["admin"]?"manage":"none";
                 }
                 if(!array_key_exists($app->getPublicKey(),$levelvalue["rights"])){
                     $rights_fixed[$app->getPublicKey()] = "manage";
