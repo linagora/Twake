@@ -45,6 +45,13 @@ class WorkspaceController extends Controller
                 $users[] = $user_obj["user"]->getAsArray();
             }
 			$response["data"]["members"] = $users;
+
+            $response["data"]["currentUser"] = $this->getUser()->getAsArray();
+            $level = $this->get("app.workspace_levels")->getLevel($workspaceId, $this->getUser()->getId());
+            $workspaceApps = $this->get("app.workspaces_apps")->getApps($workspaceId, $this->getUser()->getId(), false, false);
+            $level = $this->get("app.workspace_levels")->fixLevels(Array($level),$workspaceApps)["levels"][0];
+
+            $response["data"]["currentUser"]["level"] = $level;
 		}
 
 		return new JsonResponse($response);
