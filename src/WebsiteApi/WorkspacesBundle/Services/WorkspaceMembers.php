@@ -307,7 +307,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 	public function getMembers($workspaceId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "members:view")
+			|| $this->wls->can($workspaceId, $currentUserId, "")
 		){
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
@@ -337,7 +337,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 	public function getPendingMembers($workspaceId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "members:view")
+			|| $this->wls->can($workspaceId, $currentUserId, "")
 		){
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspaceUserByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");

@@ -306,22 +306,25 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
         }
         foreach ($list["levels"] as $k => $levelvalue) {
             //for each level, get the workspace'apps and check differencies between rights and apps
-            if ($levelvalue["rights"] == null || $levelvalue["admin"]) {
+            if ($levelvalue["rights"] == null) {
                 $levelvalue["rights"] = Array();
             }
             $rights_fixed = Array();
             foreach ($workspaceApps as $app) {
-                $rights_fixed["workspace"] = $levelvalue["admin"]?"manage":"none";
-                if(!array_key_exists($app->getPublicKey(),$levelvalue["rights"])){
+                if(!array_key_exists($app->getPublicKey(),$levelvalue["rights"]) || $levelvalue["admin"]){
                     $rights_fixed[$app->getPublicKey()] = "manage";
                 }else{
                     $rights_fixed[$app->getPublicKey()] = $levelvalue["rights"][$app->getPublicKey()]  ;
                 }
             }
-            if (!array_key_exists("workspace",$levelvalue["rights"])){
-                $rights_fixed["workspace"] = "none";
-            }else{
-                $rights_fixed["workspace"] = $levelvalue["rights"]["workspace"]  ;
+            if($levelvalue["admin"]){
+                $rights_fixed["workspace"] = $levelvalue["admin"]?"manage":$levelvalue["rights"]["workspace"];
+            }else {
+                if (!array_key_exists("workspace", $levelvalue["rights"])) {
+                    $rights_fixed["workspace"] = "none";
+                } else {
+                    $rights_fixed["workspace"] = $levelvalue["rights"]["workspace"];
+                }
             }
             $list["levels"][$k]["rights"] = $rights_fixed;
         }
