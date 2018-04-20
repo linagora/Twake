@@ -112,10 +112,6 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 				return false;
 			}
 
-			if($level->getisAdmin()){
-				return false; //Can't edit admin level (all rights)
-			}
-
 			$level->setRights($rights);
 			$level->setLabel($label);
 
@@ -318,6 +314,8 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
             foreach ($workspaceApps as $app) {
                 if (!array_key_exists("workspace",$levelvalue["rights"])){
                     $rights_fixed["workspace"] = "none";
+                }else{
+                    $rights_fixed["workspace"] = $levelvalue["rights"]["workspace"]  ;
                 }
                 if(!array_key_exists($app->getPublicKey(),$levelvalue["rights"])){
                     $rights_fixed[$app->getPublicKey()] = "manage";

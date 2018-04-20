@@ -140,8 +140,8 @@ class WorkspaceMembersController extends Controller
 		$response = Array("errors"=>Array(), "data"=>Array());
 
 		$workspaceId = $request->request->getInt("workspaceId");
-		$ids = $request->request->get("ids",Array());
-		$levelId = $request->request->get("levelId",0);
+		$ids = $request->request->get("usersId",Array());
+		$levelId = $request->request->get("levelId");
 
 		$updated = 0;
 		foreach ($ids as $id) {

@@ -132,10 +132,6 @@ class WorkspaceLevelsController extends Controller
         $levelId = $request->request->getInt("levelId");
         $rights = $request->request->get("rights");
         $label = $request->request->get("label","");
-        if ($label == null){
-            $response["errors"] = "emptylabel";
-            return new JsonResponse($response);
-        }
 
         $res = $this->get("app.workspace_levels")->updateLevel($workspaceId,$levelId, $label,$rights ,$this->getUser()->getId());
 
