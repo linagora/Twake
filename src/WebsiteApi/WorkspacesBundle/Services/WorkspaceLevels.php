@@ -57,12 +57,9 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 		$object = $actions[0];
 		$value = intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$actions[1]));
 
-		error_log($object." ".$value);
-
 		if(!isset($rights[$object]) || intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$rights[$object])) <= $value){
             return false;
         }
-        error_log("TRUE");
 
         return true;
 

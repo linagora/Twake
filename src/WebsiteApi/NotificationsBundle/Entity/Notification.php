@@ -183,7 +183,7 @@ class Notification
 			"date" => $this->getDate()->getTimestamp(),
 			"code" => $this->getCode(),
 			"workspace_id" => ($this->getWorkspace()?$this->getWorkspace()->getId():null),
-			"app_id" => $this->getApplication()->getId(),
+			"app_id" => ($this->getApplication()?$this->getApplication()->getId():null),
 			"title" => $this->getTitle(),
 			"text" => $this->getText(),
 			"data" => $this->getData()

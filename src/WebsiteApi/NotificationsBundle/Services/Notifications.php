@@ -207,7 +207,7 @@ class Notifications implements NotificationsInterface
 	public function getAll($user)
 	{
 		$nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
-		$notifs = $nRepo->findBy(Array("user"=>$user));
+		$notifs = $nRepo->findBy(Array("user"=>$user), Array("id" => "DESC"), 30); //Limit number of results
 
 		return $notifs;
 	}
