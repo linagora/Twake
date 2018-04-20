@@ -451,6 +451,15 @@ class Application
         return $this->installCount;
     }
 
+    public function increaseInstall()
+    {
+        return $this->installCount = $this->installCount+1;
+    }
+
+    public function decreaseInstall()
+    {
+        return $this->installCount = $this->installCount-1;
+    }
 	public function getThumbnail()
 	{
 		return $this->thumbnail;
@@ -698,6 +707,7 @@ class Application
 			"cssthumbnail" => $this->getCssThumbnail(),
 			"thumbnail" => $this->getUrlThumbnail(),
 			"url" => $this->getUrl(),
+            "publicKey" => $this->getPublicKey(),
 			"filestypes" => $this->getFilesTypes()
 		);
 	}
