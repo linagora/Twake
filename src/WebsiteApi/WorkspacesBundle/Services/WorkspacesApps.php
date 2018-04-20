@@ -122,7 +122,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
         }
 
         if($currentUserId==null
-            || $this->wls->can($workspaceId, $currentUserId, "workspace:edit")) {
+            || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
 
             if ($workspace->getUser() != null
                 && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
@@ -171,7 +171,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
         }
 
         if($currentUserId==null
-            || $this->wls->can($workspaceId, $currentUserId, "workspace:edit")) {
+            || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
 
             if ($workspace->getUser() != null
                 && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)

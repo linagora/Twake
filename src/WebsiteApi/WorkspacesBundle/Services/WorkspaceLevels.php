@@ -98,7 +98,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function updateLevel($workspaceId, $levelId, $label, $rights, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "levels:edit")
+			|| $this->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
@@ -143,7 +143,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function setDefaultLevel($workspaceId, $levelId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "levels:edit")
+			|| $this->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
@@ -181,7 +181,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function addLevel($workspaceId, $label, $rights, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "levels:edit")
+			|| $this->can($workspaceId, $currentUserId, "workspace:write")
 		){
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspace = $workspaceRepository->find($workspaceId);
@@ -205,7 +205,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function removeLevel($workspaceId, $levelId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "levels:edit")
+			|| $this->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");

@@ -108,7 +108,7 @@ class Workspaces implements WorkspacesInterface
 	public function remove($groupId, $workspaceId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| ($this->wls->can($workspaceId, $currentUserId, "workspace:edit")
+			|| ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
 				&& count($this->wms->getMembers($workspaceId))<=1
 			)
 			|| $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
@@ -131,7 +131,7 @@ class Workspaces implements WorkspacesInterface
 	public function changeName($workspaceId, $name, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "workspace:edit")
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -152,7 +152,7 @@ class Workspaces implements WorkspacesInterface
 	public function changeLogo($workspaceId, $logo, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "workspace:edit")
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -176,7 +176,7 @@ class Workspaces implements WorkspacesInterface
 	public function changeWallpaper($workspaceId, $wallpaper, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "workspace:edit")
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");

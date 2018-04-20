@@ -74,7 +74,7 @@ class WorkspaceDataController extends Controller
 
 		$workspaceId = $request->request->getInt("workspaceId");
 
-		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:edit")){
+		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:write")){
 			$data["errors"][] = "notallowed";
 		}else {
 
@@ -108,7 +108,7 @@ class WorkspaceDataController extends Controller
 
 		$workspaceId = $request->request->getInt("workspaceId");
 
-		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:edit")){
+		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:write")){
 			$data["errors"][] = "notallowed";
 		}else {
 

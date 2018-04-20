@@ -27,7 +27,7 @@ angular.module('twake')
         that.hasRightMembersInvite = $group.getRight("base:members:invite");
         that.hasRightMembersView = $group.getRight("base:members:view");
         that.hasRightMembersRemove = $group.getRight("base:members:remove");
-        that.hasRightMembersEdit = $group.getRight("base:members:edit");
+        that.hasRightMembersEdit = $group.getRight("base:workspace:write");
         that.hasRightGroupView = $group.getRight("base:groupe:view");
         that.hasRightGroupEdit = $group.getRight("base:groupe:edit");
         that.hasRightLinksView = $group.getRight("base:links:view");
