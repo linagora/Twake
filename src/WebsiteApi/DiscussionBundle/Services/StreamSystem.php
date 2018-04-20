@@ -49,10 +49,10 @@ class StreamSystem implements StreamSystemInterface
         if ($workspace == null) {
             return false;
         }
-        if(!$this->levelManager->can($workspace, $user, "Messages:read")){
+        if(!$this->levelManager->can($workspace, $user, "messages:read")){
             return false;
         }
-        if (!$this->levelManager->hasRight($user, $workspace, "Messages:manage")) {
+        if (!$this->levelManager->hasRight($user, $workspace, "messages:manage")) {
             return false;
         }
         else {
@@ -85,10 +85,10 @@ class StreamSystem implements StreamSystemInterface
             	return false;
             }
 
-            if(!$this->levelManager->can($stream->getWorkspace(), $user, "Messages:read")){
+            if(!$this->levelManager->can($stream->getWorkspace(), $user, "messages:read")){
                 return false;
             }
-            if (!$this->levelManager->hasRight($user, $stream->getWorkspace(), "Messages:manage")) {
+            if (!$this->levelManager->hasRight($user, $stream->getWorkspace(), "messages:manage")) {
                 return false;
             }
 
@@ -119,10 +119,10 @@ class StreamSystem implements StreamSystemInterface
             if ($workspace == null) {
                 return false;
             }
-            if(!$this->levelManager->can($workspace, $user, "Messages:read")){
+            if(!$this->levelManager->can($workspace, $user, "messages:read")){
                 return false;
             }
-            if (!$this->levelManager->hasRight($user, $workspace, "Messages:manage")) {
+            if (!$this->levelManager->hasRight($user, $workspace, "messages:manage")) {
                 return false;
             }
             $stream->setName($name);
@@ -197,7 +197,7 @@ class StreamSystem implements StreamSystemInterface
         }
         else{
 
-            if(!$this->levelManager->can($workspace, $user, "Messages:read")){
+            if(!$this->levelManager->can($workspace, $user, "messages:read")){
                 return false;
             }
 

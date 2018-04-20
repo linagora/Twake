@@ -54,18 +54,17 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 		//Compare with action asked
 		$actions = explode(":", $action);
+		$object = $actions[0];
+		$value = intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$actions[1]));
 
-		foreach ($actions as $action){
-			if(!isset($rights[$action]) || $rights[$action] == false){ // If not in tree or false no right
-				return false;
-			}
-			if($rights[$action] == true){ // If true so authorized
-				return true;
-			}
-			$rights = $rights[$action]; // Else continue in the tree
-		}
+		error_log($object." ".$value);
 
-		return false; //We did not found any true leaf, so false
+		if(!isset($rights[$object]) || intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$rights[$object])) <= $value){
+            return false;
+        }
+        error_log("TRUE");
+
+        return true;
 
 	}
 

@@ -262,7 +262,7 @@ class FilesController extends Controller
 			$download = $request->request->get("download", 1);
 		}
 
-		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:read");
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read");
 
 		if ($can) {
 
@@ -321,7 +321,7 @@ class FilesController extends Controller
 		$fileId = $request->request->get("fileToCopyId", 0);
 		$newParentId = $request->request->get("newParentId", null);
 
-		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:read")) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
 			if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
 				$data["errors"][] = "notallowed";
 			} else if (!$this->get('app.drive.FileSystem')->copy($fileId, $newParentId)) {

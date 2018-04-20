@@ -171,7 +171,7 @@ class MessageSystem implements MessagesSystemInterface
 
 			if (!$streamObject["object"]->getIsPrivate()) {
 
-				$can = $this->levelManager->can($workspace, $user, "Messages:" . $action);
+				$can = $this->levelManager->can($workspace, $user, "messages:" . $action);
 				if ($can) {
 					return true;
 				}
