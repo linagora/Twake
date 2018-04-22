@@ -176,18 +176,21 @@ class Notifications implements NotificationsInterface
 			$this->doctrine->remove($notif[$i]);
             gc_collect_cycles();
 		}
-		$this->doctrine->flush();
 
-		$totalNotifications = $this->countAll($user);
+        if($count>0) {
+            $this->doctrine->flush();
 
-		$data = Array(
-			"action"=>"remove",
-			"workspace_id"=>($workspace)?$workspace->getId():null,
-			"app_id"=>($application)?$application->getId():null
-		);
-		$this->pusher->push($data, "notifications_topic", Array("id_user" => $user->getId()));
+            $totalNotifications = $this->countAll($user);
 
-		$this->updateDeviceBadge($user, $totalNotifications);
+            $data = Array(
+                "action"=>"remove",
+                "workspace_id"=>($workspace)?$workspace->getId():null,
+                "app_id"=>($application)?$application->getId():null
+            );
+    		$this->pusher->push($data, "notifications_topic", Array("id_user" => $user->getId()));
+
+            $this->updateDeviceBadge($user, $totalNotifications);
+        }
 
         gc_collect_cycles();
 

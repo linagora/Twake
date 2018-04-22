@@ -212,12 +212,12 @@ class Application
 
 	public function getUserRights()
 	{
-		return json_decode($this->userRights);
+		return json_decode($this->userRights, 1);
 	}
 
 	public function getApplicationRights()
 	{
-		return json_decode($this->applicationRights);
+		return json_decode($this->applicationRights, 1);
 	}
 
 	public function setUserRights($rights)
