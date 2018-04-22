@@ -1,4 +1,22 @@
-# Twake-react v1.0.200
+# Twake v1.0.300
+
+## Changelogs
+
+### Messages
+- Repear notification system
+- New push notification separated server
+- Fix error creating subjects
+
+### Apps
+- Messages modules apps
+- Marketplace of apps
+- Group apps management
+- Add Giphy app
+
+### General
+- Right and levels system and management
+
+# Twake v1.0.200
 
 ## Changelogs
 
@@ -18,7 +36,7 @@
 - Better presentation for disconnected state
 - Reduce animations
 
-# Twake-react v1.0.12
+# Twake v1.0.12
 
 ## Changelogs
 
@@ -32,7 +50,7 @@
 ### Administration
 - New backend for entity listing and view
 
-# Twake-core v1.0.1
+# Twake v1.0.1
 
 ## Changelogs
 
@@ -47,7 +65,7 @@
 - Fix group unique name errors
 
 
-# Twake-core v1.0.0
+# Twake v1.0.0
 
 ## Features
 
