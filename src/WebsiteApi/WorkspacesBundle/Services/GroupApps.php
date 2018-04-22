@@ -78,7 +78,7 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
-    public function RemoveApplication($groupId, $appId, $currentUserId = null)
+    public function removeApplication($groupId, $appId, $currentUserId = null)
     {
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
         $group = $groupRepository->find($groupId);

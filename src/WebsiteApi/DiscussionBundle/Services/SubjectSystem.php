@@ -132,8 +132,10 @@ class SubjectSystem
 
     public function getSubjectAsArray($subject){
         $subjectArray = $subject->getAsArray();
-        $subjectArray["firstMessage"] = $this->getFirstMessage($subject)->getAsArray();
-        $subjectArray["lastMessage"] = $this->getLastMessage($subject)->getAsArray();
+        $fm = $this->getFirstMessage($subject);
+        $subjectArray["firstMessage"] = ($fm?$fm->getAsArray():null);
+        $lm = $this->getLastMessage($subject);
+        $subjectArray["lastMessage"] = ($lm?$lm->getAsArray():null);
         $subjectArray["responseNumber"] = count($this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("subject"=>$subject)));
         return $subjectArray;
     }

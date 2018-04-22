@@ -56,7 +56,7 @@ twake_groups_set_workspace_default:
 
 twake_groups_remove_application:
     path:     /group/remove/application
-    defaults: { _controller: TwakeWorkspacesBundle:GroupApps:RemoveApplication }
+    defaults: { _controller: TwakeWorkspacesBundle:GroupApps:removeApplication }
 
 # Edit members
 

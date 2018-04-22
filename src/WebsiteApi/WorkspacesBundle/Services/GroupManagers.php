@@ -44,6 +44,7 @@ class GroupManagers implements GroupManagersInterface
 	}
 
 	public function hasPrivileges($level, $privilege){
+	    return 2; //TODO : REMOVE IT WHEN GROUPS MANAGERS MANAGEMENT IS DONE
 		$privileges = $this->getPrivileges($level);
 		if($privileges == null){
 			return false;
@@ -87,7 +88,7 @@ class GroupManagers implements GroupManagersInterface
 			$group = $groupRepository->find($groupId);
 			$manager = $groupManagerRepository->findOneBy(Array("user"=>$user, "group"=>$group));
 
-			if(!$manager){
+            if(!$manager){
 				return null; //No rights
 			}
 
