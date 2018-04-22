@@ -26,9 +26,10 @@ class FilesController extends Controller
 	    $filename = $request->request->get("name", "New");
 	    $content = $request->request->get("content", "");
 	    $model = $request->request->get("model", null);
-	    $isDirectory = $request->request->get("isDirectory", true);
+        $isDetached = $request->request->get("isDetached", false);
+        $isDirectory = $request->request->get("isDirectory", true);
 
-	    $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+	    $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "drive:write");
 
 	    if (count($data["errors"]) == 0) {
 
@@ -36,7 +37,7 @@ class FilesController extends Controller
 			    $data["errors"][] = "notallowed";
 		    } else {
 
-			    $file = $this->get('app.drive.FileSystem')->create($groupId, $parentId, $filename, $content, $isDirectory);
+			    $file = $this->get('app.drive.FileSystem')->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached);
 
 			    if($model){
 				    //IMPORTANT ! Disable local files !!!
@@ -71,7 +72,7 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$fileIds = $request->request->get("fileIds", Array());
 
-		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit");
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
 
 		if ($can) {
 			foreach ($fileIds as $fileId){
@@ -90,7 +91,7 @@ class FilesController extends Controller
 
 		$groupId = $request->request->get("groupId", 0);
 
-		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit");
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
 
 		if ($can) {
 			if (!$this->get('app.drive.FileSystem')->emptyTrash($groupId)) {
@@ -110,7 +111,7 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$fileIds = $request->request->get("fileIds", null);
 
-		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit");
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
 
 		if ($can) {
 
@@ -137,7 +138,7 @@ class FilesController extends Controller
 		$groupId = $request->request->get("groupId", 0);
 		$objectId = $request->request->get("id", 0);
 
-		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:view");
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read");
 
 		if ($can) {
 
@@ -167,7 +168,7 @@ class FilesController extends Controller
 			$isInTrash = true;
 		}
 
-		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit")) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
 
 			if($state == "new") {
 
@@ -224,11 +225,13 @@ class FilesController extends Controller
 
 		$groupId = $request->request->has("groupId") ? $request->request->get("groupId") : 0;
 		$parentId = $request->request->has("parentId") ? $request->request->get("parentId") : 0;
+        $isDetached = $request->request->getBoolean("isDetached", false);
+
 		$file = $_FILES["file"];
 
-		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit")) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
 
-			$file = $this->get('app.drive.FileSystem')->upload($groupId, $parentId, $file, $this->get("app.upload"));
+			$file = $this->get('app.drive.FileSystem')->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached);
 
 			if ($file) {
 				$data["data"] = $file->getAsArray();
@@ -259,7 +262,7 @@ class FilesController extends Controller
 			$download = $request->request->get("download", 1);
 		}
 
-		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:read");
+		$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read");
 
 		if ($can) {
 
@@ -281,7 +284,7 @@ class FilesController extends Controller
 		$fileIds = $request->request->get("fileToMoveIds", 0);
 		$newParentId = $request->request->get("newParentId", 0);
 
-		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "Drive:general:edit");
+		$data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "drive:write");
 
 		if (count($data["errors"]) == 0) {
 
@@ -318,7 +321,7 @@ class FilesController extends Controller
 		$fileId = $request->request->get("fileToCopyId", 0);
 		$newParentId = $request->request->get("newParentId", null);
 
-		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:read")) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
 			if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
 				$data["errors"][] = "notallowed";
 			} else if (!$this->get('app.drive.FileSystem')->copy($fileId, $newParentId)) {
@@ -341,7 +344,7 @@ class FilesController extends Controller
 		$description = $request->request->get("description", "");
 		$labels = $request->request->get("labels", Array());
 
-		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "Drive:general:edit")) {
+		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
 			if ($filename == "") {
 				$data["errors"][] = "emptyname";
 			} else if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())){
@@ -359,7 +362,7 @@ class FilesController extends Controller
 		$groupId = $request->query->get("groupId", 0);
 		$fileId = $request->query->get("fileId", 0);
 
-		if ($this->get('app.workspace_levels')->can($groupId,$this->getUser()->getId(), "Drive:general:edit")) {
+		if ($this->get('app.workspace_levels')->can($groupId,$this->getUser()->getId(), "drive:write")) {
 
 			$data = $this->get('app.drive.FileSystem')->getRawContent($fileId);
 			return new Response($data, 200);

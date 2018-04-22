@@ -7,11 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Event
  *
- * @ORM\Table(name="event",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\EventRepository")
+ * @ORM\Table(name="calendar_event",options={"engine":"MyISAM"})
+ * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\CalendarEventRepository")
  */
 
-class TwakeEvent {
+class CalendarEvent {
 
     /**
      * @var int

@@ -40,14 +40,16 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
             $data = $linkStream->getAsArray();
             $data["id"] = $stream->getId();
 
-			$this->pusher->push($data,
+            $this->pusher->push($data,
 				"discussion_notifications_topic",
 				Array(
 					"user_id" => $linkStream->getUser()->getId(),
 					"workspace_id"=>($stream->getWorkspace()?$stream->getWorkspace()->getId():"")
 				)
 			);
-		}
+            gc_collect_cycles();
+
+        }
 
 		$this->doctrine->flush();
 
@@ -99,7 +101,10 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 						"workspace_id"=>($stream->getWorkspace()?$stream->getWorkspace()->getId():"")
 					)
 				);
-			}
+
+                gc_collect_cycles();
+
+            }
 		}
 
 		if(count($users)==0){

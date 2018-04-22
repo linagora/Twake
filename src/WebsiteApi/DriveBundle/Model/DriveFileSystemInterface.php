@@ -36,7 +36,7 @@ interface DriveFileSystemInterface
 	public function rename($fileOrDirectory, $filename, $description=null, $labels=Array()); // $file : entity or id, $filename : string
 
 	// @create creates a file in a directory with optional content
-	public function create($group, $directory, $filename, $content = "", $isDirectory = false); // $file : entity or id
+	public function create($group, $directory, $filename, $content = "", $isDirectory = false, $detached=false); // $file : entity or id
 
 	// @getRawContent returns content of a file (if less than 5mo)
 	public function getRawContent($file); // $file : entity or id
@@ -91,7 +91,7 @@ interface DriveFileSystemInterface
 	public function getObject($fileOrDirectory);
 
 	//TO document
-	public function upload($group, $directory, $file, $uploader);
+	public function upload($group, $directory, $file, $uploader, $detached=false);
 
 	//TO document
 	public function download($group, $file, $download);

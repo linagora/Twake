@@ -54,18 +54,14 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 		//Compare with action asked
 		$actions = explode(":", $action);
+		$object = $actions[0];
+		$value = intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$actions[1]));
 
-		foreach ($actions as $action){
-			if(!isset($rights[$action]) || $rights[$action] == false){ // If not in tree or false no right
-				return false;
-			}
-			if($rights[$action] == true){ // If true so authorized
-				return true;
-			}
-			$rights = $rights[$action]; // Else continue in the tree
-		}
+		if(!isset($rights[$object]) || intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$rights[$object])) <= $value){
+            return false;
+        }
 
-		return false; //We did not found any true leaf, so false
+        return true;
 
 	}
 
@@ -98,7 +94,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function updateLevel($workspaceId, $levelId, $label, $rights, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "levels:edit")
+			|| $this->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
@@ -110,10 +106,6 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 			if($level->getWorkspace()->getId() != $workspaceId){
 				return false;
-			}
-
-			if($level->getisAdmin()){
-				return false; //Can't edit admin level (all rights)
 			}
 
 			$level->setRights($rights);
@@ -143,7 +135,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function setDefaultLevel($workspaceId, $levelId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "levels:edit")
+			|| $this->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
@@ -181,9 +173,8 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function addLevel($workspaceId, $label, $rights, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "levels:edit")
+			|| $this->can($workspaceId, $currentUserId, "workspace:write")
 		){
-
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspace = $workspaceRepository->find($workspaceId);
 
@@ -206,7 +197,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function removeLevel($workspaceId, $levelId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "levels:edit")
+			|| $this->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
@@ -301,6 +292,41 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 		return false;
 	}
+
+    public function fixLevels($levels, $workspaceApps)
+    {
+        $list = Array();
+        $list["levels"] = Array();
+        foreach ($levels as $level) {
+            $list["levels"][] = $level->getAsArray();
+        }
+        foreach ($list["levels"] as $k => $levelvalue) {
+            //for each level, get the workspace'apps and check differencies between rights and apps
+            if ($levelvalue["rights"] == null) {
+                $levelvalue["rights"] = Array();
+            }
+            $rights_fixed = Array();
+            foreach ($workspaceApps as $app) {
+                if(!array_key_exists($app->getPublicKey(),$levelvalue["rights"]) || $levelvalue["admin"]){
+                    $rights_fixed[$app->getPublicKey()] = "manage";
+                }else{
+                    $rights_fixed[$app->getPublicKey()] = $levelvalue["rights"][$app->getPublicKey()]  ;
+                }
+            }
+            if($levelvalue["admin"]){
+                $rights_fixed["workspace"] = $levelvalue["admin"]?"manage":$levelvalue["rights"]["workspace"];
+            }else {
+                if (!array_key_exists("workspace", $levelvalue["rights"])) {
+                    $rights_fixed["workspace"] = "none";
+                } else {
+                    $rights_fixed["workspace"] = $levelvalue["rights"]["workspace"];
+                }
+            }
+            $list["levels"][$k]["rights"] = $rights_fixed;
+        }
+
+        return $list;
+    }
 
 
 

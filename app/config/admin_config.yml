@@ -61,8 +61,8 @@ easy_admin:
             label: 'Workspaces'
             list:
                 title: "Twake workspaces"
-                fields: ['id', 'isDeleted', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', {property: 'dateAdded', type: 'date'}, 'group', 'members']
-                dql_filter: 'entity.isDeleted = 0'
+                fields: ['id', 'isDeleted', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', {property: 'dateAdded', type: 'date'}, 'group', 'members', 'member_count']
+                dql_filter: 'entity.isDeleted = 0 AND entity.user IS NULL'
             show:
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', {property: 'dateAdded', type: 'date'}, 'group', 'members']
             edit:

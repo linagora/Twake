@@ -4,20 +4,24 @@
 namespace WebsiteApi\CalendarBundle\Services;
 
 use Symfony\Component\Validator\Constraints\DateTime;
-use WebsiteApi\CalendarBundle\Entity\TwakeEvent;
+use WebsiteApi\CalendarBundle\Entity\Event;
 use WebsiteApi\CalendarBundle\Entity\LinkEventUser;
-use WebsiteApi\CalendarBundle\Model\EventCalendarInterface;
+use WebsiteApi\CalendarBundle\Model\CalendarEventsInterface;
 
 /**
  * Manage calendar
  */
-class EventSystem implements EventCalendarInterface
+class CalendarEvents implements CalendarEventsInterface
 {
 
     var $doctrine;
+    var $pusher;
+    var $workspaceLevels;
 
-    public function __construct($doctrine){
+    public function __construct($doctrine, $pusher, $workspaceLevels){
         $this->doctrine = $doctrine;
+        $this->pusher = $pusher;
+        $this->workspaceLevels = $workspaceLevels;
     }
 
     public function createEvent($owner, $title, $startDate, $endDate, $description, $location, $color, $cal,$appid)
@@ -28,7 +32,7 @@ class EventSystem implements EventCalendarInterface
             return false;
         } else {
             $start = new \DateTime($startDate);
-            $event = new TwakeEvent($title,$location, $description, $start, new \DateTime($endDate), $color, $calendar, null);
+            $event = new Event($title,$location, $description, $start, new \DateTime($endDate), $color, $calendar, null);
             $this->doctrine->persist($event);
 
             $link = new LinkEventUser($user, $event);
@@ -63,7 +67,7 @@ class EventSystem implements EventCalendarInterface
         if ($calendar == null) {
             return false;
         } else {
-            $events = $this->doctrine->getRepository("TwakeCalendarBundle:TwakeEvent")->findBy(Array("calendar" => $cal));
+            $events = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->findBy(Array("calendar" => $cal));
             foreach ($events as $event){
                 $result[] = $event->getAsArray();
             }
@@ -72,7 +76,7 @@ class EventSystem implements EventCalendarInterface
     }
 
     public function updateEvent($id,$owner,$title,$startDate,$endDate,$description,$location,$color,$calendar,$appid){
-        $event = $this->doctrine->getRepository("TwakeCalendarBundle:TwakeEvent")->find($id);
+        $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($id);
         if($event != null){
             if($owner!=null){
                 $user = $this->doctrine->getRepository("TwakeUsersBundle:user")->find($owner);

@@ -12,11 +12,13 @@ class Groups implements GroupsInterface
 
 	private $doctrine;
 	private $gms;
+    private $market;
 
-	public function __construct($doctrine, $group_managers_service)
+	public function __construct($doctrine, $group_managers_service, $market_service)
 	{
 		$this->doctrine = $doctrine;
 		$this->gms = $group_managers_service;
+		$this->market = $market_service;
 	}
 
 	public function create($userId, $name, $uniquename, $planId)
@@ -47,10 +49,7 @@ class Groups implements GroupsInterface
 		$this->doctrine->persist($group);
 		$this->doctrine->flush();
 
-		$manager = new GroupManager($group, $user);
-
-		$this->doctrine->persist($manager);
-		$this->doctrine->flush();
+		$this->gms->addManager($group->getId(), $userId, 2);
 
 		$this->init($group);
 
@@ -171,11 +170,7 @@ class Groups implements GroupsInterface
             return false;
         }else{
             foreach ( $listApps as $app ){
-                $groupApp = new GroupApp($group, $app);
-                if($app->getDefault()) {
-                    $groupApp->setWorkspaceDefault(true);
-                }
-                $this->doctrine->persist($groupApp);
+                $this->market->addApplication($group->getId(),$app->getId(),null,true);
             }
             $this->doctrine->flush();
             return true;

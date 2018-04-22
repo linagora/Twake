@@ -24,7 +24,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
 		$this->gas = $groups_apps_service;
 	}
 
-    public function getApps($workspaceId, $currentUserId = null, $onlymessageModule = false)
+    public function getApps($workspaceId, $currentUserId = null, $onlymessageModule = false , $onlyEditableRights = false)
     {
 
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -42,7 +42,14 @@ class WorkspacesApps implements WorkspacesAppsInterface
             ) {
                 //Private ws apps
                 $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-                return $appRepository->findBy(Array("default"=>true));
+                if ($onlyEditableRights){
+                    $apps = $appRepository->findBy(Array("default"=>true, "editableRights"=>true));
+                }elseif ($onlymessageModule){
+                    $apps = $appRepository->findBy(Array("default"=>true, "messageModule"=>true));
+                }else{
+                    $apps = $appRepository->findBy(Array("default"=>true));
+                }
+                return $apps;
             }
 
             //Group apps
@@ -52,7 +59,11 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $apps = array();
             foreach ( $workspaceapps as $wa ){
                 $app = $wa->getGroupapp()->getApp();
-                if ($onlymessageModule){
+                if ($onlyEditableRights){
+                    if ($app->getEditableRights()){
+                        $apps[] = $app;
+                    }
+                }elseif ($onlymessageModule){
                     if($app->getMessageModule()) {
                         $apps[] = $app;
                     }
@@ -111,7 +122,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
         }
 
         if($currentUserId==null
-            || $this->wls->can($workspaceId, $currentUserId, "workspace:edit")) {
+            || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
 
             if ($workspace->getUser() != null
                 && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
@@ -160,7 +171,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
         }
 
         if($currentUserId==null
-            || $this->wls->can($workspaceId, $currentUserId, "workspace:edit")) {
+            || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
 
             if ($workspace->getUser() != null
                 && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)

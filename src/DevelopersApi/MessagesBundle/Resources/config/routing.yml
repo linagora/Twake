@@ -1,0 +1,3 @@
+developers_api_messages_new:
+    path:     /new
+    defaults: { _controller: DevelopersApiMessagesBundle:Default:new }

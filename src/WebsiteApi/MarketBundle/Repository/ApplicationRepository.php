@@ -10,4 +10,18 @@ namespace WebsiteApi\MarketBundle\Repository;
  */
 class ApplicationRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    public function findApplicationByName($name)
+    {
+        // automatically knows to select Products
+        // the "p" is an alias you'll use in the rest of the query
+        $qb = $this->createQueryBuilder('p')
+            ->andWhere('p.name like :name')
+            ->andWhere('p.enabled = true')
+            ->setParameter('name', '%'.$name.'%')
+            ->orderBy('p.name', 'ASC')
+            ->getQuery();
+
+        return $qb->execute();
+    }
 }

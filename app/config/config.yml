@@ -8,6 +8,7 @@ imports:
     - { resource: "@TwakeUsersBundle/Resources/config/services.yml" }
     - { resource: "@TwakeCoreBundle/Resources/config/services.yml" }
     - { resource: "@TwakeDiscussionBundle/Resources/config/services.yml" }
+    - { resource: "@TwakeMarketBundle/Resources/config/services.yml" }
     - { resource: "@AdministrationAuthenticationBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed
@@ -115,18 +116,6 @@ gos_web_socket:
             protocol: tcp
 
 nelmio_api_doc: ~
-
-redjan_ym_fcm:
-  firebase_api_key: "AAAAcp1VSak:APA91bFlHysMHpTk5id2Xb1yvF5DTyU46afjD2dYQgoFtH_angryy0QSQRzKvv29gqSb1Js6ze-LebAymKOluAEpIBH7xuQ0k9yaZcKYZ6gn1pBVGUv7YMaDZ_Tl7mC3JD9z9tIgkFAd"
-
-rms_push_notifications:
-  ios:
-      timeout: 60 # Seconds to wait for connection timeout, default is 60
-      sandbox: false
-      pem: 'Resources/apns_prod.pem' # can be absolute or relative path (from app directory)
-
-krlove_async_service_call:
-  console_path: bin/console
 
 cmen_google_charts:
     version: "current"

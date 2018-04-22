@@ -1,16 +1,21 @@
 services:
 
-    app.calendar.CalendarSystem:
-        class: WebsiteApi\CalendarBundle\Services\CalendarSystem
-        arguments: ["@doctrine.orm.entity_manager"]
+    app.calendar_events:
+        class: WebsiteApi\CalendarBundle\Services\CalendarEvents
+        arguments: ["@doctrine.orm.entity_manager", '@gos_web_socket.zmq.pusher', '@app.workspace_levels']
 
-    app.event.EventSystem:
-        class: WebsiteApi\CalendarBundle\Services\EventSystem
-        arguments: ["@doctrine.orm.entity_manager"]
+    app.calendars:
+        class: WebsiteApi\CalendarBundle\Services\Calendars
+        arguments: ["@doctrine.orm.entity_manager", '@gos_web_socket.zmq.pusher', '@app.workspace_levels']
 
-
-    event.topic:
-        class: WebsiteApi\CalendarBundle\Topic\EventTopic
+    calendar.topic:
+        class: WebsiteApi\CalendarBundle\Topic\CalendarTopic
         tags:
             - { name: gos_web_socket.topic }
-        arguments: [ "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications","@app.event.EventSystem"]
+        arguments: [ "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications","@app.calendar_events"]
+
+    calendar_workspace.topic:
+        class: WebsiteApi\CalendarBundle\Topic\CalendarWorkspaceTopic
+        tags:
+            - { name: gos_web_socket.topic }
+        arguments: []

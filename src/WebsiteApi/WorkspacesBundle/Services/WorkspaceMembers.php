@@ -27,7 +27,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 	public function changeLevel($workspaceId, $userId, $levelId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "members:edit")
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:write")
 		){
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -62,7 +62,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 	public function addMemberByUsername($workspaceId, $username, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "members:edit")
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:write")
 		){
 			$username = $this->string_cleaner->simplifyUsername($username);
 
@@ -80,7 +80,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 	public function addMemberByMail($workspaceId, $mail, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "members:edit")
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			$mail = $this->string_cleaner->simplifyMail($mail);
@@ -131,7 +131,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 	public function removeMemberByMail($workspaceId, $mail, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "members:edit")
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			$mail = $this->string_cleaner->simplifyMail($mail);
@@ -180,7 +180,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 	public function addMember($workspaceId, $userId, $levelId = null, $currentUserId = null)
 	{
-		if($currentUserId == null || $this->wls->can($workspaceId, $currentUserId, "members:edit")){
+		if($currentUserId == null || $this->wls->can($workspaceId, $currentUserId, "workspace:write")){
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 
@@ -238,7 +238,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 	public function removeMember($workspaceId, $userId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "members:edit")
+			|| $this->wls->can($workspaceId, $currentUserId, "workspace:write")
 		){
 
 			if($userId == $currentUserId){
@@ -307,7 +307,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 	public function getMembers($workspaceId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "members:view")
+			|| $this->wls->can($workspaceId, $currentUserId, "")
 		){
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
@@ -337,7 +337,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 	public function getPendingMembers($workspaceId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->wls->can($workspaceId, $currentUserId, "members:view")
+			|| $this->wls->can($workspaceId, $currentUserId, "")
 		){
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspaceUserByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");

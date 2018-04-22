@@ -16,10 +16,12 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	var $doctrine;
 	var $root;
+	var $parameter_drive_salt;
 
-	public function __construct($doctrine, $rootDirectory){
+	public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt){
 		$this->doctrine = $doctrine;
 		$this->root = $rootDirectory;
+		$this->parameter_drive_salt = $parameter_drive_salt;
 	}
 
 	private function convertToEntity($var, $repository)
@@ -81,7 +83,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 		if ($file == null) {
 			return true;
 		}
-		return $file->getGroup() == $group;
+		return $file->getDetachedFile() || $file->getGroup() == $group;
 	}
 
 
@@ -318,17 +320,17 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	}
 
-	public function create($group, $directory, $filename, $content = "", $isDirectory = false)
+	public function create($group, $directory, $filename, $content = "", $isDirectory = false, $detached_file=false)
 	{
 
-		if ($directory == 0) {
+		if ($directory == 0 || $detached_file) {
 			$directory = null;
 		}
 
 		$directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
 		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
-		if ($group == null || $this->getFreeSpace($group) <= 0) {
+		if (!$detached_file && ($group == null || $this->getFreeSpace($group) <= 0)) {
 			return false;
 		}
 
@@ -338,6 +340,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 			$filename,
 			$isDirectory
 		);
+
+        $newFile->setDetachedFile($detached_file);
 
 		$newFile->setLastModified();
 
@@ -363,8 +367,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 		$newFile->setSize($size);
 
-		$this->updateSize($directory, $size);
-		$this->improveName($newFile);
+		if(!$detached_file) {
+            $this->updateSize($directory, $size);
+            $this->improveName($newFile);
+        }
 
 		$this->doctrine->persist($newFile);
 		$this->doctrine->flush();
@@ -650,10 +656,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 		return $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
 	}
 
-	public function upload($group, $directory, $file, $uploader)
+	public function upload($group, $directory, $file, $uploader, $detached=false)
 	{
 
-		$newFile = $this->create($group, $directory, $file["name"], "", false);
+		$newFile = $this->create($group, $directory, $file["name"], "", false, $detached);
 		if (!$file) {
 			return false;
 		}
@@ -862,14 +868,16 @@ class DriveFileSystem implements DriveFileSystemInterface
 			$mcrypt = new MCryptAES256Implementation();
 			$lib = new AESCryptFileLib($mcrypt);
 		}
-		if($mode=="OpenSSL") {
-			$lib = new OpenSSLCryptLib();
-		}
+        if($mode=="OpenSSL") {
+            $lib = new OpenSSLCryptLib();
+        }
+        if($mode=="OpenSSL-2") {
+            $lib = new OpenSSLCryptLib();
+            $key = $mode.$this->parameter_drive_salt.$key;
+        }
 
 		$pathTemp = $path . ".tmp";
 		rename($path, $pathTemp);
-
-		error_log($key);
 
 		$lib->encryptFile($pathTemp, $key, $path);
 
@@ -886,6 +894,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 		if($mode=="OpenSSL") {
 			$lib = new OpenSSLCryptLib();
 		}
+        if($mode=="OpenSSL-2") {
+            $lib = new OpenSSLCryptLib();
+            $key = $mode.$this->parameter_drive_salt.$key;
+        }
 
 		$tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
 		$this->verifyPath($tmpPath);

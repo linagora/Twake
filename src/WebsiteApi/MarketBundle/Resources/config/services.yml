@@ -2,3 +2,7 @@ services:
 #    website_api_market.example:
 #        class: WebsiteApi\MarketBundle\Example
 #        arguments: ["@service_id", "plain_value", "%parameter%"]
+
+    website_api_market.applications:
+        class: WebsiteApi\MarketBundle\Services\MarketApplication
+        arguments: ["@doctrine.orm.entity_manager", "@app.group_managers"]

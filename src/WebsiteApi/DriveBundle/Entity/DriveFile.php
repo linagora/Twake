@@ -88,10 +88,15 @@ class DriveFile
 	 */
 	private $size;
 
-	/**
-	 * @ORM\Column(type="string", length=2048)
-	 */
-	private $cache;
+    /**
+     * @ORM\Column(type="string", length=2048)
+     */
+    private $cache;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $detached_file = false;
 
 
 	public function __construct($group, $parent, $name, $isDirectory = false)
@@ -213,6 +218,9 @@ class DriveFile
 		if($this->getLastVersion() == null){
 			return null;
 		}
+		if($this->getDetachedFile()){
+            return "detached/".$this->group->getId() . "/" . $this->getLastVersion()->getRealName();
+        }
 		return $this->group->getId() . "/" . $this->getLastVersion()->getRealName();
 	}
 
@@ -323,6 +331,22 @@ class DriveFile
 		$this->cache = json_encode($val);
 	}
 
+    /**
+     * @return mixed
+     */
+    public function getDetachedFile()
+    {
+        return $this->detached_file;
+    }
+
+    /**
+     * @param mixed $detached_file
+     */
+    public function setDetachedFile($detached_file)
+    {
+        $this->detached_file = $detached_file;
+    }
+
 	public function getAsArray()
 	{
 		return Array(
@@ -336,6 +360,7 @@ class DriveFile
 			'isDirectory' => $this->getIsDirectory(),
 			"extension" => $this->getExtension(),
 			"groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
+            "detached" => $this->getDetachedFile(),
 			"cache" => $this->getCache()
 		);
 	}

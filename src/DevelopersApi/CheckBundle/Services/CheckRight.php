@@ -51,9 +51,11 @@ class CheckRight
 			return Array("errors" => [1012]);
 		}
 
-		if (isset($requestGlobal["groupId"])) {
-			$workspaceId = $requestGlobal["groupId"];
-		} else {
+		if (isset($requestGlobal["workspaceId"])) {
+			$workspaceId = $requestGlobal["workspaceId"];
+		} else if(isset($requestGlobal["groupId"])){
+            $workspaceId = $requestGlobal["groupId"];
+        } else {
 			return Array("errors" => [1014]);
 		}
 

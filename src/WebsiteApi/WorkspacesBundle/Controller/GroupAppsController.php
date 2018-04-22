@@ -27,7 +27,7 @@ class GroupAppsController extends Controller
 
         $apps_obj = $this->get("app.group_apps")->getApps($groupId);
 
-        if(!$apps_obj){
+        if(!is_array($apps_obj)){
             $response["errors"][] = "notallowed";
         }else{
             //Apps
@@ -51,9 +51,26 @@ class GroupAppsController extends Controller
         $appId = $request->request->getInt("appId");
         $boolean = $request->request->getInt("boolean");
 
-        $apps_obj = $this->get("app.group_apps")->setWorkspaceDefault($groupId,$appId,$boolean);
+        $apps_obj = $this->get("app.group_apps")->setWorkspaceDefault($groupId,$appId,$boolean,$this->getUser()->getId());
 
-        if(!$apps_obj){
+        if(!is_array($apps_obj)){
+            $response["errors"][] = "notallowed";
+        }else{
+            $response["data"][] = true;
+        }
+
+        return new JsonResponse($response);
+    }
+
+    public function removeApplicationAction(Request $request){
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $groupId = $request->request->getInt("groupId");
+        $appId = $request->request->getInt("appId");
+
+        $apps_obj = $this->get("app.group_apps")->removeApplication($groupId,$appId,$this->getUser()->getId());
+
+        if(!is_array($apps_obj)){
             $response["errors"][] = "notallowed";
         }else{
             $response["data"][] = true;

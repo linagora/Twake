@@ -26,10 +26,15 @@ class Application
 	 */
 	private $name;
 
-	/**
-	 * @ORM\Column(type="boolean")
-	 */
-	private $default;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $default;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $order;
 
 	/**
 	 * @ORM\Column(type="string", length=6)
@@ -93,12 +98,12 @@ class Application
 	private $score = 0;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
+     * @ORM\Column(type="string", length=512)
 	 */
 	protected $thumbnail;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
+     * @ORM\Column(type="string", length=512)
 	 */
 	protected $cover;
 
@@ -111,6 +116,16 @@ class Application
 	 * @ORM\Column(name="message_module" , type="boolean")
 	 */
 	protected $messageModule;
+
+    /**
+     * @ORM\Column(type="string", length=512)
+     */
+    private $messageModuleUrl = "";
+
+    /**
+     * @ORM\Column(name="editable_rights" , type="boolean")
+     */
+    protected $editableRights;
 
 	/**
 	 * @ORM\Column(type="date")
@@ -147,8 +162,18 @@ class Application
 	 */
 	protected $applicationRights;
 
+    /**
+     * @ORM\Column(name="installCount", type="integer")
+     */
+    private $installCount = 0;
 
-	public function __construct()
+    /**
+     * @ORM\Column(name="cgu", type="text")
+     */
+    private $cgu ;
+
+
+    public function __construct()
 	{
 		$this->date = new \DateTime();
 		$this->privateKey = Application::generatePrivateKey();
@@ -304,7 +329,7 @@ class Application
 		if ($this->getThumbnail() == null) {
 			return "";
 		}
-		return "background-image: url('" . "" . $this->getThumbnail()->getPublicURL(2) . "');";
+		return "background-image: url('" . "" . $this->getThumbnail() . "');";
 	}
 
 	public function getCssCover()
@@ -312,7 +337,7 @@ class Application
 		if ($this->getCover() == null) {
 			return "";
 		}
-		return "background-image: url('" . "" . $this->getCover()->getPublicURL(2) . "');";
+		return "background-image: url('" . "" . $this->getCover() . "');";
 	}
 
 	public function getUrlThumbnail()
@@ -320,7 +345,7 @@ class Application
 		if ($this->getThumbnail() == null) {
 			return "";
 		}
-		return "" . $this->getThumbnail()->getPublicURL(2);
+		return "" . $this->getThumbnail();
 	}
 
 	public function getUrlCover()
@@ -328,7 +353,7 @@ class Application
 		if ($this->getCover() == null) {
 			return "";
 		}
-		return "" . $this->getCover()->getPublicURL(2);
+		return "" . $this->getCover();
 	}
 
 	public function getId()
@@ -355,6 +380,16 @@ class Application
 	{
 		$this->description = $descr;
 	}
+
+    public function getCgu()
+    {
+        return $this->cgu;
+    }
+
+    public function setCgu($cgu)
+    {
+        $this->cgu = $cgu;
+    }
 
 	public function getShortDescription()
 	{
@@ -411,6 +446,20 @@ class Application
 		return $this->voteCount;
 	}
 
+    public function getInstallCount()
+    {
+        return $this->installCount;
+    }
+
+    public function increaseInstall()
+    {
+        return $this->installCount = $this->installCount+1;
+    }
+
+    public function decreaseInstall()
+    {
+        return $this->installCount = $this->installCount-1;
+    }
 	public function getThumbnail()
 	{
 		return $this->thumbnail;
@@ -566,6 +615,54 @@ class Application
         $this->messageModule = $messageModule;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getMessageModuleUrl()
+    {
+        return $this->messageModuleUrl;
+    }
+
+    /**
+     * @param mixed $messageModulUrl
+     */
+    public function setMessageModuleUrl($messageModuleUrl)
+    {
+        $this->messageModuleUrl = $messageModuleUrl;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEditableRights()
+    {
+        return $this->editableRights;
+    }
+
+    /**
+     * @param mixed $editableRights
+     */
+    public function setEditableRights($editableRights)
+    {
+        $this->editableRights = $editableRights;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param mixed $order
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+    }
+
 	public function getAsArray()
 	{
 		return Array(
@@ -573,6 +670,7 @@ class Application
 			"name" => $this->name,
 			"score" => $this->score,
 			"nbvote" => $this->voteCount,
+            "nbInstall" => $this->installCount,
 			"nbUsers" => $this->userCount,
 			"description" => $this->description,
 			"shortDescription" => $this->shortDescription,
@@ -584,14 +682,21 @@ class Application
 			"screenshots" => $this->getScreenshot(),
 			"url" => $this->getUrl(),
 			"filestypes" => $this->getFilesTypes(),
+			"userRights" => $this->getUserRights(),
+            "applicationRights" => $this->getApplicationRights(),
 			"internal" => ((!(substr( $this->getUrl(), 0, 4 ) === "http"))?true:false),
 			"color" => $this->getColor(),
 			"canCreateFile" => $this->getCanCreateFile(),
 			"createFileData" => $this->getCreateFileData(),
 			"isCapable" => $this->getisCapable(),
 			"default" => $this->getDefault(),
-            "messageModule" => $this->getMessageModule()
-		);
+            "order" => $this->getOrder(),
+            "messageModule" => $this->getMessageModule(),
+            "messageModuleUrl" => $this->getMessageModuleUrl(),
+            "publicKey" => $this->getPublicKey(),
+            "cgu"=> $this->getCgu(),
+            "editableRights" => $this->getEditableRights()
+        );
 	}
 
 	public function getAsSimpleArray()
@@ -602,6 +707,7 @@ class Application
 			"cssthumbnail" => $this->getCssThumbnail(),
 			"thumbnail" => $this->getUrlThumbnail(),
 			"url" => $this->getUrl(),
+            "publicKey" => $this->getPublicKey(),
 			"filestypes" => $this->getFilesTypes()
 		);
 	}

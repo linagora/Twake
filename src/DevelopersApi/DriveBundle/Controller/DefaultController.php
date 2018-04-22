@@ -21,7 +21,7 @@ class DefaultController extends Controller
 			return new JsonResponse($request["errors"]);
 		}
 
-		$groupId = $request["workspace"]->getId();
+        $workspaceId = $request["workspace"]->getId();
 		$fileId = isset($requestData["fileId"]) ? $requestData["fileId"] : 0;
 
 		$data = Array(
@@ -33,7 +33,7 @@ class DefaultController extends Controller
 
 		if ($can) {
 
-			$this->get('app.drive.FileSystem')->download($groupId, $fileId, false);
+			$this->get('app.drive.FileSystem')->download($workspaceId, $fileId, false);
 
 		} else {
 
