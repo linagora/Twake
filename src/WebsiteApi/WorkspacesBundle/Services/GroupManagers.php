@@ -2,7 +2,7 @@
 
 namespace WebsiteApi\WorkspacesBundle\Services;
 
-use WebsiteApi\WorkspacesBundle\Entity\GroupManager;
+use WebsiteApi\WorkspacesBundle\Entity\GroupUser;
 use WebsiteApi\WorkspacesBundle\Model\GroupManagersInterface;
 
 class GroupManagers implements GroupManagersInterface
@@ -12,19 +12,20 @@ class GroupManagers implements GroupManagersInterface
 	private $twake_mailer;
 
 	var $privileges = Array(
-		0 => Array( "VIEW_USERS",
+	    0 => Array(),
+		1 => Array( "VIEW_USERS",
 					"VIEW_WORKSPACES",
 					"VIEW_MANAGERS",
 					"VIEW_APPS",
 					"VIEW_PRICINGS"),
-		1 => Array( "VIEW_USERS",
+		2 => Array( "VIEW_USERS",
 					"VIEW_WORKSPACES",
 					"VIEW_MANAGERS",
 					"VIEW_APPS",
 					"VIEW_PRICINGS",
 					"MANAGE_USERS",
 					"MANAGE_WORKSPACES"),
-		2 => Array( "VIEW_USERS",
+		3 => Array( "VIEW_USERS",
 					"VIEW_WORKSPACES",
 					"VIEW_MANAGERS",
 					"VIEW_APPS",
@@ -44,7 +45,6 @@ class GroupManagers implements GroupManagersInterface
 	}
 
 	public function hasPrivileges($level, $privilege){
-	    return 2; //TODO : REMOVE IT WHEN GROUPS MANAGERS MANAGEMENT IS DONE
 		$privileges = $this->getPrivileges($level);
 		if($privileges == null){
 			return false;
@@ -63,7 +63,7 @@ class GroupManagers implements GroupManagersInterface
 	{
 
 		if($userId == null){
-			return 2; // If userId == null this is the system (all rights)
+			return 3; // If userId == null this is the system (all rights)
 		}
 
 		/*
@@ -82,14 +82,16 @@ class GroupManagers implements GroupManagersInterface
 
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 			$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-			$groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupManager");
+			$groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
 			$user = $userRepository->find($userId);
 			$group = $groupRepository->find($groupId);
 			$manager = $groupManagerRepository->findOneBy(Array("user"=>$user, "group"=>$group));
 
             if(!$manager){
-				return null; //No rights
+                var_dump($userId);
+                var_dump($groupId);
+                return null; //No rights
 			}
 
 			return $manager->getLevel();
@@ -104,7 +106,7 @@ class GroupManagers implements GroupManagersInterface
 	{
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-		$groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupManager");
+		$groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
 		if($currentUserId == null
 			|| $this->hasPrivileges(
@@ -146,7 +148,7 @@ class GroupManagers implements GroupManagersInterface
 			$group = $groupRepository->find($groupId);
 
 			$this->removeManager($groupId, $userId);
-			$manager = new GroupManager($group, $user);
+			$manager = new GroupUser($group, $user);
 
 			$manager->setLevel($level);
 
@@ -166,7 +168,7 @@ class GroupManagers implements GroupManagersInterface
 	{
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-		$groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupManager");
+		$groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
 		if($currentUserId==$userId){
 			return false; //Cant remove myself
@@ -201,7 +203,7 @@ class GroupManagers implements GroupManagersInterface
 	{
 
 		$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-		$groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupManager");
+		$groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
 		if($currentUserId == null
 			|| $this->hasPrivileges(
@@ -232,7 +234,7 @@ class GroupManagers implements GroupManagersInterface
 	{
 
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-		$groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupManager");
+		$groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
 		$user = $userRepository->find($userId);
 		$groupsLinks = $groupManagerRepository->findBy(Array("user" => $user));
@@ -246,7 +248,27 @@ class GroupManagers implements GroupManagersInterface
 		}
 
 		return $groups;
-
 	}
+
+    public function init($group){
+        $workspaces = $group->getWorkspaces();
+        $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+
+        foreach ( $workspaces as $workspace ){
+            $members = $workspace->getMembers();
+
+            foreach ($members as $member){
+                $userEntity = $member->getUser();
+                $manager = $groupManagerRepository->findBy(Array("user" => $userEntity, "group" => $group));
+
+                if ($manager == null){ //si user n'est pas repertorié on l'ajoute au rang super-admin
+                    $newManager = new GroupUser($group,$userEntity);
+                    $newManager->setLevel(3);
+                    $this->doctrine->persist($newManager);
+                    $this->doctrine->flush();
+                }
+            }
+        }
+    }
 
 }

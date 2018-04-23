@@ -105,6 +105,14 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
       }
       error_log("Init workspaces app");
 
+      /**
+       * Initialisation des groups managers
+       */
+      foreach ( $groups as $g ){
+          $services->get("app.group_managers")->init($g);
+      }
+      error_log("Init group managers");
+
 
   }
 }

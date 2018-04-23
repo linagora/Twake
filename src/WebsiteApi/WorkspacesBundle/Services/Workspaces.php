@@ -18,8 +18,9 @@ class Workspaces implements WorkspacesInterface
 	private $gas;
 	private $ws;
 	private $doctrine;
+	private $pricing;
 
-	public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats)
+	public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats,$priceService)
 	{
 		$this->doctrine = $doctrine;
 		$this->wls = $workspaces_levels_service;
@@ -27,6 +28,7 @@ class Workspaces implements WorkspacesInterface
 		$this->gms = $groups_managers_service;
 		$this->gas = $groups_apps_service;
 		$this->ws = $workspace_stats;
+		$this->pricing = $priceService;
 	}
 
 	public function getPrivate($userId = null)
@@ -65,10 +67,17 @@ class Workspaces implements WorkspacesInterface
 			$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
 			$group = $groupRepository->find($groupId);
 
+            $limit_obj = $this->pricing->getLimitations($groupId)->getAsArray();
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $nbWorkspace = $workspaceRepository->findBy(Array("group"=>$group,"isDeleted"=>0));
+
+            if(count($nbWorkspace) >= $limit_obj["limitation"]["maxWorkspace"]){
+                return false;
+            }
 			$workspace->setGroup($group);
 		}
 
-		$this->doctrine->persist($workspace);
+        $this->doctrine->persist($workspace);
 		$this->doctrine->flush();
 
 		// Create stream

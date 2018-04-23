@@ -44,6 +44,10 @@ class PricingPlan
 	 */
 	private $groups;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    protected $limitation;
 
 
 	public function __construct($name) {
@@ -110,6 +114,28 @@ class PricingPlan
 		return $this->groups;
 	}
 
+    public function setLimitation($limit)
+    {
+        $this->limitation = json_encode($limit);
+    }
 
+    public function getLimitation()
+    {
+        if($this->limitation == null){
+            return [];
+        }
+        return json_decode($this->limitation, 1);
+    }
+
+    public function getAsArray(){
+        return Array(
+            "id"=> $this->getId(),
+            "label" => $this->getLabel(),
+            "month_price" => $this->getMonthPrice(),
+            "year_price" => $this->getYearPrice(),
+            "groups" => $this->getGroups(),
+            "limitation" => $this->getLimitation()
+        );
+    }
 
 }

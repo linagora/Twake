@@ -46,6 +46,8 @@ twake_workspaces_disable_app:
     path:     /apps/disable
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:disableApp }
 
+# Groups
+
 twake_groups_get_apps:
     path:     /group/apps/get
     defaults: { _controller: TwakeWorkspacesBundle:GroupApps:getApps }
@@ -57,6 +59,22 @@ twake_groups_set_workspace_default:
 twake_groups_remove_application:
     path:     /group/remove/application
     defaults: { _controller: TwakeWorkspacesBundle:GroupApps:removeApplication }
+
+twake_groups_manager_get:
+    path:     /group/manager/get
+    defaults: { _controller: TwakeWorkspacesBundle:GroupManager:getManagers }
+
+twake_groups_manager_add:
+    path:     /group/manager/add
+    defaults: { _controller: TwakeWorkspacesBundle:GroupManager:addManagers }
+
+twake_groups_manager_remove:
+    path:     /group/manager/remove
+    defaults: { _controller: TwakeWorkspacesBundle:GroupManager:removeManagers }
+
+twake_groups_manager_edit:
+    path:     /group/manager/edit
+    defaults: { _controller: TwakeWorkspacesBundle:GroupManager:editManagers }
 
 # Edit members
 
