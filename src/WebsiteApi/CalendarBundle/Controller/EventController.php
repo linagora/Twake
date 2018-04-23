@@ -9,66 +9,119 @@ use Symfony\Component\HttpFoundation\Request;
 
 class EventController extends Controller
 {
-    public function getEventsByCalendarAction(Request $request)
+
+
+    public function getAction(Request $request)
     {
         $data = Array(
             'errors' => Array(),
-            'data' => Array('events' => Array())
+            'data' => Array()
         );
 
-        $manager = $this->getDoctrine()->getManager();
-        $securityContext = $this->get('security.authorization_checker');
+        $useMine = $request->request->get("mine");
+        $workspaceId = $request->request->get("workspaceId");
+        $to = $request->request->get("to");
+        $from = $request->request->getInt("from", 0);
+        $calendarsId = $request->request->getInt("calendarIds");
 
-        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            $data['errors'][] = "notconnected";
+        if($useMine) {
+            $events = $this->get("app.calendar_events")->getEventsForUser($workspaceId, $from, $to, $this->getUser()->getId());
+        }else{
+            $events = $this->get("app.calendar_events")->getEventsForWorkspace($workspaceId, $from, $to, $calendarsId, $this->getUser()->getId());
         }
-        else {
-            $data['data']['events'] = $this->get('app.event.EventSystem')->getEventsByCalendar($request->request->get("cid"));
+
+        if($events){
+            $events_formated = Array();
+            foreach ($events as $event){
+                $events_formated = $event->getAsArray();
+            }
+            $data["data"] = $events_formated;
         }
+
         return new JsonResponse($data);
     }
-    public function getEventsByOwnerAction(Request $request)
+
+    public function createAction(Request $request)
     {
         $data = Array(
             'errors' => Array(),
-            'data' => Array('events' => Array())
+            'data' => Array()
         );
 
-        $manager = $this->getDoctrine()->getManager();
-        $securityContext = $this->get('security.authorization_checker');
+        $workspaceId = $request->request->get("workspaceId");
+        $event = $request->request->get("event");
+        $calendarId = $request->request->get("calendarId");
 
-        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            $data['errors'][] = "notconnected";
-        }
-        else {
-            $data['data']['events'] = $this->get('app.event.EventSystem')->getEventsByOwner($request->request->get("uid"));
-        }
+        $data['data'] = $this->get("app.calendar_events")->createEvent($workspaceId, $calendarId, $event, $this->getUser()->getId());
+
         return new JsonResponse($data);
     }
-    public function createEventAction(Request $request)
+
+    public function updateAction(Request $request)
     {
         $data = Array(
-            'errors' => Array()
+            'errors' => Array(),
+            'data' => Array()
         );
-        $manager = $this->getDoctrine()->getManager();
-        $securityContext = $this->get('security.authorization_checker');
 
-        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            $data['errors'][] = "notconnected";
-        } else {
-                $this->get('app.event.EventSystem')->createEvent($request->request->get("uid"),$request->request->get("title"),$request->request->get("sDate"),$request->request->get("eDate"),$request->request->get("description"),$request->request->get("location"),$request->request->get("color"),$request->request->get("cid"),$request->request-get('appid'));
-        }
+        $workspaceId = $request->request->get("workspaceId");
+        $eventId = $request->request->get("eventId");
+        $event = $request->request->get("event");
+        $calendarId = $request->request->get("calendarId");
+
+        $data['data'] = $this->get("app.calendar_events")->updateEvent($workspaceId, $calendarId, $eventId, $event, $this->getUser()->getId());
+
         return new JsonResponse($data);
     }
 
-
-    public function updateEventAction(Request $request)
+    public function removeAction(Request $request)
     {
         $data = Array(
-            'errors' => Array()
+            'errors' => Array(),
+            'data' => Array()
         );
-        $retour = $this->get('app.event.EventSystem')->updateEvent($request->request->get("id"),$request->request->get("owner"),$request->request->get("title"),$request->request->get("startDate"),$request->request->get("endDate"),$request->request->get("description"),$request->request->get("location"),$request->request->get("color"),$request->request->get("cid"),$request->request->get('appid'));
-        $data["errors"] = !$retour;
+
+        $workspaceId = $request->request->get("workspaceId");
+        $eventId = $request->request->get("eventId");
+        $calendarId = $request->request->get("calendarId");
+
+        $data['data'] = $this->get("app.calendar_events")->removeEvent($workspaceId, $calendarId, $eventId, $this->getUser()->getId());
+
         return new JsonResponse($data);
     }
+
+    public function addUsersAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId");
+        $eventId = $request->request->get("eventId");
+        $calendarId = $request->request->get("calendarId");
+        $usersId = $request->request->get("usersId");
+
+        $data['data'] = $this->get("app.calendar_events")->addUsers($workspaceId, $calendarId, $eventId, $usersId, $this->getUser()->getId());
+
+        return new JsonResponse($data);
+    }
+
+    public function removeUsersAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId");
+        $eventId = $request->request->get("eventId");
+        $calendarId = $request->request->get("calendarId");
+        $usersId = $request->request->get("usersId");
+
+        $data['data'] = $this->get("app.calendar_events")->removeUsers($workspaceId, $calendarId, $eventId, $usersId, $this->getUser()->getId());
+
+        return new JsonResponse($data);
+    }
+
 }
