@@ -36,6 +36,16 @@ class LinkEventUser{
 
     private $event;
 
+    /**
+     * @ORM\Column(name="from", type="integer")
+     */
+    private $from;
+
+    /**
+     * @ORM\Column(name="to", type="integer")
+     */
+    private $to;
+
     public  function __construct($user,$event)
     {
         $this->setUser($user);
@@ -88,6 +98,38 @@ class LinkEventUser{
     public function setEvent($event)
     {
         $this->event = $event;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFrom()
+    {
+        return $this->from;
+    }
+
+    /**
+     * @param mixed $from
+     */
+    public function setFrom($from)
+    {
+        $this->from = $from;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTo()
+    {
+        return $this->to;
+    }
+
+    /**
+     * @param mixed $to
+     */
+    public function setTo($to)
+    {
+        $this->to = $to;
     }
 
 

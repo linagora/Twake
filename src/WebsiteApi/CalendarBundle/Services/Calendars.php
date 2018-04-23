@@ -88,6 +88,36 @@ class Calendars implements CalendarsInterface
         }
     }
 
+    public function updateCalendar($workspaceId, $calendarId, $title, $color, $currentUserId=null)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
+            return null;
+        }
+
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+
+        if(!$calendarLink || !$calendarLink->getCalendarRight()){
+            return null;
+        }
+
+        $calendar->setTitle($title);
+        $calendar->setColor($color);
+        $this->doctrine->persist($calendar);
+        $this->doctrine->flush();
+
+        $data = Array(
+            "type" => "update",
+            "calendar" => $calendar->getAsArray()
+        );
+        $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$workspaceId));
+
+        return $calendar;
+
+    }
+
     public function removeCalendar($workspaceId, $calendarId, $currentUserId = null)
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));

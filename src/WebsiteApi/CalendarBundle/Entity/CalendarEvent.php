@@ -23,57 +23,28 @@ class CalendarEvent {
     private $id;
 
     /**
-     * @ORM\Column(name="title", type="string")
-     */
-    private $title;
-
-    /**
-     * @ORM\Column(name="location", type="string")
-     */
-    private $location;
-
-    /**
-     * @ORM\Column(name="description", type="string")
-     */
-    private $description;
-
-    /**
-     * @ORM\Column(name="start_date", type="datetime")
-     */
-    private $startDate;
-
-    /**
-     * @ORM\Column(name="end_date", type="datetime")
-     */
-    private $endDate;
-
-    /**
-     * @ORM\Column(name="color", type="string")
-     */
-    private $color;
-
-    /**
-     * @ORM\OneToMany(targetEntity="WebsiteApi\MarketBundle\Entity\Application", mappedBy="Event")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $linkApp;
-
-    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\CalendarBundle\Entity\Calendar")
      * @ORM\JoinColumn(nullable=true)
      */
     private $calendar;
 
-    public  function __construct($title,$location,$desc,$sDate,$eDate,$color,$cal,$linkApp = null)
+    /**
+     * @ORM\Column(name="from", type="integer")
+     */
+    private $from;
+
+    /**
+     * @ORM\Column(name="to", type="integer")
+     */
+    private $to;
+
+    /**
+     * @ORM\Column(name="event", type="string")
+     */
+    private $event;
+
+    public  function __construct($event, $from, $to)
     {
-        $this->setTitle($title);
-        $this->setLocation($location);
-        $this->setDescription($desc);
-        $this->setStartDate($sDate);
-        $this->setEndDate($eDate);
-        $this->setColor($color);
-        $this->setCalendar($cal);
-        $this->setLinkApp($linkApp);
     }
 
     /**
@@ -95,144 +66,72 @@ class CalendarEvent {
     /**
      * @return mixed
      */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param mixed $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
-    /**
-     * @param mixed $location
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDescription()
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param mixed $description
-     */
-    public function setDescription($description)
-    {
-        $this->description = $description;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getStartDate()
-    {
-        return $this->startDate;
-    }
-
-    /**
-     * @param mixed $startDate
-     */
-    public function setStartDate($startDate)
-    {
-        $this->startDate = $startDate;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEndDate()
-    {
-        return $this->endDate;
-    }
-
-    /**
-     * @param mixed $endDate
-     */
-    public function setEndDate($endDate)
-    {
-        $this->endDate = $endDate;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getColor()
-    {
-        return $this->color;
-    }
-
-    /**
-     * @param mixed $color
-     */
-    public function setColor($color)
-    {
-        $this->color = $color;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getLinkApp()
-    {
-        return $this->linkApp;
-    }
-
-    /**
-     * @param mixed $linkApp
-     */
-    public function setLinkApp($linkApp)
-    {
-        $this->linkApp = $linkApp;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getCalendar()
     {
         return $this->calendar;
     }
 
     /**
-     * @param mixed $linkCalendar
+     * @param mixed $calendar
      */
-    public function setCalendar(Calendar $calendar)
+    public function setCalendar($calendar)
     {
         $this->calendar = $calendar;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getFrom()
+    {
+        return $this->from;
+    }
+
+    /**
+     * @param mixed $from
+     */
+    public function setFrom($from)
+    {
+        $this->from = $from;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTo()
+    {
+        return $this->to;
+    }
+
+    /**
+     * @param mixed $to
+     */
+    public function setTo($to)
+    {
+        $this->to = $to;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEvent()
+    {
+        return json_decode($this->event, 1);
+    }
+
+    /**
+     * @param mixed $event
+     */
+    public function setEvent($event)
+    {
+        $this->event = json_encode($event);
+    }
 
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
-            "title" => $this->getTitle(),
-            "location" => $this->getLocation(),
-            "description" => $this->getDescription(),
-            "startDate" => $this->getStartDate(),
-            "endDate" => $this->getEndDate(),
-            "borderColor" => $this->getColor(),
-            "textColor" => $this->getColor(),
-            "color" => "white",
             "calendar" => $this->getCalendar()->getId(),
+            "event" => $this->getEvent()
         );
     }
 

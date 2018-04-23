@@ -87,7 +87,6 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
 
 
         if($event["type"] == "C"){ // creation
-            error_log("key : ".$key);
             $stream = $this->streamService->createStream($currentUser,$key,$event["data"]["name"],$event["data"]["description"],$event["data"]["isPrivate"]);
             if($stream){
                 $event["data"] = $stream;
@@ -100,9 +99,11 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
             if(isset($event["data"]["id"]) && isset($event["data"]["name"]) && isset($event["data"]["isPrivate"]) && isset($event["data"]["members"]) ){
                 $stream = $this->streamService->editStream($currentUser, $event["data"]["id"],$event["data"]["name"],$event["data"]["description"], $event["data"]["isPrivate"],$event["data"]["members"]);
                 if($stream){
+                    echo "YEEES";
                     $event["data"] = $stream;
                 }
                 else{
+                    echo "NOOOOO";
                     $canBroadcast = false;
                 }
 

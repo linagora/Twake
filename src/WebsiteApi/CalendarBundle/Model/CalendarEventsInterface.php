@@ -13,12 +13,18 @@ namespace WebsiteApi\CalendarBundle\Model;
  */
 interface CalendarEventsInterface
 {
-    public function createEvent($owner,$title,$startDate,$endDate,$description,$location,$color,$calendar,$appid);
+    public function createEvent($workspaceId, $calendarId, $event, $currentUserId=null);
 
-    public function getEventsByOwner($owner);
+    public function updateEvent($workspaceId, $calendarId, $eventId, $event, $currentUserId=null);
 
-    public function getEventsByCalendar($cal);
+    public function removeEvent($workspaceId, $calendarId, $eventId, $currentUserId=null);
 
-    public function updateEvent($id,$owner,$title,$startDate,$endDate,$description,$location,$color,$calendar,$appid);
+    public function addUsers($workspaceId, $calendarId, $eventId, $usersId, $currentUserId=null);
+
+    public function removeUsers($workspaceId, $calendarId, $eventId, $usersId, $currentUserId=null);
+
+    public function getEventsForWorkspace($workspaceId, $from, $to, $calendarsId, $currentUserId=null);
+
+    public function getEventsForUser($workspaceId, $from, $to, $currentUserId);
 
 }

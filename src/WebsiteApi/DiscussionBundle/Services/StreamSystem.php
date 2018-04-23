@@ -128,6 +128,7 @@ class StreamSystem implements StreamSystemInterface
             $stream->setName($name);
             $stream->setDescription($streamDescription);
             $stream->setIsPrivate($isPrivate);
+            $this->doctrine->persist($stream);
             $membersInStream = $stream->getMembers();
             foreach ($membersInStream as $member) {
                 if (!in_array($member->getId(), $members)) { // user remove

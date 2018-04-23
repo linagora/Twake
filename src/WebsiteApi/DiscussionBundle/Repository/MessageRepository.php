@@ -12,8 +12,8 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 {
 
 	public function removeStream($stream){
-		$qb = $this->createQueryBuilder();
-		$qb->delete('Message', 's');
+		$qb = $this->createQueryBuilder('s');
+		$qb->delete();
 		$qb->where('s.streamReciever = :streamReciever');
 		$qb->setParameter('streamReciever', $stream);
 	}

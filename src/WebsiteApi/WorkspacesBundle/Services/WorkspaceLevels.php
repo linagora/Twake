@@ -298,7 +298,9 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
         $list = Array();
         $list["levels"] = Array();
         foreach ($levels as $level) {
-            $list["levels"][] = $level->getAsArray();
+            if($level != null) {
+                $list["levels"][] = $level->getAsArray();
+            }
         }
         foreach ($list["levels"] as $k => $levelvalue) {
             //for each level, get the workspace'apps and check differencies between rights and apps

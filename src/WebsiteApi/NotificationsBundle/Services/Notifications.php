@@ -142,13 +142,13 @@ class Notifications implements NotificationsInterface
 			$data["action"] = "add";
 			$this->pusher->push($data, "notifications_topic", Array("id_user" => $user->getId()));
 
-            gc_collect_cycles();
+
 
 		}
 
 		$this->doctrine->flush();
 
-        gc_collect_cycles();
+
 
     }
 
@@ -174,7 +174,7 @@ class Notifications implements NotificationsInterface
         $count = count($notif);
         for($i = 0; $i < $count; $i++) {
 			$this->doctrine->remove($notif[$i]);
-            gc_collect_cycles();
+
 		}
 
         if($count>0) {
@@ -192,7 +192,7 @@ class Notifications implements NotificationsInterface
             $this->updateDeviceBadge($user, $totalNotifications);
         }
 
-        gc_collect_cycles();
+
 
     }
 
@@ -234,7 +234,7 @@ class Notifications implements NotificationsInterface
                 null
             );
 
-            gc_collect_cycles();
+
 		}
 	}
 
@@ -256,7 +256,7 @@ class Notifications implements NotificationsInterface
                 $data
             );
 
-            gc_collect_cycles();
+
 		}
 	}
 

@@ -24,34 +24,29 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 
 	public function read($stream, $user){
 
-		$linkStreams = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
-			->findBy(Array("user"=>$user,"stream"=>$stream));
+		$linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
+			->findOneBy(Array("user"=>$user,"stream"=>$stream));
 
-		if(count($linkStreams)==0){
+		if(!$linkStream){
 			return true;
 		}
 
-		foreach($linkStreams as $linkStream) {
-            $linkStream->setUnread(0);
-            $linkStream->setSubjectUnread(0);
-            $linkStream->setLastRead();
-			$this->doctrine->persist($linkStream);
+        $linkStream->setUnread(0);
+        $linkStream->setSubjectUnread(0);
+        $linkStream->setLastRead();
+        $this->doctrine->persist($linkStream);
+        $this->doctrine->flush();
 
-            $data = $linkStream->getAsArray();
-            $data["id"] = $stream->getId();
+        $data = $linkStream->getAsArray();
+        $data["id"] = $stream->getId();
 
-            $this->pusher->push($data,
-				"discussion_notifications_topic",
-				Array(
-					"user_id" => $linkStream->getUser()->getId(),
-					"workspace_id"=>($stream->getWorkspace()?$stream->getWorkspace()->getId():"")
-				)
-			);
-            gc_collect_cycles();
-
-        }
-
-		$this->doctrine->flush();
+        $this->pusher->push($data,
+            "discussion_notifications_topic",
+            Array(
+                "user_id" => $linkStream->getUser()->getId(),
+                "workspace_id"=>($stream->getWorkspace()?$stream->getWorkspace()->getId():"")
+            )
+        );
 
 		$otherStreams = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
 			->findBy(Array("user"=>$user,"workspace"=>$stream->getWorkspace(),"mute"=>false));
@@ -102,7 +97,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 					)
 				);
 
-                gc_collect_cycles();
+
 
             }
 		}
