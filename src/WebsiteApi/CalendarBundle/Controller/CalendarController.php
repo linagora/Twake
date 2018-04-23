@@ -23,7 +23,7 @@ class CalendarController extends Controller
 
         $calendars_formated = Array();
         foreach ($calendars as $calendar){
-            $calendars_formated = $calendar->getAsArray();
+            $calendars_formated[] = $calendar->getAsArray();
         }
         $data['data'] = $calendars_formated;
 
@@ -38,7 +38,7 @@ class CalendarController extends Controller
         );
 
         $workspaceId = $request->request->get("workspaceId");
-        $label = $request->request->get("label");
+        $label = $request->request->get("name");
         $color = $request->request->get("color");
 
         $data['data'] = $this->get("app.calendars")->createCalendar($workspaceId, $label, $color, $this->getUser()->getId());
@@ -55,7 +55,7 @@ class CalendarController extends Controller
 
         $workspaceId = $request->request->get("workspaceId");
         $calendarId = $request->request->get("calendarId");
-        $label = $request->request->get("label");
+        $label = $request->request->get("name");
         $color = $request->request->get("color");
 
         $data['data'] = $this->get("app.calendars")->updateCalendar($workspaceId, $calendarId, $label, $color, $this->getUser()->getId());

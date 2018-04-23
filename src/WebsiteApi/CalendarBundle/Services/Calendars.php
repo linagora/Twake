@@ -46,12 +46,7 @@ class Calendars implements CalendarsInterface
             }
 
             foreach ($links as $link) {
-                $cal = $link->getCalendar()->getAsArray();
-                $events = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->findBy(Array("calendar" => $cal));
-                $cal["events"] = Array();
-                foreach($events as $event){
-                    $cal["events"][] = $event->getAsArray();
-                }
+                $cal = $link->getCalendar();
                 $result[] = $cal;
             }
             return $result;
@@ -97,7 +92,7 @@ class Calendars implements CalendarsInterface
         }
 
         $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
-        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
 
         if(!$calendarLink || !$calendarLink->getCalendarRight()){
             return null;
@@ -127,7 +122,7 @@ class Calendars implements CalendarsInterface
         }
 
         $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
-        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
 
         if(!$calendarLink || !$calendarLink->getCalendarRight()){
             return null;
@@ -139,7 +134,7 @@ class Calendars implements CalendarsInterface
         $this->doctrine->flush();
 
         $data = Array(
-            "type" => "delete",
+            "type" => "remove",
             "calendar_id" => $calendarId
         );
         $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$workspaceId));
@@ -155,7 +150,7 @@ class Calendars implements CalendarsInterface
         }
 
         $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
-        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
 
         if(!$calendarLink || !$calendarLink->getCalendarRight()){
             return null;
@@ -189,14 +184,14 @@ class Calendars implements CalendarsInterface
         }
 
         $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
-        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
 
         if(!$calendarLink || !$calendarLink->getCalendarRight()){
             return null;
         }
 
         $other_workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $other_workspaceId, "isDeleted" => false));
-        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$other_workspace));
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$other_workspace));
 
         $calendar->setWorkspacesNumber($calendar->getWorkspacesNumber()-1);
         $this->doctrine->persist($calendar);
@@ -229,7 +224,7 @@ class Calendars implements CalendarsInterface
         }
 
         $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
-        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
 
         if(!$calendarLink || !$calendarLink->getCalendarRight()){
             return null;
