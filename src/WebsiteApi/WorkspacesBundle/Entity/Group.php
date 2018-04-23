@@ -50,7 +50,7 @@ class Group
 	private $workspaces;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupManager", mappedBy="group")
+	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupUser", mappedBy="group")
 	 */
 	private $managers;
 
