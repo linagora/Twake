@@ -52,6 +52,22 @@ class WorkspaceController extends Controller
             $level = $this->get("app.workspace_levels")->fixLevels(Array($level),$workspaceApps)["levels"][0];
 
             $response["data"]["currentUser"]["level"] = $level;
+
+            $groupRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group");
+            $workspaceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace");
+
+            $wp = $workspaceRepository->find($workspaceId);
+            if($wp->getGroup() != null){
+                $group = $groupRepository->find($wp->getGroup()->getId());
+
+                $limit_obj =  $this->get("app.pricing_plan")->getLimitations($group->getId())->getAsArray();
+
+                $nbWorkspace = $workspaceRepository->findBy(Array("group"=>$group,"isDeleted"=>0));
+
+                $response["data"]["maxWorkspace"] = $limit_obj["limitation"]["maxWorkspace"];
+                $response["data"]["currentNbWorkspace"] = count($nbWorkspace);
+            }
+
 		}
 
 		return new JsonResponse($response);
@@ -77,8 +93,9 @@ class WorkspaceController extends Controller
 
 		$ws = $this->get("app.workspaces")->create($name, $groupId, $this->getUser()->getId());
 
-		if(!$ws){
-			$response["errors"][] = "notallowed";
+		if(!$ws || is_string($ws)){
+                $response["errors"][] = "notallowed";
+                $response["errors"]["max"] = $ws;
 		}else{
 			$response["data"] = "success";
 		}
