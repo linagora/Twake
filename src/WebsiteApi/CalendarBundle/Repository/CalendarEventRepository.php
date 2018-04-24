@@ -28,6 +28,7 @@ class CalendarEventRepository extends \Doctrine\ORM\EntityRepository
         $qb->setParameter(2, $to);
         $qb->setParameter(3, $calendarsId);
         $q= $qb->getQuery();
+
         return $q->getResult();
     }
 

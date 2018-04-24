@@ -29,22 +29,25 @@ class CalendarEvent {
     private $calendar;
 
     /**
-     * @ORM\Column(name="from", type="integer")
+     * @ORM\Column(name="from_ts", type="bigint")
      */
     private $from;
 
     /**
-     * @ORM\Column(name="to", type="integer")
+     * @ORM\Column(name="to_ts", type="bigint")
      */
     private $to;
 
     /**
-     * @ORM\Column(name="event", type="string")
+     * @ORM\Column(name="event_json", type="string")
      */
     private $event;
 
     public  function __construct($event, $from, $to)
     {
+        $this->setEvent($event);
+        $this->setFrom($from);
+        $this->setTo($to);
     }
 
     /**
