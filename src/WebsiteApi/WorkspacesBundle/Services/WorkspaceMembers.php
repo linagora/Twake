@@ -189,21 +189,19 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$user = $userRepository->find($userId);
 			$workspace = $workspaceRepository->find($workspaceId);
 
-			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-			$member = $workspaceUserRepository->findOneBy(Array("workspace"=>$workspace, "user"=>$user));
-
             if($workspace->getGroup()!=null) {
-                $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-                $group = $groupRepository->find($workspace->getGroup()->getId());
+                $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+                $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(),));
+                $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUSer", PHP_INT_MAX);
 
-                $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUser", PHP_INT_MAX);
-                $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-                $nbUser = $userRepository->findBy(Array("workspace" => $group));
-
-                if (count($nbUser) >= $limit) {
+                if (count($nbuserGroup) >= $limit) {
                     return false;
                 }
             }
+            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+			$member = $workspaceUserRepository->findOneBy(Array("workspace"=>$workspace, "user"=>$user));
+
+
 			if($member!=null){
 			    error_log("already added");
 				return false; //Already added

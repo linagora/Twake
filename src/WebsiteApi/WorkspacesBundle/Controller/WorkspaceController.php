@@ -55,6 +55,7 @@ class WorkspaceController extends Controller
 
             $groupRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group");
             $workspaceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace");
+            $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             $wp = $workspaceRepository->find($workspaceId);
             if($wp->getGroup() != null){
@@ -68,8 +69,13 @@ class WorkspaceController extends Controller
 
                 $nbWorkspace = $workspaceRepository->findBy(Array("group"=>$group,"isDeleted"=>0));
 
+                $nbuserGroup = $groupUserRepository->findBy(Array("group"=>$wp->getGroup()));
+                $limitUser = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(),"maxUSer",PHP_INT_MAX);
+
                 $response["data"]["maxWorkspace"] = $limit;
                 $response["data"]["currentNbWorkspace"] = count($nbWorkspace);
+                $response["data"]["maxUser"] = $limitUser;
+                $response["data"]["currentNbUser"] = count($nbuserGroup);
             }
 
 		}
