@@ -27,6 +27,7 @@ class CalendarEvents implements CalendarEventsInterface
 
     public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false)
     {
+
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
@@ -59,7 +60,7 @@ class CalendarEvents implements CalendarEventsInterface
             "type" => "create",
             "event" => $event->getAsArray()
         );
-        $this->pusher->push($data, "calendar_topic", Array("id"=>$workspaceId));
+        $this->pusher->push($data, "calendar_topic", Array("id"=>$calendarId));
 
         return $event;
 
@@ -117,7 +118,7 @@ class CalendarEvents implements CalendarEventsInterface
             "type" => "update",
             "event" => $event->getAsArray()
         );
-        $this->pusher->push($data, "calendar_topic", Array("id"=>$workspaceId));
+        $this->pusher->push($data, "calendar_topic", Array("id"=>$calendarId));
 
         return $event;
     }
@@ -134,10 +135,6 @@ class CalendarEvents implements CalendarEventsInterface
         $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $workspace, "calendar" => $calendar));
 
         if(!$calendarLink){
-            return null;
-        }
-
-        if(!isset($event["from"]) || !isset($event["to"])){
             return null;
         }
 
@@ -159,7 +156,7 @@ class CalendarEvents implements CalendarEventsInterface
             "type" => "remove",
             "event_id" => $eventId
         );
-        $this->pusher->push($data, "calendar_topic", Array("id"=>$workspaceId));
+        $this->pusher->push($data, "calendar_topic", Array("id"=>$calendarId));
 
         return true;
     }
@@ -179,17 +176,13 @@ class CalendarEvents implements CalendarEventsInterface
             return null;
         }
 
-        if(!isset($event["from"]) || !isset($event["to"])){
-            return null;
-        }
-
         $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
 
         if(!$event || $event->getCalendar()->getId() != $calendarId){
             return null;
         }
 
-        foreach ($usersId as $userId){
+        foreach ($usersId as $userId) {
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
             $userLinked = new LinkEventUser($user, $event);
             $userLinked->setFrom($event->getFrom());
@@ -214,10 +207,6 @@ class CalendarEvents implements CalendarEventsInterface
         $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $workspace, "calendar" => $calendar));
 
         if(!$calendarLink){
-            return null;
-        }
-
-        if(!isset($event["from"]) || !isset($event["to"])){
             return null;
         }
 

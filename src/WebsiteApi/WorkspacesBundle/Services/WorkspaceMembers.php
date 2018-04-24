@@ -190,7 +190,16 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$user = $userRepository->find($userId);
 			$workspace = $workspaceRepository->find($workspaceId);
 
-			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            if($workspace->getGroup()!=null) {
+                $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+                $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(),));
+                $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUSer", PHP_INT_MAX);
+
+                if (count($nbuserGroup) >= $limit) {
+                    return false;
+                }
+            }
+            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 			$member = $workspaceUserRepository->findOneBy(Array("workspace"=>$workspace, "user"=>$user));
 
 
@@ -212,13 +221,14 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			}
             error_log("level : ".$level->getId());
 			$member = new WorkspaceUser($workspace, $user, $level);
+
 			$workspace->setMemberCount($workspace->getMemberCount()+1);
 
             $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
-            $groupmember = $groupUserRepository->findOneBy(Array("group"=>$group, "user"=>$user));
+            $groupmember = $groupUserRepository->findOneBy(Array("group"=>$workspace->getGroup(), "user"=>$user));
 
             if (!$groupmember){
-                $groupmember = new GroupUser($group,$user);
+                $groupmember = new GroupUser($workspace->getGroup(),$user);
                 $groupmember->setLevel(0);
             }else{
                 $groupmember->increaseNbWorkspace();
