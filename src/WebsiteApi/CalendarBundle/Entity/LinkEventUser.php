@@ -37,12 +37,12 @@ class LinkEventUser{
     private $event;
 
     /**
-     * @ORM\Column(name="from", type="bigint")
+     * @ORM\Column(name="from_ts", type="bigint")
      */
     private $from;
 
     /**
-     * @ORM\Column(name="to", type="bigint")
+     * @ORM\Column(name="to_ts", type="bigint")
      */
     private $to;
 
