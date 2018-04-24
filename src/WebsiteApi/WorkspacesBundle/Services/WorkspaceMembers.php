@@ -193,17 +193,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 			$member = $workspaceUserRepository->findOneBy(Array("workspace"=>$workspace, "user"=>$user));
 
-            if($workspace->getGroup()!=null) {
-                $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-                $group = $groupRepository->find($workspace->getGroup()->getId());
 
-                $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUser", PHP_INT_MAX);
-                $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-
-                if (count($nbUser) >= $limit) {
-                    return false;
-                }
-            }
 			if($member!=null){
 			    error_log("already added");
 				return false; //Already added
