@@ -19,8 +19,8 @@ class Workspaces implements WorkspacesInterface
 	private $ws;
 	private $doctrine;
 	private $pricing;
-
-	public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats,$priceService)
+    private $string_cleaner;
+	public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats,$priceService,$cleaner)
 	{
 		$this->doctrine = $doctrine;
 		$this->wls = $workspaces_levels_service;
@@ -29,6 +29,7 @@ class Workspaces implements WorkspacesInterface
 		$this->gas = $groups_apps_service;
 		$this->ws = $workspace_stats;
 		$this->pricing = $priceService;
+		$this->string_cleaner = $cleaner;
 	}
 
 	public function getPrivate($userId = null)
@@ -60,15 +61,37 @@ class Workspaces implements WorkspacesInterface
 		if($name==""){
 			return false;
 		}
+        $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 
 		$workspace = new Workspace($name);
 
+        $increment = 0;
+        $uniquename = $this->string_cleaner->simplify($name);
+
+        //Find a name
+        if($groupId != null){
+            $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+            $group = $groupRepository->find($groupId);
+            $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquename, "group"=>$group));
+        }else{
+            $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquename));
+        }
+
+        $uniquenameIncremented = $uniquename;
+        while($WorkspaceUsingThisName!=null) {
+           $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented));
+           $increment+=1;
+           if($WorkspaceUsingThisName!=null){
+               $uniquenameIncremented = $uniquename."-".$increment;
+           }
+        }
+        $workspace->setUniqueName($uniquenameIncremented);
+
 		if($groupId!=null){
-			$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-			$group = $groupRepository->find($groupId);
+
 
             $limit = $this->pricing->getLimitation($groupId,"maxWorkspace",PHP_INT_MAX);
-            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+
             $nbWorkspace = $workspaceRepository->findBy(Array("group"=>$group,"isDeleted"=>0));
 
             if(count($nbWorkspace) >= $limit){
