@@ -3,6 +3,7 @@
 namespace WebsiteApi\WorkspacesBundle\Services;
 
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\GroupUser;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUserByMail;
 use WebsiteApi\WorkspacesBundle\Model\WorkspaceMembersInterface;
 
@@ -198,7 +199,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
                 $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUser", PHP_INT_MAX);
                 $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-                $nbUser = $userRepository->findBy(Array("workspace" => $group));
 
                 if (count($nbUser) >= $limit) {
                     return false;
@@ -222,11 +222,21 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			}
             error_log("level : ".$level->getId());
 			$member = new WorkspaceUser($workspace, $user, $level);
-
 			$workspace->setMemberCount($workspace->getMemberCount()+1);
+
+            $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupmember = $groupUserRepository->findOneBy(Array("group"=>$group, "user"=>$user));
+
+            if (!$groupmember){
+                $groupmember = new GroupUser($group,$user);
+                $groupmember->setLevel(0);
+            }else{
+                $groupmember->increaseNbWorkspace();
+            }
 
             $this->doctrine->persist($workspace);
 			$this->doctrine->persist($member);
+            $this->doctrine->persist($groupmember);
 			$this->doctrine->flush();
 
             $datatopush = Array(
@@ -273,6 +283,15 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 			$member = $workspaceUserRepository->findOneBy(Array("workspace"=>$workspace, "user"=>$user));
+
+            $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupmember = $groupUserRepository->findOneBy(Array("group"=>$workspace->getGroup(), "user"=>$user));
+
+            $groupmember->decreaseNbWorkspace();
+            $this->doctrine->persist($groupmember);
+            if ($groupmember->getNbWorkspace() == 0){
+                $this->doctrine->remove($groupmember);
+            }
 
             $datatopush = Array(
                 "action" => "RM",
