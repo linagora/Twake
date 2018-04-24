@@ -54,7 +54,7 @@ class GroupUser
 		$this->user = $user;
 		$this->level = 0;
 		$this->date_added = new \DateTime();
-		$this->nbWorkspace = 1;
+		$this->nbWorkspace = 0;
 	}
 
 	public function getId(){

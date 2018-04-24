@@ -21,7 +21,7 @@ interface GroupManagersInterface
 	public function changeLevel($groupId, $userId, $level, $currentUserId=null);
 
 	// @addManager add user in group as manager
-	public function addManager($groupId, $userId, $level, $currentUserId=null);
+	public function addManager($groupId, $userId, $level,$createdWorkspace ,$currentUserId=null);
 
 	// @removeManager remove manager from group
 	public function removeManager($groupId, $userId, $currentUserId=null);

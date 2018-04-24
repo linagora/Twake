@@ -49,7 +49,7 @@ class Groups implements GroupsInterface
 		$this->doctrine->persist($group);
 		$this->doctrine->flush();
 
-		$this->gms->addManager($group->getId(), $userId, 2);
+		$this->gms->addManager($group->getId(), $userId, 3,true);
 
 		$this->init($group);
 
