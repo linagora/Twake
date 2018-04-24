@@ -53,7 +53,11 @@ class EventController extends Controller
         $calendarId = $request->request->get("calendarId");
         $addMySelf = $request->request->get("addMe");
 
-        $data['data'] = $this->get("app.calendar_events")->createEvent($workspaceId, $calendarId, $event, $this->getUser()->getId(), $addMySelf);
+        $event = $this->get("app.calendar_events")->createEvent($workspaceId, $calendarId, $event, $this->getUser()->getId(), $addMySelf);
+
+        if($event){
+            $data['data'] = $event->getAsArray();
+        }
 
         return new JsonResponse($data);
     }

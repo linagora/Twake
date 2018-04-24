@@ -12,7 +12,7 @@ services:
         class: WebsiteApi\CalendarBundle\Topic\CalendarTopic
         tags:
             - { name: gos_web_socket.topic }
-        arguments: [ "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications","@app.calendar_events"]
+        arguments: []
 
     calendar_workspace.topic:
         class: WebsiteApi\CalendarBundle\Topic\CalendarWorkspaceTopic
