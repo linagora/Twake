@@ -55,7 +55,8 @@ class PricingPlan
 		$this->limitation = json_encode([
             "apps"=>10,
             "drive"=>0,
-            "maxWorkspace"=>10
+            "maxWorkspace"=>10,
+            "maxUSer"=>10
         ]);
 	}
 
