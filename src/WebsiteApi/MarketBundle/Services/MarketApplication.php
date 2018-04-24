@@ -58,10 +58,10 @@ class MarketApplication implements MarketApplicationInterface
             return "app déjà existante";
         }
 
-        $limit_obj = $this->pricingPlan->getLimitations($groupId)->getAsArray();
+        $limit = $this->pricingPlan->getLimitation($groupId,"apps",PHP_INT_MAX);
         $listApp = $groupAppRepository->findBy(Array("group"=>$group));
 
-        if(count($listApp) >= $limit_obj["limitation"]["apps"]){
+        if(count($listApp) >= $limit){
             return "nombre d'application max atteinte" ;
         }
 

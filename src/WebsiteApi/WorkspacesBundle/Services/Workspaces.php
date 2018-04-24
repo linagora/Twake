@@ -67,11 +67,11 @@ class Workspaces implements WorkspacesInterface
 			$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
 			$group = $groupRepository->find($groupId);
 
-            $limit_obj = $this->pricing->getLimitations($groupId)->getAsArray();
+            $limit = $this->pricing->getLimitation($groupId,"maxWorkspace",PHP_INT_MAX);
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $nbWorkspace = $workspaceRepository->findBy(Array("group"=>$group,"isDeleted"=>0));
 
-            if(count($nbWorkspace) >= $limit_obj["limitation"]["maxWorkspace"]){
+            if(count($nbWorkspace) >= $limit){
                 return false;
             }
 			$workspace->setGroup($group);

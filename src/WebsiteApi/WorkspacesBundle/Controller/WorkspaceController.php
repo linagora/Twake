@@ -60,11 +60,11 @@ class WorkspaceController extends Controller
             if($wp->getGroup() != null){
                 $group = $groupRepository->find($wp->getGroup()->getId());
 
-                $limit_obj =  $this->get("app.pricing_plan")->getLimitations($group->getId())->getAsArray();
+                $limit =  $this->get("app.pricing_plan")->getLimitation($group->getId(),"maxWorkspace",PHP_INT_MAX);
 
                 $nbWorkspace = $workspaceRepository->findBy(Array("group"=>$group,"isDeleted"=>0));
 
-                $response["data"]["maxWorkspace"] = $limit_obj["limitation"]["maxWorkspace"];
+                $response["data"]["maxWorkspace"] = $limit;
                 $response["data"]["currentNbWorkspace"] = count($nbWorkspace);
             }
 
