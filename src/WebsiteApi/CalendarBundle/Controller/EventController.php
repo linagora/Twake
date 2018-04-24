@@ -19,21 +19,21 @@ class EventController extends Controller
         );
 
         $useMine = $request->request->get("mine");
-        $workspaceId = $request->request->get("workspaceId");
+        $workspaceId = $request->request->getInt("workspaceId");
         $to = $request->request->get("to");
-        $from = $request->request->getInt("from", 0);
-        $calendarsId = $request->request->getInt("calendarIds");
+        $from = $request->request->get("from", 0);
+        $calendarsIds = $request->request->get("calendarsIds");
 
         if($useMine) {
             $events = $this->get("app.calendar_events")->getEventsForUser($workspaceId, $from, $to, $this->getUser()->getId());
         }else{
-            $events = $this->get("app.calendar_events")->getEventsForWorkspace($workspaceId, $from, $to, $calendarsId, $this->getUser()->getId());
+            $events = $this->get("app.calendar_events")->getEventsForWorkspace($workspaceId, $from, $to, $calendarsIds, $this->getUser()->getId());
         }
 
         if($events){
             $events_formated = Array();
             foreach ($events as $event){
-                $events_formated = $event->getAsArray();
+                $events_formated[] = $event->getAsArray();
             }
             $data["data"] = $events_formated;
         }
@@ -51,8 +51,9 @@ class EventController extends Controller
         $workspaceId = $request->request->get("workspaceId");
         $event = $request->request->get("event");
         $calendarId = $request->request->get("calendarId");
+        $addMySelf = $request->request->get("addMe");
 
-        $data['data'] = $this->get("app.calendar_events")->createEvent($workspaceId, $calendarId, $event, $this->getUser()->getId());
+        $data['data'] = $this->get("app.calendar_events")->createEvent($workspaceId, $calendarId, $event, $this->getUser()->getId(), $addMySelf);
 
         return new JsonResponse($data);
     }

@@ -61,9 +61,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 		if ($group == null) {
 			return false;
 		}
-        $limit_obj = $this->pricingService->getLimitations($group->getId())->getAsArray();
+        $limit = $this->pricingService->getLimitation($group->getId(),"drive",222222222);
 
-        return $limit_obj["limitation"]["drive"];
+        return $limit*100000;
 
 	}
 

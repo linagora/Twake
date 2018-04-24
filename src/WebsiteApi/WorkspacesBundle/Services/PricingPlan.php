@@ -69,4 +69,28 @@ class PricingPlan implements PricingPlanInterface
 
         return $pricing;
     }
+
+    public function getLimitation($groupId,$key,$default){
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $group = $groupRepository->find($groupId);
+
+        $pricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
+
+        if($group == null){
+            $pricing = $pricingRepository->findOneBy(Array("label"=>"startup"))->getAsArray();
+        }else{
+            $pricing = $pricingRepository->findOneBy(Array("id"=>($group->getPricingPlan())))->getAsArray();
+        }
+
+        if(isset($pricing["limitation"][$key])){
+            if($pricing["limitation"][$key] == 0){
+                return PHP_INT_MAX;
+            }else{
+                return $pricing["limitation"][$key];
+            }
+        }else{
+            return $default;
+        }
+
+    }
 }

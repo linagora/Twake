@@ -32,7 +32,7 @@ class GroupAppsController extends Controller
         }else{
             //Apps
             $apps = Array();
-            $limit_obj = $this->get("app.pricing_plan")->getLimitations($groupId)->getAsArray();
+            $limit = $this->get("app.pricing_plan")->getLimitation($groupId,"apps",PHP_INT_MAX);
             foreach ($apps_obj as $app_obj){
                 $tmp = Array(
                     "app" => $app_obj->getApp()->getAsArray(),
@@ -40,7 +40,7 @@ class GroupAppsController extends Controller
                 $apps[] = $tmp;
             }
             $response["data"]["apps"] = $apps;
-            $response["data"]["maxApp"] = $limit_obj["limitation"]["apps"];
+            $response["data"]["maxApp"] = $limit;
         }
 
         return new JsonResponse($response);

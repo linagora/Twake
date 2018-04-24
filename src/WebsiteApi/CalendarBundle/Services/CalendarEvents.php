@@ -46,12 +46,14 @@ class CalendarEvents implements CalendarEventsInterface
 
         $event = new CalendarEvent($event, $event["from"], $event["to"]);
         $event->setCalendar($calendar);
+
         $this->doctrine->persist($event);
         $this->doctrine->flush();
 
         if($addMySelf){
             $this->addUsers($workspaceId, $calendarId, $event->getId(), Array($currentUserId), $currentUserId);
         }
+
 
         $data = Array(
             "type" => "create",
@@ -63,7 +65,7 @@ class CalendarEvents implements CalendarEventsInterface
 
     }
 
-    public function updateEvent($workspaceId, $calendarId, $eventId, $event, $currentUserId = null)
+    public function updateEvent($workspaceId, $calendarId, $eventId, $eventArray, $currentUserId = null)
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
@@ -78,7 +80,7 @@ class CalendarEvents implements CalendarEventsInterface
             return null;
         }
 
-        if(!isset($event["from"]) || !isset($event["to"])){
+        if(!isset($eventArray["from"]) || !isset($eventArray["to"])){
             return null;
         }
 
@@ -97,9 +99,9 @@ class CalendarEvents implements CalendarEventsInterface
         }
 
         $event->setCalendar($calendar);
-        $event->setEvent($event);
-        $event->setFrom($event["from"]);
-        $event->setTo($event["to"]);
+        $event->setEvent($eventArray);
+        $event->setFrom($eventArray["from"]);
+        $event->setTo($eventArray["to"]);
         $this->doctrine->persist($event);
 
         $usersLinked = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findBy(Array("event"=>$event));
