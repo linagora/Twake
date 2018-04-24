@@ -60,6 +60,10 @@ class WorkspaceController extends Controller
             if($wp->getGroup() != null){
                 $group = $groupRepository->find($wp->getGroup()->getId());
 
+                $level = $this->get("app.group_managers")->getLevel($group,$this->getUser()->getId());
+                $privileges = $this->get("app.group_managers")->getPrivileges($level);
+                $response["data"]["group"]["level"] = $privileges;
+
                 $limit =  $this->get("app.pricing_plan")->getLimitation($group->getId(),"maxWorkspace",PHP_INT_MAX);
 
                 $nbWorkspace = $workspaceRepository->findBy(Array("group"=>$group,"isDeleted"=>0));

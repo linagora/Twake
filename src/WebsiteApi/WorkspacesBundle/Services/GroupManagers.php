@@ -89,8 +89,6 @@ class GroupManagers implements GroupManagersInterface
 			$manager = $groupManagerRepository->findOneBy(Array("user"=>$user, "group"=>$group));
 
             if(!$manager){
-                var_dump($userId);
-                var_dump($groupId);
                 return null; //No rights
 			}
 
@@ -136,8 +134,9 @@ class GroupManagers implements GroupManagersInterface
 	{
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
-		if($currentUserId == null
+        if($currentUserId == null
 			|| $this->hasPrivileges(
 				$this->getLevel($groupId, $currentUserId),
 				"MANAGE_MANAGERS"
@@ -146,18 +145,20 @@ class GroupManagers implements GroupManagersInterface
 
 			$user = $userRepository->find($userId);
 			$group = $groupRepository->find($groupId);
+            $manager = $groupManagerRepository->findOneBy(Array("user" => $user, "group" => $group));
 
-			$this->removeManager($groupId, $userId);
-			$manager = new GroupUser($group, $user);
 
-			$manager->setLevel($level);
+            if (!$manager){
+                $manager = new GroupUser($group, $user);
+                $manager->setLevel($level);
 
-			$this->twake_mailer->send($user->getEmail(), "addedToGroupManagersMail", Array("group"=>$group->getDisplayName(), "username"=>$user->getUsername()));
+                $this->twake_mailer->send($user->getEmail(), "addedToGroupManagersMail", Array("group"=>$group->getDisplayName(), "username"=>$user->getUsername()));
 
-			$this->doctrine->persist($manager);
-			$this->doctrine->flush();
+                $this->doctrine->persist($manager);
+                $this->doctrine->flush();
 
-			return true;
+                return true;
+            }
 
 		}
 
