@@ -68,24 +68,23 @@ class Workspaces implements WorkspacesInterface
 
         $increment = 0;
         $uniquename = $this->string_cleaner->simplify($name);
+        $uniquenameIncremented = $uniquename;
 
         //Find a name
         if ($groupId != null) {
             $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
             $group = $groupRepository->find($groupId);
             $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquename, "group" => $group));
-        } else {
-            $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquename));
-        }
 
-        $uniquenameIncremented = $uniquename;
-        while ($WorkspaceUsingThisName != null) {
-            $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented));
-            $increment += 1;
-            if ($WorkspaceUsingThisName != null) {
-                $uniquenameIncremented = $uniquename . "-" . $increment;
+            while ($WorkspaceUsingThisName != null) {
+                $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented, "group" => $group));
+                $increment += 1;
+                if ($WorkspaceUsingThisName != null) {
+                    $uniquenameIncremented = $uniquename . "-" . $increment;
+                }
             }
         }
+
         $workspace->setUniqueName($uniquenameIncremented);
 
         if ($groupId != null) {
@@ -172,26 +171,26 @@ class Workspaces implements WorkspacesInterface
 
             $workspace->setName($name);
 
-            $increment = 0;
+            $uniquename = $this->string_cleaner->simplify($name);
+            $uniquenameIncremented = $uniquename;
 
             //Find a name
             if ($workspace->getGroup() != null) {
+                $increment = 0;
+
                 $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
                 $group = $groupRepository->find($workspace->getGroup()->getId());
                 $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $name, "group" => $group));
-            } else {
-                $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $name));
-            }
 
-            $uniquenameIncremented = $this->string_cleaner->simplify($name);
-
-            while ($WorkspaceUsingThisName != null) {
-                $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented));
-                $increment += 1;
-                if ($WorkspaceUsingThisName != null) {
-                    $uniquenameIncremented = $name . "-" . $increment;
+                while ($WorkspaceUsingThisName != null) {
+                    $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented, "group" => $group));
+                    $increment += 1;
+                    if ($WorkspaceUsingThisName != null) {
+                        $uniquenameIncremented = $uniquename . "-" . $increment;
+                    }
                 }
             }
+
             $workspace->setUniqueName($uniquenameIncremented);
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();

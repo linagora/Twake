@@ -121,22 +121,25 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
 
       foreach ( $workspaces as $w ){
           //Find a name
+
+          $uniquenameIncremented = $services->get("app.string_cleaner")->simplify($w->getName());
+
           if ($w->getGroup() != null) {
               $groupRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Group");
               $group = $groupRepository->find($w->getGroup()->getId());
               $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $w->getUniqueName(), "group" => $group));
-          } else {
-              $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $w->getUniqueName()));
+
+              while ($WorkspaceUsingThisName != null) {
+                  $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented));
+                  $increment += 1;
+                  if ($WorkspaceUsingThisName != null) {
+                      $uniquenameIncremented = $w->getUniqueName() . "-" . $increment;
+                  }
+              }
+
           }
 
-          $uniquenameIncremented = $w->getName();
-          while ($WorkspaceUsingThisName != null) {
-              $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented));
-              $increment += 1;
-              if ($WorkspaceUsingThisName != null) {
-                  $uniquenameIncremented = $w->getUniqueName() . "-" . $increment;
-              }
-          }
+
           $w->setUniqueName($uniquenameIncremented);
           $manager->persist($w);
       }

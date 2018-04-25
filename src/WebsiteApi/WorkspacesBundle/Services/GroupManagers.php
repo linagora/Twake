@@ -267,6 +267,7 @@ class GroupManagers implements GroupManagersInterface
     public function init($group){
         $workspaces = $group->getWorkspaces();
         $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+        $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
         foreach ( $workspaces as $workspace ){
             $members = $workspace->getMembers();
@@ -276,8 +277,18 @@ class GroupManagers implements GroupManagersInterface
                 $manager = $groupManagerRepository->findBy(Array("user" => $userEntity, "group" => $group));
 
                 if ($manager == null){ //si user n'est pas repertorié on l'ajoute au rang super-admin
+
+                    $wss = $workspaceUserRepository->findBy(Array("user" => $userEntity));
+                    $nbWs = 0;
+                    foreach ($wss as $ws){
+                        if($ws->getWorkspace()->getGroup() && $ws->getWorkspace()->getGroup()->getId()==$group->getId()){
+                            $nbWs++;
+                        }
+                    }
+
                     $newManager = new GroupUser($group,$userEntity);
                     $newManager->setLevel(3);
+                    $newManager->setNbWorkspace($nbWs);
                     $this->doctrine->persist($newManager);
                     $this->doctrine->flush();
                 }
