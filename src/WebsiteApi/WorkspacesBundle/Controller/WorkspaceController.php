@@ -255,4 +255,19 @@ class WorkspaceController extends Controller
         return new JsonResponse($response);
     }
 
+    public function getWorkspaceByNameAction(Request $request){
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $name = $request->request->get("name");
+
+        $res = $this->get("app.workspaces")->getWorkspaceByName($name);
+        if(!$res){
+            $response["errors"][] = "notallowed";
+        }else{
+            $response["data"]["workspace"] = $res;
+        }
+
+
+        return new JsonResponse($response);
+    }
 }
