@@ -6,7 +6,7 @@ services:
 
     app.groups:
         class: WebsiteApi\WorkspacesBundle\Services\Groups
-        arguments: ["@doctrine.orm.entity_manager", "@app.group_managers","@website_api_market.applications"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.group_managers","@website_api_market.applications","@app.string_cleaner"]
 
     app.group_apps:
         class: WebsiteApi\WorkspacesBundle\Services\GroupApps

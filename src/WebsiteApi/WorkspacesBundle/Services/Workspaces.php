@@ -175,15 +175,16 @@ class Workspaces implements WorkspacesInterface
             $increment = 0;
 
             //Find a name
-            if ($workspace->getId() != null) {
+            if ($workspace->getGroup() != null) {
                 $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-                $group = $groupRepository->find($workspace->getId());
+                $group = $groupRepository->find($workspace->getGroup()->getId());
                 $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $name, "group" => $group));
             } else {
                 $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $name));
             }
 
-            $uniquenameIncremented = $name;
+            $uniquenameIncremented = $this->string_cleaner->simplify($name);
+
             while ($WorkspaceUsingThisName != null) {
                 $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented));
                 $increment += 1;
