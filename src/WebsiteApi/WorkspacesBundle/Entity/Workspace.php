@@ -246,7 +246,8 @@ class Workspace
 			"wallpaper" => (($this->getWallpaper())?$this->getWallpaper()->getPublicURL():""),
 			"group" => (($this->getGroup())?$this->getGroup()->getAsArray():null),
 			"name" => $this->getName(),
-            "total_members" => $this->getMemberCount()
+            "total_members" => $this->getMemberCount(),
+            "uniqueName" => $this->getUniqueName()
 		);
 	}
 

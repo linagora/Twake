@@ -270,8 +270,15 @@ class Workspaces implements WorkspacesInterface
     {
 
         $arr = explode("@", $string, 2);
+
+        if (count($arr) != 2){
+            return false;
+        }
+
         $groupName = $arr[0];
         $workspaceName = $arr[1];
+
+
 
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
         $groups = $groupRepository->findBy(Array("name" => $groupName));
