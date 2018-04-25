@@ -329,7 +329,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 		$members = $workspaceUserRepository->findBy(Array("workspace"=>$workspace));
 
 		foreach ($members as $member){
-			$this->doctrine->remove($member);
+			$this->removeMember($workspaceId,$member->getUser()->getId());
 		}
 
 		$this->doctrine->flush();

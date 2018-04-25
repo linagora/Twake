@@ -130,7 +130,7 @@ class GroupManagers implements GroupManagersInterface
 
 	}
 
-	public function addManager($groupId, $userId, $level, $currentUserId = null)
+	public function addManager($groupId, $userId, $level,$createdWorkspace , $currentUserId = null)
 	{
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
@@ -148,8 +148,20 @@ class GroupManagers implements GroupManagersInterface
             $manager = $groupManagerRepository->findOneBy(Array("user" => $user, "group" => $group));
 
 
-            if (!$manager){
-                $manager = new GroupUser($group, $user);
+            if (!$manager) { // si on a crée un workspace et qu'on s'y ajoute soi même en admin
+                if ($createdWorkspace){
+                    $manager = new GroupUser($group, $user);
+                    $manager->setLevel($level);
+                    $this->twake_mailer->send($user->getEmail(), "addedToGroupManagersMail", Array("group"=>$group->getDisplayName(), "username"=>$user->getUsername()));
+
+                    $this->doctrine->persist($manager);
+                    $this->doctrine->flush();
+
+                    return true;
+                }else{
+                    return false;
+                }
+            }else{
                 $manager->setLevel($level);
 
                 $this->twake_mailer->send($user->getEmail(), "addedToGroupManagersMail", Array("group"=>$group->getDisplayName(), "username"=>$user->getUsername()));
@@ -190,7 +202,8 @@ class GroupManagers implements GroupManagersInterface
 				return true;
 			}
 
-			$this->doctrine->remove($manager);
+            $manager->setLevel(0);
+			$this->doctrine->persist($manager);
 			$this->doctrine->flush();
 
 			return true;
