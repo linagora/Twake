@@ -21,11 +21,13 @@ class CalendarController extends Controller
 
         $calendars = $this->get("app.calendars")->getCalendars($workspaceId, $this->getUser()->getId());
 
-        $calendars_formated = Array();
-        foreach ($calendars as $calendar){
-            $calendars_formated[] = $calendar->getAsArray();
+        if ($calendars){
+            $calendars_formated = Array();
+            foreach ($calendars as $calendar){
+                $calendars_formated[] = $calendar->getAsArray();
+            }
+            $data['data'] = $calendars_formated;
         }
-        $data['data'] = $calendars_formated;
 
         return new JsonResponse($data);
     }

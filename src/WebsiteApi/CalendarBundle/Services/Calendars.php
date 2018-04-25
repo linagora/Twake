@@ -30,13 +30,14 @@ class Calendars implements CalendarsInterface
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
         $result = Array();
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
-            return null;
-        }
-
         if ($workspace == null) {
             return false;
         } else {
+
+            if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
+                return null;
+            }
+
             $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("workspace" => $workspace));
 
             //Create calendar if no calendar was found in this workspace
