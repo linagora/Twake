@@ -17,18 +17,7 @@ class CalendarTopic implements TopicInterface, PushableTopicInterface
         return 'calendar.topic';
     }
 
-    private $clientManipulator;
-    private $doctrine;
-    private $notifications;
-    private $eventSystem;
-
-    public function __construct($clientManipulator, $doctrine, $notifications, $event)
-    {
-        $this->clientManipulator = $clientManipulator;
-        $this->doctrine = $doctrine;
-        $this->notifications = $notifications;
-        $this->eventSystem = $event;
-    }
+    public function __construct(){}
 
     public function onPush(Topic $topic, WampRequest $request, $data, $provider){
         $topic->broadcast($data);
