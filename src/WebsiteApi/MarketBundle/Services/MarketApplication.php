@@ -9,11 +9,12 @@ class MarketApplication implements MarketApplicationInterface
 {
     private $doctrine;
     private $gms;
-
-    public function __construct($doctrine, $group_managers_service)
+    private $pricingPlan;
+    public function __construct($doctrine, $group_managers_service, $pricing)
     {
         $this->doctrine = $doctrine;
         $this->gms = $group_managers_service;
+        $this->pricingPlan = $pricing;
     }
 
     public function getApps()
@@ -56,6 +57,14 @@ class MarketApplication implements MarketApplicationInterface
         if($groupApplication!=null){
             return "app déjà existante";
         }
+
+        $limit = $this->pricingPlan->getLimitation($groupId,"apps",PHP_INT_MAX);
+        $listApp = $groupAppRepository->findBy(Array("group"=>$group));
+
+        if(count($listApp) >= $limit){
+            return "nombre d'application max atteinte" ;
+        }
+
         if ( $currentUserId == null
             || $this->gms->hasPrivileges(
                 $this->gms->getLevel($groupId, $currentUserId),

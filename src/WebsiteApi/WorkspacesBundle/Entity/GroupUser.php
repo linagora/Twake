@@ -8,12 +8,12 @@ use Doctrine\ORM\Mapping as ORM;
 
 
 /**
- * GroupManager
+ * GroupUser
  *
- * @ORM\Table(name="group_manager",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupManagerRepository")
+ * @ORM\Table(name="group_user",options={"engine":"MyISAM"})
+ * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupUserRepository")
  */
-class GroupManager
+class GroupUser
 {
 	/**
 	 * @var int
@@ -39,6 +39,11 @@ class GroupManager
 	 */
 	protected $level;
 
+    /**
+     * @ORM\Column(name="nb_workspace", type="integer")
+     */
+    protected $nbWorkspace;
+
 	/**
 	 * @ORM\Column(type="datetime")
 	 */
@@ -49,6 +54,7 @@ class GroupManager
 		$this->user = $user;
 		$this->level = 0;
 		$this->date_added = new \DateTime();
+		$this->nbWorkspace = 0;
 	}
 
 	public function getId(){
@@ -102,5 +108,31 @@ class GroupManager
 	{
 		$this->level = $level;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getNbWorkspace()
+    {
+        return $this->nbWorkspace;
+    }
+
+    /**
+     * @param mixed $nbWorkspace
+     */
+    public function setNbWorkspace($nbWorkspace)
+    {
+        $this->nbWorkspace = $nbWorkspace;
+    }
+
+    public function increaseNbWorkspace()
+    {
+        return $this->nbWorkspace = $this->nbWorkspace+1;
+    }
+
+    public function decreaseNbWorkspace()
+    {
+        return $this->nbWorkspace = $this->nbWorkspace-1;
+    }
 
 }

@@ -4,6 +4,7 @@
 namespace WebsiteApi\CalendarBundle\Services;
 
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\CalendarBundle\Entity\CalendarEvent;
 use WebsiteApi\CalendarBundle\Entity\Event;
 use WebsiteApi\CalendarBundle\Entity\LinkEventUser;
 use WebsiteApi\CalendarBundle\Model\CalendarEventsInterface;
@@ -24,111 +25,236 @@ class CalendarEvents implements CalendarEventsInterface
         $this->workspaceLevels = $workspaceLevels;
     }
 
-    public function createEvent($owner, $title, $startDate, $endDate, $description, $location, $color, $cal,$appid)
+    public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false)
     {
-        $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $owner));
-        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id" => $cal));
-        if ($user == null) {
-            return false;
-        } else {
-            $start = new \DateTime($startDate);
-            $event = new Event($title,$location, $description, $start, new \DateTime($endDate), $color, $calendar, null);
-            $this->doctrine->persist($event);
 
-            $link = new LinkEventUser($user, $event);
-            $this->doctrine->persist($link);
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-            $this->doctrine->flush();
-            return $event;
+        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+            return null;
         }
+
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $workspace, "calendar" => $calendar));
+
+        if(!$calendarLink){
+            return null;
+        }
+
+        if(!isset($event["from"]) || !isset($event["to"])){
+            return null;
+        }
+
+        $event = new CalendarEvent($event, $event["from"], $event["to"]);
+        $event->setCalendar($calendar);
+
+        $this->doctrine->persist($event);
+        $this->doctrine->flush();
+
+        if($addMySelf){
+            $this->addUsers($workspaceId, $calendarId, $event->getId(), Array($currentUserId), $currentUserId);
+        }
+
+
+        $data = Array(
+            "type" => "create",
+            "event" => $event->getAsArray()
+        );
+        $this->pusher->push($data, "calendar_topic", Array("id"=>$calendarId));
+
+        return $event;
+
     }
 
-    public function getEventsByOwner($owner)
+    public function updateEvent($workspaceId, $calendarId, $eventId, $eventArray, $currentUserId = null)
     {
-        $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $owner));
-        $result = Array();
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if ($user == null) {
-            return false;
-        } else {
-            $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findBy(Array("user" => $user));
-            foreach ($links as $link){
-                $result[] = $link->getEvent()->getAsArray();
-            }
-            return $result;
+        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+            return null;
         }
+
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $workspace, "calendar" => $calendar));
+
+        if(!$calendarLink){
+            return null;
+        }
+
+        if(!isset($eventArray["from"]) || !isset($eventArray["to"])){
+            return null;
+        }
+
+        $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
+
+        if(!$event){
+            return null;
+        }
+
+        //If we changed calendar verify that old calendar is our calendar
+        if($event->getCalendar()->getId() != $calendarId){
+            $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $workspace, "calendar" => $event->getCalendar()));
+            if(!$calendarLink){
+                return null;
+            }
+        }
+
+        $event->setCalendar($calendar);
+        $event->setEvent($eventArray);
+        $event->setFrom($eventArray["from"]);
+        $event->setTo($eventArray["to"]);
+        $this->doctrine->persist($event);
+
+        $usersLinked = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findBy(Array("event"=>$event));
+        foreach ($usersLinked as $userLinked){
+            $userLinked->setFrom($event->getFrom());
+            $userLinked->setTo($event->getTo());
+            $this->doctrine->persist($userLinked);
+        }
+
+        $this->doctrine->flush();
+
+        $data = Array(
+            "type" => "update",
+            "event" => $event->getAsArray()
+        );
+        $this->pusher->push($data, "calendar_topic", Array("id"=>$calendarId));
+
+        return $event;
     }
 
-    public function getEventsByCalendar($cal)
+    public function removeEvent($workspaceId, $calendarId, $eventId, $currentUserId = null)
     {
-        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id" => $cal));
-        $result = Array();
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if ($calendar == null) {
-            return false;
-        } else {
-            $events = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->findBy(Array("calendar" => $cal));
-            foreach ($events as $event){
-                $result[] = $event->getAsArray();
-            }
-            return $result;
+        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+            return null;
         }
+
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $workspace, "calendar" => $calendar));
+
+        if(!$calendarLink){
+            return null;
+        }
+
+        $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
+
+        if(!$event || $event->getCalendar()->getId() != $calendarId){
+            return null;
+        }
+
+        $usersLinked = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findBy(Array("event"=>$event));
+        foreach ($usersLinked as $userLinked){
+            $this->doctrine->remove($userLinked);
+        }
+
+        $this->doctrine->remove($event);
+        $this->doctrine->flush();
+
+        $data = Array(
+            "type" => "remove",
+            "event_id" => $eventId
+        );
+        $this->pusher->push($data, "calendar_topic", Array("id"=>$calendarId));
+
+        return true;
     }
 
-    public function updateEvent($id,$owner,$title,$startDate,$endDate,$description,$location,$color,$calendar,$appid){
-        $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($id);
-        if($event != null){
-            if($owner!=null){
-                $user = $this->doctrine->getRepository("TwakeUsersBundle:user")->find($owner);
-                if($user!=null){
-                    error_log("owner");
-                    $event->setOwner($owner);
-                }
-            }
-            if($title != null){
-                error_log("title");
-                $event->setTitle($title);
-            }
-            if($startDate != null){
-                error_log("start");
-                $event->setStartDate( new \DateTime($startDate));
-                error_log("start Date change");
-            }
-            if($endDate != null){
-                error_log("end");
-                $event->setEndDate( new \DateTime($endDate));
-                error_log("end Date change");
-            }
-            if($description != null){
-                error_log("description");
-                $event->setDescription($description);
-            }
-            if($location!= null){
-                error_log("location");
-                $event->setLocation($location);
-            }
-            if($color != null){
-                $event->setColor($color);
-            }
-            if($calendar != null){
-                error_log("calendar");
-                $calendarEntity = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendar);
-                if($calendarEntity != null){
-                    $event->setCalendar($calendarEntity);
-                }
-            }
-            if($appid != null){
-                error_log("appid");
-                $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($appid);
-                if($app =! null){
-                    $event->setApplication($app);
-                }
-            }
-            $this->doctrine->persist($event);
-            $this->doctrine->flush();
-            return $event;
+    public function addUsers($workspaceId, $calendarId, $eventId, $usersId, $currentUserId = null)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+            return null;
         }
-        return false;
+
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $workspace, "calendar" => $calendar));
+
+        if(!$calendarLink){
+            return null;
+        }
+
+        $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
+
+        if(!$event || $event->getCalendar()->getId() != $calendarId){
+            return null;
+        }
+
+        foreach ($usersId as $userId) {
+            $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
+            $userLinked = new LinkEventUser($user, $event);
+            $userLinked->setFrom($event->getFrom());
+            $userLinked->setTo($event->getTo());
+            $this->doctrine->persist($userLinked);
+        }
+        $this->doctrine->flush();
+
+        return true;
+
     }
 
+    public function removeUsers($workspaceId, $calendarId, $eventId, $usersId, $currentUserId = null)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+            return null;
+        }
+
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $workspace, "calendar" => $calendar));
+
+        if(!$calendarLink){
+            return null;
+        }
+
+        $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
+
+        if(!$event || $event->getCalendar()->getId() != $calendarId){
+            return null;
+        }
+
+        foreach ($usersId as $userId){
+            $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
+            $userLinked = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findOneBy(Array("user"=>$user, "event"=>$event));
+            $this->doctrine->remove($userLinked);
+        }
+        $this->doctrine->flush();
+
+        return true;
+    }
+
+    public function getEventsForWorkspace($workspaceId, $from, $to, $calendarsId, $currentUserId = null)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
+            return null;
+        }
+
+        $events = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->getCalendarsEventsBy($from, $to, $calendarsId);
+
+        return $events;
+    }
+
+    public function getEventsForUser($workspaceId, $from, $to, $currentUserId)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
+            return null;
+        }
+
+        $eventsLinks = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->getForUser($from, $to, $currentUserId);
+
+        $events = Array();
+        foreach ($eventsLinks as $eventLink){
+            $events[] = $eventLink->getEvent();
+        }
+
+        return $events;
+
+    }
 }

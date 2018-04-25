@@ -12,8 +12,7 @@ class StreamMemberRepository extends \Doctrine\ORM\EntityRepository
 {
 
 	public function removeStream($stream){
-		$qb = $this->createQueryBuilder();
-		$qb->delete('StreamMember', 's');
+		$qb = $this->createQueryBuilder("s");
 		$qb->where('s.stream = :stream');
 		$qb->setParameter('stream', $stream);
 	}

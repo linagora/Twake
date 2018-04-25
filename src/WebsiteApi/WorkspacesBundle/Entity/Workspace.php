@@ -30,7 +30,13 @@ class Workspace
 	 */
 	private $name;
 
-	/**
+    /**
+     * @ORM\Column(name="uniquename", type="string", length=50, nullable=true)
+     */
+    private $uniqueName;
+
+
+    /**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
 	 */
 	private $logo;
@@ -108,6 +114,22 @@ class Workspace
 	{
 		$this->name = $name;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getUniqueName()
+    {
+        return $this->uniqueName;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setUniqueName($name)
+    {
+        $this->uniqueName = $name;
+    }
 
 	/**
 	 * @return mixed
@@ -224,7 +246,8 @@ class Workspace
 			"wallpaper" => (($this->getWallpaper())?$this->getWallpaper()->getPublicURL():""),
 			"group" => (($this->getGroup())?$this->getGroup()->getAsArray():null),
 			"name" => $this->getName(),
-            "total_members" => $this->getMemberCount()
+            "total_members" => $this->getMemberCount(),
+            "uniqueName" => $this->getUniqueName()
 		);
 	}
 

@@ -29,13 +29,12 @@ class DefaultController extends Controller
             "errors" => Array()
         );
 
-        $file = $this->get("app.messages")->sendMessage($userId, $streamId, true, $appId, false, null, $workspaceId, $subjectId, Array("iframe" => $url));
+        $message = $this->get("app.messages")->sendMessage($userId, $streamId, true, $appId, false, null, $workspaceId, $subjectId, Array("iframe" => $url));
 
-        if (!$file) {
+        if (!$message) {
             $data["errors"][] = 3001;
         } else {
-            $data["data"]["filename"] = $file->getName();
-            $data["data"]["fileId"] = $file->getId();
+            $data["data"] = "success";
         }
 
         return new JsonResponse($data);

@@ -40,7 +40,7 @@ class Calendar {
     public  function __construct($title,$color)
     {
         $this->setTitle($title);
-        $this->setCoplor($color);
+        $this->setColor($color);
     }
 
     /**
@@ -110,7 +110,7 @@ class Calendar {
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
-            "title" => $this->getTitle(),
+            "name" => $this->getTitle(),
             "color" => $this->getColor(),
             "workspaces_number" => $this->getWorkspacesNumber(),
         );

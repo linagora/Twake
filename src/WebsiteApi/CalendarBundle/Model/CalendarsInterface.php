@@ -21,6 +21,9 @@ interface CalendarsInterface
     public function createCalendar($workspaceId, $label, $color, $currentUserId = null);
 
     // @removeCalendar remove a calendar
+    public function updateCalendar($workspaceId, $calendarId, $label, $color, $currentUserId = null);
+
+    // @removeCalendar remove a calendar
     public function removeCalendar($workspaceId, $calendarId, $currentUserId = null);
 
     // @shareCalendar share a calendar with an other workspace

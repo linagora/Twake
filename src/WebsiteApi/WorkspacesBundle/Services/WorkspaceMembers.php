@@ -3,6 +3,7 @@
 namespace WebsiteApi\WorkspacesBundle\Services;
 
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\GroupUser;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUserByMail;
 use WebsiteApi\WorkspacesBundle\Model\WorkspaceMembersInterface;
 
@@ -14,14 +15,16 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 	private $twake_mailer;
 	private $doctrine;
 	private $pusher;
+    private $pricing;
 
-	public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner,$pusher)
+	public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner,$pusher,$priceService)
 	{
 		$this->doctrine = $doctrine;
 		$this->wls = $workspaces_levels_service;
 		$this->string_cleaner = $string_cleaner;
 		$this->twake_mailer = $twake_mailer;
 		$this->pusher = $pusher;
+        $this->pricing = $priceService;
 	}
 
 	public function changeLevel($workspaceId, $userId, $levelId, $currentUserId = null)
@@ -187,8 +190,18 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$user = $userRepository->find($userId);
 			$workspace = $workspaceRepository->find($workspaceId);
 
-			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            if($workspace->getGroup()!=null) {
+                $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+                $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(),));
+                $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUSer", PHP_INT_MAX);
+
+                if (count($nbuserGroup) >= $limit) {
+                    return false;
+                }
+            }
+            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 			$member = $workspaceUserRepository->findOneBy(Array("workspace"=>$workspace, "user"=>$user));
+
 
 			if($member!=null){
 			    error_log("already added");
@@ -211,8 +224,19 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 			$workspace->setMemberCount($workspace->getMemberCount()+1);
 
+            $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupmember = $groupUserRepository->findOneBy(Array("group"=>$workspace->getGroup(), "user"=>$user));
+
+            if (!$groupmember){
+                $groupmember = new GroupUser($workspace->getGroup(),$user);
+                $groupmember->setLevel(0);
+            }else{
+                $groupmember->increaseNbWorkspace();
+            }
+
             $this->doctrine->persist($workspace);
 			$this->doctrine->persist($member);
+            $this->doctrine->persist($groupmember);
 			$this->doctrine->flush();
 
             $datatopush = Array(
@@ -260,6 +284,15 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 			$member = $workspaceUserRepository->findOneBy(Array("workspace"=>$workspace, "user"=>$user));
 
+            $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupmember = $groupUserRepository->findOneBy(Array("group"=>$workspace->getGroup(), "user"=>$user));
+
+            $groupmember->decreaseNbWorkspace();
+            $this->doctrine->persist($groupmember);
+            if ($groupmember->getNbWorkspace() == 0){
+                $this->doctrine->remove($groupmember);
+            }
+
             $datatopush = Array(
                 "action" => "RM",
                 "data"=>Array(
@@ -296,7 +329,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 		$members = $workspaceUserRepository->findBy(Array("workspace"=>$workspace));
 
 		foreach ($members as $member){
-			$this->doctrine->remove($member);
+			$this->removeMember($workspaceId,$member->getUser()->getId());
 		}
 
 		$this->doctrine->flush();

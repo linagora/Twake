@@ -1,20 +1,40 @@
 calendar_get_calendars:
-    path:     /get
+    path:     /calendars/get
     defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendars }
 calendar_create_calendar:
-    path:     /create
+    path:     /calendars/create
     defaults: { _controller: TwakeCalendarBundle:Calendar:createCalendar }
+calendar_update_calendar:
+    path:     /calendars/update
+    defaults: { _controller: TwakeCalendarBundle:Calendar:updateCalendar }
+calendar_remove_calendar:
+    path:     /calendars/remove
+    defaults: { _controller: TwakeCalendarBundle:Calendar:removeCalendar }
+calendar_share_calendar:
+    path:     /calendars/share
+    defaults: { _controller: TwakeCalendarBundle:Calendar:shareCalendar }
+calendar_unshare_calendar:
+    path:     /calendars/unshare
+    defaults: { _controller: TwakeCalendarBundle:Calendar:unshareCalendar }
+calendar_get_share_calendar:
+    path:     /calendars/getShare
+    defaults: { _controller: TwakeCalendarBundle:Calendar:getShareCalendar }
 
-calendar_get_events_user:
-    path:     /event/getByUser
-    defaults: { _controller: TwakeCalendarBundle:Event:getEventsByOwner }
-calendar_get_events_calendar:
-    path:     /event/getByCalendar
-    defaults: { _controller: TwakeCalendarBundle:Event:getEventsByCalendar }
-calendar_create_event:
-    path:     /event/create
-    defaults: { _controller: TwakeCalendarBundle:Event:createEvent }
-
-TEST_calendar_create_event:
-    path:     /event/update
-    defaults: { _controller: TwakeCalendarBundle:Event:updateEvent }
+calendar_events_get:
+    path:     /events/get
+    defaults: { _controller: TwakeCalendarBundle:Event:get }
+calendar_events_create:
+    path:     /events/create
+    defaults: { _controller: TwakeCalendarBundle:Event:create }
+calendar_events_update:
+    path:     /events/update
+    defaults: { _controller: TwakeCalendarBundle:Event:update }
+calendar_events_remove:
+    path:     /events/remove
+    defaults: { _controller: TwakeCalendarBundle:Event:remove }
+calendar_events_share:
+    path:     /events/addUsers
+    defaults: { _controller: TwakeCalendarBundle:Event:addUsers }
+calendar_events_unshare:
+    path:     /events/removeUsers
+    defaults: { _controller: TwakeCalendarBundle:Event:removeUsers }

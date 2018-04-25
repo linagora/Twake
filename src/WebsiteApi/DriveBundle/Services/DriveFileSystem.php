@@ -17,11 +17,12 @@ class DriveFileSystem implements DriveFileSystemInterface
 	var $doctrine;
 	var $root;
 	var $parameter_drive_salt;
-
-	public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt){
+    var $pricingService;
+	public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt,$pricing){
 		$this->doctrine = $doctrine;
 		$this->root = $rootDirectory;
 		$this->parameter_drive_salt = $parameter_drive_salt;
+		$this->pricingService = $pricing;
 	}
 
 	private function convertToEntity($var, $repository)
@@ -60,8 +61,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 		if ($group == null) {
 			return false;
 		}
-		return 50000000000;
-		//TODO return $group->getDriveSize();
+        $limit = $this->pricingService->getLimitation($group->getId(),"drive",222222222);
+
+        return $limit*100000;
+
 	}
 
 	public function setTotalSpace($group, $space)
