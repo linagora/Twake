@@ -57,7 +57,7 @@ class Groups implements GroupsInterface
 
 	}
 
-	public function changeData($groupId, $name, $thumbnailFile, $currentUserId = null)
+	public function changeData($groupId, $name, $currentUserId = null)
 	{
 		if($currentUserId==null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_DATA")){
 
@@ -65,9 +65,22 @@ class Groups implements GroupsInterface
 			$group = $groupRepository->find($groupId);
 
 			$group->setDisplayName($name);
-			$group->setLogo($thumbnailFile);
 
-			$this->doctrine->persist($group);
+            //Find a name
+            $groupUsingThisName = $groupRepository->findOneBy(Array("name" => $name));
+            $increment = 0;
+            $uniquenameIncremented = $name;
+            while($groupUsingThisName!=null) {
+                $groupUsingThisName = $groupRepository->findOneBy(Array("name" => $uniquenameIncremented));
+                $increment+=1;
+                if($groupUsingThisName!=null){
+                    $uniquenameIncremented = $name."-".$increment;
+                }
+            }
+
+            $group->setName($uniquenameIncremented);
+
+            $this->doctrine->persist($group);
 			$this->doctrine->flush();
 
 			return true;

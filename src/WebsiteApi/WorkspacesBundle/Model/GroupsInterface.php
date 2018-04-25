@@ -19,7 +19,7 @@ interface GroupsInterface
 	public function create($userId, $name, $uniquename, $planId);
 
 	// @changeData set group data
-	public function changeData($groupId, $name, $thumbnailFile, $currentUserId = null);
+	public function changeData($groupId, $name, $currentUserId = null);
 
 	// @changePlan set a plan id for a group
 	public function changePlan($groupId, $planId, $currentUserId = null);
