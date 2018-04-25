@@ -13,12 +13,14 @@ class Groups implements GroupsInterface
 	private $doctrine;
 	private $gms;
     private $market;
+    private $string_cleaner;
 
-	public function __construct($doctrine, $group_managers_service, $market_service)
+	public function __construct($doctrine, $group_managers_service, $market_service,$clean)
 	{
 		$this->doctrine = $doctrine;
 		$this->gms = $group_managers_service;
 		$this->market = $market_service;
+		$this->string_cleaner = $clean;
 	}
 
 	public function create($userId, $name, $uniquename, $planId)
@@ -69,7 +71,8 @@ class Groups implements GroupsInterface
             //Find a name
             $groupUsingThisName = $groupRepository->findOneBy(Array("name" => $name));
             $increment = 0;
-            $uniquenameIncremented = $name;
+            $uniquenameIncremented = $this->string_cleaner->simplify($name);
+
             while($groupUsingThisName!=null) {
                 $groupUsingThisName = $groupRepository->findOneBy(Array("name" => $uniquenameIncremented));
                 $increment+=1;
