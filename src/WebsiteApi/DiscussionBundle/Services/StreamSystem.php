@@ -99,6 +99,7 @@ class StreamSystem implements StreamSystemInterface
 		            ->removeStream($stream);
                 $this->doctrine->remove($stream);
                 $this->doctrine->flush();
+                $this->doctrine->clear();
                 return true;
             }
         }

@@ -152,7 +152,7 @@ class Notifications implements NotificationsInterface
 
     }
 
-	public function readAll($application, $workspace, $user, $code = null)
+	public function readAll($application, $workspace, $user, $code = null, $force=false)
 	{
 
 		$nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
@@ -177,7 +177,7 @@ class Notifications implements NotificationsInterface
 
 		}
 
-        if($count>0) {
+        if($count>0 || $force) {
             $this->doctrine->flush();
 
             $totalNotifications = $this->countAll($user);

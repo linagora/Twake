@@ -340,9 +340,10 @@ class MessageSystem implements MessagesSystemInterface
 
         $stream = $this->getStream($key, $user->getId());
         if (!$this->isAllowed($stream, $user)) {
-
             return false;
         }
+
+        $this->messagesNotificationCenter->read($stream["object"], $user, true);
 
         $vals = $this->convertKey($key, $user);
         $recieverId = $vals["id"];
