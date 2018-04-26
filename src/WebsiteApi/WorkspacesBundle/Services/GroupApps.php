@@ -121,11 +121,10 @@ class GroupApps implements GroupAppsInterface
 
     public function appUsed($groupId, $userId, $appId)
     {
-        $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-        $groupUser = $groupUserRepository->findBy(Array("group_id" => $groupId , "user_id" => $userId));
+        $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+        $groupUser = $groupUserRepository->findOneBy(Array("group" => $groupId , "user" => $userId));
 
         if ($groupUser == null) {
-            var_dump("J'AI PERDU MON PARI LOL");
             return false;
         }else{
 
