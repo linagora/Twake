@@ -85,13 +85,13 @@ class DailyCommand extends ContainerAwareCommand
                 }
 
             }
-        $this->mySecondCron($doctrine);
+        $this->mySecondCron($doctrine,$manager);
 
 
 
     }
 
-    public function mySecondCron($doctrine){
+    public function mySecondCron($doctrine,$manager){
         $groupUserRepository = $doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
         $groupPeriodUsageRepository = $doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
 
@@ -102,52 +102,61 @@ class DailyCommand extends ContainerAwareCommand
         foreach ($AllgroupPeriod as $gp) {
             $gp->setConnexions([]);
             $gp->setAppsUsage([]);
+            $manager->persist($gp);
         }
+
+        $manager->flush();
         foreach ($listGroupUser as $ga) {
-            $groupPeriod = $groupPeriodUsageRepository->findBy(Array("group"=>$ga->getId()));
+            $groupPeriod = $groupPeriodUsageRepository->findOneBy(Array("group"=>$ga->getGroup()));
             $connexions = $groupPeriod->getConnexions();
             $appsUsage = $groupPeriod->getAppsUsage();
+            $numberOfConnection = $ga->getConnections();
 
-            if($connexions <=1){
-                if(array_key_exists($connexions,"none")){
-                    $connexions["none"] = $connexions["none"] +1 ;
+            if($numberOfConnection <=1){
+                if(array_key_exists("none",$connexions)){
+                    $connexions["none"] = $connexions["none"] + $numberOfConnection ;
                 }else{
-                    $connexions["none"] = 1 ;
+                    $connexions["none"] = $numberOfConnection ;
                 }
-            }else if($connexions <10){
-                if(array_key_exists($connexions,"partial")){
-                    $connexions["partial"] = $connexions["partial"] +1 ;
+            }else if($numberOfConnection <10){
+                if(array_key_exists("partial",$connexions)){
+                    $connexions["partial"] = $connexions["partial"] + $numberOfConnection ;
                 }else{
-                    $connexions["partial"] = 1 ;
+                    $connexions["partial"] = $numberOfConnection ;
                 }
             }else{
-                if(array_key_exists($connexions,"total")){
-                    $connexions["total"] = $connexions["total"] +1 ;
+                if(array_key_exists("total",$connexions)){
+                    $connexions["total"] = $connexions["total"] + $numberOfConnection ;
                 }else{
-                    $connexions["total"] = 1 ;
+                    $connexions["total"] = $numberOfConnection ;
                 }
             }
+            $groupPeriod->setConnexions($connexions);
+            $manager->persist($groupPeriod);
+
             $usedApps = $ga->getUsedApps();
             foreach ($usedApps as $app => $value ){
                 if($value <=1){
-                    if(array_key_exists($appsUsage,"none")){
+                    if(array_key_exists("none",$appsUsage)){
                         $appsUsage["none"] = $appsUsage["none"] + $value ;
                     }else{
                         $appsUsage["none"] = $value ;
                     }
                 }else if($value <10){
-                    if(array_key_exists($appsUsage,"partial")){
+                    if(array_key_exists("partial",$appsUsage)){
                         $appsUsage["partial"] = $appsUsage["partial"] + $value ;
                     }else{
                         $appsUsage["partial"] = $value ;
                     }
                 }else{
-                    if(array_key_exists($appsUsage,"total")){
+                    if(array_key_exists("total",$appsUsage)){
                         $appsUsage["total"] = $appsUsage["total"] + $value ;
                     }else{
                         $appsUsage["total"] = $value ;
                     }
                 }
+                $groupPeriod->setAppsUsage($appsUsage);
+                $manager->persist($groupPeriod);
             }
             // mettre a jour currentEstimatedCost
             // calculer % de clef (none/partial..) * nb gens dedans
@@ -158,6 +167,7 @@ class DailyCommand extends ContainerAwareCommand
             if($groupPeriod->getCurrentEstimatedCost() > 1000 + $groupPeriod->getExpectedCost()){
 
             }
+            $manager->flush();
             // test si estimated_cost > const + expected_cost
         }
     }
