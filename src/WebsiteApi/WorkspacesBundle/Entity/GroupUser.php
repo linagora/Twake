@@ -59,6 +59,21 @@ class GroupUser
 	 */
 	private $date_added;
 
+    /**
+     * @ORM\Column(name="update_day", type="integer")
+     */
+    protected $lastDayOfUpdate;
+
+    /**
+     * @ORM\Column(name="connection_period", type="integer")
+     */
+    protected $connectionPeriod;
+
+    /**
+     * @ORM\Column(name="app_used_period", type="string", length=100000)
+     */
+    protected $appsUsagePeriod;
+
 	public function __construct($group, $user) {
 		$this->group = $group;
 		$this->user = $user;
@@ -67,6 +82,9 @@ class GroupUser
 		$this->nbWorkspace = 0;
 		$this->connected_today = false;
 		$this->apps = "[]";
+		$this->lastDayOfUpdate = date('z')+1;
+		$this->connectionPeriod = 0;
+		$this->appsUsagePeriod = "[]";
 	}
 
 	public function getId(){
@@ -130,21 +148,49 @@ class GroupUser
     }
 
     /**
-     * @param mixed $nbWorkspace
+     * @return mixed
      */
-    public function setNbWorkspace($nbWorkspace)
+    public function getLastDayOfUpdate()
     {
-        $this->nbWorkspace = $nbWorkspace;
+        if ($this->lastDayOfUpdate == null){
+            return date('z')+1;
+        }
+        return $this->lastDayOfUpdate;
     }
 
-    public function increaseNbWorkspace()
+    /**
+     * @param mixed $lastDayOfUpdate
+     */
+    public function setLastDayOfUpdate($lastDayOfUpdate)
     {
-        return $this->nbWorkspace = $this->nbWorkspace+1;
+        $this->lastDayOfUpdate = $lastDayOfUpdate;
     }
 
-    public function decreaseNbWorkspace()
+    /**
+     * @return mixed
+     */
+    public function getConnectionPeriod()
     {
-        return $this->nbWorkspace = $this->nbWorkspace-1;
+        if ($this->connectionPeriod == null){
+            return 0;
+        }
+        return $this->connectionPeriod;
+    }
+
+    /**
+     * @param mixed $connectionPeriod
+     */
+    public function setConnectionPeriod($connectionPeriod)
+    {
+        $this->connectionPeriod = $connectionPeriod;
+    }
+
+    /**
+     * @return  mixed $connectionPeriod+1
+     */
+    public function increaseConnectionPeriod()
+    {
+        return $this->connectionPeriod = $this->connectionPeriod+1;
     }
 
     /**
@@ -166,13 +212,51 @@ class GroupUser
         $this->apps = json_encode($apps);
     }
 
+
+    /**
+     * @param mixed $nbWorkspace
+     */
+    public function setNbWorkspace($nbWorkspace)
+    {
+        $this->nbWorkspace = $nbWorkspace;
+    }
+
+    public function increaseNbWorkspace()
+    {
+        return $this->nbWorkspace = $this->nbWorkspace+1;
+    }
+
+    public function decreaseNbWorkspace()
+    {
+        return $this->nbWorkspace = $this->nbWorkspace-1;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAppsUsagePeriod()
+    {
+        if ($this->appsUsagePeriod == null){
+            return Array();
+        }
+        return json_decode($this->appsUsagePeriod, true);
+    }
+
+    /**
+     * @param mixed $appsUsagePeriod
+     */
+    public function setAppsUsagePeriod($appsUsagePeriod)
+    {
+        $this->appsUsagePeriod = json_encode($appsUsagePeriod);
+    }
+
     /**
      * @return mixed
      */
     public function getConnectedToday()
     {
         if ($this->connected_today == null){
-            return 0;
+            return false;
         }
         return $this->connected_today;
     }
@@ -184,5 +268,4 @@ class GroupUser
     {
         $this->connected_today = $connected_today;
     }
-
 }
