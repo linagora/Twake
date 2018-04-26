@@ -97,7 +97,7 @@ class DailyCommand extends ContainerAwareCommand
 
         $listGroupUser = $groupUserRepository->findBy(Array());
 
-        $AllgroupPeriod = $groupPeriodUsageRepository->findBy(Array("group"=>$ga->getId()));
+        $AllgroupPeriod = $groupPeriodUsageRepository->findBy(Array());
 
         foreach ($AllgroupPeriod as $gp) {
             $gp->setConnexions([]);
@@ -106,6 +106,7 @@ class DailyCommand extends ContainerAwareCommand
         foreach ($listGroupUser as $ga) {
             $groupPeriod = $groupPeriodUsageRepository->findBy(Array("group"=>$ga->getId()));
             $connexions = $groupPeriod->getConnexions();
+            $appsUsage = $groupPeriod->getAppsUsage();
 
             if($connexions <=1){
                 if(array_key_exists($connexions,"none")){
@@ -126,6 +127,38 @@ class DailyCommand extends ContainerAwareCommand
                     $connexions["total"] = 1 ;
                 }
             }
+            $usedApps = $ga->getUsedApps();
+            foreach ($usedApps as $app => $value ){
+                if($value <=1){
+                    if(array_key_exists($appsUsage,"none")){
+                        $appsUsage["none"] = $appsUsage["none"] + $value ;
+                    }else{
+                        $appsUsage["none"] = $value ;
+                    }
+                }else if($value <10){
+                    if(array_key_exists($appsUsage,"partial")){
+                        $appsUsage["partial"] = $appsUsage["partial"] + $value ;
+                    }else{
+                        $appsUsage["partial"] = $value ;
+                    }
+                }else{
+                    if(array_key_exists($appsUsage,"total")){
+                        $appsUsage["total"] = $appsUsage["total"] + $value ;
+                    }else{
+                        $appsUsage["total"] = $value ;
+                    }
+                }
+            }
+            // mettre a jour currentEstimatedCost
+            // calculer % de clef (none/partial..) * nb gens dedans
+            // valeur min =
+            //              max ( 1, 1%*nbUsers ) * pricing
+            //valeur final = max (valeur Min, )
+
+            if($groupPeriod->getCurrentEstimatedCost() > 1000 + $groupPeriod->getExpectedCost()){
+
+            }
+            // test si estimated_cost > const + expected_cost
         }
     }
 
