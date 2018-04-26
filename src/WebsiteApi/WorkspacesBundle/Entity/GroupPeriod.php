@@ -115,7 +115,7 @@ class GroupPeriod
      */
     public function getConnexions()
     {
-        return $this->connexions;
+        return json_decode($this->connexions,true);
     }
 
     /**
@@ -123,7 +123,7 @@ class GroupPeriod
      */
     public function setConnexions($connexions)
     {
-        $this->connexions = $connexions;
+        $this->connexions = json_encode($connexions);
     }
 
     /**
@@ -131,7 +131,7 @@ class GroupPeriod
      */
     public function getAppsUsage()
     {
-        return $this->appsUsage;
+        return json_decode($this->appsUsage,true);
     }
 
     /**
@@ -139,7 +139,7 @@ class GroupPeriod
      */
     public function setAppsUsage($appsUsage)
     {
-        $this->appsUsage = $appsUsage;
+        $this->appsUsage = json_encode($appsUsage);
     }
 
     /**
