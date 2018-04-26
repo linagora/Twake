@@ -136,12 +136,12 @@ class GroupApps implements GroupAppsInterface
                 return true;
             }else{
 
-                if (!$groupUser->getConnectedToday()){
-                    $groupUser->setConnectedToday(true);
+                if (!$groupUser->getDidConnect()){
+                    $groupUser->setDidConnect(true);
                 }
 
                 $appUsed[] = $appId;
-                $groupUser->setApps($appUsed);
+                $groupUser->setAppsUsage($appUsed);
 
                 $this->doctrine->persist($groupUser);
                 $this->doctrine->flush();

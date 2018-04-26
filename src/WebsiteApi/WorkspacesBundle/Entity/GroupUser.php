@@ -42,12 +42,12 @@ class GroupUser
     /**
      * @ORM\Column(type="boolean")
      */
-    private $connected_today;
+    private $didConnect;
 
     /**
      * @ORM\Column(name="app_used_today", type="string", length=100000)
      */
-    protected $apps;
+    protected $usedApps;
 
     /**
      * @ORM\Column(name="nb_workspace", type="integer")
@@ -60,19 +60,19 @@ class GroupUser
 	private $date_added;
 
     /**
-     * @ORM\Column(name="update_day", type="integer")
+     * @ORM\Column(name="last_update_day", type="integer")
      */
     protected $lastDayOfUpdate;
 
     /**
-     * @ORM\Column(name="connection_period", type="integer")
+     * @ORM\Column(name="nbConnection", type="integer")
      */
-    protected $connectionPeriod;
+    protected $connections;
 
     /**
      * @ORM\Column(name="app_used_period", type="string", length=100000)
      */
-    protected $appsUsagePeriod;
+    protected $appsUsage;
 
 	public function __construct($group, $user) {
 		$this->group = $group;
@@ -80,11 +80,11 @@ class GroupUser
 		$this->level = 0;
 		$this->date_added = new \DateTime();
 		$this->nbWorkspace = 0;
-		$this->connected_today = false;
-		$this->apps = "[]";
+		$this->didConnect = false;
+		$this->usedApps = "[]";
 		$this->lastDayOfUpdate = date('z')+1;
-		$this->connectionPeriod = 0;
-		$this->appsUsagePeriod = "[]";
+		$this->connections = 0;
+		$this->appsUsage = "[]";
 	}
 
 	public function getId(){
@@ -169,20 +169,20 @@ class GroupUser
     /**
      * @return mixed
      */
-    public function getConnectionPeriod()
+    public function getConnections()
     {
-        if ($this->connectionPeriod == null){
+        if ($this->connections == null){
             return 0;
         }
-        return $this->connectionPeriod;
+        return $this->connections;
     }
 
     /**
-     * @param mixed $connectionPeriod
+     * @param mixed $connections
      */
-    public function setConnectionPeriod($connectionPeriod)
+    public function setConnections($connections)
     {
-        $this->connectionPeriod = $connectionPeriod;
+        $this->connections = $connections;
     }
 
     /**
@@ -190,26 +190,26 @@ class GroupUser
      */
     public function increaseConnectionPeriod()
     {
-        return $this->connectionPeriod = $this->connectionPeriod+1;
+        return $this->connections = $this->connections+1;
     }
 
     /**
      * @return mixed
      */
-    public function getApps()
+    public function getUsedApps()
     {
-        if ($this->apps == null){
+        if ($this->usedApps == null){
             return Array();
         }
-        return json_decode($this->apps, true);
+        return json_decode($this->usedApps, true);
     }
 
     /**
-     * @param mixed $apps
+     * @param mixed $usedApps
      */
-    public function setApps($apps)
+    public function setUsedApps($usedApps)
     {
-        $this->apps = json_encode($apps);
+        $this->usedApps = json_encode($usedApps);
     }
 
 
@@ -234,38 +234,38 @@ class GroupUser
     /**
      * @return mixed
      */
-    public function getAppsUsagePeriod()
+    public function getAppsUsage()
     {
-        if ($this->appsUsagePeriod == null){
+        if ($this->appsUsage == null){
             return Array();
         }
-        return json_decode($this->appsUsagePeriod, true);
+        return json_decode($this->appsUsage, true);
     }
 
     /**
-     * @param mixed $appsUsagePeriod
+     * @param mixed $appsUsage
      */
-    public function setAppsUsagePeriod($appsUsagePeriod)
+    public function setAppsUsage($appsUsage)
     {
-        $this->appsUsagePeriod = json_encode($appsUsagePeriod);
+        $this->appsUsage = json_encode($appsUsage);
     }
 
     /**
      * @return mixed
      */
-    public function getConnectedToday()
+    public function getDidConnect()
     {
-        if ($this->connected_today == null){
+        if ($this->didConnect == null){
             return false;
         }
-        return $this->connected_today;
+        return $this->didConnect;
     }
 
     /**
-     * @param mixed $connected_today
+     * @param mixed $didConnect
      */
-    public function setConnectedToday($connected_today)
+    public function setDidConnect($didConnect)
     {
-        $this->connected_today = $connected_today;
+        $this->didConnect = $didConnect;
     }
 }
