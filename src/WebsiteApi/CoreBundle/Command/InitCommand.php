@@ -84,7 +84,16 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
 
     $services = $this->getApplication()->getKernel()->getContainer();
 
+      /**
+       * Initialisation des groupPeriod
+       */
+      $groupAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Group");
 
+      $groups = $groupAppRepository->findBy(Array());
+      foreach ( $groups as $g ){
+          $services->get("app.group_period")->init($g);
+      }
+      error_log("Init groupPeriod");
 
   }
 
