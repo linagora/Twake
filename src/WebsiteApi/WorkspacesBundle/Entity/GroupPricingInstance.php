@@ -6,7 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 
 
 /**
- * GroupPeriod
+ * GroupPricingInstance
  *
  * @ORM\Table(name="group_pricing",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupPricingInstanceRepository")
@@ -34,7 +34,7 @@ class GroupPricingInstance
     protected $cost;
 
     /**
-     * @ORM\Column(name="billed_type", type="string", length=10)
+     * @ORM\Column(name="billed_type", type="string", length=25)
      */
     protected $billedType;
 
@@ -60,7 +60,105 @@ class GroupPricingInstance
 		$this->billedType = $billtype;
         $this->originalPricingReference = $pricing;
 		$this->startedAt = new \DateTime();
-        $this->endAt = new \DateTime();;
+        $this->endAt = new \DateTime();
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * @param mixed $group
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCost()
+    {
+        return $this->cost;
+    }
+
+    /**
+     * @param mixed $cost
+     */
+    public function setCost($cost)
+    {
+        $this->cost = $cost;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBilledType()
+    {
+        return $this->billedType;
+    }
+
+    /**
+     * @param mixed $billedType
+     */
+    public function setBilledType($billedType)
+    {
+        $this->billedType = $billedType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOriginalPricingReference()
+    {
+        return $this->originalPricingReference;
+    }
+
+    /**
+     * @param mixed $originalPricingReference
+     */
+    public function setOriginalPricingReference($originalPricingReference)
+    {
+        $this->originalPricingReference = $originalPricingReference;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStartedAt()
+    {
+        return $this->startedAt;
+    }
+
+    /**
+     * @param mixed $startedAt
+     */
+    public function setStartedAt($startedAt)
+    {
+        $this->startedAt = $startedAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEndAt()
+    {
+        return $this->endAt;
+    }
+
+    /**
+     * @param mixed $endAt
+     */
+    public function setEndAt($endAt)
+    {
+        $this->endAt = $endAt;
+    }
+
+
 
 }

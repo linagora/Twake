@@ -152,7 +152,7 @@ class GroupUser
      */
     public function getLastDayOfUpdate()
     {
-        if ($this->lastDayOfUpdate == null){
+        if ($this->lastDayOfUpdate == 0){
             return date('z')+1;
         }
         return $this->lastDayOfUpdate;
@@ -171,9 +171,6 @@ class GroupUser
      */
     public function getConnections()
     {
-        if ($this->connections == null){
-            return 0;
-        }
         return $this->connections;
     }
 
