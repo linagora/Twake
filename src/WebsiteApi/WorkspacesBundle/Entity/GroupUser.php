@@ -40,6 +40,16 @@ class GroupUser
 	protected $level;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $connected_today;
+
+    /**
+     * @ORM\Column(name="app_used_today", type="string", length=100000)
+     */
+    protected $apps;
+
+    /**
      * @ORM\Column(name="nb_workspace", type="integer")
      */
     protected $nbWorkspace;
@@ -55,6 +65,8 @@ class GroupUser
 		$this->level = 0;
 		$this->date_added = new \DateTime();
 		$this->nbWorkspace = 0;
+		$this->connected_today = false;
+		$this->apps = "[]";
 	}
 
 	public function getId(){
@@ -133,6 +145,44 @@ class GroupUser
     public function decreaseNbWorkspace()
     {
         return $this->nbWorkspace = $this->nbWorkspace-1;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getApps()
+    {
+        if ($this->apps == null){
+            return Array();
+        }
+        return json_decode($this->apps, true);
+    }
+
+    /**
+     * @param mixed $apps
+     */
+    public function setApps($apps)
+    {
+        $this->apps = json_encode($apps);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConnectedToday()
+    {
+        if ($this->connected_today == null){
+            return 0;
+        }
+        return $this->connected_today;
+    }
+
+    /**
+     * @param mixed $connected_today
+     */
+    public function setConnectedToday($connected_today)
+    {
+        $this->connected_today = $connected_today;
     }
 
 }

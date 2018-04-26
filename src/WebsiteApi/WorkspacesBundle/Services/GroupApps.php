@@ -119,4 +119,35 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
+    public function appUsed($groupId, $userId, $appId)
+    {
+        $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $groupUser = $groupUserRepository->findBy(Array("group_id" => $groupId , "user_id" => $userId));
+
+        if ($groupUser == null) {
+            var_dump("J'AI PERDU MON PARI LOL");
+            return false;
+        }else{
+
+            $appUsed = $groupUser->getApps();
+            if ( in_array($appId,$appUsed) ){
+                return true;
+            }else{
+
+                if (!$groupUser->getConnectedToday()){
+                    $groupUser->setConnectedToday(true);
+                }
+                $appUsed[] = $appId;
+                $groupUser->setApps($appUsed);
+
+                $this->doctrine->persist($groupUser);
+                $this->doctrine->flush();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 }

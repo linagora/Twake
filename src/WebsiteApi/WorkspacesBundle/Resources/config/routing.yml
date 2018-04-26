@@ -57,6 +57,10 @@ twake_groups_set_name:
     defaults: { _controller: TwakeWorkspacesBundle:Group:changeName }
 
 twake_groups_get_apps:
+    path:     /group/app/use
+    defaults: { _controller: TwakeWorkspacesBundle:GroupApps:appUsed }
+
+twake_groups_get_apps:
     path:     /group/apps/get
     defaults: { _controller: TwakeWorkspacesBundle:GroupApps:getApps }
 
