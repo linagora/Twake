@@ -88,6 +88,7 @@ class GroupPeriod
 		$this->periodStartedAt = new \DateTime();
         $this->periodEndedAt = null;
         $this->periodExpectedToEndAt = $groupPricing->getEndAt();
+        $this->groupPricingInstance = $groupPricing;
         $this->current = true;
         $this->billed = false;
         $this->currentEstimatedCost = 0;
@@ -269,6 +270,24 @@ class GroupPeriod
     {
         $this->expectedCost = $expectedCost;
     }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+
 
 
 }

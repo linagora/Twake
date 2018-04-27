@@ -131,7 +131,7 @@ class GroupApps implements GroupAppsInterface
             return false;
         }else{
 
-            $appUsed = $groupUser->getApps();
+            $appUsed = $groupUser->getAppsUsage();
             if ( in_array($appId,$appUsed) ){
                 return true;
             }else{
