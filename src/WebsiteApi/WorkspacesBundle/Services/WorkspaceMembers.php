@@ -289,9 +289,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $groupmember->decreaseNbWorkspace();
             $this->doctrine->persist($groupmember);
-            if ($groupmember->getNbWorkspace() == 0){
-                $this->doctrine->remove($groupmember);
-            }
 
             $datatopush = Array(
                 "action" => "RM",

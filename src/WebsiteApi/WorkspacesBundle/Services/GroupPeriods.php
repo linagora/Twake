@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\WorkspacesBundle\Services;
 
+use WebsiteApi\WorkspacesBundle\Entity\ArchivedGroupPeriod;
 use WebsiteApi\WorkspacesBundle\Entity\Group;
 use WebsiteApi\WorkspacesBundle\Entity\GroupManager;
 use WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance;
@@ -18,6 +19,77 @@ class GroupPeriods implements GroupPeriodInterface
 		$this->doctrine = $doctrine;
 		$this->pricing = $pricing;
 	}
+
+	public function changePlanOrBill($group, $billingType ,$planId){
+
+        $groupPricingInstanceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+        $groupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
+
+        $groupPeriodRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+        $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
+
+        $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+        $groupUsers = $groupUserRepository->findBy(Array("group" => $group));
+
+        $pricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
+        $pricing = $pricingRepository->findOneBy(Array("id" => $planId));
+
+        if(!$groupPeriod){
+            return false;
+        }else{
+
+            if($groupPricingInstance){
+                if ($groupPricingInstance->getOriginalPricingReference()->getId() == $planId &&
+                    $groupPricingInstance->getBilledType() == $billingType
+                ){//pas de changement de pricing
+                    $billed = true;
+                }else{
+                    $billed = false;
+                }
+            }else{
+                $billed = true;
+            }
+
+            $archivedGroupPeriod = new ArchivedGroupPeriod($groupPeriod,$billed);
+            $newGroupPricing = new GroupPricingInstance($group ,$billingType,$pricing );
+            $date = new \DateTime();
+            if ($billingType == "monthly"){
+                $date->modify('+1 month');
+            }
+            if ($billingType == "yearly"){
+                $date->modify('+1 year');
+            }
+            $newGroupPricing->setEndAt($date);
+            $newGroupPeriod = new GroupPeriod($group,$newGroupPricing);
+            $newGroupPeriod->setGroupPricingInstance($newGroupPricing);
+
+            if($groupPricingInstance){
+                $this->doctrine->remove($groupPricingInstance);
+            }
+            $this->doctrine->remove($groupPeriod);
+
+            //TODO CALCUL COUT
+
+            //Reset user period utilisation
+            foreach ($groupUsers as $groupUser){//User left between two periods, it can be removed
+                if ($groupUser->getNbWorkspace() == 0){
+                    $this->doctrine->remove($groupUser);
+                }else{
+                    $groupUser->setConnections(0);
+                    $groupUser->setUsedApps(Array());
+                    $this->doctrine->persist($groupUser);
+                }
+            }
+
+            $this->doctrine->persist($archivedGroupPeriod);
+            $this->doctrine->persist($newGroupPricing);
+            $this->doctrine->persist($newGroupPeriod);
+            $this->doctrine->flush();
+            return true;
+        }
+
+
+    }
 
     public function init($group){
         $groupPeriodRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");

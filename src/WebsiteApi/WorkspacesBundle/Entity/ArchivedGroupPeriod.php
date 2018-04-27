@@ -3,15 +3,17 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
+
 
 
 /**
  * GroupPeriod
  *
- * @ORM\Table(name="group_period",options={"engine":"MyISAM"})
+ * @ORM\Table(name="archived_group_period",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupPeriodRepository")
  */
-class GroupPeriod
+class ArchivedGroupPeriod
 {
 
     /**
@@ -68,17 +70,24 @@ class GroupPeriod
      */
     protected $expectedCost;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $billed;
 
-	public function __construct($group, $groupPricing) {
-		$this->group = $group;
-		$this->connexions = "{}";
-        $this->appsUsage = "{}";
-		$this->periodStartedAt = new \DateTime();
-        $this->periodEndedAt = null;
-        $this->periodExpectedToEndAt = $groupPricing->getEndAt();
-        $this->groupPricingInstance = null;
-        $this->currentEstimatedCost = 0;
-        $this->expectedCost= 0;
+
+
+	public function __construct($groupPeriod, $billed) {
+		$this->group = $groupPeriod->getGroup();
+		$this->setConnexions($groupPeriod->getConnexions());
+		$this->setAppsUsage($groupPeriod->getAppsUsage());
+		$this->periodStartedAt = $groupPeriod->getPeriodStartedAt();
+        $this->periodEndedAt = $groupPeriod->getPeriodEndedAt();
+        $this->periodExpectedToEndAt = $groupPeriod->getPeriodExpectedToEndAt();
+        $this->groupPricingInstance = $groupPeriod->getGroupPricingInstance();
+        $this->currentEstimatedCost = $groupPeriod->getCurrentEstimatedCost();
+        $this->expectedCost = $groupPeriod->getExpectedCost();
+        $this->billed = $billed;
 	}
 
     /**
