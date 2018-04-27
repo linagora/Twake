@@ -33,6 +33,8 @@ class GroupPeriods implements GroupPeriodInterface
             $date->modify('+1 month');
             $groupPricing->setEndAt($date);
             $groupPeriod = new GroupPeriod($group,$groupPricing);
+            $groupPeriod->setGroupPricingInstance($groupPricing);
+
             $this->doctrine->persist($groupPricing);
             $this->doctrine->persist($groupPeriod);
             $this->doctrine->flush();

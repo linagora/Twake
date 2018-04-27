@@ -60,9 +60,8 @@ class GroupPeriod
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance")
-     * @ORM\Column(nullable=true)
      */
-    private $groupPricingInstance = null    ;
+    private $groupPricingInstance;
 
     /**
      * @ORM\Column(type="boolean")
@@ -88,7 +87,7 @@ class GroupPeriod
 		$this->periodStartedAt = new \DateTime();
         $this->periodEndedAt = null;
         $this->periodExpectedToEndAt = $groupPricing->getEndAt();
-        $this->groupPricingInstance = $groupPricing;
+        $this->groupPricingInstance = null;
         $this->current = true;
         $this->billed = false;
         $this->currentEstimatedCost = 0;
@@ -221,6 +220,7 @@ class GroupPeriod
     public function setGroupPricingInstance($groupPricingInstance)
     {
         $this->groupPricingInstance = $groupPricingInstance;
+        $this->periodExpectedToEndAt = $groupPricingInstance->getEndAt();
     }
 
     /**
