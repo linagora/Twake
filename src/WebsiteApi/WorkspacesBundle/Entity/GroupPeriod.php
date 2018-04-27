@@ -69,13 +69,15 @@ class GroupPeriod
     protected $expectedCost;
 
 
-	public function __construct($group, $groupPricing) {
+	public function __construct($group) {
 		$this->group = $group;
 		$this->connexions = "{}";
         $this->appsUsage = "{}";
 		$this->periodStartedAt = new \DateTime();
         $this->periodEndedAt = null;
-        $this->periodExpectedToEndAt = $groupPricing->getEndAt();
+        $datefin = new \DateTime();
+        $datefin->modify('+1 month');
+        $this->periodExpectedToEndAt = $datefin;
         $this->groupPricingInstance = null;
         $this->currentEstimatedCost = 0;
         $this->expectedCost= 0;

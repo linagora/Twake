@@ -77,7 +77,7 @@ class ArchivedGroupPeriod
 
 
 
-	public function __construct($groupPeriod, $billed) {
+	public function __construct($groupPeriod) {
 		$this->group = $groupPeriod->getGroup();
 		$this->setConnexions($groupPeriod->getConnexions());
 		$this->setAppsUsage($groupPeriod->getAppsUsage());
@@ -87,7 +87,7 @@ class ArchivedGroupPeriod
         $this->groupPricingInstance = $groupPeriod->getGroupPricingInstance();
         $this->currentEstimatedCost = $groupPeriod->getCurrentEstimatedCost();
         $this->expectedCost = $groupPeriod->getExpectedCost();
-        $this->billed = $billed;
+        $this->billed = true;
 	}
 
     /**

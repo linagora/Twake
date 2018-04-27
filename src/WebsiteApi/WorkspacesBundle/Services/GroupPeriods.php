@@ -20,7 +20,7 @@ class GroupPeriods implements GroupPeriodInterface
 		$this->pricing = $pricing;
 	}
 
-	public function changePlanOrBill($group, $billingType ,$planId){
+	public function changePlanOrRenew($group, $billingType ,$planId){
 
         $groupPricingInstanceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
         $groupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
@@ -38,29 +38,19 @@ class GroupPeriods implements GroupPeriodInterface
             return false;
         }else{
 
-            if($groupPricingInstance){
-                if ($groupPricingInstance->getOriginalPricingReference()->getId() == $planId &&
-                    $groupPricingInstance->getBilledType() == $billingType
-                ){//pas de changement de pricing
-                    $billed = true;
-                }else{
-                    $billed = false;
-                }
-            }else{
-                $billed = true;
-            }
-
-            $archivedGroupPeriod = new ArchivedGroupPeriod($groupPeriod,$billed);
+            $archivedGroupPeriod = new ArchivedGroupPeriod($groupPeriod);
             $newGroupPricing = new GroupPricingInstance($group ,$billingType,$pricing );
             $date = new \DateTime();
+
             if ($billingType == "monthly"){
                 $date->modify('+1 month');
             }
             if ($billingType == "yearly"){
                 $date->modify('+1 year');
             }
+
             $newGroupPricing->setEndAt($date);
-            $newGroupPeriod = new GroupPeriod($group,$newGroupPricing);
+            $newGroupPeriod = new GroupPeriod($group);
             $newGroupPeriod->setGroupPricingInstance($newGroupPricing);
 
             if($groupPricingInstance){
