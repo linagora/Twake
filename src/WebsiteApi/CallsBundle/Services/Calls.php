@@ -181,7 +181,7 @@ class Calls implements CallSystemInterface
 			    "discussionKey" => $discussionKey,
             )
 		);
-		$this->pusher->push($datatopush, "discussion_topic",Array("key"=>$discussionKey));
+		$this->pusher->push($datatopush, "discussion/".$discussionKey);
 
 	}
 

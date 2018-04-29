@@ -2,11 +2,11 @@ services:
 
     app.calendar_events:
         class: WebsiteApi\CalendarBundle\Services\CalendarEvents
-        arguments: ["@doctrine.orm.entity_manager", '@gos_web_socket.zmq.pusher', '@app.workspace_levels']
+        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels']
 
     app.calendars:
         class: WebsiteApi\CalendarBundle\Services\Calendars
-        arguments: ["@doctrine.orm.entity_manager", '@gos_web_socket.zmq.pusher', '@app.workspace_levels']
+        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels']
 
     calendar.topic:
         class: WebsiteApi\CalendarBundle\Topic\CalendarTopic

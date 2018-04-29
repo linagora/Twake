@@ -64,7 +64,7 @@ class User implements UserInterface
 
 		if($user != null){
 
-			$this->pusher->push(true, 'connections_topic', ["id_user"=>$user->getId()]);
+			$this->pusher->push(true, 'connections/'.$user->getId());
 
 			$user->isActive();
 			$this->em->persist($user);

@@ -78,7 +78,7 @@ class Calendars implements CalendarsInterface
                 "type" => "update",
                 "calendar" => $cal->getAsArray()
             );
-            $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$workspaceId));
+            $this->pusher->push($data, "calendar/workspace/".$workspaceId);
 
             return $cal;
         }
@@ -108,7 +108,7 @@ class Calendars implements CalendarsInterface
             "type" => "update",
             "calendar" => $calendar->getAsArray()
         );
-        $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$workspaceId));
+        $this->pusher->push($data, "calendar/workspace/".$workspaceId);
 
         return $calendar;
 
@@ -138,7 +138,7 @@ class Calendars implements CalendarsInterface
             "type" => "remove",
             "calendar_id" => $calendarId
         );
-        $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$workspaceId));
+        $this->pusher->push($data, "calendar/workspace/".$workspaceId);
 
     }
 
@@ -170,8 +170,8 @@ class Calendars implements CalendarsInterface
             "type" => "update",
             "calendar" => $calendar->getAsArray()
         );
-        $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$workspaceId));
-        $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$other_workspaceId));
+        $this->pusher->push($data, "calendar/workspace/".$workspaceId);
+        $this->pusher->push($data, "calendar/workspace/".$other_workspaceId);
 
 
     }
@@ -205,14 +205,14 @@ class Calendars implements CalendarsInterface
                 "type" => "update",
                 "calendar" => $calendar->getAsArray()
             );
-            $this->pusher->push($data, "calendar_workspace_topic", Array("id" => $workspaceId));
+            $this->pusher->push($data, "calendar/workspace/".$workspaceId);
         }
 
         $data = Array(
             "type" => "delete",
             "calendar_id" => $calendarId
         );
-        $this->pusher->push($data, "calendar_workspace_topic", Array("id"=>$other_workspaceId));
+        $this->pusher->push($data, "calendar/workspace/".$other_workspaceId);
 
     }
 

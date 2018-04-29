@@ -140,7 +140,7 @@ class Notifications implements NotificationsInterface
 			}
 
 			$data["action"] = "add";
-			$this->pusher->push($data, "notifications_topic", Array("id_user" => $user->getId()));
+			$this->pusher->push($data, "notifications/".$user->getId());
 
 
 
@@ -187,7 +187,7 @@ class Notifications implements NotificationsInterface
                 "workspace_id"=>($workspace)?$workspace->getId():null,
                 "app_id"=>($application)?$application->getId():null
             );
-    		$this->pusher->push($data, "notifications_topic", Array("id_user" => $user->getId()));
+    		$this->pusher->push($data, "notifications/".$user->getId());
 
             $this->updateDeviceBadge($user, $totalNotifications);
         }

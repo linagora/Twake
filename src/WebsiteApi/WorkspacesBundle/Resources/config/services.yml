@@ -22,7 +22,7 @@ services:
 
     app.workspace_members:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceMembers
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner","@gos_web_socket.zmq.pusher","@app.pricing_plan"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner","@app.pusher","@app.pricing_plan"]
 
     app.workspaces:
         class: WebsiteApi\WorkspacesBundle\Services\Workspaces

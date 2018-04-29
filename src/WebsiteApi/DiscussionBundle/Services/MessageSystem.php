@@ -548,7 +548,7 @@ class MessageSystem implements MessagesSystemInterface
             "type" => $type,
             "data" => $messageArray,
         );
-        $this->pusher->push($data, "discussion_topic", Array("key" => $discussionKey));
+        $this->pusher->push($data, "discussion/".$discussionKey);
     }
 
 

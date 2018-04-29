@@ -1,19 +1,19 @@
 services:
     app.messages:
             class: WebsiteApi\DiscussionBundle\Services\MessageSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker', "@app.command_executor", '@gos_web_socket.zmq.pusher','@app.workspace_levels','@app.drive.FileSystem', '@app.messagesNotificationsCenter', '@app.user_stats', '@app.workspace_stats']
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker', "@app.command_executor", '@app.pusher','@app.workspace_levels','@app.drive.FileSystem', '@app.messagesNotificationsCenter', '@app.user_stats', '@app.workspace_stats']
 
     app.streamSystem:
             class: WebsiteApi\DiscussionBundle\Services\StreamSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher', '@app.contacts', '@app.workspace_levels', '@app.workspace_members','@app.messagesNotificationsCenter','@app.callSystem',"@app.messages"]
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@app.pusher', '@app.contacts', '@app.workspace_levels', '@app.workspace_members','@app.messagesNotificationsCenter','@app.callSystem',"@app.messages"]
 
     app.subjectSystem:
             class: WebsiteApi\DiscussionBundle\Services\SubjectSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@gos_web_socket.zmq.pusher','@app.workspace_levels','@app.messages']
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@app.pusher','@app.workspace_levels','@app.messages']
 
     app.messagesNotificationsCenter:
             class: WebsiteApi\DiscussionBundle\Services\MessagesNotificationsCenter
-            arguments: [ "@doctrine.orm.entity_manager","@app.notifications",'@gos_web_socket.zmq.pusher', "@app.workspaces"]
+            arguments: [ "@doctrine.orm.entity_manager","@app.notifications",'@app.pusher', "@app.workspaces"]
 
 
     discussion.topic:

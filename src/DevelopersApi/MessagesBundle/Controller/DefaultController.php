@@ -17,7 +17,7 @@ class DefaultController extends Controller
             return new JsonResponse($request["errors"]);
         }
 
-        $workspaceId = isset($requestData["workspaceId"]) ? $requestData["workspaceId"] : 0;
+        $workspaceId = $request["workspace"]->getId();
         $streamId = isset($requestData["streamId"]) ? $requestData["streamId"] : 0;
         $subjectId = isset($requestData["subjectId"]) ? $requestData["subjectId"] : 0;
         $userId = isset($requestData["userId"]) ? $requestData["userId"] : 0;
