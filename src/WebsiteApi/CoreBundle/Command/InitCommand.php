@@ -84,66 +84,22 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
 
     $services = $this->getApplication()->getKernel()->getContainer();
 
-    $services->get('app.pricing_plan')->init();
-
-    /**
-     * Initialisation des groups apps et worskspace apps
-     */
-      $groupAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Group");
+      /**
+       * Initialisation des groupPeriod
+       */
+/*      $groupAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Group");
 
       $groups = $groupAppRepository->findBy(Array());
       foreach ( $groups as $g ){
-          $services->get("app.groups")->init($g);
+          $services->get("app.group_period")->init($g);
       }
-      error_log("Init group app");
+      error_log("Init groupPeriod");*/
+      $groupAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Group");
+      $group = $groupAppRepository->findOneBy(Array("id" => 114));
 
-      $workspaceAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-
-      $workspaces = $workspaceAppRepository->findBy(Array());
-      foreach ( $workspaces as $w ){
-          $services->get("app.workspaces")->init($w);
-      }
-      error_log("Init workspaces app");
-
-      /**
-       * Initialisation des groups managers
-       */
-      foreach ( $groups as $g ){
-          $services->get("app.group_managers")->init($g);
-      }
-      error_log("Init group managers");
-
-
-
-      $increment = 0;
-      $workspaces = $workspaceAppRepository->findBy(Array());
-      $workspaceRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-
-      foreach ( $workspaces as $w ){
-          //Find a name
-
-          $uniquenameIncremented = $services->get("app.string_cleaner")->simplify($w->getName());
-
-          if ($w->getGroup() != null) {
-              $groupRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Group");
-              $group = $groupRepository->find($w->getGroup()->getId());
-              $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $w->getUniqueName(), "group" => $group));
-
-              while ($WorkspaceUsingThisName != null) {
-                  $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented));
-                  $increment += 1;
-                  if ($WorkspaceUsingThisName != null) {
-                      $uniquenameIncremented = $w->getUniqueName() . "-" . $increment;
-                  }
-              }
-
-          }
-
-
-          $w->setUniqueName($uniquenameIncremented);
-          $manager->persist($w);
-      }
-      $manager->flush();
+      $res = $services->get("app.group_period")->changePlanOrRenew($group,"monthly",1);
+      var_dump($res);
 
   }
+
 }

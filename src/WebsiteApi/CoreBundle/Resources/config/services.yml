@@ -3,3 +3,7 @@ services:
     app.twake_mailer:
         class: WebsiteApi\CoreBundle\Services\TwakeMailer
         arguments: ["@mailer", "@templating", "%MAIL_FROM%", "%SERVER_NAME%"]
+
+    app.pusher:
+        class: WebsiteApi\CoreBundle\Services\ZMQPusher
+        arguments: ["%websocket_pusher_host%", "%websocket_pusher_port%"]

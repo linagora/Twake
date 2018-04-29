@@ -81,4 +81,25 @@ class GroupAppsController extends Controller
         return new JsonResponse($response);
     }
 
+    /**
+     * Inscrit l'utilisation d'une application pour un groupe + pour un user
+     */
+    public function appUsedAction(Request $request){
+
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $groupId = $request->request->getInt("groupId");
+        $appId = $request->request->getInt("appId");
+
+        $res = $this->get("app.group_apps")->appUsed($groupId,$this->getUser()->getId(),$appId);
+
+        if(!$res){
+            $response["errors"][] = "notallowed";
+        }else {
+            $response["data"][] = "success";
+        }
+
+        return new JsonResponse($response);
+    }
+
 }

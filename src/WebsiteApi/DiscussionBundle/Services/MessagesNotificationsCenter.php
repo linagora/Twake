@@ -41,11 +41,8 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
         $data["id"] = $stream->getId();
 
         $this->pusher->push($data,
-            "discussion_notifications_topic",
-            Array(
-                "user_id" => $linkStream->getUser()->getId(),
-                "workspace_id"=>($stream->getWorkspace()?$stream->getWorkspace()->getId():"")
-            )
+            "discussion_notifications/".$linkStream->getUser()->getId()
+            ."/".($stream->getWorkspace()?$stream->getWorkspace()->getId():"")
         );
 
 		$otherStreams = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
@@ -90,11 +87,8 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 				$data["id"] = $stream->getId();
 
 				$this->pusher->push($data,
-					"discussion_notifications_topic",
-					Array(
-						"user_id" => $link->getUser()->getId(),
-						"workspace_id"=>($stream->getWorkspace()?$stream->getWorkspace()->getId():"")
-					)
+                    "discussion_notifications/".$link->getUser()->getId()
+                    ."/".($stream->getWorkspace()?$stream->getWorkspace()->getId():"")
 				);
 
 

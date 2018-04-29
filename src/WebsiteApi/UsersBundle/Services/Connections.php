@@ -99,7 +99,7 @@ class Connections
 		}
 
 		//Send notifications any way
-		$this->pusher->push(true, 'connections_topic', ["id_user"=>$user->getId()]);
+		$this->pusher->push(true, 'connections/'.$user->getId());
 
 	}
 
@@ -152,7 +152,7 @@ class Connections
 			//Send notification to other users
             $this->userConnectionService->closeConnection($user->getId());
 			$this->calls->exitCalls($user);
-			$this->pusher->push(false, 'connections_topic', ["id_user"=>$user->getId()]);
+			$this->pusher->push(false, 'connections/'.$user->getId());
 		}
 	}
 }

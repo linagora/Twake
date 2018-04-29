@@ -60,7 +60,7 @@ class CalendarEvents implements CalendarEventsInterface
             "type" => "create",
             "event" => $event->getAsArray()
         );
-        $this->pusher->push($data, "calendar_topic", Array("id"=>$calendarId));
+        $this->pusher->push($data, "calendar/".$calendarId);
 
         return $event;
 
@@ -118,7 +118,7 @@ class CalendarEvents implements CalendarEventsInterface
             "type" => "update",
             "event" => $event->getAsArray()
         );
-        $this->pusher->push($data, "calendar_topic", Array("id"=>$calendarId));
+        $this->pusher->push($data, "calendar/".$calendarId);
 
         return $event;
     }
@@ -156,7 +156,7 @@ class CalendarEvents implements CalendarEventsInterface
             "type" => "remove",
             "event_id" => $eventId
         );
-        $this->pusher->push($data, "calendar_topic", Array("id"=>$calendarId));
+        $this->pusher->push($data, "calendar/".$calendarId);
 
         return true;
     }
