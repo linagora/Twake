@@ -119,4 +119,38 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
+    public function appUsed($groupId, $userId, $appId)
+    {
+        $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+        $groupUser = $groupUserRepository->findOneBy(Array("group" => $groupId , "user" => $userId));
+
+        $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+        $groupApp = $groupAppRepository->findOneBy(Array("group" => $groupId , "app" => $appId));
+
+        if ($groupUser == null || $groupApp == null || $groupId == null) {//if no user or app not in group app's list or private workspace
+            return false;
+        }else{
+
+            $appUsed = $groupUser->getAppsUsage();
+            if ( in_array($appId,$appUsed) ){
+                return true;
+            }else{
+
+                if (!$groupUser->getDidConnect()){
+                    $groupUser->setDidConnect(true);
+                }
+
+                $appUsed[] = $appId;
+                $groupUser->setAppsUsage($appUsed);
+
+                $this->doctrine->persist($groupUser);
+                $this->doctrine->flush();
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
 }

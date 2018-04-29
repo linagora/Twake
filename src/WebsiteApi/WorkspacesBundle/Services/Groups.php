@@ -15,12 +15,13 @@ class Groups implements GroupsInterface
     private $market;
     private $string_cleaner;
 
-	public function __construct($doctrine, $group_managers_service, $market_service,$clean)
+	public function __construct($doctrine, $group_managers_service, $market_service,$clean,$group_period_service)
 	{
 		$this->doctrine = $doctrine;
 		$this->gms = $group_managers_service;
 		$this->market = $market_service;
 		$this->string_cleaner = $clean;
+		$this->gps = $group_period_service;
 	}
 
 	public function create($userId, $name, $uniquename, $planId)
@@ -54,6 +55,7 @@ class Groups implements GroupsInterface
 		$this->gms->addManager($group->getId(), $userId, 3,true);
 
 		$this->init($group);
+		$this->gps->init($group);
 
 		return $group;
 

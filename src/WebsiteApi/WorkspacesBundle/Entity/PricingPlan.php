@@ -53,10 +53,7 @@ class PricingPlan
 	public function __construct($name) {
 		$this->label = $name;
 		$this->limitation = json_encode([
-            "apps"=>10,
-            "drive"=>0,
-            "maxWorkspace"=>10,
-            "maxUSer"=>10
+            "drive"=>0
         ]);
 	}
 
