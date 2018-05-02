@@ -42,7 +42,10 @@ class ZpricingTest extends WebTestCaseExtended
     public function testIndex()
     {
         $this->initData();
+        $this->assertNbConnection();
+    }
 
+    public function assertNbConnection(){
         $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("username" => "phpunit"));
@@ -50,22 +53,20 @@ class ZpricingTest extends WebTestCaseExtended
 
         $nbConnectionBase = $groupUser->getConnections();
 
-        // repeter x days
-        $groupUser->setLastDayOfUpdate(date('z'));
-        $groupUser->setDidConnect(1);
-        $groupUser->setDidConnect(1);
-        $groupUser->setUsedApps(["14"]);
+        $i = 0;
+        for($i; $i < 5 ; $i++){
+            $groupUser->setLastDayOfUpdate(date('z'));
+            $groupUser->setDidConnect(1);
+            $groupUser->setUsedApps(["14"]);
 
-        $this->getDoctrine()->persist($groupUser);
-        $this->getDoctrine()->flush();
+            $this->getDoctrine()->persist($groupUser);
+            $this->getDoctrine()->flush();
 
-             // appeler une fois le cron
-             $this->get("app.pricing_plan")->dailyDataGroupUser();
+            $this->get("app.pricing_plan")->dailyDataGroupUser();
 
-        var_dump($nbConnectionBase+1 . " AAAAA " . $groupUser->getConnections() );
+        }
 
-        $this->assertTrue($nbConnectionBase+1 == $groupUser->getConnections() , "test incrémentation 1 connexion appplication" );
+        $this->assertTrue($nbConnectionBase+$i == $groupUser->getConnections() , "test incrémentation 1 connexion" );
 
     }
-
 }
