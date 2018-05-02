@@ -8,7 +8,7 @@ use Tests\WebTestCaseExtended;
  * Date: 02/05/2018
  * Time: 14:09
  */
-class PricingTest extends WebTestCaseExtended
+class ZpricingTest extends WebTestCaseExtended
 {
 
     public function initData(){
@@ -36,12 +36,12 @@ class PricingTest extends WebTestCaseExtended
         }
 
         $this->getDoctrine()->flush();
+        
     }
 
     public function testIndex()
     {
-
-
+        $this->initData();
     }
 
 }
