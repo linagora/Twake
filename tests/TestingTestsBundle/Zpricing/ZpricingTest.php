@@ -37,6 +37,8 @@ class ZpricingTest extends WebTestCaseExtended
 
         $this->getDoctrine()->flush();
 
+        return $group;
+
     }
 
     public function testIndex()
