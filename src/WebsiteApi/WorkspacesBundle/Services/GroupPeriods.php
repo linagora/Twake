@@ -14,10 +14,9 @@ class GroupPeriods implements GroupPeriodInterface
 
 	private $doctrine;
 
-	public function __construct($doctrine,$pricing)
+	public function __construct($doctrine)
 	{
 		$this->doctrine = $doctrine;
-		$this->pricing = $pricing;
 	}
 
 	public function changePlanOrRenew($group, $billingType ,$planId){
@@ -121,7 +120,8 @@ class GroupPeriods implements GroupPeriodInterface
 
     public function init($group){
         $groupPeriodRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
-        $pricing = $this->pricing->getMinimalPricing();
+        $planRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
+        $pricing = $planRepository->findOneBy(Array("id"=>1));
 
         $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
 
