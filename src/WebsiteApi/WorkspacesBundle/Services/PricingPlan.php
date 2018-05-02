@@ -118,7 +118,7 @@ class PricingPlan implements PricingPlanInterface
         foreach ($listGroupUser as $ga) {
             $lastDate = $ga->getLastDayOfUpdate();
 
-            if ($lastDate == $dateToday){
+            if ($lastDate < $dateToday){
                 if ($ga->getDidConnect()) {
                     $ga->increaseConnectionPeriod();
                     $usedApps = $ga->getUsedApps();

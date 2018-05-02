@@ -36,12 +36,36 @@ class ZpricingTest extends WebTestCaseExtended
         }
 
         $this->getDoctrine()->flush();
-        
+
     }
 
     public function testIndex()
     {
         $this->initData();
+
+        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("username" => "phpunit"));
+        $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
+
+        $nbConnectionBase = $groupUser->getConnections();
+
+        // repeter x days
+        $groupUser->setLastDayOfUpdate(date('z'));
+        $groupUser->setDidConnect(1);
+        $groupUser->setDidConnect(1);
+        $groupUser->setUsedApps(["14"]);
+
+        $this->getDoctrine()->persist($groupUser);
+        $this->getDoctrine()->flush();
+
+             // appeler une fois le cron
+             $this->get("app.pricing_plan")->dailyDataGroupUser();
+
+        var_dump($nbConnectionBase+1 . " AAAAA " . $groupUser->getConnections() );
+
+        $this->assertTrue($nbConnectionBase+1 == $groupUser->getConnections() , "test incrémentation 1 connexion appplication" );
+
     }
 
 }
