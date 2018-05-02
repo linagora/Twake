@@ -151,6 +151,7 @@ class GroupManagers implements GroupManagersInterface
             if (!$manager) { // si on a crée un workspace et qu'on s'y ajoute soi même en admin
                 if ($createdWorkspace){
                     $manager = new GroupUser($group, $user);
+                    $manager->increaseNbWorkspace();
                     $manager->setLevel($level);
                     $this->twake_mailer->send($user->getEmail(), "addedToGroupManagersMail", Array("group"=>$group->getDisplayName(), "username"=>$user->getUsername()));
 
