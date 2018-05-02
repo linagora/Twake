@@ -73,6 +73,15 @@ class WebTestCaseExtended extends WebTestCase
         $workspaceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace");
         $workspace = $workspaceRepository->findOneBy(Array("name" => "phpunit"));
 
+        $groupUserdRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser");
+        $groupUsers = $groupUserdRepository->findBy(Array("group" => $group));
+
+        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+        $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
+
+        $groupPricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+        $groupPricing = $groupPricingRepository->findOneBy(Array("group" => $group));
+
         if($user != null){
             if(is_array($user)){
                 foreach($user as $u){
@@ -87,6 +96,17 @@ class WebTestCaseExtended extends WebTestCase
         }
         if($workspace != null){
             $this->getDoctrine()->remove($workspace);
+        }
+        if (is_array($groupUsers)){
+            foreach($groupUsers as $groupUser){
+                $this->getDoctrine()->remove($groupUser);
+            }
+        }
+        if($groupPeriod != null){
+            $this->getDoctrine()->remove($groupPeriod);
+        }
+        if($groupPricing != null){
+            $this->getDoctrine()->remove($groupPricing);
         }
         $this->getDoctrine()->flush();
     }
