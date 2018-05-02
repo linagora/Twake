@@ -117,9 +117,7 @@ class PricingPlan implements PricingPlanInterface
         foreach ($listGroupUser as $ga) {
             $lastDate = $ga->getLastDayOfUpdate();
 
-            if ($lastDate == $dateToday) {
-
-            } else {
+            if ($lastDate == $dateToday){
                 if ($ga->getDidConnect()) {
                     $ga->increaseConnectionPeriod();
                     $usedApps = $ga->getUsedApps();
@@ -259,15 +257,15 @@ class PricingPlan implements PricingPlanInterface
 
             $connexions = $gp->getConnexions();
 
-            $costUsers = 0;
+            $chargeUsers = 0;
             if (array_key_exists("none", $connexions)) {
-                $costUsers += $connexions["none"] * $this->none_cost_percentage;
+                $chargeUsers += $connexions["none"] * $this->none_cost_percentage;
             }
             if (array_key_exists("partial", $connexions)) {
-                $costUsers += $connexions["partial"] * $this->partial_cost_percentage;
+                $chargeUsers += $connexions["partial"] * $this->partial_cost_percentage;
             }
             if (array_key_exists("total", $connexions)) {
-                $costUsers += $connexions["total"] * $this->total_cost_percentage;
+                $chargeUsers += $connexions["total"] * $this->total_cost_percentage;
             }
 
             // TODO
@@ -278,14 +276,27 @@ class PricingPlan implements PricingPlanInterface
 
             foreach ($apps as $key => $value) {
                 $currentApp = $appRepository->find($key);
-                $appCost = 0;
+                $appCostTotal = 0;
                 /* TODO
-                 * if($currentApp->isPayante()){
+                 * if($currentApp!=false){
+                 * if($currentApp->isPayante()) {
                         if($currentApp->PayeParMois ){
                             $appCost = $currentApp->getMonthlyCost();
                         }else{
-                        // Payable par utilisateur par mois
+                         // Payable par utilisateur par mois
+                               if (array_key_exists("none", $value)) {
+                                  $chargeUsers += $value["none"] * $this->none_cost_percentage;
+                               }
+                              if (array_key_exists("partial", $value)) {
+                                 $chargeUsers += $value["partial"] * $this->partial_cost_percentage;
+                             }
+                             if (array_key_exists("total", $value)) {
+                                   $chargeUsers += $value["total"] * $this->total_cost_percentage;
+                            }
+                        }
+                $appCostTotal += $appCost ;
                     }
+                }
                 }*/
             }
 
@@ -295,7 +306,7 @@ class PricingPlan implements PricingPlanInterface
 
             $pricing = $typeBilled == "monthly" ? $groupPrincingInstance->getOriginalPricingReference()->getMonthPrice() : $groupPrincingInstance->getOriginalPricingReference()->getYearPrice();
 
-            $cost = $costUsers * $pricing; // + $costApps * coutApp
+            $cost = $chargeUsers * $pricing; // + $appCostTotal
 
             $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
             $nbuserGroup = $groupUserRepository->findBy(Array("group" => $gp->getGroup()));
