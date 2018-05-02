@@ -88,6 +88,14 @@ class GroupPeriods implements GroupPeriodInterface
         $date = new \DateTime();
         $date->modify('+1 day');
         $newGroupPeriod->setPeriodStartedAt($date);
+
+        $date->modify('+1 month');
+
+        if ($date < $groupPeriod->getGroupPricingInstance()->getEndAt()){
+            $newGroupPeriod->setPeriodExpectedToEndAt($date);
+        }else{
+            $newGroupPeriod->setPeriodExpectedToEndAt($groupPeriod->getGroupPricingInstance()->getEndAt());
+        }
         $newGroupPeriod->setGroupPricingInstance($groupPeriod->getGroupPricingInstance());
 
         $this->doctrine->remove($groupPeriod);
@@ -97,14 +105,12 @@ class GroupPeriods implements GroupPeriodInterface
     }
 
 
-    public function endGroupPricing($groupPricing){
+    public function endGroupPricing($groupPeriod){
 
-        $group = $groupPricing->getGroup();
+        $group = $groupPeriod->getGroup();
         $group->setPricingPlan(null);
 
-        $groupPeriodRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
-        $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
-
+        $groupPricing = $groupPeriod->getGroupPricingInstance();
         $groupPeriod->setGroupPricingInstance(null);
 
         $this->doctrine->persist($groupPeriod);

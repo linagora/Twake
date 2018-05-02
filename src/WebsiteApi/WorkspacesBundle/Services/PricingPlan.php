@@ -9,6 +9,7 @@ class PricingPlan implements PricingPlanInterface
 {
 
 	private $doctrine;
+	private $groupPeriod;
     var $newApps = Array('all' => Array(), 'notall' => Array());
 
     var $none_cost_percentage = 0; //none cost 0%
@@ -21,9 +22,10 @@ class PricingPlan implements PricingPlanInterface
     var $nbDays;
 
 
-	public function __construct($doctrine)
+	public function __construct($doctrine,$groupperiodservice)
 	{
 		$this->doctrine = $doctrine;
+		$this->groupPeriod = $groupperiodservice;
 	}
 
 	public function init()
@@ -253,7 +255,6 @@ class PricingPlan implements PricingPlanInterface
             $this->nbDays = $now->diff($gp->getPeriodStartedAt(), true)->format('%a');
             $calculTemps = min($this->month_length, $this->nbDays) / $this->month_length;
 
-
             $connexions = $gp->getConnexions();
 
             $chargeUsers = 0;
@@ -267,16 +268,13 @@ class PricingPlan implements PricingPlanInterface
                 $chargeUsers += $connexions["total"] * $this->total_cost_percentage;
             }
 
-            // TODO
-            // Calculate the apps price
-
             $apps = $gp->getAppsUsage();
             $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
 
             foreach ($apps as $key => $value) {
                 $currentApp = $appRepository->find($key);
                 $appCostTotal = 0;
-                /* TODO
+                /* TODO Calculate the apps price
                  * if($currentApp!=false){
                  * if($currentApp->isPayante()) {
                         if($currentApp->PayeParMois ){
@@ -318,13 +316,9 @@ class PricingPlan implements PricingPlanInterface
 
              var_dump(' LE COST TOTAL ' . $realCostonPeriod . " vrai cout " . $realCost . " / " . $this->nbDays  . " * " . $this->month_length ." nb jours");
 
-            // remise a 0 après payements
-            // $gp->setConnexions([]);
-            // $gp->setAppsUsage([]);
-
 
             if ($gp->getCurrentEstimatedCost() > 1000 + $gp->getExpectedCost()) {
-                // appel du service
+                $this->groupPeriod->groupPeriodOverCost($gp);
             }
         }
     }
