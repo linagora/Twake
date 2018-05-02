@@ -11,14 +11,13 @@ class PricingPlan implements PricingPlanInterface
 	private $doctrine;
     var $newApps = Array('all' => Array(), 'notall' => Array());
 
-    var $none_cost_percentage = 0 / 100;
-    var $partial_cost_percentage = 50 / 100;
-    var $total_cost_percentage = 100 / 100;
-
+    var $none_cost_percentage = 0; //none cost 0%
+    var $partial_cost_percentage = 0.5 ; //partial cost 50%
+    var $total_cost_percentage = 1; //total cost 100%
     var $none = 1;
     var $partial = 10;
     var $month_length = 20;
-    var $min_paid_users_percentage = 1 / 100;
+    var $min_paid_users_percentage = 0.01; //min cost is 1%
     var $nbDays;
 
 

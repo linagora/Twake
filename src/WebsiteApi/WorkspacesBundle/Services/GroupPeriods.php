@@ -58,7 +58,7 @@ class GroupPeriods implements GroupPeriodInterface
             }
             $this->doctrine->remove($groupPeriod);
 
-            //TODO CALCUL COUT
+            //TODO CALCUL COUT ET FAIRE PAYER (UN JOUR P-Ê)
 
             //Reset user period utilisation
             foreach ($groupUsers as $groupUser){//User left between two periods, it can be removed
@@ -79,6 +79,38 @@ class GroupPeriods implements GroupPeriodInterface
         }
 
 
+    }
+
+    public function groupPeriodOverCost($groupPeriod){
+
+        $archivedGroupPeriod = new ArchivedGroupPeriod($groupPeriod);
+        $newGroupPeriod = new GroupPeriod($groupPeriod->getGroup());
+        $date = new \DateTime();
+        $date->modify('+1 day');
+        $newGroupPeriod->setPeriodStartedAt($date);
+        $newGroupPeriod->setGroupPricingInstance($groupPeriod->getGroupPricingInstance());
+
+        $this->doctrine->remove($groupPeriod);
+        $this->doctrine->persist($archivedGroupPeriod);
+        $this->doctrine->persist($newGroupPeriod);
+        $this->doctrine->flush();
+    }
+
+
+    public function endGroupPricing($groupPricing){
+
+        $group = $groupPricing->getGroup();
+        $group->setPricingPlan(null);
+
+        $groupPeriodRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+        $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
+
+        $groupPeriod->setGroupPricingInstance(null);
+
+        $this->doctrine->persist($groupPeriod);
+        $this->doctrine->persist($group);
+        $this->doctrine->remove($groupPricing);
+        $this->doctrine->flush();
     }
 
     public function init($group){
