@@ -36,6 +36,16 @@ class WebTestCaseExtended extends WebTestCase
         return $user;
     }
 
+    public function newUserByName($name){
+        $userToken = $this->get("app.user")->subscribeMail($name . "@PHPUNIT.fr");
+        $user = $this->get("app.user")->subscribe($userToken,null, $name,$name,true);
+
+        $this->getDoctrine()->persist($user);
+        $this->getDoctrine()->flush();
+
+        return $user;
+    }
+
     public function newGroup($userId){
         $group = $this->get("app.groups")->create($userId,"phpunit","phpunit",1);
         $this->getDoctrine()->persist($group);
