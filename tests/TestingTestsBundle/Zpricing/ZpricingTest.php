@@ -30,14 +30,13 @@ class ZpricingTest extends WebTestCaseExtended
 
         // creer des utilisateurs
         for($i = 1; $i < 10 ; $i++){
-            $user = $this->newUserByName("phpunit".$i);
+            $user = $this->newUserByName("PHPUNIT".$i);
             $this->get("app.workspace_members")->addMember($work->getId(),$user->getId());
             $this->getDoctrine()->persist($user);
         }
 
         $this->getDoctrine()->flush();
 
-        return $group;
     }
 
     public function testIndex()
@@ -46,7 +45,7 @@ class ZpricingTest extends WebTestCaseExtended
 
         $this->assertIncrement();
         $this->assertDates($group);
-
+        $this->assertNbConnection();
     }
 
     public function assertIncrement(){
@@ -86,6 +85,31 @@ class ZpricingTest extends WebTestCaseExtended
         $this->assertEquals($datedeb->getTimestamp(), $datedebPricing->getTimestamp(), 'Time of start and pricing start is not equal', 5);
         $datedeb->modify('+1 month');
         $this->assertEquals($datedeb->getTimestamp(), $datefin->getTimestamp(), 'Time of start - end is not 1 month ', 5);
+
+    }
+
+    public function assertNbConnection(){
+        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("username" => "phpunit"));
+        $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
+
+        $nbConnectionBase = $groupUser->getConnections();
+
+        $i = 0;
+        for($i; $i < 5 ; $i++){
+            $groupUser->setLastDayOfUpdate(date('z'));
+            $groupUser->setDidConnect(1);
+            $groupUser->setUsedApps(["14"]);
+
+            $this->getDoctrine()->persist($groupUser);
+            $this->getDoctrine()->flush();
+
+            $this->get("app.pricing_plan")->dailyDataGroupUser();
+
+        }
+
+        $this->assertTrue($nbConnectionBase+$i == $groupUser->getConnections() , "test incrémentation 1 connexion" );
 
     }
 
