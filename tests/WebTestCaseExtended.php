@@ -64,7 +64,8 @@ class WebTestCaseExtended extends WebTestCase
 
     public function destroyTestData(){
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("username" => "phpunit"));
+        $user = $userRepository->findByName("phpunit");
+
 
         $groupRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group");
         $group = $groupRepository->findOneBy(Array("name" => "phpunit"));
@@ -73,7 +74,13 @@ class WebTestCaseExtended extends WebTestCase
         $workspace = $workspaceRepository->findOneBy(Array("name" => "phpunit"));
 
         if($user != null){
-            $this->getDoctrine()->remove($user);
+            if(is_array($user)){
+                foreach($user as $u){
+                    $this->getDoctrine()->remove($u);
+                }
+            }else{
+                $this->getDoctrine()->remove($user);
+            }
         }
         if($group != null){
             $this->getDoctrine()->remove($group);
