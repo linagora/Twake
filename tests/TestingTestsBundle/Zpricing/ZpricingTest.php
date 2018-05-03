@@ -51,6 +51,9 @@ class ZpricingTest extends WebTestCaseExtended
 
         $group = $this->initData();
         $this->assertNbConnection();
+
+        $group = $this->initData();
+        $this->assertRenew($group);
     }
 
     //teste l'incrementation des connexions au jour
@@ -98,7 +101,7 @@ class ZpricingTest extends WebTestCaseExtended
     //Teste le renouvellement de period
     public function assertRenew($group){
 
-        $groupPricingInstanceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+        $groupPricingInstanceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
         $groupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
 
         $res = $this->get("app.group_period")->changePlanOrRenew($group,"monthly",1);
@@ -110,10 +113,13 @@ class ZpricingTest extends WebTestCaseExtended
 
         $this->assertTrue($groupPricingInstance->getId() != $newGroupPricingInstance->getId() , "Error : renew did not generate a new pricing instance");
         $this->assertEquals($newGroupPricingInstance->getBilledType(), "monthly", 'renew billing went Wrong : pricing instance have wrong billing type');
-        $this->assertEquals($newGroupPricingInstance->getOriginalPricingReference(), 1, 'renew billing went Wrong : pricing instance have wrong pricing');
+        $this->assertEquals($newGroupPricingInstance->getOriginalPricingReference()->getId(), 1, 'renew billing went Wrong : pricing instance have wrong pricing');
 
 
+        $archivedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ArchivedGroupPeriod");
+        $archivedGroupPeriod = $archivedGroupPeriodRepository->findOneBy(Array("group" => $group));
 
+        $this->assertTrue($archivedGroupPeriod != null,"renew billing went wrong : period not archived");
 
 
     }
