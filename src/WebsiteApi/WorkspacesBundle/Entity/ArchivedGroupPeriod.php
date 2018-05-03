@@ -82,7 +82,7 @@ class ArchivedGroupPeriod
 		$this->setConnexions($groupPeriod->getConnexions());
 		$this->setAppsUsage($groupPeriod->getAppsUsage());
 		$this->periodStartedAt = $groupPeriod->getPeriodStartedAt();
-        $this->periodEndedAt = $groupPeriod->getPeriodEndedAt();
+        $this->periodEndedAt = new \DateTime();
         $this->periodExpectedToEndAt = $groupPeriod->getPeriodExpectedToEndAt();
         $this->groupPricingInstance = $groupPeriod->getGroupPricingInstance();
         $this->currentEstimatedCost = $groupPeriod->getCurrentEstimatedCost();

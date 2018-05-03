@@ -36,6 +36,16 @@ class WebTestCaseExtended extends WebTestCase
         return $user;
     }
 
+    public function newUserByName($name){
+        $userToken = $this->get("app.user")->subscribeMail($name . "@PHPUNIT.fr");
+        $user = $this->get("app.user")->subscribe($userToken,null, $name,$name,true);
+
+        $this->getDoctrine()->persist($user);
+        $this->getDoctrine()->flush();
+
+        return $user;
+    }
+
     public function newGroup($userId){
         $group = $this->get("app.groups")->create($userId,"phpunit","phpunit",1);
         $this->getDoctrine()->persist($group);
@@ -54,7 +64,8 @@ class WebTestCaseExtended extends WebTestCase
 
     public function destroyTestData(){
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("username" => "phpunit"));
+        $user = $userRepository->findByName("phpunit");
+
 
         $groupRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group");
         $group = $groupRepository->findOneBy(Array("name" => "phpunit"));
@@ -62,14 +73,40 @@ class WebTestCaseExtended extends WebTestCase
         $workspaceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace");
         $workspace = $workspaceRepository->findOneBy(Array("name" => "phpunit"));
 
+        $groupUserdRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser");
+        $groupUsers = $groupUserdRepository->findBy(Array("group" => $group));
+
+        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+        $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
+
+        $groupPricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+        $groupPricing = $groupPricingRepository->findOneBy(Array("group" => $group));
+
         if($user != null){
-            $this->getDoctrine()->remove($user);
+            if(is_array($user)){
+                foreach($user as $u){
+                    $this->getDoctrine()->remove($u);
+                }
+            }else{
+                $this->getDoctrine()->remove($user);
+            }
         }
         if($group != null){
             $this->getDoctrine()->remove($group);
         }
         if($workspace != null){
             $this->getDoctrine()->remove($workspace);
+        }
+        if (is_array($groupUsers)){
+            foreach($groupUsers as $groupUser){
+                $this->getDoctrine()->remove($groupUser);
+            }
+        }
+        if($groupPeriod != null){
+            $this->getDoctrine()->remove($groupPeriod);
+        }
+        if($groupPricing != null){
+            $this->getDoctrine()->remove($groupPricing);
         }
         $this->getDoctrine()->flush();
     }

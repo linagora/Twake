@@ -229,6 +229,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             if (!$groupmember){
                 $groupmember = new GroupUser($workspace->getGroup(),$user);
+                $groupmember->increaseNbWorkspace();
                 $groupmember->setLevel(0);
             }else{
                 $groupmember->increaseNbWorkspace();

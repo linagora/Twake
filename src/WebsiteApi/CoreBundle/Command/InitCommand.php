@@ -94,12 +94,6 @@ var $newApps = Array('all'=>Array(), 'notall'=>Array());
           $services->get("app.group_period")->init($g);
       }
       error_log("Init groupPeriod");*/
-      $groupAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Group");
-      $group = $groupAppRepository->findOneBy(Array("id" => 114));
-
-      $res = $services->get("app.group_period")->changePlanOrRenew($group,"monthly",1);
-      var_dump($res);
-
   }
 
 }
