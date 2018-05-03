@@ -63,6 +63,9 @@ class ZpricingTest extends WebTestCaseExtended
 
         $group = $this->initData();
         $this->assertEndOfPeriod($group);
+
+        $group = $this->initData();
+        $this->assertPeriodOverCost($group);
     }
 
     //teste l'incrementation des connexions au jour
@@ -131,7 +134,7 @@ class ZpricingTest extends WebTestCaseExtended
 
     }
 
-    //Teste le renouvellement de period
+    //Teste la fin "forcée" de period
     public function assertEndOfPeriod($group){
 
         $groupPricingInstanceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
@@ -152,7 +155,26 @@ class ZpricingTest extends WebTestCaseExtended
 
         $this->assertTrue($closedGroupPeriod != null,"closing period went wrong : period not closed");
         $this->assertFalse($closedGroupPeriod->getBilled(), "closing period went wrong : billed not false");
+    }
 
+    //Teste la fin "forcée" de period
+    public function assertPeriodOverCost($group){
+
+
+        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+        $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
+
+        $this->get("app.group_period")->groupPeriodOverCost($groupPeriod);
+
+        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+        $newgroupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
+
+        $closedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
+        $closedGroupPeriod = $closedGroupPeriodRepository->findOneBy(Array("group" => $group));
+
+        $this->assertTrue($groupPeriod->getId() != $newgroupPeriod->getId(),"closing period went wrong : old period not replaced by a new j+1");
+        $this->assertTrue($closedGroupPeriod != null,"closing period went wrong : period not closed");
+        $this->assertTrue($closedGroupPeriod->getBilled(), "closing period went wrong : billed not true");
     }
 
     //teste l'incrementation des connexions des tests 5 fois
