@@ -100,8 +100,8 @@ class WebTestCaseExtended extends WebTestCase
             $groupPricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
             $groupPricing = $groupPricingRepository->findBy(Array("group" => $group));
 
-            $archivedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ArchivedGroupPeriod");
-            $archivedGroupPeriods = $archivedGroupPeriodRepository->findBy(Array("group" => $group));
+            $closedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
+            $closedGroupPeriods = $closedGroupPeriodRepository->findBy(Array("group" => $group));
         }
 
         $PricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:PricingPlan");
@@ -141,10 +141,13 @@ class WebTestCaseExtended extends WebTestCase
                     }
                 }
             }
-            if ($archivedGroupPeriods != null ) {
-                if (is_array($archivedGroupPeriods)) {
-                    foreach ($archivedGroupPeriods as $archivedGroupPeriod) {
-                        $this->getDoctrine()->remove($archivedGroupPeriod);
+            if($groupPricing != null){
+                $this->getDoctrine()->remove($groupPricing);
+            }
+            if ($closedGroupPeriods != null ) {
+                if (is_array($closedGroupPeriods)) {
+                    foreach ($closedGroupPeriods as $closedGroupPeriod) {
+                        $this->getDoctrine()->remove($closedGroupPeriod);
                     }
                 }
             }
@@ -180,7 +183,6 @@ class WebTestCaseExtended extends WebTestCase
                 foreach($groupPricing as $groupP){
                     $this->getDoctrine()->remove($groupP);
                 }
-            }
         }
 
         if($group != null){
