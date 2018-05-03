@@ -10,10 +10,10 @@ use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
 /**
  * GroupPeriod
  *
- * @ORM\Table(name="archived_group_period",options={"engine":"MyISAM"})
+ * @ORM\Table(name="closed_group_period",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupPeriodRepository")
  */
-class ArchivedGroupPeriod
+class ClosedGroupPeriod
 {
 
     /**
@@ -81,7 +81,7 @@ class ArchivedGroupPeriod
         $this->periodExpectedToEndAt = $groupPeriod->getPeriodExpectedToEndAt();
         $this->currentEstimatedCost = $groupPeriod->getCurrentEstimatedCost();
         $this->expectedCost = $groupPeriod->getExpectedCost();
-        $this->billed = true;
+        $this->billed = false;
 	}
 
     /**
@@ -227,6 +227,23 @@ class ArchivedGroupPeriod
     {
         $this->id = $id;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getBilled()
+    {
+        return $this->billed;
+    }
+
+    /**
+     * @param mixed $billed
+     */
+    public function setBilled($billed)
+    {
+        $this->billed = $billed;
+    }
+
 
 
 

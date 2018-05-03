@@ -2,7 +2,7 @@
 
 namespace WebsiteApi\WorkspacesBundle\Services;
 
-use WebsiteApi\WorkspacesBundle\Entity\ArchivedGroupPeriod;
+use WebsiteApi\WorkspacesBundle\Entity\ClosedGroupPeriod;
 use WebsiteApi\WorkspacesBundle\Entity\Group;
 use WebsiteApi\WorkspacesBundle\Entity\GroupManager;
 use WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance;
@@ -37,7 +37,7 @@ class GroupPeriods implements GroupPeriodInterface
             return false;
         }else{
 
-            $archivedGroupPeriod = new ArchivedGroupPeriod($groupPeriod);
+            $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
             $newGroupPricing = new GroupPricingInstance($group ,$billingType,$pricing );
             $date = new \DateTime();
 
@@ -58,6 +58,10 @@ class GroupPeriods implements GroupPeriodInterface
             $this->doctrine->remove($groupPeriod);
 
             //TODO CALCUL COUT ET FAIRE PAYER (UN JOUR P-Ê)
+            // Si payement OK
+            $closedGroupPeriod->setBilled(true);
+            // Sinon
+            // $closedGroupPeriod->setBilled(false);
 
             //Reset user period utilisation
             foreach ($groupUsers as $groupUser){//User left between two periods, it can be removed
@@ -70,7 +74,7 @@ class GroupPeriods implements GroupPeriodInterface
                 }
             }
 
-            $this->doctrine->persist($archivedGroupPeriod);
+            $this->doctrine->persist($closedGroupPeriod);
             $this->doctrine->persist($newGroupPricing);
             $this->doctrine->persist($newGroupPeriod);
             $this->doctrine->flush();
@@ -82,7 +86,8 @@ class GroupPeriods implements GroupPeriodInterface
 
     public function groupPeriodOverCost($groupPeriod){
 
-        $archivedGroupPeriod = new ArchivedGroupPeriod($groupPeriod);
+        $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
+
         $newGroupPeriod = new GroupPeriod($groupPeriod->getGroup());
         $date = new \DateTime();
         $date->modify('+1 day');
@@ -97,8 +102,14 @@ class GroupPeriods implements GroupPeriodInterface
         }
         $newGroupPeriod->setGroupPricingInstance($groupPeriod->getGroupPricingInstance());
 
+        //TODO FAIRE PAYER
+        // Si payement OK
+        $closedGroupPeriod->setBilled(true);
+        // Sinon
+        // $closedGroupPeriod->setBilled(false);
+
         $this->doctrine->remove($groupPeriod);
-        $this->doctrine->persist($archivedGroupPeriod);
+        $this->doctrine->persist($closedGroupPeriod);
         $this->doctrine->persist($newGroupPeriod);
         $this->doctrine->flush();
     }
@@ -112,8 +123,12 @@ class GroupPeriods implements GroupPeriodInterface
         $groupPricing = $groupPeriod->getGroupPricingInstance();
         $groupPeriod->setGroupPricingInstance(null);
 
+        $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
+        $closedGroupPeriod->setBilled(false);
+
         $this->doctrine->persist($groupPeriod);
         $this->doctrine->persist($group);
+        $this->doctrine->persist($closedGroupPeriod);
         $this->doctrine->remove($groupPricing);
         $this->doctrine->flush();
     }

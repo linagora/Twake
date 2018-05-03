@@ -58,7 +58,11 @@ class ZpricingTest extends WebTestCaseExtended
         $group = $this->initData();
         $this->assertRenew($group);
 
+        $group = $this->initData();
         $this->assertConnection();
+
+        $group = $this->initData();
+        $this->assertEndOfPeriod($group);
     }
 
     //teste l'incrementation des connexions au jour
@@ -120,12 +124,34 @@ class ZpricingTest extends WebTestCaseExtended
         $this->assertEquals($newGroupPricingInstance->getBilledType(), "monthly", 'renew billing went Wrong : pricing instance have wrong billing type');
         $this->assertEquals($newGroupPricingInstance->getOriginalPricingReference()->getId(), 1, 'renew billing went Wrong : pricing instance have wrong pricing');
 
+        $closedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
+        $closedGroupPeriod = $closedGroupPeriodRepository->findOneBy(Array("group" => $group));
 
-        $archivedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ArchivedGroupPeriod");
-        $archivedGroupPeriod = $archivedGroupPeriodRepository->findOneBy(Array("group" => $group));
+        $this->assertTrue($closedGroupPeriod != null,"renew billing went wrong : period not closed");
 
-        $this->assertTrue($archivedGroupPeriod != null,"renew billing went wrong : period not archived");
+    }
 
+    //Teste le renouvellement de period
+    public function assertEndOfPeriod($group){
+
+        $groupPricingInstanceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+        $groupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
+
+        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+        $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
+
+        $this->assertNotNull($groupPricingInstance, 'closing period went Wrong : group pricing instance should not be null');
+
+        $res = $this->get("app.group_period")->endGroupPricing($groupPeriod);
+
+        $this->assertNull($group->getPricingPlan(), 'closing period went Wrong : group\'s pricing plan should be null');
+        $this->assertNull($groupPeriod->getGroupPricingInstance(), 'closing period went Wrong : group period\'s pricing instance should be null');
+
+        $closedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
+        $closedGroupPeriod = $closedGroupPeriodRepository->findOneBy(Array("group" => $group));
+
+        $this->assertTrue($closedGroupPeriod != null,"closing period went wrong : period not closed");
+        $this->assertFalse($closedGroupPeriod->getBilled(), "closing period went wrong : billed not false");
 
     }
 

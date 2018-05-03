@@ -193,7 +193,9 @@ class GroupPeriod
     public function setGroupPricingInstance($groupPricingInstance)
     {
         $this->groupPricingInstance = $groupPricingInstance;
-        $this->periodExpectedToEndAt = $groupPricingInstance->getEndAt();
+        if ($groupPricingInstance != null){
+            $this->periodExpectedToEndAt = $groupPricingInstance->getEndAt();
+        }
     }
 
     /**
