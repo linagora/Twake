@@ -27,6 +27,7 @@ class ZMQPusher
 	}
 
 	public function push($data, $route){
+        error_log("PUSHER");
 
         if (false === $this->connected) {
             if (!extension_loaded('zmq')) {
@@ -60,6 +61,7 @@ class ZMQPusher
         $data = json_encode($data);
 
         $this->connection->send($data);
+        error_log("PUSHER : " . $route);
 
 	}
 
