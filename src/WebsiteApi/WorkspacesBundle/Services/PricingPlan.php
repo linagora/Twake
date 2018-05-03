@@ -314,10 +314,11 @@ class PricingPlan implements PricingPlanInterface
 
             $realCostonPeriod = $realCost / ($this->nbDays == 0 ? 1 : $this->nbDays) * $this->month_length;
 
-            // var_dump(' LE COST TOTAL ' . $realCostonPeriod . " vrai cout " . $realCost . " / " . $this->nbDays  . " * " . $this->month_length ." nb jours");
 
+            $gp->setCurrentCost($realCost);
+            $gp->setExpectedCost($realCostonPeriod);
 
-            if ($gp->getCurrentEstimatedCost() > 1000 + $gp->getExpectedCost()) {
+            if ($gp->getCurrentCost() > 1000 + $gp->getExpectedCost()) {
                 $this->groupPeriod->groupPeriodOverCost($gp);
             }
         }

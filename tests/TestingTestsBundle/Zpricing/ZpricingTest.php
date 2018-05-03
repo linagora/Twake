@@ -278,4 +278,32 @@ class ZpricingTest extends WebTestCaseExtended
 
     }
 
+    public function MonthlyData($group){
+        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+
+        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupPeriod");
+        $groupPeriod = $groupPeriodRepository->findOneBy(Array("group"=>$group));
+
+        $user = $userRepository->findOneBy(Array("username" => "phpunit1"));
+
+        $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
+        $booleanConnected = key_exists("total",$groupPeriod->getConnexions());
+
+        $groupUser->setLastDayOfUpdate(date('z'));
+        $groupUser->setConnections(14);
+        $groupUser->setUsedApps(["14"]);
+
+
+        $this->getDoctrine()->persist($groupUser);
+        $this->getDoctrine()->flush();
+
+        $this->get("app.pricing_plan")->dailyDataGroupUser();
+
+        $this->get("app.pricing_plan")->groupPeriodUsage();
+
+        $this->assertTrue($booleanConnected !=  key_exists("total",$groupPeriod->getConnexions()) , "test add total user" );
+
+    }
+
 }
