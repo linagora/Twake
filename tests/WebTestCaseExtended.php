@@ -135,6 +135,9 @@ class WebTestCaseExtended extends WebTestCase
                     }
                 }
             }
+            if($groupPricing != null){
+                $this->getDoctrine()->remove($groupPricing);
+            }
             if ($archivedGroupPeriods != null ) {
                 if (is_array($archivedGroupPeriods)) {
                     foreach ($archivedGroupPeriods as $archivedGroupPeriod) {
@@ -169,10 +172,6 @@ class WebTestCaseExtended extends WebTestCase
             }
             if($groupPeriod != null){
                 $this->getDoctrine()->remove($groupPeriod);
-            }
-
-            if($groupPricing != null){
-                $this->getDoctrine()->remove($groupPricing);
             }
         }
 

@@ -56,11 +56,6 @@ class ArchivedGroupPeriod
     private $periodExpectedToEndAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance")
-     */
-    private $groupPricingInstance;
-
-    /**
      * @ORM\Column(name="current_estimated_cost", type="integer")
      */
     protected $currentEstimatedCost;
@@ -84,7 +79,6 @@ class ArchivedGroupPeriod
 		$this->periodStartedAt = $groupPeriod->getPeriodStartedAt();
         $this->periodEndedAt = new \DateTime();
         $this->periodExpectedToEndAt = $groupPeriod->getPeriodExpectedToEndAt();
-        $this->groupPricingInstance = $groupPeriod->getGroupPricingInstance();
         $this->currentEstimatedCost = $groupPeriod->getCurrentEstimatedCost();
         $this->expectedCost = $groupPeriod->getExpectedCost();
         $this->billed = true;
@@ -184,23 +178,6 @@ class ArchivedGroupPeriod
     public function setPeriodExpectedToEndAt($periodExpectedToEndAt)
     {
         $this->periodExpectedToEndAt = $periodExpectedToEndAt;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getGroupPricingInstance()
-    {
-        return $this->groupPricingInstance;
-    }
-
-    /**
-     * @param mixed $groupPricingInstance
-     */
-    public function setGroupPricingInstance($groupPricingInstance)
-    {
-        $this->groupPricingInstance = $groupPricingInstance;
-        $this->periodExpectedToEndAt = $groupPricingInstance->getEndAt();
     }
 
     /**
