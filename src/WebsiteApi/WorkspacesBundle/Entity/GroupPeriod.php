@@ -59,15 +59,19 @@ class GroupPeriod
     private $groupPricingInstance;
 
     /**
-     * @ORM\Column(name="current_estimated_cost", type="integer")
+     * @ORM\Column(name="current_cost", type="integer")
      */
-    protected $currentEstimatedCost;
+    protected $currentCost;
 
     /**
      * @ORM\Column(name="expected_cost", type="integer")
      */
     protected $expectedCost;
 
+    /**
+     * @ORM\Column(name="estimated_cost", type="integer")
+     */
+    protected $estimatedCost;
 
 	public function __construct($group) {
 		$this->group = $group;
@@ -79,7 +83,8 @@ class GroupPeriod
         $datefin->modify('+1 month');
         $this->periodExpectedToEndAt = $datefin;
         $this->groupPricingInstance = null;
-        $this->currentEstimatedCost = 0;
+        $this->currentCost = 0;
+        $this->estimatedCost = 0;
         $this->expectedCost= 0;
 	}
 
@@ -201,17 +206,17 @@ class GroupPeriod
     /**
      * @return mixed
      */
-    public function getCurrentEstimatedCost()
+    public function getCurrentCost()
     {
-        return $this->currentEstimatedCost;
+        return $this->currentCost;
     }
 
     /**
      * @param mixed $currentEstimatedCost
      */
-    public function setCurrentEstimatedCost($currentEstimatedCost)
+    public function setCurrentCost($currentEstimatedCost)
     {
-        $this->currentEstimatedCost = $currentEstimatedCost;
+        $this->currentCost = $currentEstimatedCost;
     }
 
     /**
@@ -229,7 +234,21 @@ class GroupPeriod
     {
         $this->expectedCost = $expectedCost;
     }
+    /**
+     * @return mixed
+     */
+    public function getEstimatedCost()
+    {
+        return $this->estimatedCost;
+    }
 
+    /**
+     * @param mixed $EstimatedCost
+     */
+    public function setEstimatedCost($EstimatedCost)
+    {
+        $this->estimatedCost = $EstimatedCost;
+    }
     /**
      * @return int
      */

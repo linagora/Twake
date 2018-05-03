@@ -79,7 +79,7 @@ class ClosedGroupPeriod
 		$this->periodStartedAt = $groupPeriod->getPeriodStartedAt();
         $this->periodEndedAt = new \DateTime();
         $this->periodExpectedToEndAt = $groupPeriod->getPeriodExpectedToEndAt();
-        $this->currentEstimatedCost = $groupPeriod->getCurrentEstimatedCost();
+        $this->currentEstimatedCost = $groupPeriod->getCurrentCost();
         $this->expectedCost = $groupPeriod->getExpectedCost();
         $this->billed = false;
 	}
