@@ -27,7 +27,7 @@ class NotificationMailCommand extends ContainerAwareCommand
         $last_mail_before = null;
         $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before);
 
-        $this->sendMail($users_id_count);
+        $this->sendMail($users_id_count, "today");
         $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before);
 
         // Week notifications
@@ -36,12 +36,12 @@ class NotificationMailCommand extends ContainerAwareCommand
         $last_mail_before = new \DateTime("7 days ago");
         $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before);
 
-        $this->sendMail($users_id_count);
+        $this->sendMail($users_id_count, "this week");
         $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before);
 
     }
 
-    protected function sendMail($users_id_count)
+    protected function sendMail($users_id_count, $time_text)
     {
 
         $services = $this->getApplication()->getKernel()->getContainer();
@@ -58,7 +58,8 @@ class NotificationMailCommand extends ContainerAwareCommand
             $data = Array(
                 "username" => $user->getUsername(),
                 "total_notifications" => $count,
-                "notifications" => Array()
+                "notifications" => Array(),
+                "time_text" => $time_text
             );
             foreach ($notifications as $notification) {
                 $data["notifications"][] = Array(
