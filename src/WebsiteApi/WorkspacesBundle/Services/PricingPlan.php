@@ -322,4 +322,18 @@ class PricingPlan implements PricingPlanInterface
             }
         }
     }
+
+    public function checkEnded($AllgroupPeriod){
+        foreach ($AllgroupPeriod as $gp) {
+            $group = $gp->getGroup();
+            $groupPricingInstance = $gp->getGroupPricingInstance();
+            if ($groupPricingInstance != null){
+                $billingtype = $groupPricingInstance->getBilledType();
+                $pricingId = $groupPricingInstance->getOriginalPricingReference();
+                $this->groupPeriod->changePlanOrRenew($group,$billingtype,$pricingId);
+            }
+
+        }
+    }
+
 }

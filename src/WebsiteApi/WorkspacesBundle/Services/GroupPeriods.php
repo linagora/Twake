@@ -116,6 +116,7 @@ class GroupPeriods implements GroupPeriodInterface
 
         $groupPricing = $groupPeriod->getGroupPricingInstance();
         $groupPeriod->setGroupPricingInstance(null);
+        $groupPeriod->setCurrentCost(0);
 
         $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
         $closedGroupPeriod->setBilled(false);
