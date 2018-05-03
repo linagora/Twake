@@ -103,7 +103,7 @@ class ZpricingTest extends WebTestCaseExtended
 
         $this->assertEquals($res, true, 'renew billing went Wrong : No group period  associated with test group');
 
-        $groupPricingInstanceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+        $groupPricingInstanceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
         $newGroupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
 
         $this->assertTrue($groupPricingInstance->getId() != $newGroupPricingInstance->getId() , "Error : renew did not generate a new billing instance");
@@ -158,7 +158,6 @@ class ZpricingTest extends WebTestCaseExtended
             $this->getDoctrine()->flush();
 
             $this->get("app.pricing_plan")->dailyDataGroupUser();
-
 
         $this->assertTrue($nbConnectionBase == $groupUser->getConnections() , "should be same number because of the date" );
         $this->assertTrue(1 == $groupUser->getDidConnect() , "should stay as 1 - true" );
