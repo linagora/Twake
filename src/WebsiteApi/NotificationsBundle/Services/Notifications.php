@@ -262,6 +262,10 @@ class Notifications implements NotificationsInterface
 
 	private function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $data){
 
+        if (strlen($deviceId) < 32) { //False device
+            return;
+        }
+
         $data = Array(
             "message" => $message,
             "title" => $title,
