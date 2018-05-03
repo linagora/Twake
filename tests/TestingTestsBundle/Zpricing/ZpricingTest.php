@@ -36,7 +36,17 @@ class ZpricingTest extends WebTestCaseExtended
         }
 
         $pricing = new \WebsiteApi\WorkspacesBundle\Entity\PricingPlan("phpunit");
+        $pricing->setMonthPrice(30);
+        $pricing->setYearPrice(270);
+        $this->getDoctrine()->persist($pricing);
 
+        $groupPricing = new \WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance($group,"monthly",$pricing);
+        $this->getDoctrine()->persist($groupPricing);
+
+        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupPeriod");
+        $groupPeriod = $groupPeriodRepository->findOneBy(Array("group"=>$group));
+        $groupPeriod->getGroupPricingInstance($groupPricing);
+        $this->getDoctrine()->persist($groupPeriod);
 
         $this->getDoctrine()->flush();
 
@@ -58,7 +68,11 @@ class ZpricingTest extends WebTestCaseExtended
         $group = $this->initData();
         $this->assertRenew($group);
 
+        $group = $this->initData();
         $this->assertConnection();
+
+        $group = $this->initData();
+        $this->getMonthlyData($group);
     }
 
     //teste l'incrementation des connexions au jour
@@ -211,7 +225,31 @@ class ZpricingTest extends WebTestCaseExtended
 
     }
 
-    public function getMonthlyData(){
+    public function getMonthlyData($group){
+        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+
+        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupPeriod");
+        $groupPeriod = $groupPeriodRepository->findOneBy(Array("group"=>$group));
+
+        $user = $userRepository->findOneBy(Array("username" => "phpunit1"));
+
+        $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
+        $booleanConnected = key_exists("total",$groupPeriod->getConnexions());
+
+        $groupUser->setLastDayOfUpdate(date('z'));
+        $groupUser->setConnections(14);
+        $groupUser->setUsedApps(["14"]);
+
+
+        $this->getDoctrine()->persist($groupUser);
+        $this->getDoctrine()->flush();
+
+        $this->get("app.pricing_plan")->dailyDataGroupUser();
+
+        $this->get("app.pricing_plan")->groupPeriodUsage();
+
+        $this->assertTrue($booleanConnected !=  key_exists("total",$groupPeriod->getConnexions()) , "test add total user" );
 
     }
 
