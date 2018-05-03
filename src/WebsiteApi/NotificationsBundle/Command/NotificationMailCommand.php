@@ -21,6 +21,20 @@ class NotificationMailCommand extends ContainerAwareCommand
         $doctrine = $this->getContainer()->get('doctrine');
         $em = $doctrine->getManager();
 
+
+        // Week notifications
+
+        if (date('N') == 1) { // Monday
+
+            $number_of_mails = 1;
+            $last_mail_before = new \DateTime();
+            $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before);
+
+            $this->sendMail($users_id_count, "this week");
+            $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before);
+
+        }
+
         //Today notifications
 
         $number_of_mails = 0;
@@ -28,15 +42,6 @@ class NotificationMailCommand extends ContainerAwareCommand
         $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before);
 
         $this->sendMail($users_id_count, "today");
-        $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before);
-
-        // Week notifications
-
-        $number_of_mails = 1;
-        $last_mail_before = new \DateTime("7 days ago");
-        $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before);
-
-        $this->sendMail($users_id_count, "this week");
         $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before);
 
     }
