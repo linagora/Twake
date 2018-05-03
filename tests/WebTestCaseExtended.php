@@ -98,12 +98,18 @@ class WebTestCaseExtended extends WebTestCase
             $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
 
             $groupPricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
-            $groupPricing = $groupPricingRepository->findOneBy(Array("group" => $group));
+            $groupPricing = $groupPricingRepository->findBy(Array("group" => $group));
 
             $archivedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ArchivedGroupPeriod");
             $archivedGroupPeriods = $archivedGroupPeriodRepository->findBy(Array("group" => $group));
         }
 
+        $PricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:PricingPlan");
+        $pricing = $PricingRepository->findOneBy(Array("label" => "phpunit"));
+
+        if($pricing != null){
+            $this->getDoctrine()->remove($pricing);
+        }
         if($user != null){
             if(is_array($user)){
                 foreach($user as $u){
@@ -170,9 +176,10 @@ class WebTestCaseExtended extends WebTestCase
             if($groupPeriod != null){
                 $this->getDoctrine()->remove($groupPeriod);
             }
-
-            if($groupPricing != null){
-                $this->getDoctrine()->remove($groupPricing);
+            if (is_array($groupPricing)){
+                foreach($groupPricing as $groupP){
+                    $this->getDoctrine()->remove($groupP);
+                }
             }
         }
 
