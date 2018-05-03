@@ -50,6 +50,7 @@ class ZpricingTest extends WebTestCaseExtended
         $this->assertNbConnection();
     }
 
+    //teste l'incrementation des connexions au jour
     public function assertIncrement(){
         $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
@@ -75,6 +76,7 @@ class ZpricingTest extends WebTestCaseExtended
 
     }
 
+    //teste la justesse des dates
     public function assertDates($group){
 
         $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
@@ -90,8 +92,8 @@ class ZpricingTest extends WebTestCaseExtended
 
     }
 
+    //Teste le renouvellement de period
     public function assertRenew($group){
-
 
         $groupPricingInstanceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
         $groupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
@@ -103,12 +105,17 @@ class ZpricingTest extends WebTestCaseExtended
         $groupPricingInstanceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
         $newGroupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
 
-        $this->assertTrue($groupPricingInstance->getId() != $newGroupPricingInstance->getId() , "Error : renew did not generate a new billing instance");
+        $this->assertTrue($groupPricingInstance->getId() != $newGroupPricingInstance->getId() , "Error : renew did not generate a new pricing instance");
+        $this->assertEquals($newGroupPricingInstance->getBilledType(), "monthly", 'renew billing went Wrong : pricing instance have wrong billing type');
+        $this->assertEquals($newGroupPricingInstance->getOriginalPricingReference(), 1, 'renew billing went Wrong : pricing instance have wrong pricing');
+
+
 
 
 
     }
 
+    //teste l'incrementation des connexions des tests 5 fois
     public function assertNbConnection(){
         $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
