@@ -10,4 +10,47 @@ namespace WebsiteApi\NotificationsBundle\Repository;
  */
 class NotificationRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    public function getMailCandidates($number_of_mails, $before_date = null)
+    {
+
+        $qb = $this->createQueryBuilder('m')
+            ->select('IDENTITY(m.user), count(m)')
+            ->where('m.mail_sent = :numbermail')
+            ->setParameter("numbermail", $number_of_mails);
+        if ($before_date) {
+            $qb = $qb->andWhere('m.last_mail < :lastmail')
+                ->setParameter("lastmail", $before_date);
+        } else {
+            $qb = $qb->andWhere('m.last_mail IS NULL');
+        }
+
+        $qb->groupBy("m.user");
+
+        return $qb->getQuery()->getResult();
+
+    }
+
+    public function updateMailCandidates($number_of_mails, $before_date = null)
+    {
+
+        $qb = $this->createQueryBuilder('m');
+        $qb = $qb
+            ->update()
+            ->set('m.mail_sent', $qb->expr()->literal($number_of_mails + 1))
+            ->set('m.last_mail', ":last_mail")
+            ->setParameter('last_mail', new \DateTime())
+            ->where('m.mail_sent = :numbermail')
+            ->setParameter("numbermail", $number_of_mails);
+        if ($before_date) {
+            $qb = $qb->andWhere('m.last_mail < :lastmail')
+                ->setParameter("lastmail", $before_date);
+        } else {
+            $qb = $qb->andWhere('m.last_mail IS NULL');
+        }
+
+        return $qb->getQuery()->execute();
+
+    }
+
 }

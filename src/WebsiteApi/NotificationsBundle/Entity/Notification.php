@@ -56,10 +56,20 @@ class Notification
 	 */
 	private $date;
 
-	/**
-	 * @ORM\Column(type="text", length=64, nullable=true)
-	 */
-	private $data;
+    /**
+     * @ORM\Column(type="text", length=64, nullable=true)
+     */
+    private $data;
+
+    /**
+     * @ORM\Column(type="integer", nullable=false)
+     */
+    private $mail_sent = 0;
+
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $last_mail = null;
 
 
 	public function __construct($application, $workspace, $user)
@@ -176,6 +186,38 @@ class Notification
 	{
 		$this->data = json_encode($data);
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getMailSent()
+    {
+        return $this->mail_sent;
+    }
+
+    /**
+     * @param mixed $mail_sent
+     */
+    public function setMailSent($mail_sent)
+    {
+        $this->mail_sent = $mail_sent;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastMail()
+    {
+        return $this->last_mail;
+    }
+
+    /**
+     * @param mixed $last_mail
+     */
+    public function setLastMail($last_mail)
+    {
+        $this->last_mail = $last_mail;
+    }
 
 	public function getAsArray(){
 		return Array(
