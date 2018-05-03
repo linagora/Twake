@@ -93,13 +93,7 @@ class GroupPeriods implements GroupPeriodInterface
         $date->modify('+1 day');
         $newGroupPeriod->setPeriodStartedAt($date);
 
-        $date->modify('+1 month');
-
-        if ($date < $groupPeriod->getGroupPricingInstance()->getEndAt()){
-            $newGroupPeriod->setPeriodExpectedToEndAt($date);
-        }else{
-            $newGroupPeriod->setPeriodExpectedToEndAt($groupPeriod->getGroupPricingInstance()->getEndAt());
-        }
+        $newGroupPeriod->setPeriodExpectedToEndAt($groupPeriod->getPeriodExpectedToEndAt());
         $newGroupPeriod->setGroupPricingInstance($groupPeriod->getGroupPricingInstance());
 
         //TODO FAIRE PAYER
