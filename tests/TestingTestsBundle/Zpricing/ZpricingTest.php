@@ -44,9 +44,12 @@ class ZpricingTest extends WebTestCaseExtended
     public function testIndex()
     {
         $group = $this->initData();
-
         $this->assertIncrement();
+
+        $group = $this->initData();
         $this->assertDates($group);
+
+        $group = $this->initData();
         $this->assertNbConnection();
     }
 
@@ -90,6 +93,9 @@ class ZpricingTest extends WebTestCaseExtended
 
     }
 
+    /**
+     * Verify one user with multiple connexion
+     */
     public function assertNbConnection(){
         $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
@@ -111,7 +117,35 @@ class ZpricingTest extends WebTestCaseExtended
 
         }
 
-        $this->assertTrue($nbConnectionBase+$i == $groupUser->getConnections() , "test incrémentation 1 connexion" );
+        $this->assertTrue($nbConnectionBase+$i == $groupUser->getConnections() , "test increment 1 connexion" );
+
+    }
+
+    /**
+     * Verify when user have last day of update
+     */
+    public function assertNbConnections(){
+        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+
+        $user = $userRepository->findOneBy(Array("username" => "phpunit1"));
+
+        $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
+        $nbConnectionBase = $groupUser->getConnections();
+
+            $groupUser->setLastDayOfUpdate(date('z')+1);
+            $groupUser->setDidConnect(1);
+            $groupUser->setUsedApps(["14"]);
+
+
+            $this->getDoctrine()->persist($groupUser);
+            $this->getDoctrine()->flush();
+
+            $this->get("app.pricing_plan")->dailyDataGroupUser();
+
+
+        $this->assertTrue($nbConnectionBase == $groupUser->getConnections() , "should be same number because of the date" );
+        $this->assertTrue(1 == $groupUser->getDidConnect() , "should stay as 1 - true" );
 
     }
 
