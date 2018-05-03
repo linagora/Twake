@@ -73,6 +73,9 @@ class ZpricingTest extends WebTestCaseExtended
 
         $group = $this->initData();
         $this->assertEndOfPeriod($group);
+
+        $group = $this->initData();
+        $this->getMonthlyData($group);
     }
 
     //teste l'incrementation des connexions au jour

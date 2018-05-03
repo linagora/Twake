@@ -62,14 +62,15 @@ class WebTestCaseExtended extends WebTestCase
         return $work;
     }
 
-    public function destroyTestData(){
+    public function destroyTestData()
+    {
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findByName("phpunit");
 
         $groupRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group");
         $group = $groupRepository->findOneBy(Array("name" => "phpunit"));
 
-        if ($group != null){
+        if ($group != null) {
             $groupappsRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupApp");
             $groupapps = $groupappsRepository->findBy(Array("group" => $group));
 
@@ -107,90 +108,87 @@ class WebTestCaseExtended extends WebTestCase
         $PricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:PricingPlan");
         $pricing = $PricingRepository->findOneBy(Array("label" => "phpunit"));
 
-        if($pricing != null){
+        if ($pricing != null) {
             $this->getDoctrine()->remove($pricing);
         }
-        if($user != null){
-            if(is_array($user)){
-                foreach($user as $u){
+        if ($user != null) {
+            if (is_array($user)) {
+                foreach ($user as $u) {
                     $this->getDoctrine()->remove($u);
                 }
-            }else{
+            } else {
                 $this->getDoctrine()->remove($user);
             }
         }
-        if ($group != null){
-            if ($groupapps != null ){
-                if (is_array($groupapps)){
-                    foreach($groupapps as $groupapp){
+        if ($group != null) {
+            if ($groupapps != null) {
+                if (is_array($groupapps)) {
+                    foreach ($groupapps as $groupapp) {
                         $this->getDoctrine()->remove($groupapp);
                     }
                 }
             }
-            if ($workspaceapps != null ) {
+            if ($workspaceapps != null) {
                 if (is_array($workspaceapps)) {
                     foreach ($workspaceapps as $workspaceapp) {
                         $this->getDoctrine()->remove($workspaceapp);
                     }
                 }
             }
-            if ($workspaceUsers != null ) {
+            if ($workspaceUsers != null) {
                 if (is_array($workspaceUsers)) {
                     foreach ($workspaceUsers as $workspaceUser) {
                         $this->getDoctrine()->remove($workspaceUser);
                     }
                 }
             }
-            if($groupPricing != null){
-                $this->getDoctrine()->remove($groupPricing);
-            }
-            if ($closedGroupPeriods != null ) {
+            if ($closedGroupPeriods != null) {
                 if (is_array($closedGroupPeriods)) {
                     foreach ($closedGroupPeriods as $closedGroupPeriod) {
                         $this->getDoctrine()->remove($closedGroupPeriod);
                     }
                 }
             }
-            if ($workspacelevels != null ) {
+            if ($workspacelevels != null) {
                 if (is_array($workspacelevels)) {
                     foreach ($workspacelevels as $workspacelevel) {
                         $this->getDoctrine()->remove($workspacelevel);
                     }
                 }
             }
-            if ($streams != null ) {
+            if ($streams != null) {
                 if (is_array($streams)) {
                     foreach ($streams as $stream) {
                         $this->getDoctrine()->remove($stream);
                     }
                 }
             }
-            if($workspacestats != null){
+            if ($workspacestats != null) {
                 $this->getDoctrine()->remove($workspacestats);
             }
-            if($workspace != null){
+            if ($workspace != null) {
                 $this->getDoctrine()->remove($workspace);
             }
-            if (is_array($groupUsers)){
-                foreach($groupUsers as $groupUser){
+            if (is_array($groupUsers)) {
+                foreach ($groupUsers as $groupUser) {
                     $this->getDoctrine()->remove($groupUser);
                 }
             }
-            if($groupPeriod != null){
+            if ($groupPeriod != null) {
                 $this->getDoctrine()->remove($groupPeriod);
             }
-            if (is_array($groupPricing)){
-                foreach($groupPricing as $groupP){
+            if (is_array($groupPricing)) {
+                foreach ($groupPricing as $groupP) {
                     $this->getDoctrine()->remove($groupP);
                 }
-        }
+            }
 
-        if($group != null){
-            $this->getDoctrine()->remove($group);
-        }
+            if ($group != null) {
+                $this->getDoctrine()->remove($group);
+            }
 
-        $this->getDoctrine()->flush();
+            $this->getDoctrine()->flush();
+        }
     }
-
 
 }
