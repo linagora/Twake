@@ -35,6 +35,9 @@ class ZpricingTest extends WebTestCaseExtended
             $this->getDoctrine()->persist($user);
         }
 
+        $pricing = new \WebsiteApi\WorkspacesBundle\Entity\PricingPlan("phpunit");
+
+        
         $this->getDoctrine()->flush();
 
         return $group;
@@ -44,16 +47,18 @@ class ZpricingTest extends WebTestCaseExtended
     public function testIndex()
     {
         $group = $this->initData();
-        $this->assertIncrement();
+        $this->assertIncrementDailyData();
 
-        $group = $this->initData();
+       // $group = $this->initData();
         $this->assertDates($group);
 
-        $group = $this->initData();
+        //$group = $this->initData();
         $this->assertNbConnection();
+        $this->assertNbConnections();
+        $this->assertConnection();
     }
 
-    public function assertIncrement(){
+    public function assertIncrementDailyData(){
         $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("username" => "phpunit"));
@@ -61,7 +66,6 @@ class ZpricingTest extends WebTestCaseExtended
 
         $nbConnectionBase = $groupUser->getConnections();
 
-        // repeter x days
         $groupUser->setLastDayOfUpdate(date('z'));
         $groupUser->setDidConnect(1);
         $groupUser->setUsedApps(["14"]);
@@ -72,9 +76,10 @@ class ZpricingTest extends WebTestCaseExtended
         // appeler une fois le cron
         $this->get("app.pricing_plan")->dailyDataGroupUser();
 
-        var_dump($nbConnectionBase+1 . " AAAAA " . $groupUser->getConnections() );
-
-        $this->assertTrue($nbConnectionBase+1 == $groupUser->getConnections() , "test incrémentation 1 connexion appplication" );
+        $this->assertTrue($nbConnectionBase+1 == $groupUser->getConnections() , "test increment daily data" );
+        $this->assertTrue(0 == $groupUser->getDidConnect() , "test remove did connect" );
+        $this->assertTrue([] == $groupUser->getUsedApps() , "test remove daily used apps" );
+        $this->assertTrue(["14"=>1] == $groupUser->getAppsUsage() , "test increment add monthly used apps" );
 
     }
 
@@ -112,6 +117,7 @@ class ZpricingTest extends WebTestCaseExtended
 
     }
 
+
     public function assertNbConnection(){
         $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
@@ -137,9 +143,11 @@ class ZpricingTest extends WebTestCaseExtended
 
     }
 
+
     /**
      * Verify when user have last day of update
      */
+
     public function assertNbConnections(){
         $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
@@ -161,6 +169,38 @@ class ZpricingTest extends WebTestCaseExtended
 
         $this->assertTrue($nbConnectionBase == $groupUser->getConnections() , "should be same number because of the date" );
         $this->assertTrue(1 == $groupUser->getDidConnect() , "should stay as 1 - true" );
+
+    }
+
+    /**
+     * Verify when GroupUser connect without use
+     */
+
+    public function assertConnection(){
+        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+
+        $user = $userRepository->findOneBy(Array("username" => "phpunit3"));
+
+        $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
+        $nbConnectionBase = $groupUser->getConnections();
+
+        $groupUser->setLastDayOfUpdate(date('z'));
+        $groupUser->setDidConnect(1);
+
+        $this->getDoctrine()->persist($groupUser);
+        $this->getDoctrine()->flush();
+
+        $this->get("app.pricing_plan")->dailyDataGroupUser();
+
+        $this->assertTrue($nbConnectionBase+1 == $groupUser->getConnections() , "should be same number because of the date" );
+        $this->assertTrue(0 == $groupUser->getDidConnect() , "should be 0 - false" );
+        $this->assertTrue(0 == $groupUser->getDidConnect() , "test remove did connect" );
+        $this->assertTrue([] == $groupUser->getUsedApps() , "test remove daily used apps" );
+
+    }
+
+    public function getMonthlyData(){
 
     }
 
