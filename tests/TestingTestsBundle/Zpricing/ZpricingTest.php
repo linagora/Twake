@@ -93,9 +93,25 @@ class ZpricingTest extends WebTestCaseExtended
 
     }
 
-    /**
-     * Verify one user with multiple connexion
-     */
+    public function assertRenew($group){
+
+
+        $groupPricingInstanceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+        $groupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
+
+        $res = $this->get("app.group_period")->changePlanOrRenew($group,"monthly",1);
+
+        $this->assertEquals($res, true, 'renew billing went Wrong : No group period  associated with test group');
+
+        $groupPricingInstanceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+        $newGroupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
+
+        $this->assertTrue($groupPricingInstance->getId() != $newGroupPricingInstance->getId() , "Error : renew did not generate a new billing instance");
+
+
+
+    }
+
     public function assertNbConnection(){
         $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
