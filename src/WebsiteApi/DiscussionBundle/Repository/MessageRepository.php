@@ -16,6 +16,7 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
 		$qb->delete();
 		$qb->where('s.streamReciever = :streamReciever');
 		$qb->setParameter('streamReciever', $stream);
+        $qb->getQuery()->execute();
 	}
 
 	public function findMessageBy($param){
