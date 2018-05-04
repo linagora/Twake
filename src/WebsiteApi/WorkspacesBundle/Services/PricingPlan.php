@@ -317,7 +317,6 @@ class PricingPlan implements PricingPlanInterface
             $monthDays = $monthDays > 20 ? 20 : $monthDays;
 
             $monthDays = min($monthDays,$this->month_length);
-
             $realCostonPeriod = $realCost * $monthDays / $this->month_length ;
 
             $gp->setCurrentCost($realCostonPeriod);
@@ -327,7 +326,27 @@ class PricingPlan implements PricingPlanInterface
             if ($gp->getCurrentCost() > 1000 + $gp->getExpectedCost()) {
                 $this->groupPeriod->groupPeriodOverCost($gp);
             }
-        }
+
+            //Test si fin period
+            $date = new \DateTime();
+            $date->setTime( 0, 0, 0 );
+            $endPeriod = $gp->getPeriodExpectedToEndAt();
+            $endPeriod->setTime( 0, 0, 0 );
+            if ($date == $endPeriod ){
+                $this->checkEnded($gp);
+            }
         $this->doctrine->flush();
+        }
     }
+
+    public function checkEnded($gp){
+            $group = $gp->getGroup();
+            $groupPricingInstance = $gp->getGroupPricingInstance();
+            if ($groupPricingInstance != null){
+                $billingtype = $groupPricingInstance->getBilledType();
+                $pricingId = $groupPricingInstance->getOriginalPricingReference();
+                $this->groupPeriod->changePlanOrRenew($group,$billingtype,$pricingId);
+            }
+    }
+
 }

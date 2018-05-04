@@ -29,14 +29,14 @@ class AppPricingInstance
 	private $groupapp;
 
     /**
-     * @ORM\Column(name="cost", type="integer")
+     * @ORM\Column(name="cost_monthly", type="integer")
      */
-    protected $cost;
+    protected $costMonthly;
 
     /**
-     * @ORM\Column(name="billed_type", type="string", length=10)
+     * @ORM\Column(name="cost_per_user", type="integer")
      */
-    protected $billedType;
+    protected $costUser;
 
 	/**
 	 * @ORM\Column(type="datetime")
@@ -46,8 +46,9 @@ class AppPricingInstance
 
 	public function __construct($groupapp,$billtype,$pricing) {
 		$this->groupapp = $groupapp;
-        $this-> cost = 0;
-		$this->billedType = $billtype;
+        $this->costMonthly = 0;
+        $this->costUser = 0;
+        $this->billedType = $billtype;
 		$this->startedAt = new \DateTime();
 	}
 
@@ -68,35 +69,51 @@ class AppPricingInstance
     }
 
     /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @return mixed
      */
-    public function getCost()
+    public function getCostMonthly()
     {
-        return $this->cost;
+        return $this->costMonthly;
     }
 
     /**
-     * @param mixed $cost
+     * @param mixed $costMonthly
      */
-    public function setCost($cost)
+    public function setCostMonthly($costMonthly)
     {
-        $this->cost = $cost;
+        $this->costMonthly = $costMonthly;
     }
 
     /**
      * @return mixed
      */
-    public function getBilledType()
+    public function getCostUser()
     {
-        return $this->billedType;
+        return $this->costUser;
     }
 
     /**
-     * @param mixed $billedType
+     * @param mixed $costUser
      */
-    public function setBilledType($billedType)
+    public function setCostUser($costUser)
     {
-        $this->billedType = $billedType;
+        $this->costUser = $costUser;
     }
 
     /**
