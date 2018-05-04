@@ -36,6 +36,16 @@ class WebTestCaseExtended extends WebTestCase
         return $user;
     }
 
+    public function newUserByName($name){
+        $userToken = $this->get("app.user")->subscribeMail($name . "@PHPUNIT.fr");
+        $user = $this->get("app.user")->subscribe($userToken,null, $name,$name,true);
+
+        $this->getDoctrine()->persist($user);
+        $this->getDoctrine()->flush();
+
+        return $user;
+    }
+
     public function newGroup($userId){
         $group = $this->get("app.groups")->create($userId,"phpunit","phpunit",1);
         $this->getDoctrine()->persist($group);
@@ -52,27 +62,143 @@ class WebTestCaseExtended extends WebTestCase
         return $work;
     }
 
-    public function destroyTestData(){
+    public function destroyTestData()
+    {
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("username" => "phpunit"));
+        $user = $userRepository->findByName("phpunit");
 
         $groupRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group");
         $group = $groupRepository->findOneBy(Array("name" => "phpunit"));
 
-        $workspaceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace");
-        $workspace = $workspaceRepository->findOneBy(Array("name" => "phpunit"));
+        if ($group != null) {
+            $groupappsRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupApp");
+            $groupapps = $groupappsRepository->findBy(Array("group" => $group));
 
-        if($user != null){
-            $this->getDoctrine()->remove($user);
+            $workspaceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->findOneBy(Array("name" => "phpunit"));
+
+            $workspaceUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $workspaceUsers = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
+
+            $workspaceappsRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+            $workspaceapps = $workspaceappsRepository->findBy(Array("workspace" => $workspace));
+
+            $workspacelevelRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+            $workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $workspace));
+
+            $workspacestatsRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceStats");
+            $workspacestats = $workspacestatsRepository->findOneBy(Array("workspace" => $workspace));
+
+            $streamRepository = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream");
+            $streams = $streamRepository->findBy(Array("workspace" => $workspace));
+
+            $groupUserdRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupUsers = $groupUserdRepository->findBy(Array("group" => $group));
+
+            $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+            $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
+
+            $groupPricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+            $groupPricing = $groupPricingRepository->findBy(Array("group" => $group));
+
+            $closedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
+            $closedGroupPeriods = $closedGroupPeriodRepository->findBy(Array("group" => $group));
+
+            $appPricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:AppPricingInstance");
+            $appPricings = $appPricingRepository->findBy(Array("group" => $group));
         }
-        if($group != null){
-            $this->getDoctrine()->remove($group);
+
+        $PricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:PricingPlan");
+        $pricing = $PricingRepository->findOneBy(Array("label" => "phpunit"));
+
+        if ($pricing != null) {
+            $this->getDoctrine()->remove($pricing);
         }
-        if($workspace != null){
-            $this->getDoctrine()->remove($workspace);
+        if ($user != null) {
+            if (is_array($user)) {
+                foreach ($user as $u) {
+                    $this->getDoctrine()->remove($u);
+                }
+            } else {
+                $this->getDoctrine()->remove($user);
+            }
         }
-        $this->getDoctrine()->flush();
+        if ($group != null) {
+            if ($groupapps != null) {
+                if (is_array($groupapps)) {
+                    foreach ($groupapps as $groupapp) {
+                        $this->getDoctrine()->remove($groupapp);
+                    }
+                }
+            }
+            if ($appPricings != null) {
+                if (is_array($appPricings)) {
+                    foreach ($appPricings as $appPricing) {
+                        $this->getDoctrine()->remove($appPricing);
+                    }
+                }
+            }
+            if ($workspaceapps != null) {
+                if (is_array($workspaceapps)) {
+                    foreach ($workspaceapps as $workspaceapp) {
+                        $this->getDoctrine()->remove($workspaceapp);
+                    }
+                }
+            }
+            if ($workspaceUsers != null) {
+                if (is_array($workspaceUsers)) {
+                    foreach ($workspaceUsers as $workspaceUser) {
+                        $this->getDoctrine()->remove($workspaceUser);
+                    }
+                }
+            }
+            if ($closedGroupPeriods != null) {
+                if (is_array($closedGroupPeriods)) {
+                    foreach ($closedGroupPeriods as $closedGroupPeriod) {
+                        $this->getDoctrine()->remove($closedGroupPeriod);
+                    }
+                }
+            }
+            if ($workspacelevels != null) {
+                if (is_array($workspacelevels)) {
+                    foreach ($workspacelevels as $workspacelevel) {
+                        $this->getDoctrine()->remove($workspacelevel);
+                    }
+                }
+            }
+            if ($streams != null) {
+                if (is_array($streams)) {
+                    foreach ($streams as $stream) {
+                        $this->getDoctrine()->remove($stream);
+                    }
+                }
+            }
+            if ($workspacestats != null) {
+                $this->getDoctrine()->remove($workspacestats);
+            }
+            if ($workspace != null) {
+                $this->getDoctrine()->remove($workspace);
+            }
+            if (is_array($groupUsers)) {
+                foreach ($groupUsers as $groupUser) {
+                    $this->getDoctrine()->remove($groupUser);
+                }
+            }
+            if ($groupPeriod != null) {
+                $this->getDoctrine()->remove($groupPeriod);
+            }
+            if (is_array($groupPricing)) {
+                foreach ($groupPricing as $groupP) {
+                    $this->getDoctrine()->remove($groupP);
+                }
+            }
+
+            if ($group != null) {
+                $this->getDoctrine()->remove($group);
+            }
+
+            $this->getDoctrine()->flush();
+        }
     }
-
 
 }

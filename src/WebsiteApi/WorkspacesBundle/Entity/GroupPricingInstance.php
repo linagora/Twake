@@ -56,7 +56,7 @@ class GroupPricingInstance
 
 	public function __construct($group,$billtype,$pricing) {
 		$this->group = $group;
-        $this-> cost = 0;
+        $this->cost = $billtype == "monthly" ? $pricing->getMonthPrice() : $pricing->getYearPrice();
 		$this->billedType = $billtype;
         $this->originalPricingReference = $pricing;
 		$this->startedAt = new \DateTime();

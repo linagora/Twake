@@ -2,7 +2,8 @@
 
 namespace WebsiteApi\WorkspacesBundle\Services;
 
-use WebsiteApi\WorkspacesBundle\Entity\ArchivedGroupPeriod;
+use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
+use WebsiteApi\WorkspacesBundle\Entity\ClosedGroupPeriod;
 use WebsiteApi\WorkspacesBundle\Entity\Group;
 use WebsiteApi\WorkspacesBundle\Entity\GroupManager;
 use WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance;
@@ -14,10 +15,9 @@ class GroupPeriods implements GroupPeriodInterface
 
 	private $doctrine;
 
-	public function __construct($doctrine,$pricing)
+	public function __construct($doctrine)
 	{
 		$this->doctrine = $doctrine;
-		$this->pricing = $pricing;
 	}
 
 	public function changePlanOrRenew($group, $billingType ,$planId){
@@ -31,6 +31,12 @@ class GroupPeriods implements GroupPeriodInterface
         $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
         $groupUsers = $groupUserRepository->findBy(Array("group" => $group));
 
+        $appPricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:AppPricingInstance");
+        $appPricings = $appPricingRepository->findBy(Array("group"=>$group));
+
+        $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+        $groupApps = $groupAppRepository->findBy(Array("group"=>$group));
+
         $pricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
         $pricing = $pricingRepository->findOneBy(Array("id" => $planId));
 
@@ -38,7 +44,12 @@ class GroupPeriods implements GroupPeriodInterface
             return false;
         }else{
 
-            $archivedGroupPeriod = new ArchivedGroupPeriod($groupPeriod);
+            $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
+
+            foreach ($groupApps as $groupApp){
+                $newAppPricing = new AppPricingInstance($groupApp);
+                $this->doctrine->persist($newAppPricing);
+            }
             $newGroupPricing = new GroupPricingInstance($group ,$billingType,$pricing );
             $date = new \DateTime();
 
@@ -55,13 +66,21 @@ class GroupPeriods implements GroupPeriodInterface
 
             if($groupPricingInstance){
                 $this->doctrine->remove($groupPricingInstance);
+
+                foreach ($appPricings as $appPricing){
+                    $this->doctrine->remove($appPricing);
+                }
             }
             $this->doctrine->remove($groupPeriod);
 
-            //TODO CALCUL COUT
+            //TODO CALCUL COUT ET FAIRE PAYER (UN JOUR P-Ê)
+            // Si payement OK
+            $closedGroupPeriod->setBilled(true);
+            // Sinon
+            // $closedGroupPeriod->setBilled(false);
 
             //Reset user period utilisation
-            foreach ($groupUsers as $groupUser){//User left between two periods, it can be removed
+            foreach ($groupUsers as $groupUser){//User left group between two periods, it can be removed
                 if ($groupUser->getNbWorkspace() == 0){
                     $this->doctrine->remove($groupUser);
                 }else{
@@ -71,7 +90,7 @@ class GroupPeriods implements GroupPeriodInterface
                 }
             }
 
-            $this->doctrine->persist($archivedGroupPeriod);
+            $this->doctrine->persist($closedGroupPeriod);
             $this->doctrine->persist($newGroupPricing);
             $this->doctrine->persist($newGroupPeriod);
             $this->doctrine->flush();
@@ -81,9 +100,61 @@ class GroupPeriods implements GroupPeriodInterface
 
     }
 
+    public function groupPeriodOverCost($groupPeriod){
+
+        $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
+
+        $newGroupPeriod = new GroupPeriod($groupPeriod->getGroup());
+        $date = new \DateTime();
+        $date->modify('+1 day');
+        $newGroupPeriod->setPeriodStartedAt($date);
+
+        $newGroupPeriod->setPeriodExpectedToEndAt($groupPeriod->getPeriodExpectedToEndAt());
+        $newGroupPeriod->setGroupPricingInstance($groupPeriod->getGroupPricingInstance());
+
+        //TODO FAIRE PAYER
+        // Si payement OK
+        $closedGroupPeriod->setBilled(true);
+        // Sinon
+        // $closedGroupPeriod->setBilled(false);
+
+        $this->doctrine->remove($groupPeriod);
+        $this->doctrine->persist($closedGroupPeriod);
+        $this->doctrine->persist($newGroupPeriod);
+        $this->doctrine->flush();
+    }
+
+
+    public function endGroupPricing($groupPeriod){
+
+        $group = $groupPeriod->getGroup();
+        $group->setPricingPlan(null);
+
+        $appPricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:AppPricingInstance");
+        $appPricings = $appPricingRepository->findBy(Array("group"=>$group));
+
+        $groupPricing = $groupPeriod->getGroupPricingInstance();
+        $groupPeriod->setGroupPricingInstance(null);
+        $groupPeriod->setCurrentCost(0);
+
+        $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
+        $closedGroupPeriod->setBilled(false);
+
+        foreach ($appPricings as $appPricing){
+            $this->doctrine->remove($appPricing);
+        }
+
+        $this->doctrine->persist($groupPeriod);
+        $this->doctrine->persist($group);
+        $this->doctrine->persist($closedGroupPeriod);
+        $this->doctrine->remove($groupPricing);
+        $this->doctrine->flush();
+    }
+
     public function init($group){
         $groupPeriodRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
-        $pricing = $this->pricing->getMinimalPricing();
+        $planRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
+        $pricing = $planRepository->findOneBy(Array("id"=>1));
 
         $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
 

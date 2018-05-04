@@ -3,6 +3,7 @@
 namespace WebsiteApi\MarketBundle\Services;
 
 use WebsiteApi\MarketBundle\Model\MarketApplicationInterface;
+use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
 use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
 
 class MarketApplication implements MarketApplicationInterface
@@ -72,13 +73,14 @@ class MarketApplication implements MarketApplicationInterface
             )
         ) {
             $groupapp = new GroupApp($group, $application);
+            $appPricingInstance = new AppPricingInstance($groupapp);
             if($init){
                 if($application->getDefault()) {
                     $groupapp->setWorkspaceDefault(true);
                 }
             }
             $this->doctrine->persist($groupapp);
-
+            $this->doctrine->persist($appPricingInstance);
             $application->increaseInstall();
             $this->doctrine->persist($application);
 

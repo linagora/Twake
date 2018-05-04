@@ -23,20 +23,25 @@ class AppPricingInstance
      */
     private $id;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
+     */
+    private $group;
+
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupApp")
 	 */
 	private $groupapp;
 
     /**
-     * @ORM\Column(name="cost", type="integer")
+     * @ORM\Column(name="cost_monthly", type="integer")
      */
-    protected $cost;
+    protected $costMonthly;
 
     /**
-     * @ORM\Column(name="billed_type", type="string", length=10)
+     * @ORM\Column(name="cost_per_user", type="integer")
      */
-    protected $billedType;
+    protected $costUser;
 
 	/**
 	 * @ORM\Column(type="datetime")
@@ -44,10 +49,11 @@ class AppPricingInstance
 	private $startedAt;
 
 
-	public function __construct($groupapp,$billtype,$pricing) {
+	public function __construct($groupapp) {
+	    $this->group = $groupapp->getGroup();
 		$this->groupapp = $groupapp;
-        $this-> cost = 0;
-		$this->billedType = $billtype;
+        $this->costMonthly = $groupapp->getApp()->getPriceMonthly();
+        $this->costUser = $groupapp->getApp()->getPriceUser();
 		$this->startedAt = new \DateTime();
 	}
 
@@ -68,35 +74,51 @@ class AppPricingInstance
     }
 
     /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @return mixed
      */
-    public function getCost()
+    public function getCostMonthly()
     {
-        return $this->cost;
+        return $this->costMonthly;
     }
 
     /**
-     * @param mixed $cost
+     * @param mixed $costMonthly
      */
-    public function setCost($cost)
+    public function setCostMonthly($costMonthly)
     {
-        $this->cost = $cost;
+        $this->costMonthly = $costMonthly;
     }
 
     /**
      * @return mixed
      */
-    public function getBilledType()
+    public function getCostUser()
     {
-        return $this->billedType;
+        return $this->costUser;
     }
 
     /**
-     * @param mixed $billedType
+     * @param mixed $costUser
      */
-    public function setBilledType($billedType)
+    public function setCostUser($costUser)
     {
-        $this->billedType = $billedType;
+        $this->costUser = $costUser;
     }
 
     /**
@@ -113,6 +135,22 @@ class AppPricingInstance
     public function setStartedAt($startedAt)
     {
         $this->startedAt = $startedAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * @param mixed $group
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
     }
 
 }

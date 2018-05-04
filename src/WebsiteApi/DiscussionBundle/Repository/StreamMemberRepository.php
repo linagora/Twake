@@ -15,6 +15,7 @@ class StreamMemberRepository extends \Doctrine\ORM\EntityRepository
 		$qb = $this->createQueryBuilder("s");
 		$qb->where('s.stream = :stream');
 		$qb->setParameter('stream', $stream);
+        $qb->getQuery()->execute();
 	}
 
 }

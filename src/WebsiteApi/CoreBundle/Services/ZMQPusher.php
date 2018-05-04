@@ -60,7 +60,6 @@ class ZMQPusher
         $data = json_encode($data);
 
         $this->connection->send($data);
-
 	}
 
 

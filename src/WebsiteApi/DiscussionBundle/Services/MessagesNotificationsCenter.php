@@ -67,7 +67,12 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 
 	}
 
-	public function notify($stream, $except_users_ids, Message $message){
+    public function notify($stream, $except_users_ids, $message)
+    {
+
+        if (!$message) {
+            return false;
+        }
 
 		$users = Array();
 		$linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")

@@ -1,0 +1,29 @@
+{% extends "TwakeCoreBundle:Mail:all.html.twig" %}
+
+{% block title %}You have {{ total_notifications }} unread notification(s) on Twake{% endblock %}
+
+{% block secondtitle %}You have {{ total_notifications }} unread notification(s) on Twake{% endblock %}
+
+{% block body %}
+
+    <b>Hello {{ username }},</b>
+    <br>
+    You have received <span class="badge"
+                            style="background: #ff2c2c;padding: 2px 5px;border-radius: 4px;color: #FFF;">{{ total_notifications }}</span> unread notification(s) on Twake {{ time_text }}.</b>
+    <br><br>
+    Last notification(s) :
+
+    {% for notification in notifications %}
+        <div class="card"
+             style="border-radius: 4px;padding: 10px;margin-top: 10px;box-shadow: 2px 2px 20px rgba(0,0,0,0.1);background: #ffffff;color: #000;border-left: 2px solid #0682d4;font-size: 14px;">
+            <span style="right: 0;font-size: 12px;color: #888;float: right;">{{ notification.delay }} day(s) ago</span>
+            <b>{{ notification.title }}</b><br>
+            {{ notification.text }}
+        </div>
+    {% endfor %}
+
+    <br>
+    <a href="{{ twakeurl }}">Open Twake</a>
+    <br>
+
+{% endblock %}

@@ -290,6 +290,9 @@ class MessageSystem implements MessagesSystemInterface
     public function editMessage($id, $content, $user)
     {
         $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($id);
+        if (!$message) {
+            return false;
+        }
 
         if ($message->getUserSender()->getId() != $user->getId()) {
             return false;
@@ -310,6 +313,9 @@ class MessageSystem implements MessagesSystemInterface
     public function deleteMessage($id, $user)
     {
         $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($id);
+        if (!$message) {
+            return false;
+        }
 
         if ($message->getUserSender()->getId() != $user->getId()) {
             return false;

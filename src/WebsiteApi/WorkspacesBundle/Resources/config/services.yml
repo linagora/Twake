@@ -14,11 +14,11 @@ services:
 
     app.group_period:
         class: WebsiteApi\WorkspacesBundle\Services\GroupPeriods
-        arguments: ["@doctrine.orm.entity_manager", "@app.pricing_plan"]
+        arguments: ["@doctrine.orm.entity_manager"]
 
     app.pricing_plan:
         class: WebsiteApi\WorkspacesBundle\Services\PricingPlan
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager","@app.group_period"]
 
     app.workspace_levels:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceLevels

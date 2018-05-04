@@ -112,4 +112,12 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         return $req;
     }
 
+    public function findByName($name){
+        $qb = $this->createQueryBuilder('p')
+            ->andWhere('p.username like :name')
+            ->setParameter('name', '%'.$name.'%')
+            ->getQuery();
+
+        return $qb->execute();
+    }
 }

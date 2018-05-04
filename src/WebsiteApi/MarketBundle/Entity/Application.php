@@ -73,9 +73,14 @@ class Application
 	private $description = "";
 
 	/**
-	 * @ORM\Column(name="price", type="float")
+	 * @ORM\Column(name="price_monthly", type="float")
 	 */
-	private $price = 0;
+	private $priceMonthly = 0;
+
+    /**
+     * @ORM\Column(name="price_user", type="float")
+     */
+    private $priceUser = 0;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
@@ -411,16 +416,6 @@ class Application
 		$this->workspace = $workspace;
 	}
 
-	public function getPrice()
-	{
-		return $this->price;
-	}
-
-	public function setPrice($price)
-	{
-		$this->price = $price;
-	}
-
 	public function getUserCount()
 	{
 		return $this->userCount;
@@ -663,6 +658,40 @@ class Application
         $this->order = $order;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPriceMonthly()
+    {
+        return $this->priceMonthly;
+    }
+
+    /**
+     * @param mixed $priceMonthly
+     */
+    public function setPriceMonthly($priceMonthly)
+    {
+        $this->priceMonthly = $priceMonthly;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPriceUser()
+    {
+        return $this->priceUser;
+    }
+
+    /**
+     * @param mixed $priceUser
+     */
+    public function setPriceUser($priceUser)
+    {
+        $this->priceUser = $priceUser;
+    }
+
+
+
 	public function getAsArray()
 	{
 		return Array(
@@ -674,8 +703,9 @@ class Application
 			"nbUsers" => $this->userCount,
 			"description" => $this->description,
 			"shortDescription" => $this->shortDescription,
-			"price" => $this->price,
-			"cssthumbnail" => $this->getCssThumbnail(),
+			"priceMonthly" => $this->priceMonthly,
+            "priceUser" => $this->priceUser,
+            "cssthumbnail" => $this->getCssThumbnail(),
 			"thumbnail" => $this->getUrlThumbnail(),
 			"csscover" => $this->getCssCover(),
 			"cover" => $this->getUrlCover(),

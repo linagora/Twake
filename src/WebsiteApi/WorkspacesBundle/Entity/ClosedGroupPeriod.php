@@ -10,10 +10,10 @@ use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
 /**
  * GroupPeriod
  *
- * @ORM\Table(name="archived_group_period",options={"engine":"MyISAM"})
+ * @ORM\Table(name="closed_group_period",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupPeriodRepository")
  */
-class ArchivedGroupPeriod
+class ClosedGroupPeriod
 {
 
     /**
@@ -56,11 +56,6 @@ class ArchivedGroupPeriod
     private $periodExpectedToEndAt;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance")
-     */
-    private $groupPricingInstance;
-
-    /**
      * @ORM\Column(name="current_estimated_cost", type="integer")
      */
     protected $currentEstimatedCost;
@@ -82,12 +77,11 @@ class ArchivedGroupPeriod
 		$this->setConnexions($groupPeriod->getConnexions());
 		$this->setAppsUsage($groupPeriod->getAppsUsage());
 		$this->periodStartedAt = $groupPeriod->getPeriodStartedAt();
-        $this->periodEndedAt = $groupPeriod->getPeriodEndedAt();
+        $this->periodEndedAt = new \DateTime();
         $this->periodExpectedToEndAt = $groupPeriod->getPeriodExpectedToEndAt();
-        $this->groupPricingInstance = $groupPeriod->getGroupPricingInstance();
-        $this->currentEstimatedCost = $groupPeriod->getCurrentEstimatedCost();
+        $this->currentEstimatedCost = $groupPeriod->getCurrentCost();
         $this->expectedCost = $groupPeriod->getExpectedCost();
-        $this->billed = true;
+        $this->billed = false;
 	}
 
     /**
@@ -189,23 +183,6 @@ class ArchivedGroupPeriod
     /**
      * @return mixed
      */
-    public function getGroupPricingInstance()
-    {
-        return $this->groupPricingInstance;
-    }
-
-    /**
-     * @param mixed $groupPricingInstance
-     */
-    public function setGroupPricingInstance($groupPricingInstance)
-    {
-        $this->groupPricingInstance = $groupPricingInstance;
-        $this->periodExpectedToEndAt = $groupPricingInstance->getEndAt();
-    }
-
-    /**
-     * @return mixed
-     */
     public function getCurrentEstimatedCost()
     {
         return $this->currentEstimatedCost;
@@ -250,6 +227,23 @@ class ArchivedGroupPeriod
     {
         $this->id = $id;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getBilled()
+    {
+        return $this->billed;
+    }
+
+    /**
+     * @param mixed $billed
+     */
+    public function setBilled($billed)
+    {
+        $this->billed = $billed;
+    }
+
 
 
 
