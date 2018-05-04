@@ -64,7 +64,7 @@ class GroupPeriods implements GroupPeriodInterface
             // $closedGroupPeriod->setBilled(false);
 
             //Reset user period utilisation
-            foreach ($groupUsers as $groupUser){//User left between two periods, it can be removed
+            foreach ($groupUsers as $groupUser){//User left group between two periods, it can be removed
                 if ($groupUser->getNbWorkspace() == 0){
                     $this->doctrine->remove($groupUser);
                 }else{
