@@ -8,12 +8,12 @@ use WebsiteApi\WorkspacesBundle\Model\PricingPlanInterface;
 class PricingPlan implements PricingPlanInterface
 {
 
-	private $doctrine;
-	private $groupPeriod;
+    private $doctrine;
+    private $groupPeriod;
     var $newApps = Array('all' => Array(), 'notall' => Array());
 
     var $none_cost_percentage = 0; //none cost 0%
-    var $partial_cost_percentage = 0.5 ; //partial cost 50%
+    var $partial_cost_percentage = 0.5; //partial cost 50%
     var $total_cost_percentage = 1; //total cost 100%
     var $none = 1;
     var $partial = 10;
@@ -22,86 +22,88 @@ class PricingPlan implements PricingPlanInterface
     var $nbDays;
 
 
-	public function __construct($doctrine,$groupperiodservice)
-	{
-		$this->doctrine = $doctrine;
-		$this->groupPeriod = $groupperiodservice;
-	}
+    public function __construct($doctrine, $groupperiodservice)
+    {
+        $this->doctrine = $doctrine;
+        $this->groupPeriod = $groupperiodservice;
+    }
 
-	public function init()
-	{
-		$cmd = $this->doctrine->getClassMetadata('\WebsiteApi\WorkspacesBundle\Entity\PricingPlan');
-		$connection = $this->doctrine->getConnection();
-		$dbPlatform = $connection->getDatabasePlatform();
-		$connection->query('SET FOREIGN_KEY_CHECKS=0');
-		$q = $dbPlatform->getTruncateTableSql($cmd->getTableName());
-		$connection->executeUpdate($q);
-		$connection->query('SET FOREIGN_KEY_CHECKS=1');
+    public function init()
+    {
+        $cmd = $this->doctrine->getClassMetadata('\WebsiteApi\WorkspacesBundle\Entity\PricingPlan');
+        $connection = $this->doctrine->getConnection();
+        $dbPlatform = $connection->getDatabasePlatform();
+        $connection->query('SET FOREIGN_KEY_CHECKS=0');
+        $q = $dbPlatform->getTruncateTableSql($cmd->getTableName());
+        $connection->executeUpdate($q);
+        $connection->query('SET FOREIGN_KEY_CHECKS=1');
 
-		$plans = Array(
-			Array(
-				"name" => "startup",
-				"monthlyPrice" => 9,
-				"yearlyPrice" => 90
-			),
-			Array(
-				"name" => "standard",
-				"monthlyPrice" => 17,
-				"yearlyPrice" => 170
-			)
-		);
+        $plans = Array(
+            Array(
+                "name" => "startup",
+                "monthlyPrice" => 9,
+                "yearlyPrice" => 90
+            ),
+            Array(
+                "name" => "standard",
+                "monthlyPrice" => 17,
+                "yearlyPrice" => 170
+            )
+        );
 
-		foreach ($plans as $plan) {
-			$newPlan = new \WebsiteApi\WorkspacesBundle\Entity\PricingPlan($plan["name"]);
-			$newPlan->setMonthPrice($plan["monthlyPrice"]);
-			$newPlan->setYearPrice($plan["yearlyPrice"]);
-			$this->doctrine->persist($newPlan);
-		}
-		$this->doctrine->flush();
-	}
+        foreach ($plans as $plan) {
+            $newPlan = new \WebsiteApi\WorkspacesBundle\Entity\PricingPlan($plan["name"]);
+            $newPlan->setMonthPrice($plan["monthlyPrice"]);
+            $newPlan->setYearPrice($plan["yearlyPrice"]);
+            $this->doctrine->persist($newPlan);
+        }
+        $this->doctrine->flush();
+    }
 
-	public function getMinimalPricing()
-	{
-		$planRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
-		$plan = $planRepository->findOneBy(Array("id"=>1));
-		return $plan;
-	}
+    public function getMinimalPricing()
+    {
+        $planRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
+        $plan = $planRepository->findOneBy(Array("id" => 1));
+        return $plan;
+    }
 
-	public function getLimitations($groupId){
+    public function getLimitations($groupId)
+    {
 
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
         $group = $groupRepository->find($groupId);
 
         $pricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
 
-        if($group == null){
-            $pricing = $pricingRepository->findOneBy(Array("label"=>"startup"));
-        }else{
-            $pricing = $pricingRepository->findOneBy(Array("id"=>($group->getPricingPlan())));
+        if ($group == null) {
+            $pricing = $pricingRepository->findOneBy(Array("label" => "startup"));
+        } else {
+            $pricing = $pricingRepository->findOneBy(Array("id" => ($group->getPricingPlan())));
         }
 
         return $pricing;
     }
 
-    public function getLimitation($groupId,$key,$default){
+    public function getLimitation($groupId, $key, $default)
+    {
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
         $group = $groupRepository->find($groupId);
 
         $pricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
 
-        if($group == null){
-            $pricing = $pricingRepository->findOneBy(Array("label"=>"startup"))->getAsArray();
-        }else{
-            $pricing = $pricingRepository->findOneBy(Array("id"=>($group->getPricingPlan())))->getAsArray();
+        if ($group == null) {
+            $pricing = $pricingRepository->findOneBy(Array("label" => "startup"))->getAsArray();
+        } else {
+            $pricing = $pricingRepository->findOneBy(Array("id" => ($group->getPricingPlan())))->getAsArray();
         }
 
-        if(isset($pricing["limitation"][$key])){
-            if($pricing["limitation"][$key] == 0){
+        if (isset($pricing["limitation"][$key])) {
+            if ($pricing["limitation"][$key] == 0) {
                 return PHP_INT_MAX;
-            }else{
+            } else {
                 return $pricing["limitation"][$key];
             }
-        }else{
+        } else {
             return $default;
         }
 
@@ -118,7 +120,7 @@ class PricingPlan implements PricingPlanInterface
         foreach ($listGroupUser as $ga) {
             $lastDate = $ga->getLastDayOfUpdate();
 
-            if ($lastDate < $dateToday){
+            if ($lastDate < $dateToday) {
                 if ($ga->getDidConnect()) {
                     $ga->increaseConnectionPeriod();
                     $usedApps = $ga->getUsedApps();
@@ -248,11 +250,14 @@ class PricingPlan implements PricingPlanInterface
         $this->calculatePrice($AllgroupPeriod);
     }
 
-    public function calculatePrice($AllgroupPeriod){
+    public function calculatePrice($AllgroupPeriod)
+    {
         // calcul du prix
+
         foreach ($AllgroupPeriod as $gp) {
+            $appCostTotal = 0;
             $now = new DateTime();
-            $this->nbDays = $now->diff($gp->getPeriodStartedAt(), true)->format('%a');
+            $this->nbDays = $now->diff($gp->getPeriodStartedAt()->setTime(0, 0, 0), true)->format('%a');
             $calculTemps = min($this->month_length, $this->nbDays) / $this->month_length;
 
             $connexions = $gp->getConnexions();
@@ -271,30 +276,36 @@ class PricingPlan implements PricingPlanInterface
             $apps = $gp->getAppsUsage();
             $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
 
+            $appPricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:AppPricingInstance");
+            $chargeApps=0;
+            $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+            $appCostTotal = 0;
+
             foreach ($apps as $key => $value) {
                 $currentApp = $appRepository->find($key);
-                $appCostTotal = 0;
-                /* TODO Calculate the apps price
-                 * if($currentApp!=false){
-                 * if($currentApp->isPayante()) {
-                        if($currentApp->PayeParMois ){
-                            $appCost = $currentApp->getMonthlyCost();
-                        }else{
-                         // Payable par utilisateur par mois
-                               if (array_key_exists("none", $value)) {
-                                  $chargeUsers += $value["none"] * $this->none_cost_percentage;
-                               }
-                              if (array_key_exists("partial", $value)) {
-                                 $chargeUsers += $value["partial"] * $this->partial_cost_percentage;
-                             }
-                             if (array_key_exists("total", $value)) {
-                                   $chargeUsers += $value["total"] * $this->total_cost_percentage;
-                            }
+                $appCost = 0 ;
+                if ($currentApp != null) {
+                    $groupApp = $groupAppRepository->findOneBy(Array("group" => $gp->getGroup(), "app" => $currentApp));
+                    $appPricing = $appPricingRepository->findOneBy(Array("groupapp" => $groupApp, "group" => $gp->getGroup()));
+                    if($appPricing != null){
+                        $appCost = $appPricing->getCostMonthly();
+
+                        // Payable par utilisateur par mois
+                        if (array_key_exists("none", $value)) {
+                            $chargeApps += $value["none"] * $this->none_cost_percentage * $appPricing->getCostUser();
                         }
-                $appCostTotal += $appCost ;
+                        if (array_key_exists("partial", $value)) {
+                            $chargeApps += $value["partial"] * $this->partial_cost_percentage * $appPricing->getCostUser();
+                        }
+                        if (array_key_exists("total", $value)) {
+                            $chargeApps += $value["total"] * $this->total_cost_percentage * $appPricing->getCostUser();
+                        }
+
+                        $appCostTotal += $appCost + $chargeApps;
                     }
+
                 }
-                }*/
+
             }
 
 
@@ -303,43 +314,52 @@ class PricingPlan implements PricingPlanInterface
 
             $pricing = $typeBilled == "monthly" ? $groupPrincingInstance->getOriginalPricingReference()->getMonthPrice() : $groupPrincingInstance->getOriginalPricingReference()->getYearPrice();
 
-            $cost = $chargeUsers * $pricing; // + $appCostTotal
-
+            $cost = $chargeUsers * $pricing + $appCostTotal;
+            var_dump($appCostTotal);
             $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
             $nbuserGroup = $groupUserRepository->findBy(Array("group" => $gp->getGroup()));
 
-            $minCost = max(1, $this->min_paid_users_percentage * count($nbuserGroup)) * $pricing * $calculTemps;
+            $minCost = max(1, $this->min_paid_users_percentage * count($nbuserGroup)) * $pricing;
+
 
             $realCost = max($minCost, $cost);
 
-            $realCostonPeriod = $realCost / ($this->nbDays == 0 ? 1 : $this->nbDays) * $this->month_length;
+            $monthDays = $this->nbDays == 0 ? 1 : $this->nbDays;
+            $monthDays = $monthDays > 20 ? 20 : $monthDays;
 
-            $gp->setCurrentCost($realCost);
-            $gp->setExpectedCost($realCostonPeriod);
+            $monthDays = min($monthDays, $this->month_length);
+            $realCostonPeriod = $realCost * $monthDays / $this->month_length;
 
+            $gp->setCurrentCost($realCostonPeriod);
+            $gp->setEstimatedCost($realCost);
+
+            $this->doctrine->persist($gp);
             if ($gp->getCurrentCost() > 1000 + $gp->getExpectedCost()) {
                 $this->groupPeriod->groupPeriodOverCost($gp);
             }
 
             //Test si fin period
             $date = new \DateTime();
-            $date->setTime( 0, 0, 0 );
+            $date->setTime(0, 0, 0);
             $endPeriod = $gp->getPeriodExpectedToEndAt();
-            $endPeriod->setTime( 0, 0, 0 );
-            if ($date == $endPeriod ){
+            $endPeriod->setTime(0, 0, 0);
+            if ($date == $endPeriod) {
                 $this->checkEnded($gp);
             }
+            $this->doctrine->flush();
         }
     }
 
-    public function checkEnded($gp){
-            $group = $gp->getGroup();
-            $groupPricingInstance = $gp->getGroupPricingInstance();
-            if ($groupPricingInstance != null){
-                $billingtype = $groupPricingInstance->getBilledType();
-                $pricingId = $groupPricingInstance->getOriginalPricingReference();
-                $this->groupPeriod->changePlanOrRenew($group,$billingtype,$pricingId);
-            }
+    public
+    function checkEnded($gp)
+    {
+        $group = $gp->getGroup();
+        $groupPricingInstance = $gp->getGroupPricingInstance();
+        if ($groupPricingInstance != null) {
+            $billingtype = $groupPricingInstance->getBilledType();
+            $pricingId = $groupPricingInstance->getOriginalPricingReference();
+            $this->groupPeriod->changePlanOrRenew($group, $billingtype, $pricingId);
+        }
     }
 
 }
