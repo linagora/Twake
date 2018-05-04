@@ -252,7 +252,7 @@ class PricingPlan implements PricingPlanInterface
         // calcul du prix
         foreach ($AllgroupPeriod as $gp) {
             $now = new DateTime();
-            $this->nbDays = $now->diff($gp->getPeriodStartedAt(), true)->format('%a');
+            $this->nbDays = $now->diff($gp->getPeriodStartedAt()->setTime(0,0,0), true)->format('%a');
             $calculTemps = min($this->month_length, $this->nbDays) / $this->month_length;
 
             $connexions = $gp->getConnexions();
@@ -308,15 +308,21 @@ class PricingPlan implements PricingPlanInterface
             $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
             $nbuserGroup = $groupUserRepository->findBy(Array("group" => $gp->getGroup()));
 
-            $minCost = max(1, $this->min_paid_users_percentage * count($nbuserGroup)) * $pricing * $calculTemps;
+            $minCost = max(1, $this->min_paid_users_percentage * count($nbuserGroup)) * $pricing;
+
 
             $realCost = max($minCost, $cost);
 
-            $realCostonPeriod = $realCost / ($this->nbDays == 0 ? 1 : $this->nbDays) * $this->month_length;
+            $monthDays = $this->nbDays == 0 ? 1 : $this->nbDays;
+            $monthDays = $monthDays > 20 ? 20 : $monthDays;
 
-            $gp->setCurrentCost($realCost);
-            $gp->setExpectedCost($realCostonPeriod);
+            $monthDays = min($monthDays,$this->month_length);
+            $realCostonPeriod = $realCost * $monthDays / $this->month_length ;
 
+            $gp->setCurrentCost($realCostonPeriod);
+            $gp->setEstimatedCost($realCost);
+
+            $this->doctrine->persist($gp);
             if ($gp->getCurrentCost() > 1000 + $gp->getExpectedCost()) {
                 $this->groupPeriod->groupPeriodOverCost($gp);
             }
@@ -329,6 +335,7 @@ class PricingPlan implements PricingPlanInterface
             if ($date == $endPeriod ){
                 $this->checkEnded($gp);
             }
+        $this->doctrine->flush();
         }
     }
 
