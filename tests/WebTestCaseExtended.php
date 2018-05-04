@@ -103,6 +103,9 @@ class WebTestCaseExtended extends WebTestCase
 
             $closedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
             $closedGroupPeriods = $closedGroupPeriodRepository->findBy(Array("group" => $group));
+
+            $appPricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:AppPricingInstance");
+            $appPricings = $appPricingRepository->findBy(Array("group" => $group));
         }
 
         $PricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:PricingPlan");
@@ -125,6 +128,13 @@ class WebTestCaseExtended extends WebTestCase
                 if (is_array($groupapps)) {
                     foreach ($groupapps as $groupapp) {
                         $this->getDoctrine()->remove($groupapp);
+                    }
+                }
+            }
+            if ($appPricings != null) {
+                if (is_array($appPricings)) {
+                    foreach ($appPricings as $appPricing) {
+                        $this->getDoctrine()->remove($appPricing);
                     }
                 }
             }

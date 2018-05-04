@@ -23,6 +23,11 @@ class AppPricingInstance
      */
     private $id;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
+     */
+    private $group;
+
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupApp")
 	 */
@@ -44,11 +49,11 @@ class AppPricingInstance
 	private $startedAt;
 
 
-	public function __construct($groupapp,$billtype,$pricing) {
+	public function __construct($groupapp) {
+	    $this->group = $groupapp->getGroup();
 		$this->groupapp = $groupapp;
-        $this->costMonthly = 0;
-        $this->costUser = 0;
-        $this->billedType = $billtype;
+        $this->costMonthly = $groupapp->getApp()->getPriceMonthly();
+        $this->costUser = $groupapp->getApp()->getPriceUser();
 		$this->startedAt = new \DateTime();
 	}
 
@@ -130,6 +135,22 @@ class AppPricingInstance
     public function setStartedAt($startedAt)
     {
         $this->startedAt = $startedAt;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * @param mixed $group
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
     }
 
 }

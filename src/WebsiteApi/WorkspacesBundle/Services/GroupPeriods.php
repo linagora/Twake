@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\WorkspacesBundle\Services;
 
+use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
 use WebsiteApi\WorkspacesBundle\Entity\ClosedGroupPeriod;
 use WebsiteApi\WorkspacesBundle\Entity\Group;
 use WebsiteApi\WorkspacesBundle\Entity\GroupManager;
@@ -30,6 +31,12 @@ class GroupPeriods implements GroupPeriodInterface
         $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
         $groupUsers = $groupUserRepository->findBy(Array("group" => $group));
 
+        $appPricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:AppPricingInstance");
+        $appPricings = $appPricingRepository->findBy(Array("group"=>$group));
+
+        $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+        $groupApps = $groupAppRepository->findBy(Array("group"=>$group));
+
         $pricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
         $pricing = $pricingRepository->findOneBy(Array("id" => $planId));
 
@@ -38,6 +45,11 @@ class GroupPeriods implements GroupPeriodInterface
         }else{
 
             $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
+
+            foreach ($groupApps as $groupApp){
+                $newAppPricing = new AppPricingInstance($groupApp);
+                $this->doctrine->persist($newAppPricing);
+            }
             $newGroupPricing = new GroupPricingInstance($group ,$billingType,$pricing );
             $date = new \DateTime();
 
@@ -54,6 +66,10 @@ class GroupPeriods implements GroupPeriodInterface
 
             if($groupPricingInstance){
                 $this->doctrine->remove($groupPricingInstance);
+
+                foreach ($appPricings as $appPricing){
+                    $this->doctrine->remove($appPricing);
+                }
             }
             $this->doctrine->remove($groupPeriod);
 
@@ -114,12 +130,19 @@ class GroupPeriods implements GroupPeriodInterface
         $group = $groupPeriod->getGroup();
         $group->setPricingPlan(null);
 
+        $appPricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:AppPricingInstance");
+        $appPricings = $appPricingRepository->findBy(Array("group"=>$group));
+
         $groupPricing = $groupPeriod->getGroupPricingInstance();
         $groupPeriod->setGroupPricingInstance(null);
         $groupPeriod->setCurrentCost(0);
 
         $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
         $closedGroupPeriod->setBilled(false);
+
+        foreach ($appPricings as $appPricing){
+            $this->doctrine->remove($appPricing);
+        }
 
         $this->doctrine->persist($groupPeriod);
         $this->doctrine->persist($group);
