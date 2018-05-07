@@ -255,7 +255,8 @@ class PricingPlan implements PricingPlanInterface
         // calcul du prix
 
         foreach ($AllgroupPeriod as $gp) {
-            $appCostTotal = 0;
+            $cost = 0 ;
+            $realCost = 0 ;
             $now = new DateTime();
             $this->nbDays = $now->diff($gp->getPeriodStartedAt()->setTime(0, 0, 0), true)->format('%a');
             $calculTemps = min($this->month_length, $this->nbDays) / $this->month_length;
@@ -308,21 +309,20 @@ class PricingPlan implements PricingPlanInterface
 
             }
 
-
             $groupPrincingInstance = $gp->getGroupPricingInstance();
             $typeBilled = $groupPrincingInstance->getBilledType();
 
             $pricing = $typeBilled == "monthly" ? $groupPrincingInstance->getOriginalPricingReference()->getMonthPrice() : $groupPrincingInstance->getOriginalPricingReference()->getYearPrice();
 
-            $cost = $chargeUsers * $pricing + $appCostTotal;
-            var_dump($appCostTotal);
+            $cost = $chargeUsers * $pricing;
+
             $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
             $nbuserGroup = $groupUserRepository->findBy(Array("group" => $gp->getGroup()));
 
             $minCost = max(1, $this->min_paid_users_percentage * count($nbuserGroup)) * $pricing;
-
-
+            
             $realCost = max($minCost, $cost);
+            $realCost+= $appCostTotal;
 
             $monthDays = $this->nbDays == 0 ? 1 : $this->nbDays;
             $monthDays = $monthDays > 20 ? 20 : $monthDays;
