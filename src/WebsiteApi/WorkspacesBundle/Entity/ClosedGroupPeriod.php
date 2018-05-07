@@ -56,9 +56,14 @@ class ClosedGroupPeriod
     private $periodExpectedToEndAt;
 
     /**
+     * @ORM\Column(name="current_cost", type="decimal", precision=5, scale=3)
+     */
+    protected $currentCost;
+
+    /**
      * @ORM\Column(name="current_estimated_cost", type="integer")
      */
-    protected $currentEstimatedCost;
+    protected $estimatedCost;
 
     /**
      * @ORM\Column(name="expected_cost", type="integer")
@@ -79,7 +84,8 @@ class ClosedGroupPeriod
 		$this->periodStartedAt = $groupPeriod->getPeriodStartedAt();
         $this->periodEndedAt = new \DateTime();
         $this->periodExpectedToEndAt = $groupPeriod->getPeriodExpectedToEndAt();
-        $this->currentEstimatedCost = $groupPeriod->getCurrentCost();
+        $this->currentCost = $groupPeriod->getCurrentCost();
+        $this->estimatedCost = $groupPeriod->getEstimatedCost();
         $this->expectedCost = $groupPeriod->getExpectedCost();
         $this->billed = false;
 	}
@@ -183,17 +189,33 @@ class ClosedGroupPeriod
     /**
      * @return mixed
      */
-    public function getCurrentEstimatedCost()
+    public function getCurrentCost()
     {
-        return $this->currentEstimatedCost;
+        return $this->currentCost;
     }
 
     /**
      * @param mixed $currentEstimatedCost
      */
-    public function setCurrentEstimatedCost($currentEstimatedCost)
+    public function setCurrentCost($currentEstimatedCost)
     {
-        $this->currentEstimatedCost = $currentEstimatedCost;
+        $this->currentCost = $currentEstimatedCost;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEstimatedCost()
+    {
+        return $this->estimatedCost;
+    }
+
+    /**
+     * @param mixed $currentEstimatedCost
+     */
+    public function setEstimatedCost($currentEstimatedCost)
+    {
+        $this->estimatedCost = $currentEstimatedCost;
     }
 
     /**

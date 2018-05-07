@@ -18,11 +18,14 @@ class DriveFileSystem implements DriveFileSystemInterface
 	var $root;
 	var $parameter_drive_salt;
     var $pricingService;
-	public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt,$pricing){
+    var $preview;
+
+	public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt,$pricing,$preview){
 		$this->doctrine = $doctrine;
 		$this->root = $rootDirectory;
 		$this->parameter_drive_salt = $parameter_drive_salt;
 		$this->pricingService = $pricing;
+		$this->preview = $preview;
 	}
 
 	private function convertToEntity($var, $repository)
@@ -672,6 +675,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 			"max_size" => 100000000 // 100Mo
 		);
 		$errors = $uploader->upload($file, $real, $context);
+
+
+        $path = $this->getRoot() . $group . "/"."preview"."/" ;
+        $this->preview->generatePreview($newFile->getName(),$real, $path);
 
 		$this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
 

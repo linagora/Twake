@@ -350,8 +350,7 @@ class PricingPlan implements PricingPlanInterface
         }
     }
 
-    public
-    function checkEnded($gp)
+    public function checkEnded($gp)
     {
         $group = $gp->getGroup();
         $groupPricingInstance = $gp->getGroupPricingInstance();
