@@ -1,3 +1,0 @@
-citi_go_tags_scripts:
-    path:     /{script}
-    defaults: { _controller: TwakeTagsBundle:Scripts:scripts }

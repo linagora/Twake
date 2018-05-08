@@ -29,8 +29,8 @@ class InitCommand extends ContainerAwareCommand
   var $output;
   var $force;
   var $twake;
-  var $APPS_SERVER;
-var $newApps = Array('all'=>Array(), 'notall'=>Array());
+
+  var $newApps = Array('all'=>Array(), 'notall'=>Array());
 
   protected function configure()
   {

@@ -14,7 +14,6 @@ class DailyCommand extends ContainerAwareCommand
     var $output;
     var $force;
     var $twake;
-    var $APPS_SERVER;
 
     protected function configure()
     {

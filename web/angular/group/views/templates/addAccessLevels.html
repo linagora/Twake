@@ -1,7 +1,0 @@
-<div ng-controller="addAccessLevelCtrl as addAccessLevel">
-  <div ng-repeat="level in addAccessLevel.levels">
-    <input type="checkbox" ng-model="addAccessLevel.levelsValues[level.id]" ng-change="addAccessLevel.show()"><span>{{level.name}}</span>
-  </div>
-
-  <div class="btn btn-success" ng-click="addAccessLevel.validate()">Valider</div>
-</div>

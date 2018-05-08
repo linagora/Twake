@@ -1,8 +1,0 @@
-<textarea maxlength="9999" class="input_bar edit_bar"
-          onkeydown="if(!event.shiftKey && event.keyCode==13){return false;}"
-          ng-keydown="chat.keyPressed($event, undefined, chat.messages[id]);" msd-elastic rows="1"
-          ng-model="chat.messages[id].contentTemp">
-</textarea>
-<div class="nfo" style="text-align:right;">
-    <a class="link" style="margin-right: 10px;opacity: 0.5;" ng-click="chat.cancelEdit(chat.messages[id])">cancel</a> <a class="link" ng-click="chat.doEdit(chat.messages[id])">save</a>
-</div>
