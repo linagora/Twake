@@ -20,73 +20,73 @@ class DriveFile
      */
     private $id;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
-	 */
-	private $group;
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
+     */
+    private $group;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
-	 * @ORM\JoinColumn(nullable=true)
-	 */
-	private $parent;
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $parent;
 
-	/**
-	 * @ORM\Column(type="string", length=255)
-	 */
-	private $name;
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $name;
 
-	/**
-	 * @ORM\Column(type="string", length=16)
-	 */
-	private $extension;
+    /**
+     * @ORM\Column(type="string", length=16)
+     */
+    private $extension;
 
-	/**
-	 * @ORM\Column(type="string", length=2048)
-	 */
-	private $description;
+    /**
+     * @ORM\Column(type="string", length=2048)
+     */
+    private $description;
 
-	/**
-	 * @ORM\Column(type="boolean")
-	 */
-	private $isDirectory;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isDirectory;
 
-	/**
-	 * @ORM\Column(type="boolean")
-	 */
-	private $isInTrash;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isInTrash;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
-	 * @ORM\JoinColumn(nullable=true)
-	 */
-	private $oldParent;
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $oldParent;
 
-	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile", mappedBy="parent")
-	 */
-	private $children;
+    /**
+     * @ORM\OneToMany(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile", mappedBy="parent")
+     */
+    private $children;
 
-	/**
-	 * @ORM\Column(type="datetime")
-	 */
-	private $added;
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $added;
 
-	/**
-	 * @ORM\Column(type="datetime")
-	 */
-	private $last_modified;
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $last_modified;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFileVersion")
-	 * @ORM\JoinColumn(nullable=true)
-	 */
-	private $last_version;
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFileVersion")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $last_version;
 
-	/**
-	 * @ORM\Column(type="bigint")
-	 */
-	private $size;
+    /**
+     * @ORM\Column(type="bigint")
+     */
+    private $size;
 
     /**
      * @ORM\Column(type="string", length=2048)
@@ -99,237 +99,251 @@ class DriveFile
     private $detached_file = false;
 
 
-	public function __construct($group, $parent, $name, $isDirectory = false)
-	{
+    public function __construct($group, $parent, $name, $isDirectory = false)
+    {
 
-		$this->group = $group;
-		$this->setParent($parent);
-		$this->setName($name);
-		$this->setDescription("");
-    	$this->setSize(0);
-		$this->isDirectory = $isDirectory;
-    	$this->setIsInTrash(false);
-		$this->added = new \DateTime();
-		$this->cache = "{}";
-		$this->setLastModified();
+        $this->group = $group;
+        $this->setParent($parent);
+        $this->setName($name);
+        $this->setDescription("");
+        $this->setSize(0);
+        $this->isDirectory = $isDirectory;
+        $this->setIsInTrash(false);
+        $this->added = new \DateTime();
+        $this->cache = "{}";
+        $this->setLastModified();
 
-	}
+    }
 
-	public function getId()
-	{
-		return $this->id;
-	}
+    public function getId()
+    {
+        return $this->id;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getGroup()
-	{
-		return $this->group;
-	}
-	/**
-	 * @return mixed
-	 */
-	public function getParent()
-	{
-		return $this->parent;
-	}
+    /**
+     * @return mixed
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+    /**
+     * @return mixed
+     */
+    public function getParent()
+    {
+        return $this->parent;
+    }
 
-	/**
-	 * @param mixed $parent
-	 */
-	public function setParent($parent)
-	{
-		$this->parent = $parent;
-	}
+    /**
+     * @param mixed $parent
+     */
+    public function setParent($parent)
+    {
+        $this->parent = $parent;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @param mixed $name
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
-		$array = explode(".", $name);
-		$ext = array_pop($array);
-		$this->setExtension($ext);
-	}
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+        $array = explode(".", $name);
+        $ext = array_pop($array);
+        $this->setExtension($ext);
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getIsDirectory()
-	{
-		return $this->isDirectory;
-	}
+    /**
+     * @return mixed
+     */
+    public function getIsDirectory()
+    {
+        return $this->isDirectory;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getIsInTrash()
-	{
-		return $this->isInTrash;
-	}
+    /**
+     * @return mixed
+     */
+    public function getIsInTrash()
+    {
+        return $this->isInTrash;
+    }
 
-	/**
-	 * @param mixed $isInTrash
-	 */
-	public function setIsInTrash($isInTrash)
-	{
-		$this->isInTrash = $isInTrash;
-	}
+    /**
+     * @param mixed $isInTrash
+     */
+    public function setIsInTrash($isInTrash)
+    {
+        $this->isInTrash = $isInTrash;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getOldParent()
-	{
-		return $this->oldParent;
-	}
+    /**
+     * @return mixed
+     */
+    public function getOldParent()
+    {
+        return $this->oldParent;
+    }
 
-	/**
-	 * @param mixed $oldParent
-	 */
-	public function setOldParent($oldParent)
-	{
-		$this->oldParent = $oldParent;
-	}
+    /**
+     * @param mixed $oldParent
+     */
+    public function setOldParent($oldParent)
+    {
+        $this->oldParent = $oldParent;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getChildren()
-	{
-		return $this->children;
-	}
+    /**
+     * @return mixed
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
 
-	/**
-	 * Generate path from group id and realName
-	 */
-	public function getPath()
-	{
-		if($this->getLastVersion() == null){
-			return null;
-		}
-		if($this->getDetachedFile()){
+    /**
+     * Generate path from group id and realName
+     */
+    public function getPath()
+    {
+        if($this->getLastVersion() == null){
+            return null;
+        }
+        if($this->getDetachedFile()){
             return "detached/".$this->group->getId() . "/" . $this->getLastVersion()->getRealName();
         }
-		return $this->group->getId() . "/" . $this->getLastVersion()->getRealName();
-	}
+        return $this->group->getId() . "/" . $this->getLastVersion()->getRealName();
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getDescription()
-	{
-		return $this->description;
-	}
+    /**
+     * Generate preview path from group id and realName
+     */
+    public function getPreviewPath()
+    {
+        if($this->getLastVersion() == null){
+            return null;
+        }
+        if($this->getDetachedFile()){
+            return "detached/".$this->group->getId() . "/preview/" . $this->getLastVersion()->getRealName().".png";
+        }
+        return $this->group->getId() . "/preview/" . $this->getLastVersion()->getRealName().".png";
+    }
 
-	/**
-	 * @param mixed $description
-	 */
-	public function setDescription($description)
-	{
-		$this->description = $description;
-	}
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getAdded()
-	{
-		return $this->added;
-	}
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getLastModified()
-	{
-		return $this->last_modified;
-	}
+    /**
+     * @return mixed
+     */
+    public function getAdded()
+    {
+        return $this->added;
+    }
 
-	/**
-	 * @param mixed $last_modified
-	 */
-	public function setLastModified()
-	{
-		$this->last_modified = new \DateTime();
-	}
+    /**
+     * @return mixed
+     */
+    public function getLastModified()
+    {
+        return $this->last_modified;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getLastVersion()
-	{
-		return $this->last_version;
-	}
+    /**
+     * @param mixed $last_modified
+     */
+    public function setLastModified()
+    {
+        $this->last_modified = new \DateTime();
+    }
 
-	/**
-	 * @param mixed $last_version
-	 */
-	public function setLastVersion($last_version)
-	{
-		$this->last_version = $last_version;
-	}
+    /**
+     * @return mixed
+     */
+    public function getLastVersion()
+    {
+        return $this->last_version;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getSize()
-	{
-		return $this->size;
-	}
+    /**
+     * @param mixed $last_version
+     */
+    public function setLastVersion($last_version)
+    {
+        $this->last_version = $last_version;
+    }
 
-	/**
-	 * @param mixed $size
-	 */
-	public function setSize($size)
-	{
-		$this->size = $size;
-	}
+    /**
+     * @return mixed
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getExtension()
-	{
-		return strtolower($this->extension);
-	}
+    /**
+     * @param mixed $size
+     */
+    public function setSize($size)
+    {
+        $this->size = $size;
+    }
 
-	/**
-	 * @param mixed $extension
-	 */
-	public function setExtension($extension)
-	{
-		$this->extension = $extension;
-	}
+    /**
+     * @return mixed
+     */
+    public function getExtension()
+    {
+        return strtolower($this->extension);
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getCache()
-	{
-		$cache = json_decode($this->cache, 1);
-		return ($cache)?$cache:Array();
-	}
+    /**
+     * @param mixed $extension
+     */
+    public function setExtension($extension)
+    {
+        $this->extension = $extension;
+    }
 
-	/**
-	 * @param mixed $cache
-	 */
-	public function setCache($key, $cache)
-	{
-		$val = $this->getCache();
-		$val[$key] = $cache;
-		$this->cache = json_encode($val);
-	}
+    /**
+     * @return mixed
+     */
+    public function getCache()
+    {
+        $cache = json_decode($this->cache, 1);
+        return ($cache)?$cache:Array();
+    }
+
+    /**
+     * @param mixed $cache
+     */
+    public function setCache($key, $cache)
+    {
+        $val = $this->getCache();
+        $val[$key] = $cache;
+        $this->cache = json_encode($val);
+    }
 
     /**
      * @return mixed
@@ -347,23 +361,24 @@ class DriveFile
         $this->detached_file = $detached_file;
     }
 
-	public function getAsArray()
-	{
-		return Array(
-			'id' => $this->getId(),
-			'name' => $this->getName(),
-			'description' => $this->getDescription(),
-			'size' => $this->getSize(),
-			'added' => $this->getAdded()->getTimestamp(),
-			'parent' => (($this->getParent())?$this->getParent()->getId():0),
-			'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
-			'isDirectory' => $this->getIsDirectory(),
-			"extension" => $this->getExtension(),
-			"groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
+    public function getAsArray()
+    {
+        return Array(
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'description' => $this->getDescription(),
+            'size' => $this->getSize(),
+            'added' => $this->getAdded()->getTimestamp(),
+            'parent' => (($this->getParent())?$this->getParent()->getId():0),
+            'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
+            'isDirectory' => $this->getIsDirectory(),
+            "extension" => $this->getExtension(),
+            "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
             "detached" => $this->getDetachedFile(),
-			"cache" => $this->getCache()
-		);
-	}
+            "cache" => $this->getCache(),
+            "preview" => $this->getPreviewPath()
+        );
+    }
 
 
 }

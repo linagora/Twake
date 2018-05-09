@@ -384,7 +384,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 		return $newFile;
 	}
 
-	public function getRawContent($file)
+	public function getRawContent($file, $isPreview = false)
 	{
 		$file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
 
@@ -396,13 +396,20 @@ class DriveFileSystem implements DriveFileSystemInterface
 			return "";
 		}
 
-		$path = $this->getRoot() . $file->getPath();
+        $path = $this->getRoot() . $file->getPath();
+		if ($isPreview){
+            $path = $this->getRoot() . $file->getPreviewPath();
+        }
+        error_log($path);
 		$this->verifyPath($path);
 
 		if (!file_exists($path)) {
 			return null;
 		}
 
+        if ($isPreview){
+            return $this->read($path);
+        }
 		return $this->readDecode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
 	}
 
@@ -678,7 +685,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 
         $path = $this->getRoot() . $group . "/"."preview"."/" ;
-        $this->preview->generatePreview($newFile->getName(),$real, $path);
+        $this->preview->generatePreview($newFile->getLastVersion()->getRealName(),$real, $path);
 
 		$this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
 
@@ -931,4 +938,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 		@unlink($path);
 		return $var;
 	}
+
+    private function read($path){
+        $var = file_get_contents($path);
+        return $var;
+    }
 }
