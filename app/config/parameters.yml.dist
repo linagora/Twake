@@ -6,6 +6,7 @@ parameters:
     PUSH_NOTIFICATION_SERVER: http://localhost:8009/server.php
     websocket_host: 127.0.0.1
     websocket_port: 8080
+    websocket_pusher_remote_host: 127.0.0.1
     websocket_pusher_host: 127.0.0.1
     websocket_pusher_port: 8081
     database_host: 127.0.0.1
