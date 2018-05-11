@@ -573,6 +573,11 @@ class DriveFileSystem implements DriveFileSystemInterface
 			if (file_exists($real)) {
 				unlink($real);
 			}
+            // Remove preview file
+            $real = $this->getRoot() . $fileOrDirectory->getPreviewPath();
+            if (file_exists($real)) {
+                unlink($real);
+            }
 
 		} else {
 
@@ -683,8 +688,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 		);
 		$errors = $uploader->upload($file, $real, $context);
 
+        $ext = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
+
         $path = $this->getRoot() . $group . "/"."preview"."/" ;
-        $this->preview->generatePreview($newFile->getLastVersion()->getRealName(),$real, $path);
+        $this->preview->generatePreview($newFile->getLastVersion()->getRealName(),$real, $path,$ext);
 
 		$this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
 

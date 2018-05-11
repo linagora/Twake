@@ -21,7 +21,7 @@ class DrivePreview
         $this->img_width = 300 ;
     }
 
-    public function generatePreview($filename,$file, $path)
+    public function generatePreview($filename,$file, $path,$ext)
     {
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
@@ -29,19 +29,27 @@ class DrivePreview
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
         $filetype = finfo_file($finfo, $file);
-
         if ($filetype === 'image/png' ||
             $filetype === 'image/gif' ||
             $filetype === 'image/x-icon' ||
             $filetype === 'image/jpeg' ||
-            $filetype === 'image/png' ||
             $filetype === 'image/svg+xml' ||
             $filetype === 'image/tiff' ||
-            $filetype === 'image/webp'
+            $filetype === 'image/webp' ||
+            $ext === 'png' ||
+            $ext === 'jpg' ||
+            $ext === 'jpeg' ||
+            $ext === 'jp2' ||
+            $ext === 'gif' ||
+            $ext === 'svg' ||
+            $ext === 'tiff' ||
+            $ext === 'bmp' ||
+            $ext === 'ico' ||
+            $ext === 'webp'
         ) {
             $this->generateImagePreview($filename,$file, $path);
         }
-        var_dump($filetype);
+
         if($filetype === 'application/pdf') {
             $this->generateImagePreview($filename,$file, $path, true);
         }
@@ -58,7 +66,28 @@ class DrivePreview
             $filetype === 'application/vnd.ms-office' ||
             $filetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
             $filetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
-            $filetype === 'text/html'
+            $filetype === 'application/vnd.oasis.opendocument.text' ||
+            $filetype === 'application/vnd.oasis.opendocument.presentation' ||
+            $filetype === 'application/vnd.oasis.opendocument.spreadsheet' ||
+            $filetype === 'application/vnd.oasis.opendocument.chart' ||
+            $filetype === 'application/xml' ||
+            $filetype === 'text/html' ||
+            $ext === 'doc' ||
+            $ext === 'docx  ' ||
+            $ext === 'xls' ||
+            $ext === 'xlsx' ||
+            $ext === 'pps' ||
+            $ext === 'ppt' ||
+            $ext === 'pptx' ||
+            $ext === 'bmp' ||
+            $ext === 'ico' ||
+            $ext === 'odt' ||
+            $ext === 'odg' ||
+            $ext === 'odp' ||
+            $ext === 'ods' ||
+            $ext === 'odc' ||
+            $ext === 'xml' ||
+            $ext === 'webp'
         ){
             $this->generateImagePreview($filename,$file, $path, false,true);
         }

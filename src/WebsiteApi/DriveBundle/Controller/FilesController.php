@@ -229,7 +229,7 @@ class FilesController extends Controller
 
 		$file = $_FILES["file"];
 
-		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
 
 			$file = $this->get('app.drive.FileSystem')->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached);
 
