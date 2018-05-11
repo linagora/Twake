@@ -178,4 +178,35 @@ class ContactsController extends Controller
 
 	}
 
+    public function searchUsersByUsernameAction(Request $request)
+    {
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        if ($this->getUser()) {
+            $username = $request->request->get("username", "");
+            $res = $this->get("app.contacts")->searchUsersByUsername($username);
+            if (!$res) {
+                $data["errors"][] = "empty username";
+            } else {
+                $array_user = [];
+                foreach ($res as $user) {
+                    $array_user[] = $user->getAsArray();
+                }
+                $data["data"] = $array_user;
+            }
+
+        } else {
+            $data["errors"][] = "unknown";
+        }
+
+        return new JsonResponse($data);
+
+    }
+
+
+
 }

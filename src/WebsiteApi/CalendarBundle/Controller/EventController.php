@@ -129,4 +129,17 @@ class EventController extends Controller
         return new JsonResponse($data);
     }
 
+    public function getUsersAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $eventId = $request->request->get("eventId");
+
+        $data['data'] = $this->get("app.calendar_events")->getUsers( $eventId, $this->getUser()->getId());
+
+        return new JsonResponse($data);
+    }
 }
