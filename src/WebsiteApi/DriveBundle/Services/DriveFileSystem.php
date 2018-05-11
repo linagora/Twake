@@ -683,7 +683,6 @@ class DriveFileSystem implements DriveFileSystemInterface
 		);
 		$errors = $uploader->upload($file, $real, $context);
 
-
         $path = $this->getRoot() . $group . "/"."preview"."/" ;
         $this->preview->generatePreview($newFile->getLastVersion()->getRealName(),$real, $path);
 
