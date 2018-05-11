@@ -95,6 +95,15 @@ class InitCommand extends ContainerAwareCommand
             $plan->setLimitation(Array("drive" => "0"));
             $plan->setMonthPrice(0);
             $plan->setYearPrice(0);
+            $manager->persist($plan);
+        }
+        $plan = $manager->getRepository("TwakeWorkspacesBundle:PricingPlan")->findOneBy(Array("label" => "private"));
+        if (!$plan) {
+            $plan = new PricingPlan("private");
+            $plan->setLimitation(Array("drive" => "0"));
+            $plan->setMonthPrice(0);
+            $plan->setYearPrice(0);
+            $manager->persist($plan);
         }
 
         // Création des applications de base
