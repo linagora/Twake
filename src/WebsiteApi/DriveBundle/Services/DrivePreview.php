@@ -12,9 +12,13 @@ namespace WebsiteApi\DriveBundle\Services;
 class DrivePreview
 {
     var $doctrine;
+    var $img_height;
+    var $img_width;
 
     public function __construct($doctrine){
         $this->doctrine = $doctrine;
+        $this->img_height = 130 ;
+        $this->img_width = 300 ;
     }
 
     public function generatePreview($filename,$file, $path)
@@ -22,65 +26,97 @@ class DrivePreview
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
         }
-        $dimensions = getimagesize($file);
-        if ($dimensions !== false) {
-            $this->generateImagePreview($filename,$file, $path);
-        }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        if(finfo_file($finfo, $file) === 'application/pdf') {
-            $this->generatePDFPreview($filename,$file, $path);
+        $filetype = finfo_file($finfo, $file);
+
+        if ($filetype === 'image/png' ||
+            $filetype === 'image/gif' ||
+            $filetype === 'image/x-icon' ||
+            $filetype === 'image/jpeg' ||
+            $filetype === 'image/png' ||
+            $filetype === 'image/svg+xml' ||
+            $filetype === 'image/tiff' ||
+            $filetype === 'image/webp'
+        ) {
+            $this->generateImagePreview($filename,$file, $path);
         }
+        var_dump($filetype);
+        if($filetype === 'application/pdf') {
+            $this->generateImagePreview($filename,$file, $path, true);
+        }
+        if($filetype === 'application/msword' ||
+            $filetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+            $filetype === 'text/css' ||
+            $filetype === 'text/csv' ||
+            $filetype === 'text/plain' ||
+            $filetype === 'application/vnd.oasis.opendocument.presentation' ||
+            $filetype === 'application/vnd.oasis.opendocument.spreadsheet' ||
+            $filetype === 'application/vnd.oasis.opendocument.text' ||
+            $filetype === 'application/vnd.ms-powerpoint' ||
+            $filetype === 'application/vnd.ms-excel' ||
+            $filetype === 'application/vnd.ms-office' ||
+            $filetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+            $filetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+            $filetype === 'text/html'
+        ){
+            $this->generateImagePreview($filename,$file, $path, false,true);
+        }
+
         finfo_close($finfo);
-    }
-
-
-    public function generateImagePreview($filename,$file, $path)
-    {
-        $dimensions = getimagesize($file);
-        $width_orig = $dimensions[0];
-        $height_orig = $dimensions[1];
-
-        if ($width_orig > 100 && $height_orig > 100) {
-            // Le fichier
-            $filepath = $path . $filename;
-
-            // Définition de la largeur et de la hauteur maximale
-            $width = 100;
-            $height = 100;
-
-            // Cacul des nouvelles dimensions
-            $ratio_orig = $width_orig / $height_orig;
-
-            if ($width / $height > $ratio_orig) {
-                $width = $height * $ratio_orig;
-            } else {
-                $height = $width / $ratio_orig;
-            }
-
-            // Redimensionnement
-            $image_preview = imagecreatetruecolor($width, $height);
-            error_log("COUCOU :     ".$file);
-            $image = imagecreatefrompng($file);
-            imagecopyresampled($image_preview, $image, 0, 0, 0, 0, $width, $height, $width_orig, $height_orig);
-            imagepng($image_preview, $filepath.".png");
-        }
         return true;
     }
 
-    public function generatePDFPreview($filename,$file, $path)
+    public function generateImagePreview($filename,$file, $path, $isText = false,$isOffice = false)
     {
         $filepath = $path . $filename;
+        $width = $this->img_width;
+        $height = $this->img_height;
         $im = new \Imagick();
-        $im->readimage($file."[0]");
+
+        if ($isText) {
+            $im->readimage($file . "[0]");
+        }elseif ($isOffice){
+            $file = $this->convertToPDF($file);
+            $im->readimage($file . "[0]");
+
+        }else{
+            $im->readimage($file);
+        }
+
+        // get the current image dimensions
+        $geo = $im->getImageGeometry();
+
+        // crop the image
+        if(($geo['width']/$width) < ($geo['height']/$height))
+        {
+            $im->cropImage($geo['width'], floor($height*$geo['width']/$width), 0, 0);
+        }
+        else
+        {
+            $im->cropImage(ceil($width*$geo['height']/$height), $geo['height'], (($geo['width']-($width*$geo['height']/$height))/2), 0);
+        }
+        // thumbnail the image
+
         $im->setImageAlphaChannel(11);
-        $im->setResolution(100,75);
+        $im->ThumbnailImage($width,$height,true);
         $im->setImageFormat('png');
         $im->writeImage($filepath.'.png');
         $im->clear();
         $im->destroy();
 
-        return true;
+        if ($isOffice){
+            unlink($file);
+        }
+
+    }
+
+    public function convertToPDF($filepath){
+        exec("unoconv -f pdf -e PageRange=1-1 ".$filepath);
+        $a = explode(".",$filepath);
+        array_pop($a);
+        $filepath = join(".",$a).".pdf";
+        return $filepath;
     }
 
 }
