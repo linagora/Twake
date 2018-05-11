@@ -184,10 +184,14 @@ class CalendarEvents implements CalendarEventsInterface
 
         foreach ($usersId as $userId) {
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
-            $userLinked = new LinkEventUser($user, $event);
-            $userLinked->setFrom($event->getFrom());
-            $userLinked->setTo($event->getTo());
-            $this->doctrine->persist($userLinked);
+            $eventUserRepo = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser");
+            $userLink = $eventUserRepo->findBy(Array("user"=>$user,"event"=>$event));
+            if($userLink== false){
+                $userLinked = new LinkEventUser($user, $event);
+                $userLinked->setFrom($event->getFrom());
+                $userLinked->setTo($event->getTo());
+                $this->doctrine->persist($userLinked);
+            }
         }
         $this->doctrine->flush();
 
@@ -255,6 +259,26 @@ class CalendarEvents implements CalendarEventsInterface
         }
 
         return $events;
+
+    }
+
+    public function getUsers( $eventId, $currentUserId = null)
+    {
+        $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
+
+        if(!$event ){
+            return null;
+        }
+
+        $eventUserRepo = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser");
+        $users = Array();
+        $eventUsers = $eventUserRepo->findBy(Array("event"=>$event));
+
+        foreach ($eventUsers as $user){
+            $users[] = $user->getUser()->getAsArray();
+        }
+
+        return $users;
 
     }
 }

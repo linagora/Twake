@@ -27,12 +27,12 @@ class Application
 	private $name;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="isdefault", type="boolean")
      */
     private $default;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="autoorder", type="integer")
      */
     private $order;
 
@@ -110,7 +110,7 @@ class Application
 	/**
      * @ORM\Column(type="string", length=512)
 	 */
-	protected $cover;
+    protected $cover = "";
 
 	/**
 	 * @ORM\Column(name="screenshot", type="text")

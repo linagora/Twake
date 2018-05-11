@@ -76,7 +76,7 @@ class PricingPlan implements PricingPlanInterface
         $pricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
 
         if ($group == null) {
-            $pricing = $pricingRepository->findOneBy(Array("label" => "startup"));
+            $pricing = $pricingRepository->findOneBy(Array("label" => "private"));
         } else {
             $pricing = $pricingRepository->findOneBy(Array("id" => ($group->getPricingPlan())));
         }
@@ -92,7 +92,7 @@ class PricingPlan implements PricingPlanInterface
         $pricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
 
         if ($group == null) {
-            $pricing = $pricingRepository->findOneBy(Array("label" => "startup"))->getAsArray();
+            $pricing = $pricingRepository->findOneBy(Array("label" => "private"))->getAsArray();
         } else {
             $pricing = $pricingRepository->findOneBy(Array("id" => ($group->getPricingPlan())))->getAsArray();
         }

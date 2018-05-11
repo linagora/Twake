@@ -45,6 +45,10 @@ twake_contact_searchByUsername:
     path:     /contacts/search
     defaults: { _controller: TwakeUsersBundle:Contacts:searchByUsername }
 
+twake_contact_searchUsersBuyUsername:
+    path:     /contacts/search/users
+    defaults: { _controller: TwakeUsersBundle:Contacts:searchUsersByUsername }
+
 # Account
 
 twake_user_account_setbasic:
