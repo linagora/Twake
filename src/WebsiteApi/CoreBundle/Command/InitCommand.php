@@ -126,7 +126,8 @@ class InitCommand extends ContainerAwareCommand
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
         $app->setOrder(0);
-        $app->setThumbnail($serverbase . "/upload/apps/2/messagerie.png");
+
+        $app->setThumbnail($serverbase . "/upload/apps/messagerie.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
         $app->setCgu("");
@@ -149,9 +150,34 @@ class InitCommand extends ContainerAwareCommand
         $app->setIsCapable(1);
         $app->setDefault(1);
         $app->setCreateFileData(json_decode("", true));
+        $app->setMessageModule(1);
+        $app->setOrder(0);
+        $app->setThumbnail($serverbase . "/upload/apps/drive.png");
+        $app->setMessageModuleUrl("");
+        $app->setEditableRights(1);
+        $app->setCgu("");
+        $manager->persist($app);
+
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calendar"));
+        if (!$app) {
+            $app = new Application();
+        }
+        $app->setPublicKey("calendar");
+        $app->setName("Calendar");
+        $app->setDescription("Twake calendar app.");
+        $app->setShortDescription("Twake calendar app.");
+        $app->setUrl("calendar");
+        $app->setUserRights(json_decode('{"general":{"create":true,"view":true,"edit":true}}', true));
+        $app->setApplicationRights(json_decode('{"calendar":"manage"}', true));
+        $app->setEnabled(1);
+        $app->setColor("E63B42");
+        $app->setCanCreateFile(0);
+        $app->setIsCapable(1);
+        $app->setDefault(1);
+        $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
         $app->setOrder(0);
-        $app->setThumbnail($serverbase . "/upload/apps/2/drive.png");
+        $app->setThumbnail($serverbase . "/upload/apps/calendar.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
         $app->setCgu("");

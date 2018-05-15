@@ -121,28 +121,28 @@ class PricingPlan implements PricingPlanInterface
             $lastDate = $ga->getLastDayOfUpdate();
 
             if ($lastDate < $dateToday) {
-                if ($ga->getDidConnect()) {
-                    $ga->increaseConnectionPeriod();
-                    $usedApps = $ga->getUsedApps();
+                if ($ga->getDidConnectToday()) {
+                    $ga->increaseConnectionsPeriod();
+                    $usedApps = $ga->getUsedAppsToday();
                     $ga->setLastDayOfUpdate($dateToday);
                     foreach ($usedApps as $app) {
-                        $appsUsage = $ga->getAppsUsage();
+                        $appsUsage = $ga->getAppsUsagePeriod();
                         if ($appsUsage != null && !empty($appsUsage) &&
                             array_key_exists($app, $appsUsage)
                         ) {
                             $obj = $appsUsage;
                             $obj[$app] = $appsUsage[$app] + 1;
-                            $ga->setAppsUsage($obj);
+                            $ga->setAppsUsagePeriod($obj);
                             $this->doctrine->persist($ga);
                         } else {
                             $obj = $appsUsage;
                             $obj[$app] = 1;
-                            $ga->setAppsUsage($obj);
+                            $ga->setAppsUsagePeriod($obj);
                             $this->doctrine->persist($ga);
                         }
                     }
-                    $ga->setUsedApps([]);
-                    $ga->setDidConnect(0);
+                    $ga->setUsedAppsToday([]);
+                    $ga->setDidConnectToday(0);
                     $this->doctrine->flush();
                 }
 
@@ -165,7 +165,7 @@ class PricingPlan implements PricingPlanInterface
 
         foreach ($AllgroupPeriod as $gp) {
             $gp->setConnexions([]);
-            $gp->setAppsUsage([]);
+            $gp->setAppsUsagePeriod([]);
             $this->doctrine->persist($gp);
         }
 
@@ -173,14 +173,18 @@ class PricingPlan implements PricingPlanInterface
 
         foreach ($listGroupUser as $ga) {
             $groupPeriod = $groupPeriodUsageRepository->findOneBy(Array("group" => $ga->getGroup()));
+            if (!$groupPeriod) {
+                $this->groupPeriod->init($ga->getGroup());
+                $groupPeriod = $groupPeriodUsageRepository->findOneBy(Array("group" => $ga->getGroup()));
+            }
             $connexions = $groupPeriod->getConnexions();
-            $appsUsage = $groupPeriod->getAppsUsage();
+            $appsUsage = $groupPeriod->getAppsUsagePeriod();
 
             $now = new DateTime();
             $this->nbDays = $now->diff($groupPeriod->getPeriodStartedAt(), true)->format('%a');
             $calculTemps = min($this->month_length, $this->nbDays) / $this->month_length;
 
-            $numberOfConnection = $ga->getConnections();
+            $numberOfConnection = $ga->getConnectionsPeriod();
 
             // nb connexions
 
@@ -216,7 +220,7 @@ class PricingPlan implements PricingPlanInterface
             $this->doctrine->persist($groupPeriod);
 
             //apps
-            $usedApps = $ga->getAppsUsage();
+            $usedApps = $ga->getAppsUsagePeriod();
             foreach ($usedApps as $app => $value) {
                 if (!array_key_exists($app, $appsUsage)) {
                     $appsUsage[$app] = ["none" => 0, "partial" => 0, "total" => 0];
@@ -240,7 +244,7 @@ class PricingPlan implements PricingPlanInterface
                         $appsUsage[$app]["total"] = $appsUsage[$app]["total"] + 1;
                     }
                 }
-                $groupPeriod->setAppsUsage($appsUsage);
+                $groupPeriod->setAppsUsagePeriod($appsUsage);
                 $this->doctrine->persist($groupPeriod);
             }
 
@@ -274,7 +278,7 @@ class PricingPlan implements PricingPlanInterface
                 $chargeUsers += $connexions["total"] * $this->total_cost_percentage;
             }
 
-            $apps = $gp->getAppsUsage();
+            $apps = $gp->getAppsUsagePeriod();
             $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
 
             $appPricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:AppPricingInstance");
