@@ -68,7 +68,15 @@ class RemoteController extends Controller
                 return new JsonResponse(Array("status" => "error", "error" => $result["error"]));
             }
 
-            //TODO push notification
+            $data = $request->request->get("data", Array());
+            $type = $data["type"];
+            $deviceId = $data["deviceId"];
+            $message = $data["message"];
+            $title = $data["title"];
+            $badge = $data["badge"];
+            $more_data = $data["data"];
+
+            $this->get("app.notifications")->pushDeviceInternal($type, $deviceId, $message, $title, $badge, $more_data);
 
             return new JsonResponse(Array("status" => "success"));
 

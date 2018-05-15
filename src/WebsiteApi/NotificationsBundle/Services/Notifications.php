@@ -18,13 +18,18 @@ class Notifications implements NotificationsInterface
 	var $doctrine;
 	var $circle;
 	var $pushNotificationServer;
+    var $standalone;
+    var $licenceKey;
 
-	public function __construct($doctrine, $pusher, $mailer, $circle, $pushNotificationServer){
+    public function __construct($doctrine, $pusher, $mailer, $circle, $pushNotificationServer, $standalone, $licenceKey)
+    {
 		$this->doctrine = $doctrine;
 		$this->pusher = $pusher;
 		$this->mailer = $mailer;
 		$this->circle = $circle;
         $this->pushNotificationServer = $pushNotificationServer;
+        $this->standalone = $standalone;
+        $this->licenceKey = $licenceKey;
 	}
 
 	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data=null)
@@ -260,9 +265,36 @@ class Notifications implements NotificationsInterface
 		}
 	}
 
-	private function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $data){
+    public function pushDeviceInternalViaRemote($type, $deviceId, $message, $title, $badge, $data)
+    {
+        $data = Array(
+            "type" => $type,
+            "deviceId" => $deviceId,
+            "message" => $message,
+            "title" => $title,
+            "badge" => $badge,
+            "data" => $data
+        );
+
+        $masterServer = "https://app.twakeapp.com/api/remote";
+        $data = Array(
+            "licenceKey" => $this->licenceKey,
+            "data" => $data
+        );
+        $this->circle->post($masterServer . "/push", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1));
+
+    }
+
+
+    public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $data)
+    {
 
         if (strlen($deviceId) < 32) { //False device
+            return;
+        }
+
+        if (!$this->standalone) {
+            $this->pushDeviceInternalViaRemote($type, $deviceId, $message, $title, $badge, $data);
             return;
         }
 
