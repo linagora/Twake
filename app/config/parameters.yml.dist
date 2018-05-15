@@ -1,5 +1,6 @@
 # This file is auto-generated during the composer install
 parameters:
+    LICENCE_KEY: A
     MAIL_FROM: noreply@twakeapp.com
     SERVER_NAME: https://twakeapp.com
     DRIVE_SALT: SecretPassword
