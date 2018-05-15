@@ -21,10 +21,16 @@ class DrivePreview
         $this->img_width = 300 ;
     }
 
-    public function generatePreview($filename,$file, $path,$ext)
+    /* Do not generate preview for files larger than 50Mo */
+    public function generatePreview($filename, $file, $path, $ext)
     {
+
         if (!is_dir($path)) {
             mkdir($path, 0777, true);
+        }
+
+        if (filesize($file) > 50000000) { //50Mo (protection)
+            return false;
         }
 
         $finfo = finfo_open(FILEINFO_MIME_TYPE);

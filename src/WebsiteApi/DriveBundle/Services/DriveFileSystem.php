@@ -384,7 +384,27 @@ class DriveFileSystem implements DriveFileSystemInterface
 		return $newFile;
 	}
 
-	public function getRawContent($file, $isPreview = false)
+    public function getPreview($file)
+    {
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
+
+        if ($file == null) {
+            return false;
+        }
+
+        $path = $this->getRoot() . $file->getPreviewPath();
+
+        $this->verifyPath($path);
+
+        if (!file_exists($path)) {
+            return null;
+        }
+
+        return $this->read($path);
+
+    }
+
+    public function getRawContent($file)
 	{
 		$file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
 
@@ -397,19 +417,13 @@ class DriveFileSystem implements DriveFileSystemInterface
 		}
 
         $path = $this->getRoot() . $file->getPath();
-		if ($isPreview){
-            $path = $this->getRoot() . $file->getPreviewPath();
-        }
-        error_log($path);
-		$this->verifyPath($path);
+
+        $this->verifyPath($path);
 
 		if (!file_exists($path)) {
 			return null;
 		}
 
-        if ($isPreview){
-            return $this->read($path);
-        }
 		return $this->readDecode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
 	}
 

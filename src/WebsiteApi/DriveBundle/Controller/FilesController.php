@@ -364,7 +364,7 @@ class FilesController extends Controller
 
 		if ($this->get('app.workspace_levels')->can($groupId,$this->getUser()->getId(), "drive:write")) {
 
-			$data = $this->get('app.drive.FileSystem')->getRawContent($fileId,true);
+            $data = $this->get('app.drive.FileSystem')->getPreview($fileId);
 			return new Response($data, 200);
 
 		}
