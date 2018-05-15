@@ -84,8 +84,8 @@ class GroupPeriods implements GroupPeriodInterface
                 if ($groupUser->getNbWorkspace() == 0){
                     $this->doctrine->remove($groupUser);
                 }else{
-                    $groupUser->setConnections(0);
-                    $groupUser->setUsedApps(Array());
+                    $groupUser->setConnectionsPeriod(0);
+                    $groupUser->setUsedAppsToday(Array());
                     $this->doctrine->persist($groupUser);
                 }
             }

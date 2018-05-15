@@ -80,7 +80,7 @@ class ClosedGroupPeriod
 	public function __construct($groupPeriod) {
 		$this->group = $groupPeriod->getGroup();
 		$this->setConnexions($groupPeriod->getConnexions());
-		$this->setAppsUsage($groupPeriod->getAppsUsage());
+        $this->setAppsUsagePeriod($groupPeriod->getAppsUsagePeriod());
 		$this->periodStartedAt = $groupPeriod->getPeriodStartedAt();
         $this->periodEndedAt = new \DateTime();
         $this->periodExpectedToEndAt = $groupPeriod->getPeriodExpectedToEndAt();
@@ -125,7 +125,7 @@ class ClosedGroupPeriod
     /**
      * @return mixed
      */
-    public function getAppsUsage()
+    public function getAppsUsagePeriod()
     {
         return json_decode($this->appsUsage,true);
     }
@@ -133,7 +133,7 @@ class ClosedGroupPeriod
     /**
      * @param mixed $appsUsage
      */
-    public function setAppsUsage($appsUsage)
+    public function setAppsUsagePeriod($appsUsage)
     {
         $this->appsUsage = json_encode($appsUsage);
     }
