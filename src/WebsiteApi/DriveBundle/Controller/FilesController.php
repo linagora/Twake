@@ -168,7 +168,7 @@ class FilesController extends Controller
 			$isInTrash = true;
 		}
 
-		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
 
 			if($state == "new") {
 
@@ -208,7 +208,7 @@ class FilesController extends Controller
 			}
 
 			$data["data"]["maxspace"] = $this->get('app.drive.FileSystem')->getTotalSpace($groupId);
-			$data["data"]["totalsize"] = $data["data"]["maxspace"] - $this->get('app.drive.FileSystem')->getFreeSpace($groupId);
+            $data["data"]["totalsize"] = $this->get('app.drive.FileSystem')->getUsedSpace($groupId);
 
 
 		}

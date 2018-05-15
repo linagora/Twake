@@ -44,18 +44,25 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	}
 
+    public function getUsedSpace($group)
+    {
+        $group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
+
+        if ($group == null) {
+            return false;
+        }
+
+        // Get total size from root directory(ies) and file(s)
+        $totalSize = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize($group);
+
+        return $totalSize;
+    }
+
 	public function getFreeSpace($group)
 	{
 		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
-		if ($group == null) {
-			return false;
-		}
-
-		// Get total size from root directory(ies) and file(s)
-		$totalSize = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize($group);
-
-		return $this->getTotalSpace($group) - $totalSize;
+        return $this->getTotalSpace($group) - $this->getUsedSpace($group);
 	}
 
 	public function getTotalSpace($group)
@@ -64,9 +71,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 		if ($group == null) {
 			return false;
 		}
-        $limit = $this->pricingService->getLimitation($group->getId(),"drive",222222222);
+        $limit = $this->pricingService->getLimitation($group->getId(), "drive", 1000000000);
 
-        return $limit*100000;
+        return $limit * 1000000;
 
 	}
 
