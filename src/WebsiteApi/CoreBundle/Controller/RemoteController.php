@@ -16,52 +16,64 @@ class RemoteController extends Controller
     public function mailAction(Request $request)
     {
 
-        $remoteLicenceKey = $request->request->get("licenceKey", "");
-        $remoteIp = $request->getClientIp();
+        if ($this->container->getParameter('STANDALONE')) {
 
-        $licenceServer = "https://licences.twakeapp.com/api";
-        $licenceKey = $this->container->getParameter('LICENCE_KEY');
-        $data = Array(
-            "licenceKey" => $licenceKey,
-            "remoteLicenceKey" => $remoteLicenceKey,
-            "remoteIp" => $remoteIp
-        );
-        $result = $this->get("circle.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
-        $result = json_decode($result->getContent(), true);
+            $remoteLicenceKey = $request->request->get("licenceKey", "");
+            $remoteIp = $request->getClientIp();
 
-        if (!isset($result["status"]) || $result["status"] == "valid") {
-            return new JsonResponse(Array("status" => "error", "error" => $result["error"]));
+            $licenceServer = "https://licences.twakeapp.com/api";
+            $licenceKey = $this->container->getParameter('LICENCE_KEY');
+            $data = Array(
+                "licenceKey" => $licenceKey,
+                "remoteLicenceKey" => $remoteLicenceKey,
+                "remoteIp" => $remoteIp
+            );
+            $result = $this->get("circle.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
+            $result = json_decode($result->getContent(), true);
+
+            if (!isset($result["status"]) || $result["status"] == "valid") {
+                return new JsonResponse(Array("status" => "error", "error" => $result["error"]));
+            }
+
+            $mail = $request->request->get("mail", "");
+            $html = $request->request->get("html", "");
+            $this->get("app.twake_mailer")->sendHTML($mail, $html);
+
+            return new JsonResponse(Array("status" => "success"));
+
         }
-
-        //TODO Send mails to send
-
-        return new JsonResponse(Array("status" => "success"));
+        return new JsonResponse(Array("status" => "error"));
 
     }
 
     public function pushAction(Request $request)
     {
 
-        $remoteLicenceKey = $request->request->get("licenceKey", "");
-        $remoteIp = $request->getClientIp();
+        if ($this->container->getParameter('STANDALONE')) {
 
-        $licenceServer = "https://licences.twakeapp.com/api";
-        $licenceKey = $this->container->getParameter('LICENCE_KEY');
-        $data = Array(
-            "licenceKey" => $licenceKey,
-            "remoteLicenceKey" => $remoteLicenceKey,
-            "remoteIp" => $remoteIp
-        );
-        $result = $this->get("circle.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
-        $result = json_decode($result->getContent(), true);
+            $remoteLicenceKey = $request->request->get("licenceKey", "");
+            $remoteIp = $request->getClientIp();
 
-        if (!isset($result["status"]) || $result["status"] == "valid") {
-            return new JsonResponse(Array("status" => "error", "error" => $result["error"]));
+            $licenceServer = "https://licences.twakeapp.com/api";
+            $licenceKey = $this->container->getParameter('LICENCE_KEY');
+            $data = Array(
+                "licenceKey" => $licenceKey,
+                "remoteLicenceKey" => $remoteLicenceKey,
+                "remoteIp" => $remoteIp
+            );
+            $result = $this->get("circle.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
+            $result = json_decode($result->getContent(), true);
+
+            if (!isset($result["status"]) || $result["status"] == "valid") {
+                return new JsonResponse(Array("status" => "error", "error" => $result["error"]));
+            }
+
+            //TODO push notification
+
+            return new JsonResponse(Array("status" => "success"));
+
         }
-
-        //TODO Push objects to push
-
-        return new JsonResponse(Array("status" => "success"));
+        return new JsonResponse(Array("status" => "error"));
 
     }
 
