@@ -26,7 +26,6 @@ class DailyCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $starttime = microtime(true);
 
         $this->output = $output;
 
@@ -42,6 +41,8 @@ class DailyCommand extends ContainerAwareCommand
 
         $services->get("app.pricing_plan")->dailyDataGroupUser();
         $services->get("app.pricing_plan")->groupPeriodUsage();
+
+        /* Send usage report */
 
         $licenceServer = "https://licences.twakeapp.com/api";
         $licenceKey = $this->getContainer()->getParameter('LICENCE_KEY');
@@ -69,7 +70,7 @@ class DailyCommand extends ContainerAwareCommand
             );
 
             /** @var Group[] $groups */
-            $groups = $manager->getRepository("TwakeWorkspacesBundle:Group")->findBy();
+            $groups = $manager->getRepository("TwakeWorkspacesBundle:Group")->findBy(Array());
             foreach ($groups as $group) {
                 $report["groups"][$group->getId()] = Array(
                     "name" => $group->getDisplayName(),
@@ -82,11 +83,13 @@ class DailyCommand extends ContainerAwareCommand
                 $report["groups"][$group->getId()]["workspaces"] = count($workspaces);
 
                 /** @var GroupPeriod $group_period */
-                $group_period = $manager->getRepository("TwakeWorkspacesBundle:GroupPeriod")->findBy(Array("group" => $group));
-                $report["groups"][$group->getId()]["usage"] = Array(
-                    "apps_usage" => $group_period->getAppsUsagePeriod(),
-                    "connexions" => $group_period->getConnexions()
-                );
+                $group_period = $manager->getRepository("TwakeWorkspacesBundle:GroupPeriod")->findOneBy(Array("group" => $group));
+                if ($group_period) {
+                    $report["groups"][$group->getId()]["usage"] = Array(
+                        "apps_usage" => $group_period->getAppsUsagePeriod(),
+                        "connexions" => $group_period->getConnexions()
+                    );
+                }
 
             }
 
@@ -95,7 +98,7 @@ class DailyCommand extends ContainerAwareCommand
                 "licenceKey" => $licenceKey,
                 "report" => $report
             );
-            $services->get("circle.restclient")->post($licenceServer . "/report", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 600));
+            $result = $services->get("circle.restclient")->post($licenceServer . "/report", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 600));
 
         }
 
