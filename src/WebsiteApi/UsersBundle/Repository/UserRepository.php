@@ -122,13 +122,4 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
         return $qb->execute();
     }
 
-    public function findByLevel($name){
-        $qb = $this->createQueryBuilder('p')
-            ->andWhere('p.username like :name')
-            ->setParameter('name', '%'.$name.'%')
-            ->setMaxResults(10)
-            ->getQuery();
-
-        return $qb->execute();
-    }
 }

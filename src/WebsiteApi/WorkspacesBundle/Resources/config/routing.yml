@@ -132,6 +132,10 @@ twake_workspaces_levels_default:
     path:     /levels/default
     defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLevels:makeDefaulLevel }
 
+twake_workspaces_levels_get_by_label:
+    path:     /levels/getByLabel
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLevels:getByLabel }
+
 
 
 #twake_workspace_group_create:
