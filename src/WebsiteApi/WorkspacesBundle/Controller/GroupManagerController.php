@@ -58,6 +58,11 @@ class GroupManagerController extends Controller
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("username"=>$username));
 
+        if(!$user){
+            $response["errors"][] = "usernotfound";
+            return new JsonResponse($response);
+        }
+
         $result = $this->get("app.group_managers")->addManager($groupId, $user->getId(), 1, false, $this->getUser()->getId());
 
 
