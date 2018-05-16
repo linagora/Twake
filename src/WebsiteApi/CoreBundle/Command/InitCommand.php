@@ -127,7 +127,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setMessageModule(0);
         $app->setOrder(0);
 
-        $app->setThumbnail($serverbase . "/upload/apps/messagerie.png");
+        $app->setThumbnail($serverbase . "/medias/apps/messagerie.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
         $app->setCgu("");
@@ -152,7 +152,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(1);
         $app->setOrder(0);
-        $app->setThumbnail($serverbase . "/upload/apps/drive.png");
+        $app->setThumbnail($serverbase . "/medias/apps/drive.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
         $app->setCgu("");
@@ -177,7 +177,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
         $app->setOrder(0);
-        $app->setThumbnail($serverbase . "/upload/apps/calendar.png");
+        $app->setThumbnail($serverbase . "/medias/apps/calendar.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
         $app->setCgu("");

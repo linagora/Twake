@@ -44,18 +44,25 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 	}
 
+    public function getUsedSpace($group)
+    {
+        $group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
+
+        if ($group == null) {
+            return false;
+        }
+
+        // Get total size from root directory(ies) and file(s)
+        $totalSize = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize($group);
+
+        return $totalSize;
+    }
+
 	public function getFreeSpace($group)
 	{
 		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
 
-		if ($group == null) {
-			return false;
-		}
-
-		// Get total size from root directory(ies) and file(s)
-		$totalSize = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize($group);
-
-		return $this->getTotalSpace($group) - $totalSize;
+        return $this->getTotalSpace($group) - $this->getUsedSpace($group);
 	}
 
 	public function getTotalSpace($group)
@@ -64,9 +71,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 		if ($group == null) {
 			return false;
 		}
-        $limit = $this->pricingService->getLimitation($group->getId(),"drive",222222222);
+        $limit = $this->pricingService->getLimitation($group->getId(), "drive", 1000000000);
 
-        return $limit*100000;
+        return $limit * 1000000;
 
 	}
 
@@ -384,7 +391,27 @@ class DriveFileSystem implements DriveFileSystemInterface
 		return $newFile;
 	}
 
-	public function getRawContent($file, $isPreview = false)
+    public function getPreview($file)
+    {
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
+
+        if ($file == null) {
+            return false;
+        }
+
+        $path = $this->getRoot() . $file->getPreviewPath();
+
+        $this->verifyPath($path);
+
+        if (!file_exists($path)) {
+            return null;
+        }
+
+        return $this->read($path);
+
+    }
+
+    public function getRawContent($file)
 	{
 		$file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
 
@@ -397,19 +424,13 @@ class DriveFileSystem implements DriveFileSystemInterface
 		}
 
         $path = $this->getRoot() . $file->getPath();
-		if ($isPreview){
-            $path = $this->getRoot() . $file->getPreviewPath();
-        }
-        error_log($path);
-		$this->verifyPath($path);
+
+        $this->verifyPath($path);
 
 		if (!file_exists($path)) {
 			return null;
 		}
 
-        if ($isPreview){
-            return $this->read($path);
-        }
 		return $this->readDecode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
 	}
 

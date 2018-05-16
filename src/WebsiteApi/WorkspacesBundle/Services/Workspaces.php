@@ -59,6 +59,10 @@ class Workspaces implements WorkspacesInterface
     public function create($name, $groupId = null, $userId = null)
     {
 
+        if ($groupId == null && $userId == null) {
+            return false;
+        }
+
         if ($name == "") {
             return false;
         }

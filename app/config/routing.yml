@@ -78,6 +78,10 @@ citi_go_core:
     resource: "@TwakeCoreBundle/Resources/config/routing.yml"
     prefix:   /ajax/core/
 
+citi_go_core_remote:
+    resource: "@TwakeCoreBundle/Resources/config/routing_remote.yml"
+    prefix:   /api/remote/
+
 citi_go_marketplace:
     resource: "@TwakeMarketBundle/Resources/config/routing.yml"
     prefix:   /ajax/market/

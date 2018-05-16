@@ -2,7 +2,7 @@ services:
 
     app.twake_mailer:
         class: WebsiteApi\CoreBundle\Services\TwakeMailer
-        arguments: ["@mailer", "@templating", "%MAIL_FROM%", "%SERVER_NAME%"]
+        arguments: ["@mailer", "@templating", "%MAIL_FROM%", "%SERVER_NAME%", "%STANDALONE%", "%LICENCE_KEY%", "@circle.restclient"]
 
     app.pusher:
         class: WebsiteApi\CoreBundle\Services\ZMQPusher
