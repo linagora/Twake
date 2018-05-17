@@ -37,9 +37,10 @@ class GroupController extends Controller
         $groupId = $request->request->getInt("groupId");
         $limit = $request->request->get("limit");
         $offset = $request->request->get("offset");
+        $onlyExterne = $request->request->getBoolean("onlyExterne");
 
         $nb = $this->get("app.groups")->countUsersGroup($groupId);
-        $users = $this->get("app.groups")->getUsersGroup($groupId,$limit, $offset);
+        $users = $this->get("app.groups")->getUsersGroup($groupId,$onlyExterne,$limit, $offset);
 
         if(!$users){
             $response["errors"][] = "notallowed";
@@ -47,7 +48,8 @@ class GroupController extends Controller
             $list = Array();
             foreach ($users as $user) {
                 $list[] = Array(
-                    "user" => $user["user"]->getAsArray()
+                    "user" => $user["user"]->getAsArray(),
+                    "externe" => $user["externe"]
                 );
             }
             $response["data"] = Array("users" => $list);

@@ -21,4 +21,25 @@ class GroupUserRepository extends \Doctrine\ORM\EntityRepository
        $criteria->andWhere(Criteria::expr()->neq('level', 0));
        return  $this->matching( $criteria);
     }
+
+    public function getUsers($group,$limit,$offset)
+    {
+        $criteria = Criteria::create();
+        $criteria->setMaxResults($limit);
+        $criteria->setFirstResult($offset);
+        $criteria->where(Criteria::expr()->eq('group', $group));
+        $criteria->andWhere(Criteria::expr()->neq('nbWorkspace', 0));
+        return  $this->matching( $criteria);
+    }
+
+    public function getExternalUsers($group,$limit,$offset)
+    {
+        $criteria = Criteria::create();
+        $criteria->setMaxResults($limit);
+        $criteria->setFirstResult($offset);
+        $criteria->where(Criteria::expr()->eq('group', $group));
+        $criteria->andWhere(Criteria::expr()->neq('nbWorkspace', 0));
+        $criteria->andWhere(Criteria::expr()->eq('externe', true));
+        return  $this->matching( $criteria);
+    }
 }

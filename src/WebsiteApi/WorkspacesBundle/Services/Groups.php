@@ -313,18 +313,23 @@ class Groups implements GroupsInterface
 
     }
 
-    public function getUsersGroup($groupId,$limit, $offset)
+    public function getUsersGroup($groupId,$onlyExterne,$limit, $offset)
     {
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
         $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
         $group = $groupRepository->find($groupId);
-        $managerLinks = $groupManagerRepository->findBy(Array("group" => $group),null,$limit,$offset);
+        if($onlyExterne){
+            $managerLinks = $groupManagerRepository->getExternalUsers($group,$limit,$offset);
+        }else{
+            $managerLinks = $groupManagerRepository->getUsers($group,$limit,$offset);
+        }
 
         $users = Array();
         foreach ($managerLinks as $managerLink){
             $users[] = Array(
                 "user" => $managerLink->getUser(),
+                "externe" => $managerLink->getExterne()
             );
         }
         return $users;
