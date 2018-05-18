@@ -185,16 +185,18 @@ class InitCommand extends ContainerAwareCommand
 
         $manager->flush();
 
-        /**
-         * Initialisation des groupPeriod
-         */
-        /*      $groupAppRepository = $doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        //Init pour la future mise a jour
 
-              $groups = $groupAppRepository->findBy(Array());
-              foreach ( $groups as $g ){
-                  $services->get("app.group_period")->init($g);
+        /**
+         * Initialisation des WorkspaceUser
+         */
+              $workspaceUserRepository = $doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+
+              $workspaceusers = $workspaceUserRepository->findBy(Array());
+              foreach ( $workspaceusers as $wm ){
+                  $services->get("app.workspace_members")->init($wm);
               }
-              error_log("Init groupPeriod");*/
+              error_log("Init groupPeriod");
     }
 
 }

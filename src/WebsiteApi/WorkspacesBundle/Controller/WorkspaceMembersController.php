@@ -31,7 +31,8 @@ class WorkspaceMembersController extends Controller
 		foreach ($members as $member){
 			$list[] = Array(
 				"user" => $member["user"]->getAsArray(),
-				"level" => $member["level"]->getAsArray()
+				"level" => $member["level"]->getAsArray(),
+                "externe" => $member["externe"]
 			);
 		}
 
@@ -61,6 +62,7 @@ class WorkspaceMembersController extends Controller
 
 		$workspaceId = $request->request->getInt("workspaceId");
 		$list = $request->request->get("list", "");
+        $asExterne = $request->request->getBoolean("asExterne");
 
 		$list = str_replace(Array(",",";"), " ", $list);
 		$list = preg_replace('!\s+!', ' ', $list);
@@ -72,10 +74,10 @@ class WorkspaceMembersController extends Controller
 			$element = trim($element);
 			if(strrpos($element, "@")<=0) { //No mail or "@username"
 				$res = $this->get("app.workspace_members")
-					->addMemberByUsername($workspaceId, $element, $this->getUser()->getId());
+					->addMemberByUsername($workspaceId, $element,$asExterne, $this->getUser()->getId());
 			}else{
 				$res = $this->get("app.workspace_members")
-					->addMemberByMail($workspaceId, $element, $this->getUser()->getId());
+					->addMemberByMail($workspaceId, $element,$asExterne, $this->getUser()->getId());
 			}
 			if($res){
 				$added[] = $element;

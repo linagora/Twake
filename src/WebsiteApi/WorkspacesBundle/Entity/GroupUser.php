@@ -45,6 +45,11 @@ class GroupUser
     private $didConnectToday;
 
     /**
+     * @ORM\Column(name="is_externe", type="boolean")
+     */
+    private $externe;
+
+    /**
      * @ORM\Column(name="app_used_today", type="string", length=100000)
      */
     protected $usedAppsToday;
@@ -85,6 +90,7 @@ class GroupUser
 		$this->lastDayOfUpdate = date('z')+1;
         $this->connectionsPeriod = 0;
         $this->appsUsage_period = "[]";
+        $this->externe = false;
 	}
 
 	public function getId(){
@@ -187,7 +193,11 @@ class GroupUser
 
     public function decreaseNbWorkspace()
     {
-        return $this->nbWorkspace = $this->nbWorkspace-1;
+        if ($this->nbWorkspace == 0){
+            return $this->nbWorkspace;
+        }else{
+            return $this->nbWorkspace = $this->nbWorkspace-1;
+        }
     }
 
     /**
@@ -265,4 +275,22 @@ class GroupUser
     {
         $this->didConnectToday = $didConnectToday;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getExterne()
+    {
+        return $this->externe;
+    }
+
+    /**
+     * @param mixed $isClient
+     */
+    public function setExterne($externe)
+    {
+        $this->externe = $externe;
+    }
+
+
 }

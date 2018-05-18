@@ -1,6 +1,9 @@
 <?php
 
 namespace WebsiteApi\WorkspacesBundle\Repository;
+use Doctrine\Common\Collections\Criteria;
+
+
 
 /**
  * GroupUserRepository
@@ -10,4 +13,33 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  */
 class GroupUserRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    public function getManagers($group)
+    {
+       $criteria = Criteria::create();
+       $criteria->where(Criteria::expr()->eq('group', $group));
+       $criteria->andWhere(Criteria::expr()->neq('level', 0));
+       return  $this->matching( $criteria);
+    }
+
+    public function getUsers($group,$limit,$offset)
+    {
+        $criteria = Criteria::create();
+        $criteria->setMaxResults($limit);
+        $criteria->setFirstResult($offset);
+        $criteria->where(Criteria::expr()->eq('group', $group));
+        $criteria->andWhere(Criteria::expr()->neq('nbWorkspace', 0));
+        return  $this->matching( $criteria);
+    }
+
+    public function getExternalUsers($group,$limit,$offset)
+    {
+        $criteria = Criteria::create();
+        $criteria->setMaxResults($limit);
+        $criteria->setFirstResult($offset);
+        $criteria->where(Criteria::expr()->eq('group', $group));
+        $criteria->andWhere(Criteria::expr()->neq('nbWorkspace', 0));
+        $criteria->andWhere(Criteria::expr()->eq('externe', true));
+        return  $this->matching( $criteria);
+    }
 }

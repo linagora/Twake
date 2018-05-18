@@ -14,15 +14,18 @@ class Groups implements GroupsInterface
 	private $gms;
     private $market;
     private $string_cleaner;
+    private $gps;
+    private $wms;
 
-	public function __construct($doctrine, $group_managers_service, $market_service,$clean,$group_period_service)
+	public function __construct($doctrine, $group_managers_service, $market_service,$clean,$group_period_service,$workspace_member_service)
 	{
 		$this->doctrine = $doctrine;
 		$this->gms = $group_managers_service;
 		$this->market = $market_service;
 		$this->string_cleaner = $clean;
 		$this->gps = $group_period_service;
-	}
+        $this->wms = $workspace_member_service;
+    }
 
 	public function create($userId, $name, $uniquename, $planId)
 	{
@@ -119,17 +122,11 @@ class Groups implements GroupsInterface
 	{
 		if($currentUserId==null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_USERS")){
 
-			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-			$user = $userRepository->find($userId);
+			$ws = $this->getWorkspaces($groupId);
 
-			$ws = $this->getWorkspaces($groupId);//TODO remove users from all workspaces
-
-			$workspace_ids = Array();
 			foreach ($ws as $workspace){
-				$workspace_ids[] = $workspace->getId();
+			    $this->wms->removeMember($workspace->getId(), $userId, $currentUserId);
 			}
-
-			$this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->deleteUserFromGroup($workspace_ids, $user);
 
 			return true;
 		}
@@ -302,6 +299,41 @@ class Groups implements GroupsInterface
         }
 
         $this->getDoctrine()->flush();
+    }
+
+    public function countUsersGroup($groupId)
+    {
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+
+        $group = $groupRepository->find($groupId);
+        $managers = $groupManagerRepository->findBy(Array("group" => $group));
+
+        return count($managers);
+
+    }
+
+    public function getUsersGroup($groupId,$onlyExterne,$limit, $offset)
+    {
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+
+        $group = $groupRepository->find($groupId);
+        if($onlyExterne){
+            $managerLinks = $groupManagerRepository->getExternalUsers($group,$limit,$offset);
+        }else{
+            $managerLinks = $groupManagerRepository->getUsers($group,$limit,$offset);
+        }
+
+        $users = Array();
+        foreach ($managerLinks as $managerLink){
+            $users[] = Array(
+                "user" => $managerLink->getUser(),
+                "externe" => $managerLink->getExterne()
+            );
+        }
+        return $users;
+
     }
 
 }

@@ -51,6 +51,13 @@ twake_workspaces_disable_app:
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:disableApp }
 
 # Groups
+twake_groups_get_users:
+    path:     /group/getUsers
+    defaults: { _controller: TwakeWorkspacesBundle:Group:getUsers }
+
+twake_groups_remove_user:
+    path:     /group/removeUser
+    defaults: { _controller: TwakeWorkspacesBundle:Group:removeUser }
 
 twake_groups_set_name:
     path:     /group/data/name
