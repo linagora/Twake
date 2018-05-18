@@ -75,13 +75,19 @@ class User extends BaseUser
 	 */
 	protected $language = "en";
 
-	/**
-	 * @ORM\Column(name="notification_preference", type="string", length=2048)
-	 */
-	protected $notification_preference = "{}";
+    /**
+     * @ORM\Column(name="notification_preference", type="string", length=2048)
+     */
+    protected $notification_preference = "{}";
+
+    /**
+     * @ORM\Column(name="phone", type="string", length=64)
+     */
+    protected $phone = "";
 
 
-	public function __construct()
+
+    public function __construct()
 	{
 		$this->enabled = true;
 		$this->connections = 0;
@@ -228,6 +234,24 @@ class User extends BaseUser
 	{
 		$this->language = $language;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getPhone()
+    {
+        return $this->phone;
+    }
+
+    /**
+     * @param mixed $phone
+     */
+    public function setPhone($phone)
+    {
+        $this->phone = $phone;
+    }
+
+
 
 	/**
 	 * @return mixed

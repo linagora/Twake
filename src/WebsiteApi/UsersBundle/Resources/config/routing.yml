@@ -111,6 +111,18 @@ twake_user_subscribe_identity:
     defaults: { _controller: TwakeUsersBundle:UsersSubscribe:subscribe }
 
 
+
+# New Subscribe
+
+twake_user_subscribe:
+    path:     /subscribe/subscribe
+    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:subscribeTotaly }
+
+twake_user_subscribe_mailavaible:
+    path:     /subscribe/availability
+    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:getAvaible }
+
+
 # Recover
 
 twake_user_recover_mail:

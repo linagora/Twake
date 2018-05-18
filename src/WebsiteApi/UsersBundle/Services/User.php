@@ -29,8 +29,11 @@ class User implements UserInterface
 	private $string_cleaner;
 	private $token_storage;
 	private $workspace_members_service;
+	private $group_service;
+	private $workspace_service;
+    private $pricing_plan;
 
-	public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service){
+	public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service,$group_service,$workspace_service,$pricing_plan){
 		$this->em = $em;
 		$this->pusher = $pusher;
 		$this->encoder_factory = $encoder_factory;
@@ -42,7 +45,10 @@ class User implements UserInterface
 		$this->string_cleaner = $string_cleaner;
 		$this->authorization_checker = $authorization_checker;
 		$this->token_storage= $token_storage;
-		$this->workspace_members_service = $workspace_members_service;
+        $this->workspace_members_service = $workspace_members_service;
+        $this->group_service = $group_service;
+        $this->workspace_service = $workspace_service;
+        $this->pricing_plan = $pricing_plan;
 	}
 
 	public function current()
@@ -233,7 +239,78 @@ class User implements UserInterface
 		return false;
 	}
 
-	public function subscribeMail($mail)
+	public function getAvaibleMailPseudo($mail,$pseudo){
+        $mail = $this->string_cleaner->simplifyMail($mail);
+        $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
+        $retour = Array();
+
+        //Check user doesn't exists
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("email"=>$mail));
+        //Check mail doesn't exists
+        $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+        $mailExists = $mailsRepository->findOneBy(Array("mail"=>$mail));
+
+        if($user != null || $mailExists != null){
+            $retour[] = -1;
+        }
+
+        //Check pseudo doesn't exists
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("username"=>$pseudo));
+        if($user != null){
+            $retour[] = -2;
+        }
+        if(count($retour)<=0){
+            return true;
+        }
+        return $retour;
+    }
+
+	public function subscribeInfo($mail,$password,$pseudo,$firstName,$lastName,$phone,$workspace,$company,$friends){
+        $mail = $this->string_cleaner->simplifyMail($mail);
+        $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
+
+
+        $avaible = $this->getAvaibleMailPseudo($mail,$pseudo);
+        if(is_bool($avaible) && !$avaible){
+            return $avaible;
+        }
+        if($mail==null || $password==null || $pseudo==null){
+            return false;
+        }
+        $token = $this->subscribeMail($mail,false);
+        $user = $this->subscribe($token,"",$pseudo,$password,true);
+        if($user==null || $user== false){
+            return false;
+        }
+        $user->setFirstName($firstName);
+        $user->setLastName($lastName);
+        $user->setPhone($phone);
+        $this->em->persist($user);
+        $this->em->flush();
+        if($workspace != "" && $workspace!=null){
+
+            $uniquename = $this->string_cleaner->simplify($company);
+            $plan = $this->pricing_plan->getMinimalPricing();
+            $group = $this->group_service->create($user->getId(), $company, $uniquename,$plan);
+            $workspace = $this->workspace_service->create($workspace,$group->getId(),$user->getId());
+            if($workspace){
+                if(is_array($friends) && count($friends)>0){
+                    foreach($friends as $friend){
+                        if($friend != $mail){
+                            error_log("send mail to ".$friend);
+                            $this->workspace_members_service->addMemberByMail($workspace->getId(),$friend);
+                        }
+                    }
+                }
+            }
+        }
+
+        return true;
+    }
+
+	public function subscribeMail($mail,$sendEmail = true)
 	{
 
 		$mail = $this->string_cleaner->simplifyMail($mail);
@@ -253,12 +330,15 @@ class User implements UserInterface
 		$verificationNumberMail = new VerificationNumberMail($mail);
 		$code = $verificationNumberMail->getCode();
 
-		$this->twake_mailer->send($mail, "subscribeMail", Array("code"=>$code));
+		if($sendEmail){
+            $this->twake_mailer->send($mail, "subscribeMail", Array("code"=>$code));
+        }
 
 		$this->em->persist($verificationNumberMail);
 		$this->em->flush();
 		return $verificationNumberMail->getToken();
 	}
+
 
 	public function checkNumberForSubscribe($token, $code)
 	{
