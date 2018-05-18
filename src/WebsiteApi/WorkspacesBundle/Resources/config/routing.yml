@@ -55,6 +55,10 @@ twake_groups_get_users:
     path:     /group/getUsers
     defaults: { _controller: TwakeWorkspacesBundle:Group:getUsers }
 
+twake_groups_edit_user:
+    path:     /group/edit
+    defaults: { _controller: TwakeWorkspacesBundle:Group:editUser }
+
 twake_groups_remove_user:
     path:     /group/removeUser
     defaults: { _controller: TwakeWorkspacesBundle:Group:removeUser }
@@ -76,7 +80,11 @@ twake_groups_set_workspace_default:
     defaults: { _controller: TwakeWorkspacesBundle:GroupApps:setWorkspaceDefault }
 
 twake_groups_remove_application:
-    path:     /group/remove/application
+    path:     /group/application/force
+    defaults: { _controller: TwakeWorkspacesBundle:GroupApps:forceApplication }
+
+twake_groups_remove_application:
+    path:     /group/application/remove
     defaults: { _controller: TwakeWorkspacesBundle:GroupApps:removeApplication }
 
 twake_groups_manager_get:

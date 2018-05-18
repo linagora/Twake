@@ -16,13 +16,17 @@ class WorkspacesApps implements WorkspacesAppsInterface
 	private $wls;
 	private $gas;
 	private $doctrine;
+    private $gms;
 
-	public function __construct($doctrine, $workspaces_levels_service, $groups_apps_service)
+
+    public function __construct($doctrine, $workspaces_levels_service, $groups_apps_service,$group_managers_service)
 	{
 		$this->doctrine = $doctrine;
 		$this->wls = $workspaces_levels_service;
 		$this->gas = $groups_apps_service;
-	}
+        $this->gms = $group_managers_service;
+
+    }
 
     public function getApps($workspaceId, $currentUserId = null, $onlymessageModule = false , $onlyEditableRights = false)
     {
@@ -108,6 +112,34 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
 		return false;
 	}*/
+
+    public function forceApplication($groupId, $appId, $currentUserId = null)
+    {
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $group = $groupRepository->find($groupId);
+
+        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $application = $applicationRepository->find($appId);
+
+        if ($group == null || $application == null) {
+            return false;
+        }
+
+        if ($currentUserId == null
+            || $this->gms->hasPrivileges(
+                $this->gms->getLevel($groupId, $currentUserId),
+                "MANAGE_APPS"
+            )
+        ) {
+            $workspaces = $group->getWorkspaces();
+            foreach ($workspaces as $workspace){
+                $this->enableApp($workspace->getId(),$appId,$currentUserId);
+            }
+
+            return true;
+        }
+        return false;
+    }
 
     public function enableApp($workspaceId, $applicationId, $currentUserId = null)
     {
