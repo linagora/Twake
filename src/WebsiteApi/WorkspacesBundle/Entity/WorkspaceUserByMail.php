@@ -30,11 +30,17 @@ class WorkspaceUserByMail
 	 */
 	private $mail;
 
+    /**
+     * @ORM\Column(name="is_externe", type="boolean")
+     */
+    private $externe;
+
 	function __construct($workspace, $mail)
 	{
 		$this->workspace = $workspace;
 		$this->mail = $mail;
-	}
+        $this->externe = false;
+    }
 
 	public function getId()
 	{
@@ -57,7 +63,21 @@ class WorkspaceUserByMail
 		return $this->mail;
 	}
 
+    /**
+     * @return mixed
+     */
+    public function getExterne()
+    {
+        return $this->externe;
+    }
 
+    /**
+     * @param mixed $isClient
+     */
+    public function setExterne($externe)
+    {
+        $this->externe = $externe;
+    }
 
 
 }

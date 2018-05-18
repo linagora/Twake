@@ -115,6 +115,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			if($mailObj==null){
 				//Mail not in tables
 				$userByMail = new WorkspaceUserByMail($workspace, $mail);
+				$userByMail->setExterne($asExterne);
 				$this->doctrine->persist($userByMail);
 				$this->doctrine->flush();
 			}
@@ -175,7 +176,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 		foreach ($invitations as $userByMail) {
 			$this->doctrine->remove($userByMail);
 			$this->doctrine->flush();
-			$this->addMember($userByMail->getWorkspace()->getId(), $userId);
+			$this->addMember($userByMail->getWorkspace()->getId(), $userId,$userByMail->getExterne());
 		}
 
 		return true;
@@ -230,14 +231,12 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $groupmember = new GroupUser($workspace->getGroup(),$user);
                 $groupmember->increaseNbWorkspace();
                 $groupmember->setLevel(0);
-                if($asExterne){
-                    $groupmember->setExterne(true);
-                }
+                $groupmember->setExterne($asExterne);
             }else{
-                $groupmember->increaseNbWorkspace();
-                if($asExterne){
-                    $groupmember->setExterne(true);
+                if ($groupmember->getNbWorkspace() == 0){ //Deleted user can still change status, not others
+                    $groupmember->setExterne($asExterne);
                 }
+                $groupmember->increaseNbWorkspace();
             }
             $member->setGroupUser($groupmember);
 
@@ -359,11 +358,20 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 			$users = Array();
 			foreach($link as $user){
-				$users[] = Array(
-					"user"=> $user->getUser(),
-					"level"=> $user->getLevel(),
-                    "externe"=> $user->getGroupUser()->getExterne()
-				);
+
+                if ($user->getGroupUser()){ //Private workspaces does not have a group user assiociated
+                    $users[] = Array(
+                        "user"=> $user->getUser(),
+                        "level"=> $user->getLevel(),
+                        "externe" => $user->getGroupUser()->getExterne()
+                    );
+                 }else{
+                    $users[] = Array(
+                        "user"=> $user->getUser(),
+                        "level"=> $user->getLevel(),
+                    );
+                }
+
 			}
 
 			return $users;

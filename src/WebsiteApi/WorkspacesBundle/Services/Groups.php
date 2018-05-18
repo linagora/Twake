@@ -313,27 +313,54 @@ class Groups implements GroupsInterface
 
     }
 
-    public function getUsersGroup($groupId,$onlyExterne,$limit, $offset)
+    public function getUsersGroup($groupId,$onlyExterne,$limit, $offset,$currentUserId = null)
     {
-        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-        $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+        if($currentUserId==null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "VIEW_USERS")){
 
-        $group = $groupRepository->find($groupId);
-        if($onlyExterne){
-            $managerLinks = $groupManagerRepository->getExternalUsers($group,$limit,$offset);
-        }else{
-            $managerLinks = $groupManagerRepository->getUsers($group,$limit,$offset);
+            $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+            $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+
+            $group = $groupRepository->find($groupId);
+            if($onlyExterne){
+                $managerLinks = $groupManagerRepository->getExternalUsers($group,$limit,$offset);
+            }else{
+                $managerLinks = $groupManagerRepository->getUsers($group,$limit,$offset);
+            }
+
+            $users = Array();
+            foreach ($managerLinks as $managerLink){
+                $users[] = Array(
+                    "user" => $managerLink->getUser(),
+                    "externe" => $managerLink->getExterne(),
+                    "level" => $managerLink->getLevel()
+                );
+            }
+            return $users;
+
         }
 
-        $users = Array();
-        foreach ($managerLinks as $managerLink){
-            $users[] = Array(
-                "user" => $managerLink->getUser(),
-                "externe" => $managerLink->getExterne()
-            );
-        }
-        return $users;
+        return false;
 
+
+    }
+
+    public function editUserFromGroup($groupId,$userId,$externe,$currentUserId = null)
+    {
+        if($currentUserId==null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_USERS")){
+
+            $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+            $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+
+            $group = $groupRepository->find($groupId);
+            $user = $groupManagerRepository->findOneBy(Array("group" => $group, "user" => $userId ));
+
+            $user->setExterne($externe);
+            $this->doctrine->persist($user);
+            $this->doctrine->flush();
+            return true;
+            }
+
+        return false;
     }
 
 }

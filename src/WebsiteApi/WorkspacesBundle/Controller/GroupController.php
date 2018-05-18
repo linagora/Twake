@@ -40,17 +40,17 @@ class GroupController extends Controller
         $onlyExterne = $request->request->getBoolean("onlyExterne");
 
         $nb = $this->get("app.groups")->countUsersGroup($groupId);
-        $users = $this->get("app.groups")->getUsersGroup($groupId,$onlyExterne,$limit, $offset);
+        $users = $this->get("app.groups")->getUsersGroup($groupId,$onlyExterne,$limit, $offset,$this->getUser()->getId());
 
         if(!$users){
             $response["errors"][] = "notallowed";
         }else {
             $list = Array();
             foreach ($users as $user) {
-                $list[] = Array(
-                    "user" => $user["user"]->getAsArray(),
-                    "externe" => $user["externe"]
-                );
+                $temp = $user["user"]->getAsArray();
+                $temp["externe"] = $user["externe"];
+                $temp["level"] = $user["level"];
+                $list[] = $temp;
             }
             $response["data"] = Array("users" => $list);
             $response["data"]["nbuser"] = $nb;
@@ -66,6 +66,24 @@ class GroupController extends Controller
         $userId = $request->request->get("userId");
 
         $users = $this->get("app.groups")->removeUserFromGroup($groupId,$userId,$this->getUser()->getId());
+
+        if(!$users){
+            $response["errors"][] = "notallowed";
+        }else {
+            $response["data"][] = "success";
+        }
+
+        return new JsonResponse($response);
+    }
+
+    public function editUserAction(Request $request){
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $groupId = $request->request->getInt("groupId");
+        $userId = $request->request->get("userId");
+        $externe = $request->request->getBoolean("editExterne");
+
+        $users = $this->get("app.groups")->editUserFromGroup($groupId,$userId,$externe,$this->getUser()->getId());
 
         if(!$users){
             $response["errors"][] = "notallowed";
