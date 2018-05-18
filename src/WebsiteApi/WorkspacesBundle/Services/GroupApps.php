@@ -27,7 +27,7 @@ class GroupApps implements GroupAppsInterface
         if ($currentUserId == null
             || $this->gms->hasPrivileges(
                 $this->gms->getLevel($groupId, $currentUserId),
-                "VIEW_APPS"
+                "MANAGE_APPS"
             )
         ) {
             //Group apps
@@ -57,7 +57,7 @@ class GroupApps implements GroupAppsInterface
         if ($currentUserId == null
             || $this->gms->hasPrivileges(
                 $this->gms->getLevel($groupId, $currentUserId),
-                "VIEW_APPS"
+                "MANAGE_APPS"
             )
         ) {
             //Group apps
@@ -93,7 +93,7 @@ class GroupApps implements GroupAppsInterface
         if ($currentUserId == null
             || $this->gms->hasPrivileges(
                 $this->gms->getLevel($groupId, $currentUserId),
-                "VIEW_APPS"
+                "MANAGE_APPS"
             )
         ) {
             //Group apps

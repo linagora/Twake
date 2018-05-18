@@ -34,7 +34,7 @@ services:
 
     app.workspaces_apps:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesApps
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.group_apps"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.group_apps","@app.group_managers"]
 
     app.workspace_stats:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceStats
