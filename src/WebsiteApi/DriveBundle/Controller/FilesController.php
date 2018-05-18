@@ -174,16 +174,23 @@ class FilesController extends Controller
 
 				$files = $this->get('app.drive.FileSystem')->listNew($groupId, $offset, $max);
 
-			} else if($state == "shared") {
+            } else if ($state == "shared") {
 
 				$files = $this->get('app.drive.FileSystem')->listShared($groupId, $offset, $max);
 
-			} else if($state == "search") {
+            } else if ($state == "search") {
 
-				$query = $request->request->get("query", "");
-				$files = $this->get('app.drive.FileSystem')->search($groupId, $query, $offset, $max);
+                $query = $request->request->get("query", "");
+                $files = $this->get('app.drive.FileSystem')->search($groupId, $query, $offset, $max);
 
-			} else {
+            } else if (strpos($state, "label_") === 0) {
+
+                $label_id = explode("_", $state);
+                $label_id = intval($label_id[1]);
+
+                $files = $this->get('app.drive.FileSystem')->byLabel($groupId, $label_id, $offset, $max);
+
+            } else {
 
 				$arbo = [];
 				$parent = $this->get('app.drive.FileSystem')->getObject($parentId);
