@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use \DateTime;
+use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\WorkspacesBundle\Entity\Group;
 use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
 
@@ -66,8 +67,15 @@ class DailyCommand extends ContainerAwareCommand
 
             //Send report
             $report = Array(
+                "apps" => Array(),
                 "groups" => Array()
             );
+
+            /** @var Application[] $apps */
+            $apps = $manager->getRepository("TwakeMarketBundle:Application")->findBy(Array());
+            foreach ($apps as $app) {
+                $report["apps"][] = $app->getAsArray();
+            }
 
             /** @var Group[] $groups */
             $groups = $manager->getRepository("TwakeWorkspacesBundle:Group")->findBy(Array());

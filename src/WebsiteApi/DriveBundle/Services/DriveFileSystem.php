@@ -744,8 +744,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $ext = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
 
-        $path = $this->getRoot() . $workspace . "/" . "preview" . "/";
-        $this->preview->generatePreview($newFile->getLastVersion()->getRealName(),$real, $path,$ext);
+        $path = $this->getRoot() . dirname($newFile->getPreviewPath()) . "/";
+        $this->preview->generatePreview($newFile->getLastVersion()->getRealName(), $real, $path, $ext);
 
         $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
 

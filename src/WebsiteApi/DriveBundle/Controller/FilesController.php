@@ -367,11 +367,16 @@ class FilesController extends Controller
 	public function previewAction(Request $request){
 
 		$groupId = $request->query->get("groupId", 0);
-		$fileId = $request->query->get("fileId", 0);
+        $fileId = $request->query->get("fileId", 0);
+        $original = $request->query->get("original", 0);
 
-		if ($this->get('app.workspace_levels')->can($groupId,$this->getUser()->getId(), "drive:write")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
 
-            $data = $this->get('app.drive.FileSystem')->getPreview($fileId);
+            if ($original) {
+                $data = $this->get('app.drive.FileSystem')->getRawContent($fileId);
+            } else {
+                $data = $this->get('app.drive.FileSystem')->getPreview($fileId);
+            }
 			return new Response($data, 200);
 
 		}

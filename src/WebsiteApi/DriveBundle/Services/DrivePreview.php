@@ -25,84 +25,91 @@ class DrivePreview
     public function generatePreview($filename, $file, $path, $ext)
     {
 
-        if (!is_dir($path)) {
-            mkdir($path, 0777, true);
+        try {
+
+            if (!is_dir($path)) {
+                mkdir($path, 0777, true);
+            }
+
+            if (filesize($file) > 50000000) { //50Mo (protection)
+                return false;
+            }
+
+            $finfo = finfo_open(FILEINFO_MIME_TYPE);
+            $filetype = finfo_file($finfo, $file);
+            if ($filetype === 'image/png' ||
+                $filetype === 'image/gif' ||
+                $filetype === 'image/x-icon' ||
+                $filetype === 'image/jpeg' ||
+                $filetype === 'image/svg+xml' ||
+                $filetype === 'image/tiff' ||
+                $filetype === 'image/webp' ||
+                $ext === 'png' ||
+                $ext === 'jpg' ||
+                $ext === 'jpeg' ||
+                $ext === 'jp2' ||
+                $ext === 'gif' ||
+                $ext === 'svg' ||
+                $ext === 'tiff' ||
+                $ext === 'bmp' ||
+                $ext === 'ico' ||
+                $ext === 'webp'
+            ) {
+                $this->generateImagePreview($filename, $file, $path);
+            }
+
+            if ($filetype === 'application/pdf') {
+                $this->generateImagePreview($filename, $file, $path, true);
+            }
+            if ($filetype === 'application/msword' ||
+                $filetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
+                $filetype === 'text/css' ||
+                $filetype === 'text/csv' ||
+                $filetype === 'text/plain' ||
+                $filetype === 'application/vnd.oasis.opendocument.presentation' ||
+                $filetype === 'application/vnd.oasis.opendocument.spreadsheet' ||
+                $filetype === 'application/vnd.oasis.opendocument.text' ||
+                $filetype === 'application/vnd.ms-powerpoint' ||
+                $filetype === 'application/vnd.ms-excel' ||
+                $filetype === 'application/vnd.ms-office' ||
+                $filetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
+                $filetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
+                $filetype === 'application/vnd.oasis.opendocument.text' ||
+                $filetype === 'application/vnd.oasis.opendocument.presentation' ||
+                $filetype === 'application/vnd.oasis.opendocument.spreadsheet' ||
+                $filetype === 'application/vnd.oasis.opendocument.chart' ||
+                $filetype === 'application/xml' ||
+                $filetype === 'text/html' ||
+                $ext === 'doc' ||
+                $ext === 'docx  ' ||
+                $ext === 'xls' ||
+                $ext === 'xlsx' ||
+                $ext === 'pps' ||
+                $ext === 'ppt' ||
+                $ext === 'pptx' ||
+                $ext === 'bmp' ||
+                $ext === 'ico' ||
+                $ext === 'odt' ||
+                $ext === 'odg' ||
+                $ext === 'odp' ||
+                $ext === 'ods' ||
+                $ext === 'odc' ||
+                $ext === 'xml' ||
+                $ext === 'webp'
+            ) {
+                $this->generateImagePreview($filename, $file, $path, false, true);
+            }
+
+            finfo_close($finfo);
+
+        } catch (\Exception $e) {
+            error_log("Error during preview generation : " . $e);
         }
 
-        if (filesize($file) > 50000000) { //50Mo (protection)
-            return false;
-        }
-
-        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-        $filetype = finfo_file($finfo, $file);
-        if ($filetype === 'image/png' ||
-            $filetype === 'image/gif' ||
-            $filetype === 'image/x-icon' ||
-            $filetype === 'image/jpeg' ||
-            $filetype === 'image/svg+xml' ||
-            $filetype === 'image/tiff' ||
-            $filetype === 'image/webp' ||
-            $ext === 'png' ||
-            $ext === 'jpg' ||
-            $ext === 'jpeg' ||
-            $ext === 'jp2' ||
-            $ext === 'gif' ||
-            $ext === 'svg' ||
-            $ext === 'tiff' ||
-            $ext === 'bmp' ||
-            $ext === 'ico' ||
-            $ext === 'webp'
-        ) {
-            $this->generateImagePreview($filename,$file, $path);
-        }
-
-        if($filetype === 'application/pdf') {
-            $this->generateImagePreview($filename,$file, $path, true);
-        }
-        if($filetype === 'application/msword' ||
-            $filetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
-            $filetype === 'text/css' ||
-            $filetype === 'text/csv' ||
-            $filetype === 'text/plain' ||
-            $filetype === 'application/vnd.oasis.opendocument.presentation' ||
-            $filetype === 'application/vnd.oasis.opendocument.spreadsheet' ||
-            $filetype === 'application/vnd.oasis.opendocument.text' ||
-            $filetype === 'application/vnd.ms-powerpoint' ||
-            $filetype === 'application/vnd.ms-excel' ||
-            $filetype === 'application/vnd.ms-office' ||
-            $filetype === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
-            $filetype === 'application/vnd.openxmlformats-officedocument.presentationml.presentation' ||
-            $filetype === 'application/vnd.oasis.opendocument.text' ||
-            $filetype === 'application/vnd.oasis.opendocument.presentation' ||
-            $filetype === 'application/vnd.oasis.opendocument.spreadsheet' ||
-            $filetype === 'application/vnd.oasis.opendocument.chart' ||
-            $filetype === 'application/xml' ||
-            $filetype === 'text/html' ||
-            $ext === 'doc' ||
-            $ext === 'docx  ' ||
-            $ext === 'xls' ||
-            $ext === 'xlsx' ||
-            $ext === 'pps' ||
-            $ext === 'ppt' ||
-            $ext === 'pptx' ||
-            $ext === 'bmp' ||
-            $ext === 'ico' ||
-            $ext === 'odt' ||
-            $ext === 'odg' ||
-            $ext === 'odp' ||
-            $ext === 'ods' ||
-            $ext === 'odc' ||
-            $ext === 'xml' ||
-            $ext === 'webp'
-        ){
-            $this->generateImagePreview($filename,$file, $path, false,true);
-        }
-
-        finfo_close($finfo);
         return true;
     }
 
-    public function generateImagePreview($filename,$file, $path, $isText = false,$isOffice = false)
+    public function generateImagePreview($filename, $file, $path, $isText = false, $isOffice = false)
     {
         $filepath = $path . $filename;
         $width = $this->img_width;
@@ -135,11 +142,11 @@ class DrivePreview
         } else {
 
             // crop the image
-            if (($geo['width'] / $width) < ($geo['height'] / $height)) {
+            /*if (($geo['width'] / $width) < ($geo['height'] / $height)) {
                 $im->cropImage($geo['width'], floor($height * $geo['width'] / $width), 0, 0);
             } else {
                 $im->cropImage(ceil($width * $geo['height'] / $height), $geo['height'], (($geo['width'] - ($width * $geo['height'] / $height)) / 2), 0);
-            }
+            }*/
             $im->setImageAlphaChannel(11);
             $im->ThumbnailImage($width, $height, true);
 
