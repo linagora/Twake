@@ -42,7 +42,7 @@ class GroupController extends Controller
         $nb = $this->get("app.groups")->countUsersGroup($groupId);
         $users = $this->get("app.groups")->getUsersGroup($groupId,$onlyExterne,$limit, $offset,$this->getUser()->getId());
 
-        if(!$users){
+        if (!is_array($users)) {
             $response["errors"][] = "notallowed";
         }else {
             $list = Array();

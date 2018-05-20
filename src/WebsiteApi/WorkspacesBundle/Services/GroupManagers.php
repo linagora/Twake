@@ -13,7 +13,7 @@ class GroupManagers implements GroupManagersInterface
     private $twake_mailer;
 
     var $privileges = Array(
-        0 => Array(),
+        0 => Array("VIEW_USERS"),
         1 => Array( "VIEW_USERS",
             "VIEW_WORKSPACES",
             "VIEW_MANAGERS",
