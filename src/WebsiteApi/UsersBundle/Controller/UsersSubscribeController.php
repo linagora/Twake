@@ -97,5 +97,80 @@ class UsersSubscribeController extends Controller
 
 	}
 
+	public function getAvaibleAction(Request $request){
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $mail = $request->request->get("mail", "");
+        $username = $request->request->get("username", "");
+
+
+
+        $res = $this->get("app.user")->getAvaibleMailPseudo($mail,$username);
+
+        if(is_bool($res) && $res == true ){
+            $data["data"]["status"] = "success";
+        }
+        elseif(is_array($res)){
+            if(in_array(-1,$res)) {
+
+                $data["errors"][] = "mailalreadytaken";
+
+            }
+            if(in_array(-2,$res)) {
+
+                $data["errors"][] = "usernamealreadytaken";
+
+            }
+        }
+
+        return new JsonResponse($data);
+    }
+    public function subscribeTotalyAction(Request $request){
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $mail = $request->request->get("mail", "");
+        $username = $request->request->get("username", "");
+        $password = $request->request->get("password", "");
+        $lastName = $request->request->get("lastName", "");
+        $firstName = $request->request->get("firstName", "");
+        $phone = $request->request->get("phone", "");
+        $workspace = $request->request->get("workspace", "");
+        $company = $request->request->get("company", "");
+        $friends = $request->request->get("friends", "");
+
+
+
+        $res = $this->get("app.user")->subscribeInfo($mail,$password,$username,$firstName,$lastName,$phone,$workspace,$company,$friends);
+
+        if ( $res==true && is_bool($res)) {
+
+            $data["data"]["status"] = "success";
+
+        }
+        elseif(is_array($res)){
+            if(in_array(-1,$res)) {
+
+                $data["errors"][] = "mailalreadytaken";
+
+            }
+            if(in_array(-2,$res)) {
+
+                $data["errors"][] = "usernamealreadytaken";
+
+            }
+        }
+        else{
+            $data["errors"][] = "error:".$mail.",".$username.",".$password;
+        }
+        return new JsonResponse($data);
+    }
+
 
 }
