@@ -62,7 +62,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 		return false;
 	}
 
-	public function addMemberByUsername($workspaceId, $username, $currentUserId = null)
+	public function addMemberByUsername($workspaceId,$username,$asExterne, $currentUserId = null)
 	{
 		if($currentUserId == null
 			|| $this->wls->can($workspaceId, $currentUserId, "workspace:write")
@@ -73,14 +73,14 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$user = $userRepository->findOneBy(Array("username"=>$username));
 
 			if($user){
-				return $this->addMember($workspaceId, $user->getId());
+				return $this->addMember($workspaceId, $user->getId(), $asExterne);
 			}
 
 		}
 		return false;
 	}
 
-	public function addMemberByMail($workspaceId, $mail, $currentUserId = null)
+	public function addMemberByMail($workspaceId, $mail,$asExterne, $currentUserId = null)
 	{
 		if($currentUserId == null
 			|| $this->wls->can($workspaceId, $currentUserId, "workspace:write")
@@ -96,14 +96,14 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			$user = $userRepository->findOneBy(Array("email"=>$mail));
 
 			if($user){
-				return $this->addMember($workspaceId, $user->getId());
+				return $this->addMember($workspaceId, $user->getId(),$asExterne);
 			}
 
 			$mailsRepository = $this->doctrine->getRepository("TwakeUsersBundle:Mail");
 			$userMail = $mailsRepository->findOneBy(Array("mail"=>$mail));
 
 			if($userMail){
-				return $this->addMember($workspaceId, $userMail->getUser()->getId());
+				return $this->addMember($workspaceId, $userMail->getUser()->getId(),$asExterne);
 			}
 
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -115,6 +115,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 			if($mailObj==null){
 				//Mail not in tables
 				$userByMail = new WorkspaceUserByMail($workspace, $mail);
+				$userByMail->setExterne($asExterne);
 				$this->doctrine->persist($userByMail);
 				$this->doctrine->flush();
 			}
@@ -175,13 +176,13 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 		foreach ($invitations as $userByMail) {
 			$this->doctrine->remove($userByMail);
 			$this->doctrine->flush();
-			$this->addMember($userByMail->getWorkspace()->getId(), $userId);
+			$this->addMember($userByMail->getWorkspace()->getId(), $userId,$userByMail->getExterne());
 		}
 
 		return true;
 	}
 
-	public function addMember($workspaceId, $userId, $levelId = null, $currentUserId = null)
+	public function addMember($workspaceId, $userId,$asExterne, $levelId = null, $currentUserId = null)
 	{
 		if($currentUserId == null || $this->wls->can($workspaceId, $currentUserId, "workspace:write")){
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
@@ -230,9 +231,14 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $groupmember = new GroupUser($workspace->getGroup(),$user);
                 $groupmember->increaseNbWorkspace();
                 $groupmember->setLevel(0);
+                $groupmember->setExterne($asExterne);
             }else{
+                if ($groupmember->getNbWorkspace() == 0){ //Deleted user can still change status, not others
+                    $groupmember->setExterne($asExterne);
+                }
                 $groupmember->increaseNbWorkspace();
             }
+            $member->setGroupUser($groupmember);
 
             $this->doctrine->persist($workspace);
 			$this->doctrine->persist($member);
@@ -352,10 +358,20 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 			$users = Array();
 			foreach($link as $user){
-				$users[] = Array(
-					"user"=> $user->getUser(),
-					"level"=> $user->getLevel()
-				);
+
+                if ($user->getGroupUser()){ //Private workspaces does not have a group user assiociated
+                    $users[] = Array(
+                        "user"=> $user->getUser(),
+                        "level"=> $user->getLevel(),
+                        "externe" => $user->getGroupUser()->getExterne()
+                    );
+                 }else{
+                    $users[] = Array(
+                        "user"=> $user->getUser(),
+                        "level"=> $user->getLevel(),
+                    );
+                }
+
 			}
 
 			return $users;
@@ -408,4 +424,16 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 		return $workspaces;
 	}
+
+    public function init($workspaceUser)
+    {
+        $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+        $groupmember = $groupUserRepository->findOneBy(Array("group"=>$workspaceUser->getWorkspace()->getGroup(), "user"=>$workspaceUser->getUser()));
+
+        if ($groupmember){
+            $workspaceUser->setGroupUser($groupmember);
+            $this->doctrine->persist($workspaceUser);
+            $this->doctrine->flush();
+        }
+    }
 }

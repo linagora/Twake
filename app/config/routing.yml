@@ -78,11 +78,9 @@ citi_go_core:
     resource: "@TwakeCoreBundle/Resources/config/routing.yml"
     prefix:   /ajax/core/
 
-
-citi_go_tags:
-    resource: "@TwakeTagsBundle/Resources/config/routing.yml"
-    prefix:   /ajax/tags/
-    methods: [POST]
+citi_go_core_remote:
+    resource: "@TwakeCoreBundle/Resources/config/routing_remote.yml"
+    prefix:   /api/remote/
 
 citi_go_marketplace:
     resource: "@TwakeMarketBundle/Resources/config/routing.yml"
@@ -102,16 +100,6 @@ twake_notifications:
     resource: "@TwakeNotificationsBundle/Resources/config/routing.yml"
     prefix:   /ajax/notifications/
     methods: [POST, GET]
-
-twake_status:
-    resource: "@TwakeStatusBundle/Resources/config/routing.yml"
-    prefix:   /ajax/status/
-    methods: [POST]
-
-twake_comments:
-    resource: "@TwakeCommentsBundle/Resources/config/routing.yml"
-    prefix:   /ajax/status/comment
-    methods: [POST]
 
 twake_api_error:
     path:     /ajax/{req}

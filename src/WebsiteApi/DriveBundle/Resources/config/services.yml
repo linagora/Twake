@@ -2,7 +2,7 @@ services:
 
     app.drive.FileSystem:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystem
-        arguments: ["@doctrine.orm.entity_manager", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan"]
+        arguments: ["@doctrine.orm.entity_manager", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview"]
 
     app.drive.SmartFolders:
         class: WebsiteApi\DriveBundle\Services\DriveSmartFolders
@@ -11,3 +11,7 @@ services:
     app.drive.Labels:
         class: WebsiteApi\DriveBundle\Services\DriveLabels
         arguments: ["@doctrine.orm.entity_manager"]
+
+    app.drive.Preview:
+      class: WebsiteApi\DriveBundle\Services\DrivePreview
+      arguments: ["@doctrine.orm.entity_manager"]

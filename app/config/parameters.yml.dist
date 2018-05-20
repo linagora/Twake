@@ -1,12 +1,14 @@
 # This file is auto-generated during the composer install
 parameters:
+    LICENCE_KEY: A
+    STANDALONE: false
     MAIL_FROM: noreply@twakeapp.com
     SERVER_NAME: https://twakeapp.com
-    APPS_SERVER: http://127.0.0.1:8001
     DRIVE_SALT: SecretPassword
     PUSH_NOTIFICATION_SERVER: http://localhost:8009/server.php
     websocket_host: 127.0.0.1
     websocket_port: 8080
+    websocket_pusher_remote_host: 127.0.0.1
     websocket_pusher_host: 127.0.0.1
     websocket_pusher_port: 8081
     database_host: 127.0.0.1

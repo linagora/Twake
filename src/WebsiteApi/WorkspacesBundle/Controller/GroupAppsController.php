@@ -81,17 +81,35 @@ class GroupAppsController extends Controller
         return new JsonResponse($response);
     }
 
+    public function forceApplicationAction(Request $request){
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $groupId = $request->request->getInt("groupId");
+        $appId = $request->request->getInt("appId");
+
+        $apps_obj = $this->get("app.workspaces_apps")->forceApplication($groupId,$appId,$this->getUser()->getId());
+
+        if(!is_array($apps_obj)){
+            $response["errors"][] = "notallowed";
+        }else{
+            $response["data"][] = true;
+        }
+
+        return new JsonResponse($response);
+    }
+
     /**
      * Inscrit l'utilisation d'une application pour un groupe + pour un user
      */
-    public function appUsedAction(Request $request){
+    public function useAppAction(Request $request)
+    {
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
         $groupId = $request->request->getInt("groupId");
         $appId = $request->request->getInt("appId");
 
-        $res = $this->get("app.group_apps")->appUsed($groupId,$this->getUser()->getId(),$appId);
+        $res = $this->get("app.group_apps")->useApp($groupId, $this->getUser()->getId(), $appId);
 
         if(!$res){
             $response["errors"][] = "notallowed";

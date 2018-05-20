@@ -40,14 +40,19 @@ class GroupUser
 	protected $level;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="did_connect_today", type="boolean")
      */
-    private $didConnect;
+    private $didConnectToday;
+
+    /**
+     * @ORM\Column(name="is_externe", type="boolean")
+     */
+    private $externe;
 
     /**
      * @ORM\Column(name="app_used_today", type="string", length=100000)
      */
-    protected $usedApps;
+    protected $usedAppsToday;
 
     /**
      * @ORM\Column(name="nb_workspace", type="integer")
@@ -65,14 +70,14 @@ class GroupUser
     protected $lastDayOfUpdate;
 
     /**
-     * @ORM\Column(name="nbConnection", type="integer")
+     * @ORM\Column(name="nbConnectionsPeriod", type="integer")
      */
-    protected $connections;
+    protected $connectionsPeriod;
 
     /**
      * @ORM\Column(name="app_used_period", type="string", length=100000)
      */
-    protected $appsUsage;
+    protected $appsUsage_period;
 
 	public function __construct($group, $user) {
 		$this->group = $group;
@@ -80,11 +85,12 @@ class GroupUser
 		$this->level = 0;
 		$this->date_added = new \DateTime();
 		$this->nbWorkspace = 0;
-		$this->didConnect = false;
-		$this->usedApps = "[]";
+        $this->didConnectToday = false;
+        $this->usedAppsToday = "[]";
 		$this->lastDayOfUpdate = date('z')+1;
-		$this->connections = 0;
-		$this->appsUsage = "[]";
+        $this->connectionsPeriod = 0;
+        $this->appsUsage_period = "[]";
+        $this->externe = false;
 	}
 
 	public function getId(){
@@ -150,63 +156,25 @@ class GroupUser
     /**
      * @return mixed
      */
-    public function getLastDayOfUpdate()
+    public function getConnectionsPeriod()
     {
-        if ($this->lastDayOfUpdate == 0){
-            return date('z')+1;
-        }
-        return $this->lastDayOfUpdate;
+        return $this->connectionsPeriod;
     }
 
     /**
-     * @param mixed $lastDayOfUpdate
+     * @param mixed $connectionsPeriod
      */
-    public function setLastDayOfUpdate($lastDayOfUpdate)
+    public function setConnectionsPeriod($connectionsPeriod)
     {
-        $this->lastDayOfUpdate = $lastDayOfUpdate;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getConnections()
-    {
-        return $this->connections;
-    }
-
-    /**
-     * @param mixed $connections
-     */
-    public function setConnections($connections)
-    {
-        $this->connections = $connections;
+        $this->connectionsPeriod = $connectionsPeriod;
     }
 
     /**
      * @return  mixed $connectionPeriod+1
      */
-    public function increaseConnectionPeriod()
+    public function increaseConnectionsPeriod()
     {
-        return $this->connections = $this->connections+1;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getUsedApps()
-    {
-        if ($this->usedApps == null){
-            return Array();
-        }
-        return json_decode($this->usedApps, true);
-    }
-
-    /**
-     * @param mixed $usedApps
-     */
-    public function setUsedApps($usedApps)
-    {
-        $this->usedApps = json_encode($usedApps);
+        return $this->connectionsPeriod = $this->connectionsPeriod + 1;
     }
 
 
@@ -225,44 +193,104 @@ class GroupUser
 
     public function decreaseNbWorkspace()
     {
-        return $this->nbWorkspace = $this->nbWorkspace-1;
+        if ($this->nbWorkspace == 0){
+            return $this->nbWorkspace;
+        }else{
+            return $this->nbWorkspace = $this->nbWorkspace-1;
+        }
     }
 
     /**
      * @return mixed
      */
-    public function getAppsUsage()
+    public function getLastDayOfUpdate()
     {
-        if ($this->appsUsage == null){
+        if ($this->lastDayOfUpdate == 0) {
+            return date('z') + 1;
+        }
+        return $this->lastDayOfUpdate;
+    }
+
+    /**
+     * @param mixed $lastDayOfUpdate
+     */
+    public function setLastDayOfUpdate($lastDayOfUpdate)
+    {
+        $this->lastDayOfUpdate = $lastDayOfUpdate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAppsUsagePeriod()
+    {
+        if ($this->appsUsage_period == null) {
             return Array();
         }
-        return json_decode($this->appsUsage, true);
+        return json_decode($this->appsUsage_period, true);
     }
 
     /**
-     * @param mixed $appsUsage
+     * @param mixed $appsUsage_period
      */
-    public function setAppsUsage($appsUsage)
+    public function setAppsUsagePeriod($appsUsage_period)
     {
-        $this->appsUsage = json_encode($appsUsage);
+        $this->appsUsage_period = json_encode($appsUsage_period);
     }
 
     /**
      * @return mixed
      */
-    public function getDidConnect()
+    public function getUsedAppsToday()
     {
-        if ($this->didConnect == null){
-            return false;
+        if ($this->usedAppsToday == null) {
+            return Array();
         }
-        return $this->didConnect;
+        return json_decode($this->usedAppsToday, true);
     }
 
     /**
-     * @param mixed $didConnect
+     * @param mixed $usedApps
      */
-    public function setDidConnect($didConnect)
+    public function setUsedAppsToday($usedApps)
     {
-        $this->didConnect = $didConnect;
+        $this->usedAppsToday = json_encode($usedApps);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDidConnectToday()
+    {
+        if ($this->didConnectToday == null) {
+            return false;
+        }
+        return $this->didConnectToday;
+    }
+
+    /**
+     * @param mixed $didConnectToday
+     */
+    public function setDidConnectToday($didConnectToday)
+    {
+        $this->didConnectToday = $didConnectToday;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExterne()
+    {
+        return $this->externe;
+    }
+
+    /**
+     * @param mixed $isClient
+     */
+    public function setExterne($externe)
+    {
+        $this->externe = $externe;
+    }
+
+
 }

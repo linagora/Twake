@@ -86,11 +86,11 @@ class ZpricingTest extends WebTestCaseExtended
         $user = $userRepository->findOneBy(Array("username" => "phpunit"));
         $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
 
-        $nbConnectionBase = $groupUser->getConnections();
+        $nbConnectionBase = $groupUser->getConnectionsPeriod();
 
         $groupUser->setLastDayOfUpdate(date('z'));
-        $groupUser->setDidConnect(1);
-        $groupUser->setUsedApps(["14"]);
+        $groupUser->setDidConnectToday(1);
+        $groupUser->setUsedAppsToday(["14"]);
 
         $this->getDoctrine()->persist($groupUser);
         $this->getDoctrine()->flush();
@@ -98,10 +98,10 @@ class ZpricingTest extends WebTestCaseExtended
         // appeler une fois le cron
         $this->get("app.pricing_plan")->dailyDataGroupUser();
 
-        $this->assertTrue($nbConnectionBase+1 == $groupUser->getConnections() , "test increment daily data" );
-        $this->assertTrue(0 == $groupUser->getDidConnect() , "test remove did connect" );
-        $this->assertTrue([] == $groupUser->getUsedApps() , "test remove daily used apps" );
-        $this->assertTrue(["14"=>1] == $groupUser->getAppsUsage() , "test increment add monthly used apps" );
+        $this->assertTrue($nbConnectionBase + 1 == $groupUser->getConnectionsPeriod(), "test increment daily data");
+        $this->assertTrue(0 == $groupUser->getDidConnectToday(), "test remove did connect");
+        $this->assertTrue([] == $groupUser->getUsedAppsToday(), "test remove daily used apps");
+        $this->assertTrue(["14" => 1] == $groupUser->getAppsUsagePeriod(), "test increment add monthly used apps");
 
     }
 
@@ -195,13 +195,13 @@ class ZpricingTest extends WebTestCaseExtended
         $user = $userRepository->findOneBy(Array("username" => "phpunit"));
         $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
 
-        $nbConnectionBase = $groupUser->getConnections();
+        $nbConnectionBase = $groupUser->getConnectionsPeriod();
 
         $i = 0;
         for($i; $i < 5 ; $i++){
             $groupUser->setLastDayOfUpdate(date('z'));
-            $groupUser->setDidConnect(1);
-            $groupUser->setUsedApps(["14"]);
+            $groupUser->setDidConnectToday(1);
+            $groupUser->setUsedAppsToday(["14"]);
 
             $this->getDoctrine()->persist($groupUser);
             $this->getDoctrine()->flush();
@@ -210,7 +210,7 @@ class ZpricingTest extends WebTestCaseExtended
 
         }
 
-        $this->assertTrue($nbConnectionBase+$i == $groupUser->getConnections() , "test increment 1 connexion" );
+        $this->assertTrue($nbConnectionBase + $i == $groupUser->getConnectionsPeriod(), "test increment 1 connexion");
 
     }
 
@@ -225,11 +225,11 @@ class ZpricingTest extends WebTestCaseExtended
         $user = $userRepository->findOneBy(Array("username" => "phpunit1"));
 
         $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
-        $nbConnectionBase = $groupUser->getConnections();
+        $nbConnectionBase = $groupUser->getConnectionsPeriod();
 
             $groupUser->setLastDayOfUpdate(date('z')+1);
-            $groupUser->setDidConnect(1);
-            $groupUser->setUsedApps(["14"]);
+        $groupUser->setDidConnectToday(1);
+        $groupUser->setUsedAppsToday(["14"]);
 
 
             $this->getDoctrine()->persist($groupUser);
@@ -237,8 +237,8 @@ class ZpricingTest extends WebTestCaseExtended
 
             $this->get("app.pricing_plan")->dailyDataGroupUser();
 
-        $this->assertTrue($nbConnectionBase == $groupUser->getConnections() , "should be same number because of the date" );
-        $this->assertTrue(1 == $groupUser->getDidConnect() , "should stay as 1 - true" );
+        $this->assertTrue($nbConnectionBase == $groupUser->getConnectionsPeriod(), "should be same number because of the date");
+        $this->assertTrue(1 == $groupUser->getDidConnectToday(), "should stay as 1 - true");
 
     }
 
@@ -253,20 +253,20 @@ class ZpricingTest extends WebTestCaseExtended
         $user = $userRepository->findOneBy(Array("username" => "phpunit3"));
 
         $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
-        $nbConnectionBase = $groupUser->getConnections();
+        $nbConnectionBase = $groupUser->getConnectionsPeriod();
 
         $groupUser->setLastDayOfUpdate(date('z'));
-        $groupUser->setDidConnect(1);
+        $groupUser->setDidConnectToday(1);
 
         $this->getDoctrine()->persist($groupUser);
         $this->getDoctrine()->flush();
 
         $this->get("app.pricing_plan")->dailyDataGroupUser();
 
-        $this->assertTrue($nbConnectionBase+1 == $groupUser->getConnections() , "should be same number because of the date" );
-        $this->assertTrue(0 == $groupUser->getDidConnect() , "should be 0 - false" );
-        $this->assertTrue(0 == $groupUser->getDidConnect() , "test remove did connect" );
-        $this->assertTrue([] == $groupUser->getUsedApps() , "test remove daily used apps" );
+        $this->assertTrue($nbConnectionBase + 1 == $groupUser->getConnectionsPeriod(), "should be same number because of the date");
+        $this->assertTrue(0 == $groupUser->getDidConnectToday(), "should be 0 - false");
+        $this->assertTrue(0 == $groupUser->getDidConnectToday(), "test remove did connect");
+        $this->assertTrue([] == $groupUser->getUsedAppsToday(), "test remove daily used apps");
 
     }
 
@@ -283,8 +283,8 @@ class ZpricingTest extends WebTestCaseExtended
         $booleanConnected = key_exists("total",$groupPeriod->getConnexions());
 
         $groupUser->setLastDayOfUpdate(date('z'));
-        $groupUser->setConnections(14);
-        $groupUser->setUsedApps(["14"]);
+        $groupUser->setConnectionsPeriod(14);
+        $groupUser->setUsedAppsToday(["14"]);
 
 
         $this->getDoctrine()->persist($groupUser);
@@ -311,8 +311,8 @@ class ZpricingTest extends WebTestCaseExtended
         $booleanConnected = key_exists("total",$groupPeriod->getConnexions());
 
         $groupUser->setLastDayOfUpdate(date('z'));
-        $groupUser->setConnections(14);
-        $groupUser->setUsedApps(["14"]);
+        $groupUser->setConnectionsPeriod(14);
+        $groupUser->setUsedAppsToday(["14"]);
 
 
         $this->getDoctrine()->persist($groupUser);

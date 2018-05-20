@@ -39,7 +39,7 @@ class UsersConnectionsController extends Controller
 		if ($loginResult) {
 
 			$device = $request->request->get("device", false);
-            if ($device and isset($device["token"])) {
+            if ($device && isset($device["type"])) {
 				$this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], $device["version"]);
 			}
 
@@ -61,7 +61,7 @@ class UsersConnectionsController extends Controller
 	{
 
 		$device = $request->request->get("device", false);
-		if($device) {
+		if($device && isset($device["type"])) {
 			$this->get("app.user")->removeDevice($this->getUser()->getId(), $device["type"], $device["value"]);
 		}
 		$this->get("app.user")->logout();

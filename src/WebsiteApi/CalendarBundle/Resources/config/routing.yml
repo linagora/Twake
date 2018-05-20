@@ -23,6 +23,9 @@ calendar_get_share_calendar:
 calendar_events_get:
     path:     /events/get
     defaults: { _controller: TwakeCalendarBundle:Event:get }
+calendar_events_get_users:
+    path:     /events/get/users
+    defaults: { _controller: TwakeCalendarBundle:Event:getUsers }
 calendar_events_create:
     path:     /events/create
     defaults: { _controller: TwakeCalendarBundle:Event:create }

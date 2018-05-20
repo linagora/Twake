@@ -27,7 +27,7 @@ class GroupApps implements GroupAppsInterface
         if ($currentUserId == null
             || $this->gms->hasPrivileges(
                 $this->gms->getLevel($groupId, $currentUserId),
-                "VIEW_APPS"
+                "MANAGE_APPS"
             )
         ) {
             //Group apps
@@ -57,7 +57,7 @@ class GroupApps implements GroupAppsInterface
         if ($currentUserId == null
             || $this->gms->hasPrivileges(
                 $this->gms->getLevel($groupId, $currentUserId),
-                "VIEW_APPS"
+                "MANAGE_APPS"
             )
         ) {
             //Group apps
@@ -93,7 +93,7 @@ class GroupApps implements GroupAppsInterface
         if ($currentUserId == null
             || $this->gms->hasPrivileges(
                 $this->gms->getLevel($groupId, $currentUserId),
-                "VIEW_APPS"
+                "MANAGE_APPS"
             )
         ) {
             //Group apps
@@ -119,7 +119,7 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
-    public function appUsed($groupId, $userId, $appId)
+    public function useApp($groupId, $userId, $appId)
     {
         $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
         $groupUser = $groupUserRepository->findOneBy(Array("group" => $groupId , "user" => $userId));
@@ -131,17 +131,17 @@ class GroupApps implements GroupAppsInterface
             return false;
         }else{
 
-            $appUsed = $groupUser->getAppsUsage();
+            $appUsed = $groupUser->getUsedAppsToday();
             if ( in_array($appId,$appUsed) ){
                 return true;
             }else{
 
-                if (!$groupUser->getDidConnect()){
-                    $groupUser->setDidConnect(true);
+                if (!$groupUser->getDidConnectToday()) {
+                    $groupUser->setDidConnectToday(true);
                 }
 
                 $appUsed[] = $appId;
-                $groupUser->setAppsUsage($appUsed);
+                $groupUser->setUsedAppsToday($appUsed);
 
                 $this->doctrine->persist($groupUser);
                 $this->doctrine->flush();

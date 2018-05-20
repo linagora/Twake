@@ -3,6 +3,7 @@
 
 namespace WebsiteApi\DriveBundle\Services;
 
+use WebsiteApi\DriveBundle\Entity\DriveLabel;
 use WebsiteApi\DriveBundle\Services\MCryptAES256Implementation;
 use WebsiteApi\DriveBundle\Services\AESCryptFileLib;
 use WebsiteApi\DriveBundle\Entity\DriveFile;
@@ -14,863 +15,936 @@ use ZipArchive;
 class DriveFileSystem implements DriveFileSystemInterface
 {
 
-	var $doctrine;
-	var $root;
-	var $parameter_drive_salt;
+    var $doctrine;
+    var $root;
+    var $parameter_drive_salt;
     var $pricingService;
-	public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt,$pricing){
-		$this->doctrine = $doctrine;
-		$this->root = $rootDirectory;
-		$this->parameter_drive_salt = $parameter_drive_salt;
-		$this->pricingService = $pricing;
-	}
-
-	private function convertToEntity($var, $repository)
-	{
-		if (is_string($var)) {
-			$var = intval($var);
-		}
-
-		if (is_int($var)) {
-			return $this->doctrine->getRepository($repository)->find($var);
-		} else if (is_object($var)) {
-			return $var;
-		} else {
-			return null;
-		}
-
-	}
-
-	public function getFreeSpace($group)
-	{
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
-
-		if ($group == null) {
-			return false;
-		}
-
-		// Get total size from root directory(ies) and file(s)
-		$totalSize = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize($group);
-
-		return $this->getTotalSpace($group) - $totalSize;
-	}
-
-	public function getTotalSpace($group)
-	{
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
-		if ($group == null) {
-			return false;
-		}
-        $limit = $this->pricingService->getLimitation($group->getId(),"drive",222222222);
-
-        return $limit*100000;
-
-	}
-
-	public function setTotalSpace($group, $space)
-	{
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
-		if ($group == null) {
-			return false;
-		}
-		return $group->setDriveSize($space);
-	}
-
-	public function canAccessTo($file, $group, $user = null)
-	{
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
-		$file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
-		if ($group == null) {
-			return false;
-		}
-		if ($file == null) {
-			return true;
-		}
-		return $file->getDetachedFile() || $file->getGroup() == $group;
-	}
-
-
-	private function getRoot()
-	{
-		return dirname($this->root) . "/" . "drive" . "/";
-	}
-
-	// @improveName updates name of object in case a directory already exists where we want to move it
-	/**
-	 * @param $fileOrDirectory
-	 */
-	private function improveName($fileOrDirectory)
-	{
-		$originalCompleteName = explode(".", $fileOrDirectory->getName());
-		$originalName = array_shift($originalCompleteName);
-		$originalExt = join(".", $originalCompleteName);
-
-		$currentNames = [];
-		if ($fileOrDirectory->getParent() != null) {
-			foreach ($fileOrDirectory->getParent()->getChildren() as $brothers) {
-				if ($brothers->getId() != $fileOrDirectory->getId()) {
-					$currentNames[] = $brothers->getName();
-				}
-			}
-		} else {
-			foreach ($this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-				         ->listDirectory($fileOrDirectory->getGroup(), null, $fileOrDirectory->getIsInTrash()) as $brothers) {
-				if ($brothers->getId() != $fileOrDirectory->getId()) {
-					$currentNames[] = $brothers->getName();
-				}
-			}
-		}
+    var $preview;
+
+    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview)
+    {
+        $this->doctrine = $doctrine;
+        $this->root = $rootDirectory;
+        $this->parameter_drive_salt = $parameter_drive_salt;
+        $this->pricingService = $pricing;
+        $this->preview = $preview;
+    }
+
+    private function convertToEntity($var, $repository)
+    {
+        if (is_string($var)) {
+            $var = intval($var);
+        }
+
+        if (is_int($var)) {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
+
+    public function getUsedSpace($workspace)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+
+        if ($workspace == null) {
+            return false;
+        }
+
+        // Get total size from root directory(ies) and file(s)
+        $totalSize = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize($workspace);
+
+        return $totalSize;
+    }
+
+    public function getFreeSpace($workspace)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+
+        return $this->getTotalSpace($workspace) - $this->getUsedSpace($workspace);
+    }
+
+    public function getTotalSpace($workspace)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        if ($workspace == null) {
+            return false;
+        }
+        $limit = $this->pricingService->getLimitation($workspace->getId(), "drive", 1000000000);
+
+        return $limit * 1000000;
+
+    }
+
+    public function setTotalSpace($workspace, $space)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        if ($workspace == null) {
+            return false;
+        }
+        return $workspace->setDriveSize($space);
+    }
+
+    public function canAccessTo($file, $workspace, $user = null)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
+        if ($workspace == null) {
+            return false;
+        }
+        if ($file == null) {
+            return true;
+        }
+        return $file->getDetachedFile() || $file->getGroup() == $workspace;
+    }
+
+
+    private function getRoot()
+    {
+        return dirname($this->root) . "/" . "drive" . "/";
+    }
+
+    // @improveName updates name of object in case a directory already exists where we want to move it
+
+    /**
+     * @param $fileOrDirectory
+     */
+    private function improveName($fileOrDirectory)
+    {
+        $originalCompleteName = explode(".", $fileOrDirectory->getName());
+        $originalName = array_shift($originalCompleteName);
+        $originalExt = join(".", $originalCompleteName);
+
+        $currentNames = [];
+        if ($fileOrDirectory->getParent() != null) {
+            foreach ($fileOrDirectory->getParent()->getChildren() as $brothers) {
+                if ($brothers->getId() != $fileOrDirectory->getId()) {
+                    $currentNames[] = $brothers->getName();
+                }
+            }
+        } else {
+            foreach ($this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+                         ->listDirectory($fileOrDirectory->getGroup(), null, $fileOrDirectory->getIsInTrash()) as $brothers) {
+                if ($brothers->getId() != $fileOrDirectory->getId()) {
+                    $currentNames[] = $brothers->getName();
+                }
+            }
+        }
+
+        $i = 2;
+
+        //Verify there is not already a number
+        $parts = explode(" ", $originalName);
+        $last = array_pop($parts);
+        if (intval($last) . "" == $last) {
+            $i = intval($last) + 1;
+            $originalName = join(" ", $parts);
+        }
+
+        while (in_array($fileOrDirectory->getName(), $currentNames)) {
+            //Rename file
+            $fileOrDirectory->setName($originalName . " " . $i . (($originalExt) ? "." : "") . $originalExt);
+            $i++;
+        }
+    }
+
+    private function updateSize($directory, $delta)
+    {
+        while ($directory != null) {
+            $currentSize = $directory->getSize();
+            $directory->setSize($currentSize + $delta);
+            $this->doctrine->persist($directory);
+            $directory = $directory->getParent();
+        }
+    }
+
+    public function move($fileOrDirectory, $directory)
+    {
+
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
+        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
+
+        if ($fileOrDirectory == null) {
+            return false;
+        }
+
+        if ($directory != null && $fileOrDirectory->getId() == $directory->getId()) {
+            return false;
+        }
+
+        //Update directories size
+        $this->updateSize($fileOrDirectory->getParent(), -$fileOrDirectory->getSize());
+        $this->updateSize($directory, $fileOrDirectory->getSize());
 
-		$i = 2;
+        $fileOrDirectory->setParent($directory);
+
+        $this->improveName($fileOrDirectory);
 
-		//Verify there is not already a number
-		$parts = explode(" ", $originalName);
-		$last = array_pop($parts);
-		if (intval($last) . "" == $last) {
-			$i = intval($last) + 1;
-			$originalName = join(" ", $parts);
-		}
+        $this->doctrine->persist($fileOrDirectory);
+        $this->doctrine->flush();
 
-		while (in_array($fileOrDirectory->getName(), $currentNames)) {
-			//Rename file
-			$fileOrDirectory->setName($originalName . " " . $i . (($originalExt) ? "." : "") . $originalExt);
-			$i++;
-		}
-	}
+        return true;
+    }
 
-	private function updateSize($directory, $delta)
-	{
-		while ($directory != null) {
-			$currentSize = $directory->getSize();
-			$directory->setSize($currentSize + $delta);
-			$this->doctrine->persist($directory);
-			$directory = $directory->getParent();
-		}
-	}
+    private function recursCopy($inFile, $outFile)
+    {
+        if (!$inFile->getIsDirectory()) {
 
-	public function move($fileOrDirectory, $directory)
-	{
-
-		$fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
-		$directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
-
-		if ($fileOrDirectory == null) {
-			return false;
-		}
-
-		if ($directory!=null && $fileOrDirectory->getId() == $directory->getId()) {
-			return false;
-		}
-
-		//Update directories size
-		$this->updateSize($fileOrDirectory->getParent(), -$fileOrDirectory->getSize());
-		$this->updateSize($directory, $fileOrDirectory->getSize());
-
-		$fileOrDirectory->setParent($directory);
-
-		$this->improveName($fileOrDirectory);
-
-		$this->doctrine->persist($fileOrDirectory);
-		$this->doctrine->flush();
-
-		return true;
-	}
-
-	private function recursCopy($inFile, $outFile)
-	{
-		if (!$inFile->getIsDirectory()) {
-
-			//Copy real file
-			$from = $this->getRoot() . $inFile->getPath();
-			$to = $this->getRoot() . $outFile->getPath();
-
-			if (file_exists($from)) {
-				copy($from, $to);
-			} else {
-				$this->delete($inFile);
-				return;
-			}
-
-		} else {
-
-			foreach ($inFile->getChildren() as $child) {
-
-				$newFile = new DriveFile(
-					$child->getGroup(),
-					$outFile,
-					$child->getName(),
-					$child->getIsDirectory()
-				);
-
-				$newFile->setSize($child->getSize());
-
-				$this->doctrine->persist($newFile);
-
-				$this->recursCopy($child, $newFile);
-
-			}
-		}
-	}
-
-	public function copy($fileOrDirectory, $newParent = null)
-	{
-
-		$fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
-		$newParent = $this->convertToEntity($newParent, "TwakeDriveBundle:DriveFile");;
-
-		if ($fileOrDirectory == null || $this->getFreeSpace($fileOrDirectory->getGroup()) <= 0) {
-			return false;
-		}
-
-		$parent = $fileOrDirectory->getParent();
-		if ($newParent != null) {
-			$parent = $newParent;
-		}
-
-		$newFile = new DriveFile(
-			$fileOrDirectory->getGroup(),
-			$parent,
-			$fileOrDirectory->getName(),
-			$fileOrDirectory->getIsDirectory()
-		);
-
-		$newFile->setSize($fileOrDirectory->getSize());
-
-		$this->improveName($newFile);
-
-		//If file copy version (same key currently -> to improve)
-		if(!$newFile->getIsDirectory()) {
-
-			$this->doctrine->persist($newFile);
-			$this->doctrine->flush();
-
-			$newVersion = new DriveFileVersion($newFile);
-			$newFile->setLastVersion($newVersion);
-
-			$newVersion->setKey($fileOrDirectory->getLastVersion()->getKey());
-			$newVersion->setSize($fileOrDirectory->getSize());
-			$this->doctrine->persist($newVersion);
-		}
-
-		// Copy real file and sub files (copy entities)
-		$this->recursCopy($fileOrDirectory, $newFile);
-
-		$this->updateSize($parent, $newFile->getSize());
-		$this->improveName($fileOrDirectory);
-
-		$this->doctrine->persist($newFile);
-		$this->doctrine->flush();
-
-		return true;
-
-	}
-
-	public function rename($fileOrDirectory, $filename, $description=null, $labels=Array())
-	{
-
-		$fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
-
-		if ($fileOrDirectory == null) {
-			return false;
-		}
-
-		//Update labels
-		$labelsRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel");
-		$old_labels = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("file"=>$fileOrDirectory));
-
-		foreach ($old_labels as $old_label){
-			$found = false;
-			foreach ($labels as $new_label) {
-				if ($old_label->getId() == $new_label["id"]) {
-					$found = true;
-					break;
-				}
-			}
-			if(!$found) {
-				$this->doctrine->remove($old_label);
-			}
-		}
-
-		foreach ($labels as $new_label){
-			$found = false;
-			foreach ($old_labels as $old_label) {
-				if ($old_label->getId() == $new_label["id"]) {
-					$found = true;
-					break;
-				}
-			}
-			if(!$found) {
-				$l = $labelsRepository->find($new_label["id"]);
-				if($l) {
-					$new_label = new DriveFileLabel($fileOrDirectory, $l);
-					$this->doctrine->persist($new_label);
-				}
-			}
-		}
-
-		//End update label
-
-		$fileOrDirectory->setName($filename);
-		$fileOrDirectory->setDescription($description);
-		$fileOrDirectory->setCache("labels", $labels);
-		$this->improveName($fileOrDirectory);
-		$this->doctrine->persist($fileOrDirectory);
-
-		//Flush
-		$this->doctrine->flush();
-
-		return true;
-
-	}
-
-	public function create($group, $directory, $filename, $content = "", $isDirectory = false, $detached_file=false)
-	{
-
-		if ($directory == 0 || $detached_file) {
-			$directory = null;
-		}
-
-		$directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
-
-		if (!$detached_file && ($group == null || $this->getFreeSpace($group) <= 0)) {
-			return false;
-		}
-
-		$newFile = new DriveFile(
-			$group,
-			$directory,
-			$filename,
-			$isDirectory
-		);
+            //Copy real file
+            $from = $this->getRoot() . $inFile->getPath();
+            $to = $this->getRoot() . $outFile->getPath();
+
+            if (file_exists($from)) {
+                copy($from, $to);
+            } else {
+                $this->delete($inFile);
+                return;
+            }
+
+        } else {
+
+            foreach ($inFile->getChildren() as $child) {
+
+                $newFile = new DriveFile(
+                    $child->getGroup(),
+                    $outFile,
+                    $child->getName(),
+                    $child->getIsDirectory()
+                );
+
+                $newFile->setSize($child->getSize());
+
+                $this->doctrine->persist($newFile);
+
+                $this->recursCopy($child, $newFile);
+
+            }
+        }
+    }
+
+    public function copy($fileOrDirectory, $newParent = null)
+    {
+
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+        $newParent = $this->convertToEntity($newParent, "TwakeDriveBundle:DriveFile");;
+
+        if ($fileOrDirectory == null || $this->getFreeSpace($fileOrDirectory->getGroup()) <= 0) {
+            return false;
+        }
+
+        $parent = $fileOrDirectory->getParent();
+        if ($newParent != null) {
+            $parent = $newParent;
+        }
+
+        $newFile = new DriveFile(
+            $fileOrDirectory->getGroup(),
+            $parent,
+            $fileOrDirectory->getName(),
+            $fileOrDirectory->getIsDirectory()
+        );
+
+        $newFile->setSize($fileOrDirectory->getSize());
+
+        $this->improveName($newFile);
+
+        //If file copy version (same key currently -> to improve)
+        if (!$newFile->getIsDirectory()) {
+
+            $this->doctrine->persist($newFile);
+            $this->doctrine->flush();
+
+            $newVersion = new DriveFileVersion($newFile);
+            $newFile->setLastVersion($newVersion);
+
+            $newVersion->setKey($fileOrDirectory->getLastVersion()->getKey());
+            $newVersion->setSize($fileOrDirectory->getSize());
+            $this->doctrine->persist($newVersion);
+        }
+
+        // Copy real file and sub files (copy entities)
+        $this->recursCopy($fileOrDirectory, $newFile);
+
+        $this->updateSize($parent, $newFile->getSize());
+        $this->improveName($fileOrDirectory);
+
+        $this->doctrine->persist($newFile);
+        $this->doctrine->flush();
+
+        return true;
+
+    }
+
+    public function rename($fileOrDirectory, $filename, $description = null, $labels = Array())
+    {
+
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+
+        if ($fileOrDirectory == null) {
+            return false;
+        }
+
+        //Update labels
+        $labelsRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel");
+        $old_labels = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("file" => $fileOrDirectory));
+
+        foreach ($old_labels as $old_label) {
+            $found = false;
+            foreach ($labels as $new_label) {
+                if ($old_label->getId() == $new_label["id"]) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $this->doctrine->remove($old_label);
+            }
+        }
+
+        foreach ($labels as $new_label) {
+            $found = false;
+            foreach ($old_labels as $old_label) {
+                if ($old_label->getLabel()->getId() == $new_label["id"]) {
+                    $found = true;
+                    break;
+                }
+            }
+            if (!$found) {
+                $l = $labelsRepository->find($new_label["id"]);
+                if ($l) {
+                    $new_label = new DriveFileLabel($fileOrDirectory, $l);
+                    $this->doctrine->persist($new_label);
+                }
+            }
+        }
+
+        //End update label
+
+        $fileOrDirectory->setName($filename);
+        $fileOrDirectory->setDescription($description);
+        $fileOrDirectory->setCache("labels", $labels);
+        $this->improveName($fileOrDirectory);
+        $this->doctrine->persist($fileOrDirectory);
+
+        //Flush
+        $this->doctrine->flush();
+
+        return true;
+
+    }
+
+    public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false)
+    {
+
+        if ($directory == 0 || $detached_file) {
+            $directory = null;
+        }
+
+        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+
+        if (!$detached_file && ($workspace == null || $this->getFreeSpace($workspace) <= 0)) {
+            return false;
+        }
+
+        $newFile = new DriveFile(
+            $workspace,
+            $directory,
+            $filename,
+            $isDirectory
+        );
 
         $newFile->setDetachedFile($detached_file);
 
-		$newFile->setLastModified();
+        $newFile->setLastModified();
 
-		if (!$isDirectory) {
+        if (!$isDirectory) {
 
-			$this->doctrine->persist($newFile);
-			$this->doctrine->flush();
+            $this->doctrine->persist($newFile);
+            $this->doctrine->flush();
 
-			$fileVersion = new DriveFileVersion($newFile);
-			$newFile->setLastVersion($fileVersion);
+            $fileVersion = new DriveFileVersion($newFile);
+            $newFile->setLastVersion($fileVersion);
 
-			$path = $this->getRoot() . $newFile->getPath();
-			$this->verifyPath($path);
-			$this->writeEncode($path, $fileVersion->getKey(), $content, $fileVersion->getMode());
-			$size = filesize($path);
+            $path = $this->getRoot() . $newFile->getPath();
+            $this->verifyPath($path);
+            $this->writeEncode($path, $fileVersion->getKey(), $content, $fileVersion->getMode());
+            $size = filesize($path);
 
-			$fileVersion->setSize($size);
-			$this->doctrine->persist($fileVersion);
+            $fileVersion->setSize($size);
+            $this->doctrine->persist($fileVersion);
 
-		} else {
-			$size = 10;
-		}
+        } else {
+            $size = 10;
+        }
 
-		$newFile->setSize($size);
+        $newFile->setSize($size);
 
-		if(!$detached_file) {
+        if (!$detached_file) {
             $this->updateSize($directory, $size);
             $this->improveName($newFile);
         }
 
-		$this->doctrine->persist($newFile);
-		$this->doctrine->flush();
+        $this->doctrine->persist($newFile);
+        $this->doctrine->flush();
 
-		return $newFile;
-	}
+        return $newFile;
+    }
 
-	public function getRawContent($file)
-	{
-		$file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
+    public function getPreview($file)
+    {
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
 
-		if ($file == null) {
-			return false;
-		}
+        if ($file == null) {
+            return false;
+        }
 
-		if ($file->getSize() > 5000000) { //5Mo (protection)
-			return "";
-		}
+        $path = $this->getRoot() . $file->getPreviewPath();
 
-		$path = $this->getRoot() . $file->getPath();
-		$this->verifyPath($path);
+        $this->verifyPath($path);
 
-		if (!file_exists($path)) {
-			return null;
-		}
+        if (!file_exists($path)) {
+            return null;
+        }
 
-		return $this->readDecode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
-	}
+        return $this->read($path);
 
-	public function setRawContent($file, $content = null, $newVersion = false)
-	{
-		/**
-		 * @var DriveFile
-		 */
-		$file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
+    }
 
-		if ($file == null) {
-			return false;
-		}
+    public function getRawContent($file)
+    {
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
 
-		$path = $this->getRoot() . $file->getPath();
+        if ($file == null) {
+            return false;
+        }
 
-		if (file_exists($path)) {
+        if ($file->getSize() > 5000000) { //5Mo (protection)
+            return "";
+        }
 
-			if($newVersion){
-				$newVersion = new DriveFileVersion($file);
-				$file->setLastVersion($newVersion);
-				$this->doctrine->persist($newVersion);
-			}
+        $path = $this->getRoot() . $file->getPath();
 
-			if ($content != null) {
-				$this->verifyPath($path);
-				$this->writeEncode($path, $file->getLastVersion()->getKey(), $content, $file->getLastVersion()->getMode());
-			}
+        $this->verifyPath($path);
 
-			$file->setSize(filesize($path));
-			$file->setLastModified();
-			$this->updateSize($file->getParent(), $file->getSize());
+        if (!file_exists($path)) {
+            return null;
+        }
 
-		} else {
-			$this->delete($file);
-		}
+        return $this->readDecode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+    }
 
-		$this->doctrine->persist($file);
-		$this->doctrine->flush();
+    public function setRawContent($file, $content = null, $newVersion = false)
+    {
+        /**
+         * @var DriveFile
+         */
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
 
-		return true;
-	}
+        if ($file == null) {
+            return false;
+        }
 
-	public function getInfos($fileOrDirectory)
-	{
-		$fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+        $path = $this->getRoot() . $file->getPath();
 
-		if ($fileOrDirectory == null) {
-			return false;
-		}
+        if (file_exists($path)) {
 
-		$data = $fileOrDirectory->getAsArray();
+            if ($newVersion) {
+                $newVersion = new DriveFileVersion($file);
+                $file->setLastVersion($newVersion);
+                $this->doctrine->persist($newVersion);
+            }
 
-		return $data;
-	}
+            if ($content != null) {
+                $this->verifyPath($path);
+                $this->writeEncode($path, $file->getLastVersion()->getKey(), $content, $file->getLastVersion()->getMode());
+            }
 
-	public function listDirectory($group, $directory, $trash=false)
-	{
+            $file->setSize(filesize($path));
+            $file->setLastModified();
+            $this->updateSize($file->getParent(), $file->getSize());
 
-		$directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
+        } else {
+            $this->delete($file);
+        }
 
-		if ($group == null) {
-			return false;
-		}
+        $this->doctrine->persist($file);
+        $this->doctrine->flush();
 
-		$list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-			->listDirectory($group, $directory, $trash);
-		return $list;
-	}
+        return true;
+    }
 
-	public function search($group, $query, $offset = 0, $max = 20)
-	{
+    public function getInfos($fileOrDirectory)
+    {
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
 
-		if($query==""){
-			return Array();
-		}
+        if ($fileOrDirectory == null) {
+            return false;
+        }
 
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
+        $data = $fileOrDirectory->getAsArray();
 
-		if ($group == null) {
-			return false;
-		}
+        return $data;
+    }
 
-		$sort = Array();
+    public function listDirectory($workspace, $directory, $trash = false)
+    {
+        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
 
-		$list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-			->search($group, $query, $sort, $offset, $max);
-		return $list;
-	}
+        if ($workspace == null) {
+            return false;
+        }
 
-	public function listNew($group, $offset = 0, $max = 20)
-	{
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
+        $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+            ->listDirectory($workspace, $directory, $trash);
 
-		if ($group == null) {
-			return false;
-		}
+        return $list;
+    }
 
-		$list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-			->search($group, Array(), Array("added"=>"DESC"), $offset, $max);
-		return $list;
-	}
+    public function search($workspace, $query, $offset = 0, $max = 20)
+    {
 
-	public function listShared($group, $offset = 0, $max = 20)
-	{
-		//TODO
-		return Array();
-	}
+        if ($query == "") {
+            return Array();
+        }
 
-	public function listTrash($group)
-	{
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
 
-		if ($group == null) {
-			return false;
-		}
+        if ($workspace == null) {
+            return false;
+        }
 
-		$list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-			->listDirectory($group, null, true);
-		return $list;
-	}
+        $sort = Array();
 
-	public function autoDelete($fileOrDirectory)
-	{
-		$fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+        $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+            ->search($workspace, $query, $sort, $offset, $max);
 
-		if ($fileOrDirectory == null) {
-			return false;
-		}
+        return $list;
+    }
 
-		// If already in trash force remove
-		if ($fileOrDirectory->getIsInTrash()) {
-			return $this->delete($fileOrDirectory);
-		}
+    public function byLabel($workspace, $label, $offset = 0, $max = 20)
+    {
 
-		$fileOrDirectory->setOldParent($fileOrDirectory->getParent());
-		$fileOrDirectory->setParent(null); //On le met dans le root de la corbeille
-		$fileOrDirectory->setIsInTrash(true);
+        if ($label <= 0) {
+            return Array();
+        }
 
-		$this->updateSize($fileOrDirectory->getOldParent(), -$fileOrDirectory->getSize());
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
 
-		$this->doctrine->persist($fileOrDirectory);
-		$this->doctrine->flush();
+        if ($workspace == null) {
+            return false;
+        }
 
-		return true;
-	}
+        $list = Array();
 
-	private function recursDelete($fileOrDirectory)
-	{
-		if ($fileOrDirectory == null) {
-			return false;
-		}
+        /** @var DriveLabel $label */
+        $label = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel")->find($label);
+        if ($label->getWorkspace()->getId() == $workspace->getId()) {
+            /** @var DriveFileLabel[] $filesLabels */
+            $filesLabels = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("label" => $label), Array(), $max, $offset);
+            foreach ($filesLabels as $fileLabel) {
+                $list[] = $fileLabel->getFile();
+            }
+        }
 
-		$this->updateSize($fileOrDirectory->getParent(), -$fileOrDirectory->getSize());
+        return $list;
 
-		if (!$fileOrDirectory->getIsDirectory()) {
+    }
 
-			// Remove real file
-			$real = $this->getRoot() . $fileOrDirectory->getPath();
-			if (file_exists($real)) {
-				unlink($real);
-			}
+    public function listNew($workspace, $offset = 0, $max = 20)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
 
-		} else {
+        if ($workspace == null) {
+            return false;
+        }
 
-			foreach ($fileOrDirectory->getChildren() as $child) {
+        $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+            ->search($workspace, Array(), Array("added" => "DESC"), $offset, $max);
+        return $list;
+    }
 
-				$this->recursDelete($child);
+    public function listShared($workspace, $offset = 0, $max = 20)
+    {
+        //TODO
+        return Array();
+    }
 
-			}
-		}
+    public function listTrash($workspace)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
 
-		$this->doctrine->remove($fileOrDirectory);
+        if ($workspace == null) {
+            return false;
+        }
 
-		return true;
-	}
+        $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+            ->listDirectory($workspace, null, true);
+        return $list;
+    }
 
-	public function delete($fileOrDirectory)
-	{
-		$fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
+    public function autoDelete($fileOrDirectory)
+    {
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
 
-		if ($fileOrDirectory == null) {
-			return false;
-		}
+        if ($fileOrDirectory == null) {
+            return false;
+        }
 
-		$this->recursDelete($fileOrDirectory);
+        // If already in trash force remove
+        if ($fileOrDirectory->getIsInTrash()) {
+            return $this->delete($fileOrDirectory);
+        }
 
-		$this->doctrine->flush();
+        $fileOrDirectory->setOldParent($fileOrDirectory->getParent());
+        $fileOrDirectory->setParent(null); //On le met dans le root de la corbeille
+        $fileOrDirectory->setIsInTrash(true);
 
-		return true;
-	}
+        $this->updateSize($fileOrDirectory->getOldParent(), -$fileOrDirectory->getSize());
 
-	public function restore($fileOrDirectory)
-	{
-		$fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+        $this->doctrine->persist($fileOrDirectory);
+        $this->doctrine->flush();
 
-		if ($fileOrDirectory == null) {
-			return false;
-		}
+        return true;
+    }
 
-		$fileOrDirectory->setParent($fileOrDirectory->getOldParent()); //On le met dans le root de la corbeille
-		$fileOrDirectory->setIsInTrash(false);
+    private function recursDelete($fileOrDirectory)
+    {
+        if ($fileOrDirectory == null) {
+            return false;
+        }
 
-		$this->updateSize($fileOrDirectory->getParent(), $fileOrDirectory->getSize());
+        $this->updateSize($fileOrDirectory->getParent(), -$fileOrDirectory->getSize());
 
-		$this->doctrine->persist($fileOrDirectory);
-		$this->doctrine->flush();
+        if (!$fileOrDirectory->getIsDirectory()) {
 
-		return true;
-	}
+            // Remove real file
+            $real = $this->getRoot() . $fileOrDirectory->getPath();
+            if (file_exists($real)) {
+                unlink($real);
+            }
+            // Remove preview file
+            $real = $this->getRoot() . $fileOrDirectory->getPreviewPath();
+            if (file_exists($real)) {
+                unlink($real);
+            }
 
-	public function emptyTrash($group)
-	{
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
+        } else {
 
-		if ($group == null) {
-			return false;
-		}
+            foreach ($fileOrDirectory->getChildren() as $child) {
 
-		if ($this->listTrash($group) == false) {
-			return false;
-		}
+                $this->recursDelete($child);
 
-		$list = $this->listTrash($group);
+            }
+        }
 
-		foreach ($list as $child) {
-			$this->delete($child);
-		}
+        $this->doctrine->remove($fileOrDirectory);
 
-		return true;
-	}
+        return true;
+    }
 
-	public function restoreTrash($group)
-	{
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");;
+    public function delete($fileOrDirectory)
+    {
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
 
-		if ($group == null) {
-			return false;
-		}
+        if ($fileOrDirectory == null) {
+            return false;
+        }
 
-		if ($this->listTrash($group) == false) {
-			return false;
-		}
-
-		$list = $this->listTrash($group);
+        $this->recursDelete($fileOrDirectory);
 
-		foreach ($list as $child) {
-			$this->restore($child);
-		}
-
-		return true;
-	}
-
-	public function getObject($fileOrDirectory)
-	{
-		return $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
-	}
+        $this->doctrine->flush();
 
-	public function upload($group, $directory, $file, $uploader, $detached=false)
-	{
+        return true;
+    }
 
-		$newFile = $this->create($group, $directory, $file["name"], "", false, $detached);
-		if (!$file) {
-			return false;
-		}
-
-		$real = $this->getRoot() . $newFile->getPath();
-		$context = Array(
-			"max_size" => 100000000 // 100Mo
-		);
-		$errors = $uploader->upload($file, $real, $context);
-
-		$this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
-
-		$this->setRawContent($newFile);
-
-		if (count($errors["errors"]) > 0) {
-			$this->delete($newFile);
-			return false;
-		}
-
-		return $newFile;
-
-	}
-
-	public function recursZip($group, &$zip, $directory, $prefix, $working_dir){
-		if($prefix!=""){
-			$zip->addEmptyDir($prefix);
-		}
-		if($directory==null){
-			$children = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-				->listDirectory($group, null, false);
-		}else{
-			$children = $directory->getChildren();
-		}
-		foreach ($children as $child) {
-			if($child->getIsDirectory()){
-				$dirname = $child->getName();
-				$dirname = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $dirname);
-				$dirname = mb_ereg_replace("([\.]{2,})", '', $dirname);
-				if($dirname==""){
-					$dirname = "no_name";
-				}
-				$this->recursZip($group, $zip, $child, $prefix.$dirname."/", $working_dir);
-			}else{
-				$filename = $child->getName();
-				$filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $filename);
-				$filename = mb_ereg_replace("([\.]{2,})", '', $filename);
-				if($filename==""){
-					$filename = "no_name";
-				}
+    public function restore($fileOrDirectory)
+    {
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
 
-				$completePath = $this->getRoot() . $child->getPath();
-				$realFile = $this->decode($completePath, $child->getLastVersion()->getKey(), $child->getLastVersion()->getMode());
+        if ($fileOrDirectory == null) {
+            return false;
+        }
 
-				rename($realFile, $working_dir."/".basename($realFile));
+        $fileOrDirectory->setParent($fileOrDirectory->getOldParent()); //On le met dans le root de la corbeille
+        $fileOrDirectory->setIsInTrash(false);
 
-				$zip->addFile($working_dir."/".basename($realFile), $prefix.$filename);
-			}
-		}
-	}
+        $this->updateSize($fileOrDirectory->getParent(), $fileOrDirectory->getSize());
 
-	public function generateZip($group, $directory){
-		if ($directory == null || $directory->getIsDirectory()) {
-			$zip = new ZipArchive;
-			$name = bin2hex(random_bytes(16));
-			$tmpPath = $this->getRoot() . "/tmp/" . $name . ".zip";
-			if ($zip->open($tmpPath, ZipArchive::CREATE) === TRUE) {
+        $this->doctrine->persist($fileOrDirectory);
+        $this->doctrine->flush();
 
-				$working_dir = $this->getRoot() . "/tmp/".$name;
-				mkdir($working_dir);
-				$this->recursZip($group, $zip, $directory, "", $working_dir);
-				$zip->close();
+        return true;
+    }
 
-				$cdir = scandir($working_dir);
-				foreach ($cdir as $key => $value)
-				{
-					if (!in_array($value,array(".","..")))
-					{
-						@unlink($working_dir."/".$value);
-					}
-				}
-				@rmdir($working_dir);
+    public function emptyTrash($workspace)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
 
-				return $tmpPath;
-			}
-		}
-		return false;
-	}
+        if ($workspace == null) {
+            return false;
+        }
 
-	public function download($group, $file, $download)
-	{
+        if ($this->listTrash($workspace) == false) {
+            return false;
+        }
 
-		$group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Workspace");
-		$file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
+        $list = $this->listTrash($workspace);
 
-		//Directory : download as zip
-		if ($file == null || $file->getIsDirectory()) { //Directory or root
+        foreach ($list as $child) {
+            $this->delete($child);
+        }
 
-			if($file==null){
-				$totalSize = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize($group);
-				if($totalSize>1000000000) //1Go is too large
-				{
-					return false;
-				}
-			}
-			else if($file->getSize()>1000000000) //1Go is too large
-			{
-				return false;
-			}
+        return true;
+    }
 
-			$zip_path = $this->generateZip($group, $file);
+    public function restoreTrash($workspace)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
 
-			if(!$zip_path){
-				return false;
-			}
+        if ($workspace == null) {
+            return false;
+        }
 
-			$archive_name = ($file?$file->getName():"Documents");
+        if ($this->listTrash($workspace) == false) {
+            return false;
+        }
 
-			header('Content-Type: application/octet-stream');
-			header("Content-type: application/force-download");
-			header('Content-Disposition: attachment; filename="' . $archive_name.".zip" . '"');
+        $list = $this->listTrash($workspace);
 
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate');
-			header('Pragma: public');
-			header('Content-Length: ' . filesize($zip_path));
+        foreach ($list as $child) {
+            $this->restore($child);
+        }
 
-			$fp = fopen($zip_path, "r");
+        return true;
+    }
 
-			ob_clean();
-			flush();
-			while (!feof($fp)) {
-				$buff = fread($fp, 1024);
-				print $buff;
-			}
+    public function getObject($fileOrDirectory)
+    {
+        return $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
+    }
 
-			//Delete decoded file
-			@unlink($zip_path);
+    public function upload($workspace, $directory, $file, $uploader, $detached = false)
+    {
 
-			exit;
-			die();
+        $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached);
+        if (!$file) {
+            return false;
+        }
 
-		} else {
+        $real = $this->getRoot() . $newFile->getPath();
+        $context = Array(
+            "max_size" => 100000000 // 100Mo
+        );
+        $errors = $uploader->upload($file, $real, $context);
 
-			$completePath = $this->getRoot() . $file->getPath();
+        $ext = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
 
-			ini_set('memory_limit', '10M');
+        $path = $this->getRoot() . dirname($newFile->getPreviewPath()) . "/";
+        $this->preview->generatePreview($newFile->getLastVersion()->getRealName(), $real, $path, $ext);
 
-			$completePath = $this->decode($completePath, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+        $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
 
+        $this->setRawContent($newFile);
 
-			$ext = $this->getInfos($file)['extension'];
+        if (count($errors["errors"]) > 0) {
+            $this->delete($newFile);
+            return false;
+        }
 
-			header('Content-Description: File Transfer');
+        return $newFile;
 
+    }
 
-			if ($download) {
-				header('Content-Type: application/octet-stream');
-				header("Content-type: application/force-download");
-				header('Content-Disposition: attachment; filename="' . $file->getName() . '"');
-			} else {
+    public function recursZip($workspace, &$zip, $directory, $prefix, $working_dir)
+    {
+        if ($prefix != "") {
+            $zip->addEmptyDir($prefix);
+        }
+        if ($directory == null) {
+            $children = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+                ->listDirectory($workspace, null, false);
+        } else {
+            $children = $directory->getChildren();
+        }
+        foreach ($children as $child) {
+            if ($child->getIsDirectory()) {
+                $dirname = $child->getName();
+                $dirname = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $dirname);
+                $dirname = mb_ereg_replace("([\.]{2,})", '', $dirname);
+                if ($dirname == "") {
+                    $dirname = "no_name";
+                }
+                $this->recursZip($workspace, $zip, $child, $prefix . $dirname . "/", $working_dir);
+            } else {
+                $filename = $child->getName();
+                $filename = mb_ereg_replace("([^\w\s\d\-_~,;\[\]\(\).])", '', $filename);
+                $filename = mb_ereg_replace("([\.]{2,})", '', $filename);
+                if ($filename == "") {
+                    $filename = "no_name";
+                }
 
-				header('Content-Disposition: inline; filename="' . $file->getName() . '"');
+                $completePath = $this->getRoot() . $child->getPath();
+                $realFile = $this->decode($completePath, $child->getLastVersion()->getKey(), $child->getLastVersion()->getMode());
 
-				if (in_array($ext, ["gif", "svg", "jpeg", "jpg", "tiff", "png"])) {
-					header('Content-Type: image; filename="' . $file->getName() . '"');
-				}
-				if ($ext == "pdf") {
-					header("Content-type: application/pdf");
-				}
-			}
+                rename($realFile, $working_dir . "/" . basename($realFile));
 
-			header('Expires: 0');
-			header('Cache-Control: must-revalidate');
-			header('Pragma: public');
-			header('Content-Length: ' . filesize($completePath));
+                $zip->addFile($working_dir . "/" . basename($realFile), $prefix . $filename);
+            }
+        }
+    }
 
-			$fp = fopen($completePath, "r");
+    public function generateZip($workspace, $directory)
+    {
+        if ($directory == null || $directory->getIsDirectory()) {
+            $zip = new ZipArchive;
+            $name = bin2hex(random_bytes(16));
+            $tmpPath = $this->getRoot() . "/tmp/" . $name . ".zip";
+            if ($zip->open($tmpPath, ZipArchive::CREATE) === TRUE) {
 
-			ob_clean();
-			flush();
-			while (!feof($fp)) {
-				$buff = fread($fp, 1024);
-				print $buff;
-			}
+                $working_dir = $this->getRoot() . "/tmp/" . $name;
+                mkdir($working_dir);
+                $this->recursZip($workspace, $zip, $directory, "", $working_dir);
+                $zip->close();
 
-			//Delete decoded file
-			@unlink($completePath);
+                $cdir = scandir($working_dir);
+                foreach ($cdir as $key => $value) {
+                    if (!in_array($value, array(".", ".."))) {
+                        @unlink($working_dir . "/" . $value);
+                    }
+                }
+                @rmdir($working_dir);
 
-			exit;
-			die();
-		}
+                return $tmpPath;
+            }
+        }
+        return false;
+    }
 
-	}
+    public function download($workspace, $file, $download)
+    {
 
-	private function verifyPath($path)
-	{
-		$path = dirname($path);
-		if (!file_exists($path)) {
-			mkdir($path, 0777, true);
-		}
-	}
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
 
-	private function encode($path, $key, $mode="AES"){
+        //Directory : download as zip
+        if ($file == null || $file->getIsDirectory()) { //Directory or root
 
-		if($mode=="AES") {
-			$mcrypt = new MCryptAES256Implementation();
-			$lib = new AESCryptFileLib($mcrypt);
-		}
+            if ($file == null) {
+                $totalSize = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize($workspace);
+                if ($totalSize > 1000000000) //1Go is too large
+                {
+                    return false;
+                }
+            } else if ($file->getSize() > 1000000000) //1Go is too large
+            {
+                return false;
+            }
+
+            $zip_path = $this->generateZip($workspace, $file);
+
+            if (!$zip_path) {
+                return false;
+            }
+
+            $archive_name = ($file ? $file->getName() : "Documents");
+
+            header('Content-Type: application/octet-stream');
+            header("Content-type: application/force-download");
+            header('Content-Disposition: attachment; filename="' . $archive_name . ".zip" . '"');
+
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($zip_path));
+
+            $fp = fopen($zip_path, "r");
+
+            ob_clean();
+            flush();
+            while (!feof($fp)) {
+                $buff = fread($fp, 1024);
+                print $buff;
+            }
+
+            //Delete decoded file
+            @unlink($zip_path);
+
+            exit;
+            die();
+
+        } else {
+
+            $completePath = $this->getRoot() . $file->getPath();
+
+            ini_set('memory_limit', '10M');
+
+            $completePath = $this->decode($completePath, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+
+
+            $ext = $this->getInfos($file)['extension'];
+
+            header('Content-Description: File Transfer');
+
+
+            if ($download) {
+                header('Content-Type: application/octet-stream');
+                header("Content-type: application/force-download");
+                header('Content-Disposition: attachment; filename="' . $file->getName() . '"');
+            } else {
+
+                header('Content-Disposition: inline; filename="' . $file->getName() . '"');
+
+                if (in_array($ext, ["gif", "svg", "jpeg", "jpg", "tiff", "png"])) {
+                    header('Content-Type: image; filename="' . $file->getName() . '"');
+                }
+                if ($ext == "pdf") {
+                    header("Content-type: application/pdf");
+                }
+            }
+
+            header('Expires: 0');
+            header('Cache-Control: must-revalidate');
+            header('Pragma: public');
+            header('Content-Length: ' . filesize($completePath));
+
+            $fp = fopen($completePath, "r");
+
+            ob_clean();
+            flush();
+            while (!feof($fp)) {
+                $buff = fread($fp, 1024);
+                print $buff;
+            }
+
+            //Delete decoded file
+            @unlink($completePath);
+
+            exit;
+            die();
+        }
+
+    }
+
+    private function verifyPath($path)
+    {
+        $path = dirname($path);
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
+    }
+
+    private function encode($path, $key, $mode = "AES")
+    {
+
+        if ($mode == "AES") {
+            $mcrypt = new MCryptAES256Implementation();
+            $lib = new AESCryptFileLib($mcrypt);
+        }
         if($mode=="OpenSSL") {
             $lib = new OpenSSLCryptLib();
         }
@@ -879,49 +953,57 @@ class DriveFileSystem implements DriveFileSystemInterface
             $key = $mode.$this->parameter_drive_salt.$key;
         }
 
-		$pathTemp = $path . ".tmp";
-		rename($path, $pathTemp);
+        $pathTemp = $path . ".tmp";
+        rename($path, $pathTemp);
 
-		$lib->encryptFile($pathTemp, $key, $path);
+        $lib->encryptFile($pathTemp, $key, $path);
 
-		@unlink($pathTemp);
+        @unlink($pathTemp);
 
-	}
+    }
 
-	private function decode($path, $key, $mode="AES"){
+    private function decode($path, $key, $mode = "AES")
+    {
 
-		if($mode=="AES") {
-			$mcrypt = new MCryptAES256Implementation();
-			$lib = new AESCryptFileLib($mcrypt);
-		}
-		if($mode=="OpenSSL") {
-			$lib = new OpenSSLCryptLib();
-		}
+        if ($mode == "AES") {
+            $mcrypt = new MCryptAES256Implementation();
+            $lib = new AESCryptFileLib($mcrypt);
+        }
+        if ($mode == "OpenSSL") {
+            $lib = new OpenSSLCryptLib();
+        }
         if($mode=="OpenSSL-2") {
             $lib = new OpenSSLCryptLib();
             $key = $mode.$this->parameter_drive_salt.$key;
         }
 
-		$tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
-		$this->verifyPath($tmpPath);
+        $tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
+        $this->verifyPath($tmpPath);
 
-		$lib->decryptFile($path, $key, $tmpPath);
+        $lib->decryptFile($path, $key, $tmpPath);
 
-		return $tmpPath;
+        return $tmpPath;
 
-	}
+    }
 
-	private function writeEncode($path, $key, $content, $mode="AES"){
-		file_put_contents($path, $content);
-		if($content!="") {
-			$this->encode($path, $key, $mode);
-		}
-	}
+    private function writeEncode($path, $key, $content, $mode = "AES")
+    {
+        file_put_contents($path, $content);
+        if ($content != "") {
+            $this->encode($path, $key, $mode);
+        }
+    }
 
-	private function readDecode($path, $key, $mode="AES"){
-		$path = $this->decode($path, $key, $mode);
-		$var = file_get_contents($path);
-		@unlink($path);
-		return $var;
-	}
+    private function readDecode($path, $key, $mode = "AES")
+    {
+        $path = $this->decode($path, $key, $mode);
+        $var = file_get_contents($path);
+        @unlink($path);
+        return $var;
+    }
+
+    private function read($path){
+        $var = file_get_contents($path);
+        return $var;
+    }
 }

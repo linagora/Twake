@@ -123,7 +123,7 @@ class GroupPeriod
     /**
      * @return mixed
      */
-    public function getAppsUsage()
+    public function getAppsUsagePeriod()
     {
         return json_decode($this->appsUsage,true);
     }
@@ -131,7 +131,7 @@ class GroupPeriod
     /**
      * @param mixed $appsUsage
      */
-    public function setAppsUsage($appsUsage)
+    public function setAppsUsagePeriod($appsUsage)
     {
         $this->appsUsage = json_encode($appsUsage);
     }

@@ -168,22 +168,29 @@ class FilesController extends Controller
 			$isInTrash = true;
 		}
 
-		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
 
 			if($state == "new") {
 
 				$files = $this->get('app.drive.FileSystem')->listNew($groupId, $offset, $max);
 
-			} else if($state == "shared") {
+            } else if ($state == "shared") {
 
 				$files = $this->get('app.drive.FileSystem')->listShared($groupId, $offset, $max);
 
-			} else if($state == "search") {
+            } else if ($state == "search") {
 
-				$query = $request->request->get("query", "");
-				$files = $this->get('app.drive.FileSystem')->search($groupId, $query, $offset, $max);
+                $query = $request->request->get("query", "");
+                $files = $this->get('app.drive.FileSystem')->search($groupId, $query, $offset, $max);
 
-			} else {
+            } else if (strpos($state, "label_") === 0) {
+
+                $label_id = explode("_", $state);
+                $label_id = intval($label_id[1]);
+
+                $files = $this->get('app.drive.FileSystem')->byLabel($groupId, $label_id, $offset, $max);
+
+            } else {
 
 				$arbo = [];
 				$parent = $this->get('app.drive.FileSystem')->getObject($parentId);
@@ -208,7 +215,7 @@ class FilesController extends Controller
 			}
 
 			$data["data"]["maxspace"] = $this->get('app.drive.FileSystem')->getTotalSpace($groupId);
-			$data["data"]["totalsize"] = $data["data"]["maxspace"] - $this->get('app.drive.FileSystem')->getFreeSpace($groupId);
+            $data["data"]["totalsize"] = $this->get('app.drive.FileSystem')->getUsedSpace($groupId);
 
 
 		}
@@ -229,7 +236,7 @@ class FilesController extends Controller
 
 		$file = $_FILES["file"];
 
-		if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
 
 			$file = $this->get('app.drive.FileSystem')->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached);
 
@@ -360,11 +367,16 @@ class FilesController extends Controller
 	public function previewAction(Request $request){
 
 		$groupId = $request->query->get("groupId", 0);
-		$fileId = $request->query->get("fileId", 0);
+        $fileId = $request->query->get("fileId", 0);
+        $original = $request->query->get("original", 0);
 
-		if ($this->get('app.workspace_levels')->can($groupId,$this->getUser()->getId(), "drive:write")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
 
-			$data = $this->get('app.drive.FileSystem')->getRawContent($fileId);
+            if ($original) {
+                $data = $this->get('app.drive.FileSystem')->getRawContent($fileId);
+            } else {
+                $data = $this->get('app.drive.FileSystem')->getPreview($fileId);
+            }
 			return new Response($data, 200);
 
 		}

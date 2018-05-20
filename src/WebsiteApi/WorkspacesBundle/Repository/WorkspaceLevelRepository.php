@@ -10,4 +10,16 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  */
 class WorkspaceLevelRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    public function getByLabel($label,$workspace){
+        $qb = $this->createQueryBuilder('p')
+            ->andWhere('p.label like :label')
+            ->andWhere('p.workspace = :workspace')
+            ->setParameter('label', '%'.$label.'%')
+            ->setParameter('workspace', $workspace)
+            ->setMaxResults(10)
+            ->getQuery();
+
+        return $qb->execute();
+    }
 }

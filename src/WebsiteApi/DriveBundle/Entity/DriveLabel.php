@@ -85,6 +85,14 @@ class DriveLabel
 		$this->color = str_replace("#","", $color);
 	}
 
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
+
 	public function getAsArray(){
 		return Array(
 			"id" => $this->id,

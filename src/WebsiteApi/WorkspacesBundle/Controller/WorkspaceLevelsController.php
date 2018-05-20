@@ -142,5 +142,25 @@ class WorkspaceLevelsController extends Controller
         return new JsonResponse($response);
     }
 
+    public function getByLabelAction(Request $request){
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $workspaceId = $request->request->getInt("workspaceId");
+        $label = $request->request->get("label","");
+
+        $res = $this->get("app.workspace_levels")->getByLabel($workspaceId, $label);
+        $labels = [];
+        if (!$res ){
+            $response["errors"] = "notauthorized";
+        }else{
+            foreach ($res as $label){
+                $labels[] = $label->getAsArray();
+            }
+            $response["data"] = $labels;
+        }
+
+        return new JsonResponse($response);
+    }
+
 
 }

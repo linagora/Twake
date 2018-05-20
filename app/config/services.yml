@@ -36,10 +36,6 @@ services:
         class: WebsiteApi\UploadBundle\Services\Uploader
         arguments: ["@doctrine.orm.entity_manager", "@app.upload", "@app.images_modifiers"]
 
-    app.tags:
-        class: WebsiteApi\TagsBundle\Services\Tags
-        arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker']
-
     #app.contacts:
     #    class: WebsiteApi\UsersBundle\Services\Contacts
     #    arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer", "%SERVER_NAME%"]
@@ -59,10 +55,6 @@ services:
     app.command_executor:
                 class: WebsiteApi\DiscussionBundle\Services\CommandExecutor
                 arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications"]
-
-    app.status:
-        class: WebsiteApi\StatusBundle\Services\StatusService
-        arguments: ["@doctrine.orm.entity_manager"]
 
     app.before_render:
             class: WebsiteApi\CoreBundle\Services\BeforeRender
