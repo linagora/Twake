@@ -127,30 +127,18 @@ class DrivePreview
         }
 
         // get the current image dimensions
+        $im->ThumbnailImage($width, $height, true);
         $geo = $im->getImageGeometry();
 
-        if ($geo['width'] < $width || $geo['height'] < $height) {
 
-            $canvas = new \Imagick();
-            $canvas->newImage($width, $height, 'white', 'png');
-            $offsetX = (int)($width / 2) - (int)($geo['width'] / 2);
-            $offsetY = (int)($height / 2) - (int)($geo['height'] / 2);
-            $canvas->compositeImage($im, \Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
+        $canvas = new \Imagick();
+        $canvas->newImage($width, $height, 'black', 'png');
+        $offsetX = (int)($width / 2) - (int)($geo['width'] / 2);
+        $offsetY = (int)($height / 2) - (int)($geo['height'] / 2);
+        $canvas->compositeImage($im, \Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
 
-            $im = $canvas;
+        $im = $canvas;
 
-        } else {
-
-            // crop the image
-            /*if (($geo['width'] / $width) < ($geo['height'] / $height)) {
-                $im->cropImage($geo['width'], floor($height * $geo['width'] / $width), 0, 0);
-            } else {
-                $im->cropImage(ceil($width * $geo['height'] / $height), $geo['height'], (($geo['width'] - ($width * $geo['height'] / $height)) / 2), 0);
-            }*/
-            $im->setImageAlphaChannel(11);
-            $im->ThumbnailImage($width, $height, true);
-
-        }
 
         // thumbnail the image
 
