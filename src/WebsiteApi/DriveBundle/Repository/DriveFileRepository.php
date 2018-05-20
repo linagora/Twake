@@ -41,13 +41,14 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
         return $qb->getQuery()->getResult();
     }
 
-	public function listDirectory($group, $directory = null, $trash = false)
+    public function listDirectory($group, $directory = null, $trash = false, $detached = false)
 	{
 
 		return $this->findBy(Array(
 			"group" => $group,
 			"parent" => $directory,
-			"isInTrash" => $trash
+            "isInTrash" => $trash,
+            "detached_file" => $detached
 		), Array("name" => "ASC"));
 
 	}

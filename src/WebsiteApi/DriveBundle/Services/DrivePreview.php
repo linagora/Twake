@@ -113,7 +113,7 @@ class DrivePreview
 
     public function generateImagePreview($filename, $file, $path, $isText = false, $isOffice = false)
     {
-        $filepath = $path . $filename;
+        $filepath = $path . "/" . $filename;
         $width = $this->img_width;
         $height = $this->img_height;
         $im = new \Imagick();
@@ -146,6 +146,7 @@ class DrivePreview
 
         $im->setImageFormat('png');
         $im->writeImage($filepath.'.png');
+
         $im->clear();
         $im->destroy();
 
