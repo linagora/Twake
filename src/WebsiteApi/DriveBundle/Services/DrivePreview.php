@@ -95,7 +95,9 @@ class DrivePreview
                 $ext === 'ods' ||
                 $ext === 'odc' ||
                 $ext === 'xml' ||
-                $ext === 'webp'
+                $ext === 'webp' ||
+                $ext === 'txt' ||
+                $ext === 'svg'
             ) {
                 $this->generateImagePreview($filename, $file, $path, false, true);
             }
@@ -116,12 +118,12 @@ class DrivePreview
         $height = $this->img_height;
         $im = new \Imagick();
 
+
         if ($isText) {
             $im->readimage($file . "[0]");
         }elseif ($isOffice){
             $file = $this->convertToPDF($file);
             $im->readimage($file . "[0]");
-
         }else{
             $im->readimage($file);
         }
@@ -132,7 +134,7 @@ class DrivePreview
 
 
         $canvas = new \Imagick();
-        $canvas->newImage($width, $height, 'black', 'png');
+        $canvas->newImage($width, $height, 'white', 'png');
         $offsetX = (int)($width / 2) - (int)($geo['width'] / 2);
         $offsetY = (int)($height / 2) - (int)($geo['height'] / 2);
         $canvas->compositeImage($im, \Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
@@ -154,7 +156,8 @@ class DrivePreview
     }
 
     public function convertToPDF($filepath){
-        exec("unoconv -f pdf -e PageRange=1-1 ".$filepath);
+        putenv("PATH=/sbin:/bin:/usr/sbin:/usr/bin");
+        shell_exec("unoconv -vvvv -f pdf -e PageRange=1-1 " . $filepath);
         $a = explode(".",$filepath);
         array_pop($a);
         $filepath = join(".",$a).".pdf";
