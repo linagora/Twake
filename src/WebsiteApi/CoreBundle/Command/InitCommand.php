@@ -190,23 +190,6 @@ class InitCommand extends ContainerAwareCommand
          * Init pour la future mise a jour
          */
 
-        $allFiles = $manager->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
-        $driveService = $services->get("app.drive.FileSystem");
-        $count = count($allFiles);
-        $i = 0;
-        foreach ($allFiles as $file) {
-
-            try {
-                $driveService->genPreview($file);
-            } catch (\Exception $e) {
-                error_log($e);
-            }
-
-            $i++;
-            error_log($i . "/" . $count);
-
-        }
-
 
     }
 
