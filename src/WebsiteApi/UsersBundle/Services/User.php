@@ -299,8 +299,7 @@ class User implements UserInterface
                 if(is_array($friends) && count($friends)>0){
                     foreach($friends as $friend){
                         if($friend != $mail){
-                            error_log("send mail to ".$friend);
-                            $this->workspace_members_service->addMemberByMail($workspace->getId(),$friend);
+                            $this->workspace_members_service->addMemberByMail($workspace->getId(),$friend,false);
                         }
                     }
                 }
