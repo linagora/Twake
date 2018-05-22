@@ -500,7 +500,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-            ->listDirectory($workspace, $directory, $trash);
+            ->listDirectory($workspace, $directory, $trash, false);
 
         return $list;
     }
@@ -647,7 +647,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    public function delete($fileOrDirectory)
+    public function delete($fileOrDirectory, $flush = true)
     {
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
 
@@ -657,7 +657,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $this->recursDelete($fileOrDirectory);
 
-        $this->doctrine->flush();
+        if ($flush) {
+            $this->doctrine->flush();
+        }
 
         return true;
     }
@@ -696,8 +698,10 @@ class DriveFileSystem implements DriveFileSystemInterface
         $list = $this->listTrash($workspace);
 
         foreach ($list as $child) {
-            $this->delete($child);
+            $this->delete($child, false);
         }
+
+        $this->doctrine->flush();
 
         return true;
     }
@@ -1006,4 +1010,37 @@ class DriveFileSystem implements DriveFileSystemInterface
         $var = file_get_contents($path);
         return $var;
     }
+
+    public function genPreview(DriveFile $file)
+    {
+
+        if (!$file->getIsDirectory() && $file->getLastVersion()) {
+
+            $path = $this->getRoot() . "/" . $file->getPath();
+            $previewPath = $this->getRoot() . "/" . $file->getPreviewPath();
+
+            $this->verifyPath($previewPath);
+
+            $ext = $file->getExtension();
+            $tmppath = $this->decode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+            rename($tmppath, $tmppath . ".tw");
+            $tmppath = $tmppath . ".tw";
+
+            try {
+                $this->preview->generatePreview(basename($path), $tmppath, dirname($path), $ext);
+                if (file_exists($path . ".png")) {
+                    rename($path . ".png", $previewPath);
+                } else {
+                    error_log("FILE NOT GENERATED !");
+                }
+            } catch (\Exception $e) {
+
+            }
+
+            @unlink($tmppath);
+
+        }
+
+    }
+
 }

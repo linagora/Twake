@@ -22,8 +22,6 @@ class DefaultController extends Controller
 			"data" => Array()
 		);
 
-		$manager = $this->getDoctrine()->getManager();
-
 		$fields = $requestData["fields"];
 
 		$workspaceId = $request["workspace"]->getId();

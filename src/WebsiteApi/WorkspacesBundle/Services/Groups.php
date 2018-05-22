@@ -55,7 +55,7 @@ class Groups implements GroupsInterface
 		$this->doctrine->persist($group);
 		$this->doctrine->flush();
 
-		$this->gms->addManager($group->getId(), $userId, 3,true);
+        $this->gms->addManager($group->getId(), $userId, 3, true);
 
 		$this->init($group);
 		$this->gps->init($group);
@@ -307,7 +307,7 @@ class Groups implements GroupsInterface
         $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
         $group = $groupRepository->find($groupId);
-        $managers = $groupManagerRepository->findBy(Array("group" => $group));
+        $managers = $groupManagerRepository->getUsers($group,0,0, false);
 
         return count($managers);
 
@@ -332,7 +332,8 @@ class Groups implements GroupsInterface
                 $users[] = Array(
                     "user" => $managerLink->getUser(),
                     "externe" => $managerLink->getExterne(),
-                    "level" => $managerLink->getLevel()
+                    "level" => $managerLink->getLevel(),
+                    "nbWorkspace" => $managerLink->getNbWorkspace()
                 );
             }
             return $users;

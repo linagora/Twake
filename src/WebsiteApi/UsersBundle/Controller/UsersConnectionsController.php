@@ -21,6 +21,11 @@ class UsersConnectionsController extends Controller
 		return new JsonResponse(Array());
 	}
 
+    public function autoLoginAction(Request $request)
+    {
+        $this->loginAction($request);
+        return $this->redirect('https://app.twakeapp.com');
+    }
 	public function loginAction(Request $request)
 	{
 
@@ -56,6 +61,15 @@ class UsersConnectionsController extends Controller
 		return $response;
 
 	}
+
+    public function isLoggedAction(Request $request)
+    {
+        $ok = $this->get("app.user")->current();
+        if(!$ok){
+            return $this->redirect('https://twakeapp.com/signin');
+        }
+        return $this->redirect("https://app.twakeapp.com");
+    }
 
 	public function logoutAction(Request $request)
 	{

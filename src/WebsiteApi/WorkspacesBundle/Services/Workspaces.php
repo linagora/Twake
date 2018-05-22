@@ -129,7 +129,7 @@ class Workspaces implements WorkspacesInterface
 
         //Add user in workspace
         if ($userId != null) {
-            $this->wms->addMember($workspace->getId(), $userId, $level->getId());
+            $this->wms->addMember($workspace->getId(), $userId, false, $level->getId());
         }
 
         $this->ws->create($workspace); //Create workspace stat element

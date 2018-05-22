@@ -3,9 +3,17 @@ twake_user_login_check:
     path:     /login
     defaults: { _controller: TwakeUsersBundle:UsersConnections:login }
 
+twake_user_auto_login:
+    path:     /autoLogin
+    defaults: { _controller: TwakeUsersBundle:UsersConnections:autoLogin }
+
 twake_user_logout:
     path:     /logout
     defaults: { _controller: TwakeUsersBundle:UsersConnections:logout }
+
+twake_user_is_logged:
+    path:     /current/isLogged
+    defaults: { _controller: TwakeUsersBundle:UsersConnections:isLogged }
 
 twake_user_get:
     path:     /current/get

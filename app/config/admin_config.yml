@@ -25,11 +25,11 @@ easy_admin:
             label: 'Users'
             list:
                 title: "Most recent users"
-                fields: ['id', { property: 'connected', label: 'Connected', type: 'boolean' }, 'enabled', {property: 'thumbnail.publicURL', label: 'Image', type: 'image'}, 'username', 'first_name', 'last_name', 'email', 'language']
+                fields: ['id', { property: 'connected', label: 'Connected', type: 'boolean' }, 'enabled', {property: 'thumbnail.publicURL', label: 'Image', type: 'image'}, 'username', 'first_name', 'last_name', 'email', 'phone', 'language']
             form:
                 fields: ['enabled', 'first_name', 'last_name', 'email']
             show:
-                fields: ['id', { property: 'connected', label: 'Connected', type: 'boolean' }, 'connections', 'enabled', {property: 'thumbnail.publicURL', label: 'Image', type: 'image'}, 'username', 'first_name', 'last_name', 'email', 'language']
+                fields: ['id', { property: 'connected', label: 'Connected', type: 'boolean' }, 'connections', 'enabled', {property: 'thumbnail.publicURL', label: 'Image', type: 'image'}, 'username', 'first_name', 'last_name', 'email', 'phone', 'language']
             disabled_actions: ['new', 'delete']
         VerificationNumberMail:
             class: WebsiteApi\UsersBundle\Entity\VerificationNumberMail
