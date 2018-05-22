@@ -22,11 +22,13 @@ class GroupUserRepository extends \Doctrine\ORM\EntityRepository
        return  $this->matching( $criteria);
     }
 
-    public function getUsers($group,$limit,$offset)
+    public function getUsers($group,$limit,$offset, $restrict = true)
     {
         $criteria = Criteria::create();
-        $criteria->setMaxResults($limit);
-        $criteria->setFirstResult($offset);
+        if ($restrict){
+            $criteria->setMaxResults($limit);
+            $criteria->setFirstResult($offset);
+        }
         $criteria->where(Criteria::expr()->eq('group', $group));
         $criteria->andWhere(Criteria::expr()->neq('nbWorkspace', 0));
         return  $this->matching( $criteria);

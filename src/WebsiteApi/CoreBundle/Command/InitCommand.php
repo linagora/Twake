@@ -59,7 +59,7 @@ class InitCommand extends ContainerAwareCommand
          * Doctrine Schema Update
          */
 
-        /*$command = $this->getApplication()->find('doctrine:schema:update');
+        $command = $this->getApplication()->find('doctrine:schema:update');
 
         $arguments = array(
             'command' => 'doctrine:schema:update',
@@ -76,7 +76,7 @@ class InitCommand extends ContainerAwareCommand
         } else if ($returnCode != 0 && !$ignore) {
             $output->writeln('WARNING : doctrine schema update failed, error was ignored');
         }
-*/
+
         $doctrine = $this->getContainer()->get('doctrine');
         $manager = $doctrine->getManager();
 
@@ -189,23 +189,6 @@ class InitCommand extends ContainerAwareCommand
         /*
          * Init pour la future mise a jour
          */
-
-        $allFiles = $manager->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
-        $driveService = $services->get("app.drive.FileSystem");
-        $count = count($allFiles);
-        $i = 0;
-        foreach ($allFiles as $file) {
-
-            try {
-                $driveService->genPreview($file);
-            } catch (\Exception $e) {
-                error_log($e);
-            }
-
-            $i++;
-            error_log($i . "/" . $count);
-
-        }
 
 
     }
