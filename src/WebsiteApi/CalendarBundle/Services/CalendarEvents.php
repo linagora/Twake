@@ -18,11 +18,14 @@ class CalendarEvents implements CalendarEventsInterface
     var $doctrine;
     var $pusher;
     var $workspaceLevels;
+    var $notifications;
 
-    public function __construct($doctrine, $pusher, $workspaceLevels){
+    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications)
+    {
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
         $this->workspaceLevels = $workspaceLevels;
+        $this->notifications = $notifications;
     }
 
     public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false)
@@ -46,6 +49,7 @@ class CalendarEvents implements CalendarEventsInterface
         }
 
         $event = new CalendarEvent($event, $event["from"], $event["to"]);
+        $event->setReminder();
         $event->setCalendar($calendar);
 
         $this->doctrine->persist($event);
@@ -103,6 +107,7 @@ class CalendarEvents implements CalendarEventsInterface
         $event->setEvent($eventArray);
         $event->setFrom($eventArray["from"]);
         $event->setTo($eventArray["to"]);
+        $event->setReminder();
         $this->doctrine->persist($event);
 
         $usersLinked = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findBy(Array("event"=>$event));
@@ -279,6 +284,47 @@ class CalendarEvents implements CalendarEventsInterface
         }
 
         return $users;
+
+    }
+
+    /** Check all events that have to be reminded */
+    public function checkReminders()
+    {
+
+        /** @var CalendarEvent[] $events */
+        $events = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->toRemind();
+        $linkRepo = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser");
+
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calendar"));
+
+        foreach ($events as $event) {
+
+            $date = $event->getFrom();
+            $in = date("U") - $date;
+            $in = $in / 60;
+            if ($in < 60) {
+                $in = $in . " minute(s) ";
+            } else if ($in / 60 < 24) {
+                $in = ($in / 60) . " hour(s) ";
+            } else {
+                $in = ($in / (60 * 24)) . " day(s) ";
+            }
+
+            $title = "Event";
+            if (isset($event->getEvent()["title"])) {
+                $title = $event->getEvent()["title"];
+            }
+            $text = $title . " in " . $in;
+
+            $users = $linkRepo->findBy(Array("event" => $event));
+            $this->notifications->pushNotification($app, null, $users, null, "event_" . $event->getId(), $text, Array("push"));
+
+            $event->setNextReminder(0);
+            $this->doctrine->persist($event);
+
+        }
+
+        $this->doctrine->flush();
 
     }
 }

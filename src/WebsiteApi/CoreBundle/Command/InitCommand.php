@@ -59,7 +59,7 @@ class InitCommand extends ContainerAwareCommand
          * Doctrine Schema Update
          */
 
-        /*$command = $this->getApplication()->find('doctrine:schema:update');
+        $command = $this->getApplication()->find('doctrine:schema:update');
 
         $arguments = array(
             'command' => 'doctrine:schema:update',
@@ -76,7 +76,7 @@ class InitCommand extends ContainerAwareCommand
         } else if ($returnCode != 0 && !$ignore) {
             $output->writeln('WARNING : doctrine schema update failed, error was ignored');
         }
-*/
+
         $doctrine = $this->getContainer()->get('doctrine');
         $manager = $doctrine->getManager();
 
