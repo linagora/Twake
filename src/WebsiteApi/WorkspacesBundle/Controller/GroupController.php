@@ -50,6 +50,7 @@ class GroupController extends Controller
                 $temp = $user["user"]->getAsArray();
                 $temp["externe"] = $user["externe"];
                 $temp["level"] = $user["level"];
+                $temp["nbWorkspace"] = $user["nbWorkspace"];
                 $list[] = $temp;
             }
             $response["data"] = Array("users" => $list);
