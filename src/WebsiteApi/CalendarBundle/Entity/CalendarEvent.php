@@ -44,7 +44,7 @@ class CalendarEvent {
     private $to;
 
     /**
-     * @ORM\Column(name="event_json", type="string")
+     * @ORM\Column(name="event_json", type="text")
      */
     private $event;
 
@@ -53,6 +53,7 @@ class CalendarEvent {
         $this->setEvent($event);
         $this->setFrom($from);
         $this->setTo($to);
+        $this->setReminder();
     }
 
     /**

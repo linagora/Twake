@@ -320,10 +320,15 @@ class CalendarEvents implements CalendarEventsInterface
             }
             $text = $title . " in " . $in;
 
-            $users = $linkRepo->findBy(Array("event" => $event));
-            if (count($users) > 0) {
-                $this->notifications->pushNotification($app, null, $users, null, "event_" . $event->getId(), $text, Array("push"));
+            $_users = $linkRepo->findBy(Array("event" => $event));
+            if (count($_users) > 0) {
+                $users = Array();
+                foreach ($_users as $user) {
+                    $users[] = $user->getUser()->getId();
+                }
+                $this->notifications->pushNotification($app, null, $users, null, "event_" . $event->getId(), $text, Array("push"), null, false);
             }
+
 
             $event->setNextReminder(0);
             $this->doctrine->persist($event);

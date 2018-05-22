@@ -32,7 +32,7 @@ class Notifications implements NotificationsInterface
         $this->licenceKey = $licenceKey;
 	}
 
-	public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data=null)
+    public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data = null, $save_notification = true)
 	{
 
 		if($workspace != null){
@@ -130,7 +130,10 @@ class Notifications implements NotificationsInterface
 			if($title){
 				$n->setTitle($title);
 			}
-			$this->doctrine->persist($n);
+
+            if ($save_notification) {
+                $this->doctrine->persist($n);
+            }
 
 			if(in_array("push", $type)){
 				$totalNotifications = $this->countAll($user) + 1;
