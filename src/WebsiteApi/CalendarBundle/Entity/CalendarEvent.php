@@ -153,7 +153,7 @@ class CalendarEvent {
 
     public function setReminder($delay = 1800)
     {
-        if ($this->getFrom() - $delay < date("U")) {
+        if ($this->getFrom() < date("U")) {
             $this->setNextReminder(0);
             return;
         }

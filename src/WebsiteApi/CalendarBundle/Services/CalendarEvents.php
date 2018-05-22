@@ -300,14 +300,14 @@ class CalendarEvents implements CalendarEventsInterface
         foreach ($events as $event) {
 
             $date = $event->getFrom();
-            $in = date("U") - $date;
+            $in = $date - date("U");
             $in = $in / 60;
             if ($in < 60) {
-                $in = $in . " minute(s) ";
+                $in = intval($in) . " minute(s) ";
             } else if ($in / 60 < 24) {
-                $in = ($in / 60) . " hour(s) ";
+                $in = intval($in / 60) . " hour(s) ";
             } else {
-                $in = ($in / (60 * 24)) . " day(s) ";
+                $in = intval($in / (60 * 24)) . " day(s) ";
             }
 
             $title = "Event";
@@ -317,7 +317,9 @@ class CalendarEvents implements CalendarEventsInterface
             $text = $title . " in " . $in;
 
             $users = $linkRepo->findBy(Array("event" => $event));
-            $this->notifications->pushNotification($app, null, $users, null, "event_" . $event->getId(), $text, Array("push"));
+            if (count($users) > 0) {
+                $this->notifications->pushNotification($app, null, $users, null, "event_" . $event->getId(), $text, Array("push"));
+            }
 
             $event->setNextReminder(0);
             $this->doctrine->persist($event);
