@@ -107,7 +107,11 @@ class CalendarEvents implements CalendarEventsInterface
         $event->setEvent($eventArray);
         $event->setFrom($eventArray["from"]);
         $event->setTo($eventArray["to"]);
-        $event->setReminder();
+        if (isset($eventArray["reminder"])) {
+            $event->setReminder(intval($eventArray["reminder"]));
+        } else {
+            $event->setReminder();
+        }
         $this->doctrine->persist($event);
 
         $usersLinked = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findBy(Array("event"=>$event));
