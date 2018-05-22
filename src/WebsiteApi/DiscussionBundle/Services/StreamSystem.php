@@ -69,7 +69,15 @@ class StreamSystem implements StreamSystemInterface
             $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
             $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
 
-            error_log(json_encode($stream->getAsArray()));
+            $users = $this->app_workspace_members->getMembers($workspaceId);
+            foreach ($users as $user_) {
+                $user = $user_["user"];
+                if ($this->levelManager->can($workspace, $user, "messages:read")) {
+                    $link = $stream->addMember($user);
+                    $this->doctrine->persist($link);
+                }
+            }
+            $this->doctrine->flush();
 
             $retour = array_merge($stream->getAsArray(),Array("notifications"=>$notifications["notifications"], "subject_notifications"=>$notifications["subject_notifications"], "lastread"=>$notifications["lastread"],"call"=>$callInfos));
 

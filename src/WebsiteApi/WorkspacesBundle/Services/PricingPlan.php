@@ -115,12 +115,12 @@ class PricingPlan implements PricingPlanInterface
     public function dailyDataGroupUser()
     {
         $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
-        $listGroupUser = $groupUserRepository->findBy(Array());
+        $listGroupUser = $groupUserRepository->findBy(Array("didConnectToday" => 1));
         $dateToday = date('z') + 1;
         foreach ($listGroupUser as $ga) {
             $lastDate = $ga->getLastDayOfUpdate();
 
-            if ($lastDate < $dateToday) {
+            if ($lastDate != $dateToday) {
                 if ($ga->getDidConnectToday()) {
                     $ga->increaseConnectionsPeriod();
                     $usedApps = $ga->getUsedAppsToday();
@@ -133,22 +133,21 @@ class PricingPlan implements PricingPlanInterface
                             $obj = $appsUsage;
                             $obj[$app] = $appsUsage[$app] + 1;
                             $ga->setAppsUsagePeriod($obj);
-                            $this->doctrine->persist($ga);
                         } else {
                             $obj = $appsUsage;
                             $obj[$app] = 1;
                             $ga->setAppsUsagePeriod($obj);
-                            $this->doctrine->persist($ga);
                         }
                     }
                     $ga->setUsedAppsToday([]);
                     $ga->setDidConnectToday(0);
-                    $this->doctrine->flush();
+                    $this->doctrine->persist($ga);
                 }
 
             }
 
         }
+        $this->doctrine->flush();
     }
 
     /**
