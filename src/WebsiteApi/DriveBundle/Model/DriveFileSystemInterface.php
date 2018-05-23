@@ -61,7 +61,7 @@ interface DriveFileSystemInterface
 	public function listNew($group, $offset = 0, $max = 20);
 
 	// @listShared returns shared objects
-	public function listShared($group, $offset = 0, $max = 20);
+	public function listShared($group);
 
 	// @search searches files with such name (given in query)
 	// Query

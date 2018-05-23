@@ -48,7 +48,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function getUsedSpace($workspace)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
         if ($workspace == null) {
             return false;
@@ -62,14 +62,14 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function getFreeSpace($workspace)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
         return $this->getTotalSpace($workspace) - $this->getUsedSpace($workspace);
     }
 
     public function getTotalSpace($workspace)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
         if ($workspace == null) {
             return false;
         }
@@ -81,7 +81,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function setTotalSpace($workspace, $space)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
         if ($workspace == null) {
             return false;
         }
@@ -90,8 +90,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function canAccessTo($file, $workspace, $user = null)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
-        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
         if ($workspace == null) {
             return false;
         }
@@ -165,7 +165,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     {
 
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
-        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
+        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
 
         if ($fileOrDirectory == null) {
             return false;
@@ -228,8 +228,8 @@ class DriveFileSystem implements DriveFileSystemInterface
     public function copy($fileOrDirectory, $newParent = null)
     {
 
-        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
-        $newParent = $this->convertToEntity($newParent, "TwakeDriveBundle:DriveFile");;
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
+        $newParent = $this->convertToEntity($newParent, "TwakeDriveBundle:DriveFile");
 
         if ($fileOrDirectory == null || $this->getFreeSpace($fileOrDirectory->getGroup()) <= 0) {
             return false;
@@ -278,10 +278,40 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
+    public function share($directory, $groupId)
+    {
+
+        $fileOrDirectory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
+
+        if ($fileOrDirectory == null || $fileOrDirectory->getIsDirectory() == false) {
+            return false;
+        }
+
+        $parent = $fileOrDirectory->getParent();
+
+        $newFile = new DriveFile(
+            $groupId,
+            $parent,
+            $fileOrDirectory->getName(),
+            $fileOrDirectory->getIsDirectory(),
+            $fileOrDirectory->getId()
+        );
+
+        $newFile->setSize($fileOrDirectory->getSize());
+
+        $this->improveName($newFile);
+
+        $this->doctrine->persist($newFile);
+        $this->doctrine->flush();
+
+        return true;
+
+    }
+
     public function rename($fileOrDirectory, $filename, $description = null, $labels = Array())
     {
 
-        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
 
         if ($fileOrDirectory == null) {
             return false;
@@ -343,8 +373,8 @@ class DriveFileSystem implements DriveFileSystemInterface
             $directory = null;
         }
 
-        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
         if (!$detached_file && ($workspace == null || $this->getFreeSpace($workspace) <= 0)) {
             return false;
@@ -396,7 +426,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function getPreview($file)
     {
-        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
 
         if ($file == null) {
             return false;
@@ -416,7 +446,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function getRawContent($file)
     {
-        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
 
         if ($file == null) {
             return false;
@@ -442,7 +472,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         /**
          * @var DriveFile
          */
-        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");;
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
 
         if ($file == null) {
             return false;
@@ -479,7 +509,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function getInfos($fileOrDirectory)
     {
-        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
 
         if ($fileOrDirectory == null) {
             return false;
@@ -492,15 +522,26 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function listDirectory($workspace, $directory, $trash = false)
     {
-        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");;
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
         if ($workspace == null) {
             return false;
         }
 
-        $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-            ->listDirectory($workspace, $directory, $trash, false);
+        if ($directory) {
+            $originalDir = $directory->getCopyOf();
+            if ($originalDir != null) {
+                $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+                    ->listDirectory($workspace, $originalDir, $trash, false);
+            }else{
+                $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+                ->listDirectory($workspace, $directory, $trash, false);
+            }
+        }else{
+            $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+                ->listDirectory($workspace, $directory, $trash, false);
+        }
 
         return $list;
     }
@@ -512,7 +553,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             return Array();
         }
 
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
         if ($workspace == null) {
             return false;
@@ -568,10 +609,16 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $list;
     }
 
-    public function listShared($workspace, $offset = 0, $max = 20)
+    public function listShared($workspace)
     {
-        //TODO
-        return Array();
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+
+        if ($workspace == null) {
+            return false;
+        }
+
+        $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->shared($workspace);
+        return $list;
     }
 
     public function listTrash($workspace)

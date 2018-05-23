@@ -98,10 +98,19 @@ class DriveFile
      */
     private $detached_file = false;
 
+	/**
+	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
+	 */
+	private $copyOf;
 
-    public function __construct($group, $parent, $name, $isDirectory = false)
+	/**
+    * @ORM\Column(type="boolean")
+    */
+    private $shared = false;
+
+
+    public function __construct($group, $parent, $name, $isDirectory = false,$directoryToCopy = null)
     {
-
         $this->group = $group;
         $this->setParent($parent);
         $this->setName($name);
@@ -112,7 +121,9 @@ class DriveFile
         $this->added = new \DateTime();
         $this->cache = "{}";
         $this->setLastModified();
-
+        if ($directoryToCopy){
+            $this->copyOf = $directoryToCopy;
+        }
     }
 
     public function getId()
@@ -361,6 +372,40 @@ class DriveFile
         $this->detached_file = $detached_file;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getCopyOf()
+    {
+        return $this->copyOf;
+    }
+
+    /**
+     * @param mixed $copyOf
+     */
+    public function setCopyOf($copyOf)
+    {
+        $this->copyOf = $copyOf;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getShared()
+    {
+        return $this->shared;
+    }
+
+    /**
+     * @param mixed $shared
+     */
+    public function setShared($shared)
+    {
+        $this->shared = $shared;
+    }
+
+
+
     public function getAsArray()
     {
         return Array(
@@ -376,7 +421,9 @@ class DriveFile
             "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
             "detached" => $this->getDetachedFile(),
             "cache" => $this->getCache(),
-            "preview" => $this->getPreviewPath()
+            "preview" => $this->getPreviewPath(),
+            "copyOf" => $this->getCopyOf(),
+            "shared" => $this->getShared()
         );
     }
 

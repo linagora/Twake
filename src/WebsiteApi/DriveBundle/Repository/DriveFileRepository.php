@@ -1,6 +1,7 @@
 <?php
 
 namespace WebsiteApi\DriveBundle\Repository;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * DriveFileRepository
@@ -11,22 +12,22 @@ namespace WebsiteApi\DriveBundle\Repository;
 class DriveFileRepository extends \Doctrine\ORM\EntityRepository
 {
 
-	public function sumSize($group, $directory = null)
-	{
-		$qb = $this->createQueryBuilder('f')
-			->select('sum(f.size)')
-			->where('f.group = :group')
-			->setParameter("group", $group);
+    public function sumSize($group, $directory = null)
+    {
+        $qb = $this->createQueryBuilder('f')
+            ->select('sum(f.size)')
+            ->where('f.group = :group')
+            ->setParameter("group", $group);
 
-		if ($directory == null) {
-			$qb = $qb->andWhere('f.parent IS NULL');
-		} else {
-			$qb = $qb->andWhere('f.parent = :directory')
-				->setParameter("directory", $directory);
-		}
+        if ($directory == null) {
+            $qb = $qb->andWhere('f.parent IS NULL');
+        } else {
+            $qb = $qb->andWhere('f.parent = :directory')
+                ->setParameter("directory", $directory);
+        }
 
-		return $qb->getQuery()->getSingleScalarResult();
-	}
+        return $qb->getQuery()->getSingleScalarResult();
+    }
 
     public function sumSizeByExt($group)
     {
@@ -42,43 +43,52 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
     }
 
     public function listDirectory($group, $directory = null, $trash = false, $detached = false)
-	{
+    {
 
-		return $this->findBy(Array(
-			"group" => $group,
-			"parent" => $directory,
+        return $this->findBy(Array(
+            "group" => $group,
+            "parent" => $directory,
             "isInTrash" => $trash,
             "detached_file" => $detached
-		), Array("name" => "ASC"));
+        ), Array("name" => "ASC"));
 
-	}
+    }
 
-	public function search($group, $query, $sorts, $offset = 0, $max = 20)
-	{
-		$qb = $this->createQueryBuilder('f')
-			->select('f')
-			->where('f.group = :group');
+    public function search($group, $query, $sorts, $offset = 0, $max = 20)
+    {
+        $qb = $this->createQueryBuilder('f')
+            ->select('f')
+            ->where('f.group = :group');
 
-		foreach ($sorts as $key=>$sort){
-			$qb = $qb->addOrderBy("f.".$key, $sort);
-		}
+        foreach ($sorts as $key=>$sort){
+            $qb = $qb->addOrderBy("f.".$key, $sort);
+        }
 
-		//Query search
-		if(is_string($query)) {
-			$query = str_replace(Array("%", "_"),Array("!%","!_"), $query);
-			$qb = $qb->andWhere($qb->expr()->like("f.name", ":query"));
-			$qb = $qb->setParameter("query", "%".$query."%");
-		}
+        //Query search
+        if(is_string($query)) {
+            $query = str_replace(Array("%", "_"),Array("!%","!_"), $query);
+            $qb = $qb->andWhere($qb->expr()->like("f.name", ":query"));
+            $qb = $qb->setParameter("query", "%".$query."%");
+        }
 
-		$qb = $qb->setParameter("group", $group);
+        $qb = $qb->setParameter("group", $group);
 
-		$qb = $qb->setMaxResults($max);
-		$qb = $qb->setFirstResult($offset);
+        $qb = $qb->setMaxResults($max);
+        $qb = $qb->setFirstResult($offset);
 
-		return $qb->getQuery()->getResult();
-	}
+        return $qb->getQuery()->getResult();
+    }
 
-	public function countEachExtension(){
+    public function shared($workspace)
+    {
+        $criteria = Criteria::create();
+        $criteria->where(Criteria::expr()->neq('copyOf', null));
+        $criteria->orWhere(Criteria::expr()->eq('shared', true));
+        $criteria->andWhere(Criteria::expr()->eq('group', $workspace));
+        return  $this->matching( $criteria);
+    }
+
+    public function countEachExtension(){
         $req = $this->createQueryBuilder('f')
             ->select('f.extension, count(f.extension) AS nb')
             ->where('f.isDirectory = false')
