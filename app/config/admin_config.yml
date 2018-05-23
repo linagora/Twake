@@ -17,6 +17,7 @@ easy_admin:
               children:
                 - { entity: 'Workspace', icon: 'list' }
                 - { entity: 'Group', icon: 'building' }
+                - { entity: 'WorkspaceUserByMail', icon: 'envelope' }
             - { entity: 'Application', icon: 'rocket' }
             - { entity: 'PricingPlan', icon: 'dollar' }
     entities:
@@ -42,6 +43,13 @@ easy_admin:
             class: WebsiteApi\UsersBundle\Entity\Device
             label: 'Devices'
             disabled_actions: ['new']
+
+        WorkspaceUserByMail:
+            class: WebsiteApi\WorkspacesBundle\Entity\WorkspaceUserByMail
+            label: 'Workspace user invited by mail'
+            list:
+                title: "Workspace user invited by mail"
+            disabled_actions: ['new', 'edit']
 
         Application:
             class: WebsiteApi\MarketBundle\Entity\Application
