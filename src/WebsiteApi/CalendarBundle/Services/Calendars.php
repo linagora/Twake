@@ -232,6 +232,6 @@ class Calendars implements CalendarsInterface
             return null;
         }
 
-        return $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+        return $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
     }
 }
