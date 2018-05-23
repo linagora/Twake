@@ -104,10 +104,10 @@ class AdministrationServerStats
 	public function saveUsersConnected()
 	{
 
-		$req1 = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerUsersStats")
+        $req1 = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser")
 			->createQueryBuilder('U')
-			->select('count(U.id)')
-			->where('U.connected = 1');
+            ->select('count(distinct U.user)')
+            ->where('U.didConnectToday = 1');
 		$connected = $req1->getQuery()->getSingleScalarResult();
 
 		$em = $this->doctrine;
