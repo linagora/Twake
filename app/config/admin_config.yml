@@ -5,7 +5,7 @@ easy_admin:
         actions: ['show']
     design:
         menu:
-            - { label: 'Dashboard', icon: 'tachometer', route: 'easy_admin_bundle_dashboard' }
+            - { label: 'Dashboard', icon: 'tachometer', route: 'easy_admin_bundle_dashboard', default: true }
             - label: 'Users'
               icon: 'users'
               children:

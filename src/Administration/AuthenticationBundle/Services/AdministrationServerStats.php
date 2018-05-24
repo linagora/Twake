@@ -101,26 +101,67 @@ class AdministrationServerStats
 		return "done";
 	}
 
-	public function saveUsersConnected()
-	{
+    public function saveUsersConnected()
+    {
 
         $req1 = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser")
-			->createQueryBuilder('U')
+            ->createQueryBuilder('U')
             ->select('count(distinct U.user)')
             ->where('U.didConnectToday = 1');
-		$connected = $req1->getQuery()->getSingleScalarResult();
+        $connected = $req1->getQuery()->getSingleScalarResult();
 
-		$em = $this->doctrine;
+        $req2 = $this->doctrine->getRepository("TwakeUsersBundle:User")
+            ->createQueryBuilder('U')
+            ->select('count(U)');
+        $accounts = $req2->getQuery()->getSingleScalarResult();
 
-		$serverStat = new ServerUsersStats();
-		$serverStat-> setDateSave(new \DateTime("now"));
-		$serverStat->setConnected($connected);
+        $em = $this->doctrine;
 
-		$em->persist($serverStat);
-		$em->flush();
+        $serverStat = new ServerUsersStats();
+        $serverStat->setDateSave(new \DateTime("now"));
+        $serverStat->setConnected($connected);
+        $serverStat->setAccount($accounts);
 
-		return "done";
-	}
+        $em->persist($serverStat);
+        $em->flush();
+
+        return "done";
+    }
+
+    public function getUsersConnected($limit = 0)
+    {
+        $repo = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerUsersStats");
+        $_list = $repo->findBy(Array(), Array("dateSave" => "DESC"), $limit);
+        $list = Array();
+        foreach ($_list as $el) {
+            $list[] = $el->getAsArray();
+        }
+        return $list;
+    }
+
+    public function getNumberFiles()
+    {
+        $req1 = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+            ->createQueryBuilder('F')
+            ->select('count(F)');
+        return $req1->getQuery()->getSingleScalarResult();
+    }
+
+    public function getNumberMessages()
+    {
+        $req1 = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")
+            ->createQueryBuilder('F')
+            ->select('count(F)');
+        return $req1->getQuery()->getSingleScalarResult();
+    }
+
+    public function getNumberEvents()
+    {
+        $req1 = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")
+            ->createQueryBuilder('F')
+            ->select('count(F)');
+        return $req1->getQuery()->getSingleScalarResult();
+    }
 
     public function getAllErrors()
     {
