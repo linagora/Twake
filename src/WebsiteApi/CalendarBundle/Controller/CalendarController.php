@@ -127,7 +127,7 @@ class CalendarController extends Controller
         $calendars_formated = Array();
         foreach ($linkCalendars as $calendar){
             if($calendar->getWorkspace() != null){
-                $calendars_formated = $calendar->getWorkspace()->getAsArray();
+                $calendars_formated[] = $calendar->getWorkspace()->getAsArray();
             }
 
         }
