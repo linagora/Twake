@@ -27,6 +27,7 @@ class DashboardController extends Controller
 
         //users by hour
         $_connections_usage_array = $this->get("admin.TwakeServerStats")->getUsersConnected(1000);
+        $_connections_usage_array = array_reverse($_connections_usage_array);
         $connections_usage_array = [['Date', 'Connected']];
         foreach ($_connections_usage_array as $datum) {
             $connections_usage_array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["connected"]];
@@ -35,6 +36,16 @@ class DashboardController extends Controller
         $connections_usage_chart->getData()->setArrayToDataTable($connections_usage_array);
         $connections_usage_chart->getOptions()->setHeight(200);
         $data["users"]["users_by_hours"] = $connections_usage_chart;
+
+        //accounts by hour
+        $accounts_array = [['Date', 'Accounts']];
+        foreach ($_connections_usage_array as $datum) {
+            $accounts_array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["accounts"]];
+        }
+        $accounts_chart = new AreaChart();
+        $accounts_chart->getData()->setArrayToDataTable($accounts_array);
+        $accounts_chart->getOptions()->setHeight(200);
+        $data["users"]["accounts_by_hours"] = $accounts_chart;
 
 		//workspaces
 		$data["workspaces"]["count"] = $this->get('admin.TwakeGroupManagement')->countWorkspace();
@@ -54,6 +65,10 @@ class DashboardController extends Controller
 		//ram
 		$data["ram"]["percent"] = $this->get("admin.TwakeServerStats")->getRamUsage()["used"];
 		$data["ram"]["mo"] = $this->get("admin.TwakeServerStats")->getTotalRam() * $data["ram"]["percent"]/100;
+
+        $data["nbmessages"] = $this->get("admin.TwakeServerStats")->getNumberMessages();
+        $data["nbevents"] = $this->get("admin.TwakeServerStats")->getNumberEvents();
+        $data["nbfiles"] = $this->get("admin.TwakeServerStats")->getNumberFiles();
 
 		return $this->render('AdministrationAuthenticationBundle:Dashboard:dashboard.html.twig', $data);
 	}

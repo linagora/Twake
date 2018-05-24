@@ -45,6 +45,13 @@ class ServerUsersStats
     private $connected;
 
     /**
+     * @var integer
+     *
+     * @ORM\Column(name="accounts", type="integer")
+     */
+    private $accounts;
+
+    /**
      * @return int
      */
     public function getId()
@@ -92,12 +99,29 @@ class ServerUsersStats
 		$this->connected = $connected;
 	}
 
+    /**
+     * @return int
+     */
+    public function getAccounts()
+    {
+        return $this->accounts;
+    }
+
+    /**
+     * @param int $accounts
+     */
+    public function setAccounts($accounts)
+    {
+        $this->accounts = $accounts;
+    }
+
 
 
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
             "connected" => $this->getConnected(),
+            "accounts" => $this->getAccounts(),
             "datesave" => ($this->getDateSave() ? $this->getDateSave()->getTimestamp() : null)
         );
     }
