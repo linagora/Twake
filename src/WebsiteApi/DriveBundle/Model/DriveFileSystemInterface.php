@@ -39,7 +39,7 @@ interface DriveFileSystemInterface
 	public function create($group, $directory, $filename, $content = "", $isDirectory = false, $detached=false); // $file : entity or id
 
 	// @getRawContent returns content of a file (if less than 5mo)
-	public function getRawContent($file); // $file : entity or id
+	public function getRawContent($workspace,$file); // $file : entity or id
 
 	// @setRawContent set content of a file
 	public function setRawContent($file, $content = ""); // $file : entity or id
@@ -52,7 +52,7 @@ interface DriveFileSystemInterface
 	// - parent directory id
 	// - object id
 	// - group id
-	public function getInfos($fileOrDirectory); // $fileOrDirectory : entity or id
+	public function getInfos($workspace,$fileOrDirectory); // $fileOrDirectory : entity or id
 
 	// @listDirectory returns objects in directory
 	public function listDirectory($group, $directory, $inTrash=false); // $directory : entity or id
@@ -61,7 +61,7 @@ interface DriveFileSystemInterface
 	public function listNew($group, $offset = 0, $max = 20);
 
 	// @listShared returns shared objects
-	public function listShared($group, $offset = 0, $max = 20);
+	public function listShared($group);
 
 	// @search searches files with such name (given in query)
 	// Query
@@ -73,7 +73,7 @@ interface DriveFileSystemInterface
 	public function search($group, $query, $offset = 0, $max = 20);
 
 	// @toTrash set a file into trash
-	public function autoDelete($fileOrDirectory);
+	public function autoDelete($workspace,$fileOrDirectory);
 
 	// @delete delete a file definitively
 	public function delete($fileOrDirectory);
