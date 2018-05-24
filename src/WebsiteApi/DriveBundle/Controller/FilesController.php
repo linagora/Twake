@@ -76,7 +76,7 @@ class FilesController extends Controller
 
         if ($can) {
             foreach ($fileIds as $fileId){
-                $this->get('app.drive.FileSystem')->autoDelete($fileId);
+                $this->get('app.drive.FileSystem')->autoDelete($groupId,$fileId);
             }
         }
 
@@ -142,7 +142,7 @@ class FilesController extends Controller
 
         if ($can) {
 
-            $data = $this->get('app.drive.FileSystem')->getInfos($objectId);
+            $data = $this->get('app.drive.FileSystem')->getInfos($groupId,$objectId);
             $data["data"] = $data;
 
         }
@@ -217,9 +217,15 @@ class FilesController extends Controller
                 $data["data"]["tree"] = array_reverse($arbo);
             }
 
-            foreach ($files as $file) {
+            foreach ($files as $index => $file) {
 
-                $data["data"]["files"][] = $this->get('app.drive.FileSystem')->getInfos($file);
+                if ($file->getCopyOf() != null){//if it's a copy shortcut to another folder, link directly the folder
+                    $data["data"]["files"][] = $this->get('app.drive.FileSystem')->getInfos($groupId,$file->getCopyOf(),true);
+                    $data["data"]["files"][$index]["shortcut"] = true;
+                }else{
+                    $data["data"]["files"][] = $this->get('app.drive.FileSystem')->getInfos($groupId,$file,true);
+                    $data["data"]["files"][$index]["shortcut"] = false;
+                }
 
             }
 
@@ -317,7 +323,10 @@ class FilesController extends Controller
                 }
 
                 foreach ($toMove as $id){
-                    $this->get('app.drive.FileSystem')->move(intval($id), $newParentId);
+                    $res = $this->get('app.drive.FileSystem')->move(intval($id), $newParentId);
+                    if(!$res){
+                        $data["errors"][] = "ヾ(⌐■_■)ノ Nice try ヾ(⌐■_■)ノ";
+                    }
                 }
 
             }
@@ -382,9 +391,9 @@ class FilesController extends Controller
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
 
             if ($original) {
-                $data = $this->get('app.drive.FileSystem')->getRawContent($fileId);
+                $data = $this->get('app.drive.FileSystem')->getRawContent($groupId,$fileId);
             } else {
-                $data = $this->get('app.drive.FileSystem')->getPreview($fileId);
+                $data = $this->get('app.drive.FileSystem')->getPreview($groupId,$fileId);
             }
             return new Response($data, 200);
 
@@ -407,9 +416,31 @@ class FilesController extends Controller
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
             if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
                 $data["errors"][] = "notallowed";
-            } else if (!$this->get('app.drive.FileSystem')->share($fileId,$workspaceId)) {
+            } else if (!$this->get('app.drive.FileSystem')->share($groupId,$fileId,$workspaceId)) {
                 $data["errors"][] = "unknown";
             }
+        }else{
+            $data["errors"][] = "notallowed";
+        }
+
+        return new JsonResponse($data);
+    }
+
+    public function unshareAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array()
+        );
+
+        $groupId = $request->request->get("groupId", 0);
+        $workspaceId = $request->request->get("unshareWorkspaceId", 0);
+        $fileId = $request->request->get("fileToUnshareId", 0);
+        $removeAll = $request->request->get("totallyUnshare", false);
+
+        if (!$this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
+            $data["errors"][] = "notallowed";
+        } else if (!$this->get('app.drive.FileSystem')->unshare($groupId,$fileId,$workspaceId,$removeAll)) {
+            $data["errors"][] = "unknown";
         }
 
         return new JsonResponse($data);

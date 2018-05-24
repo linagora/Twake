@@ -127,7 +127,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             }
         } else {
             foreach ($this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-                         ->listDirectory($fileOrDirectory->getGroup(), null, $fileOrDirectory->getIsInTrash()) as $brothers) {
+                         ->listDirectory(null, $fileOrDirectory->getIsInTrash()) as $brothers) {
                 if ($brothers->getId() != $fileOrDirectory->getId()) {
                     $currentNames[] = $brothers->getName();
                 }
@@ -173,6 +173,15 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         if ($directory != null && $fileOrDirectory->getId() == $directory->getId()) {
             return false;
+        }
+
+        $dir = $directory;
+        while($dir != null){
+            if ($dir->getId() == $fileOrDirectory->getId()){
+                error_log("MOVED FILE IN DRIVE : PARENT INFINITE LOOP");
+                return false;
+            }
+            $dir = $dir->getParent();
         }
 
         //Update directories size
@@ -278,34 +287,71 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    public function share($directory, $groupId)
+    public function share($ownerGroupId,$directory, $groupId)
     {
 
         $fileOrDirectory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
+        $group = $this->convertToEntity($groupId, "TwakeWorkspacesBundle:Workspace");
 
         if ($fileOrDirectory == null || $fileOrDirectory->getIsDirectory() == false) {
             return false;
         }
 
+        if (!$this->isWorkspaceAllowed($ownerGroupId,$directory)){
+            return false;
+        }
+
+        $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $copy = $driveRepository->findOneBy(Array("group" => $group,"copyOf" => $directory));
+        if ($copy){
+            return false; //already shared
+        }
+
         $parent = $fileOrDirectory->getParent();
 
         $newFile = new DriveFile(
-            $groupId,
+            $group,
             $parent,
             $fileOrDirectory->getName(),
             $fileOrDirectory->getIsDirectory(),
-            $fileOrDirectory->getId()
+            $fileOrDirectory
         );
 
         $newFile->setSize($fileOrDirectory->getSize());
 
         $this->improveName($newFile);
 
+        $fileOrDirectory->setShared(true);
+        $this->doctrine->persist($fileOrDirectory);
         $this->doctrine->persist($newFile);
+        $this->doctrine->flush();
+        return true;
+    }
+
+    public function unshare($ownerGroupId,$directory, $groupId,$removeAll)
+    {
+        $fileOrDirectory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
+
+        if ($fileOrDirectory == null || $fileOrDirectory->getIsDirectory() == false) {
+            return false;
+        }
+        if (!$this->isWorkspaceAllowed($ownerGroupId,$directory)){
+            return false;
+        }
+        $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+
+        if ($removeAll){
+            $copies = $driveRepository->findBy(Array("copyOf" => $directory));
+            foreach ($copies as $copy){
+                $this->doctrine->remove($copy);
+            }
+        }else{
+            $copy = $driveRepository->findOneBy(Array("group" => $groupId,"copyOf" => $directory));
+            $this->doctrine->remove($copy);
+        }
         $this->doctrine->flush();
 
         return true;
-
     }
 
     public function rename($fileOrDirectory, $filename, $description = null, $labels = Array())
@@ -373,6 +419,10 @@ class DriveFileSystem implements DriveFileSystemInterface
             $directory = null;
         }
 
+        if (!$this->isWorkspaceAllowed($workspace,$directory)){
+            return false;
+        }
+
         $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
@@ -424,11 +474,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $newFile;
     }
 
-    public function getPreview($file)
+    public function getPreview($workspace, $file)
     {
         $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
 
         if ($file == null) {
+            return false;
+        }
+        if (!$this->isWorkspaceAllowed($workspace,$file)){
             return false;
         }
 
@@ -444,11 +497,14 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    public function getRawContent($file)
+    public function getRawContent($workspace,$file)
     {
         $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
 
         if ($file == null) {
+            return false;
+        }
+        if (!$this->isWorkspaceAllowed($workspace,$file)){
             return false;
         }
 
@@ -507,10 +563,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    public function getInfos($fileOrDirectory)
+    public function getInfos($workspace,$fileOrDirectory,$forceAccess = false)
     {
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
-
+        if (!$forceAccess){
+            if (!$this->isWorkspaceAllowed($workspace,$fileOrDirectory->getParent())){
+                return false;
+            }
+        }
         if ($fileOrDirectory == null) {
             return false;
         }
@@ -520,27 +580,24 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $data;
     }
 
-    public function listDirectory($workspace, $directory, $trash = false)
+    public function listDirectory($workspaceId, $directory, $trash = false)
     {
         $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        $workspace = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
 
         if ($workspace == null) {
             return false;
         }
+        if (!$this->isWorkspaceAllowed($workspaceId,$directory)){
+            return false;
+        }
 
         if ($directory) {
-            $originalDir = $directory->getCopyOf();
-            if ($originalDir != null) {
-                $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-                    ->listDirectory($workspace, $originalDir, $trash, false);
-            }else{
-                $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-                ->listDirectory($workspace, $directory, $trash, false);
-            }
+            $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+                ->listDirectory($workspace,$directory, $trash, false);
         }else{
             $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-                ->listDirectory($workspace, $directory, $trash, false);
+                ->listDirectory($workspace,null, $trash, false);
         }
 
         return $list;
@@ -634,11 +691,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $list;
     }
 
-    public function autoDelete($fileOrDirectory)
+    public function autoDelete($workspace,$fileOrDirectory)
     {
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
 
         if ($fileOrDirectory == null) {
+            return false;
+        }
+        if (!$this->isWorkspaceAllowed($workspace,$fileOrDirectory)){
             return false;
         }
 
@@ -848,6 +908,10 @@ class DriveFileSystem implements DriveFileSystemInterface
     public function generateZip($workspace, $directory)
     {
         if ($directory == null || $directory->getIsDirectory()) {
+            if (!$this->isWorkspaceAllowed($workspace,$directory)){
+                return false;
+            }
+
             $zip = new ZipArchive;
             $name = bin2hex(random_bytes(16));
             $tmpPath = $this->getRoot() . "/tmp/" . $name . ".zip";
@@ -878,6 +942,9 @@ class DriveFileSystem implements DriveFileSystemInterface
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
         $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
 
+        if (!$this->isWorkspaceAllowed($workspace,$file)){
+            return false;
+        }
         //Directory : download as zip
         if ($file == null || $file->getIsDirectory()) { //Directory or root
 
@@ -1084,6 +1151,36 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         }
 
+    }
+
+    //Used to show content of a drive folder since now other group can see others content
+    public function isWorkspaceAllowed($workspaceId,$directoryId){
+        if($directoryId == null){
+            return true;
+        }
+        $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $workspace = $this->convertToEntity($workspaceId,"TwakeWorkspacesBundle:Workspace");
+
+
+        $dir = $this->convertToEntity($directoryId,"TwakeDriveBundle:DriveFile");
+        while($dir != null){
+            //If it's mine
+            if ($workspaceId == $dir->getGroup()->getId()){
+                return true;
+            }
+            //if it's shared..
+            if ($dir->getShared()){
+
+                //to me
+                $directoryaccess = $driveRepository->findOneBy(Array("group" => $workspace, "copyOf" => $dir));
+                if($directoryaccess){
+                    return true;
+                }
+            }
+            //we go upward to see if a parent is shared to us
+            $dir = $dir->getParent();
+        }
+        return false;
     }
 
 }

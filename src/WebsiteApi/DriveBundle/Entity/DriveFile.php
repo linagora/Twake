@@ -422,7 +422,7 @@ class DriveFile
             "detached" => $this->getDetachedFile(),
             "cache" => $this->getCache(),
             "preview" => $this->getPreviewPath(),
-            "copyOf" => $this->getCopyOf(),
+            "copyOf" => ($this->getCopyOf()?$this->getCopyOf()->getId():null),
             "shared" => $this->getShared()
         );
     }
