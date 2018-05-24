@@ -66,6 +66,7 @@ class Workspaces implements WorkspacesInterface
         if ($name == "") {
             return false;
         }
+
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 
         $workspace = new Workspace($name);
@@ -74,10 +75,21 @@ class Workspaces implements WorkspacesInterface
         $uniquename = $this->string_cleaner->simplify($name);
         $uniquenameIncremented = $uniquename;
 
-        //Find a name
+
         if ($groupId != null) {
             $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
             $group = $groupRepository->find($groupId);
+            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $user = $userRepository->find($userId);
+
+            $groupUserdRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $group_user = $groupUserdRepository->findOneBy(Array("group" => $group, "user" => $user));
+
+            if (!$group_user || $group_user->getExterne()) {
+                return false;
+            }
+
+            //Find a name
             $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquename, "group" => $group));
 
             while ($WorkspaceUsingThisName != null) {
