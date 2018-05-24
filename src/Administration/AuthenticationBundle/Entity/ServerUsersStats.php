@@ -98,8 +98,7 @@ class ServerUsersStats
         return Array(
             "id" => $this->getId(),
             "connected" => $this->getConnected(),
-            "datesave" => $this->getDateSave()
-
+            "datesave" => ($this->getDateSave() ? $this->getDateSave()->getTimestamp() : null)
         );
     }
 

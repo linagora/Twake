@@ -56,15 +56,35 @@
 
     </div>
 
-    <div class="box box-default">
-        <div class="box-header with-border">
-            <h3 class="box-title">Drive Usage</h3>
-        </div>
-        <div class="box-body">
-            <div id="drive_chart"></div>
-        </div>
-    </div>
+    <div class="row">
 
+        <div class="col-md-8">
+
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Connected users by hours</h3>
+                </div>
+                <div class="box-body">
+                    <div id="connections_chart"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Drive Usage</h3>
+                </div>
+                <div class="box-body">
+                    <div id="drive_chart"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
 {% endblock main %}
 
 {% block body_javascript %}
@@ -74,5 +94,7 @@
 
     <script type="text/javascript">
         {{ gc_draw(workspaces.drive_usage_chart, 'drive_chart') }}
+
+        {{ gc_draw(users.users_by_hours, 'connections_chart') }}
     </script>
 {% endblock %}

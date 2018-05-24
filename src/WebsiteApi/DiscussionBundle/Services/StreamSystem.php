@@ -59,6 +59,10 @@ class StreamSystem implements StreamSystemInterface
             $stream = new Stream($workspace, $streamName, $streamIsPrivate,$streamDescription);
             $stream->setType($type);
             $this->doctrine->persist($stream);
+            $this->doctrine->flush();
+
+            $this->messageSystem->sendMessage(null, $stream->getAsArray()["key"], false, null, true,
+                "This is the first message.", $workspace);
 
             if (!$streamIsPrivate) {
                 $users = $this->app_workspace_members->getMembers($workspaceId);
@@ -74,9 +78,6 @@ class StreamSystem implements StreamSystemInterface
                 $this->doctrine->persist($link);
             }
             $this->doctrine->flush();
-
-            $this->messageSystem->sendMessage(null,$stream->getAsArray()["key"],false,null,true,
-                "This is the first message.", $workspace);
 
             $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
             $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());

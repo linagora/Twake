@@ -4,6 +4,7 @@
 namespace Administration\AuthenticationBundle\Controller;
 
 use CMEN\GoogleChartsBundle\GoogleCharts\Charts\PieChart;
+use CMEN\GoogleChartsBundle\GoogleCharts\Charts\AreaChart;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -24,6 +25,17 @@ class DashboardController extends Controller
 		$data["users"]["connected"] = $this->get('admin.TwakeStatistics')->numberOfUserCurrentlyConnected();
 		$data["users"]["count"] = $this->get('admin.TwakeStatistics')->numberOfUsers();
 
+        //users by hour
+        $_connections_usage_array = $this->get("admin.TwakeServerStats")->getUsersConnected(1000);
+        $connections_usage_array = [['Date', 'Connected']];
+        foreach ($_connections_usage_array as $datum) {
+            $connections_usage_array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["connected"]];
+        }
+        $connections_usage_chart = new AreaChart();
+        $connections_usage_chart->getData()->setArrayToDataTable($connections_usage_array);
+        $connections_usage_chart->getOptions()->setHeight(200);
+        $data["users"]["users_by_hours"] = $connections_usage_chart;
+
 		//workspaces
 		$data["workspaces"]["count"] = $this->get('admin.TwakeGroupManagement')->countWorkspace();
 		$data["workspaces"]["drive_usage"]= $this->get('admin.TwakeStatistics')->numberOfExtensions();
@@ -33,7 +45,7 @@ class DashboardController extends Controller
 		}
 		$drive_usage_chart = new PieChart();
 		$drive_usage_chart->getData()->setArrayToDataTable($drive_data);
-		$drive_usage_chart->getOptions()->setHeight(500);
+        $drive_usage_chart->getOptions()->setHeight(200);
 		$data["workspaces"]["drive_usage_chart"] = $drive_usage_chart;
 
 		//groups
