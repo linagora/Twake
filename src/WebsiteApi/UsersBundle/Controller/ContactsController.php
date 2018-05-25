@@ -188,9 +188,12 @@ class ContactsController extends Controller
 
         if ($this->getUser()) {
             $username = $request->request->get("username", "");
-            $res = $this->get("app.contacts")->searchUsersByUsername($username);
+            $restrictions = $request->request->get("restriction", "all");
+            $groupId = $request->request->get("groupId", "-1");
+            $workspaceId = $request->request->get("workspaceId", "-1");
+            $res = $this->get("app.contacts")->searchUsersByUsername($username,$restrictions,$groupId,$workspaceId);
             if (!$res) {
-                $data["errors"][] = "empty username";
+                $data["errors"][] = "error";
             } else {
                 $array_user = [];
                 foreach ($res as $user) {
