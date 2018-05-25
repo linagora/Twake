@@ -134,15 +134,19 @@ class Calendars implements CalendarsInterface
         }
 
         $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->removeAllByCalendar($calendar);
-        $this->doctrine->remove($calendarLink);
+
+        $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("calendar" => $calendar));
+        foreach ($links as $link) {
+            $data = Array(
+                "type" => "remove",
+                "calendar_id" => $calendarId
+            );
+            $this->pusher->push($data, "calendar/workspace/" . $link->getWorkspace()->getId());
+            $this->doctrine->remove($link);
+        }
+
         $this->doctrine->remove($calendar);
         $this->doctrine->flush();
-
-        $data = Array(
-            "type" => "remove",
-            "calendar_id" => $calendarId
-        );
-        $this->pusher->push($data, "calendar/workspace/".$workspaceId);
 
     }
 
