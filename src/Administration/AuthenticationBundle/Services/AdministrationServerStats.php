@@ -120,7 +120,7 @@ class AdministrationServerStats
         $serverStat = new ServerUsersStats();
         $serverStat->setDateSave(new \DateTime("now"));
         $serverStat->setConnected($connected);
-        $serverStat->setAccount($accounts);
+        $serverStat->setAccounts($accounts);
 
         $em->persist($serverStat);
         $em->flush();

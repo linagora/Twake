@@ -89,7 +89,7 @@ class GroupManagers implements GroupManagersInterface
             $group = $groupRepository->find($groupId);
             $manager = $groupManagerRepository->findOneBy(Array("user"=>$user, "group"=>$group));
 
-            if(!$manager){
+            if (!$manager || $manager->getExterne()) {
                 return null; //No rights
             }
 
