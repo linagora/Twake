@@ -161,7 +161,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
     }
 
-    public function move($fileOrDirectory, $directory)
+    public function move($fileOrDirectory, $directory, $groupId = null)
     {
 
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
@@ -172,6 +172,13 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         if ($directory != null && $fileOrDirectory->getId() == $directory->getId()) {
+            return false;
+        }
+
+        if($fileOrDirectory->isShared() && $fileOrDirectory->getGroup()->getId() != $directory->getGroup()->getId() ){
+            return false;
+        }
+        if ($groupId == null && $fileOrDirectory->isShared() && $fileOrDirectory->getGroup()->getId() != $groupId ){
             return false;
         }
 
@@ -345,8 +352,18 @@ class DriveFileSystem implements DriveFileSystemInterface
             foreach ($copies as $copy){
                 $this->doctrine->remove($copy);
             }
+            $directory->setShared(false);
         }else{
+            //Set unshared if last
+            $copies = $driveRepository->findBy(Array("copyOf" => $directory));
+            if (count($copies) == 1){
+                $directory->setShared(false);
+            }
+
             $copy = $driveRepository->findOneBy(Array("group" => $groupId,"copyOf" => $directory));
+            if ($copy == null){
+                return false;
+            }
             $this->doctrine->remove($copy);
         }
         $this->doctrine->flush();
@@ -700,6 +717,10 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
         if (!$this->isWorkspaceAllowed($workspace,$fileOrDirectory)){
             return false;
+        }
+        //if deleting a shared file
+        if($fileOrDirectory->getGroup()->getId() != $workspace){
+            return $this->unshare($fileOrDirectory->getGroup()->getId(),$fileOrDirectory,$workspace,false);
         }
 
         // If already in trash force remove
