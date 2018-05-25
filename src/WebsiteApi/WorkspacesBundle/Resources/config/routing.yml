@@ -79,7 +79,7 @@ twake_groups_set_workspace_default:
     path:     /group/workspacedefault/set
     defaults: { _controller: TwakeWorkspacesBundle:GroupApps:setWorkspaceDefault }
 
-twake_groups_remove_application:
+twake_groups_force_application:
     path:     /group/application/force
     defaults: { _controller: TwakeWorkspacesBundle:GroupApps:forceApplication }
 

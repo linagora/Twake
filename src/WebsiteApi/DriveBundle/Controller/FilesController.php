@@ -73,11 +73,12 @@ class FilesController extends Controller
         $fileIds = $request->request->get("fileIds", Array());
 
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
-
         if ($can) {
             foreach ($fileIds as $fileId){
                 $this->get('app.drive.FileSystem')->autoDelete($groupId,$fileId);
             }
+        }else{
+            $data["errors"][] = "notallowed";
         }
 
         return new JsonResponse($data);
@@ -323,7 +324,7 @@ class FilesController extends Controller
                 }
 
                 foreach ($toMove as $id){
-                    $res = $this->get('app.drive.FileSystem')->move(intval($id), $newParentId);
+                    $res = $this->get('app.drive.FileSystem')->move(intval($id), $newParentId,$groupId);
                     if(!$res){
                         $data["errors"][] = "ヾ(⌐■_■)ノ Nice try ヾ(⌐■_■)ノ";
                     }

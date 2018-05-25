@@ -82,7 +82,7 @@ class Workspaces implements WorkspacesInterface
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
             $user = $userRepository->find($userId);
 
-            $groupUserdRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupUserdRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
             $group_user = $groupUserdRepository->findOneBy(Array("group" => $group, "user" => $user));
 
             if (!$group_user || $group_user->getExterne()) {
