@@ -110,6 +110,11 @@ class Message
      */
     private $applicationData = "{}";
 
+    /**
+     * @ORM\Column(type="string", length=40)
+     */
+    private $front_id;
+
 
 	public function __construct($sender,$typeReciever,$reciever,$isApplicationMessage,$applicationMessage,$isSystemMessage,$date,$content,$cleanContent,$subject){
         $this->setUserSender($sender);
@@ -403,11 +408,26 @@ class Message
         return $key;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getFrontId()
+    {
+        return $this->front_id;
+    }
 
+    /**
+     * @param mixed $front_id
+     */
+    public function setFrontId($front_id)
+    {
+        $this->front_id = $front_id;
+    }
 
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
+            "front_id" => $this->getFrontId(),
             "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getId():null,
 
             "recieverType" => $this->getTypeReciever(),

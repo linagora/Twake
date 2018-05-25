@@ -56,15 +56,68 @@
 
     </div>
 
-    <div class="box box-default">
-        <div class="box-header with-border">
-            <h3 class="box-title">Drive Usage</h3>
-        </div>
-        <div class="box-body">
-            <div id="drive_chart"></div>
-        </div>
-    </div>
+    <div class="row">
 
+        <div class="col-md-8">
+
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Connected users by hours</h3>
+                </div>
+                <div class="box-body">
+                    <div id="connections_chart"></div>
+                </div>
+            </div>
+
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Accounts by hours</h3>
+                </div>
+                <div class="box-body">
+                    <div id="accounts_chart"></div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Drive Usage</h3>
+                </div>
+                <div class="box-body">
+                    <div id="drive_chart"></div>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <span class="info-box-icon bg-blue"><i class="fa fa-envelope"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Messages</span>
+                    <span class="info-box-number">{{ nbmessages|number_format(0, '.', ',') }}</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <span class="info-box-icon bg-yellow"><i class="fa fa-file"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Files</span>
+                    <span class="info-box-number">{{ nbfiles|number_format(0, '.', ',') }}</span>
+                </div>
+            </div>
+
+            <div class="info-box">
+                <span class="info-box-icon bg-red"><i class="fa fa-calendar"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Events</span>
+                    <span class="info-box-number">{{ nbevents|number_format(0, '.', ',') }}</span>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
 {% endblock main %}
 
 {% block body_javascript %}
@@ -74,5 +127,9 @@
 
     <script type="text/javascript">
         {{ gc_draw(workspaces.drive_usage_chart, 'drive_chart') }}
+
+        {{ gc_draw(users.users_by_hours, 'connections_chart') }}
+
+        {{ gc_draw(users.accounts_by_hours, 'accounts_chart') }}
     </script>
 {% endblock %}

@@ -32,8 +32,9 @@ class User implements UserInterface
 	private $group_service;
 	private $workspace_service;
     private $pricing_plan;
+    private $restClient;
 
-	public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service,$group_service,$workspace_service,$pricing_plan){
+	public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service,$group_service,$workspace_service,$pricing_plan,$restClient){
 		$this->em = $em;
 		$this->pusher = $pusher;
 		$this->encoder_factory = $encoder_factory;
@@ -49,6 +50,7 @@ class User implements UserInterface
         $this->group_service = $group_service;
         $this->workspace_service = $workspace_service;
         $this->pricing_plan = $pricing_plan;
+        $this->restClient = $restClient;
 	}
 
 	public function current()
@@ -267,7 +269,25 @@ class User implements UserInterface
         return $retour;
     }
 
-	public function subscribeInfo($mail,$password,$pseudo,$firstName,$lastName,$phone,$workspace,$company,$friends){
+    public function testRecaptcha($recaptcha){
+        $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
+        $remoteip = $_SERVER['REMOTE_ADDR'];
+
+        $dataToSend = Array(
+            "secret" => $secret,
+            "response" => $recaptcha,
+            "remoteip" => $remoteip,
+        );
+        $api_url = "https://www.google.com/recaptcha/api/siteverify?secret="
+            . $secret
+            . "&response=" . $recaptcha
+            . "&remoteip=" . $remoteip ;
+
+        $decode = json_decode(file_get_contents($api_url), true);
+        return $decode["success"];
+    }
+
+	public function subscribeInfo($mail,$password,$pseudo,$firstName,$lastName,$phone,$workspace,$company,$friends,$recaptcha){
         $mail = $this->string_cleaner->simplifyMail($mail);
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
 
@@ -279,6 +299,12 @@ class User implements UserInterface
         if($mail==null || $password==null || $pseudo==null){
             return false;
         }
+        if(!$this->testRecaptcha($recaptcha)){
+            error_log("-#-#-#-#-#-#-#-no captcha-#-#-#-#-#-#-#-");
+            return false;
+        }
+
+
         $token = $this->subscribeMail($mail,false);
         $user = $this->subscribe($token,"",$pseudo,$password,true);
         if($user==null || $user== false){

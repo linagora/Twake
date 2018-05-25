@@ -29,6 +29,11 @@ class CalendarEvent {
     private $calendar;
 
     /**
+     * @ORM\Column(name="next_reminder", type="bigint")
+     */
+    private $nextReminder = 0;
+
+    /**
      * @ORM\Column(name="from_ts", type="bigint")
      */
     private $from;
@@ -39,7 +44,7 @@ class CalendarEvent {
     private $to;
 
     /**
-     * @ORM\Column(name="event_json", type="string")
+     * @ORM\Column(name="event_json", type="text")
      */
     private $event;
 
@@ -48,6 +53,7 @@ class CalendarEvent {
         $this->setEvent($event);
         $this->setFrom($from);
         $this->setTo($to);
+        $this->setReminder();
     }
 
     /**
@@ -128,6 +134,33 @@ class CalendarEvent {
     public function setEvent($event)
     {
         $this->event = json_encode($event);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNextReminder()
+    {
+        return $this->nextReminder;
+    }
+
+    /**
+     * @param mixed $nextReminder
+     */
+    public function setNextReminder($nextReminder)
+    {
+        $this->nextReminder = $nextReminder;
+    }
+
+    public function setReminder($delay = 1800)
+    {
+        if ($this->getFrom() < date("U")) {
+            $this->setNextReminder(0);
+            return;
+        }
+        $this->setNextReminder(
+            $this->getFrom() - $delay
+        );
     }
 
     public function getAsArray(){

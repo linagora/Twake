@@ -775,7 +775,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    public function delete($fileOrDirectory)
+    public function delete($fileOrDirectory, $flush = true)
     {
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
 
@@ -785,7 +785,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $this->recursDelete($fileOrDirectory);
 
-        $this->doctrine->flush();
+        if ($flush) {
+            $this->doctrine->flush();
+        }
 
         return true;
     }
@@ -824,8 +826,10 @@ class DriveFileSystem implements DriveFileSystemInterface
         $list = $this->listTrash($workspace);
 
         foreach ($list as $child) {
-            $this->delete($child);
+            $this->delete($child, false);
         }
+
+        $this->doctrine->flush();
 
         return true;
     }

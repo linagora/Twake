@@ -32,4 +32,14 @@ class CalendarEventRepository extends \Doctrine\ORM\EntityRepository
         return $q->getResult();
     }
 
+    public function toRemind()
+    {
+        $qb = $this->createQueryBuilder('e');
+        $qb->where($qb->expr()->neq('e.nextReminder', '0'));
+        $qb->andWhere($qb->expr()->lte('e.nextReminder', date("U")));
+        $q = $qb->getQuery();
+
+        return $q->getResult();
+    }
+
 }
