@@ -34,7 +34,7 @@ class FilesController extends Controller
         if (count($data["errors"]) == 0) {
 
             if (!$this->get('app.drive.FileSystem')->canAccessTo($parentId, $groupId, $this->getUser())) {
-                $data["errors"][] = "notallowed";
+                $data["errors"] = "notallowed";
             } else {
 
                 $file = $this->get('app.drive.FileSystem')->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached);

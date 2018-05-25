@@ -88,9 +88,9 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $workspace->setDriveSize($space);
     }
 
-    public function canAccessTo($file, $workspace, $user = null)
+    public function canAccessTo($file, $workspaceId, $user = null)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        $workspace = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
         $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
         if ($workspace == null) {
             return false;
@@ -98,7 +98,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         if ($file == null) {
             return true;
         }
-        return $file->getDetachedFile() || $file->getGroup() == $workspace;
+        return $file->getDetachedFile() || $this->isWorkspaceAllowed($workspaceId,$file);
     }
 
 
@@ -175,7 +175,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             return false;
         }
 
-        if($fileOrDirectory->isShared() && $fileOrDirectory->getGroup()->getId() != $directory->getGroup()->getId() ){
+        if($fileOrDirectory->getShared() && $fileOrDirectory->getGroup()->getId() != $directory->getGroup()->getId() ){
             return false;
         }
         if ($groupId == null && $fileOrDirectory->isShared() && $fileOrDirectory->getGroup()->getId() != $groupId ){
