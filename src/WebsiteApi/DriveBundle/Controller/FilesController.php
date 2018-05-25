@@ -415,9 +415,6 @@ class FilesController extends Controller
         $fileId = $request->request->get("fileSearchedId", 0);
 
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
-            if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
-                $data["errors"][] = "notallowed";
-            }
             $files = $this->get('app.drive.FileSystem')->getSharedWorkspace($groupId,$fileId);
             if (count($files) != 0 && !$files ) {
                 $data["errors"][] = "unknown";
@@ -426,6 +423,7 @@ class FilesController extends Controller
                 foreach ($files as $file) {
                     $data["data"]["workspaces"][] = $file->getGroup()->getAsArray();
                 }
+                $data["data"]["owner"] = $this->get('app.drive.FileSystem')->isFolderOwner($groupId,$fileId);
             }
         }else{
             $data["errors"][] = "notallowed";

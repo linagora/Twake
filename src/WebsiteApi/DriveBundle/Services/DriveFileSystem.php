@@ -308,6 +308,20 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
+    public function isFolderOwner($groupId,$fileId){
+        $directory = $this->convertToEntity($fileId, "TwakeDriveBundle:DriveFile");
+
+        if (!$this->isWorkspaceAllowed($groupId,$directory)){
+            return false;
+        }
+
+        $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $res = $driveRepository->findOneBy(Array("id"=> $fileId,"group"=>$groupId,"copyOf" => null));
+
+        return isset($res);
+
+    }
+
     public function share($groupId,$directory, $targetgroupId)
     {
 
