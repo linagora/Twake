@@ -209,7 +209,7 @@ class FilesController extends Controller
                 $arbo = [];
                 $parent = $this->get('app.drive.FileSystem')->getObject($parentId);
                 while ($parent != null) {
-                    $arbo[] = Array("id" => $parent->getId(), "name" => $parent->getName());
+                    $arbo[] = Array("id" => $parent->getId(), "name" => $parent->getName(), "shared" => $parent->getShared());
                     $parent = $parent->getParent();
                 }
                 $data["data"]["tree"] = array_reverse($arbo);
