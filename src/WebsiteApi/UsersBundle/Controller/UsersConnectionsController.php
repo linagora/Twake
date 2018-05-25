@@ -24,7 +24,7 @@ class UsersConnectionsController extends Controller
     public function autoLoginAction(Request $request)
     {
         $this->loginAction($request);
-        return $this->redirect('https://app.twakeapp.com');
+        return $this->redirect($this->getParameter("SERVER_NAME"));
     }
 	public function loginAction(Request $request)
 	{
@@ -68,7 +68,7 @@ class UsersConnectionsController extends Controller
         if(!$ok){
             return $this->redirect('https://twakeapp.com/signin');
         }
-        return $this->redirect("https://app.twakeapp.com");
+        return $this->redirect($this->getParameter("SERVER_NAME"));
     }
 
 	public function logoutAction(Request $request)
