@@ -34,7 +34,7 @@ class FilesController extends Controller
         if (count($data["errors"]) == 0) {
 
             if (!$this->get('app.drive.FileSystem')->canAccessTo($parentId, $groupId, $this->getUser())) {
-                $data["errors"][] = "notallowed";
+                $data["errors"] = "notallowed";
             } else {
 
                 $file = $this->get('app.drive.FileSystem')->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached);
@@ -142,10 +142,7 @@ class FilesController extends Controller
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read");
 
         if ($can) {
-
-            $data = $this->get('app.drive.FileSystem')->getInfos($groupId,$objectId);
-            $data["data"] = $data;
-
+            $data["data"] = $this->get('app.drive.FileSystem')->getInfos($groupId,$objectId);
         }
 
         return new JsonResponse($data);
@@ -218,16 +215,20 @@ class FilesController extends Controller
                 $data["data"]["tree"] = array_reverse($arbo);
             }
 
-            foreach ($files as $index => $file) {
+            if(count($files) != 0 && $files == false){
+                $data["data"]["error"] = "notauthorized";
+            }else{
+                foreach ($files as $index => $file) {
 
-                if ($file->getCopyOf() != null){//if it's a copy shortcut to another folder, link directly the folder
-                    $data["data"]["files"][] = $this->get('app.drive.FileSystem')->getInfos($groupId,$file->getCopyOf(),true);
-                    $data["data"]["files"][$index]["shortcut"] = true;
-                }else{
-                    $data["data"]["files"][] = $this->get('app.drive.FileSystem')->getInfos($groupId,$file,true);
-                    $data["data"]["files"][$index]["shortcut"] = false;
+                    if ($file->getCopyOf() != null){//if it's a copy shortcut to another folder, link directly the folder
+                        $data["data"]["files"][] = $this->get('app.drive.FileSystem')->getInfos($groupId,$file->getCopyOf(),true);
+                        $data["data"]["files"][$index]["shortcut"] = true;
+                    }else{
+                        $data["data"]["files"][] = $this->get('app.drive.FileSystem')->getInfos($groupId,$file,true);
+                        $data["data"]["files"][$index]["shortcut"] = false;
+                    }
+
                 }
-
             }
 
             $data["data"]["maxspace"] = $this->get('app.drive.FileSystem')->getTotalSpace($groupId);
@@ -402,6 +403,33 @@ class FilesController extends Controller
 
         return new Response(json_encode("not found"), 404);
 
+    }
+
+    public function getSharedAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array()
+        );
+
+        $groupId = $request->request->get("groupId", 0);
+        $fileId = $request->request->get("fileSearchedId", 0);
+
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
+            $files = $this->get('app.drive.FileSystem')->getSharedWorkspace($groupId,$fileId);
+            if (count($files) != 0 && !$files ) {
+                $data["errors"][] = "unknown";
+            }else{
+                $data["data"]["workspaces"] = Array();
+                foreach ($files as $file) {
+                    $data["data"]["workspaces"][] = $file->getGroup()->getAsArray();
+                }
+                $data["data"]["owner"] = $this->get('app.drive.FileSystem')->isFolderOwner($groupId,$fileId);
+            }
+        }else{
+            $data["errors"][] = "notallowed";
+        }
+
+        return new JsonResponse($data);
     }
 
     public function shareAction(Request $request)

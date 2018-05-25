@@ -88,9 +88,9 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $workspace->setDriveSize($space);
     }
 
-    public function canAccessTo($file, $workspace, $user = null)
+    public function canAccessTo($file, $workspaceId, $user = null)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        $workspace = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
         $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
         if ($workspace == null) {
             return false;
@@ -98,7 +98,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         if ($file == null) {
             return true;
         }
-        return $file->getDetachedFile() || $file->getGroup() == $workspace;
+        return $file->getDetachedFile() || $this->isWorkspaceAllowed($workspaceId,$file);
     }
 
 
@@ -175,7 +175,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             return false;
         }
 
-        if($fileOrDirectory->isShared() && $fileOrDirectory->getGroup()->getId() != $directory->getGroup()->getId() ){
+        if($fileOrDirectory->getShared() && $fileOrDirectory->getGroup()->getId() != $directory->getGroup()->getId() ){
             return false;
         }
         if ($groupId == null && $fileOrDirectory->isShared() && $fileOrDirectory->getGroup()->getId() != $groupId ){
@@ -294,17 +294,45 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    public function share($ownerGroupId,$directory, $groupId)
-    {
+    public function getSharedWorkspace($groupId,$fileId){
+        $directory = $this->convertToEntity($fileId, "TwakeDriveBundle:DriveFile");
 
-        $fileOrDirectory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
-        $group = $this->convertToEntity($groupId, "TwakeWorkspacesBundle:Workspace");
-
-        if ($fileOrDirectory == null || $fileOrDirectory->getIsDirectory() == false) {
+        if (!$this->isWorkspaceAllowed($groupId,$directory)){
             return false;
         }
 
-        if (!$this->isWorkspaceAllowed($ownerGroupId,$directory)){
+        $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $shared = $driveRepository->findBy(Array("copyOf" => $directory));
+
+        return $shared;
+
+    }
+
+    public function isFolderOwner($groupId,$fileId){
+        $directory = $this->convertToEntity($fileId, "TwakeDriveBundle:DriveFile");
+
+        if (!$this->isWorkspaceAllowed($groupId,$directory)){
+            return false;
+        }
+
+        $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $res = $driveRepository->findOneBy(Array("id"=> $fileId,"group"=>$groupId,"copyOf" => null));
+
+        return isset($res);
+
+    }
+
+    public function share($groupId,$directory, $targetgroupId)
+    {
+
+        $fileOrDirectory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
+        $group = $this->convertToEntity($targetgroupId, "TwakeWorkspacesBundle:Workspace");
+
+        if ($fileOrDirectory == null || $fileOrDirectory->getIsDirectory() == false || $groupId == $targetgroupId) {
+            return false;
+        }
+
+        if (!$this->isWorkspaceAllowed($groupId,$directory)){
             return false;
         }
 
@@ -335,14 +363,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    public function unshare($ownerGroupId,$directory, $groupId,$removeAll)
+    public function unshare($groupId,$directory, $targetgroupId,$removeAll)
     {
         $fileOrDirectory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
 
         if ($fileOrDirectory == null || $fileOrDirectory->getIsDirectory() == false) {
             return false;
         }
-        if (!$this->isWorkspaceAllowed($ownerGroupId,$directory)){
+        if (!$this->isWorkspaceAllowed($groupId,$directory)){
             return false;
         }
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
@@ -352,15 +380,15 @@ class DriveFileSystem implements DriveFileSystemInterface
             foreach ($copies as $copy){
                 $this->doctrine->remove($copy);
             }
-            $directory->setShared(false);
+            $fileOrDirectory->setShared(false);
         }else{
             //Set unshared if last
             $copies = $driveRepository->findBy(Array("copyOf" => $directory));
             if (count($copies) == 1){
-                $directory->setShared(false);
+                $fileOrDirectory->setShared(false);
             }
 
-            $copy = $driveRepository->findOneBy(Array("group" => $groupId,"copyOf" => $directory));
+            $copy = $driveRepository->findOneBy(Array("group" => $targetgroupId,"copyOf" => $directory));
             if ($copy == null){
                 return false;
             }
@@ -599,6 +627,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function listDirectory($workspaceId, $directory, $trash = false)
     {
+
         $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
         $workspace = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
 
