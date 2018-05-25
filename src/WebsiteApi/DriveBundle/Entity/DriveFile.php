@@ -319,6 +319,9 @@ class DriveFile
     public function setSize($size)
     {
         $this->size = $size;
+        if($this->size < 10){
+            $this->size = 10;
+        }
     }
 
     /**

@@ -748,7 +748,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             return false;
         }
         //if deleting a shared file
-        if($fileOrDirectory->getGroup()->getId() != $workspace){
+        if($fileOrDirectory->getIsDirectory() && $fileOrDirectory->getGroup()->getId() != $workspace){
             return $this->unshare($fileOrDirectory->getGroup()->getId(),$fileOrDirectory,$workspace,false);
         }
 
@@ -1219,7 +1219,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $dir = $this->convertToEntity($directoryId,"TwakeDriveBundle:DriveFile");
         while($dir != null){
             //If it's mine
-            if ($workspaceId == $dir->getGroup()->getId()){
+            if ($workspace->getId() == $dir->getGroup()->getId()){
                 return true;
             }
             //if it's shared..
