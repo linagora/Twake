@@ -62,6 +62,7 @@ class WorkspaceController extends Controller
                 $group = $groupRepository->find($wp->getGroup()->getId());
 
                 $level = $this->get("app.group_managers")->getLevel($group,$this->getUser()->getId());
+
                 $privileges = $this->get("app.group_managers")->getPrivileges($level);
                 $response["data"]["group"]["level"] = $privileges;
 

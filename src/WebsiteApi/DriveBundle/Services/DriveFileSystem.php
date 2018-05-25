@@ -1054,7 +1054,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             $completePath = $this->decode($completePath, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
 
 
-            $ext = $this->getInfos($file)['extension'];
+            $ext = $this->getInfos(null, $file, true)['extension'];
 
             header('Content-Description: File Transfer');
 

@@ -54,7 +54,7 @@ class GroupManagers implements GroupManagersInterface
     }
 
     public function getPrivileges($level){
-        if($level == null){
+        if ($level === null) {
             return null;
         }
         return $this->privileges[$level];

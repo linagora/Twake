@@ -543,7 +543,7 @@ class MessageSystem implements MessagesSystemInterface
             $retour = [];
             foreach ($messages as $message) {
                 $mess = $message->getAsArray();
-                $mess["file"] = $this->fileSystem->getInfos($message->getApplicationData()["file"]);
+                $mess["file"] = $this->fileSystem->getInfos(null, $message->getApplicationData()["file"], true);
                 $retour[] = $mess;
             }
         }
