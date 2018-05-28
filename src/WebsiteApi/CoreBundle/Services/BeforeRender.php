@@ -23,7 +23,7 @@ class BeforeRender
 
 	public function beforeRender(FilterResponseEvent $event){
 
-        if (strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
+        if (isset($_SERVER['HTTP_ORIGIN']) && strpos("http://localhost", $_SERVER['HTTP_ORIGIN']) == 0) {
             $event->getResponse()->headers->set('Access-Control-Allow-Origin', $_SERVER['HTTP_ORIGIN']); //Allow App
         }
         $event->getResponse()->headers->set('Access-Control-Allow-Headers', ' Content-Type, *');

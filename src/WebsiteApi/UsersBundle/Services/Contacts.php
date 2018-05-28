@@ -21,12 +21,42 @@ class Contacts implements ContactsInterface
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		return $userRepository->findOneBy(Array("username"=>$username));
 	}
-    public function searchUsersByUsername($username)
+    public function searchUsersByUsername($username,$restrictions,$groupId,$workspaceId)
     {
         if($username == "")
-            return false;
+            return "empty username";
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        return $users = $userRepository->findByName($username);
+
+        $users = $userRepository->findByName($username);
+
+        if($restrictions == "all"){
+            return $users;
+        }
+        $res = [] ;
+        if($restrictions == "group"){
+            $groupUserRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
+
+            foreach($users as $user){
+                $groupUser = $groupUserRepository->findBy(Array("group" => $groupId, "user"=>$user));
+                if(!$groupUser ){
+                    $res[] = ($user);
+                }
+            }
+        }
+
+        if($restrictions == "workspace"){
+            $workspaceUsers = $this->em->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+
+            foreach($users as $user){
+                $workspaceUser = $workspaceUsers->findBy(Array("workspace" => $workspaceId, "user"=>$user));
+                if(!$workspaceUser ){
+                    $res[] = ($user);
+                }
+            }
+        }
+
+        return $res;
+
     }
 	public function ask($current_user, $user)
 	{

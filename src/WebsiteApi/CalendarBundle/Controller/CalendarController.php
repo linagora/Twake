@@ -122,11 +122,14 @@ class CalendarController extends Controller
         $workspaceId = $request->request->get("workspaceId");
         $calendarId = $request->request->get("calendarId");
 
-        $calendars = $this->get("app.calendars")->getCalendarShare($workspaceId, $calendarId, $this->getUser()->getId());
+        $linkCalendars = $this->get("app.calendars")->getCalendarShare($workspaceId, $calendarId, $this->getUser()->getId());
 
         $calendars_formated = Array();
-        foreach ($calendars as $calendar){
-            $calendars_formated = $calendar->getAsArray();
+        foreach ($linkCalendars as $calendar){
+            if($calendar->getWorkspace() != null){
+                $calendars_formated[] = $calendar->getWorkspace()->getAsArray();
+            }
+
         }
         $data['data'] = $calendars_formated;
 

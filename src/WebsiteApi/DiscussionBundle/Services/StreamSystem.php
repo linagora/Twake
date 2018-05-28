@@ -59,25 +59,28 @@ class StreamSystem implements StreamSystemInterface
             $stream = new Stream($workspace, $streamName, $streamIsPrivate,$streamDescription);
             $stream->setType($type);
             $this->doctrine->persist($stream);
-            $link = $stream->addMember($user);
-            $this->doctrine->persist($link);
             $this->doctrine->flush();
 
-            $this->messageSystem->sendMessage(null,$stream->getAsArray()["key"],false,null,true,
+            $this->messageSystem->sendMessage(null, $stream->getAsArray()["key"], false, null, true,
                 "This is the first message.", $workspace);
+
+            if (!$streamIsPrivate) {
+                $users = $this->app_workspace_members->getMembers($workspaceId);
+                foreach ($users as $user_) {
+                    $user = $user_["user"];
+                    if ($this->levelManager->can($workspace, $user, "messages:read")) {
+                        $link = $stream->addMember($user);
+                        $this->doctrine->persist($link);
+                    }
+                }
+            } else {
+                $link = $stream->addMember($user);
+                $this->doctrine->persist($link);
+            }
+            $this->doctrine->flush();
 
             $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
             $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
-
-            $users = $this->app_workspace_members->getMembers($workspaceId);
-            foreach ($users as $user_) {
-                $user = $user_["user"];
-                if ($this->levelManager->can($workspace, $user, "messages:read")) {
-                    $link = $stream->addMember($user);
-                    $this->doctrine->persist($link);
-                }
-            }
-            $this->doctrine->flush();
 
             $retour = array_merge($stream->getAsArray(),Array("notifications"=>$notifications["notifications"], "subject_notifications"=>$notifications["subject_notifications"], "lastread"=>$notifications["lastread"],"call"=>$callInfos));
 

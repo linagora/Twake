@@ -133,8 +133,8 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 
 	public function sendNotification($message, $workspace, $users)
 	{
-		$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
-			->findOneBy(Array("url" => "messages-auto"));
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
+            ->findOneBy(Array("url" => "messages-auto"));
 		if ($message->getStreamReciever()->getType() != "user") {
 			$channelName = $message->getStreamReciever()->getName();
 			if($channelName[0]==":"){
@@ -143,9 +143,13 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 			if ($message->getIsSystemMessage()) {
 				return;
 			} elseif ($message->getIsApplicationMessage()) {
-				$msg = "#" . $channelName;
+                $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
+                    ->find($message->getApplicationSender());
+                if ($application) {
+                    $msg = $application->getName() . " added a message in #" . $channelName;
+                }
 			} else {
-				$msg = "#" . $channelName . " : @" . $message->getUserSender()->getUsername() . " " . $message->getContent();
+                $msg = "@" . $message->getUserSender()->getUsername() . " " . $message->getContent() . " in " . "#" . $channelName;
 			}
 		} else {
 			$msg = "@" . $message->getUserSender()->getUsername() . " : " . $message->getContent();

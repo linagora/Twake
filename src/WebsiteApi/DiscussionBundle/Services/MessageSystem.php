@@ -190,7 +190,7 @@ class MessageSystem implements MessagesSystemInterface
     }
 
 
-    public function sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify = true)
+    public function sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify = true, $front_id = "")
     {
 
         if ($workspace != null) {
@@ -236,6 +236,8 @@ class MessageSystem implements MessagesSystemInterface
             $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
             $dateTime = new \DateTime(date('Y-m-d H:i:s.' . $micro, $t));
             $message = new Message($sender, "S", $stream, $isApplicationMessage, $application, $isSystemMessage, $dateTime, $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), $subject);
+            $message->setFrontId($front_id);
+
             if ($messageData != null) {
                 $message->setApplicationData($messageData);
             }
@@ -270,7 +272,7 @@ class MessageSystem implements MessagesSystemInterface
 
         if ($file != null && $driveApplication != null) {
             $messageData = Array("file" => $file->getId());
-            return $this->sendMessage($senderId, $key, true, $driveApplication, false, $content, $workspace, $subjectId, $messageData);
+            return $this->sendMessage($senderId, $key, true, $driveApplication, false, $content, $workspace, $subjectId, $messageData, false);
         }
         return false;
     }
@@ -541,7 +543,7 @@ class MessageSystem implements MessagesSystemInterface
             $retour = [];
             foreach ($messages as $message) {
                 $mess = $message->getAsArray();
-                $mess["file"] = $this->fileSystem->getInfos($message->getApplicationData()["file"]);
+                $mess["file"] = $this->fileSystem->getInfos(null, $message->getApplicationData()["file"], true);
                 $retour[] = $mess;
             }
         }

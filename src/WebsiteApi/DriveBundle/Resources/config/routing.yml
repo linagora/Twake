@@ -62,6 +62,21 @@ twake_drive_rename:
     defaults: { _controller: TwakeDriveBundle:Files:rename }
     methods: [POST]
 
+twake_drive_getshared:
+    path:     /getShared
+    defaults: { _controller: TwakeDriveBundle:Files:getShared }
+    methods: [POST]
+
+twake_drive_share:
+    path:     /share
+    defaults: { _controller: TwakeDriveBundle:Files:share }
+    methods: [POST]
+
+twake_drive_unshare:
+    path:     /unshare
+    defaults: { _controller: TwakeDriveBundle:Files:unshare }
+    methods: [POST]
+
 twake_drive_content_get_details:
     path:     /details
     defaults: { _controller: TwakeDriveBundle:Files:getDetails }
