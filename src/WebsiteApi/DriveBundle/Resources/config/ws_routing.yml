@@ -1,0 +1,7 @@
+drive_topic:
+    channel: drive/{workspace_id}
+    handler:
+        callback: 'drive.topic'
+    requirements:
+        workspace_id:
+            pattern: "[0-9]+"

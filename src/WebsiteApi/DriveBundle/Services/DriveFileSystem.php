@@ -20,14 +20,16 @@ class DriveFileSystem implements DriveFileSystemInterface
     var $parameter_drive_salt;
     var $pricingService;
     var $preview;
+    var $pusher;
 
-    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview)
+    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher)
     {
         $this->doctrine = $doctrine;
         $this->root = $rootDirectory;
         $this->parameter_drive_salt = $parameter_drive_salt;
         $this->pricingService = $pricing;
         $this->preview = $preview;
+        $this->pusher = $pusher;
     }
 
     private function convertToEntity($var, $repository)
@@ -202,6 +204,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($fileOrDirectory);
         $this->doctrine->flush();
 
+        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
+
         return true;
     }
 
@@ -360,10 +364,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($fileOrDirectory);
         $this->doctrine->persist($newFile);
         $this->doctrine->flush();
+
+        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
+        $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
+
         return true;
     }
 
-    public function unshare($groupId,$directory, $targetgroupId,$removeAll)
+    public function unshare($groupId, $directory, $targetgroupId, $removeAll)
     {
         $fileOrDirectory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
 
@@ -395,6 +403,9 @@ class DriveFileSystem implements DriveFileSystemInterface
             $this->doctrine->remove($copy);
         }
         $this->doctrine->flush();
+
+        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
+        $this->pusher->push(Array("action" => "update"), "drive/" . $targetgroupId);
 
         return true;
     }
@@ -454,6 +465,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->flush();
 
         $this->updateLabelsCount($fileOrDirectory->getGroup());
+
+        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
 
         return true;
 
@@ -517,6 +530,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $this->doctrine->persist($newFile);
         $this->doctrine->flush();
+
+        $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
 
         return $newFile;
     }
@@ -880,6 +895,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->flush();
         $this->updateLabelsCount($workspace);
 
+        $this->pusher->push(Array("action" => "update"), "drive/" . $workspace->getId());
+
         return true;
     }
 
@@ -900,6 +917,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         foreach ($list as $child) {
             $this->restore($child);
         }
+
+        $this->pusher->push(Array("action" => "update"), "drive/" . $workspace->getId());
 
         return true;
     }
