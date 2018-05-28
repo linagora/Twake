@@ -453,6 +453,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         //Flush
         $this->doctrine->flush();
 
+        $this->updateLabelsCount($fileOrDirectory->getGroup());
+
         return true;
 
     }
@@ -799,6 +801,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             }
         }
 
+        $this->removeLabels($fileOrDirectory, false);
         $this->doctrine->remove($fileOrDirectory);
 
         return true;
@@ -816,9 +819,25 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         if ($flush) {
             $this->doctrine->flush();
+            $this->updateLabelsCount($fileOrDirectory->getGroup());
         }
 
         return true;
+    }
+
+    private function removeLabels($fileOrDirectory, $flush = true)
+    {
+
+        $labels_link = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("file" => $fileOrDirectory));
+
+        foreach ($labels_link as $label_link) {
+            $this->doctrine->remove($label_link);
+        }
+
+        if ($flush) {
+            $this->doctrine->flush();
+        }
+
     }
 
     public function restore($fileOrDirectory)
@@ -859,6 +878,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $this->doctrine->flush();
+        $this->updateLabelsCount($workspace);
 
         return true;
     }
@@ -1235,6 +1255,22 @@ class DriveFileSystem implements DriveFileSystemInterface
             $dir = $dir->getParent();
         }
         return false;
+    }
+
+    private function updateLabelsCount($workspace, $flush = true)
+    {
+        $labelsRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel");
+
+        foreach ($labelsRepository->findBy(Array("workspace" => $workspace)) as $label) {
+            $count = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->countByLabel($label);
+            $label->setNumber($count);
+            $this->doctrine->persist($label);
+        }
+
+        if ($flush) {
+            $this->doctrine->flush();
+        }
+
     }
 
 }

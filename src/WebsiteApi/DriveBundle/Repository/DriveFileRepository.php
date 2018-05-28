@@ -44,11 +44,13 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
 
     public function listDirectory($group, $directory = null, $trash = false, $detached = false)
     {
+
         if ($directory){
             return $this->findBy(Array(
                 "parent" => $directory,
                 "isInTrash" => $trash,
-                "detached_file" => $detached
+                "detached_file" => $detached,
+                "copyOf" => null
             ), Array("name" => "ASC"));
         }
 

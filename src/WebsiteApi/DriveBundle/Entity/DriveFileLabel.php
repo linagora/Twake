@@ -27,11 +27,11 @@ class DriveFileLabel
 	 */
 	private $file;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveLabel",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=false)
-	 */
-	private $label;
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveLabel",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $label;
 
 	public function __construct($file, $label){
 		$this->label = $label;

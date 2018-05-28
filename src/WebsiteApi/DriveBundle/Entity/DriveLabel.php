@@ -38,6 +38,11 @@ class DriveLabel
 	 */
 	private $color;
 
+    /**
+     * @ORM\Column(name="number", type="integer")
+     */
+    private $number = 0;
+
 
 	public function __construct($workspace, $name, $color="000000"){
 		$this->workspace = $workspace;
@@ -93,11 +98,28 @@ class DriveLabel
         return $this->workspace;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getNumber()
+    {
+        return $this->number;
+    }
+
+    /**
+     * @param mixed $number
+     */
+    public function setNumber($number)
+    {
+        $this->number = $number;
+    }
+
 	public function getAsArray(){
 		return Array(
 			"id" => $this->id,
 			"name" => $this->name,
-			"color" => "#".$this->color
+            "color" => "#" . $this->color,
+            "number" => $this->number
 		);
 	}
 
