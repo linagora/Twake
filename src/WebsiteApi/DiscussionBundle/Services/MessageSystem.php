@@ -272,7 +272,7 @@ class MessageSystem implements MessagesSystemInterface
 
         if ($file != null && $driveApplication != null) {
             $messageData = Array("file" => $file->getId());
-            return $this->sendMessage($senderId, $key, true, $driveApplication, false, $content, $workspace, $subjectId, $messageData);
+            return $this->sendMessage($senderId, $key, true, $driveApplication, false, $content, $workspace, $subjectId, $messageData, false);
         }
         return false;
     }

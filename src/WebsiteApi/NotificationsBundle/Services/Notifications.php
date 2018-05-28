@@ -138,7 +138,7 @@ class Notifications implements NotificationsInterface
 			if(in_array("push", $type)){
 				$totalNotifications = $this->countAll($user) + 1;
 				if($useDevices) {
-					@$this->pushDevice($user, $data["text"], $title, $totalNotifications, $data);
+                    @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $data);
 				}else{
 					@$this->updateDeviceBadge($user, $totalNotifications);
 				}
