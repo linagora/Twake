@@ -143,16 +143,24 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 			if ($message->getIsSystemMessage()) {
 				return;
 			} elseif ($message->getIsApplicationMessage()) {
-                $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
+                $sender_application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
                     ->find($message->getApplicationSender());
-                if ($application) {
-                    $msg = $application->getName() . " added a message in #" . $channelName;
+                if ($sender_application) {
+                    $msg = $sender_application->getName() . " added a message in #" . $channelName;
                 }
 			} else {
                 $msg = "@" . $message->getUserSender()->getUsername() . " " . $message->getContent() . " in " . "#" . $channelName;
 			}
 		} else {
-			$msg = "@" . $message->getUserSender()->getUsername() . " : " . $message->getContent();
+            if ($message->getIsApplicationMessage()) {
+                $sender_application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
+                    ->find($message->getApplicationSender());
+                if ($sender_application) {
+                    $msg = $sender_application->getName() . " added a message in a discussion with @" . $message->getUserSender()->getUsername();
+                }
+            } else {
+                $msg = "@" . $message->getUserSender()->getUsername() . " : " . $message->getContent();
+            }
 		}
 		$this->notificationSystem->pushNotification($application->getId(), $workspace->getId(), $users, null, null, $msg, Array("push"));
 	}
