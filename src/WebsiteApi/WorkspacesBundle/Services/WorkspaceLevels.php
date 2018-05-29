@@ -69,7 +69,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	{
 		if($currentUserId == null
 			|| $currentUserId == $userId
-			|| $this->can($workspaceId, $currentUserId, "levels:view")
+            || $this->can($workspaceId, $currentUserId, "")
 		){
 
 			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
@@ -243,7 +243,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function getUsers($workspaceId, $levelId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "levels:view")
+            || $this->can($workspaceId, $currentUserId, "workspace:read")
 		) {
 
 			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
@@ -273,7 +273,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function getLevels($workspaceId, $currentUserId = null)
 	{
 		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "levels:view")
+            || $this->can($workspaceId, $currentUserId, "workspace:read")
 		) {
 
 			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
@@ -295,7 +295,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 	public function getByLabel($workspaceId,$label, $currentUserId = null){
         if($currentUserId == null
-            || $this->can($workspaceId, $currentUserId, "levels:view")
+            || $this->can($workspaceId, $currentUserId, "workspace:read")
         ) {
 
             $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");

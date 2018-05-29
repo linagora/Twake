@@ -142,7 +142,15 @@ class FilesController extends Controller
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read");
 
         if ($can) {
-            $data["data"] = $this->get('app.drive.FileSystem')->getInfos($groupId,$objectId);
+            $data["data"] = $this->get('app.drive.FileSystem')->getInfos($groupId, $objectId, true);
+        }
+
+        if (!$data["data"] && $this->get('app.workspace_levels')->can(
+                $this->get('app.drive.FileSystem')->getWorkspace($objectId),
+                $this->getUser()->getId(), "drive:read")) {
+            $data["data"] = $this->get('app.drive.FileSystem')->getInfos(
+                $this->get('app.drive.FileSystem')->getWorkspace($objectId),
+                $objectId, true);
         }
 
         return new JsonResponse($data);
