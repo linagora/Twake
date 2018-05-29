@@ -258,4 +258,15 @@ class Calendars implements CalendarsInterface
 
         return $allLinks;
     }
+
+    public function addWorkspaceMember($workspace, $user)
+    {
+        //Nothing to do
+    }
+
+    public function delWorkspaceMember($workspace, $user)
+    {
+        //Nothing to do
+    }
+
 }
