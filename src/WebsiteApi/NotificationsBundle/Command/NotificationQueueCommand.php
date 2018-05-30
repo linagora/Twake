@@ -22,39 +22,46 @@ class NotificationQueueCommand extends ContainerAwareCommand
         $em = $doctrine->getManager();
         $services = $this->getApplication()->getKernel()->getContainer();
         $circle = $services->get("circle.restclient");
-        $key = $this->getContainer()->getParameter('licence_key');
+        $key = $this->getContainer()->getParameter('LICENCE_KEY');
         $server = $this->getContainer()->getParameter('PUSH_NOTIFICATION_SERVER');
         $notifRepo = $em->getRepository("TwakeNotificationsBundle:PushNotificationQueue");
 
-        //while(true) {
-        //Lock
-        $notifications = $notifRepo->findBy(Array(), Array(), 1, 0);
-        foreach ($notifications as $notification) {
-            $em->remove($notification);
-        }
-        $em->flush();
-        //Unlock
+        $limit = date("U", date("U") + 60);
 
-        if (!$this->getContainer()->getParameter('STANDALONE')) {
-            $masterServer = "https://app.twakeapp.com/api/remote/push";
-            $dataArray = Array(
-                "licenceKey" => $key,
-                "data" => Array()
-            );
-            foreach ($notifications as $notification) {
-                $dataArray["data"][] = $notification->getText();
-            }
-            error_log(json_encode($dataArray));
-            $r = $circle->post($masterServer, json_encode($dataArray), array(CURLOPT_CONNECTTIMEOUT => 1));
-            var_dump($r);
+        while (date("U") < $limit) {
 
-        }else{
+            // TODO Lock
+            $notifications = $notifRepo->findBy(Array(), Array(), 20, 0);
             foreach ($notifications as $notification) {
-                $data = $notification->getText();
-                $circle->post($server, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1));
+                $em->remove($notification);
+            }
+            $em->flush();
+            //Unlock
+
+            if (count($notifications) == 0) {
+                sleep(1);
+            } else {
+
+                if (!$this->getContainer()->getParameter('STANDALONE')) {
+                    $masterServer = "https://app.twakeapp.com/api/remote/push";
+                    $dataArray = Array(
+                        "licenceKey" => $key,
+                        "data" => Array()
+                    );
+                    foreach ($notifications as $notification) {
+                        $dataArray["data"][] = $notification->getText();
+                    }
+                    $circle->post($masterServer, json_encode($dataArray), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+
+                } else {
+                    foreach ($notifications as $notification) {
+                        $data = $notification->getText();
+                        $circle->post($server, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1));
+                    }
+                }
+
             }
         }
-        //}
 
     }
 

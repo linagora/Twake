@@ -268,26 +268,6 @@ class Notifications implements NotificationsInterface
         }
     }
 
-    public function pushDeviceInternalViaRemote($type, $deviceId, $message, $title, $badge, $data)
-    {
-        $data = Array(
-            "type" => $type,
-            "deviceId" => $deviceId,
-            "message" => $message,
-            "title" => $title,
-            "badge" => $badge,
-            "data" => $data
-        );
-
-        $masterServer = "https://app.twakeapp.com/api/remote";
-        $data = Array(
-            "licenceKey" => $this->licenceKey,
-            "data" => $data
-        );
-        $this->circle->post($masterServer . "/push", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1));
-
-    }
-
 
     public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $data)
     {
@@ -301,19 +281,11 @@ class Notifications implements NotificationsInterface
             "title" => $title,
             "data" => $data,
             "badge" => $badge,
-            "device_id" => $deviceId
+            "device_id" => $deviceId,
+            "type" => $type
         );
         try {
-            if (strtoupper($type) == "FCM") {
-                $data["type"] = "fcm";
-                $element = new PushNotificationQueue($data);
-                //$this->circle->post($this->pushNotificationServer, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1));
-            }
-            if (strtoupper($type) == "APNS") {
-                $data["type"] = "apns";
-                $element = new PushNotificationQueue($data);
-                //$this->circle->post($this->pushNotificationServer, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1));
-            }
+            $element = new PushNotificationQueue($data);
             $this->doctrine->persist($element);
             $this->doctrine->flush();
         } catch (\Exception $exception) {
