@@ -68,7 +68,8 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
     {
         $qb = $this->createQueryBuilder('f')
             ->select('f')
-            ->where('f.group = :group');
+            ->where('f.group = :group')
+            ->andWhere('f.isInTrash = 0');
 
         foreach ($sorts as $key=>$sort){
             $qb = $qb->addOrderBy("f.".$key, $sort);
