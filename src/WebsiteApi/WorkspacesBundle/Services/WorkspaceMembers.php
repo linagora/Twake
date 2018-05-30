@@ -61,7 +61,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             }
 
             $datatopush = Array(
-                "action" => "CHANGE_LEVEL",
+                "type" => "CHANGE_LEVEL",
                 "data" => Array(
                     "id" => $userId,
                     "workspaceId" => $workspace->getId(),

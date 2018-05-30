@@ -117,7 +117,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			$this->doctrine->flush();
 
             $datatopush = Array(
-                "action" => "CHANGE_LEVEL",
+                "type" => "CHANGE_LEVEL",
                 "data" => Array(
                     "workspaceId" => $workspaceId,
                 )
@@ -244,7 +244,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			$this->doctrine->flush();
 
             $datatopush = Array(
-                "action" => "CHANGE_LEVEL",
+                "type" => "CHANGE_LEVEL",
                 "data" => Array(
                     "workspaceId" => $workspace->getId(),
                 )
