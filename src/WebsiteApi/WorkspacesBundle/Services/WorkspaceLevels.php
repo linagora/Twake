@@ -10,10 +10,12 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 {
 
 	private $doctrine;
+    private $pusher;
 
-	public function __construct($doctrine)
+    public function __construct($doctrine, $pusher)
 	{
 		$this->doctrine = $doctrine;
+        $this->pusher = $pusher;
 	}
 
 	public function can($workspaceId, $userId, $action)
@@ -113,6 +115,14 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 			$this->doctrine->persist($level);
 			$this->doctrine->flush();
+
+            $datatopush = Array(
+                "action" => "CHANGE_LEVEL",
+                "data" => Array(
+                    "workspaceId" => $workspaceId,
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspaceId);
 
 			return true;
 
@@ -232,6 +242,14 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 			$this->doctrine->remove($level);
 			$this->doctrine->flush();
+
+            $datatopush = Array(
+                "action" => "CHANGE_LEVEL",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
 			return true;
 

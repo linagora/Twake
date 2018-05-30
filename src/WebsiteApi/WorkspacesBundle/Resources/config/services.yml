@@ -2,7 +2,7 @@ services:
 
     app.group_managers:
         class: WebsiteApi\WorkspacesBundle\Services\GroupManagers
-        arguments: ["@doctrine.orm.entity_manager", "@app.twake_mailer"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.twake_mailer", "@app.pusher"]
 
     app.groups:
         class: WebsiteApi\WorkspacesBundle\Services\Groups
@@ -22,7 +22,7 @@ services:
 
     app.workspace_levels:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceLevels
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.pusher"]
 
     app.workspace_members:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceMembers
@@ -30,11 +30,11 @@ services:
 
     app.workspaces:
         class: WebsiteApi\WorkspacesBundle\Services\Workspaces
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.workspace_stats","@app.pricing_plan","@app.string_cleaner"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.workspace_stats","@app.pricing_plan","@app.string_cleaner","@app.pusher"]
 
     app.workspaces_apps:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesApps
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.group_apps","@app.group_managers"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.group_apps","@app.group_managers","@app.pusher"]
 
     app.workspace_stats:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceStats
