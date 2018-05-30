@@ -20,8 +20,9 @@ class Workspaces implements WorkspacesInterface
     private $doctrine;
     private $pricing;
     private $string_cleaner;
+    private $pusher;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $priceService, $cleaner)
+    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $priceService, $cleaner, $pusher)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -31,6 +32,7 @@ class Workspaces implements WorkspacesInterface
         $this->ws = $workspace_stats;
         $this->pricing = $priceService;
         $this->string_cleaner = $cleaner;
+        $this->pusher = $pusher;
     }
 
     public function getPrivate($userId = null)
@@ -211,6 +213,14 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
 
+            $datatopush = Array(
+                "action" => "CHANGE_WORKSPACE",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
             return true;
         }
 
@@ -235,6 +245,14 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
 
+            $datatopush = Array(
+                "action" => "CHANGE_WORKSPACE",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
             return true;
         }
 
@@ -258,6 +276,14 @@ class Workspaces implements WorkspacesInterface
 
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
+
+            $datatopush = Array(
+                "action" => "CHANGE_WORKSPACE",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
             return true;
         }
