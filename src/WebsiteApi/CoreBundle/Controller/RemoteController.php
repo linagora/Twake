@@ -77,7 +77,7 @@ class RemoteController extends Controller
             foreach ($data_array as $data) {
 
                 $type = $data["type"];
-                $deviceId = $data["deviceId"];
+                $deviceId = $data["device_id"];
                 $message = $data["message"];
                 $title = $data["title"];
                 $badge = $data["badge"];
