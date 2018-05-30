@@ -329,7 +329,7 @@ class Workspaces implements WorkspacesInterface
         }
 
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-        $workspace = $workspaceRepository->findOneBy(Array("uniqueName" => $workspaceName, "group" => $group, "deleted" => 0));
+        $workspace = $workspaceRepository->findOneBy(Array("uniqueName" => $workspaceName, "group" => $group, "isDeleted" => 0));
 
         if($workspace != null){
             return $workspace->getAsArray();
