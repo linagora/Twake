@@ -41,14 +41,17 @@ class Calendars implements CalendarsInterface
             $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("workspace" => $workspace));
 
             foreach ($links as $link) {
-                $cal = $link->getCalendar();
+                $cal = $link->getCalendar()->getAsArray();
+                $cal["owner"] = $link->getOwner();
                 $result[] = $cal;
             }
 
             //Create calendar if no calendar was found in this workspace
             if (count($links) == 0) {
                 $calendar = $this->createCalendar($workspaceId, "Default", "E2333A");
-                $result = [$calendar];
+                $cal = $calendar->getCalendar()->getAsArray();
+                $cal["owner"] = $link->getOwner();
+                $result[] = $cal;
             }
 
             return $result;
