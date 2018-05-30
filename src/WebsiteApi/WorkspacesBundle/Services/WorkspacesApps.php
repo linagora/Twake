@@ -107,7 +107,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
                 $this->enableApp($workspace->getId(),$appId,$currentUserId);
 
                 $datatopush = Array(
-                    "action" => "CHANGE_WORKSPACE_APPS",
+                    "type" => "CHANGE_WORKSPACE_APPS",
                     "data" => Array(
                         "workspaceId" => $workspace->getId(),
                     )
@@ -165,7 +165,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $this->doctrine->flush();
 
             $datatopush = Array(
-                "action" => "CHANGE_WORKSPACE_APPS",
+                "type" => "CHANGE_WORKSPACE_APPS",
                 "data" => Array(
                     "workspaceId" => $workspace->getId(),
                 )
@@ -211,7 +211,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $this->doctrine->flush();
 
             $datatopush = Array(
-                "action" => "CHANGE_WORKSPACE_APPS",
+                "type" => "CHANGE_WORKSPACE_APPS",
                 "data" => Array(
                     "workspaceId" => $workspace->getId(),
                 )

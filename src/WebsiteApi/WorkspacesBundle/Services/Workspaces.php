@@ -214,7 +214,7 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->flush();
 
             $datatopush = Array(
-                "action" => "CHANGE_WORKSPACE",
+                "type" => "CHANGE_WORKSPACE",
                 "data" => Array(
                     "workspaceId" => $workspace->getId(),
                 )
@@ -246,7 +246,7 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->flush();
 
             $datatopush = Array(
-                "action" => "CHANGE_WORKSPACE",
+                "type" => "CHANGE_WORKSPACE",
                 "data" => Array(
                     "workspaceId" => $workspace->getId(),
                 )
@@ -278,7 +278,7 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->flush();
 
             $datatopush = Array(
-                "action" => "CHANGE_WORKSPACE",
+                "type" => "CHANGE_WORKSPACE",
                 "data" => Array(
                     "workspaceId" => $workspace->getId(),
                 )
