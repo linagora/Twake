@@ -178,6 +178,10 @@ class Calendars implements CalendarsInterface
 
         $other_workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $other_workspaceId, "isDeleted" => false));
 
+        $otherCalendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar" => $calendar, "workspace" => $other_workspace));
+        if ($otherCalendarLink) {
+            return; //Already exists
+        }
 
         $shareLink = new LinkCalendarWorkspace($other_workspace, $calendar, false, $hasAllRights);
 
