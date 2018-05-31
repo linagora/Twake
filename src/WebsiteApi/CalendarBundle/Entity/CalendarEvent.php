@@ -48,6 +48,11 @@ class CalendarEvent {
      */
     private $event;
 
+    /**
+     * @ORM\Column(name="participant", type="text")
+     */
+    private $participant;
+
     public  function __construct($event, $from, $to)
     {
         $this->setEvent($event);
@@ -139,6 +144,22 @@ class CalendarEvent {
     /**
      * @return mixed
      */
+    public function getParticipant()
+    {
+        return json_decode($this->participant, 1);
+    }
+
+    /**
+     * @param mixed $event
+     */
+    public function setParticipant($event)
+    {
+        $this->participant = json_encode($event);
+    }
+
+    /**
+     * @return mixed
+     */
     public function getNextReminder()
     {
         return $this->nextReminder;
@@ -167,7 +188,8 @@ class CalendarEvent {
         return Array(
             "id" => $this->getId(),
             "calendar" => $this->getCalendar()->getId(),
-            "event" => $this->getEvent()
+            "event" => $this->getEvent(),
+            "participant" => $this->getParticipant(),
         );
     }
 
