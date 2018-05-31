@@ -33,14 +33,20 @@ class LinkCalendarWorkspace{
     private $calendarRight;
 
     /**
+     * @ORM\Column(name="owner", type="boolean")
+     */
+    private $owner;
+
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\CalendarBundle\Entity\Calendar")
      */
     private $calendar;
 
-    public  function __construct($workspace,$calendar,$calendarRight = true)
+    public  function __construct($workspace,$calendar,$owner,$calendarRight = true)
     {
         $this->setWorkspace($workspace);
         $this->setCalendar($calendar);
+        $this->setOwner($owner);
         $this->setCalendarRight($calendarRight);
     }
 
@@ -108,12 +114,28 @@ class LinkCalendarWorkspace{
         $this->calendarRight = $calendarRight;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @param mixed $owner
+     */
+    public function setOwner($owner)
+    {
+        $this->owner = $owner;
+    }
 
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
             "workspace" => $this->getWorkspace(),
             "calendar" => $this->getCalendar(),
+            "owner" => $this->getOwner(),
             "right" => $this->getCalendarRight()
         );
     }

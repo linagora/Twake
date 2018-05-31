@@ -31,8 +31,8 @@ class RemoteController extends Controller
             $result = $this->get("circle.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
             $result = json_decode($result->getContent(), true);
 
-            if (!isset($result["status"]) || $result["status"] == "valid") {
-                return new JsonResponse(Array("status" => "error", "error" => $result["error"]));
+            if (!isset($result["status"]) || $result["status"] != "valid") {
+                return new JsonResponse(Array("status" => "error", "error" => $result));
             }
 
             $mail = $request->request->get("mail", "");
@@ -64,8 +64,8 @@ class RemoteController extends Controller
             $result = $this->get("circle.restclient")->post($licenceServer . "/verifyRemote", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60));
             $result = json_decode($result->getContent(), true);
 
-            if (!isset($result["status"]) || $result["status"] == "valid") {
-                return new JsonResponse(Array("status" => "error", "error" => $result["error"]));
+            if (!isset($result["status"]) || $result["status"] != "valid") {
+                return new JsonResponse(Array("status" => "error", "error" => $result));
             }
 
             $data_array = $request->request->get("data", Array());
@@ -77,7 +77,7 @@ class RemoteController extends Controller
             foreach ($data_array as $data) {
 
                 $type = $data["type"];
-                $deviceId = $data["deviceId"];
+                $deviceId = $data["device_id"];
                 $message = $data["message"];
                 $title = $data["title"];
                 $badge = $data["badge"];

@@ -60,6 +60,15 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("workspace" => $workspace->getName(), "group" => $workspace->getGroup()->getDisplayName(), "username" => $user->getUsername(), "level" => $level->getLabel()));
             }
 
+            $datatopush = Array(
+                "type" => "CHANGE_LEVEL",
+                "data" => Array(
+                    "id" => $userId,
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
             return true;
         }
 
@@ -310,7 +319,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                     "workspaceId" => $workspace->getId(),
                 )
             );
-
             $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
             $workspace->setMemberCount($workspace->getMemberCount() - 1);

@@ -131,11 +131,29 @@ class AdministrationServerStats
     public function getUsersConnected($limit = 0)
     {
         $repo = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerUsersStats");
-        $_list = $repo->findBy(Array(), Array("dateSave" => "DESC"), $limit);
+        $_list = $repo->findBy(Array(), Array("dateSave" => "DESC"), $limit * 24);
         $list = Array();
+        $day = 0;
+        $currentValues = Array();
         foreach ($_list as $el) {
-            $list[] = $el->getAsArray();
+            $elDay = date("z", $el->getDateSave()->getTimestamp());
+            if ($day == 0) {
+                $day = $elDay;
+            }
+            if ($elDay != $day) {
+                $day = $elDay;
+                $list[] = $currentValues;
+                $currentValues = Array();
+            }
+            if (!isset($currentValues["accounts"]) || $currentValues["accounts"] < $el->getAsArray()["accounts"]) {
+                $currentValues["accounts"] = $el->getAsArray()["accounts"];
+            }
+            if (!isset($currentValues["connected"]) || $currentValues["connected"] < $el->getAsArray()["connected"]) {
+                $currentValues["connected"] = $el->getAsArray()["connected"];
+            }
+            $currentValues["datesave"] = $el->getAsArray()["datesave"];
         }
+
         return $list;
     }
 
