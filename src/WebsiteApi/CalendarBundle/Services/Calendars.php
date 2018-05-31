@@ -73,7 +73,7 @@ class Calendars implements CalendarsInterface
             $cal->setWorkspacesNumber(1);
             $this->doctrine->persist($cal);
 
-            $link = new LinkCalendarWorkspace($workspace, $cal);
+            $link = new LinkCalendarWorkspace($workspace, $cal, true);
             $this->doctrine->persist($link);
 
             $this->doctrine->flush();
@@ -179,7 +179,7 @@ class Calendars implements CalendarsInterface
         $other_workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $other_workspaceId, "isDeleted" => false));
 
 
-        $shareLink = new LinkCalendarWorkspace($other_workspace, $calendar, $hasAllRights);
+        $shareLink = new LinkCalendarWorkspace($other_workspace, $calendar, false, $hasAllRights);
 
         $calendar->setWorkspacesNumber($calendar->getWorkspacesNumber()+1);
         $this->doctrine->persist($calendar);
