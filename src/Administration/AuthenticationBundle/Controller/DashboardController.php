@@ -47,6 +47,11 @@ class DashboardController extends Controller
         $accounts_chart->getOptions()->setHeight(200);
         $data["users"]["accounts_by_hours"] = $accounts_chart;
 
+
+        $_connections_usage_array = $this->get("admin.TwakeServerStats")->getUsersConnected(1000, "hourly");
+        $_connections_usage_array = array_reverse($_connections_usage_array);
+
+
         //messages by hour
         $array = [['Date', 'Messages']];
         foreach ($_connections_usage_array as $datum) {
