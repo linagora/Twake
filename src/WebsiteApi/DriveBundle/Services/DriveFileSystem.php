@@ -903,7 +903,6 @@ class DriveFileSystem implements DriveFileSystemInterface
             $this->delete($child, false);
         }
 
-        $this->doctrine->flush();
         $this->updateLabelsCount($workspace);
 
         $this->pusher->push(Array("action" => "update"), "drive/" . $workspace->getId());
