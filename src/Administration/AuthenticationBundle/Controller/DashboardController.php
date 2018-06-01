@@ -47,6 +47,36 @@ class DashboardController extends Controller
         $accounts_chart->getOptions()->setHeight(200);
         $data["users"]["accounts_by_hours"] = $accounts_chart;
 
+        //messages by hour
+        $array = [['Date', 'Messages']];
+        foreach ($_connections_usage_array as $datum) {
+            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["messages"]];
+        }
+        $messages_chart = new AreaChart();
+        $messages_chart->getData()->setArrayToDataTable($array);
+        $messages_chart->getOptions()->setHeight(200);
+        $data["messages_by_hours"] = $messages_chart;
+
+        //files by hour
+        $array = [['Date', 'Files']];
+        foreach ($_connections_usage_array as $datum) {
+            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["files"]];
+        }
+        $files_chart = new AreaChart();
+        $files_chart->getData()->setArrayToDataTable($array);
+        $files_chart->getOptions()->setHeight(200);
+        $data["files_by_hours"] = $files_chart;
+
+        //event by hour
+        $array = [['Date', 'Events']];
+        foreach ($_connections_usage_array as $datum) {
+            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["event"]];
+        }
+        $event_chart = new AreaChart();
+        $event_chart->getData()->setArrayToDataTable($array);
+        $event_chart->getOptions()->setHeight(200);
+        $data["events_by_hours"] = $event_chart;
+
 		//workspaces
 		$data["workspaces"]["count"] = $this->get('admin.TwakeGroupManagement')->countWorkspace();
 		$data["workspaces"]["drive_usage"]= $this->get('admin.TwakeStatistics')->numberOfExtensions();
