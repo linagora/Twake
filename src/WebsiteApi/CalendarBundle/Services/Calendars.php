@@ -69,6 +69,11 @@ class Calendars implements CalendarsInterface
         if ($workspace == null) {
             return false;
         } else {
+
+            if (strlen($title) == 0) {
+                $title = "New calendar";
+            }
+
             $cal = new Calendar($title, $color);
             $cal->setWorkspacesNumber(1);
             $this->doctrine->persist($cal);
