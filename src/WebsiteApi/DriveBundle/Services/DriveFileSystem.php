@@ -799,6 +799,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     private function recursDelete($fileOrDirectory)
     {
+        $driveRepository = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
+
         if ($fileOrDirectory == null) {
             return false;
         }
@@ -819,7 +821,10 @@ class DriveFileSystem implements DriveFileSystemInterface
             }
 
         } else {
-
+            $copies = $driveRepository->findBy(Array("copyOf" => $fileOrDirectory));
+            foreach ($copies as $copy) {
+                $this->doctrine->remove($copy);
+            }
             foreach ($fileOrDirectory->getChildren() as $child) {
 
                 $this->recursDelete($child);
