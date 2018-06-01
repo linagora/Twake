@@ -17,14 +17,16 @@ class WorkspacesApps implements WorkspacesAppsInterface
 	private $gas;
 	private $doctrine;
     private $gms;
+    private $pusher;
 
 
-    public function __construct($doctrine, $workspaces_levels_service, $groups_apps_service,$group_managers_service)
+    public function __construct($doctrine, $workspaces_levels_service, $groups_apps_service, $group_managers_service, $pusher)
 	{
 		$this->doctrine = $doctrine;
 		$this->wls = $workspaces_levels_service;
 		$this->gas = $groups_apps_service;
         $this->gms = $group_managers_service;
+        $this->pusher = $pusher;
 
     }
 
@@ -82,37 +84,6 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
     }
 
-
-    //Depreciated
-	/*public function _getAllApps($workspaceId, $currentUserId = null)
-	{
-		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-		$workspace = $workspaceRepository->find($workspaceId);
-
-		if($workspace==null){
-			return false;
-		}
-
-		if($currentUserId==null
-			|| $this->wls->can($workspaceId, $currentUserId, "")) {
-
-			if ($workspace->getUser() != null
-				&& ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
-			) {
-				//Private ws apps
-				//TODO
-				$appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-				return $appRepository->findBy(Array());
-			}
-
-			//Group apps
-			return $this->gas->getApps($workspace->getGroup()->getId(), $currentUserId);
-
-		}
-
-		return false;
-	}*/
-
     public function forceApplication($groupId, $appId, $currentUserId = null)
     {
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
@@ -134,6 +105,15 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $workspaces = $group->getWorkspaces();
             foreach ($workspaces as $workspace){
                 $this->enableApp($workspace->getId(),$appId,$currentUserId);
+
+                $datatopush = Array(
+                    "type" => "CHANGE_WORKSPACE_APPS",
+                    "data" => Array(
+                        "workspaceId" => $workspace->getId(),
+                    )
+                );
+                $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
             }
 
             return true;
@@ -184,6 +164,14 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $this->doctrine->persist($workspaceapp);
             $this->doctrine->flush();
 
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE_APPS",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
             return true;
         }
 
@@ -221,6 +209,14 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
             $this->doctrine->remove($workspaceapp);
             $this->doctrine->flush();
+
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE_APPS",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
             return true;
         }

@@ -11,6 +11,7 @@ class GroupManagers implements GroupManagersInterface
 
     var $doctrine;
     private $twake_mailer;
+    private $pusher;
 
     var $privileges = Array(
         0 => Array("VIEW_USERS"),
@@ -39,10 +40,11 @@ class GroupManagers implements GroupManagersInterface
             "MANAGE_DATA")
     );
 
-    public function __construct($doctrine, $twake_mailer)
+    public function __construct($doctrine, $twake_mailer, $pusher)
     {
         $this->doctrine = $doctrine;
         $this->twake_mailer = $twake_mailer;
+        $this->pusher = $pusher;
     }
 
     public function hasPrivileges($level, $privilege){

@@ -41,14 +41,17 @@ class Calendars implements CalendarsInterface
             $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("workspace" => $workspace));
 
             foreach ($links as $link) {
-                $cal = $link->getCalendar();
+                $cal = $link->getCalendar()->getAsArray();
+                $cal["owner"] = $link->getOwner();
                 $result[] = $cal;
             }
 
             //Create calendar if no calendar was found in this workspace
             if (count($links) == 0) {
                 $calendar = $this->createCalendar($workspaceId, "Default", "E2333A");
-                $result = [$calendar];
+                $cal = $calendar->getCalendar()->getAsArray();
+                $cal["owner"] = $link->getOwner();
+                $result[] = $cal;
             }
 
             return $result;
@@ -66,11 +69,16 @@ class Calendars implements CalendarsInterface
         if ($workspace == null) {
             return false;
         } else {
+
+            if (strlen($title) == 0) {
+                $title = "New calendar";
+            }
+
             $cal = new Calendar($title, $color);
             $cal->setWorkspacesNumber(1);
             $this->doctrine->persist($cal);
 
-            $link = new LinkCalendarWorkspace($workspace, $cal);
+            $link = new LinkCalendarWorkspace($workspace, $cal, true);
             $this->doctrine->persist($link);
 
             $this->doctrine->flush();
@@ -175,8 +183,12 @@ class Calendars implements CalendarsInterface
 
         $other_workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $other_workspaceId, "isDeleted" => false));
 
+        $otherCalendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar" => $calendar, "workspace" => $other_workspace));
+        if ($otherCalendarLink) {
+            return; //Already exists
+        }
 
-        $shareLink = new LinkCalendarWorkspace($other_workspace, $calendar, $hasAllRights);
+        $shareLink = new LinkCalendarWorkspace($other_workspace, $calendar, false, $hasAllRights);
 
         $calendar->setWorkspacesNumber($calendar->getWorkspacesNumber()+1);
         $this->doctrine->persist($calendar);

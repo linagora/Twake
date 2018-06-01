@@ -62,7 +62,9 @@ class MessagesMasterService
         $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace" => $workspace));
         foreach ($streams as $stream) {
             $member = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user" => $user, "stream" => $stream));
-            $this->doctrine->remove($member);
+            if ($member) {
+                $this->doctrine->remove($member);
+            }
         }
         $this->doctrine->flush();
     }
