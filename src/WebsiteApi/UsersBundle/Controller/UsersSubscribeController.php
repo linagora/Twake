@@ -168,7 +168,7 @@ class UsersSubscribeController extends Controller
             }
         }
         else{
-            $data["errors"][] = "error:".$mail.",".$username.",".$password;
+            $data["errors"][] = "error";
         }
         return new JsonResponse($data);
     }
