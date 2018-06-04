@@ -115,12 +115,30 @@ class AdministrationServerStats
             ->select('count(U)');
         $accounts = $req2->getQuery()->getSingleScalarResult();
 
+        $req3 = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")
+            ->createQueryBuilder('U')
+            ->select('count(U)');
+        $eventnumber = $req3->getQuery()->getSingleScalarResult();
+
+        $req4 = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+            ->createQueryBuilder('U')
+            ->select('count(U)');
+        $filesnumber = $req4->getQuery()->getSingleScalarResult();
+
+        $req5 = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")
+            ->createQueryBuilder('U')
+            ->select('count(U)');
+        $messagesnumber = $req5->getQuery()->getSingleScalarResult();
+
         $em = $this->doctrine;
 
         $serverStat = new ServerUsersStats();
         $serverStat->setDateSave(new \DateTime("now"));
         $serverStat->setConnected($connected);
         $serverStat->setAccounts($accounts);
+        $serverStat->setEvent($eventnumber);
+        $serverStat->setFiles($filesnumber);
+        $serverStat->setMessages($messagesnumber);
 
         $em->persist($serverStat);
         $em->flush();
@@ -128,7 +146,7 @@ class AdministrationServerStats
         return "done";
     }
 
-    public function getUsersConnected($limit = 0)
+    public function getUsersConnected($limit = 0, $granularity = "daily")
     {
         $repo = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerUsersStats");
         $_list = $repo->findBy(Array(), Array("dateSave" => "DESC"), $limit * 24);
@@ -136,7 +154,11 @@ class AdministrationServerStats
         $day = 0;
         $currentValues = Array();
         foreach ($_list as $el) {
-            $elDay = date("z", $el->getDateSave()->getTimestamp());
+            if ($granularity == "daily") {
+                $elDay = date("z", $el->getDateSave()->getTimestamp());
+            } else {
+                $elDay = date("zH", $el->getDateSave()->getTimestamp());
+            }
             if ($day == 0) {
                 $day = $elDay;
             }
@@ -150,6 +172,15 @@ class AdministrationServerStats
             }
             if (!isset($currentValues["connected"]) || $currentValues["connected"] < $el->getAsArray()["connected"]) {
                 $currentValues["connected"] = $el->getAsArray()["connected"];
+            }
+            if (!isset($currentValues["event"]) || $currentValues["event"] < $el->getAsArray()["event"]) {
+                $currentValues["event"] = $el->getAsArray()["event"];
+            }
+            if (!isset($currentValues["files"]) || $currentValues["files"] < $el->getAsArray()["files"]) {
+                $currentValues["files"] = $el->getAsArray()["files"];
+            }
+            if (!isset($currentValues["messages"]) || $currentValues["messages"] < $el->getAsArray()["messages"]) {
+                $currentValues["messages"] = $el->getAsArray()["messages"];
             }
             $currentValues["datesave"] = $el->getAsArray()["datesave"];
         }

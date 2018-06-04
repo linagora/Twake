@@ -47,6 +47,27 @@ class ServerUsersStats
     /**
      * @var integer
      *
+     * @ORM\Column(name="event", type="integer")
+     */
+    private $event;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="files", type="integer")
+     */
+    private $files;
+
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="messages", type="integer")
+     */
+    private $messages;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="accounts", type="integer")
      */
     private $accounts;
@@ -115,12 +136,63 @@ class ServerUsersStats
         $this->accounts = $accounts;
     }
 
+    /**
+     * @return int
+     */
+    public function getEvent()
+    {
+        return $this->event;
+    }
+
+    /**
+     * @param int $event
+     */
+    public function setEvent($event)
+    {
+        $this->event = $event;
+    }
+
+    /**
+     * @return int
+     */
+    public function getFiles()
+    {
+        return $this->files;
+    }
+
+    /**
+     * @param int $files
+     */
+    public function setFiles($files)
+    {
+        $this->files = $files;
+    }
+
+    /**
+     * @return int
+     */
+    public function getMessages()
+    {
+        return $this->messages;
+    }
+
+    /**
+     * @param int $messages
+     */
+    public function setMessages($messages)
+    {
+        $this->messages = $messages;
+    }
+
 
 
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
             "connected" => $this->getConnected(),
+            "event" => $this->getEvent(),
+            "files" => $this->getFiles(),
+            "messages" => $this->getMessages(),
             "accounts" => $this->getAccounts(),
             "datesave" => ($this->getDateSave() ? $this->getDateSave()->getTimestamp() : null)
         );
