@@ -1,3 +1,5 @@
+
+
 administration_authentication:
     resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
     prefix:   /administration/ajax/authentication
@@ -134,3 +136,7 @@ developers_api_error:
     requirements:
       req: ".*"
 
+#API V1 pour les developpeurs
+developers_api_v1_messages:
+    resource: "@DevelopersApiV1MessagesBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/

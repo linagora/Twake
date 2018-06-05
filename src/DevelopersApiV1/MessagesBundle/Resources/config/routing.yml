@@ -1,0 +1,3 @@
+developers_api_v1_messages_homepage:
+    path:     /
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Default:index }
