@@ -313,10 +313,10 @@ class User implements UserInterface
         $user->setFirstName($firstName);
         $user->setLastName($lastName);
         $user->setPhone($phone);
+        $user->setCreationDate(new \DateTime());
         $this->em->persist($user);
         $this->em->flush();
         if($workspace != "" && $workspace!=null){
-
             $uniquename = $this->string_cleaner->simplify($company);
             $plan = $this->pricing_plan->getMinimalPricing();
             $group = $this->group_service->create($user->getId(), $company, $uniquename,$plan);

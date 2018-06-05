@@ -70,6 +70,12 @@ class User extends BaseUser
 	 */
 	protected $lastActivity = 0;
 
+    /**
+     * @var int
+     * @ORM\Column(type="datetime",nullable=true)
+     */
+    protected $creationDate;
+
 	/**
 	 * @ORM\Column(name="language", type="string", length=64)
 	 */
@@ -133,6 +139,22 @@ class User extends BaseUser
 	{
 		$this->firstName = $firstName;
 	}
+
+    /**
+     * @return dateTime
+     */
+    public function getCreationDate()
+    {
+        return $this->creationDate;
+    }
+
+    /**
+     * @param datetime $creationDate
+     */
+    public function setCreationDate($creationDate)
+    {
+        $this->creationDate = $creationDate;
+    }
 
 	/**
 	 * @return mixed
