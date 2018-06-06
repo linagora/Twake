@@ -138,6 +138,14 @@ developers_api_v1_drive:
     resource: "@DevelopersApiV1DriveBundle/Resources/config/routing.yml"
     prefix:   /api/v1/
 
+developers_api_v1_drive:
+    resource: "@DevelopersApiV1CalendarBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/
+
+developers_api_v1_calendar:
+    resource: "@DevelopersApiV1CalendarBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/
+
 developers_api_error:
     path:     /api/{req}
     defaults: { _controller: TwakeCheckBundle:Error:BadRequest }
