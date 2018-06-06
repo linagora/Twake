@@ -44,6 +44,23 @@ class MessageSystem implements MessagesSystemInterface
         $this->workspace_stats = $workspace_stats;
     }
 
+    private function convertToEntity($var, $repository)
+    {
+        if (is_string($var)) {
+            $var = intval($var);
+        }
+
+        if (is_int($var)) {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
+
+
     public function getStream($streamKey, $currentUserId = null)
     {
         $explode = explode("-", $streamKey);
@@ -367,6 +384,11 @@ class MessageSystem implements MessagesSystemInterface
             }
         }
         return $retour;
+    }
+
+    public function getMessage($messageId){
+        $message = $this->convertToEntity($messageId,"TwakeDiscussionBundle:Message");
+        return $message;
     }
 
     public function pinMessage($id, $pinned, $user)
