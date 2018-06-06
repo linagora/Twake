@@ -1,5 +1,4 @@
 
-
 administration_authentication:
     resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
     prefix:   /administration/ajax/authentication
@@ -133,6 +132,10 @@ developers_api_messages:
 #API V1 pour les developpeurs
 developers_api_v1_messages:
     resource: "@DevelopersApiV1MessagesBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/
+
+developers_api_v1_drive:
+    resource: "@DevelopersApiV1DriveBundle/Resources/config/routing.yml"
     prefix:   /api/v1/
 
 developers_api_error:
