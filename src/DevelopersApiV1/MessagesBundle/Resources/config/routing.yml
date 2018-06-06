@@ -1,3 +1,4 @@
+#Message routing
 developers_api_v1_messages_send_message:
     path:     /workspace/{workspace_id}/messages/stream/{stream_id}/message
     defaults: { _controller: DevelopersApiV1MessagesBundle:Message:sendMessage }
@@ -25,22 +26,17 @@ developers_api_v1_messages_delete_message:
 
 developers_api_v1_messages_get_stream_content:
     path:     /workspace/{workspace_id}/messages/stream/{stream_id}
-    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getStream }
-    methods: [GET]
-
-developers_api_v1_messages_get_groupe_stream_list:
-    path:     /workspace/{workspace_id}/messages/groupe/{groupe_id}
-    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getGroupeStreamList }
-    methods: [GET]
-
-developers_api_v1_messages_get_stream_list:
-    path:     /workspace/{workspace_id}/messages/groupe
-    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getStreamList }
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getStreamContent }
     methods: [GET]
 
 developers_api_v1_messages_move_message_in_subject:
-    path:     /workspace/{workspace_id}/messages/message/{message_id}/to_subject
+    path:     /workspace/{workspace_id}/messages/message/{message_id}/subject/{subject_id}
     defaults: { _controller: DevelopersApiV1MessagesBundle:Message:moveMessageInSubject }
+    methods: [PUT]
+
+developers_api_v1_messages_change_message_to_subject:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}/to_subject
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:changeMessageToSubject }
     methods: [PUT]
 
 developers_api_v1_messages_move_message_in_response:
@@ -53,7 +49,32 @@ developers_api_v1_messages_send_message_with_file:
     defaults: { _controller: DevelopersApiV1MessagesBundle:Message:sendMessageWithFile }
     methods: [POST]
 
+
+#Stream routing
+developers_api_v1_messages_get_stream_list:
+    path:     /workspace/{workspace_id}/messages/streams
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Stream:getStreamList }
+    methods: [GET]
+
+developers_api_v1_messages_create_stream:
+    path:     /workspace/{workspace_id}/messages/stream/new
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Stream:createStream }
+    methods: [POST]
+
+developers_api_v1_messages_delete_stream:
+    path:     /workspace/{workspace_id}/messages/stream/{stream_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Stream:deleteStream }
+    methods: [DELETE]
+
+developers_api_v1_messages_edit_stream:
+    path:     /workspace/{workspace_id}/messages/stream/{stream_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Stream:editStream }
+    methods: [PUT]
+
+
+#Subject routing
+
 developers_api_v1_messages_close_subject:
-    path:     /workspace/{workspace_id}/messages/message/{message_id}/subject/{subject_id}
-    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:closeSubject }
+    path:     /workspace/{workspace_id}/messages/subject/{subject_id}/close
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Subject:closeSubject }
     methods: [PUT]

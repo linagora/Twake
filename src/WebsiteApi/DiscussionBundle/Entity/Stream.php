@@ -68,6 +68,7 @@ class Stream
 	    $this->setName($name);
         $this->setIsPrivate($isPrivate);
         $this->setDescription($description);
+        $this->setMembersLinks(Array());
 	}
 
     public function getId() {
@@ -209,6 +210,11 @@ class Stream
 	            "type"=>$this->getType()
             )
         );
+    }
+
+    private function setMembersLinks($Array)
+    {
+        $this->membersLinks = $Array;
     }
 
 }
