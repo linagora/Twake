@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class StreamController extends Controller
 {
-    //TODO : doc
     public function getStreamListAction(Request $request, $workspace_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -54,7 +53,6 @@ class StreamController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : doc
     public function createStreamAction(Request $request, $workspace_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -90,7 +88,6 @@ class StreamController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : doc
     public function deleteStreamAction(Request $request, $workspace_id, $stream_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -119,7 +116,6 @@ class StreamController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : doc
     public function editStreamAction(Request $request, $workspace_id, $stream_id){
         $app = $this->get("api.v1.check")->check($request);
 

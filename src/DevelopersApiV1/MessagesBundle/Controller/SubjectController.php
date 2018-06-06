@@ -14,7 +14,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SubjectController extends Controller
 {
-    //TODO : doc
     public function closeSubjectAction(Request $request, $workspace_id, $subject_id){
         $app = $this->get("api.v1.check")->check($request);
 
