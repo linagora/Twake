@@ -71,23 +71,52 @@ class CalendarController extends Controller
         return new JsonResponse($data);
     }
 
-    public function editCalendarAction(Request $request){
-        //TODO
-        //verif des datas
-        //verif des droits
-        //edition
-        //return l'objet modifié ou error
-       // return new JsonResponse($data);
+    public function editCalendarAction(Request $request, $workspace_id, $calendar_id){
+        $application = $this->get("api.v1.check")->check($request);
+
+        if(!$application){
+            return new JSonResponse("application");
+        }
+
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
+            return new JSonResponse("allowed");
+        }
+
+        $content = $this->get("api.v1.check")->get($request);
+
+        if($content === false ){
+            return new JsonResponse("content");
+        }
+
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+        $postdata = Array(
+            "data" => Array(),
+        );
+        $postdata["data"] =($this->get("app.calendars")->getCalendarById($workspace_id, $calendar_id));
+
+        $title = isset($content["title"])? $content["title"] : $postdata["data"]["title"] ; //TODO régler le soucis ça ne prend pas l'ancienne version quand on ne set pas
+        $color = isset($content["color"])? $content["color"] : $postdata["data"]["color"] ;
+
+        $data["data"] =($this->get("app.calendars")->updateCalendar($workspace_id, $calendar_id, $title, $color, null))->getAsArray();
+
+
+        return new JsonResponse($data);
     }
 
     public function getCalendarAction(Request $request, $workspace_id, $calendar_id){
         $application = $this->get("api.v1.check")->check($request);
+
         if(!$application){
             return new JSonResponse("application");
         }
+
         if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
             return new JSonResponse("allowed");
         }
+
         $content = $this->get("api.v1.check")->get($request);
 
         if($content === false ){
@@ -100,6 +129,7 @@ class CalendarController extends Controller
         );
 
         $data["data"] =($this->get("app.calendars")->getCalendarById($workspace_id, $calendar_id));
+
         return new JsonResponse($data);
 
     }

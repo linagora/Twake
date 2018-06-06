@@ -128,7 +128,7 @@ class Calendars implements CalendarsInterface
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
 
