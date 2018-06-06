@@ -13,74 +13,56 @@ class CalendarController extends Controller
     }
 
     public function createCalendarAction(Request $request, $workspace_id){
-        //TODO
+
         $application = $this->get("api.v1.check")->check($request);
         if(!$application){
-            return new JSonResponse(); //TODO error
+            return new JSonResponse();
         }
         if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
-            //return error
+            return new JSonResponse();
         }
-        $content = this->get("aî.v1.check")->get($request);
+        $content = $this->get("api.v1.check")->get($request);
 
         if($content === false ){
-            return new JsonResponse($request["errors"]);
-        }
-
-        
-        if (isset($request["errors"])) {
-            return new JsonResponse($request["errors"]);
+            return new JsonResponse();
         }
 
         $data = Array(
             "data" => Array(),
             "errors" => Array()
         );
-
-        $calendar = $this->get("app.calendars") ;
-        if(!$calendar){
-            $date["error"][] = 3001;
-        }else{
-            $data["data"]["title"] // TODO ;
-        }
+        $title = isset($content["title"])? $content["title"] : 0 ;
+        $color = isset($content["color"])? $content["color"] : 0 ;
+        $data["data"] = $this->get("app.calendars")->createCalendar($workspace_id, $title, $color, $this->getUser()->getId());
+        //$data["data"] = "test";
         return new JsonResponse($data);
-        /**
-         *
 
-        $workspaceId = $request->request->get("workspaceId");
-        $label = $request->request->get("name");
-        $color = $request->request->get("color");
-
-        $data['data'] = $this->get("app.calendars")->createCalendar($workspaceId, $label, $color, $this->getUser()->getId());
-
-        return new JsonResponse($data);
-         */
     }
 
-    public function deleteCalendar(Request $request){
+    public function deleteCalendarAction(Request $request){
         //TODO
         //vérif des data
         //verif des droits
         //supprimer de la bd -> cascade pour supprimer les events reliés à ce calendrier
         //return succès si succès, error sinon
-        return new JsonResponse($data);
+        //return new JsonResponse($data);
 
     }
 
-    public function editCalendar(Request $request){
+    public function editCalendarAction(Request $request){
         //TODO
         //verif des datas
         //verif des droits
         //edition
         //return l'objet modifié ou error
-        return new JsonResponse($data);
+       // return new JsonResponse($data);
     }
 
-    public function getCalendar(Request $request){
+    public function getCalendarAction(Request $request){
         //TODO
         //verifi des datas
         //verif des droits
         //return objet demandé ou error
-        return new JsonResponse($data);
+       // return new JsonResponse($data);
     }
 }
