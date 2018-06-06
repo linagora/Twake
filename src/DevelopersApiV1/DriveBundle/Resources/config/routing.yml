@@ -1,0 +1,7 @@
+developers_api_v1_drive_homepage:
+    path:     workspace/{workspace_id}/drive/object
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:addObject }
+    methods: [POST]
+    requirements:
+        workspace_id: '\d+'
+
