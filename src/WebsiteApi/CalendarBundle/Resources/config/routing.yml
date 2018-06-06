@@ -2,6 +2,10 @@ calendar_get_calendars:
     path:     /calendars/get
     defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendars }
 
+calendar_get_calendars:
+    path:     /calendars/getById
+    defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendarById }
+
 calendar_create_calendar:
     path:     /calendars/create
     defaults: { _controller: TwakeCalendarBundle:Calendar:createCalendar }

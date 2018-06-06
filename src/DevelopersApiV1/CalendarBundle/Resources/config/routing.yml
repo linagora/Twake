@@ -1,62 +1,64 @@
 event_create:
-    path:     workspace/{workspace_id}/calendar/event
-    method: [POST]
-    defaults: { _controller: CalendarBundle:Event:createEvent }
+    path: workspace/{workspace_id}/calendar/event/{calendar_id}
+    methods: [POST]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Event:createEvent }
     requirements:
         workspace_id: "[0-9]+"
+        calendar_id: "[0-9]+"
 
 calendar_create:
-    path: workspace/{workspace_id}/calendar/create_calendar
-    method: [POST]
-    default: { _controller: CalendarBundle:Calendar:createCalendar }
+    path: workspace/{workspace_id}/calendar
+    methods: [POST]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:createCalendar }
     requirements:
         workspace_id: "[0-9]+"
 
 calendar_display:
     path: workspace/{workspace_id}/calendar/{calendar_id}
-    method: [GET]
-    default: { _controller: CalendarBundle:Calendar:getCalendar }
+    methods: [GET]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:getCalendar }
     requirements:
           calendar_id: "[0-9]+"
           workspace_id: "[0-9]+"
 
 event_display:
     path: workspace/{workspace_id}/calendar/event/{event_id}
-    method: [GET]
-    default: { _controller: CalendarBundle:Event:getEvent }
+    methods: [GET]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Event:getEvent }
     requirements:
           event_id: "[0-9]+"
           workspace_id: "[0-9]+"
 
 calendar_edit:
-    path: workspace/{workspace_id}/calendar/edit_calendar/{calendar_id}
-    method: [PUT]
-    default: { _controller: CalendarBundle:Calendar:editCalendar }
+    path: workspace/{workspace_id}/calendar/{calendar_id}
+    methods: [PUT]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:editCalendar }
     requirements:
           calendar_id: "[0-9]+"
           workspace_id: "[0-9]+"
 
 event_edit:
     path: workspace/{workspace_id}/calendar/event/{event_id}
-    method: [PUT]
-    default: { _controller: CalendarBundle:Event:editEvent }
+    methods: [PUT]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Event:editEvent }
     requirements:
           event_id: "[0-9]+"
           workspace_id: "[0-9]+"
 
 calendar_delete:
-    path: workspace/{workspace_id}/calendar/delete_calendar/{calendar_id}
-    method: [DELETE]
-    default: { _controller: CalendarBundle:Calendar:deleteCalendar }
+    path: workspace/{workspace_id}/calendar/{calendar_id}
+    methods: [DELETE]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:deleteCalendar }
     requirements:
           calendar_id: "[0-9]+"
           workspace_id: "[0-9]+"
 
 
 event_delete:
-    path: workspace/{workspace_id}/calendar/delete_event/{event_id}
-    method: [DELETE]
-    default: { _controller: CalendarBundle:Event:deleteEvent }
+    path: workspace/{workspace_id}/calendar/{calendar_id}/event/{event_id}
+    methods: [DELETE]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Event:deleteEvent }
     requirements:
           event_id: "[0-9]+"
           workspace_id: "[0-9]+"
+          calendar_id: "[0-9]+"
