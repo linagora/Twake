@@ -6,7 +6,7 @@ event_create:
         workspace_id: "[0-9]+"
 
 calendar_create:
-    path: workspace/{workspace_id}/calendar/create_calendar
+    path: workspace/{workspace_id}/calendar/calendar
     method: [POST]
     default: { _controller: CalendarBundle:Calendar:createCalendar }
     requirements:

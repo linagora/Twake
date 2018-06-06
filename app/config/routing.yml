@@ -1,3 +1,7 @@
+calendar:
+    resource: "@CalendarBundle/Resources/config/routing.yml"
+    prefix:   /
+
 
 
 administration_authentication:
