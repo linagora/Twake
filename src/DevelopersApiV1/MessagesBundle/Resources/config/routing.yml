@@ -49,10 +49,6 @@ developers_api_v1_messages_send_message_with_file:
     defaults: { _controller: DevelopersApiV1MessagesBundle:Message:sendMessageWithFile }
     methods: [POST]
 
-developers_api_v1_messages_close_subject:
-    path:     /workspace/{workspace_id}/messages/subject/{subject_id}/close
-    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:closeSubject }
-    methods: [PUT]
 
 #Stream routing
 developers_api_v1_messages_get_stream_list:
@@ -77,3 +73,8 @@ developers_api_v1_messages_edit_stream:
 
 
 #Subject routing
+
+developers_api_v1_messages_close_subject:
+    path:     /workspace/{workspace_id}/messages/subject/{subject_id}/close
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Subject:closeSubject }
+    methods: [PUT]
