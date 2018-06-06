@@ -34,8 +34,6 @@ class CheckService
                 $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey"=> $publicKey));
 
                 if ($application != null){
-                    var_dump("OK");
-                    var_dump($application->getId());
                     $key = $application->getPrivateKey();
 
                     if ($key == $privateKey) {
