@@ -305,6 +305,11 @@ class MessageSystem implements MessagesSystemInterface
         $this->messagesNotificationCenter->read($stream, $user);
     }
 
+    public function editMessageFromApp($id, $content){
+        $message = $this->convertToEntity($id,"TwakeDiscussionBundle:Message");
+        return $this->editMessage($id,$content,$message->getUserSender());
+    }
+
 
     public function editMessage($id, $content, $user)
     {
@@ -327,6 +332,13 @@ class MessageSystem implements MessagesSystemInterface
             return $this->getMessageAsArray($message, true, $message->getResponseTo() != null);
         }
         return false;
+    }
+
+    public function deleteMassageFromApp($id){
+        $message = $this->convertToEntity($id,"TwakeDiscussionBundle:Message");
+        if($message==null)
+            return false;
+        return $this->deleteMessage($id,$message->getUserSender());
     }
 
     public function deleteMessage($id, $user)
