@@ -55,9 +55,10 @@ calendar_delete:
 
 
 event_delete:
-    path: workspace/{workspace_id}/calendar/event/{event_id}
+    path: workspace/{workspace_id}/calendar/{calendar_id}/event/{event_id}
     methods: [DELETE]
     defaults: { _controller: DevelopersApiV1CalendarBundle:Event:deleteEvent }
     requirements:
           event_id: "[0-9]+"
           workspace_id: "[0-9]+"
+          calendar_id: "[0-9]+"
