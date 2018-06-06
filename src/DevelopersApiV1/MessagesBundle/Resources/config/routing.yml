@@ -1,3 +1,59 @@
-developers_api_v1_messages_homepage:
-    path:     /
-    defaults: { _controller: DevelopersApiV1MessagesBundle:Default:index }
+developers_api_v1_messages_send_message:
+    path:     /workspace/{workspace_id}/messages/stream/{stream_id}/message
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:sendMessage }
+    methods: [POST]
+
+developers_api_v1_messages_get_message:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getMessage }
+    methods: [GET]
+
+developers_api_v1_messages_get_message_children:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}/children
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getMessageChildren }
+    methods: [GET]
+
+developers_api_v1_messages_edit_message:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:editMessage }
+    methods: [PUT]
+
+developers_api_v1_messages_delete_message:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:deleteMessage }
+    methods: [DELETE]
+
+developers_api_v1_messages_get_stream_content:
+    path:     /workspace/{workspace_id}/messages/stream/{stream_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getStream }
+    methods: [GET]
+
+developers_api_v1_messages_get_groupe_stream_list:
+    path:     /workspace/{workspace_id}/messages/groupe/{groupe_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getGroupeStreamList }
+    methods: [GET]
+
+developers_api_v1_messages_get_stream_list:
+    path:     /workspace/{workspace_id}/messages/groupe
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getStreamList }
+    methods: [GET]
+
+developers_api_v1_messages_move_message_in_subject:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}/to_subject
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:moveMessageInSubject }
+    methods: [PUT]
+
+developers_api_v1_messages_move_message_in_response:
+    path:     /workspace/{workspace_id}/messages/message/{response_message_id}/response_to/{main_message_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:moveMessageInMessage }
+    methods: [PUT]
+
+developers_api_v1_messages_send_message_with_file:
+    path:     /workspace/{workspace_id}/messages/messages/stream/{stream_id}/message/file/{file_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:sendMessageWithFile }
+    methods: [POST]
+
+developers_api_v1_messages_close_subject:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}/subject/{subject_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:closeSubject }
+    methods: [PUT]
