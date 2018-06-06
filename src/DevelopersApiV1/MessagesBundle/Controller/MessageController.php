@@ -15,7 +15,6 @@ use Symfony\Component\HttpFoundation\Request;
 
 class MessageController extends Controller
 {
-    //TODO : doc
     public function sendMessageAction(Request $request, $workspace_id, $stream_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -59,7 +58,6 @@ class MessageController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : doc
     public function getMessageAction(Request $request,$workspace_id, $message_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -125,7 +123,6 @@ class MessageController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : doc
     public function editMessageAction(Request $request, $workspace_id, $message_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -156,7 +153,6 @@ class MessageController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : doc
     public function deleteMessageAction(Request $request, $workspace_id, $message_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -173,7 +169,7 @@ class MessageController extends Controller
         $message = $this->get("app.messages")->deleteMassageFromApp($message_id);
 
         $data = Array(
-            "message" => $message,
+            "message" => !$message ? false : true,
             "errors" => Array()
         );
 
@@ -214,7 +210,6 @@ class MessageController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : doc
     public function changeMessageToSubjectAction(Request $request, $workspace_id, $message_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -231,7 +226,7 @@ class MessageController extends Controller
         $message = $this->get("app.subjectsystem")->createSubjectFromMessageFromApp($message_id);
 
         $data = Array(
-            "message" => $message,
+            "subject_id" => $message["id"],
             "errors" => Array()
         );
 
@@ -243,7 +238,6 @@ class MessageController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : doc
     public function moveMessageInMessageAction(Request $request, $workspace_id, $response_message_id,$main_message_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -260,7 +254,7 @@ class MessageController extends Controller
         $message = $this->get("app.messages")->moveMessageInMessage($main_message_id,$response_message_id,null);
 
         $data = Array(
-            "message" => $message,
+            "message" => !$message ? false : true,
             "errors" => Array()
         );
 
@@ -272,7 +266,6 @@ class MessageController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : doc
     public function moveMessageInSubjectAction(Request $request, $workspace_id, $message_id, $subject_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -289,7 +282,7 @@ class MessageController extends Controller
         $message = $this->get("app.messages")->moveMessageInSubject($subject_id,$message_id,null);
 
         $data = Array(
-            "message" => $message,
+            "success" => !$message ? false : true,
             "errors" => Array()
         );
 
