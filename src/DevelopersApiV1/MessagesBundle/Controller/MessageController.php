@@ -16,35 +16,39 @@ use Symfony\Component\HttpFoundation\Request;
 class MessageController extends Controller
 {
     public function sendMessageAction(Request $request, $workspace_id, $stream_id){
-        $data = $request->$request["data"];
-        $app = true;
+        $app = $this->get("api.v1.check")->check($request);
 
-        //$app = $this->get("api.")->check($request);
-
-        if($app){
-            $subjectId = isset($data["subject_id"]) ? $data["subject_id"] : null;
-            $userId = isset($data["user_id"]) ? $data["user_id"] : null;
-            $appId = 0;//$app->getId();
-            $url = "";
-            if(isset($data["iframe"]) ){
-                $url = $data["iframe"]["url"];
-            }
-            else
-                $url = $data["content"];
-
-            $message = $this->get("app.messages")->sendMessage($userId, $stream_id, true, $appId, false, null, $workspace_id, $subjectId, Array("iframe" => $url));
-
-
-            return new JsonResponse($message);
+        if(!$app){
+            return new JsonResponse("erreur app inconnue");
         }
 
-        return new JsonResponse($app["Auth error"]);
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:write");
+
+        if(!$auth){
+            return new JsonResponse("erreur app non autho");
+        }
+
+        $data = $this->get("api.v1.check")->get($request);
+
+        $subjectId = isset($data["subject_id"]) ? $data["subject_id"] : 0;
+        $userId = isset($data["user_id"]) ? $data["user_id"] : 0;
+        $appId = $app->getId();
+        $url = null;
+        if(isset($data["iframe"]) ){
+            $url = Array("iframe" => $data["iframe"]["url"]);
+        }
+
+        $content = isset($data["content"]) ? $data["content"] : null;
+
+        //sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify = true, $front_id = "")
+        $message = $this->get("app.messages")->sendMessage($userId, "s-".$stream_id, true, $appId, false, $content, $workspace_id, $subjectId, $url);
+
+
+        return new JsonResponse($message);
     }
 
-    public function getMessageAction($workspace_id, $message_id){
-        $app = true;
-
-        //$app = $this->get("api.")->check($request);
+    public function getMessageAction(Request $request,$workspace_id, $message_id){
+        $app = $this->get("api.v1.check")->check($request);
 
         if($app){
             var_dump($message_id);
@@ -76,63 +80,45 @@ class MessageController extends Controller
     }
 
     public function editMessageAction(Request $request, $workspace_id, $message_id){
-        $app = true;
-
-        //$app = $this->get("api.")->check($request);
-        $data = $request->$request["data"];
+        $app = $this->get("api.")->check($request);
+        $content = $this->get("api.v1.check")->get($request);
 
         if($app){
-            $success = $this->get("app.messages")->editMessage($message_id,$data["content"],null);
+            $success = $this->get("app.messages")->editMessage($message_id,$content["content"],null);
         }
 
     }
 
-    public function deleteMessageAction($workspace_id, $message_id){
-        $app = true;
-
-        //$app = $this->get("api.")->check($request);
+    public function deleteMessageAction(Request $request, $workspace_id, $message_id){
+        $app = $this->get("api.")->check($request);
 
     }
-    public function getStream($workspace_id, $message_id){
-        $app = true;
-
-        //$app = $this->get("api.")->check($request);
+    public function getStreamAction(Request $request, $workspace_id, $message_id){
+        $app = $this->get("api.")->check($request);
 
     }
-    public function getGroupeStreamList($workspace_id, $message_id){
-        $app = true;
-
-        //$app = $this->get("api.")->check($request);
+    public function getGroupeStreamListAction(Request $request, $workspace_id, $message_id){
+        $app = $this->get("api.")->check($request);
 
     }
-    public function getStreamList($workspace_id, $message_id){
-        $app = true;
-
-        //$app = $this->get("api.")->check($request);
+    public function getStreamListAction(Request $request, $workspace_id, $message_id){
+        $app = $this->get("api.")->check($request);
 
     }
-    public function moveMessageInSubject($workspace_id, $message_id){
-        $app = true;
-
-        //$app = $this->get("api.")->check($request);
+    public function moveMessageInSubjectAction(Request $request, $workspace_id, $message_id){
+        $app = $this->get("api.")->check($request);
 
     }
-    public function moveMessageInMessage($workspace_id, $message_id){
-        $app = true;
-
-        //$app = $this->get("api.")->check($request);
+    public function moveMessageInMessageAction(Request $request, $workspace_id, $message_id){
+        $app = $this->get("api.")->check($request);
 
     }
-    public function sendMessageWithFile($workspace_id, $message_id){
-        $app = true;
-
-        //$app = $this->get("api.")->check($request);
+    public function sendMessageWithFileAction(Request $request, $workspace_id, $message_id){
+        $app = $this->get("api.")->check($request);
 
     }
-    public function closeSubject($workspace_id, $message_id){
-        $app = true;
-
-        //$app = $this->get("api.")->check($request);
+    public function closeSubjectAction(Request $request, $workspace_id, $message_id){
+        $app = $this->get("api.")->check($request);
 
     }
 }
