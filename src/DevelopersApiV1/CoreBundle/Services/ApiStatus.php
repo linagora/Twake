@@ -19,6 +19,14 @@ class ApiStatus {
         //0 < General errors < 1000
         $this->map[1] = "Incorrect authentification";
         $this->map[2] = "You have not the rights to perform this action";
+
+        //999 < errors from Workspace < 2000
+
+        //1999 < errors from Drive < 3000
+
+        //2999 < errors from Messages < 4000
+
+        //3999 < errors from Calendar < 5000
     }
 
     public function getError($code){
