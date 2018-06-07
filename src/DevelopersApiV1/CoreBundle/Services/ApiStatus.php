@@ -23,6 +23,7 @@ class ApiStatus {
         //999 < errors from Workspace < 2000
 
         //1999 < errors from Drive < 3000
+        $this->map[2000] = "";
 
         //2999 < errors from Messages < 4000
 

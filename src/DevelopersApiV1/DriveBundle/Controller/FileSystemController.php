@@ -15,14 +15,14 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:write",$workspace_id);
 
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $content = $this->get("api.v1.check")->get($request);;
@@ -34,7 +34,7 @@ class FileSystemController extends Controller
         $f = $this->get("app.drive.FileSystem")->create($workspace_id,$directory, $filename, $content = "", $isDirectory, $detached_file);
 
         if ($f == true){
-            return new JsonResponse($this->get("api.v1.errors_map")->getSuccess());
+            return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
         }
         return new JsonResponse();
     }
@@ -44,13 +44,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:manage",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
@@ -71,13 +71,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:manage",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
@@ -98,13 +98,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:manage",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
@@ -125,13 +125,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:manage",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $restoreTrash = $this->get("app.drive.FileSystem")->restoreTrash($workspace_id);
@@ -148,13 +148,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:manage",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $empty = $this->get("app.drive.FileSystem")->emptyTrash($workspace_id);
@@ -189,13 +189,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:read",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $info = $this->get("app.drive.FileSystem")->getInfos($workspace_id, $id, $forceAccess = false);
@@ -212,13 +212,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:read",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $download = $this->get("app.drive.FileSystem")->download($workspace_id,$id,false);
@@ -236,13 +236,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:write",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $data = $this->get("api.v1.check")->get($request);
@@ -290,13 +290,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:manage",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $content = $this->get("api.v1.check")->get($request);
@@ -316,13 +316,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:manage",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $content = $this->get("api.v1.check")->get($request);
@@ -341,13 +341,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:write",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
@@ -378,13 +378,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:read",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $content = $this->get("api.v1.check")->get($request);
@@ -414,13 +414,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:read",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
@@ -448,13 +448,13 @@ class FileSystemController extends Controller
         $check = $this->get("api.v1.check")->check($request);
 
         if (!$check){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(1));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:write",$workspace_id);
 
         if (!$isAllowedTo){
-            return new JsonResponse($this->get("api.v1.errors_map")->getError(2));
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
