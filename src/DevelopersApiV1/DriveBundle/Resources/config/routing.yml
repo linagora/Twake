@@ -1,7 +1,115 @@
-developers_api_v1_drive_homepage:
+developers_api_v1_drive_add:
     path:     workspace/{workspace_id}/drive/object
     defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:addObject }
     methods: [POST]
     requirements:
         workspace_id: '\d+'
 
+developers_api_v1_drive_delete:
+    path:     workspace/{workspace_id}/drive/object/{id}
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:deleteObject }
+    methods: [DELETE]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'
+
+developers_api_v1_drive_trash:
+    path:     workspace/{workspace_id}/drive/object/{id}/trash
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:trashObject }
+    methods: [POST]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'
+
+developers_api_v1_drive_restore:
+    path:     workspace/{workspace_id}/drive/object/{id}/restore
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:restoreObject }
+    methods: [POST]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'
+
+developers_api_v1_drive_restoreTrash:
+    path:     workspace/{workspace_id}/drive/restoreTrash
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:restoreTrash }
+    methods: [POST]
+    requirements:
+        workspace_id: '\d+'
+
+developers_api_v1_drive_emptyTrash:
+    path:     workspace/{workspace_id}/drive/emptyTrash
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:emptyTrash }
+    methods: [POST]
+    requirements:
+        workspace_id: '\d+'
+
+developers_api_v1_drive_getInfo:
+    path:     workspace/{workspace_id}/drive/object/{id}
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:getInfo }
+    methods: [GET]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'
+
+developers_api_v1_drive_content:
+    path:     workspace/{workspace_id}/drive/object/{id}/content
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:content }
+    methods: [GET]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'
+
+developers_api_v1_drive_setContent:
+    path:     workspace/{workspace_id}/drive/object/{id}
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:setContent }
+    methods: [POST]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'
+
+developers_api_v1_drive_share:
+    path:     workspace/{workspace_id}/drive/object/{id}/share
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:shareObject }
+    methods: [POST]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'
+
+developers_api_v1_drive_unshare:
+    path:     workspace/{workspace_id}/drive/object/{id}/unshare
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:unshareObject }
+    methods: [POST]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'
+
+developers_api_v1_drive_rename:
+    path:     workspace/{workspace_id}/drive/object/{id}/rename
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:renameObject }
+    methods: [PUT]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'
+
+developers_api_v1_drive_search:
+    path:     workspace/{workspace_id}/drive/search
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:searchObject }
+    methods: [POST]
+    requirements:
+        workspace_id: '\d+'
+
+developers_api_v1_drive_listFiles:
+    path:     workspace/{workspace_id}/drive/object/{id}/listFiles
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:listFiles }
+    methods: [GET]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'
+
+developers_api_v1_drive_move:
+    path:     workspace/{workspace_id}/drive/object/{id}/move
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:moveObject }
+    methods: [POST]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'

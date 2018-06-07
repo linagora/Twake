@@ -372,6 +372,12 @@ class MessageSystem implements MessagesSystemInterface
         return false;
     }
 
+    public function getMessagesFromStream($streamId){
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("streamReciever" => $streamId));
+
+        return $messages;
+    }
+
     public function getMessages($key, $maxId, $subjectId, $user)
     {
 
@@ -512,6 +518,11 @@ class MessageSystem implements MessagesSystemInterface
         return $message;
     }
 
+    public function getResponseMessages($messageParentId){
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo" => $messageParentId));
+
+        return $messages;
+    }
 
     private function setResponseMessage($messageParent, $messageDroped)
     {
