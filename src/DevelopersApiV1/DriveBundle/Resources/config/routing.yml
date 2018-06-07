@@ -44,7 +44,7 @@ developers_api_v1_drive_emptyTrash:
         workspace_id: '\d+'
 
 developers_api_v1_drive_getInfo:
-    path:     workspace/{workspace_id}/drive/object/{id}/getInfo
+    path:     workspace/{workspace_id}/drive/object/{id}
     defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:getInfo }
     methods: [GET]
     requirements:
@@ -60,7 +60,7 @@ developers_api_v1_drive_content:
         id : '\d+'
 
 developers_api_v1_drive_setContent:
-    path:     workspace/{workspace_id}/drive/object/{id}/setContent
+    path:     workspace/{workspace_id}/drive/object/{id}
     defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:setContent }
     methods: [POST]
     requirements:
@@ -97,3 +97,19 @@ developers_api_v1_drive_search:
     methods: [POST]
     requirements:
         workspace_id: '\d+'
+
+developers_api_v1_drive_listFiles:
+    path:     workspace/{workspace_id}/drive/object/{id}/listFiles
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:listFiles }
+    methods: [GET]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'
+
+developers_api_v1_drive_move:
+    path:     workspace/{workspace_id}/drive/object/{id}/move
+    defaults: { _controller: DevelopersApiV1DriveBundle:FileSystem:moveObject }
+    methods: [POST]
+    requirements:
+        workspace_id: '\d+'
+        id : '\d+'

@@ -180,9 +180,6 @@ class DriveFileSystem implements DriveFileSystemInterface
         if ($fileOrDirectory->getShared() && $fileOrDirectory->getGroup()->getId() != $directory->getGroup()->getId()) {
             return false;
         }
-        if ($groupId == null && $fileOrDirectory->isShared() && $fileOrDirectory->getGroup()->getId() != $groupId) {
-            return false;
-        }
 
         $dir = $directory;
         while ($dir != null) {
