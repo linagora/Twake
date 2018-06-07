@@ -22,10 +22,10 @@ class StreamController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
 
         if(!$auth){
-            $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read");
+            $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read",$workspace_id);
 
             if(!$auth)
                 return new JsonResponse("erreur app non autho");
@@ -60,7 +60,7 @@ class StreamController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
@@ -95,7 +95,7 @@ class StreamController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
@@ -123,7 +123,7 @@ class StreamController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
@@ -153,9 +153,98 @@ class StreamController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : routing, impl, test, doc
-    //addMemberAction
+    //POST /workspace/{workspace_id}/messages/stream/{stream_id}/member/{user_id}
+    public function addMemberAction(Request $request, $workspace_id,$stream_id,$user_id){
+        $app = $this->get("api.v1.check")->check($request);
 
-    //TODO : routing, impl, test, doc
-    //removeMemberAction
+        if(!$app){
+            return new JsonResponse("erreur app inconnue");
+        }
+
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
+
+        if(!$auth){
+            return new JsonResponse("erreur app non autho");
+        }
+
+        $stream = $this->get("app.streamsystem")->getStreamEntity($stream_id);
+        $streamKey = "s-".$stream->getId();
+        $name = $stream->getName();
+        $streamDescription = $stream->getDescription();
+        $isPrivate = $stream->getIsPrivate();
+        $members = $stream->getMembers();
+        $add = true;
+        $membersId = Array();
+        foreach ($members as $member){
+            array_push($membersId, $member->getId());
+            if($user_id==$member->getId())
+                $add = false;
+        }
+        if($add){
+            array_push($membersId, $user_id);
+            //$streamKey,$name,$streamDescription,$isPrivate,$members
+            $success = $this->get("app.streamsystem")->editStreamFromApp($streamKey,$name,$streamDescription,$isPrivate,$membersId);
+
+        }
+
+        $data = Array(
+            "success" => !$success?false:true,
+            "errors" => Array()
+        );
+
+
+        if(!$success){
+            $data["errors"][] = 3008;
+        }
+
+        return new JsonResponse($data);
+    }
+
+    //DELETE /workspace/{workspace_id}/messages/stream/{stream_id}/member/{user_id}
+    public function removeMemberAction(Request $request, $workspace_id,$stream_id,$user_id)
+    {
+        $app = $this->get("api.v1.check")->check($request);
+
+        if (!$app) {
+            return new JsonResponse("erreur app inconnue");
+        }
+
+        $auth = $this->get("api.v1.check")->isAllowedTo($app, "messages:manage",$workspace_id);
+
+        if (!$auth) {
+            return new JsonResponse("erreur app non autho");
+        }
+
+        $stream = $this->get("app.streamsystem")->getStreamEntity($stream_id);
+        $streamKey = "s-".$stream->getId();
+        $name = $stream->getName();
+        $streamDescription = $stream->getDescription();
+        $isPrivate = $stream->getIsPrivate();
+        $members = $stream->getMembers();
+        $remove = false;
+        $membersId = Array();
+        foreach ($members as $member){
+            if($user_id==$member->getId())
+                $remove = true;
+            else
+                array_push($membersId, $member->getId());
+        }
+        if($remove){
+            //$streamKey,$name,$streamDescription,$isPrivate,$members
+            $success = $this->get("app.streamsystem")->editStreamFromApp($streamKey,$name,$streamDescription,$isPrivate,$membersId);
+
+        }
+
+        $data = Array(
+            "success" => !$success?false:true,
+            "errors" => Array()
+        );
+
+
+        if (!$success) {
+            $data["errors"][] = 3008;
+        }
+
+        return new JsonResponse($data);
+    }
 }

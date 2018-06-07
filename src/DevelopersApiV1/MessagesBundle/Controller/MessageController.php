@@ -22,7 +22,7 @@ class MessageController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:write");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:write", $workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
@@ -65,13 +65,13 @@ class MessageController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read", $workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
         }
 
-        $message = $this->get("app.messages")->getMessage($message_id);
+        $message = $this->get("app.messages")->getMessage($message_id, $workspace_id);
 
         $data = Array(
             "message" => null,
@@ -87,7 +87,7 @@ class MessageController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : impl, test, doc
+    //GET /workspace/{workspace_id}/messages/message/{message_id}/children
     public function getMessageChildrenAction(Request $request,$workspace_id, $message_id){
         //SubjectSystem : getMessages
         $app = $this->get("api.v1.check")->check($request);
@@ -96,16 +96,40 @@ class MessageController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read", $workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
         }
 
-        $messages = null;
+        $subject = $this->get("app.subjectsystem")->getSubjectFromMessage($message_id);
+        if($subject==null){
+            //Get all response from message_id
+            $messageParent = $this->get("app.messages")->getMessage($message_id);
+
+            $responseMessages = $this->get("app.messages")->getResponseMessages($message_id);
+
+            $messages["first_message"] = $messageParent->getAsArrayForClient();
+            $ar = Array();
+
+            foreach ($responseMessages as $responseMessage) {
+                array_push($ar,$responseMessage->getAsArrayForClient());
+            }
+
+            $messages["response"] = $ar;
+        }else{
+            //Return all response from the subject
+            $messages = $this->get("app.subjectsystem")->getMessages($subject->getId());
+            $ar = Array();
+
+            foreach ($messages as $message){
+                array_push($ar,$message->getAsArrayForClient());
+            }
+            $messages = $ar;
+        }
 
         $data = Array(
-            "messages" => Array(),
+            "messages" => $messages,
             "errors" => Array()
         );
 
@@ -114,10 +138,6 @@ class MessageController extends Controller
             $data["errors"][] = 3003;
         }
         else {
-            $data_msg = Array();
-            foreach($messages as $msg)
-                array_push($data_msg, $msg->getContent());
-            $data["messages"] = $data_msg;
         }
 
         return new JsonResponse($data);
@@ -130,7 +150,7 @@ class MessageController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:write");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:write", $workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
@@ -160,7 +180,7 @@ class MessageController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage", $workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
@@ -181,32 +201,32 @@ class MessageController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : impl, test, doc
-    public function getStreamContentAction(Request $request, $workspace_id, $message_id){
+    //GET /workspace/{workspace_id}/messages/stream/{stream_id}
+    public function getStreamContentAction(Request $request, $workspace_id, $stream_id){
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read", $workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
         }
 
-        $message = null;
+        $messagesRaw = $this->get("app.messages")->getMessagesFromStream($stream_id);
 
-        $data = Array(
-            "message" => $message,
-            "errors" => Array()
-        );
+        $messages = Array();
 
-
-        if(!$message){
-            $data["errors"][] = 3006;
+        foreach ($messagesRaw as $message) {
+            array_push($messages,$message->getAsArrayForClient());
         }
 
+        $data = Array(
+            "messages" => $messages,
+            "errors" => Array()
+        );
         return new JsonResponse($data);
     }
 
@@ -217,7 +237,7 @@ class MessageController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage", $workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
@@ -245,7 +265,7 @@ class MessageController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage", $workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
@@ -273,7 +293,7 @@ class MessageController extends Controller
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage", $workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
@@ -294,15 +314,15 @@ class MessageController extends Controller
         return new JsonResponse($data);
     }
 
-    //TODO : impl, test, doc
-    public function sendMessageWithFileAction(Request $request, $workspace_id, $message_id){
+    //NOTTODO : impl, test, doc
+    /*public function sendMessageWithFileAction(Request $request, $workspace_id, $message_id){
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
             return new JsonResponse("erreur app inconnue");
         }
 
-        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:write");
+        $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:write", $workspace_id);
 
         if(!$auth){
             return new JsonResponse("erreur app non autho");
@@ -321,6 +341,6 @@ class MessageController extends Controller
         }
 
         return new JsonResponse($data);
-    }
+    }*/
 
 }

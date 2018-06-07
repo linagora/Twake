@@ -34,8 +34,6 @@ class CheckService
                 $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey"=> $publicKey));
 
                 if ($application != null){
-                    var_dump("OK");
-                    var_dump($application->getId());
                     $key = $application->getPrivateKey();
 
                     if ($key == $privateKey) {
@@ -56,7 +54,7 @@ class CheckService
     }
 
 
-    public function isAllowedTo($application, $action){
+    public function isAllowedTo($application, $action, $workspaceId){
 
         $rights = $application->getApplicationRights();
 
@@ -69,6 +67,26 @@ class CheckService
             return false;
         }
 
-        return true;
+        return $this->containsApp($workspaceId,$application);
     }
+
+
+    public function containsApp($workspaceId, $application){
+        $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $workspaceRepository->find($workspaceId);
+
+        if($workspace==null){
+            return false;
+        }
+
+        if($workspace->getUser()!=null)//If is private
+            return $application->getDefault();
+
+        //Group apps
+        $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+        $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace" => $workspace, "groupapp" => $application->getId()));
+
+        return $workspaceapp!=null;
+    }
+
 }

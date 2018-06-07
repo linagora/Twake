@@ -81,8 +81,13 @@ class SubjectSystem
         return false;
     }
 
+    public function getSubjectById($subjectId){
+        $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
+        return $subject;
+    }
+
     public function closeSubject($idSubject,$user){
-        $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($idSubject);
+        $subject = $this->getSubjectById($idSubject);
         return $this->editSubject($idSubject,$subject->getName(),$subject->getDescription(),false,$user);
     }
 
@@ -113,6 +118,13 @@ class SubjectSystem
         }
         $retour = array_reverse($retour);
         return $retour;
+    }
+
+    public function getSubjectFromMessage($messageId){
+        $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($messageId);
+        if($message!=null)
+            return $message->getSubject();
+        return null;
     }
 
     public function getMessages($subject){
