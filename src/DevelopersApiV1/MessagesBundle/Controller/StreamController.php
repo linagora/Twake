@@ -15,6 +15,14 @@ use Symfony\Component\HttpFoundation\Request;
 
 class StreamController extends Controller
 {
+    private function checkIfStreamInWorksapce($streamId, $workspaceId){
+        $stream = $this->get("app.streamsystem")->getStreamEntity($streamId);
+
+        if($stream==null)
+            return false;
+        return ($stream->getWorkspace()!=null)?$stream->getWorkspace()->getId()==$workspaceId:false;
+    }
+
     public function getStreamListAction(Request $request, $workspace_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -101,6 +109,9 @@ class StreamController extends Controller
             return new JsonResponse("erreur app non autho");
         }
 
+        if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
+            return new JsonResponse("bad stream");
+
         $stream = $this->get("app.streamsystem")->deleteStreamFromApp($stream_id);
 
         $data = Array(
@@ -128,6 +139,9 @@ class StreamController extends Controller
         if(!$auth){
             return new JsonResponse("erreur app non autho");
         }
+
+        if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
+            return new JsonResponse("bad stream");
 
         $data = $this->get("api.v1.check")->get($request);
 
@@ -166,6 +180,9 @@ class StreamController extends Controller
         if(!$auth){
             return new JsonResponse("erreur app non autho");
         }
+
+        if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
+            return new JsonResponse("bad stream");
 
         $stream = $this->get("app.streamsystem")->getStreamEntity($stream_id);
         $streamKey = "s-".$stream->getId();
@@ -214,6 +231,9 @@ class StreamController extends Controller
         if (!$auth) {
             return new JsonResponse("erreur app non autho");
         }
+
+        if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
+            return new JsonResponse("bad stream");
 
         $stream = $this->get("app.streamsystem")->getStreamEntity($stream_id);
         $streamKey = "s-".$stream->getId();

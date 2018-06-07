@@ -1,4 +1,8 @@
 services:
-    api.v1.check:
+  api.v1.check:
         class: DevelopersApiV1\CoreBundle\Services\CheckService
+        arguments: ["@doctrine.orm.entity_manager"]
+
+  api.v1.api_status:
+        class: DevelopersApiV1\CoreBundle\Services\ApiStatus
         arguments: ["@doctrine.orm.entity_manager"]
