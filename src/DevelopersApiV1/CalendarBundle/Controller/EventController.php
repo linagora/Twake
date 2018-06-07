@@ -20,13 +20,17 @@ class EventController extends Controller
      * @return JsonResponse
      */
     public function createEventAction(Request $request,$workspace_id,$calendar_id){
+
         $application = $this->get("api.v1.check")->check($request);
+
         if(!$application){
             return new JSonResponse();
         }
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
+
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
             return new JSonResponse();
         }
+
         $content = $this->get("api.v1.check")->get($request);
 
         if($content === false ){
@@ -37,10 +41,12 @@ class EventController extends Controller
             "data" => Array(),
             "errors" => Array()
         );
+
         $event = Array() ;
+        $participants = Array();
+
         $event["from"] = isset($content["from"])? $content["from"]: 0 ;
         $event["to"] = isset($content["event"])? $content["to"]: 0 ;
-        $participants = Array();
 
         $data["data"] = $this->get("app.calendar_events")->createEvent($workspace_id, $calendar_id, $event, null, false, $participants);
 
@@ -52,13 +58,17 @@ class EventController extends Controller
     }
 
     public function deleteEventAction(Request $request, $workspace_id, $event_id, $calendar_id){
+
         $application = $this->get("api.v1.check")->check($request);
+
         if(!$application){
             return new JSonResponse("1");
         }
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
+
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
             return new JSonResponse("2");
         }
+
         $content = $this->get("api.v1.check")->get($request);
 
         if($content === false ){
@@ -75,24 +85,124 @@ class EventController extends Controller
         return new JsonResponse($data);
     }
 
-    public function editEventAction(Request $request){
-        //TODO
-        //verif des datas
-        //verif des droits
-        //edit
-        //return event modifié ou error
+    public function editEventAction(Request $request, $workspace_id, $event_id){
+        $application = $this->get("api.v1.check")->check($request);
+
+        if(!$application){
+            return new JSonResponse("1");
+        }
+
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
+            return new JSonResponse("2");
+        }
+
+        $content = $this->get("api.v1.check")->get($request);
+
+        if($content === false ){
+            return new JsonResponse("3");
+        }
+
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $olderData =$this->get("app.calendar_events")->getEventById($workspace_id, $event_id, null);
+        $olderEvent = $olderData["event"];
+
+        $calendar = isset($content["calendar"])? $content["calendar"] : $olderData["calendar"];
+        $olderEvent["from"] = isset($content["from"])? $content["from"]: $olderEvent["from"];
+        $olderEvent["to"] = isset($content["to"])? $content["to"]: $olderEvent["to"];
+        $olderEvent["title"] = isset($content["title"])? $content["title"] : $olderEvent["title"] ;
+        $olderEvent["typeEvent"] = isset($content["typeEvent"])? $content["typeEvent"]: $olderEvent["typeEvent"] ;
+
+
+        $data["data"] =($this->get("app.calendar_events")->updateEvent($workspace_id, $calendar, $event_id, $olderEvent, null))->getAsArray();
+
+
+        return new JsonResponse($data);
     }
 
     public function getEventAction(Request $request, $workspace_id, $event_id){
 
-        //TODO
+        $application = $this->get("api.v1.check")->check($request);
+
+        if(!$application){
+            return new JSonResponse("1");
+        }
+
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
+            return new JSonResponse("2");
+        }
+
+        $content = $this->get("api.v1.check")->get($request);
+
+        if($content === false ){
+            return new JsonResponse("3");
+        }
+
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $data["data"] = $this->get("app.calendar_events")->getEventById($workspace_id, $event_id, null);
+
+       return new JsonResponse($data);
     }
 
-    public function shareAction(Request $request){
-        //TODO
+    public function shareAction(Request $request, $workspace_id, $event_id, $calendar_id, $user_id){
+        $application = $this->get("api.v1.check")->check($request);
+
+        if(!$application){
+            return new JSonResponse("1");
+        }
+
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
+            return new JSonResponse("2");
+        }
+
+        $content = $this->get("api.v1.check")->get($request);
+
+        if($content === false ){
+            return new JsonResponse("3");
+        }
+
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $data["data"] = $this->get("app.calendar_events")->addUsers($workspace_id, $calendar_id, $event_id, Array($user_id), null);
+
+        return new JsonResponse($data);
+
     }
 
-    public function unshareAction(Request $request){
-        //TODO
+    public function unshareAction(Request $request, $workspace_id, $event_id, $user_id, $calendar_id){
+        $application = $this->get("api.v1.check")->check($request);
+
+        if(!$application){
+            return new JSonResponse("1");
+        }
+
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
+            return new JSonResponse("2");
+        }
+
+        $content = $this->get("api.v1.check")->get($request);
+
+        if($content === false ){
+            return new JsonResponse("3");
+        }
+
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $data["data"] = $this->get("app.calendar_events")->removeUsers($workspace_id, $calendar_id, $event_id,Array($user_id), null);
+
+        return new JsonResponse($data);
     }
 }

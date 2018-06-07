@@ -20,7 +20,7 @@ class CalendarController extends Controller
             return new JSonResponse("application");
         }
 
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:write")){
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:write", $workspace_id)){
             return new JSonResponse("allowed");
         }
 
@@ -51,7 +51,7 @@ class CalendarController extends Controller
             return new JSonResponse("application");
         }
 
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
             return new JSonResponse("allowed");
         }
 
@@ -78,7 +78,7 @@ class CalendarController extends Controller
             return new JSonResponse("application");
         }
 
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
             return new JSonResponse("allowed");
         }
 
@@ -112,7 +112,7 @@ class CalendarController extends Controller
             return new JSonResponse("application");
         }
 
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:read")){
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:read", $workspace_id)){
             return new JSonResponse("allowed");
         }
 
@@ -147,7 +147,7 @@ class CalendarController extends Controller
             return new JSonResponse("application");
         }
 
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
             return new JSonResponse("allowed");
         }
 
@@ -188,7 +188,7 @@ class CalendarController extends Controller
             return new JSonResponse("application");
         }
 
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage",$workspace_id)){
             return new JSonResponse("allowed");
         }
 
