@@ -15,6 +15,19 @@ use Symfony\Component\HttpFoundation\Request;
 
 class MessageController extends Controller
 {
+
+    private function checkIfMessageInWorksapce($messageId, $workspaceId){
+        $message = $this->get("app.messages")->getMessage($messageId, $workspaceId);
+
+        return ($message->getStreamReciever()!=null)?$this->checkIfStreamInWorksapce($message->getStreamReciever()->getId(),$workspaceId)  :false;
+    }
+    private function checkIfStreamInWorksapce($streamId, $workspaceId){
+        $stream = $this->get("app.streamsystem")->getStreamEntity($streamId);
+
+        if($stream==null)
+            return false;
+        return ($stream->getWorkspace()!=null)?$stream->getWorkspace()->getId()==$workspaceId:false;
+    }
     public function sendMessageAction(Request $request, $workspace_id, $stream_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -27,6 +40,10 @@ class MessageController extends Controller
         if(!$auth){
             return new JsonResponse("erreur app non autho");
         }
+
+        if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
+            return new JsonResponse("bad stream");
+
 
         $data = $this->get("api.v1.check")->get($request);
 
@@ -71,6 +88,9 @@ class MessageController extends Controller
             return new JsonResponse("erreur app non autho");
         }
 
+        if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
+            return new JsonResponse("bad stream");
+
         $message = $this->get("app.messages")->getMessage($message_id, $workspace_id);
 
         $data = Array(
@@ -101,6 +121,9 @@ class MessageController extends Controller
         if(!$auth){
             return new JsonResponse("erreur app non autho");
         }
+
+        if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
+            return new JsonResponse("bad stream");
 
         $subject = $this->get("app.subjectsystem")->getSubjectFromMessage($message_id);
         if($subject==null){
@@ -156,6 +179,9 @@ class MessageController extends Controller
             return new JsonResponse("erreur app non autho");
         }
 
+        if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
+            return new JsonResponse("bad stream");
+
         $content = $this->get("api.v1.check")->get($request);
 
         $success = $this->get("app.messages")->editMessageFromApp($message_id,$content["content"]);
@@ -186,6 +212,9 @@ class MessageController extends Controller
             return new JsonResponse("erreur app non autho");
         }
 
+        if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
+            return new JsonResponse("bad stream");
+
         $message = $this->get("app.messages")->deleteMassageFromApp($message_id);
 
         $data = Array(
@@ -215,6 +244,9 @@ class MessageController extends Controller
             return new JsonResponse("erreur app non autho");
         }
 
+        if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
+            return new JsonResponse("bad stream");
+
         $messagesRaw = $this->get("app.messages")->getMessagesFromStream($stream_id);
 
         $messages = Array();
@@ -243,6 +275,8 @@ class MessageController extends Controller
             return new JsonResponse("erreur app non autho");
         }
 
+        if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
+            return new JsonResponse("bad stream");
         $message = $this->get("app.subjectsystem")->createSubjectFromMessageFromApp($message_id);
 
         $data = Array(
@@ -271,6 +305,10 @@ class MessageController extends Controller
             return new JsonResponse("erreur app non autho");
         }
 
+        if(!$this->checkIfMessageInWorksapce($response_message_id,$workspace_id))
+            return new JsonResponse("bad stream");
+        if(!$this->checkIfMessageInWorksapce($main_message_id,$workspace_id))
+            return new JsonResponse("bad stream");
         $message = $this->get("app.messages")->moveMessageInMessage($main_message_id,$response_message_id,null);
 
         $data = Array(
@@ -298,6 +336,12 @@ class MessageController extends Controller
         if(!$auth){
             return new JsonResponse("erreur app non autho");
         }
+
+        if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
+            return new JsonResponse("bad stream");
+
+        if(!$this->checkIfSubjectInWorksapce($subject_id,$workspace_id))
+            return new JsonResponse("bad stream");
 
         $message = $this->get("app.messages")->moveMessageInSubject($subject_id,$message_id,null);
 

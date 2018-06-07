@@ -14,6 +14,20 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SubjectController extends Controller
 {
+
+    private function checkIfSubjectInWorksapce($subjectId, $workspaceId){
+        $subject = $this->get("app.subjectsystem")->getSubjectById($subjectId);
+        return $this->checkIfStreamInWorksapce($subject->getStream()->getId(), $workspaceId);
+    }
+
+    private function checkIfStreamInWorksapce($streamId, $workspaceId){
+        $stream = $this->get("app.streamsystem")->getStreamEntity($streamId);
+
+        if($stream==null)
+            return false;
+        return ($stream->getWorkspace()!=null)?$stream->getWorkspace()->getId()==$workspaceId:false;
+    }
+
     public function closeSubjectAction(Request $request, $workspace_id, $subject_id){
         $app = $this->get("api.v1.check")->check($request);
 
@@ -26,6 +40,9 @@ class SubjectController extends Controller
         if(!$auth){
             return new JsonResponse("erreur app non autho");
         }
+
+        if(!$this->checkIfSubjectInWorksapce($subject_id,$workspace_id))
+            return new JsonResponse("bad stream");
 
         $message = $this->get("app.subjectsystem")->closeSubject($subject_id,null);
 
@@ -55,6 +72,10 @@ class SubjectController extends Controller
         if(!$auth){
             return new JsonResponse("erreur app non autho");
         }
+
+
+        if(!$this->checkIfSubjectInWorksapce($subject_id,$workspace_id))
+            return new JsonResponse("bad stream");
 
         $data = $this->get("api.v1.check")->get($request);
 
@@ -93,6 +114,9 @@ class SubjectController extends Controller
         if(!$auth){
             return new JsonResponse("erreur app non autho");
         }
+
+        if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
+            return new JsonResponse("bad stream");
 
         $subjects = $this->get("app.subjectsystem")->getSubject($stream_id);
 
