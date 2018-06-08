@@ -11,5 +11,12 @@ use http\Env\Request;
  */
 class DataTokenRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function removeToken($token){
+        $qb = $this->createQueryBuilder('s');
+        $qb->delete();
+        $qb->where('s.token = :token');
+        $qb->setParameter('token', $token);
+        $qb->getQuery()->execute();
+    }
 
 }
