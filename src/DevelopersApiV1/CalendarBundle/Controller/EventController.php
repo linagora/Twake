@@ -42,7 +42,6 @@ class EventController extends Controller
 
         if($result == false || $result ==null){
             $data = $this->get("api.v1.api_status")->getError(4007);
-            $data["data"] = "";
         }else{
             $data = $this->get("api.v1.api_status")->getSuccess();
             $data["data"] = $result->getAsArray();
@@ -76,10 +75,8 @@ class EventController extends Controller
 
         if($result == false || $result == null){
             $data = $this->get("api.v1.api_status")->getError(4008);
-            $data["data"] = "";
         }else{
             $data = $this->get("api.v1.api_status")->getSuccess();
-            $data["data"] = "";
         }
 
         return new JsonResponse($data);
@@ -122,7 +119,6 @@ class EventController extends Controller
 
         if($result == false || $result ==null){
             $data = $this->get("api.v1.api_status")->getError(4009);
-            $data["data"] = "";
         }else{
             $data = $this->get("api.v1.api_status")->getSuccess();
             $data["data"] = $result;
@@ -153,7 +149,6 @@ class EventController extends Controller
 
         if($result == false || $result ==null){
             $data = $this->get("api.v1.api_status")->getError(4010);
-            $data["data"] = "";
         }else{
             $data = $this->get("api.v1.api_status")->getSuccess();
             $data["data"] = $result;
@@ -169,7 +164,7 @@ class EventController extends Controller
      * @return JsonResponse
      */
     public function getAllEventAction(Request $request, $workspace_id, $calendar_id){
-        //TODO affiche pas les objets ( BUG )
+
         $application = $this->get("api.v1.check")->check($request);
 
         if(!$application){
@@ -180,11 +175,10 @@ class EventController extends Controller
             return new JSonResponse($this->get("api.v1.api_status")-> getError(2));
         }
 
-        $result = $this->get("app.calendar_events")->getEventsForWorkspace($workspace_id,0, time(),$calendar_id, null);
+        $result = $this->get("app.calendar_events")->getEventsByCalendar($workspace_id,$calendar_id, null);
 
         if($result == false || $result ==null){
             $data = $this->get("api.v1.api_status")->getError(4013);
-            $data["data"] = "";
         }else{
             $data = $this->get("api.v1.api_status")->getSuccess();
             $data["data"] = $result;
@@ -218,10 +212,8 @@ class EventController extends Controller
 
         if($error == false || $error ==null){
             $data = $this->get("api.v1.api_status")->getError(4011);
-            $data["data"] = "";
         }else if($result == false || $result ==null){
             $data = $this->get("api.v1.api_status")->getError(4009);
-            $data["data"] = "";
         }else{
             $data = $this->get("api.v1.api_status")->getSuccess();
             $data["data"] = $result;
@@ -256,10 +248,8 @@ class EventController extends Controller
 
         if($error == false || $error ==null){
             $data = $this->get("api.v1.api_status")->getError(40012);
-            $data["data"] = "";
         }else if($result == false || $result ==null){
             $data = $this->get("api.v1.api_status")->getError(4009);
-            $data["data"] = "";
         }else{
             $data = $this->get("api.v1.api_status")->getSuccess();
             $data["data"] = $result;
