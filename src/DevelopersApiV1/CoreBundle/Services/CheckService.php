@@ -11,9 +11,10 @@ class CheckService
     /**
      * CheckService constructor.
      */
-    public function __construct($doctrine)
+    public function __construct($doctrine, $accessLogService)
     {
         $this->doctrine = $doctrine;
+        $this->accessLogService = $accessLogService;
 
     }
 
@@ -62,6 +63,8 @@ class CheckService
         $actions = explode(":", $action);
         $object = $actions[0];
         $value = intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$actions[1]));
+
+        $this->accessLogService->record($application->getId(), $value);
 
         if(!isset($rights[$object]) || intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$rights[$object])) < $value){
             return false;
