@@ -32,17 +32,17 @@ class SubjectController extends Controller
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfSubjectInWorksapce($subject_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $message = $this->get("app.subjectsystem")->closeSubject($subject_id,null);
 
@@ -53,10 +53,10 @@ class SubjectController extends Controller
 
 
         if(!$message){
-            $data["errors"][] = 3012;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3013)); // Fail to close a subject
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse(array_merge($data,$this->get("api.v1.api_status")->getSuccess()));
     }
 
     //PUT /workspace/{workspace_id}/messages/subject/{subject_id}
@@ -64,18 +64,18 @@ class SubjectController extends Controller
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
 
         if(!$this->checkIfSubjectInWorksapce($subject_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $data = $this->get("api.v1.check")->get($request);
 
@@ -95,10 +95,10 @@ class SubjectController extends Controller
 
 
         if(!$message){
-            $data["errors"][] = 3012;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3021));//Fail to edit a subject
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse(array_merge($data,$this->get("api.v1.api_status")->getSuccess()));
     }
 
     //GET  /workspace/{workspace_id}/messages/stream/{stream_id}/subjects
@@ -106,17 +106,17 @@ class SubjectController extends Controller
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $subjects = $this->get("app.subjectsystem")->getSubject($stream_id);
 
@@ -127,9 +127,9 @@ class SubjectController extends Controller
 
 
         if(!$subjects){
-            $data["errors"][] = 3012;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3022)); // Fail to get all subjects from a stream
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse(array_merge($data,$this->get("api.v1.api_status")->getSuccess()));
     }
 }

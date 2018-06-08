@@ -27,7 +27,7 @@ class StreamController extends Controller
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
@@ -36,7 +36,7 @@ class StreamController extends Controller
             $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read",$workspace_id);
 
             if(!$auth)
-                return new JsonResponse("erreur app non autho");
+                return new JsonResponse($this->get("api.v1.api_status")->getError(2));
 
             $streams = $this->get("app.streamsystem")->getAllPublicStreamList($workspace_id);
         }else {
@@ -50,7 +50,7 @@ class StreamController extends Controller
 
 
         if(!$streams){
-            $data["errors"][] = 3008;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3009)); // Fail to get stream list
         }
         else{
             foreach ($streams as $stream){
@@ -58,20 +58,20 @@ class StreamController extends Controller
             }
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse(array_merge($data,$this->get("api.v1.api_status")->getSuccess()));
     }
 
     public function createStreamAction(Request $request, $workspace_id){
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $data = $this->get("api.v1.check")->get($request);
@@ -90,27 +90,27 @@ class StreamController extends Controller
 
 
         if(!$stream){
-            $data["errors"][] = 3008;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3016)); //Fail to create a stream
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse(array_merge($data,$this->get("api.v1.api_status")->getSuccess()));
     }
 
     public function deleteStreamAction(Request $request, $workspace_id, $stream_id){
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $stream = $this->get("app.streamsystem")->deleteStreamFromApp($stream_id);
 
@@ -121,27 +121,27 @@ class StreamController extends Controller
 
 
         if(!$stream){
-            $data["errors"][] = 3008;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3015)); // Fail to delete a stream
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse(array_merge($data,$this->get("api.v1.api_status")->getSuccess()));
     }
 
     public function editStreamAction(Request $request, $workspace_id, $stream_id){
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $data = $this->get("api.v1.check")->get($request);
 
@@ -155,16 +155,15 @@ class StreamController extends Controller
         $stream = $this->get("app.streamsystem")->editStreamFromApp("s-".$stream_id,$name,$streamDescription,$isPrivate,$members);
 
         $data = Array(
-            "stream" => $stream->getAsArray(),
-            "errors" => Array()
+            "stream" => $stream->getAsArray()
         );
 
 
         if(!$stream){
-            $data["errors"][] = 3008;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3017));// Fail to edit a stream
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse(array_merge($data,$this->get("api.v1.api_status")->getSuccess()));
     }
 
     //POST /workspace/{workspace_id}/messages/stream/{stream_id}/member/{user_id}
@@ -172,17 +171,17 @@ class StreamController extends Controller
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage",$workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $stream = $this->get("app.streamsystem")->getStreamEntity($stream_id);
         $streamKey = "s-".$stream->getId();
@@ -204,17 +203,13 @@ class StreamController extends Controller
 
         }
 
-        $data = Array(
-            "success" => !$success?false:true,
-            "errors" => Array()
-        );
 
 
         if(!$success){
-            $data["errors"][] = 3008;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3019)); // fail to add a member
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
     //DELETE /workspace/{workspace_id}/messages/stream/{stream_id}/member/{user_id}
@@ -223,17 +218,17 @@ class StreamController extends Controller
         $app = $this->get("api.v1.check")->check($request);
 
         if (!$app) {
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app, "messages:manage",$workspace_id);
 
         if (!$auth) {
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $stream = $this->get("app.streamsystem")->getStreamEntity($stream_id);
         $streamKey = "s-".$stream->getId();
@@ -255,16 +250,10 @@ class StreamController extends Controller
 
         }
 
-        $data = Array(
-            "success" => !$success?false:true,
-            "errors" => Array()
-        );
-
-
         if (!$success) {
-            $data["errors"][] = 3008;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3020)); // Fail to remove a member
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 }

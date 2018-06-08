@@ -18,6 +18,8 @@ class MessageController extends Controller
 
     private function checkIfMessageInWorksapce($messageId, $workspaceId){
         $message = $this->get("app.messages")->getMessage($messageId, $workspaceId);
+        if($message==null)
+            return false;
 
         return ($message->getStreamReciever()!=null)?$this->checkIfStreamInWorksapce($message->getStreamReciever()->getId(),$workspaceId)  :false;
     }
@@ -32,17 +34,17 @@ class MessageController extends Controller
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:write", $workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
 
         $data = $this->get("api.v1.check")->get($request);
@@ -62,49 +64,47 @@ class MessageController extends Controller
 
 
         $data = Array(
-            "message_id" => null,
-            "errors" => Array()
+            "message_id" => null
         );
 
         if(!$message){
-            $data["errors"][] = 3001;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3002));
         }
         else
-            $data["message_id"] = $message->getId();
+            $data["message_id"] = $message->getAsArrayForClient();
 
-        return new JsonResponse($data);
+        return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$data));
     }
 
     public function getMessageAction(Request $request,$workspace_id, $message_id){
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read", $workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $message = $this->get("app.messages")->getMessage($message_id, $workspace_id);
 
         $data = Array(
-            "message" => null,
-            "errors" => Array()
+            "message" => null
         );
 
         if(!$message|| $message==null){
-            $data["errors"][] = 3002;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3003));//Fail to get message
         }
         else
             $data["message"] = $message->getContent();
 
-        return new JsonResponse($data);
+        return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$data));
     }
 
     //GET /workspace/{workspace_id}/messages/message/{message_id}/children
@@ -113,17 +113,17 @@ class MessageController extends Controller
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read", $workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $subject = $this->get("app.subjectsystem")->getSubjectFromMessage($message_id);
         if($subject==null){
@@ -152,35 +152,32 @@ class MessageController extends Controller
         }
 
         $data = Array(
-            "messages" => $messages,
-            "errors" => Array()
+            "messages" => $messages
         );
 
 
         if(!$messages|| $messages==null){
-            $data["errors"][] = 3003;
-        }
-        else {
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3004));// Fail to get message children
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$data));
     }
 
     public function editMessageAction(Request $request, $workspace_id, $message_id){
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:write", $workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $content = $this->get("api.v1.check")->get($request);
 
@@ -193,41 +190,36 @@ class MessageController extends Controller
 
 
         if(!$success){
-            $data["errors"][] = 3004;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3005)); // Fail to edit a message
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
     public function deleteMessageAction(Request $request, $workspace_id, $message_id){
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage", $workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $message = $this->get("app.messages")->deleteMassageFromApp($message_id);
 
-        $data = Array(
-            "message" => !$message ? false : true,
-            "errors" => Array()
-        );
-
 
         if(!$message){
-            $data["errors"][] = 3005;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3006)); //Fail to delete a message
         }
 
-        return new JsonResponse($data);
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
     //GET /workspace/{workspace_id}/messages/stream/{stream_id}
@@ -235,19 +227,22 @@ class MessageController extends Controller
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:read", $workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfStreamInWorksapce($stream_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $messagesRaw = $this->get("app.messages")->getMessagesFromStream($stream_id);
+
+        if(!$messagesRaw)
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3007));//Fail to get stream content
 
         $messages = Array();
 
@@ -256,59 +251,58 @@ class MessageController extends Controller
         }
 
         $data = Array(
-            "messages" => $messages,
-            "errors" => Array()
+            "messages" => $messages
         );
-        return new JsonResponse($data);
+
+        return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$data));
     }
 
     public function changeMessageToSubjectAction(Request $request, $workspace_id, $message_id){
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage", $workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
         $message = $this->get("app.subjectsystem")->createSubjectFromMessageFromApp($message_id);
 
         $data = Array(
-            "subject_id" => $message["id"],
-            "errors" => Array()
+            "subject_id" => $message["id"]
         );
 
 
         if(!$message){
-            $data["errors"][] = 3009;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3010));//Fail to change message in subject
         }
-
-        return new JsonResponse($data);
+        else
+            return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$data));
     }
 
     public function moveMessageInMessageAction(Request $request, $workspace_id, $response_message_id,$main_message_id){
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage", $workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfMessageInWorksapce($response_message_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
         if(!$this->checkIfMessageInWorksapce($main_message_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
         $message = $this->get("app.messages")->moveMessageInMessage($main_message_id,$response_message_id,null);
 
         $data = Array(
@@ -318,44 +312,38 @@ class MessageController extends Controller
 
 
         if(!$message){
-            $data["errors"][] = 3010;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3011));//Fail to move a message in a message
         }
-
-        return new JsonResponse($data);
+        else
+            return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
     public function moveMessageInSubjectAction(Request $request, $workspace_id, $message_id, $subject_id){
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:manage", $workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         if(!$this->checkIfMessageInWorksapce($message_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         if(!$this->checkIfSubjectInWorksapce($subject_id,$workspace_id))
-            return new JsonResponse("bad stream");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $message = $this->get("app.messages")->moveMessageInSubject($subject_id,$message_id,null);
 
-        $data = Array(
-            "success" => !$message ? false : true,
-            "errors" => Array()
-        );
-
-
         if(!$message){
-            $data["errors"][] = 3013;
+            return new JsonResponse($this->get("api.v1.api_status")->getError(3014));//Fail to move message in subject
         }
-
-        return new JsonResponse($data);
+        else
+            return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
     //NOTTODO : impl, test, doc
@@ -363,13 +351,13 @@ class MessageController extends Controller
         $app = $this->get("api.v1.check")->check($request);
 
         if(!$app){
-            return new JsonResponse("erreur app inconnue");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $auth = $this->get("api.v1.check")->isAllowedTo($app,"messages:write", $workspace_id);
 
         if(!$auth){
-            return new JsonResponse("erreur app non autho");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
         $message = null;
