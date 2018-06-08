@@ -16,6 +16,9 @@ class CalendarEventRepository extends \Doctrine\ORM\EntityRepository
         $qb->delete('e');
         $qb->where('e.calendar = :calendar');
         $qb->setParameter('calendar', $calendar);
+        $q = $qb->getQuery();
+
+        return $q->getResult();
     }
 
     public function getCalendarsEventsBy($from, $to, $calendarsId){

@@ -69,6 +69,21 @@ class ApiStatus {
         $this->map[3022] = "Failed to get all subjects from a stream";
 
         //3999 < errors from Calendar < 5000
+        $this->map[4000] = " No content in the request ";
+        $this->map[4001] = " Fail to create a calendar" ;
+        $this->map[4002] = " Fail to delete a calendar" ;
+        $this->map[4003] = " Fail to edit a calendar" ;
+        $this->map[4004] = " Fail to get a calendar" ;
+        $this->map[4005] = " Fail to share a calendar" ;
+        $this->map[4006] = " Fail to unshare a calendar ";
+        $this->map[4007] = " Fail to create an event ";
+        $this->map[4008] = " Fail to delete an event ";
+        $this->map[4009] = " Fail to edit an event ";
+        $this->map[4009] = " Fail to get an event ";
+        $this->map[4011] = " Fail to share an event ";
+        $this->map[4012] = " Fail to unshare an event ";
+        $this->map[4013] = " Fail to get all events ";
+        $this->map[4014] = " Fail to get all calendars ";
     }
 
     public function getError($code){

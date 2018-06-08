@@ -21,6 +21,13 @@ calendar_display:
           calendar_id: "[0-9]+"
           workspace_id: "[0-9]+"
 
+calendar_all_display:
+    path: workspace/{workspace_id}/calendar/all
+    methods: [GET]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:getAllCalendar }
+    requirements:
+          workspace_id: "[0-9]+"
+
 event_display:
     path: workspace/{workspace_id}/calendar/event/{event_id}
     methods: [GET]
@@ -28,6 +35,14 @@ event_display:
     requirements:
           event_id: "[0-9]+"
           workspace_id: "[0-9]+"
+
+event_all_display:
+    path: workspace/{workspace_id}/calendar/{calendar_id}/event/all
+    methods: [GET]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Event:getAllEvent }
+    requirements:
+          workspace_id: "[0-9]+"
+          calendar_id: "[0-9]+"
 
 calendar_edit:
     path: workspace/{workspace_id}/calendar/{calendar_id}

@@ -32,7 +32,7 @@ class Notifications implements NotificationsInterface
         $this->licenceKey = $licenceKey;
     }
 
-    public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data = null, $save_notification = true)
+    public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $_data = null, $save_notification = true)
     {
 
         if($workspace != null){
@@ -118,8 +118,8 @@ class Notifications implements NotificationsInterface
             }
 
             $n = new Notification($application, $workspace, $user);
-            if($data){
-                $n->setData($data);
+            if ($_data) {
+                $n->setData($_data);
             }
             if($code){
                 $n->setCode($code);
@@ -138,7 +138,7 @@ class Notifications implements NotificationsInterface
             if(in_array("push", $type)){
                 $totalNotifications = $this->countAll($user) + 1;
                 if($useDevices) {
-                    @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $data);
+                    @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $_data);
                 }else{
                     @$this->updateDeviceBadge($user, $totalNotifications);
                 }
@@ -269,7 +269,7 @@ class Notifications implements NotificationsInterface
     }
 
 
-    public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $data)
+    public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $_data)
     {
 
         if (strlen($deviceId) < 32) { //False device
@@ -279,7 +279,7 @@ class Notifications implements NotificationsInterface
         $data = Array(
             "message" => $message,
             "title" => $title,
-            "data" => $data,
+            "data" => $_data,
             "badge" => $badge,
             "device_id" => $deviceId,
             "type" => $type

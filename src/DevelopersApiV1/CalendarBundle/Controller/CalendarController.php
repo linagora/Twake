@@ -2,138 +2,208 @@
 
 namespace DevelopersApiV1\CalendarBundle\Controller;
 
+use DevelopersApiV1\CoreBundle\Services\ApiStatus;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
+
 class CalendarController extends Controller
 {
-    public function indexAction()
-    {
-        return $this->render('CalendarBundle:Default:index.html.twig');
-    }
 
+    /**
+     * Create a calendar from api and return the json object if success or error log if fail
+     * By default the color is pink and the title is "MyCalendar"
+     * @param Request $request
+     * @param $workspace_id
+     * @return JsonResponse
+     */
     public function createCalendarAction(Request $request, $workspace_id){
 
         $application = $this->get("api.v1.check")->check($request);
 
         if(!$application){
-            return new JSonResponse("application");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(1));
         }
 
         if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:write", $workspace_id)){
-            return new JSonResponse("allowed");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(2));
         }
 
         $content = $this->get("api.v1.check")->get($request);
 
         if($content === false ){
-            return new JsonResponse("content");
+            return new JsonResponse($this->get("api.v1.api_status")-> getError(4000));
         }
 
-        $data = Array(
-            "data" => Array(),
-            "errors" => Array()
-        );
 
-        $title = isset($content["title"])? $content["title"] : 0 ;
-        $color = isset($content["color"])? $content["color"] : 0 ;
+        $title = isset($content["title"])? $content["title"] : "MyCalendar" ;
+        $color = isset($content["color"])? $content["color"] : "pink" ;
 
-        $data["data"] =($this->get("app.calendars")->createCalendar($workspace_id, $title, $color, null))->getAsArray();
+        $result =($this->get("app.calendars")->createCalendar($workspace_id, $title, $color, null))->getAsArray();
+
+        if($result == false || $result == null){
+            $data = $this->get("api.v1.api_status")-> getError(4001);
+            $data["data"] = "";
+        }else{
+            $data = $this->get("api.v1.api_status")-> getSuccess();
+            $data["data"] = $result;
+        }
 
         return new JsonResponse($data);
     }
 
+    /**
+     * Delete a calendar from the api, return a sucess log or an error log if fail
+     * @param Request $request
+     * @param $workspace_id
+     * @param $calendar_id
+     * @return JsonResponse
+     */
     public function deleteCalendarAction(Request $request, $workspace_id, $calendar_id){
 
         $application = $this->get("api.v1.check")->check($request);
 
         if(!$application){
-            return new JSonResponse("application");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(1));
         }
 
         if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
-            return new JSonResponse("allowed");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(2));
         }
 
-        $content = $this->get("api.v1.check")->get($request);
+        $result = ($this->get("app.calendars")->removeCalendar($workspace_id, $calendar_id, null));
 
-        if($content === false ){
-            return new JsonResponse("content");
+        if($result == false || $result == null){
+            $data = $this->get("api.v1.api_status")->getError(4002);
+            $data["data"] = "";
+        }else{
+            $data = $this->get("api.v1.api_status")->getSuccess();
+            $data["data"] = "";
         }
-
-        $data = Array(
-            "data" => Array(),
-            "errors" => Array()
-        );
-
-        $data["data"] =($this->get("app.calendars")->removeCalendar($workspace_id, $calendar_id, null));
 
         return new JsonResponse($data);
     }
 
+    /**
+     * Edit a calendar from the api, if a field is not specified it keeps the old value.
+     * Return the json object if success or a log error if fail
+     * @param Request $request
+     * @param $workspace_id
+     * @param $calendar_id
+     * @return JsonResponse
+     */
     public function editCalendarAction(Request $request, $workspace_id, $calendar_id){
+
         $application = $this->get("api.v1.check")->check($request);
 
         if(!$application){
-            return new JSonResponse("application");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(1));
         }
 
         if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
-            return new JSonResponse("allowed");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(2));
         }
 
         $content = $this->get("api.v1.check")->get($request);
 
         if($content === false ){
-            return new JsonResponse("content");
+            return new JsonResponse($this->get("api.v1.api_status")-> getError(4000));
         }
 
-        $data = Array(
-            "data" => Array(),
-            "errors" => Array()
-        );
-
         $olderData =$this->get("app.calendars")->getCalendarById($workspace_id, $calendar_id);
-
 
         $title = isset($content["title"])? $content["title"] : $olderData["name"];
         $color = isset($content["color"])? $content["color"] : $olderData["color"] ;
 
-        $data["data"] =($this->get("app.calendars")->updateCalendar($workspace_id, $calendar_id, $title, $color, null))->getAsArray();
+        $result =($this->get("app.calendars")->updateCalendar($workspace_id, $calendar_id, $title, $color, null))->getAsArray();
 
+        if($result == false || $result ==null){
+            $data = $this->get("api.v1.api_status")->getError(4003);
+            $data["data"] = "";
+        }else{
+            $data = $this->get("api.v1.api_status")->getSuccess();
+            $data["data"] = $result;
+        }
 
         return new JsonResponse($data);
     }
 
+    /**
+     * Get a calendar from the api, return the json object if success, an error log if fail
+     * @param Request $request
+     * @param $workspace_id
+     * @param $calendar_id
+     * @return JsonResponse
+     */
     public function getCalendarAction(Request $request, $workspace_id, $calendar_id){
         $application = $this->get("api.v1.check")->check($request);
 
         if(!$application){
-            return new JSonResponse("application");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(1));
         }
 
         if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:read", $workspace_id)){
-            return new JSonResponse("allowed");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(2));
         }
 
         $content = $this->get("api.v1.check")->get($request);
 
         if($content === false ){
-            return new JsonResponse("content");
+            return new JsonResponse($this->get("api.v1.api_status")-> getError(4000));
         }
 
-        $data = Array(
-            "data" => Array(),
-            "errors" => Array()
-        );
+        $result =($this->get("app.calendars")->getCalendarById($workspace_id, $calendar_id));
 
-        $data["data"] =($this->get("app.calendars")->getCalendarById($workspace_id, $calendar_id));
+        if($result == false || $result ==null){
+            $data = $this->get("api.v1.api_status")->getError(4004);
+            $data["data"] = "";
+        }else{
+            $data = $this->get("api.v1.api_status")->getSuccess();
+            $data["data"] = $result;
+        }
 
         return new JsonResponse($data);
 
     }
 
     /**
+     * @param Request $request
+     * @param $workspace_id
+     * @return JsonResponse
+     */
+    public function getAllCalendarAction(Request $request, $workspace_id){
+        $application = $this->get("api.v1.check")->check($request);
+
+        if(!$application){
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(1));
+        }
+
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:read", $workspace_id)){
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(2));
+        }
+
+        $content = $this->get("api.v1.check")->get($request);
+
+        if($content === false ){
+            return new JsonResponse($this->get("api.v1.api_status")-> getError(4000));
+        }
+
+        $result =($this->get("app.calendars")->getCalendars($workspace_id));
+
+        if($result == false || $result ==null){
+            $data = $this->get("api.v1.api_status")->getError(4014);
+            $data["data"] = "";
+        }else{
+            $data = $this->get("api.v1.api_status")->getSuccess();
+            $data["data"] = $result;
+        }
+
+        return new JsonResponse($data);
+
+    }
+
+    /**
+     * Share a calendar between two workspaces
      * @param Request $request
      * @param $workspace_id
      * @param $calendar_id
@@ -144,31 +214,27 @@ class CalendarController extends Controller
         $application = $this->get("api.v1.check")->check($request);
 
         if(!$application){
-            return new JSonResponse("application");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(1));
         }
 
         if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
-            return new JSonResponse("allowed");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(2));
         }
 
-        $content = $this->get("api.v1.check")->get($request);
+        $error = ($this->get("app.calendars")->shareCalendar($workspace_id, $calendar_id, $other_workspace_id, true,null));
 
-        if($content === false ){
-            return new JsonResponse("content");
+        $result= ($this->get("app.calendars")->getCalendarById($other_workspace_id, $calendar_id));
+
+        if($error == false || $error ==null){
+            $data = $this->get("api.v1.api_status")->getError(4005);
+            $data["data"] = "";
+        }else if($result == false || $result ==null){
+            $data = $this->get("api.v1.api_status")->getError(4004);
+            $data["data"] = "";
+        }else{
+            $data = $this->get("api.v1.api_status")->getSuccess();
+            $data["data"] = $result;
         }
-
-        if(!$workspace_id || !$calendar_id || !$other_workspace_id){
-            return null;
-        }
-
-        $data = Array(
-            "data" => Array(),
-            "errors" => Array()
-        );
-
-       ($this->get("app.calendars")->shareCalendar($workspace_id, $calendar_id, $other_workspace_id, true,null));
-
-        $data["data"] = ($this->get("app.calendars")->getCalendarById($other_workspace_id, $calendar_id));
 
         return new JsonResponse($data);
 
@@ -185,29 +251,27 @@ class CalendarController extends Controller
         $application = $this->get("api.v1.check")->check($request);
 
         if(!$application){
-            return new JSonResponse("application");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(1));
         }
 
         if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage",$workspace_id)){
-            return new JSonResponse("allowed");
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(2));
         }
 
-        $content = $this->get("api.v1.check")->get($request);
+        $error = ($this->get("app.calendars")->unshareCalendar($workspace_id, $calendar_id, $other_workspace_id, true,null));
 
-        if($content === false ){
-            return new JsonResponse("content");
+        $result = $data["data"] =($this->get("app.calendars")->getCalendarById($workspace_id, $calendar_id));
+
+        if($error == false || $error ==null){
+            $data = $this->get("api.v1.api_status")->getError(4006);
+            $data["data"] = "";
+        }else if($result == false || $result ==null){
+            $data = $this->get("api.v1.api_status")->getError(4004);
+            $data["data"] = "";
+        }else{
+            $data = $this->get("api.v1.api_status")->getSuccess();
+            $data["data"] = $result;
         }
-        if(!$workspace_id || !$calendar_id || !$other_workspace_id){
-            return null;
-        }
-
-        $data = Array(
-            "data" => Array(),
-            "errors" => Array()
-        );
-
-        ($this->get("app.calendars")->unshareCalendar($workspace_id, $calendar_id, $other_workspace_id, true,null));
-        $data["data"] =($this->get("app.calendars")->getCalendarById($workspace_id, $calendar_id));
 
         return new JsonResponse($data);
 

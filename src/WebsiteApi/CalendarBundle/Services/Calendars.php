@@ -187,6 +187,8 @@ class Calendars implements CalendarsInterface
         $this->doctrine->remove($calendar);
         $this->doctrine->flush();
 
+        return 1;
+
     }
 
     public function shareCalendar($workspaceId, $calendarId, $other_workspaceId, $hasAllRights = true, $currentUserId = null)
@@ -234,14 +236,14 @@ class Calendars implements CalendarsInterface
         $this->pusher->push($data, "calendar/workspace/".$workspaceId);
         $this->pusher->push($data, "calendar/workspace/".$other_workspaceId);
 
-
+        return 1;
     }
 
     public function unshareCalendar($workspaceId, $calendarId, $other_workspaceId, $currentUserId = null)
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if ($curentUser_Id && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
 
@@ -275,6 +277,7 @@ class Calendars implements CalendarsInterface
         );
         $this->pusher->push($data, "calendar/workspace/".$other_workspaceId);
 
+        return 1;
     }
 
     public function getCalendarShare($workspaceId, $calendarId, $currentUserId = null)
