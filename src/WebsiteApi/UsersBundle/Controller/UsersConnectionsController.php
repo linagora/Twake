@@ -107,7 +107,9 @@ class UsersConnectionsController extends Controller
 
 			$workspaces = Array();
 			foreach ($workspaces_obj as $workspace_obj){
-				$workspaces[] = $workspace_obj->getAsArray();
+                $value = $workspace_obj["workspace"]->getAsArray();
+                $value["last_access"] = $workspace_obj["last_access"]->getTimestamp();
+                $workspaces[] = $value;
 			}
 
 			$data["data"]["workspaces"] = $workspaces;

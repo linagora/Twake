@@ -272,6 +272,7 @@ class GroupManagers implements GroupManagersInterface
         $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
         foreach ( $workspaces as $workspace ){
+            $workspace = $workspace["workspace"];
             $members = $workspace->getMembers();
 
             foreach ($members as $member){
