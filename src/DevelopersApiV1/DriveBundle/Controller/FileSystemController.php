@@ -140,7 +140,7 @@ class FileSystemController extends Controller
 
     }
 
-//Continuer ici
+
     public function emptyTrashAction(Request $request, $workspace_id){
         $check = $this->get("api.v1.check")->check($request);
 
@@ -156,10 +156,10 @@ class FileSystemController extends Controller
 
         $empty = $this->get("app.drive.FileSystem")->emptyTrash($workspace_id);
 
-        if($empty == true){
-            return new JsonResponse("true");
+        if($empty != true){
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2006));
         }
-        return new JsonResponse();
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
 
@@ -199,12 +199,12 @@ class FileSystemController extends Controller
 
         $infoLight = $this->selectInfoAction($info);
         if($info !=false){
-            return new JsonResponse($infoLight);
+            return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(), $infoLight));
         }
-        return new JsonResponse();
+        return new JsonResponse($this->get("api.v1.api_status")->getError(2007));
     }
 
-
+//A revoir avec Romaric !!!
     public function contentAction(Request $request, $workspace_id, $id){
         $check = $this->get("api.v1.check")->check($request);
 
@@ -223,8 +223,7 @@ class FileSystemController extends Controller
         if($download ==false){
             return new JsonResponse("");
         }
-        var_dump("test2");
-        return new JsonResponse("test");
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
 
@@ -249,16 +248,16 @@ class FileSystemController extends Controller
         $canAllow = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
 
         if (!$canAllow){
-            return new JsonResponse("");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2001));
         }
 
         if ($content===null && $url === null){
-            return new JsonResponse("");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2008));
         }
 
         if ($url === null ){
             $setContent = $this->get("app.drive.FileSystem")->setRawContent($id, $content, $newVersion = false);
-            return new JsonResponse($setContent);
+            return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$setContent));
         }
 
         if ($content === null ){
@@ -271,7 +270,7 @@ class FileSystemController extends Controller
             }
 
             if (!$url || !$this->get("app.drive.FileSystem")->canAccessTo($id, $workspace_id, null)) {
-                $data["errors"][] = 3004;
+                return new JsonResponse($this->get("api.v1.api_status")->getError(2001));
             } else {
 
                 $content = file_get_contents($url);
@@ -279,7 +278,7 @@ class FileSystemController extends Controller
 
             }
 
-            return new JsonResponse($data);
+            return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$data));
         }
     }
 
@@ -302,10 +301,10 @@ class FileSystemController extends Controller
         $share = $this->get("app.drive.FileSystem")->share($workspace_id, $id, $targetgroupId);
 
         if ($share == false){
-            return new JsonResponse("Pb");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2009));
         }
 
-        return new JsonResponse("....");
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
 
@@ -328,10 +327,10 @@ class FileSystemController extends Controller
         $unshare = $this->get("app.drive.FileSystem")->unshare($workspace_id, $id, $targetgroupId, false);
 
         if ($unshare == false){
-            return new JsonResponse("Pb");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2010));
         }
 
-        return new JsonResponse("..");
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
     public function renameObjectAction(Request $request, $workspace_id, $id){
@@ -349,15 +348,13 @@ class FileSystemController extends Controller
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
         if (!$test){
-            return new JsonResponse("");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2001));
         }
 
         $infos = $this->get("app.drive.FileSystem")->getInfos($workspace_id, $id, $forceAccess = false);
         $oldFileName = $infos["name"];
         $oldDescription = $infos["description"];
         $labels = isset($infos["cache"]["labels"])?$infos["cache"]["labels"]:Array();
-        //var_dump($labels);
-        var_dump($infos["cache"]["labels"]);
 
         $content = $this->get("api.v1.check")->get($request);
         $newFileName = isset($content["new_file_name"])?$content["new_file_name"]:$oldFileName;
@@ -365,10 +362,10 @@ class FileSystemController extends Controller
         $rename = $this->get("app.drive.FileSystem")->rename($id, $newFileName, $oldDescription, $labels);
 
         if (!$rename){
-            return new JsonResponse("");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2011));
         }
 
-        return new JsonResponse("..");
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
     public function searchObjectAction(Request $request,$workspace_id){
@@ -390,11 +387,11 @@ class FileSystemController extends Controller
         $search = $this->get("app.drive.FileSystem")->search($workspace_id, $query, 0, 20);
 
         if ($search == Array()){
-            return new JsonResponse("List vide");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2012));
         }
 
         if ($search == false){
-            return new JsonResponse("retourne false");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2013));
         }
         $response = Array();
         foreach ($search as $element){
@@ -403,7 +400,7 @@ class FileSystemController extends Controller
             array_push($response,$selectedInfos);
         }
 
-        return new JsonResponse($response);
+        return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$response));
     }
 
 
@@ -422,13 +419,13 @@ class FileSystemController extends Controller
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
         if (!$test){
-            return new JsonResponse("");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2001));
         }
 
         $listFiles = $this->get("app.drive.FileSystem")->listDirectory($workspace_id, $id, false);
 
         if($listFiles == false){
-            return new JsonResponse("Pb");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2014));
         }
 
         $response = Array();
@@ -437,7 +434,7 @@ class FileSystemController extends Controller
             $selectedInfos = $this->selectInfoAction($infos);
             array_push($response,$selectedInfos);
         }
-        return new JsonResponse($response);
+        return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$response));
     }
 
 
@@ -456,7 +453,7 @@ class FileSystemController extends Controller
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
         if (!$test){
-            return new JsonResponse("");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2001));
         }
 
         $content = $this->get("api.v1.check")->get($request);
@@ -464,9 +461,9 @@ class FileSystemController extends Controller
 
         $move = $this->get("app.drive.FileSystem")->move($id, $newDirectory, $workspace_id);
         if($move == false){
-            return new JsonResponse("Pb");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2015));
         }
 
-        return new JsonResponse("Tout va bien !");
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 }
