@@ -54,8 +54,10 @@ class DashboardController extends Controller
 
         //messages by hour
         $array = [['Date', 'Messages']];
+        $last = 0;
         foreach ($_connections_usage_array as $datum) {
-            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["messages"]];
+            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["messages"]-$last];
+            $last = $datum["messages"];
         }
         $messages_chart = new AreaChart();
         $messages_chart->getData()->setArrayToDataTable($array);
@@ -64,8 +66,10 @@ class DashboardController extends Controller
 
         //files by hour
         $array = [['Date', 'Files']];
+        $last = 0;
         foreach ($_connections_usage_array as $datum) {
-            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["files"]];
+            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["files"]-$last];
+            $last = $datum["files"];
         }
         $files_chart = new AreaChart();
         $files_chart->getData()->setArrayToDataTable($array);
@@ -74,8 +78,10 @@ class DashboardController extends Controller
 
         //event by hour
         $array = [['Date', 'Events']];
+        $last = 0;
         foreach ($_connections_usage_array as $datum) {
-            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["event"]];
+            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["event"]-$last];
+            $last = $datum["event"];
         }
         $event_chart = new AreaChart();
         $event_chart->getData()->setArrayToDataTable($array);
