@@ -29,6 +29,16 @@ class ApiStatus {
         $this->map[2003] = "The file or the folder has not been thrown away";
         $this->map[2004] = "The file or the folder has not been restored";
         $this->map[2005] = "The content of the trash has not been restored";
+        $this->map[2006] = "The trash has not been emptied";
+        $this->map[2007] = "Failed to get informations";
+        $this->map[2008] = "No content and no url has been given";
+        $this->map[2009] = "The folder has not been shared";
+        $this->map[2010] = "The folder has not been unshared";
+        $this->map[2011] = "The file has not been renamed";
+        $this->map[2012] = "The array is empty";
+        $this->map[2013] = "The search is impossible";
+        $this->map[2014] = "Impossible to return the list of files contained into the folder";
+        $this->map[2015] = "The file has not been moved";
 
         //2999 < errors from Messages < 4000
         $this->map[3000] = "You can't access to this stream";
