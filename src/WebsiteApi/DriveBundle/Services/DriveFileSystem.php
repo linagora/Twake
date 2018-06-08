@@ -1273,6 +1273,11 @@ class DriveFileSystem implements DriveFileSystemInterface
 
 
         $dir = $this->convertToEntity($directoryId, "TwakeDriveBundle:DriveFile");
+
+        if ($dir->getDetachedFile()) {
+            return true;
+        }
+
         while ($dir != null) {
             //If it's mine
             if ($workspace->getId() == $dir->getGroup()->getId()) {

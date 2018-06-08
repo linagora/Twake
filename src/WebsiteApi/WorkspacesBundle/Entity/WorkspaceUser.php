@@ -43,16 +43,22 @@ class WorkspaceUser
 	 */
 	private $level;
 
-	/**
-	 * @ORM\Column(type="datetime")
-	 */
-	private $date_added;
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $date_added;
+
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $last_access;
 
 	public function __construct($workspace, $user, $level) {
 		$this->workspace = $workspace;
 		$this->user = $user;
 		$this->level = $level;
 		$this->date_added = new \DateTime();
+        $this->last_access = new \DateTime();
 	}
 
 	/**
@@ -119,6 +125,20 @@ class WorkspaceUser
         $this->groupUser = $groupUser;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getLastAccess()
+    {
+        return $this->last_access;
+    }
 
+    /**
+     * @param mixed $last_access
+     */
+    public function setLastAccess()
+    {
+        $this->last_access = new \DateTime();
+    }
 
 }
