@@ -42,6 +42,7 @@ class ApiStatus {
         $this->map[2013] = "The search is impossible";
         $this->map[2014] = "Impossible to return the list of files contained into the folder";
         $this->map[2015] = "The file has not been moved";
+        $this->map[2016] = "The content of the file has not been set";
 
         //2999 < errors from Messages < 4000
         $this->map[3000] = "Stream not found";
