@@ -282,6 +282,23 @@ class CalendarEvents implements CalendarEventsInterface
 
         return $events;
     }
+    //
+    public function getEventsByCalendar($workspaceId, $calendarsId, $currentUserId = null){
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        if($workspace == null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read"))){
+            return null;
+        }
+
+        $events = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->getAllCalendarEventsByCalendar($calendarsId);
+
+        foreach ($events as $link) {
+            $evt = $link->getAsArray();
+
+            $result[] = $evt;
+        }
+
+        return $result;
+    }
 
     public function getEventsForUser($workspaceId, $from, $to, $currentUserId)
     {

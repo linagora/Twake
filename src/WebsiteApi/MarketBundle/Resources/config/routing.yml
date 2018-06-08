@@ -44,3 +44,7 @@ website_api_app_remove:
 website_api_app_vote:
     path:     /user/vote
     defaults: { _controller: TwakeMarketBundle:AppUsers:vote }
+
+website_api_get_data_token:
+    path:     /token
+    defaults: { _controller: TwakeMarketBundle:DataToken:makeToken }

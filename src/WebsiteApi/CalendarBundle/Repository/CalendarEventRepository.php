@@ -45,4 +45,13 @@ class CalendarEventRepository extends \Doctrine\ORM\EntityRepository
         return $q->getResult();
     }
 
+    public function getAllCalendarEventsByCalendar($calendarId){
+        $qb = $this->createQueryBuilder(e);
+        $qb->where($qb->expr()->in('e.calendar', '?1'))
+            ->setParameter(1, $calendarId);
+        $q= $qb->getQuery();
+
+        return $q->getResult();
+    }
+
 }
