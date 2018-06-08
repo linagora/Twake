@@ -21,6 +21,9 @@ class ApiStatus {
         $this->map[2] = "You have not the rights to perform this action";
 
         //999 < errors from Workspace < 2000
+        $this->map[1000] = "The workspace does not exist or is incorrect";
+        $this->map[1001] = "Array empty. The workspace is incorrect";
+        $this->map[1002] = "No level found";
 
         //1999 < errors from Drive < 3000
         $this->map[2000] = "The file have not been created";
