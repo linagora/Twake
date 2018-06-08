@@ -180,9 +180,6 @@ class DriveFileSystem implements DriveFileSystemInterface
         if ($fileOrDirectory->getShared() && $fileOrDirectory->getGroup()->getId() != $directory->getGroup()->getId()) {
             return false;
         }
-        if ($groupId == null && $fileOrDirectory->isShared() && $fileOrDirectory->getGroup()->getId() != $groupId) {
-            return false;
-        }
 
         $dir = $directory;
         while ($dir != null) {
@@ -624,6 +621,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($file);
         $this->doctrine->flush();
 
+        $this->genPreview($file);
+
         return true;
     }
 
@@ -783,8 +782,19 @@ class DriveFileSystem implements DriveFileSystemInterface
         // If already in trash force remove
         if ($fileOrDirectory->getIsInTrash()) {
             return $this->delete($fileOrDirectory);
+        }else {
+            return $this->toTrash($fileOrDirectory);
         }
 
+        return true;
+    }
+
+    public function toTrash($fileOrDirectory){
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+
+        if(!$fileOrDirectory){
+            return false;
+        }
         $fileOrDirectory->setOldParent($fileOrDirectory->getParent());
         $fileOrDirectory->setParent(null); //On le met dans le root de la corbeille
         $fileOrDirectory->setIsInTrash(true);

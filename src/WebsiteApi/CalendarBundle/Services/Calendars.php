@@ -34,7 +34,7 @@ class Calendars implements CalendarsInterface
             return false;
         } else {
 
-            if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
+            if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
                 return null;
             }
 
@@ -55,6 +55,37 @@ class Calendars implements CalendarsInterface
             }
 
             return $result;
+        }
+    }
+
+    /**
+     * codé par une stagiaire et ça marche
+     * @param $workspaceId
+     * @param $calendarId
+     * @return array|bool
+     */
+    public function getCalendarById($workspaceId, $calendarId){
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+
+        $result = Array();
+
+        if ($workspace == null || $calendarId == null ) {
+            return false;
+        } else {
+            $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+            $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
+
+            if(!$calendarLink){
+                return null;
+            }else{
+
+                $cal = $calendar->getAsArray();
+
+            }
+
+
+            return $cal;
         }
     }
 
@@ -97,7 +128,7 @@ class Calendars implements CalendarsInterface
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
 
@@ -130,7 +161,7 @@ class Calendars implements CalendarsInterface
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
 
@@ -156,6 +187,8 @@ class Calendars implements CalendarsInterface
         $this->doctrine->remove($calendar);
         $this->doctrine->flush();
 
+        return 1;
+
     }
 
     public function shareCalendar($workspaceId, $calendarId, $other_workspaceId, $hasAllRights = true, $currentUserId = null)
@@ -169,7 +202,7 @@ class Calendars implements CalendarsInterface
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
 
@@ -203,14 +236,14 @@ class Calendars implements CalendarsInterface
         $this->pusher->push($data, "calendar/workspace/".$workspaceId);
         $this->pusher->push($data, "calendar/workspace/".$other_workspaceId);
 
-
+        return 1;
     }
 
     public function unshareCalendar($workspaceId, $calendarId, $other_workspaceId, $currentUserId = null)
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
 
@@ -244,6 +277,7 @@ class Calendars implements CalendarsInterface
         );
         $this->pusher->push($data, "calendar/workspace/".$other_workspaceId);
 
+        return 1;
     }
 
     public function getCalendarShare($workspaceId, $calendarId, $currentUserId = null)

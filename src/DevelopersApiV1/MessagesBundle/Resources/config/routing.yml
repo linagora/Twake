@@ -1,3 +1,99 @@
-developers_api_v1_messages_homepage:
-    path:     /
-    defaults: { _controller: DevelopersApiV1MessagesBundle:Default:index }
+#Message routing
+developers_api_v1_messages_send_message:
+    path:     /workspace/{workspace_id}/messages/stream/{stream_id}/message
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:sendMessage }
+    methods: [POST]
+
+developers_api_v1_messages_get_message:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getMessage }
+    methods: [GET]
+
+developers_api_v1_messages_get_message_children:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}/children
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getMessageChildren }
+    methods: [GET]
+
+developers_api_v1_messages_edit_message:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:editMessage }
+    methods: [PUT]
+
+developers_api_v1_messages_delete_message:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:deleteMessage }
+    methods: [DELETE]
+
+developers_api_v1_messages_get_stream_content:
+    path:     /workspace/{workspace_id}/messages/stream/{stream_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:getStreamContent }
+    methods: [GET]
+
+developers_api_v1_messages_move_message_in_subject:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}/subject/{subject_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:moveMessageInSubject }
+    methods: [POST]
+
+developers_api_v1_messages_change_message_to_subject:
+    path:     /workspace/{workspace_id}/messages/message/{message_id}/to_subject
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:changeMessageToSubject }
+    methods: [POST]
+
+developers_api_v1_messages_move_message_in_response:
+    path:     /workspace/{workspace_id}/messages/message/{response_message_id}/response_to/{main_message_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:moveMessageInMessage }
+    methods: [POST]
+
+developers_api_v1_messages_send_message_with_file:
+    path:     /workspace/{workspace_id}/messages/messages/stream/{stream_id}/message/file/{file_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:sendMessageWithFile }
+    methods: [POST]
+
+
+#Stream routing
+developers_api_v1_messages_get_stream_list:
+    path:     /workspace/{workspace_id}/messages/streams
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Stream:getStreamList }
+    methods: [GET]
+
+developers_api_v1_messages_create_stream:
+    path:     /workspace/{workspace_id}/messages/stream
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Stream:createStream }
+    methods: [POST]
+
+developers_api_v1_messages_delete_stream:
+    path:     /workspace/{workspace_id}/messages/stream/{stream_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Stream:deleteStream }
+    methods: [DELETE]
+
+developers_api_v1_messages_edit_stream:
+    path:     /workspace/{workspace_id}/messages/stream/{stream_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Stream:editStream }
+    methods: [PUT]
+
+developers_api_v1_messages_add_member:
+    path:     /workspace/{workspace_id}/messages/stream/{stream_id}/member/{user_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Stream:addMember }
+    methods: [POST]
+
+developers_api_v1_messages_remove_member:
+    path:     /workspace/{workspace_id}/messages/stream/{stream_id}/member/{user_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Stream:removeMember }
+    methods: [DELETE]
+
+#Subject routing
+
+developers_api_v1_messages_close_subject:
+    path:     /workspace/{workspace_id}/messages/subject/{subject_id}/close
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Subject:closeSubject }
+    methods: [PUT]
+
+developers_api_v1_messages_edit_subject:
+    path:     /workspace/{workspace_id}/messages/subject/{subject_id}
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Subject:editSubject }
+    methods: [PUT]
+
+developers_api_v1_messages_get_subject_from_stream:
+    path:     /workspace/{workspace_id}/messages/stream/{stream_id}/subjects
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Subject:getSubjectsFromStream }
+    methods: [GET]

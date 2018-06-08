@@ -45,6 +45,10 @@ class AppKernel extends Kernel
             new DevelopersApi\MessagesBundle\DevelopersApiMessagesBundle(),
             new Circle\RestClientBundle\CircleRestClientBundle(),
             new DevelopersApiV1\MessagesBundle\DevelopersApiV1MessagesBundle(),
+            new DevelopersApiV1\DriveBundle\DevelopersApiV1DriveBundle(),
+            new DevelopersApiV1\CoreBundle\DevelopersApiV1CoreBundle(),
+            new DevelopersApiV1\CalendarBundle\DevelopersApiV1CalendarBundle(),
+            new DevelopersApiV1\WorkspacesBundle\DevelopersApiV1WorkspacesBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

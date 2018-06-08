@@ -449,6 +449,22 @@ class Message
 
     }
 
+    public function getAsArrayForClient(){
+        return Array(
+            "id" => $this->getId(),
+            "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getId():null,
+
+            "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getId()  :null,
+            "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
+
+            "content" => $this->getContent(),
+            "date" => $this->getDate()?$this->getDate()->getTimestamp()*1000:null,
+            "edited" => $this->getEdited(),
+            "pinned" => $this->getPinned(),
+            "subject" => ($this->getSubject()!=null)?$this->getSubject()->getAsArray():null,
+        );
+    }
+
 
 
 

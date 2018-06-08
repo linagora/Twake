@@ -44,6 +44,23 @@ class MessageSystem implements MessagesSystemInterface
         $this->workspace_stats = $workspace_stats;
     }
 
+    private function convertToEntity($var, $repository)
+    {
+        if (is_string($var)) {
+            $var = intval($var);
+        }
+
+        if (is_int($var)) {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
+
+
     public function getStream($streamKey, $currentUserId = null)
     {
         $explode = explode("-", $streamKey);
@@ -288,6 +305,11 @@ class MessageSystem implements MessagesSystemInterface
         $this->messagesNotificationCenter->read($stream, $user);
     }
 
+    public function editMessageFromApp($id, $content){
+        $message = $this->convertToEntity($id,"TwakeDiscussionBundle:Message");
+        return $this->editMessage($id,$content,$message->getUserSender());
+    }
+
 
     public function editMessage($id, $content, $user)
     {
@@ -310,6 +332,13 @@ class MessageSystem implements MessagesSystemInterface
             return $this->getMessageAsArray($message, true, $message->getResponseTo() != null);
         }
         return false;
+    }
+
+    public function deleteMassageFromApp($id){
+        $message = $this->convertToEntity($id,"TwakeDiscussionBundle:Message");
+        if($message==null)
+            return false;
+        return $this->deleteMessage($id,$message->getUserSender());
     }
 
     public function deleteMessage($id, $user)
@@ -343,6 +372,12 @@ class MessageSystem implements MessagesSystemInterface
         return false;
     }
 
+    public function getMessagesFromStream($streamId){
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("streamReciever" => $streamId));
+
+        return $messages;
+    }
+
     public function getMessages($key, $maxId, $subjectId, $user)
     {
 
@@ -367,6 +402,11 @@ class MessageSystem implements MessagesSystemInterface
             }
         }
         return $retour;
+    }
+
+    public function getMessage($messageId){
+        $message = $this->convertToEntity($messageId,"TwakeDiscussionBundle:Message");
+        return $message;
     }
 
     public function pinMessage($id, $pinned, $user)
@@ -478,6 +518,11 @@ class MessageSystem implements MessagesSystemInterface
         return $message;
     }
 
+    public function getResponseMessages($messageParentId){
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo" => $messageParentId));
+
+        return $messages;
+    }
 
     private function setResponseMessage($messageParent, $messageDroped)
     {

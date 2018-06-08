@@ -33,7 +33,7 @@ class CalendarEvents implements CalendarEventsInterface
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
             return null;
         }
 
@@ -85,7 +85,7 @@ class CalendarEvents implements CalendarEventsInterface
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
             return null;
         }
 
@@ -147,7 +147,7 @@ class CalendarEvents implements CalendarEventsInterface
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
             return null;
         }
 
@@ -185,7 +185,7 @@ class CalendarEvents implements CalendarEventsInterface
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
             return null;
         }
 
@@ -230,7 +230,7 @@ class CalendarEvents implements CalendarEventsInterface
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
             return null;
         }
 
@@ -272,10 +272,9 @@ class CalendarEvents implements CalendarEventsInterface
 
     public function getEventsForWorkspace($workspaceId, $from, $to, $calendarsId, $currentUserId = null)
     {
-        error_log("workspaceId ".$workspaceId);
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if ($workspace==null || !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
+        if ($workspace==null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read"))) {
             return null;
         }
 
@@ -288,7 +287,7 @@ class CalendarEvents implements CalendarEventsInterface
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
             return null;
         }
 
@@ -301,6 +300,31 @@ class CalendarEvents implements CalendarEventsInterface
 
         return $events;
 
+    }
+
+    public function getEventById($workspaceId, $eventId, $currentUserId = null)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
+            return null;
+        }
+
+        if($workspace==null ){
+            return null;
+        }
+
+        $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
+        if(!$event){
+            return null;
+        }else{
+
+            $event = $event->getAsArray();
+
+        }
+
+
+        return $event;
     }
 
     public function getUsers( $eventId, $currentUserId = null)
@@ -368,6 +392,6 @@ class CalendarEvents implements CalendarEventsInterface
         }
 
         $this->doctrine->flush();
-
+        return true;
     }
 }
