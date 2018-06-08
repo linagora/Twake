@@ -1,6 +1,6 @@
 developers_api_v1_core_getInfoFromToken:
-    path:     token/{token}
-    defaults: { _controller: DevelopersApiV1WorkspacesBundle:Default:getInfoFromToken }
-    methods: [GET]
+    path:     /token
+    defaults: { _controller: DevelopersApiV1CoreBundle:Default:getInfoFromToken }
+    methods: [POST]
     requirements:
         token: '\d+'

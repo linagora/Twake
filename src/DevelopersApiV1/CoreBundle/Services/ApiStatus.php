@@ -19,6 +19,7 @@ class ApiStatus {
         //0 < General errors < 1000
         $this->map[1] = "Incorrect authentification";
         $this->map[2] = "You have not the rights to perform this action";
+        $this->map[3] = "Token not found";
 
         //999 < errors from Workspace < 2000
         $this->map[1000] = "The workspace does not exist or is incorrect";

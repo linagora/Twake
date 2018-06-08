@@ -151,6 +151,9 @@ developers_api_v1_workspaces:
     resource: "@DevelopersApiV1WorkspacesBundle/Resources/config/routing.yml"
     prefix:   /api/v1/
 
+developers_api_v1_core:
+    resource: "@DevelopersApiV1CoreBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/
 
 developers_api_error:
     path:     /api/{req}
