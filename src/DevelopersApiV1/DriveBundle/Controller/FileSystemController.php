@@ -13,14 +13,11 @@ class FileSystemController extends Controller
 {
     public function addObjectAction(Request $request, $workspace_id){
         $check = $this->get("api.v1.check")->check($request);
-
         if (!$check){
             return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
         $isAllowedTo = $this->get("api.v1.check")->isAllowedTo($check,"drive:write",$workspace_id);
-
-
         if (!$isAllowedTo){
             return new JsonResponse($this->get("api.v1.api_status")->getError(2));
         }
@@ -32,11 +29,11 @@ class FileSystemController extends Controller
         $detached_file = isset($content["detached"])?$content["detached"]:false;
 
         $f = $this->get("app.drive.FileSystem")->create($workspace_id,$directory, $filename, $content = "", $isDirectory, $detached_file);
-
-        if ($f == true){
-            return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
+        if ($f == false ){
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2000));
         }
-        return new JsonResponse();
+
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
 
@@ -55,15 +52,15 @@ class FileSystemController extends Controller
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
         if (!$test){
-            return new JsonResponse("");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2001));
         }
         $supp = $this->get("app.drive.FileSystem")->delete($id, $flush = true);
 
-        if ($supp == true){
-            return new JsonResponse("true");
+        if ($supp != true){
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2002));
         }
 
-        return new JsonResponse();
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
 
@@ -82,15 +79,15 @@ class FileSystemController extends Controller
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
         if (!$test){
-            return new JsonResponse("");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2001));
         }
         $supp = $this->get("app.drive.FileSystem")->toTrash($id);
 
-        if ($supp == true){
-            return new JsonResponse("true");
+        if ($supp != true){
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2003));
         }
 
-        return new JsonResponse();
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
 
@@ -109,15 +106,15 @@ class FileSystemController extends Controller
 
         $test = $this->get("app.drive.FileSystem")->canAccessTo($id,$workspace_id,$user = null);
         if (!$test){
-            return new JsonResponse("");
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2001));
         }
         $restore = $this->get("app.drive.FileSystem")->restore($id);
 
-        if($restore == true){
-            return new JsonResponse("true");
+        if($restore != true){
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2004));
         }
 
-        return new JsonResponse();
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
     }
 
 
@@ -136,14 +133,14 @@ class FileSystemController extends Controller
 
         $restoreTrash = $this->get("app.drive.FileSystem")->restoreTrash($workspace_id);
 
-        if($restoreTrash == true){
-            return new JsonResponse("true");
+        if($restoreTrash != true){
+            return new JsonResponse($this->get("api.v1.api_status")->getError(2005));
         }
-        return new JsonResponse();
+        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
 
     }
 
-
+//Continuer ici
     public function emptyTrashAction(Request $request, $workspace_id){
         $check = $this->get("api.v1.check")->check($request);
 

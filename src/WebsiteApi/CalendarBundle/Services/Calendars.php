@@ -73,19 +73,19 @@ class Calendars implements CalendarsInterface
         if ($workspace == null || $calendarId == null ) {
             return false;
         } else {
-            $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("workspace" => $workspace));
+            $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
+            $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
 
-            foreach ($links as $link) {
-                $cal = $link->getCalendar()->getAsArray();
-                if($cal["id"]==$calendarId){
-                    $cal["owner"] = $link->getOwner();
+            if(!$calendarLink){
+                return null;
+            }else{
 
-                    $result[] = $cal;
-                    break;
-                }
+                $cal = $calendar->getAsArray();
+
             }
 
-            return $result;
+
+            return $cal;
         }
     }
 
@@ -200,7 +200,7 @@ class Calendars implements CalendarsInterface
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
 
@@ -241,7 +241,7 @@ class Calendars implements CalendarsInterface
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
+        if ($curentUser_Id && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
 

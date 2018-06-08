@@ -23,7 +23,12 @@ class ApiStatus {
         //999 < errors from Workspace < 2000
 
         //1999 < errors from Drive < 3000
-        $this->map[2000] = "";
+        $this->map[2000] = "The file have not been created";
+        $this->map[2001] = "The file does not exist in this workspace or is not accessible";
+        $this->map[2002] = "The file or the folder was not deleted";
+        $this->map[2003] = "The file or the folder has not been thrown away";
+        $this->map[2004] = "The file or the folder has not been restored";
+        $this->map[2005] = "The content of the trash has not been restored";
 
         //2999 < errors from Messages < 4000
         $this->map[3000] = "You can't access to this stream";

@@ -62,3 +62,41 @@ event_delete:
           event_id: "[0-9]+"
           workspace_id: "[0-9]+"
           calendar_id: "[0-9]+"
+
+calendar_share:
+    path: workspace/{workspace_id}/{other_workspace_id}/calendar/share/{calendar_id}
+    methods: [PUT]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:share }
+    requirements:
+          calendar_id: "[0-9]+"
+          workspace_id: "[0-9]+"
+          other_workspace_id: "[0-9]+"
+
+calendar_unshare:
+    path: workspace/{workspace_id}/{other_workspace_id}/calendar/unshare/{calendar_id}
+    methods: [PUT]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:unshare }
+    requirements:
+          calendar_id: "[0-9]+"
+          workspace_id: "[0-9]+"
+          other_workspace_id: "[0-9]+"
+
+event_share:
+    path: workspace/{workspace_id}/calendar/share/{calendar_id}/event/{event_id}/{user_id}
+    methods: [PUT]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Event:share }
+    requirements:
+          calendar_id: "[0-9]+"
+          workspace_id: "[0-9]+"
+          event_id: "[0-9]+"
+          user_id: "[0-9]+"
+
+event_unshare:
+    path: workspace/{workspace_id}/calendar/unshare/{calendar_id}/event/{event_id}/{user_id}
+    methods: [PUT]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Event:unshare}
+    requirements:
+          calendar_id: "[0-9]+"
+          workspace_id: "[0-9]+"
+          event_id: "[0-9]+"
+          user_id: "[0-9]+"

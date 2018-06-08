@@ -20,7 +20,7 @@ class CalendarController extends Controller
             return new JSonResponse("application");
         }
 
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:write", $workspace_id)){
             return new JSonResponse("allowed");
         }
 
@@ -51,7 +51,7 @@ class CalendarController extends Controller
             return new JSonResponse("application");
         }
 
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
             return new JSonResponse("allowed");
         }
 
@@ -78,7 +78,7 @@ class CalendarController extends Controller
             return new JSonResponse("application");
         }
 
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
             return new JSonResponse("allowed");
         }
 
@@ -92,13 +92,12 @@ class CalendarController extends Controller
             "data" => Array(),
             "errors" => Array()
         );
-        $postdata = Array(
-            "data" => Array(),
-        );
-        $postdata["data"] =($this->get("app.calendars")->getCalendarById($workspace_id, $calendar_id));
 
-        $title = isset($content["title"])? $content["title"] : $postdata["data"]["title"] ; //TODO régler le soucis ça ne prend pas l'ancienne version quand on ne set pas
-        $color = isset($content["color"])? $content["color"] : $postdata["data"]["color"] ;
+        $olderData =$this->get("app.calendars")->getCalendarById($workspace_id, $calendar_id);
+
+
+        $title = isset($content["title"])? $content["title"] : $olderData["name"];
+        $color = isset($content["color"])? $content["color"] : $olderData["color"] ;
 
         $data["data"] =($this->get("app.calendars")->updateCalendar($workspace_id, $calendar_id, $title, $color, null))->getAsArray();
 
@@ -113,7 +112,7 @@ class CalendarController extends Controller
             return new JSonResponse("application");
         }
 
-        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage")){
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:read", $workspace_id)){
             return new JSonResponse("allowed");
         }
 
@@ -134,11 +133,83 @@ class CalendarController extends Controller
 
     }
 
-    public function shareAction(Request $request){
-        //TODO
+    /**
+     * @param Request $request
+     * @param $workspace_id
+     * @param $calendar_id
+     * @param $other_workspace_id
+     * @return JsonResponse
+     */
+    public function shareAction(Request $request, $workspace_id, $calendar_id, $other_workspace_id){
+        $application = $this->get("api.v1.check")->check($request);
+
+        if(!$application){
+            return new JSonResponse("application");
+        }
+
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
+            return new JSonResponse("allowed");
+        }
+
+        $content = $this->get("api.v1.check")->get($request);
+
+        if($content === false ){
+            return new JsonResponse("content");
+        }
+
+        if(!$workspace_id || !$calendar_id || !$other_workspace_id){
+            return null;
+        }
+
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+       ($this->get("app.calendars")->shareCalendar($workspace_id, $calendar_id, $other_workspace_id, true,null));
+
+        $data["data"] = ($this->get("app.calendars")->getCalendarById($other_workspace_id, $calendar_id));
+
+        return new JsonResponse($data);
+
     }
 
-    public function unshareACtion(Request $request){
-        //TODO
+    /**
+     * @param Request $request
+     * @param $workspace_id
+     * @param $calendar_id
+     * @param $other_workspace_id
+     * @return JsonResponse
+     */
+    public function unshareAction(Request $request, $workspace_id, $calendar_id, $other_workspace_id){
+        $application = $this->get("api.v1.check")->check($request);
+
+        if(!$application){
+            return new JSonResponse("application");
+        }
+
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage",$workspace_id)){
+            return new JSonResponse("allowed");
+        }
+
+        $content = $this->get("api.v1.check")->get($request);
+
+        if($content === false ){
+            return new JsonResponse("content");
+        }
+        if(!$workspace_id || !$calendar_id || !$other_workspace_id){
+            return null;
+        }
+
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        ($this->get("app.calendars")->unshareCalendar($workspace_id, $calendar_id, $other_workspace_id, true,null));
+        $data["data"] =($this->get("app.calendars")->getCalendarById($workspace_id, $calendar_id));
+
+        return new JsonResponse($data);
+
     }
 }
