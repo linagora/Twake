@@ -32,7 +32,7 @@ class ApiStatus {
 
         //2999 < errors from Messages < 4000
         $this->map[3000] = "Stream not found";
-        $this->map[3001] = "Message not";
+        $this->map[3001] = "Message not found";
         $this->map[3002] = "Failed to post message";
         $this->map[3003] = "Failed to get message";
         $this->map[3004] = "Failed to get message children";
