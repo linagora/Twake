@@ -64,14 +64,14 @@ class MessageController extends Controller
 
 
         $data = Array(
-            "message_id" => null
+            "message" => null
         );
 
         if(!$message){
             return new JsonResponse($this->get("api.v1.api_status")->getError(3002));
         }
         else
-            $data["message_id"] = $message->getAsArrayForClient();
+            $data["message"] = $message->getAsArrayForClient();
 
         return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$data));
     }
@@ -102,7 +102,7 @@ class MessageController extends Controller
             return new JsonResponse($this->get("api.v1.api_status")->getError(3003));//Fail to get message
         }
         else
-            $data["message"] = $message->getContent();
+            $data["message"] = $message->getAsArrayForClient();
 
         return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$data));
     }
@@ -126,6 +126,7 @@ class MessageController extends Controller
             return new JsonResponse($this->get("api.v1.api_status")->getError(3000));
 
         $subject = $this->get("app.subjectsystem")->getSubjectFromMessage($message_id);
+
         if($subject==null){
             //Get all response from message_id
             $messageParent = $this->get("app.messages")->getMessage($message_id);

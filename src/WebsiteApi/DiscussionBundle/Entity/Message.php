@@ -457,8 +457,6 @@ class Message
             "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getId()  :null,
             "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
 
-            "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getAsArray():null,
-
             "content" => $this->getContent(),
             "date" => $this->getDate()?$this->getDate()->getTimestamp()*1000:null,
             "edited" => $this->getEdited(),
