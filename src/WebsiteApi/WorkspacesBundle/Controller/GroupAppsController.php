@@ -107,9 +107,10 @@ class GroupAppsController extends Controller
         $response = Array("errors"=>Array(), "data"=>Array());
 
         $groupId = $request->request->getInt("groupId");
+        $workspaceId = $request->request->getInt("workspaceId");
         $appId = $request->request->getInt("appId");
 
-        $res = $this->get("app.group_apps")->useApp($groupId, $this->getUser()->getId(), $appId);
+        $res = $this->get("app.group_apps")->useApp($groupId, $workspaceId, $this->getUser()->getId(), $appId);
 
         if(!$res){
             $response["errors"][] = "notallowed";
