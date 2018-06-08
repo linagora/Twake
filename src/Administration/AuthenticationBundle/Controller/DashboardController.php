@@ -54,8 +54,11 @@ class DashboardController extends Controller
 
         //messages by hour
         $array = [['Date', 'Messages']];
-        $last = 0;
+        $last = -1;
         foreach ($_connections_usage_array as $datum) {
+            if ($last == -1) {
+                $last = $datum["messages"];
+            }
             $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["messages"]-$last];
             $last = $datum["messages"];
         }
@@ -66,8 +69,11 @@ class DashboardController extends Controller
 
         //files by hour
         $array = [['Date', 'Files']];
-        $last = 0;
+        $last = -1;
         foreach ($_connections_usage_array as $datum) {
+            if ($last == -1) {
+                $last = $datum["files"];
+            }
             $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["files"]-$last];
             $last = $datum["files"];
         }
@@ -78,8 +84,11 @@ class DashboardController extends Controller
 
         //event by hour
         $array = [['Date', 'Events']];
-        $last = 0;
+        $last = -1;
         foreach ($_connections_usage_array as $datum) {
+            if ($last == -1) {
+                $last = $datum["event"];
+            }
             $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["event"]-$last];
             $last = $datum["event"];
         }
