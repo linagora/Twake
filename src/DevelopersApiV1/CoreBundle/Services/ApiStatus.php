@@ -31,29 +31,29 @@ class ApiStatus {
         $this->map[2005] = "The content of the trash has not been restored";
 
         //2999 < errors from Messages < 4000
-        $this->map[3000] = "You can't access to this stream";
-        $this->map[3001] = "You can't access to this message";
-        $this->map[3002] = "Failed to post";
-        $this->map[3003] = "Fail to get message";
-        $this->map[3004] = "Fail to get message children";
-        $this->map[3005] = "Fail to edit a message";
-        $this->map[3006] = "Fail to delete a message";
-        $this->map[3007] = "Fail to get stream content";
+        $this->map[3000] = "Stream not found";
+        $this->map[3001] = "Message not";
+        $this->map[3002] = "Failed to post message";
+        $this->map[3003] = "Failed to get message";
+        $this->map[3004] = "Failed to get message children";
+        $this->map[3005] = "Failed to edit a message";
+        $this->map[3006] = "Failed to delete a message";
+        $this->map[3007] = "Failed to get stream content";
         $this->map[3008] = "";
-        $this->map[3009] = "Fail to get stream list";
-        $this->map[3010] = "Fail to change message in subject";
-        $this->map[3011] = "Fail to move a message in a message";
+        $this->map[3009] = "Failed to get stream list";
+        $this->map[3010] = "Failed to change message in subject";
+        $this->map[3011] = "Failed to move a message in a message";
         $this->map[3012] = "";
-        $this->map[3013] = "Fail to close a subject";
-        $this->map[3014] = "Fail to move message in subject";
-        $this->map[3015] = "Fail to delete a stream";
-        $this->map[3016] = "Fail to create a stream";
-        $this->map[3017] = "Fail to edit a stream";
+        $this->map[3013] = "Failed to close a subject";
+        $this->map[3014] = "Failed to move message in subject";
+        $this->map[3015] = "Failed to delete a stream";
+        $this->map[3016] = "Failed to create a stream";
+        $this->map[3017] = "Failed to edit a stream";
         $this->map[3018] = "";
-        $this->map[3019] = "Fail to add a member";
-        $this->map[3020] = "Fail to remove a member";
-        $this->map[3021] = "Fail to edit a subject";
-        $this->map[3022] = "Fail to get all subjects from a stream";
+        $this->map[3019] = "Failed to add a member";
+        $this->map[3020] = "Failed to remove a member";
+        $this->map[3021] = "Failed to edit a subject";
+        $this->map[3022] = "Failed to get all subjects from a stream";
 
         //3999 < errors from Calendar < 5000
     }
