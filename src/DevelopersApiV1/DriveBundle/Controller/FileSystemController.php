@@ -27,8 +27,9 @@ class FileSystemController extends Controller
         $directory = isset($content["parent_id"])?$content["parent_id"]:0;
         $isDirectory = isset($content["is_directory"])?$content["is_directory"]:false;
         $detached_file = isset($content["detached"])?$content["detached"]:false;
+        $url = isset($content["url"])?$content["url"]:null;
 
-        $f = $this->get("app.drive.FileSystem")->create($workspace_id,$directory, $filename, $content = "", $isDirectory, $detached_file);
+        $f = $this->get("app.drive.FileSystem")->create($workspace_id,$directory, $filename, $content = "", $isDirectory, $detached_file,$url);
         if ($f == false ){
             return new JsonResponse($this->get("api.v1.api_status")->getError(2000));
         }

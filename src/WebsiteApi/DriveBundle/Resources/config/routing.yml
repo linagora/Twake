@@ -92,11 +92,14 @@ twake_drive_content_set:
     defaults: { _controller: TwakeDriveBundle:Files:setContent }
     methods: [POST]
 
-# Sharing
+twake_drive_open:
+    path:     /open
+    defaults: { _controller: TwakeDriveBundle:Files:open }
+    methods: [POST]
 
-twake_drive_share:
-    path: /share
-    defaults: { _controller: TwakeDriveBundle:FilesSharing:share }
+twake_drive_getAppFiles:
+    path:     /getAppFiles
+    defaults: { _controller: TwakeDriveBundle:Files:getFilesFromApp }
     methods: [POST]
 
 # Trash

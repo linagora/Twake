@@ -90,4 +90,21 @@ class MarketApplication implements MarketApplicationInterface
         }
         return false ;
     }
+
+    public function getAppForUrl($url){
+        if ($url != null){
+
+            $pattern = '/\/\/([^\/]+)\//';
+            $subject = $url;
+            preg_match($pattern, $subject, $matches, PREG_OFFSET_CAPTURE);
+            $tmp = $matches[1][0];
+            if(substr($tmp,0,4)=="www."){
+                $domain_name = substr($tmp,4);
+            }else{
+                $domain_name = $tmp;
+            }
+            $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("domain_name" => $domain_name));
+            return $app;
+        }
+    }
 }

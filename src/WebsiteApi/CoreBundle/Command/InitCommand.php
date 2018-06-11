@@ -186,6 +186,41 @@ class InitCommand extends ContainerAwareCommand
         $manager->flush();
 
 
+        $apps = [
+            ["/medias/apps/vectr.png", "Vectr","vectr.com","vectr","E63B42",Array()],
+            ["/medias/apps/webflow.jpeg", "Webflow","webflow.com","webflow","E63B42",Array()]
+        ];
+
+        foreach ($apps as $application){
+            $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => $application[3]));
+            if (!$app) {
+                $app = new Application();
+            }
+            $app->setPublicKey($application[3]);
+            $app->setName($application[1]);
+            $app->setDescription("");
+            $app->setShortDescription("");
+            $app->setUrl(null);
+            $app->setDomainName($application[2]);
+            $app->setUserRights(json_decode('{"general":{"create":true,"view":true,"edit":true}}', true));
+            $app->setApplicationRights(json_decode('{}', true));
+            $app->setEnabled(1);
+            $app->setColor($application[4]);
+            $app->setCanCreateFile(0);
+            $app->setIsCapable(0);
+            $app->setDefault(1);
+            $app->setCreateFileData(json_decode("", true));
+            $app->setMessageModule(0);
+            $app->setOrder(2);
+            $app->setThumbnail($serverbase .$application[0] );
+            $app->setMessageModuleUrl("");
+            $app->setEditableRights(0);
+            $app->setCgu("");
+            $manager->persist($app);
+        }
+
+        $manager->flush();
+
         /*
          * Init pour la future mise a jour
          */
