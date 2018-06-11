@@ -19,3 +19,7 @@ services:
         tags:
             - { name: gos_web_socket.topic }
         arguments: []
+
+    app.export_import:
+        class: WebsiteApi\CalendarBundle\Services\exportImport
+        arguments: []
