@@ -115,3 +115,19 @@ event_unshare:
           workspace_id: "[0-9]+"
           event_id: "[0-9]+"
           user_id: "[0-9]+"
+
+event_export:
+    path: workspace/{workspace_id}/calendar/event/export/{event_id}
+    methods: [GET]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Event:generateIcsFile}
+    requirements:
+          event_id: "[0-9]+"
+          workspace_id: "[0-9]+"
+
+calendar_export:
+    path: workspace/{workspace_id}/calendar/export/{calendar_id}
+    methods: [GET]
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:generateIcsFile}
+    requirements:
+          calendar_id: "[0-9]+"
+          workspace_id: "[0-9]+"
