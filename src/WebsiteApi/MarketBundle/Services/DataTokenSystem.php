@@ -27,8 +27,21 @@ class DataTokenSystem
         return $dataToken;
     }
 
-    public function checkWorkspaceUser($workspaceId, $userId){
+    public function getDataToken($token){
+        $dataTokenRepository = $this->doctrine->getRepository("TwakeMarketBundle:DataToken");
+        $dataToken = $dataTokenRepository->findOneBy(Array("token" => $token));
+        if($dataToken==null)
+            return false;
 
+        $data["workspaceId"] = $dataToken->getWorkspaceId();
+        $data["userId"] = $dataToken->getUserId();
+
+        $dataTokenRepository->removeToken($dataToken->getToken());
+
+        return $data;
+    }
+
+    public function checkWorkspaceUser($workspaceId, $userId){
         $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
         $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspaceId, "user" => $userId));

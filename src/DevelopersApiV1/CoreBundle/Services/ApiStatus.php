@@ -19,6 +19,7 @@ class ApiStatus {
         //0 < General errors < 1000
         $this->map[1] = "Incorrect authentification";
         $this->map[2] = "You have not the rights to perform this action";
+        $this->map[3] = "Token not found";
 
         //999 < errors from Workspace < 2000
         $this->map[1000] = "The workspace does not exist or is incorrect";
@@ -42,6 +43,7 @@ class ApiStatus {
         $this->map[2013] = "The search is impossible";
         $this->map[2014] = "Impossible to return the list of files contained into the folder";
         $this->map[2015] = "The file has not been moved";
+        $this->map[2016] = "The content of the file has not been set";
 
         //2999 < errors from Messages < 4000
         $this->map[3000] = "Stream not found";

@@ -33,7 +33,8 @@ class FileSystemController extends Controller
             return new JsonResponse($this->get("api.v1.api_status")->getError(2000));
         }
 
-        return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
+        $response = $this->get("app.drive.FileSystem")->getInfos($workspace_id, $f, false);
+        return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$response));
     }
 
 
@@ -204,7 +205,6 @@ class FileSystemController extends Controller
         return new JsonResponse($this->get("api.v1.api_status")->getError(2007));
     }
 
-//A revoir avec Romaric !!!
     public function contentAction(Request $request, $workspace_id, $id){
         $check = $this->get("api.v1.check")->check($request);
 
@@ -257,7 +257,7 @@ class FileSystemController extends Controller
 
         if ($url === null ){
             $setContent = $this->get("app.drive.FileSystem")->setRawContent($id, $content, $newVersion = false);
-            return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$setContent));
+
         }
 
         if ($content === null ){
@@ -274,12 +274,16 @@ class FileSystemController extends Controller
             } else {
 
                 $content = file_get_contents($url);
-                $this->get("app.drive.FileSystem")->setRawContent($id, $content);
+                $setContent = $this->get("app.drive.FileSystem")->setRawContent($id, $content);
 
             }
-
-            return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$data));
         }
+
+        if ($setContent) {
+            return new JsonResponse($this->get("api.v1.api_status")->getSuccess());
+        }
+
+        return new JsonResponse($this->get("api.v1.api_status")->getError(2016));
     }
 
     public function shareObjectAction(Request $request, $workspace_id, $id){
@@ -400,7 +404,7 @@ class FileSystemController extends Controller
             array_push($response,$selectedInfos);
         }
 
-        return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$response));
+        return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(), $response));
     }
 
 

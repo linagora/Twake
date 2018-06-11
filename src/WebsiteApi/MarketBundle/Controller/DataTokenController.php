@@ -32,7 +32,6 @@ class DataTokenController extends Controller
 
         $success = $this->get("website_api_market.data_token")->checkWorkspaceUser($workspaceId,$userId);
 
-
         if(!$success)
             return new JsonResponse($data);
 
