@@ -241,4 +241,31 @@ class DiscussionController extends Controller
 	    return new JsonResponse($data);
     }
 
+    public function getLastMessagesAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $user = $this->getUser()->getId();
+
+        $list = $this->get('app.messages_master')->getLastMessages($user);
+        if(count($list)==0){
+            $data[0] = "list empty";
+        }else {
+            $response = array();
+            foreach ($list as $message) {
+                if ($message != null){
+                    $infos = $message->getAsArrayForClient();
+                    array_push($response, $infos);
+                }
+            }
+
+            $data[1] = "success";
+        }
+        return new JsonResponse(array_merge($data,$response));
+    }
+
+
+
 }

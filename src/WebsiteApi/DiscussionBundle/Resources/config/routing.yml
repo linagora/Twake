@@ -36,3 +36,6 @@ subject_get_message:
     path:     /subject/getMessage
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getSubjectMessage }
 
+subject_get_last_messages:
+    path:     /getLastMessages
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:getLastMessages }
