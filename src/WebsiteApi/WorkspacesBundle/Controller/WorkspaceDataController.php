@@ -120,10 +120,22 @@ class WorkspaceDataController extends Controller
 				if (count($thumbnail["errors"]) > 0) {
 					$data["errors"][] = "badimage";
 				} else {
-					$this->get("app.workspaces")->changeWallpaper($workspaceId, $thumbnail["file"], $this->getUser()->getId());
+
+                    $color = null;
+                    try {
+                        $image = new \Imagick($thumbnail["file"]->getLocalServerURL());
+                        $image->resizeImage(250, 250, \Imagick::FILTER_GAUSSIAN, 1);
+                        $image->cropImage(50, 250, 0, 0);
+                        $image->quantizeImage(1, \Imagick::COLORSPACE_RGB, 0, false, false);
+                        $image->setFormat('RGB');
+                        $color = "#" . substr(bin2hex($image), 0, 6);
+                    } catch (\ImagickException $e) {
+                        $color = null;
+                    }
+                    $this->get("app.workspaces")->changeWallpaper($workspaceId, $thumbnail["file"], $color, $this->getUser()->getId());
 				}
 			} else {
-				$this->get("app.workspaces")->changeWallpaper($workspaceId, null, $this->getUser()->getId());
+                $this->get("app.workspaces")->changeWallpaper($workspaceId, null, null, $this->getUser()->getId());
 			}
 
 		}
