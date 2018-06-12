@@ -332,6 +332,7 @@ class Notifications implements NotificationsInterface
             $data = Array(
                 "action"=>"remove"
             );
+            //convert
             $this->pusher->push($data, "notifications/".$user->getId());
 
             $this->updateDeviceBadge($user, $totalNotifications);

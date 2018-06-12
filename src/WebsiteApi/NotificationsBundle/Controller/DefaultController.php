@@ -32,8 +32,8 @@ class DefaultController extends Controller
             'data' => Array()
         );
 
-        $user = $this->getUser()->getId();
-        $delete = $this->get('app.app.notifications')->deleteAllExceptMessages($user);
+        $user = $this->getUser();
+        $delete = $this->get('app.notifications')->deleteAllExceptMessages($user);
 
         if (!$delete){
             $data["errors"][] = "no removal made";
@@ -44,14 +44,17 @@ class DefaultController extends Controller
         return new JsonResponse($data);
     }
 
-    public function deleteAction(Request $request, $application, $workspace_id){
+    public function deleteAction(Request $request){
         $data = Array(
             'errors' => Array(),
             'data' => Array()
         );
 
+        $application = $request->request->get("application");
+        $workspace_id = $request->request->get("workspace_id");
+
         $user = $this->getUser()->getId();
-        $delete = $this->get('app.app.notifications')->readAll($application, $workspace_id, $user, null, false);
+        $delete = $this->get('app.notifications')->readAll($application, $workspace_id, $user, null, false);
         if (!$delete){
             $data["errors"][] = "no removal made";
         } else{
