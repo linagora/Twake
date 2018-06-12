@@ -4,6 +4,7 @@ namespace WebsiteApi\DiscussionBundle\Services;
 
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\DiscussionBundle\Entity\MessageNotification;
+use WebsiteApi\DiscussionBundle\Entity\StreamMember;
 use WebsiteApi\DiscussionBundle\Model\MessagesNotificationsCenterInterface;
 
 
@@ -31,9 +32,11 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 			return true;
 		}
 
+        /** @var StreamMember $linkStream */
         $linkStream->setUnread(0);
         $linkStream->setSubjectUnread(0);
         $linkStream->setLastRead();
+        $linkStream->setLastUpdate();
         $this->doctrine->persist($linkStream);
         $this->doctrine->flush();
 

@@ -41,9 +41,14 @@ class StreamMember
     private $mute;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="datetime", options={"default" : "1970-01-02"})
      */
     private $last_read;
+
+    /**
+     * @ORM\Column(type="datetime", options={"default" : "1970-01-02"})
+     */
+    private $last_update;
 
     /**
      * @ORM\Column(type="integer")
@@ -143,6 +148,22 @@ class StreamMember
     public function setLastRead()
     {
         $this->last_read = new \DateTime();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastUpdate()
+    {
+        return $this->last_update;
+    }
+
+    /**
+     * @param mixed $last_update
+     */
+    public function setLastUpdate()
+    {
+        $this->last_update = new \DateTime();
     }
 
     /**

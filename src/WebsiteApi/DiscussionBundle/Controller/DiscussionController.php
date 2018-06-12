@@ -251,8 +251,9 @@ class DiscussionController extends Controller
 
         $list = $this->get('app.messages_master')->getLastMessages($user);
         if(count($list)==0){
-            $data[0] = "list empty";
+            $data["errors"][] = "list empty";
         }else {
+
             $response = array();
             foreach ($list as $message) {
                 if ($message != null){
@@ -261,9 +262,9 @@ class DiscussionController extends Controller
                 }
             }
 
-            $data[1] = "success";
+            $data["data"] = $response;
         }
-        return new JsonResponse(array_merge($data,$response));
+        return new JsonResponse($data);
     }
 
 
