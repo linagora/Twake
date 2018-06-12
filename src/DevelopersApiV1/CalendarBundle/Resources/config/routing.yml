@@ -131,3 +131,11 @@ calendar_export:
     requirements:
           calendar_id: "[0-9]+"
           workspace_id: "[0-9]+"
+
+calendar_iport:
+  path: workspace/{workspace_id}/calendar/import/{calendar_id}
+  methods: [GET]
+  defaults: {_controller: DevelopersApiV1CalendarBundle:Calendar:parseCalendar}
+  requirements:
+      workspace_id: "[0-9]+"
+      calendar_id: "[0-9]+"
