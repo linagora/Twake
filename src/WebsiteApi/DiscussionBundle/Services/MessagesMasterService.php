@@ -80,7 +80,7 @@ class MessagesMasterService
             $stream = $streamMember->getStream();
             $element["stream"]=$stream;
             $element["message"]=$message;
-            $element["streamMember"]=$streamMember;
+            $element["stream_member"]=$streamMember;
             $List[] = $element;
         }
 

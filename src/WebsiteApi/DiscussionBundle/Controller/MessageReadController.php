@@ -50,8 +50,7 @@ class MessageReadController extends Controller
         else {
             $user = $this->getUser();
             $tmp = $this->get("app.messagesNotificationsCenter")->readAll($user);
-            var_dump($tmp);
-            if(!$tmp) {
+            if($tmp) {
                 $data["errors"][] = "errorSystem";
             }else{
                 $data["data"][] = "success";

@@ -253,14 +253,10 @@ class DiscussionController extends Controller
 
             $response = array();
             foreach ($list as $element) {
-                if ($element[1] != null){
-                    $responseElement = array();
-                    $infoStream = $element[0]->getAsArray();
-                    $infoMessage = $element[1]->getAsArrayForClient();
-                    $infoStreamMember = $element[2]->getAsArray();
-                    $responseElement["stream"] = $infoStream;
-                    $responseElement["message"] = $infoMessage;
-                    $responseElement["stream_member"] = $infoStreamMember;
+                if ($element["message"] != null){
+                    $responseElement["stream"] = $element["stream"]->getAsArray();
+                    $responseElement["message"] = $element["message"]->getAsArrayForClient();
+                    $responseElement["stream_member"] = $element["stream_member"]->getAsArray();
                     $response[] = $responseElement;
                 }
             }
