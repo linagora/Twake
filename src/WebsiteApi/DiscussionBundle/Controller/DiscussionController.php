@@ -255,10 +255,16 @@ class DiscussionController extends Controller
         }else {
 
             $response = array();
-            foreach ($list as $message) {
-                if ($message != null){
-                    $infos = $message->getAsArrayForClient();
-                    array_push($response, $infos);
+            foreach ($list as $element) {
+                if ($element[1] != null){
+                    $responseElement = array();
+                    $infoStream = $element[0]->getAsArray();
+                    $infoMessage = $element[1]->getAsArrayForClient();
+                    $infoStreamMember = $element[2]->getAsArray();
+                    array_push($responseElement, $infoStream);
+                    array_push($responseElement,$infoMessage);
+                    array_push($responseElement,$infoStreamMember);
+                    $response[] = $responseElement;
                 }
             }
 

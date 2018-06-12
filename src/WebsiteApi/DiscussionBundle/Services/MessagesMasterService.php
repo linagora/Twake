@@ -73,12 +73,17 @@ class MessagesMasterService
     public function getLastMessages($user){
         $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(array('user' => $user, 'mute' => false), array('unread' => 'desc', 'last_update' => 'desc'), 50);
 
-        $messagesList = array();
-        foreach ($streams as $stream){
-            $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(array('streamReciever' => $stream->getStream()), array('id' => 'desc'));
-            array_push($messagesList,$message);
+        $List = array();
+        foreach ($streams as $streamMember){
+            $element = array();
+            $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(array('streamReciever' => $streamMember->getStream()), array('id' => 'desc'));
+            $stream = $streamMember->getStream();
+            array_push($element,$stream);
+            array_push($element,$message);
+            array_push($element,$streamMember);
+            $List[] = $element;
         }
 
-        return $messagesList;
+        return $List;
     }
 }
