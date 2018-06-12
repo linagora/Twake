@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "637126739a2e35fcef7317b2d89c2900",
+    "content-hash": "409f45f4504d0e653108c0e64675d382",
     "packages": [
         {
             "name": "cboden/ratchet",
@@ -952,16 +952,16 @@
         },
         {
             "name": "easycorp/easyadmin-bundle",
-            "version": "v1.17.12",
+            "version": "v1.17.13",
             "source": {
                 "type": "git",
                 "url": "https://github.com/EasyCorp/EasyAdminBundle.git",
-                "reference": "f9114922faf5be8a4d5e70a774e672a67250baec"
+                "reference": "034c0151526b766af2896e93f1f35619687820d0"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/f9114922faf5be8a4d5e70a774e672a67250baec",
-                "reference": "f9114922faf5be8a4d5e70a774e672a67250baec",
+                "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/034c0151526b766af2896e93f1f35619687820d0",
+                "reference": "034c0151526b766af2896e93f1f35619687820d0",
                 "shasum": ""
             },
             "require": {
@@ -977,6 +977,7 @@
                 "symfony/dependency-injection": "~2.3|~3.0|^4.0",
                 "symfony/doctrine-bridge": "~2.3|~3.0|^4.0",
                 "symfony/event-dispatcher": "~2.3|~3.0|^4.0",
+                "symfony/finder": "~2.3|~3.0|^4.0",
                 "symfony/form": "~2.3|~3.0|^4.0",
                 "symfony/framework-bundle": "~2.3|~3.0|^4.0",
                 "symfony/http-foundation": "~2.3|~3.0|^4.0",
@@ -998,7 +999,6 @@
                 "symfony/console": "~2.3|~3.0|^4.0",
                 "symfony/css-selector": "~2.3|~3.0|^4.0",
                 "symfony/dom-crawler": "~2.3|~3.0|^4.0",
-                "symfony/finder": "~2.3|~3.0|^4.0",
                 "symfony/phpunit-bridge": "^3.2|^4.0",
                 "symfony/var-dumper": "~2.3|~3.0|^4.0",
                 "symfony/yaml": "~2.3|~3.0|^4.0"
@@ -1021,22 +1021,18 @@
             ],
             "authors": [
                 {
-                    "name": "Javier Eguiluz",
-                    "email": "javiereguiluz@gmail.com"
-                },
-                {
                     "name": "Project Contributors",
-                    "homepage": "http://github.com/javiereguiluz/easyadmin/blob/master/CONTRIBUTORS.md"
+                    "homepage": "http://github.com/EasyCorp/easyadmin/blob/master/CONTRIBUTORS.md"
                 }
             ],
             "description": "Admin generator for Symfony applications",
-            "homepage": "https://github.com/javiereguiluz/EasyAdminBundle",
+            "homepage": "https://github.com/EasyCorp/EasyAdminBundle",
             "keywords": [
                 "admin",
                 "backend",
                 "generator"
             ],
-            "time": "2018-02-24T09:24:55+00:00"
+            "time": "2018-06-10T10:43:27+00:00"
         },
         {
             "name": "eluceo/ical",
@@ -1143,12 +1139,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-                "reference": "6d02c6c7e2c3b7bab7af1a6ec79b1d8fec9b536e"
+                "reference": "8e723f2c7a36191b0fd7db60d8f8d0aacc20d807"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/6d02c6c7e2c3b7bab7af1a6ec79b1d8fec9b536e",
-                "reference": "6d02c6c7e2c3b7bab7af1a6ec79b1d8fec9b536e",
+                "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/8e723f2c7a36191b0fd7db60d8f8d0aacc20d807",
+                "reference": "8e723f2c7a36191b0fd7db60d8f8d0aacc20d807",
                 "shasum": ""
             },
             "require": {
@@ -1211,7 +1207,7 @@
             "keywords": [
                 "User management"
             ],
-            "time": "2018-05-22 07:56:25"
+            "time": "2018-06-08 13:55:34"
         },
         {
             "name": "gos/pnctl-event-loop-emitter",
@@ -1705,6 +1701,66 @@
             "time": "2014-01-12T16:20:24+00:00"
         },
         {
+            "name": "johngrogg/ics-parser",
+            "version": "v2.1.5",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/u01jmg3/ics-parser.git",
+                "reference": "ffd1788215b19da9813420935715b2bb7919b88e"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/u01jmg3/ics-parser/zipball/ffd1788215b19da9813420935715b2bb7919b88e",
+                "reference": "ffd1788215b19da9813420935715b2bb7919b88e",
+                "shasum": ""
+            },
+            "require": {
+                "ext-mbstring": "*",
+                "nesbot/carbon": "~1.28",
+                "php": ">=5.3.0"
+            },
+            "require-dev": {
+                "squizlabs/php_codesniffer": "~2.9.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-0": {
+                    "ICal": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Martin Thoma",
+                    "email": "info@martin-thoma.de",
+                    "role": "Original Developer"
+                },
+                {
+                    "name": "John Grogg",
+                    "email": "john.grogg@gmail.com",
+                    "role": "Developer/Prior Owner"
+                },
+                {
+                    "name": "Jonathan Goode",
+                    "role": "Developer/Owner"
+                }
+            ],
+            "description": "ICS Parser",
+            "homepage": "https://github.com/u01jmg3/ics-parser",
+            "keywords": [
+                "iCalendar",
+                "ical",
+                "ical-parser",
+                "ics",
+                "ics-parser",
+                "ifb"
+            ],
+            "time": "2018-05-24T14:12:00+00:00"
+        },
+        {
             "name": "kriswallsmith/assetic",
             "version": "v1.4.0",
             "source": {
@@ -2141,6 +2197,54 @@
             "time": "2017-12-05T06:14:09+00:00"
         },
         {
+            "name": "nesbot/carbon",
+            "version": "1.29.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/briannesbitt/Carbon.git",
+                "reference": "ed6aa898982f441ccc9b2acdec51490f2bc5d337"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/briannesbitt/Carbon/zipball/ed6aa898982f441ccc9b2acdec51490f2bc5d337",
+                "reference": "ed6aa898982f441ccc9b2acdec51490f2bc5d337",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3.9",
+                "symfony/translation": "~2.6 || ~3.0 || ~4.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "~2",
+                "phpunit/phpunit": "^4.8.35 || ^5.7"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Brian Nesbitt",
+                    "email": "brian@nesbot.com",
+                    "homepage": "http://nesbot.com"
+                }
+            ],
+            "description": "A simple API extension for DateTime.",
+            "homepage": "http://carbon.nesbot.com",
+            "keywords": [
+                "date",
+                "datetime",
+                "time"
+            ],
+            "time": "2018-05-29T15:23:46+00:00"
+        },
+        {
             "name": "ocramius/package-versions",
             "version": "1.3.0",
             "source": {
@@ -2329,16 +2433,16 @@
         },
         {
             "name": "paragonie/random_compat",
-            "version": "v2.0.12",
+            "version": "v2.0.15",
             "source": {
                 "type": "git",
                 "url": "https://github.com/paragonie/random_compat.git",
-                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb"
+                "reference": "10bcb46e8f3d365170f6de9d05245aa066b81f09"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
-                "reference": "258c89a6b97de7dfaf5b8c7607d0478e236b04fb",
+                "url": "https://api.github.com/repos/paragonie/random_compat/zipball/10bcb46e8f3d365170f6de9d05245aa066b81f09",
+                "reference": "10bcb46e8f3d365170f6de9d05245aa066b81f09",
                 "shasum": ""
             },
             "require": {
@@ -2370,10 +2474,11 @@
             "description": "PHP 5.x polyfill for random_bytes() and random_int() from PHP 7",
             "keywords": [
                 "csprng",
+                "polyfill",
                 "pseudorandom",
                 "random"
             ],
-            "time": "2018-04-04T21:24:14+00:00"
+            "time": "2018-06-08T15:26:40+00:00"
         },
         {
             "name": "patchwork/jsqueeze",
@@ -2781,16 +2886,16 @@
         },
         {
             "name": "react/promise",
-            "version": "v2.5.1",
+            "version": "v2.6.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise.git",
-                "reference": "62785ae604c8d69725d693eb370e1d67e94c4053"
+                "reference": "5e60e5596a5422287f9d2205f405bef2ae0cef4b"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise/zipball/62785ae604c8d69725d693eb370e1d67e94c4053",
-                "reference": "62785ae604c8d69725d693eb370e1d67e94c4053",
+                "url": "https://api.github.com/repos/reactphp/promise/zipball/5e60e5596a5422287f9d2205f405bef2ae0cef4b",
+                "reference": "5e60e5596a5422287f9d2205f405bef2ae0cef4b",
                 "shasum": ""
             },
             "require": {
@@ -2823,26 +2928,26 @@
                 "promise",
                 "promises"
             ],
-            "time": "2017-03-25T12:08:31+00:00"
+            "time": "2018-06-11T11:05:43+00:00"
         },
         {
             "name": "react/promise-timer",
-            "version": "v1.3.0",
+            "version": "v1.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/promise-timer.git",
-                "reference": "604513e33feb96ffb0dfb3d25233d3f9f0dce356"
+                "reference": "c21781145955892900efba366ec236eb66e3ee35"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/promise-timer/zipball/604513e33feb96ffb0dfb3d25233d3f9f0dce356",
-                "reference": "604513e33feb96ffb0dfb3d25233d3f9f0dce356",
+                "url": "https://api.github.com/repos/reactphp/promise-timer/zipball/c21781145955892900efba366ec236eb66e3ee35",
+                "reference": "c21781145955892900efba366ec236eb66e3ee35",
                 "shasum": ""
             },
             "require": {
                 "php": ">=5.3",
                 "react/event-loop": "^1.0 || ^0.5 || ^0.4 || ^0.3.5",
-                "react/promise": "~2.1|~1.2"
+                "react/promise": "^2.6.0 || ^1.2.1"
             },
             "require-dev": {
                 "phpunit/phpunit": "^6.4 || ^5.7 || ^4.8.35"
@@ -2876,20 +2981,20 @@
                 "timeout",
                 "timer"
             ],
-            "time": "2018-04-24T14:19:26+00:00"
+            "time": "2018-06-11T14:11:05+00:00"
         },
         {
             "name": "react/socket",
-            "version": "v0.8.11",
+            "version": "v0.8.12",
             "source": {
                 "type": "git",
                 "url": "https://github.com/reactphp/socket.git",
-                "reference": "94e98bb4def7054454784b330e44f73b7f6c160f"
+                "reference": "7f7e6c56ccda7418a1a264892a625f38a5bdee0c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/reactphp/socket/zipball/94e98bb4def7054454784b330e44f73b7f6c160f",
-                "reference": "94e98bb4def7054454784b330e44f73b7f6c160f",
+                "url": "https://api.github.com/repos/reactphp/socket/zipball/7f7e6c56ccda7418a1a264892a625f38a5bdee0c",
+                "reference": "7f7e6c56ccda7418a1a264892a625f38a5bdee0c",
                 "shasum": ""
             },
             "require": {
@@ -2897,8 +3002,8 @@
                 "php": ">=5.3.0",
                 "react/dns": "^0.4.13",
                 "react/event-loop": "^1.0 || ^0.5 || ^0.4 || ^0.3.5",
-                "react/promise": "^2.1 || ^1.2",
-                "react/promise-timer": "~1.0",
+                "react/promise": "^2.6.0 || ^1.2.1",
+                "react/promise-timer": "^1.4.0",
                 "react/stream": "^1.0 || ^0.7.1"
             },
             "require-dev": {
@@ -2923,7 +3028,7 @@
                 "reactphp",
                 "stream"
             ],
-            "time": "2018-04-24T14:07:53+00:00"
+            "time": "2018-06-11T14:33:43+00:00"
         },
         {
             "name": "react/stream",
@@ -3082,16 +3187,16 @@
         },
         {
             "name": "sensio/distribution-bundle",
-            "version": "v5.0.21",
+            "version": "v5.0.22",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sensiolabs/SensioDistributionBundle.git",
-                "reference": "eb6266b3b472e4002538610b28a0a04bcf94891a"
+                "reference": "209b11f8cee5bf71986dd703e45e27d3ed7a6d15"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/eb6266b3b472e4002538610b28a0a04bcf94891a",
-                "reference": "eb6266b3b472e4002538610b28a0a04bcf94891a",
+                "url": "https://api.github.com/repos/sensiolabs/SensioDistributionBundle/zipball/209b11f8cee5bf71986dd703e45e27d3ed7a6d15",
+                "reference": "209b11f8cee5bf71986dd703e45e27d3ed7a6d15",
                 "shasum": ""
             },
             "require": {
@@ -3130,7 +3235,7 @@
                 "configuration",
                 "distribution"
             ],
-            "time": "2017-08-25T16:55:44+00:00"
+            "time": "2018-06-07T06:22:12+00:00"
         },
         {
             "name": "sensio/framework-extra-bundle",
@@ -4305,16 +4410,16 @@
         },
         {
             "name": "myclabs/deep-copy",
-            "version": "1.8.0",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "478465659fd987669df0bd8a9bf22a8710e5f1b6"
+                "reference": "3e01bdad3e18354c3dce54466b7fbe33a9f9f7f8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/478465659fd987669df0bd8a9bf22a8710e5f1b6",
-                "reference": "478465659fd987669df0bd8a9bf22a8710e5f1b6",
+                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/3e01bdad3e18354c3dce54466b7fbe33a9f9f7f8",
+                "reference": "3e01bdad3e18354c3dce54466b7fbe33a9f9f7f8",
                 "shasum": ""
             },
             "require": {
@@ -4349,7 +4454,7 @@
                 "object",
                 "object graph"
             ],
-            "time": "2018-05-29T17:25:09+00:00"
+            "time": "2018-06-11T23:09:50+00:00"
         },
         {
             "name": "phar-io/manifest",

@@ -50,8 +50,9 @@ class CalendarEvents implements CalendarEventsInterface
 
         $event = new CalendarEvent($event, $event["from"], $event["to"]);
         $eventModified = $event->getEvent();
-        $eventModified["title"] = "event";
-        $eventModified["typeEvent"] = "event";
+        $eventModified["title"] = isset($event->getEvent()["title"])? $event->getEvent()["title"] : "event";
+        $eventModified["typeEvent"] = isset($event->getEvent()["typeEvent"])? $event->getEvent()["typeEvent"] : "event";
+
         $event->setEvent($eventModified);
         $event->setReminder();
         $event->setCalendar($calendar);
