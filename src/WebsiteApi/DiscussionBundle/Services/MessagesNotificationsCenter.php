@@ -39,6 +39,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
         $linkStream->setLastUpdate();
         $this->doctrine->persist($linkStream);
         $this->doctrine->flush();
+        $this->doctrine->clear();
 
         $data = $linkStream->getAsArray();
         $data["id"] = $stream->getId();
