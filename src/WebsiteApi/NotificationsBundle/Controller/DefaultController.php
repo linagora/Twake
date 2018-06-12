@@ -4,6 +4,7 @@ namespace WebsiteApi\NotificationsBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 
 class DefaultController extends Controller
 {
@@ -23,5 +24,40 @@ class DefaultController extends Controller
 	    }
         return new JsonResponse(Array("data"=>$data));
 
+    }
+
+    public function deleteAllExceptMessagesAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $user = $this->getUser()->getId();
+        $delete = $this->get('app.app.notifications')->deleteAllExceptMessages($user);
+
+        if (!$delete){
+            $data["errors"][] = "no removal made";
+        } else{
+            $data["data"][] = "success";
+        }
+
+        return new JsonResponse($data);
+    }
+
+    public function deleteAction(Request $request, $application, $workspace_id){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $user = $this->getUser()->getId();
+        $delete = $this->get('app.app.notifications')->readAll($application, $workspace_id, $user, null, false);
+        if (!$delete){
+            $data["errors"][] = "no removal made";
+        } else{
+            $data["data"][] = "success";
+        }
+
+        return new JsonResponse($data);
     }
 }

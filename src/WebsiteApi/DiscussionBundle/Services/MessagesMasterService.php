@@ -78,9 +78,9 @@ class MessagesMasterService
             $element = array();
             $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(array('streamReciever' => $streamMember->getStream()), array('id' => 'desc'));
             $stream = $streamMember->getStream();
-            array_push($element,$stream);
-            array_push($element,$message);
-            array_push($element,$streamMember);
+            $element["stream"]=$stream;
+            $element["message"]=$message;
+            $element["streamMember"]=$streamMember;
             $List[] = $element;
         }
 

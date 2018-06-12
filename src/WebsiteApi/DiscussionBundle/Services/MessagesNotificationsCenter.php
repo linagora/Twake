@@ -71,6 +71,19 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 
 	}
 
+	public function readAll($user){
+        $listStreamMember = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findUnreadMessage($user);
+        var_dump(count($listStreamMember));
+
+        $ok = true;
+        foreach ($listStreamMember as $streamMember){
+            $stream = $streamMember->getStream();
+
+            $ok = $ok && $this->read($stream, $user);
+        }
+        return $ok;
+    }
+
     public function notify($stream, $except_users_ids, $message)
     {
 

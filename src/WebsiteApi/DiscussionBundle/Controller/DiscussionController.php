@@ -5,9 +5,6 @@ namespace WebsiteApi\DiscussionBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use WebsiteApi\DiscussionBundle\Entity\Stream;
-use WebsiteApi\DiscussionBundle\Entity\StreamMember;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 
 class DiscussionController extends Controller
