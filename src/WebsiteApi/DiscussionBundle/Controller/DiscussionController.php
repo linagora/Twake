@@ -261,9 +261,9 @@ class DiscussionController extends Controller
                     $infoStream = $element[0]->getAsArray();
                     $infoMessage = $element[1]->getAsArrayForClient();
                     $infoStreamMember = $element[2]->getAsArray();
-                    array_push($responseElement, $infoStream);
-                    array_push($responseElement,$infoMessage);
-                    array_push($responseElement,$infoStreamMember);
+                    $responseElement["stream"] = $infoStream;
+                    $responseElement["message"] = $infoMessage;
+                    $responseElement["stream_member"] = $infoStreamMember;
                     $response[] = $responseElement;
                 }
             }

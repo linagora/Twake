@@ -68,6 +68,7 @@ class StreamMember
 	    $this->setUser($user);
 	    $this->setMute(false);
 	    $this->setLastRead();
+        $this->setLastUpdate();
 	}
 
     public function getId() {

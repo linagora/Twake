@@ -182,7 +182,6 @@ class Notifications implements NotificationsInterface
         $count = count($notif);
         for($i = 0; $i < $count; $i++) {
             $this->doctrine->remove($notif[$i]);
-
         }
 
         if($count>0 || $force) {

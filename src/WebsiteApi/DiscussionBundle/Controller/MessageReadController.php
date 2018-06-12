@@ -24,8 +24,8 @@ class MessageReadController extends Controller
             $data['errors'][] = "notconnected";
         }
         else {
-            if($request->request->get("key") != null){
-                if(!$this->get('app.messageReadSystem')->readByKey($request->request->get("key"),$request->request->get("workspace"),$this->getUser())){
+            if($request->request->get("stream_id") != null){
+                if(!$this->get('app.messages')->readStream($request->request->get("stream_id"), $this->getUser())){
                     $data["errors"][] = "errorSystem";
                 }
             }

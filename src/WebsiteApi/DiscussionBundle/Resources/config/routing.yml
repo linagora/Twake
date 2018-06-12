@@ -19,7 +19,6 @@ message_read:
     path:     /read
     defaults: { _controller: TwakeDiscussionBundle:MessageRead:readMessage}
 
-
 streams_get:
     path:     /streams/get
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getStreams }

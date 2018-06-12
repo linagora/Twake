@@ -72,7 +72,7 @@ class User extends BaseUser
 
     /**
      * @var int
-     * @ORM\Column(type="datetime",nullable=true)
+     * @ORM\Column(type="datetime",nullable=true, options={"default" : "1970-01-02"})
      */
     protected $creationDate;
 
