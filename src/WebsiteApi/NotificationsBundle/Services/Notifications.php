@@ -308,10 +308,13 @@ class Notifications implements NotificationsInterface
     }
 
     public function deleteAllExceptMessages($user,$force=false){
-        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
 
-        $notif = $nRepo->getAppNoMessages($user);
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(array("publicKey" => "messages"));
+
+        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+        $notif = $nRepo->getAppNoMessages($app);
         $count = count($notif);
+
 
         if ($count == 0){
             return false;
