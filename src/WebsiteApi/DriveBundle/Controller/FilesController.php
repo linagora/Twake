@@ -333,7 +333,7 @@ class FilesController extends Controller
                 }
 
                 foreach ($toMove as $id){
-                    $res = $this->get('app.drive.FileSystem')->move(intval($id), $newParentId,$groupId);
+                    $res = $this->get('app.drive.FileSystem')->move($id, $newParentId,$groupId);
                     if(!$res){
                         $data["errors"][] = "ヾ(⌐■_■)ノ Nice try ヾ(⌐■_■)ノ";
                     }
