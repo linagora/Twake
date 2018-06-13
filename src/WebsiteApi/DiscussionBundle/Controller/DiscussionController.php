@@ -5,9 +5,6 @@ namespace WebsiteApi\DiscussionBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use WebsiteApi\DiscussionBundle\Entity\Stream;
-use WebsiteApi\DiscussionBundle\Entity\StreamMember;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 
 class DiscussionController extends Controller
@@ -240,5 +237,35 @@ class DiscussionController extends Controller
 
 	    return new JsonResponse($data);
     }
+
+    public function getLastMessagesAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $user = $this->getUser()->getId();
+
+        $list = $this->get('app.messages_master')->getLastMessages($user);
+        if(count($list)==0){
+            $data["errors"][] = "list empty";
+        }else {
+
+            $response = array();
+            foreach ($list as $element) {
+                if ($element["message"] != null){
+                    $responseElement["stream"] = $element["stream"]->getAsArray();
+                    $responseElement["message"] = $element["message"]->getAsArrayForClient();
+                    $responseElement["stream_member"] = $element["stream_member"]->getAsArray();
+                    $response[] = $responseElement;
+                }
+            }
+
+            $data["data"] = $response;
+        }
+        return new JsonResponse($data);
+    }
+
+
 
 }

@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\DriveBundle\Controller;
 
+use PHPUnit\Util\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,6 +29,7 @@ class FilesController extends Controller
         $model = $request->request->get("model", null);
         $isDetached = $request->request->get("isDetached", false);
         $isDirectory = $request->request->get("isDirectory", true);
+        $url = $request->request->get("url",null);
 
         $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "drive:write");
 
@@ -37,7 +39,7 @@ class FilesController extends Controller
                 $data["errors"] = "notallowed";
             } else {
 
-                $file = $this->get('app.drive.FileSystem')->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached);
+                $file = $this->get('app.drive.FileSystem')->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached,$url);
 
                 if($model){
                     //IMPORTANT ! Disable local files !!!
@@ -481,6 +483,39 @@ class FilesController extends Controller
         }
 
         return new JsonResponse($data);
+    }
+
+    public function openAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+        $file = $request->request->get("file", null);
+        $bool = $this->get('app.drive.FileSystem')->open($file);
+        var_dump($file);
+        if ($bool){
+            $data["data"][] ="success";
+        }else{
+            $data["data"][] = "error";
+        }
+
+        return new JsonResponse($data);
+    }
+
+    public function getFilesFromAppAction(Request $request){
+
+        $workspace_id = $request->request->get("workspace_id", 0);
+        $app = $request->request->get("app", 0);
+
+        $list = $this->get('app.drive.FileSystem')->getFilesFromApp($app,$workspace_id);
+
+        $response = Array();
+        var_dump(count($list));
+        foreach ($list as $element){
+            $infos = $this->get("app.drive.FileSystem")->getInfos($workspace_id, $element, false);
+            array_push($response,$infos);
+        }
+        return new JsonResponse($response);
     }
 
 }

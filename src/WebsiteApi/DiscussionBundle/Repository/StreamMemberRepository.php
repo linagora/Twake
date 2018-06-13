@@ -19,4 +19,13 @@ class StreamMemberRepository extends \Doctrine\ORM\EntityRepository
         $qb->getQuery()->execute();
 	}
 
+	public function findUnreadMessage($user){
+        $qb = $this->createQueryBuilder('u');
+        $qb->where('u.unread > 0 AND u.user = :user');
+        $qb->setParameter('user', $user);
+        $result = $qb->getQuery()->getResult();
+
+        return $result;
+    }
+
 }

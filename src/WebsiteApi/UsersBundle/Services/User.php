@@ -641,6 +641,12 @@ class User implements UserInterface
 			$this->em->persist($user);
 			$this->em->flush();
 
+            $datatopush = Array(
+                "type" => "USER",
+                "action" => "changeUser"
+            );
+            $this->pusher->push($datatopush, "notifications/" . $user->getId());
+
 			return true;
 
 		}
@@ -700,6 +706,12 @@ class User implements UserInterface
 			}
 			$this->em->persist($user);
 			$this->em->flush();
+
+            $datatopush = Array(
+                "type" => "USER",
+                "action" => "changeUser"
+            );
+            $this->pusher->push($datatopush, "notifications/" . $user->getId());
 
 		}
 

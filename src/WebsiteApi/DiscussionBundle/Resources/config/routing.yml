@@ -1,7 +1,7 @@
+#DiscussionController
 message_get_stream:
     path:     /getStream
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getStream}
-
 
 message_get:
     path:     /getMessage
@@ -14,11 +14,6 @@ message_search:
 message_get_drive_message:
     path:     /getDriveMessage
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getDriveMessage}
-
-message_read:
-    path:     /read
-    defaults: { _controller: TwakeDiscussionBundle:MessageRead:readMessage}
-
 
 streams_get:
     path:     /streams/get
@@ -35,4 +30,17 @@ subjectList_get:
 subject_get_message:
     path:     /subject/getMessage
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getSubjectMessage }
+
+subject_get_last_messages:
+    path:     /getLastMessages
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:getLastMessages }
+
+#MessageReadController
+message_read:
+    path:     /read
+    defaults: { _controller: TwakeDiscussionBundle:MessageRead:readMessage}
+
+message_read_all:
+    path:     /readAll
+    defaults: { _controller: TwakeDiscussionBundle:MessageRead:readAllMessages}
 

@@ -108,8 +108,24 @@ class DriveFile
     */
     private $shared = false;
 
+    /**
+     * @ORM\Column(type="string", length=2048, nullable = true)
+     */
+    private $url;
 
-    public function __construct($group, $parent, $name, $isDirectory = false,$directoryToCopy = null)
+    /**
+     * @ORM\Column(type="decimal")
+     */
+    private $opening_rate;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $default_app;
+
+
+    public function __construct($group, $parent, $name, $isDirectory = false,$directoryToCopy = null, $url = null)
     {
         $this->group = $group;
         $this->setParent($parent);
@@ -124,6 +140,11 @@ class DriveFile
         if ($directoryToCopy){
             $this->copyOf = $directoryToCopy;
         }
+        if ($url != null){
+            $this->setUrl($url);
+        }
+        $this->opening_rate = 0;
+        $this->default_app = null;
     }
 
     public function getId()
@@ -420,7 +441,47 @@ class DriveFile
         $this->shared = $shared;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getUrl(){
+        return $this->url;
+    }
 
+    /**
+     * @param $url
+     */
+    public function setUrl($url){
+        $this->url = $url;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOpeningRate(){
+        return $this->opening_rate;
+    }
+
+    /**
+     * @param $opening_rate
+     */
+    public function setOpeningRate($opening_rate){
+        $this->opening_rate = $opening_rate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultApp(){
+        return $this->default_app;
+    }
+
+    /**
+     * @param $default_app
+     */
+    public function setDefaultApp($default_app){
+        $this->default_app = $default_app;
+    }
 
     public function getAsArray()
     {
@@ -439,7 +500,10 @@ class DriveFile
             "cache" => $this->getCache(),
             "preview" => $this->getPreviewPath(),
             "copyOf" => ($this->getCopyOf()?$this->getCopyOf()->getId():null),
-            "shared" => $this->getShared()
+            "shared" => $this->getShared(),
+            "url" => $this->getUrl(),
+            "opening_rate" => $this->getOpeningRate(),
+            "default_app" => $this->getDefaultApp()
         );
     }
 

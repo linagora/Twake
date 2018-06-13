@@ -41,7 +41,9 @@
         "richsage/rms-push-notifications-bundle": "^0.2.3",
         "cmen/google-charts-bundle": "^3.0",
         "easycorp/easyadmin-bundle": "^1.17",
-        "google/apiclient": "^2.0"
+        "google/apiclient": "^2.0",
+        "eluceo/ical": "^0.14.0",
+	"johngrogg/ics-parser": "^2"
 	},
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

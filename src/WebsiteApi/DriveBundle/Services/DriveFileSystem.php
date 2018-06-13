@@ -22,7 +22,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     var $preview;
     var $pusher;
 
-    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher)
+    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService)
     {
         $this->doctrine = $doctrine;
         $this->root = $rootDirectory;
@@ -30,6 +30,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->pricingService = $pricing;
         $this->preview = $preview;
         $this->pusher = $pusher;
+        $this->applicationService = $applicationService;
     }
 
     private function convertToEntity($var, $repository)
@@ -229,7 +230,9 @@ class DriveFileSystem implements DriveFileSystemInterface
                     $child->getGroup(),
                     $outFile,
                     $child->getName(),
-                    $child->getIsDirectory()
+                    $child->getIsDirectory(),
+                    $child->setCopyOf(null),
+                    $child->getUrl()
                 );
 
                 $newFile->setSize($child->getSize());
@@ -261,7 +264,9 @@ class DriveFileSystem implements DriveFileSystemInterface
             $fileOrDirectory->getGroup(),
             $parent,
             $fileOrDirectory->getName(),
-            $fileOrDirectory->getIsDirectory()
+            $fileOrDirectory->getIsDirectory(),
+            $fileOrDirectory->setCopyOf(null),
+            $fileOrDirectory->getUrl()
         );
 
         $newFile->setSize($fileOrDirectory->getSize());
@@ -352,7 +357,8 @@ class DriveFileSystem implements DriveFileSystemInterface
             $parent,
             $fileOrDirectory->getName(),
             $fileOrDirectory->getIsDirectory(),
-            $fileOrDirectory
+            $fileOrDirectory,
+            $fileOrDirectory->getUrl()
         );
 
         $newFile->setSize($fileOrDirectory->getSize());
@@ -471,19 +477,19 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false)
+    public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false, $url =null)
     {
 
         if ($directory == 0 || $detached_file) {
             $directory = null;
         }
 
+        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+
         if (!$this->isWorkspaceAllowed($workspace, $directory)) {
             return false;
         }
-
-        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
         if (!$detached_file && ($workspace == null || $this->getFreeSpace($workspace) <= 0)) {
             return false;
@@ -493,8 +499,15 @@ class DriveFileSystem implements DriveFileSystemInterface
             $workspace,
             $directory,
             $filename,
-            $isDirectory
+            $isDirectory,
+            null,
+            $url
         );
+
+        if ($url!=null){
+            $app = $this->applicationService->getAppForUrl($url);
+            $newFile->setDefaultApp($app);
+        }
 
         $newFile->setDetachedFile($detached_file);
 
@@ -1324,4 +1337,27 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
+    public function open($file){
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
+        if ($file != null){
+            $file->setOpeningRate( $file->getOpeningRate() + 1);
+            $this->doctrine->persist($file);
+            $this->doctrine->flush();
+            return true;
+        }
+
+        return false;
+    }
+
+    public function decreaseOpeningFile(){
+        $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->decreaseOpeningRate();
+    }
+
+
+    public function getFilesFromApp($app,$workspace_id){
+        $app = $this->convertToEntity($app, "TwakeMarketBundle:Application");
+
+        $listFiles = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(array('default_app' => $app, 'group' => $workspace_id),array('opening_rate'=> 'desc'),20);
+        return $listFiles;
+    }
 }

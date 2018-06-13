@@ -86,6 +86,7 @@ class ApiStatus {
         $this->map[4012] = " Fail to unshare an event ";
         $this->map[4013] = " Fail to get all events ";
         $this->map[4014] = " Fail to get all calendars ";
+        $this->map[4015] = " Fail to generate calenda ";
     }
 
     public function getError($code){

@@ -2,6 +2,7 @@
 
 
 namespace WebsiteApi\NotificationsBundle\Services;
+use phpDocumentor\Reflection\Types\Array_;
 use RMS\PushNotificationsBundle\Message\iOSMessage;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
 use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
@@ -182,7 +183,10 @@ class Notifications implements NotificationsInterface
         $count = count($notif);
         for($i = 0; $i < $count; $i++) {
             $this->doctrine->remove($notif[$i]);
+        }
 
+        if ($count == 0){
+            return false;
         }
 
         if($count>0 || $force) {
@@ -198,8 +202,9 @@ class Notifications implements NotificationsInterface
             $this->pusher->push($data, "notifications/".$user->getId());
 
             $this->updateDeviceBadge($user, $totalNotifications);
+            return true;
         }
-
+        return true;
 
 
     }
@@ -301,4 +306,40 @@ class Notifications implements NotificationsInterface
             "text"=>$text
         ));
     }
+
+    public function deleteAllExceptMessages($user,$force=false){
+
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(array("publicKey" => "messages"));
+
+        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+        $notif = $nRepo->getAppNoMessages($app);
+        $count = count($notif);
+
+
+        if ($count == 0){
+            return false;
+        }
+        for($i = 0; $i < $count; $i++) {
+            $this->doctrine->remove($notif[$i]);
+
+        }
+
+        if($count>0 || $force) {
+            $this->doctrine->flush();
+
+            $totalNotifications = $this->countAll($user);
+
+            $data = Array(
+                "action"=>"remove"
+            );
+            //convert
+            $this->pusher->push($data, "notifications/".$user->getId());
+
+            $this->updateDeviceBadge($user, $totalNotifications);
+            return true;
+        }
+
+        return true;
+    }
+
 }

@@ -3,7 +3,9 @@ namespace DevelopersApiV1\CalendarBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use \Eluceo\iCal\Component ;
 
 class EventController extends Controller
 {
@@ -239,7 +241,7 @@ class EventController extends Controller
         }
 
         if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
-            return new JSonResponse($this->get("api.v1.api_status")-> getError(1));
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(2));
         }
 
         $error = $this->get("app.calendar_events")->removeUsers($workspace_id, $calendar_id, $event_id,Array($user_id), null);
@@ -257,4 +259,58 @@ class EventController extends Controller
 
         return new JsonResponse($data);
     }
+
+    /**
+     * see https://github.com/markuspoerschke/iCal
+     * @param Request $request
+     * @param $workspace_id
+     * @param $event_id
+     * @return string|JsonResponse
+     */
+    public function generateIcsFileAction(Request $request,$workspace_id, $event_id){
+        $application = $this->get("api.v1.check")->check($request);
+
+        if(!$application){
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(1));
+        }
+
+        if(!$this->get("api.v1.check")->isAllowedTo($application,"calendar:manage", $workspace_id)){
+            return new JSonResponse($this->get("api.v1.api_status")-> getError(2));
+        }
+
+        $vCalendar = new Component\Calendar('twakeapp.com');
+        $vEvent = new Component\Event();
+
+        $tz  = 'Europe/Paris';
+        date_default_timezone_set($tz);
+
+        $data =$this->get("app.calendar_events")->getEventById($workspace_id, $event_id, null);
+        $event = $data["event"];
+
+        $dateStart = new \DateTime(date( "c", (int)$event["from"]));
+       // $dateStart = (new \DateTime($event["start"]));
+        $dateEnd = new \DateTime(date("c",(int)$event["to"]));
+        //$dateEnd = new \DateTime($event["end"]);
+
+        $vEvent
+            ->setDtStart($dateStart)
+            ->setDtEnd($dateEnd)
+            ->setSummary($event["title"])
+            ->setDescription($event["description"])
+            ->setLocation($event["location"])
+
+        ;
+        $vEvent->setUseTimezone(true);
+
+
+        $vCalendar->addComponent($vEvent);
+
+        return new Response(
+            $vCalendar->render(), 200, array(
+            'Content-Type' => 'text/calendar; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="cal.ics"',
+        )); // split sur les \r\n et autres types de prog
+
+    }
+
 }

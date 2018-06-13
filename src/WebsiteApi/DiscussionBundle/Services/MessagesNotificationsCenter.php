@@ -4,6 +4,7 @@ namespace WebsiteApi\DiscussionBundle\Services;
 
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\DiscussionBundle\Entity\MessageNotification;
+use WebsiteApi\DiscussionBundle\Entity\StreamMember;
 use WebsiteApi\DiscussionBundle\Model\MessagesNotificationsCenterInterface;
 
 
@@ -22,7 +23,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 		$this->workspaces = $workspaces;
     }
 
-	public function read($stream, $user, $force=false){
+	public function read($stream, $user, $force=false, $noflush = false){
 
 		$linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
 			->findOneBy(Array("user"=>$user,"stream"=>$stream));
@@ -31,11 +32,17 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 			return true;
 		}
 
+        /** @var StreamMember $linkStream */
         $linkStream->setUnread(0);
         $linkStream->setSubjectUnread(0);
         $linkStream->setLastRead();
+        $linkStream->setLastUpdate();
         $this->doctrine->persist($linkStream);
-        $this->doctrine->flush();
+
+        if ($noflush == false){
+            $this->doctrine->flush();
+        }
+        $this->doctrine->clear();
 
         $data = $linkStream->getAsArray();
         $data["id"] = $stream->getId();
@@ -66,6 +73,19 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 		}
 
 	}
+
+	public function readAll($user){
+        $listStreamMember = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findUnreadMessage($user);
+
+        $ok = true;
+        foreach ($listStreamMember as $streamMember){
+            $stream = $streamMember->getStream();
+
+            $ok = $ok && $this->read($stream, $user,false, true);
+        }
+        $this->doctrine->flush();
+        return $ok;
+    }
 
     public function notify($stream, $except_users_ids, $message)
     {

@@ -259,8 +259,13 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function changeWallpaper($workspaceId, $wallpaper, $currentUserId = null)
+    public function changeWallpaper($workspaceId, $wallpaper, $color = null, $currentUserId = null)
     {
+
+        if ($color == null) {
+            $color = "#7E7A6D";
+        }
+
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
         ) {
@@ -273,6 +278,7 @@ class Workspaces implements WorkspacesInterface
                 $this->doctrine->remove($workspace->getWallpaper());
             }
             $workspace->setWallpaper($wallpaper);
+            $workspace->setColor($color);
 
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();

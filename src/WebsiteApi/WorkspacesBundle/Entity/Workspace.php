@@ -41,10 +41,15 @@ class Workspace
 	 */
 	private $logo;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
-	 */
-	private $wallpaper;
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
+     */
+    private $wallpaper;
+
+    /**
+     * @ORM\Column(name="wallpaper_color", type="string", length=50)
+     */
+    private $color = "#7E7A6D";
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
@@ -238,12 +243,29 @@ class Workspace
         $this->member_count = $member_count;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getColor()
+    {
+        return $this->color;
+    }
+
+    /**
+     * @param mixed $color
+     */
+    public function setColor($color)
+    {
+        $this->color = $color;
+    }
+
 	public function getAsArray(){
 		return Array(
 			"id"=> $this->getId(),
 			"private" => $this->getUser()!=null,
 			"logo" => (($this->getLogo())?$this->getLogo()->getPublicURL():""),
 			"wallpaper" => (($this->getWallpaper())?$this->getWallpaper()->getPublicURL():""),
+            "color" => $this->getColor(),
 			"group" => (($this->getGroup())?$this->getGroup()->getAsArray():null),
 			"name" => $this->getName(),
             "total_members" => $this->getMemberCount(),

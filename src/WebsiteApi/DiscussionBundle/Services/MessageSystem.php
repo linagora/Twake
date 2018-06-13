@@ -302,7 +302,8 @@ class MessageSystem implements MessagesSystemInterface
 
     public function readStream($stream, $user)
     {
-        $this->messagesNotificationCenter->read($stream, $user);
+        $stream = $this->convertToEntity($stream,"TwakeDiscussionBundle:Stream");
+        return $this->messagesNotificationCenter->read($stream, $user);
     }
 
     public function editMessageFromApp($id, $content){
