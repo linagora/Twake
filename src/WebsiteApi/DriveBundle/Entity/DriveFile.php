@@ -130,6 +130,10 @@ class DriveFile
     {
         return $this->id;
     }
+    public function setId($newId)
+    {
+        return $this->id = $newId;
+    }
 
     /**
      * @return mixed
@@ -272,6 +276,14 @@ class DriveFile
     public function getAdded()
     {
         return $this->added;
+    }
+
+    /**
+     * @param mixed $added
+     */
+    public function setAdded($added)
+    {
+        $this->added = $added;
     }
 
     /**
@@ -430,6 +442,5 @@ class DriveFile
             "shared" => $this->getShared()
         );
     }
-
 
 }
