@@ -66,6 +66,11 @@ class Subscription
     private $auto_renew;
 
     /**
+     * @ORM/Column(name="archived", type = "boolean")
+     */
+    private $archived = false;
+
+    /**
      * Subscription constructor.
      * @param $group_id
      * @param $pricing_plan_id
@@ -84,6 +89,23 @@ class Subscription
         $this->end_date = $end_date;
         $this->auto_withdrawal = $auto_withdrawal;
         $this->auto_renew = $auto_renew;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getArchived()
+    {
+        return $this->archived;
+    }
+
+    /**
+     * @param mixed $archived
+     */
+    public function setArchived($archived)
+    {
+        $this->archived = $archived;
     }
 
     /**
