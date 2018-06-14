@@ -26,7 +26,7 @@ interface SubscriptionInterface
     public function addBalanceConsumption($value, $group);
 
     //@getDiff
-    public function getRemainingBalnce($group);
+    public function getRemainingBalance($group);
 
     //@updateLockDate
     public function updateLockDate($group);
@@ -45,5 +45,8 @@ interface SubscriptionInterface
 
     //@getCorrectBalanceConsumed
     public function getCorrectBalanceConsumed($group);
+
+    //@getOverCost
+    public function getOverCost($group);
 
 }

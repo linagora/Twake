@@ -10,4 +10,15 @@ namespace WebsiteApi\PaymentsBundle\Repository;
  */
 class GroupIdentityRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findByLockDateExpire()
+    {
+        $qb = $this->createQueryBuilder('u');
+        $qb->where('u.lock_date != :null_idf')
+            ->andWhere('u.lock_date >= :current_date')
+            ->setParameter('null_idf', null)
+            ->setParameter('current_date', new \DateTime());
+
+        return $qb->getQuery()
+            ->getResult();
+    }
 }
