@@ -56,7 +56,7 @@ class DefaultController extends Controller
         $workspace_id = $this->getDoctrine()->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
         $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->find($application_tmp);
 
-        $user = $this->getUser()->getId();
+        $user = $this->getUser();
         $delete = $this->get('app.notifications')->readAll($application, $workspace_id, $user, null, false);
         if (!$delete){
             $data["errors"][] = "no removal made";

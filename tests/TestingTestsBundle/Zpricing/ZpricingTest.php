@@ -12,7 +12,6 @@ class ZpricingTest extends WebTestCaseExtended
 {
 
     public function initData(){
-        $this->destroyTestData();
 
         $user = $this->newUser();
         $this->getDoctrine()->persist($user);

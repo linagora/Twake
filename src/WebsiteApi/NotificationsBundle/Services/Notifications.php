@@ -330,7 +330,7 @@ class Notifications implements NotificationsInterface
             $totalNotifications = $this->countAll($user);
 
             $data = Array(
-                "action"=>"remove"
+                "action" => "remove_all_non_messages"
             );
             //convert
             $this->pusher->push($data, "notifications/".$user->getId());

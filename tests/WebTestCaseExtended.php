@@ -30,6 +30,10 @@ class WebTestCaseExtended extends WebTestCase
         $userToken = $this->get("app.user")->subscribeMail("PHPUNIT@PHPUNIT.fr");
         $user = $this->get("app.user")->subscribe($userToken,null, "phpunit","phpunit",true);
 
+        if (!$user) {
+            return $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "phpunit"));
+        }
+
         $this->getDoctrine()->persist($user);
         $this->getDoctrine()->flush();
 
@@ -39,6 +43,10 @@ class WebTestCaseExtended extends WebTestCase
     public function newUserByName($name){
         $userToken = $this->get("app.user")->subscribeMail($name . "@PHPUNIT.fr");
         $user = $this->get("app.user")->subscribe($userToken,null, $name,$name,true);
+
+        if (!$user) {
+            return $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => $name));
+        }
 
         $this->getDoctrine()->persist($user);
         $this->getDoctrine()->flush();
@@ -55,150 +63,18 @@ class WebTestCaseExtended extends WebTestCase
     }
 
     public function newWorkspace($groupId){
-        $work = $this->get("app.workspaces")->create("phpunit",$groupId); // Get a service and run function
+        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findByName("phpunit");
+        if (count($user) == 0) {
+            $user = $this->newUser();
+        }
+        $user = $user[0];
+        $userId = $user->getId();
+        $work = $this->get("app.workspaces")->create("phpunit", $groupId, $userId); // Get a service and run function
         $this->getDoctrine()->persist($work);
         $this->getDoctrine()->flush();
 
         return $work;
-    }
-
-    public function destroyTestData()
-    {
-        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findByName("phpunit");
-
-        $groupRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group");
-        $group = $groupRepository->findOneBy(Array("name" => "phpunit"));
-
-        if ($group != null) {
-            $groupappsRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupApp");
-            $groupapps = $groupappsRepository->findBy(Array("group" => $group));
-
-            $workspaceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace");
-            $workspace = $workspaceRepository->findOneBy(Array("name" => "phpunit"));
-
-            $workspaceUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-            $workspaceUsers = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
-
-            $workspaceappsRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
-            $workspaceapps = $workspaceappsRepository->findBy(Array("workspace" => $workspace));
-
-            $workspacelevelRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
-            $workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $workspace));
-
-            $workspacestatsRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceStats");
-            $workspacestats = $workspacestatsRepository->findOneBy(Array("workspace" => $workspace));
-
-            $streamRepository = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream");
-            $streams = $streamRepository->findBy(Array("workspace" => $workspace));
-
-            $groupUserdRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser");
-            $groupUsers = $groupUserdRepository->findBy(Array("group" => $group));
-
-            $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
-            $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
-
-            $groupPricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
-            $groupPricing = $groupPricingRepository->findBy(Array("group" => $group));
-
-            $closedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
-            $closedGroupPeriods = $closedGroupPeriodRepository->findBy(Array("group" => $group));
-
-            $appPricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:AppPricingInstance");
-            $appPricings = $appPricingRepository->findBy(Array("group" => $group));
-        }
-
-        $PricingRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:PricingPlan");
-        $pricing = $PricingRepository->findOneBy(Array("label" => "phpunit"));
-
-        if ($pricing != null) {
-            $this->getDoctrine()->remove($pricing);
-        }
-        if ($user != null) {
-            if (is_array($user)) {
-                foreach ($user as $u) {
-                    $this->getDoctrine()->remove($u);
-                }
-            } else {
-                $this->getDoctrine()->remove($user);
-            }
-        }
-        if ($group != null) {
-            if ($groupapps != null) {
-                if (is_array($groupapps)) {
-                    foreach ($groupapps as $groupapp) {
-                        $this->getDoctrine()->remove($groupapp);
-                    }
-                }
-            }
-            if ($appPricings != null) {
-                if (is_array($appPricings)) {
-                    foreach ($appPricings as $appPricing) {
-                        $this->getDoctrine()->remove($appPricing);
-                    }
-                }
-            }
-            if ($workspaceapps != null) {
-                if (is_array($workspaceapps)) {
-                    foreach ($workspaceapps as $workspaceapp) {
-                        $this->getDoctrine()->remove($workspaceapp);
-                    }
-                }
-            }
-            if ($workspaceUsers != null) {
-                if (is_array($workspaceUsers)) {
-                    foreach ($workspaceUsers as $workspaceUser) {
-                        $this->getDoctrine()->remove($workspaceUser);
-                    }
-                }
-            }
-            if ($closedGroupPeriods != null) {
-                if (is_array($closedGroupPeriods)) {
-                    foreach ($closedGroupPeriods as $closedGroupPeriod) {
-                        $this->getDoctrine()->remove($closedGroupPeriod);
-                    }
-                }
-            }
-            if ($workspacelevels != null) {
-                if (is_array($workspacelevels)) {
-                    foreach ($workspacelevels as $workspacelevel) {
-                        $this->getDoctrine()->remove($workspacelevel);
-                    }
-                }
-            }
-            if ($streams != null) {
-                if (is_array($streams)) {
-                    foreach ($streams as $stream) {
-                        $this->getDoctrine()->remove($stream);
-                    }
-                }
-            }
-            if ($workspacestats != null) {
-                $this->getDoctrine()->remove($workspacestats);
-            }
-            if ($workspace != null) {
-                $this->getDoctrine()->remove($workspace);
-            }
-            if (is_array($groupUsers)) {
-                foreach ($groupUsers as $groupUser) {
-                    $this->getDoctrine()->remove($groupUser);
-                }
-            }
-            if ($groupPeriod != null) {
-                $this->getDoctrine()->remove($groupPeriod);
-            }
-            if (is_array($groupPricing)) {
-                foreach ($groupPricing as $groupP) {
-                    $this->getDoctrine()->remove($groupP);
-                }
-            }
-
-            if ($group != null) {
-                $this->getDoctrine()->remove($group);
-            }
-
-            $this->getDoctrine()->flush();
-        }
     }
 
 }

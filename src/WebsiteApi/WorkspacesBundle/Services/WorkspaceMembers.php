@@ -195,7 +195,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         return true;
     }
 
-    public function addMember($workspaceId, $userId, $asExterne, $levelId = null, $currentUserId = null)
+    public function addMember($workspaceId, $userId, $asExterne = false, $levelId = null, $currentUserId = null)
     {
         if ($currentUserId == null || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
@@ -218,12 +218,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 
             if ($member != null) {
-                error_log("already added");
                 return false; //Already added
             }
 
             if ($workspace->getUser() != null && $workspace->getUser()->getId() != $userId) {
-                error_log("private workspace");
                 return false; //Private workspace, only one user
             }
 
@@ -305,6 +303,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $member = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $user));
+
+            if (!$member) {
+                return false;
+            }
 
             $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
             $groupmember = $groupUserRepository->findOneBy(Array("group" => $workspace->getGroup(), "user" => $user));

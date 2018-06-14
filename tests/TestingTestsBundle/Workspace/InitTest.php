@@ -7,7 +7,6 @@ class InitTest extends WebTestCaseExtended
 {
     public function testIndex()
     {
-        $this->destroyTestData();
 
         $user = $this->newUser();
         $group = $this->newGroup($user->getId());
