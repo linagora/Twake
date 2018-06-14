@@ -25,6 +25,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     public function newSubscription($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost)
     {
         $this->subscriptionSystem->create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
+        var_dump("new sub");
 
         $this->billGroup($group,$cost);
     }
@@ -40,13 +41,16 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
 
     public function billGroup($group, $cost)
     {
-        if ($this->subscriptionSystem->getAutoWithdrawal()){
+        var_dump($this->subscriptionSystem->getAutoWithdrawal($group));
+        if ($this->subscriptionSystem->getAutoWithdrawal($group)){
+            var_dump("send bill : ".$cost);
             //TODO : record transaction in billingSystem
             //TODO : makeBillPDF
             //TODO : send mail
         }
         else { //Cas batard
             $this->subscriptionSystem->updateLockDate($group);
+            var_dump("lock and send unpaid mail");
             //TODO send unpaid mail
         }
     }
@@ -54,13 +58,18 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     public function checkOverusingByGroup($group)
     {
         if ($this->subscriptionSystem->groupIsOverUsingALot($group)) {
+            var_dump("over using a lot : ".$this->subscriptionSystem->getOverCost($group));
             $this->billGroup($group, $this->subscriptionSystem->getOverCost($group));
         } else if ($this->subscriptionSystem->groupIsOverUsingALittle($group)) {
+            var_dump("over using a little : ".$this->subscriptionSystem->getOverCost($group));
             //TODO : send mail
 
         } else if ($this->subscriptionSystem->groupWillBeOverUsing($group)) {
+            var_dump("will be over using".$this->subscriptionSystem->getOverCost($group));
             //TODO : send mail
         }
+        else
+            var_dump("not over using");
     }
 
     public function checkEndPeriod()
@@ -76,31 +85,49 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     public function checkEndPeriodByGroup($group)
     {
         $dateInterval = $this->subscriptionSystem->getEndPeriodTimeLeft($group);
-        if ($dateInterval->m == 2 && $dateInterval->y == 0 && $dateInterval->d == 0)
-            ;//TODO : send mail 2 month
+        if ($dateInterval->m == 2 && $dateInterval->y == 0 && $dateInterval->d == 0){
+            var_dump("mail 2 month");
+            //TODO : send mail 2 month
+        }
         else if ($dateInterval->m == 1 && $dateInterval->y == 0 && $dateInterval->d == 0)
-            ;//TODO : send mail 1 month
+        {
+            var_dump("mail 1 month");
+            //TODO : send mail 1 month
+        }
         else if ($dateInterval->m == 0 && $dateInterval->y == 0 && $dateInterval->d == 15)
-            ;//TODO : send mail 15 days
+        {
+            var_dump("mail 15 days");
+            //TODO : send mail 15 days
+        }
         else if ($dateInterval->m == 0 && $dateInterval->y == 0 && $dateInterval->d == 7)
-            ;//TODO : send mail 7 days
+        {
+            var_dump("mail 7 days");
+            //TODO : send mail 7 days
+        }
         else if ($dateInterval->m == 0 && $dateInterval->y == 0 && $dateInterval->d == 1)
-            ;//TODO : send mail 1 days
+        {
+            var_dump("mail 1 days");
+            //TODO : send mail 1 days
+        }
         else if ($dateInterval->m == 0 && $dateInterval->y == 0 && $dateInterval->d == 0) {
-            if ($this->subscriptionSystem->getAutoRenew()) {
+            if ($this->subscriptionSystem->getAutoRenew($group)) {
                 $sub = $this->subscriptionSystem->get($group);
                 $endDate = new \DateTime();
                 $dateInterval = $this->subscriptionSystem->getEndDate($group)->diff($this->subscriptionSystem->getStartDate($group));
                 $endDate->add($dateInterval);
                 $cost = $sub->getBalance()+$this->subscriptionSystem->getRemainingBalance($group);
+                var_dump("auto renew");
                 $this->renew($group, $sub->getPricingPlan(), $sub->getBalance(), new \DateTime(), $endDate,$sub->getAutoWithdrawal(),$sub->getAutoRenew(),$cost);
-            } else
-                ;//TODO : passer en free
+            } else {
+                var_dump("passer en free");
+                //TODO : passer en free
+            }
         }
     }
 
     public function renew($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost)
     {
+        var_dump("renew");
         $this->subscriptionSystem->archive($group);
         $this->subscriptionSystem->create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
 
