@@ -11,31 +11,39 @@ namespace WebsiteApi\PaymentsBundle\Model;
 
 interface SubscriptionInterface
 {
-
-
     // @getSubscription returns subscription by group_id
-    public function get($group_id);
+    public function get($group);
 
     // voir pour getter particulier
 
     // @createSubscirption create a subscription
-    public function create($group_id, $pricing_plan_id, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
+    public function create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
 
     // @archiveSubscription archive a subscription
-    public function archive($group_id);
+    public function archive($group);
 
-    public function addConsumed($value, $group_id);
+    //@addBalanceConsumption
+    public function addBalanceConsumption($value, $group);
 
-    public function getDiff($group_id);
+    //@getDiff
+    public function getRemainingBalnce($group);
 
-    public function updateLockDate($group_id);
+    //@updateLockDate
+    public function updateLockDate($group);
 
-    public function groupIsOverUsingALittle($group_id);
+    //@groupIsOverUsingALittle
+    public function groupIsOverUsingALittle($group);
 
-    public function groupWillBeOverUsing($group_id);
+    //@groupWillBeOverUsing
+    public function groupWillBeOverUsing($group);
 
-    public function groupIsOverUsingALot($group_id);
+    //@groupIsOverUsingALot
+    public function groupIsOverUsingALot($group);
 
-    public function getEndPeriodTimeLeft($group_id);
+    //@getEndPeriodTimeLeft
+    public function getEndPeriodTimeLeft($group);
+
+    //@getCorrectBalanceConsumed
+    public function getCorrectBalanceConsumed($group);
 
 }

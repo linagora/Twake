@@ -57,4 +57,31 @@ class GroupIdentity
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $lockDate;
+
+
+    public function __construct($group, $billingAddress, $address, $mail, $phoneNumber)
+    {
+        $this->lockDate = null;
+        $this->group = $group;
+        $this->billingAddress = $billingAddress;
+        $this->address = $address;
+        $this->mail = $mail;
+        $this->phoneNumber = $phoneNumber;
+    }
+
+    /**
+     * @param mixed $lockDate
+     */
+    public function setLockDate($lockDate)
+    {
+        $this->lockDate = $lockDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLockDate()
+    {
+        return $this->lockDate;
+    }
 }
