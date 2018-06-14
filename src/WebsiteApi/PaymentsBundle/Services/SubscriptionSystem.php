@@ -42,8 +42,6 @@ class SubscriptionSystem implements SubscriptionInterface
 
         $subscription = $subscriptionRepo->findOneBy(Array( "group" => $group, "archived" => false));
 
-        var_dump($subscription->getAsArray());
-
         return $subscription;
     }
 
@@ -51,9 +49,9 @@ class SubscriptionSystem implements SubscriptionInterface
         $sub = $this->get($group);
 
         if($sub)
-            $sub->getStartDate();
+            return $sub->getStartDate();
 
-        return false;
+        throw new SubscriptionNotFound();
     }
 
 
@@ -61,9 +59,9 @@ class SubscriptionSystem implements SubscriptionInterface
         $sub = $this->get($group);
 
         if($sub)
-            $sub->getEndDate();
+            return $sub->getEndDate();
 
-        return false;
+        throw new SubscriptionNotFound();
     }
 
     public function getAutoWithdrawal($group)
@@ -71,7 +69,7 @@ class SubscriptionSystem implements SubscriptionInterface
         $sub = $this->get($group);
 
         if($sub)
-            $sub->getAutoWithdrawal();
+            return $sub->getAutoWithdrawal();
 
         throw new SubscriptionNotFound();
     }
@@ -81,9 +79,9 @@ class SubscriptionSystem implements SubscriptionInterface
         $sub = $this->get($group);
 
         if($sub)
-            $sub->getAutoRenew();
+            return $sub->getAutoRenew();
 
-        return false;
+        throw new SubscriptionNotFound();
     }
 
     public function create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew)
@@ -207,6 +205,6 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $gp = $this->getGroupPeriod($group);
 
-        return $gp->getPeriodStartedAt()->diff($gp->getPeriodEndedAt());
+        return $gp->getPeriodStartedAt()->diff($gp->getPeriodExpectedToEndAt());
     }
 }
