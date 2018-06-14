@@ -125,7 +125,6 @@ class Groups implements GroupsInterface
 			$ws = $this->getWorkspaces($groupId);
 
 			foreach ($ws as $workspace){
-                $workspace = $workspace["workspace"];
 			    $this->wms->removeMember($workspace->getId(), $userId, $currentUserId);
 			}
 

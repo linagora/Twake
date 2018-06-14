@@ -64,7 +64,7 @@ class TwakeMailer
             "html" => $html
         );
         $result = $this->circle->post($masterServer . "/mail", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
-        error_log($result);
+
     }
 
     public function sendHtml($mail, $html)
