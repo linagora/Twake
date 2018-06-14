@@ -73,12 +73,14 @@ class SubscriptionSystem implements SubscriptionInterface
         $sub->addBalanceConsumed($value);
     }
 
-    public function getRemainingBalnce($group)
+    public function getRemainingBalance($group)
     {
         $sub = $this->get($group);
-        if($sub)
-            return $sub->getBalance()-$sub->getBalanceConsumed();
-        return false;
+
+        if(!$sub)
+            return false;
+
+        return $sub->getBalance() - $this->getCorrectBalanceConsumed($group);
     }
 
     public function updateLockDate($group){
@@ -110,30 +112,45 @@ class SubscriptionSystem implements SubscriptionInterface
 
     public function groupIsOverUsingALittle($group)
     {
-        $sub = $this->get($group);
+        $delta = $this->getRemainingBalance($group);
 
-        if(!$sub)
+        if(!$delta)
             throw new GroupNotFoundExecption();
 
-        $delta = $sub->getBalance() - $this->getCorrectBalanceConsumed($group);
+        if($delta>=0)
+            return false;
 
-        //if($delta>0)
+        $delta *= -1;
 
-        //return  < 1000;
+        return $delta < 1000;
     }
 
     public function groupWillBeOverUsing($group)
     {
-        // TODO: Implement groupWillBeOverUsing() method.
+        $gp = $this->getGroupPeriod($group);
+
+        return $gp->getEstimatedCost() > $gp->getExpectedCost();
     }
 
     public function groupIsOverUsingALot($group)
     {
-        // TODO: Implement groupIsOverUsingALot() method.
+        $delta = $this->getRemainingBalance($group);
+
+        if(!$delta)
+            throw new GroupNotFoundExecption();
+
+        if($delta>=0)
+            return false;
+
+        $delta *= -1;
+
+        return $delta >=1000;
     }
 
     public function getEndPeriodTimeLeft($group)
     {
-        // TODO: Implement getEndPeriodTimeLeft() method.
+        $gp = $this->getGroupPeriod($group);
+
+        return $gp->getPeriodStartedAt()->diff($gp->getPeriodEndedAt());
     }
 }
