@@ -66,4 +66,124 @@ class Receipt
      * @ORM\Column(type="text", nullable=true)
      */
     private $discount;
+
+    /**
+     * Receipt constructor.
+     * @param $id
+     * @param $issueDate
+     * @param $startDateOfService
+     * @param $billId
+     * @param $groupIdentity
+     * @param $pricingPlan
+     * @param $groupPricingInstance
+     * @param $groupPeriods
+     * @param $discount
+     */
+    public function __construct($issueDate, $startDateOfService, $billId, $groupIdentity, $pricingPlan, $groupPricingInstance, $groupPeriods, $discount = null)
+    {
+        $this->issueDate = $issueDate;
+        $this->startDateOfService = $startDateOfService;
+        $this->groupIdentity = $groupIdentity;
+        $this->pricingPlan = $pricingPlan;
+        $this->groupPricingInstance = $groupPricingInstance;
+        $this->groupPeriods = $groupPeriods;
+        $this->discount = $discount;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIssueDate()
+    {
+        return $this->issueDate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getStartDateOfService()
+    {
+        return $this->startDateOfService;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBillId()
+    {
+        return $this->billId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGroupIdentity()
+    {
+        return $this->groupIdentity;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPricingPlan()
+    {
+        return $this->pricingPlan;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGroupPricingInstance()
+    {
+        return $this->groupPricingInstance;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGroupPeriods()
+    {
+        return $this->groupPeriods;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDiscount()
+    {
+        return $this->discount;
+    }
+
+    /**
+     * @param mixed $billId
+     */
+    public function setBillId($billId)
+    {
+        $this->billId = $billId;
+    }
+
+
+    public function getAsArray() {
+
+        return Array(
+            "id" => $this->getId(),
+            "issue_date" => $this->getIssueDate(),
+            "start_date_of_service" => $this->getStartDateOfService(),
+            "bill_id" => $this->getBillId(),
+            "group_identity" => $this->getGroupIdentity(),
+            "pricing_plan" => $this->getPricingPlan(),
+            "group_pricing_instance" => $this->getGroupPricingInstance(),
+            "group_periods" => $this->getGroupPeriods(),
+            "discount" => $this->getDiscount()
+        );
+    }
+
 }

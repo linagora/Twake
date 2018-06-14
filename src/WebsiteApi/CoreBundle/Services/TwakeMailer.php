@@ -35,7 +35,7 @@ class TwakeMailer
 
     }
 
-	public function send($mail, $template, $data = Array()){
+	public function send($mail, $template, $data = Array(), $templateDirectory = "TwakeCoreBundle:Mail"){
 
 
 		$data["mail"] = $mail;
@@ -43,7 +43,7 @@ class TwakeMailer
 		$data["twakeurl"] = $this->twakeurl;
 
 		$html = $this->templating->render(
-			'TwakeCoreBundle:Mail:'.$template.'.html.twig',
+			$templateDirectory.":".$template.'.html.twig',
 			$data
 		);
 

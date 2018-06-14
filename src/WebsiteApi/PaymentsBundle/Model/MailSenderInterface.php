@@ -18,17 +18,20 @@ interface MailSenderInterface
     public function sendEndPeriodsMail($group, $timeleft);
 
     //@sendIsOverUsingALittle send a mail to the client to notify him of his overusing (less than 1000)
-    public function sendIsOverUsingALittle($group);
+    public function sendIsOverUsingALittle($group, $overuse);
 
     //@sendWillBeOverUsing send a mail to the client to notify him of  his soon overusing
-    public function sendWillBeOverUsing($group);
+    public function sendWillBeOverUsing($group, $overuse);
 
     //@sendIsOverUsingALot send a mail to the client to notify him of his overusing (over than 1000)
-    public function sendIsOverUsingALot($group);
+    public function sendIsOverUsingALot($group, $overuse);
 
     //@sendGiveUsYourMoney send a mail to the client to notify him of the soon debiting
-    public function sendGiveUsYourMoney($group, $howMuch);
+    public function sendDirectDebitNotification($group, $howMuch);
 
     //@setBillingUsersList set the list of users which will be notified of financial events
-    public function setBillingUsersList($usersList);
+    public function setBillingUsersList($usersList, $group);
+
+    //@sendUnpaidSubscription send a mail to the client to notify his unpaid subscription
+    public function sendUnpaidSubscription($group);
 }
