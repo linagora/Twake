@@ -33,4 +33,31 @@ class BillingUserList
      * @ORM\Id
      */
     private $user;
+
+    /**
+     * BillingUserList constructor.
+     * @param $group
+     * @param $user
+     */
+    public function __construct($group, $user)
+    {
+        $this->group = $group;
+        $this->user = $user;
+    }
+
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
 }

@@ -14,6 +14,4 @@ interface BillingInterface
     //@recordTransaction record a transaction in bdd
     public function recordTransaction($group, $pricingPlan, $period);
 
-    //@makeBill return bill content in a array form
-    public function getBill($group, $pricingPlan, $period);
 }
