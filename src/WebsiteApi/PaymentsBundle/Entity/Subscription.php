@@ -8,6 +8,11 @@
 
 namespace WebsiteApi\PaymentsBundle\Entity;
 
+use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\Mapping as ORM;
+use WebsiteApi\WorkspacesBundle\Entity\Group;
+use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;
+
 /**
  * Class Subscription
  * @package WebsiteApi\PaymentsBundle\Entity
@@ -27,46 +32,47 @@ class Subscription
     private $id;
 
     /**
-     * @ORM\Column(name="group_id", type="integer")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
      */
-    private $group_id;
+    private $group;
+
 
     /**
-     * @ORM\Column(name="pricing_plan_id", type="integer")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\PricingPlan")
      */
-    private $pricing_plan_id;
+    private $pricingPlan;
 
     /**
-     * @ORM\Column(name="balance", type = "decimal")
+     * @ORM\Column(type = "integer")
      */
     private $balance;
 
     /**
-     * @ORM\Column(name="balance_consumed, type="decimal")
+     * @ORM\Column(type="integer")
      */
-    private $balance_consumed = 0;
+    private $balanceConsumed = 0;
 
     /**
-     * @ORM\Column(name="start_date", type="datetime")
+     * @ORM\Column(type="datetime")
      */
-    private $start_date;
+    private $startDate;
 
     /**
-     * @ORM\Column(name="end_date", type="datetime")
+     * @ORM\Column(type="datetime")
      */
-    private $end_date;
+    private $endDate;
 
     /**
-     * @ORM/Column(name="auto_withdrawal", type = "boolean")
+     * @ORM\Column(type = "boolean")
      */
-    private $auto_withdrawal;
+    private $autoWithdrawal;
     /**
-     * @ORM/Column(name="auto_renew", type = "boolean")
+     * @ORM\Column(type = "boolean")
      */
-    private $auto_renew;
+    private $autoRenew;
 
     /**
-     * @ORM/Column(name="archived", type = "boolean")
+     * @ORM\Column(type = "boolean")
      */
     private $archived = false;
 
@@ -80,15 +86,15 @@ class Subscription
      * @param $auto_withdrawal
      * @param $auto_renew
      */
-    public function __construct($group_id, $pricing_plan_id, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew)
+    public function __construct($group, $pricingPlan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew)
     {
-        $this->group_id = $group_id;
-        $this->pricing_plan_id = $pricing_plan_id;
+        $this->group = $group;
+        $this->pricing_plan_id = $pricingPlan;
         $this->balance = $balance;
-        $this->start_date = $start_date;
-        $this->end_date = $end_date;
-        $this->auto_withdrawal = $auto_withdrawal;
-        $this->auto_renew = $auto_renew;
+        $this->startDate = $start_date;
+        $this->endDate = $end_date;
+        $this->autoWithdrawal = $auto_withdrawal;
+        $this->autoRenew = $auto_renew;
     }
 
 
@@ -111,33 +117,33 @@ class Subscription
     /**
      * @return mixed
      */
-    public function getGroupId()
+    public function getGroup()
     {
-        return $this->group_id;
+        return $this->group;
     }
 
     /**
      * @param mixed $group_id
      */
-    public function setGroupId($group_id)
+    public function setGroup($group)
     {
-        $this->group_id = $group_id;
+        $this->group_id = $group;
     }
 
     /**
      * @return mixed
      */
-    public function getPricingPlanId()
+    public function getPricingPlan()
     {
-        return $this->pricing_plan_id;
+        return $this->pricingPlan;
     }
 
     /**
      * @param mixed $pricing_plan_id
      */
-    public function setPricingPlanId($pricing_plan_id)
+    public function setPricingPlan($pricing_plan)
     {
-        $this->pricing_plan_id = $pricing_plan_id;
+        $this->pricingPlan = $pricing_plan;
     }
 
     /**
@@ -161,7 +167,7 @@ class Subscription
      */
     public function getBalanceConsumed()
     {
-        return $this->balance_consumed;
+        return $this->balanceConsumed;
     }
 
     /**
@@ -169,7 +175,12 @@ class Subscription
      */
     public function setBalanceConsumed($balance_consumed)
     {
-        $this->balance_consumed = $balance_consumed;
+        $this->balanceConsumed = $balance_consumed;
+    }
+
+    public function addBalanceConsumed($balance_consumed)
+    {
+        $this->balanceConsumed += $balance_consumed;
     }
 
     /**
@@ -177,15 +188,15 @@ class Subscription
      */
     public function getStartDate()
     {
-        return $this->start_date;
+        return $this->startDate;
     }
 
     /**
-     * @param mixed $start_date
+     * @param mixed $startDate
      */
-    public function setStartDate($start_date)
+    public function setStartDate($startDate)
     {
-        $this->start_date = $start_date;
+        $this->startDate = $startDate;
     }
 
     /**
@@ -193,15 +204,15 @@ class Subscription
      */
     public function getEndDate()
     {
-        return $this->end_date;
+        return $this->endDate;
     }
 
     /**
-     * @param mixed $end_date
+     * @param mixed $endDate
      */
-    public function setEndDate($end_date)
+    public function setEndDate($endDate)
     {
-        $this->end_date = $end_date;
+        $this->endDate = $endDate;
     }
 
     /**
@@ -209,15 +220,15 @@ class Subscription
      */
     public function getAutoWithdrawal()
     {
-        return $this->auto_withdrawal;
+        return $this->autoWithdrawal;
     }
 
     /**
-     * @param mixed $auto_withdrawal
+     * @param mixed $autoWithdrawal
      */
-    public function setAutoWithdrawal($auto_withdrawal)
+    public function setAutoWithdrawal($autoWithdrawal)
     {
-        $this->auto_withdrawal = $auto_withdrawal;
+        $this->autoWithdrawal = $autoWithdrawal;
     }
 
     /**
@@ -225,15 +236,15 @@ class Subscription
      */
     public function getAutoRenew()
     {
-        return $this->auto_renew;
+        return $this->autoRenew;
     }
 
     /**
-     * @param mixed $auto_renew
+     * @param mixed $autoRenew
      */
-    public function setAutoRenew($auto_renew)
+    public function setAutoRenew($autoRenew)
     {
-        $this->auto_renew = $auto_renew;
+        $this->autoRenew = $autoRenew;
     }
 
 
@@ -254,12 +265,12 @@ class Subscription
     }
 
 
-    public function getAsSimpleArray() {
+    public function getAsArray() {
 
         return Array(
             "id" => $this->getId(),
-            "groupId" => $this->getGroupId(),
-            "pricingPlan" => $this->getPricingPlanId(),
+            "group" => $this->getGroup()->getAsArray(),
+            "pricingPlan" => $this->getPricingPlan()->getAsArray(),
             "startDate" => $this->getStartDate()->getTimestamp(),
             "endDate" => $this->getEndDate()->getTimestamp(),
             "balance" => $this->getBalance(),
