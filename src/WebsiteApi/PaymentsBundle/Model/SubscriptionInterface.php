@@ -46,4 +46,7 @@ interface SubscriptionInterface
     //@getCorrectBalanceConsumed
     public function getCorrectBalanceConsumed($group);
 
+    //@getOverCost
+    public function getOverCost($group);
+
 }

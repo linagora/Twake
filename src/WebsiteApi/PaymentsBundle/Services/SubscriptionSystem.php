@@ -29,6 +29,25 @@ class SubscriptionSystem implements SubscriptionInterface
         return $subscription;
     }
 
+    public function getStartDate($group){
+        $sub = $this->get($group);
+
+        if($sub)
+            $sub->getStartDate();
+
+        return false;
+    }
+
+
+    public function getEndDate($group){
+        $sub = $this->get($group);
+
+        if($sub)
+            $sub->getEndDate();
+
+        return false;
+    }
+
     public function getAutoWithdrawal($group)
     {
         $sub = $this->get($group);
@@ -123,6 +142,20 @@ class SubscriptionSystem implements SubscriptionInterface
         $delta *= -1;
 
         return $delta < 1000;
+    }
+
+    public function getOverCost($group){
+        $delta = $this->getRemainingBalance($group);
+
+        if(!$delta)
+            throw new GroupNotFoundExecption();
+
+        if($delta>=0)
+            return false;
+
+        $delta *= -1;
+
+        return $delta;
     }
 
     public function groupWillBeOverUsing($group)
