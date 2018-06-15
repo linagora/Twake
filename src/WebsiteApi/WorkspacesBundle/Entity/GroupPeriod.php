@@ -88,6 +88,20 @@ class GroupPeriod
         $this->expectedCost= 0;
 	}
 
+	public function getAsArray(){
+	    return Array(
+	        "groupId" => $this->group->getId(),
+            "connexions" => $this->connexions,
+            "appsUsage" => $this->appsUsage,
+            "periodStartedAt" => $this->periodStartedAt ,
+            "periodEndedAt" => $this->periodEndedAt,
+            "periodExpectedToEndAt" => $this->periodExpectedToEndAt,
+            "groupPricingInstanceId" => $this->groupPricingInstance==null ?  null : $this->groupPricingInstance->getId(),
+            "currentCost" => $this->currentCost = 0,
+            "estimatedCost" => $this->estimatedCost = 0,
+            "expectedCost" => $this->expectedCost= 0
+        );
+    }
     /**
      * @return mixed
      */

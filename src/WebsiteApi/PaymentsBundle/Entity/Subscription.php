@@ -51,6 +51,10 @@ class Subscription
      * @ORM\Column(type="integer")
      */
     private $balanceConsumed = 0;
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $subscribedBalance = 0;
 
     /**
      * @ORM\Column(type="datetime")
@@ -91,6 +95,7 @@ class Subscription
         $this->group = $group;
         $this->pricingPlan = $pricingPlan;
         $this->balance = $balance;
+        $this->subscribedBalance = $balance;
         $this->startDate = $start_date;
         $this->endDate = $end_date;
         $this->autoWithdrawal = $auto_withdrawal;
@@ -181,6 +186,12 @@ class Subscription
     public function addBalanceConsumed($balance_consumed)
     {
         $this->balanceConsumed += $balance_consumed;
+    }
+
+
+    public function addBalance($balance)
+    {
+        $this->balance += $balance;
     }
 
     /**
@@ -278,5 +289,13 @@ class Subscription
             "autoRenew" => $this->getAutoRenew(),
             "autoWithdrawable" => $this->getAutoWithdrawal()
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getSubscribedBalance()
+    {
+        return $this->subscribedBalance;
     }
 }

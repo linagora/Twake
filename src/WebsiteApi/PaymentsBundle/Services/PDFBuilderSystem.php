@@ -16,7 +16,7 @@ class PDFBuilderSystem implements PDFBuilderInterface
 {
     private $templating;
 
-    public function __construct($templating)
+    public function __construct($doctrine, $templating)
     {
         $this->templating = $templating;
     }
