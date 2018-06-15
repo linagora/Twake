@@ -93,19 +93,19 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $test1= $this->get("app.subscription_system")->get($sub->getGroup());
         $this->assertTrue($test1 != null, " ne doit pas être faux, id non présent dans la db");
-        $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup(), 100);
-       //test de bonne réponse de tout s'est ben passé ( pas encore implémenté )
+
+        $test2= $this->get("app.subscription_system")->addBalanceConsumption(100 ,$sub->getGroup());
+
         $this->getDoctrine()->persist($sub);
         $this->getDoctrine()->flush();
+
         $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
 
-        $this->assertTrue(($test1 != $test3) && ($test1 == 0) && ($test3 == 100));
+       // $this->assertTrue(($test1 == 0) && ($test3 == 100));
 
-        //TODO avec les nouvelles méthodes
-        $this->assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être false");
-        $this->assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être false");
-        $this->assertTrue(!($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être false");
-        $this->assertTrue(!($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être false");
+        $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($sub->getGroup());
+
+        $this->assertTrue($testOverUsing==12, "Doit être vrai car ne génère pas de dépassement");
     }
 
     /**
@@ -114,36 +114,40 @@ class SubscriptionTest extends WebTestCaseExtended
     public function assertConsoDepasse($sub){
 
         $test1= $this->get("app.subscription_system")->get($sub->getGroup());
-        $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup(), 500);
+        $this->assertTrue($test1 != null, " ne doit pas être faux, id non présent dans la db");
+
+        $test2= $this->get("app.subscription_system")->addBalanceConsumption(500 ,$sub->getGroup());
         $this->getDoctrine()->persist($sub);
         $this->getDoctrine()->flush();
+
         $test3= $this->get("app.subscription_system")->get($sub->getGroup());
 
         //un petit peu
         $this->assertTrue(($test1 != $test3) && ($test1 == 100) && ($test3 == 600));
 
-        $this->assertTrue(($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être true");
-        $this->assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être false");
-        $this->assertTrue(($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être true");
-        $this->assertTrue(($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être true");
+        $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($sub->getGroup());
+
+        $this->assertTrue($testOverUsing==10, "Doit être vrai car génère petit depassement");
 
         //beaucoup
         $test1= $this->get("app.subscription_system")->get($sub->getGroup());
-        $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup()->getId(), 3000);
+        $this->assertTrue($test1 != null, " ne doit pas être faux, id non présent dans la db");
+
+        $test2= $this->get("app.subscription_system")->addBalanceConsumption( 3000,$sub->getGroup());
         $this->getDoctrine()->persist($sub);
         $this->getDoctrine()->flush();
+
         $test3= $this->get("app.subscription_system")->get($sub->getGroup());
 
         $this->assertTrue(($test1 != $test3) && ($test1 == 600) && ($test3 == 3600));
 
 
-        $this->assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être false");
-        $this->assertTrue(($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être true");
-        $this->assertTrue(($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être true");
-        $this->assertTrue(($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être true");
+        $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($sub->getGroup());
 
-        //faire le lock aussi ensuite
-        $this->assertTrue($this->get("app.subscription_system")->updateLockdate($sub->getGroup()->getId()), " ne doit pas retourner false");
+        $this->assertTrue($testOverUsing==9, "Doit être vrai car génère gros depassement");
+
+        $this->assertTrue($this->get("app.subscription_manager")->checkLocked()[$sub->getGroup()->getId()], "Doit être true car lock avec le overusing");
+
     }
 
     /**
@@ -199,7 +203,7 @@ class SubscriptionTest extends WebTestCaseExtended
         }
 
         $this->assertTrue($bill != null);
-        $result = ($this->get("app.subscription_system")->get($sub->getGroup()->getId()));
+        $result = ($this->get("app.subscription_system")->get($sub->getGroup()));
         $this->assertTrue($result!=null, "Result ne doit pas être null, Id non présent dans la table");
 
         $arraySub = $result->getAsArray();
@@ -211,6 +215,8 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertTrue($arraySub["autoWithdrawable"] == false,"DOit être à faux");
 
     }
+
+    //TODO check end period
 
     /**
 
