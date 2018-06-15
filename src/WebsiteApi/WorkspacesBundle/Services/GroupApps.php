@@ -45,6 +45,38 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
+    public function getAppsForPDF($groupId, $currentUserId = null)
+    {
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $group = $groupRepository->find($groupId);
+
+        if ($group == null) {
+            return false;
+        }
+
+        if ($currentUserId == null
+            || $this->gms->hasPrivileges(
+                $this->gms->getLevel($groupId, $currentUserId),
+                "MANAGE_APPS"
+            )
+        ) {
+            //Group apps
+            $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+            $groupapps = $groupappsRepository->findBy(Array("group" => $group));
+
+            $apps = array();
+            foreach ($groupapps as $ga) {
+                $gaFormat["id"] = $ga->getId();
+                $gaFormat["name"] = $ga->getName();
+                $apps[] = $gaFormat;
+            }
+
+            return $apps;
+        }
+
+        return false;
+    }
+
     public function setWorkspaceDefault($groupId, $appId, $boolean, $currentUserId = null)
     {
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");

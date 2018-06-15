@@ -4,4 +4,4 @@ citi_go_payments_send_mail:
 
 citi_go_payments_test:
     path:     /test
-    defaults: { _controller: TwakePaymentsBundle:Subscription:checkEndPeriod }
+    defaults: { _controller: TwakePaymentsBundle:Subscription:newSubscription }

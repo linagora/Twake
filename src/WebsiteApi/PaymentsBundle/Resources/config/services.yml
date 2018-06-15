@@ -17,4 +17,4 @@ services:
 
     app.subscription_manager:
                 class: WebsiteApi\PaymentsBundle\Services\SubscriptionManagerSystem
-                arguments: ["@doctrine.orm.entity_manager", "@app.subscription_system", "@app.mail_sender", "@app.billing","@app.pdf_builder_system", "@app.groups"]
+                arguments: ["@doctrine.orm.entity_manager", "@app.subscription_system", "@app.mail_sender", "@app.billing","@app.pdf_builder_system", "@app.groups", "@app.group_apps"]

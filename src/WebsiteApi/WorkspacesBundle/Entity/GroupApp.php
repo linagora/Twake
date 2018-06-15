@@ -53,6 +53,17 @@ class GroupApp
 		$this->workspaceDefault = false;
 	}
 
+
+    public function getAsArray(){
+	    return Array(
+	        "id" => $this->getId(),
+            "group" => $this->getGroup(),
+            "app" => $this->getApp(),
+            "date_added" => $this->getDateAdded(),
+            "workspace_default" => $this->getWorkspaceDefault()
+        );
+    }
+
 	/**
 	 * @return int
 	 */
@@ -100,6 +111,5 @@ class GroupApp
     {
         $this->workspaceDefault = $workspaceDefault;
     }
-
 
 }
