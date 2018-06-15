@@ -165,20 +165,24 @@ class Notifications implements NotificationsInterface
     {
 
         $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
-        if(!$code){
-            $notif = $nRepo->findBy(Array(
-                "workspace"=>$workspace,
-                "application"=>$application,
-                "user"=>$user
-            ));
-        }else{
-            $notif = $nRepo->findBy(Array(
-                "workspace"=>$workspace,
-                "application"=>$application,
-                "user"=>$user,
-                "code"=>$code
-            ));
+
+        $search = Array(
+            "user" => $user
+        );
+
+        if ($code) {
+            $search["code"] = $code;
         }
+
+        if ($application) {
+            $search["application"] = $application;
+        }
+
+        if ($workspace) {
+            $search["workspace"] = $workspace;
+        }
+
+        $notif = $nRepo->findBy($search);
 
         $count = count($notif);
         for($i = 0; $i < $count; $i++) {
