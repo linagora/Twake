@@ -113,6 +113,12 @@ class SubscriptionSystem implements SubscriptionInterface
         $sub = $this->get($group);
         $sub->addBalanceConsumed($value);
     }
+    public function addBalance($value, $group)
+    {
+        $sub = $this->get($group);
+        $sub->addBalance($value);
+    }
+
 
     public function getRemainingBalance($group)
     {

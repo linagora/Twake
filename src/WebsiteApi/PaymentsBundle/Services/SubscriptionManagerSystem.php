@@ -108,7 +108,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         }
         else { //Cas batard
             $this->subscriptionSystem->updateLockDate($group);
-            var_dump("lock and send unpaid mail");
+            //var_dump("lock and send unpaid mail");
             $this->mailSender->sendUnpaidSubscription($group);
             return 2;
         }
@@ -119,7 +119,10 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         if ($this->subscriptionSystem->groupIsOverUsingALot($group)) {
             //var_dump("over using a lot : ".$this->subscriptionSystem->getOverCost($group));
             $this->mailSender->sendIsOverUsingALot($group,$this->subscriptionSystem->getOverCost($group));
-            return 7+$this->billGroup($group, $this->subscriptionSystem->getOverCost($group), $this->subscriptionSystem->get($group));
+            $res = $this->billGroup($group, $this->subscriptionSystem->getOverCost($group), $this->subscriptionSystem->get($group));
+            if($res==1)
+                $this->subscriptionSystem->addBalance($this->subscriptionSystem->getOverCost($group),$group);
+            return 7+$res;
         } else if ($this->subscriptionSystem->groupIsOverUsingALittle($group)) {
             //var_dump("over using a little : ".$this->subscriptionSystem->getOverCost($group));
             $this->mailSender->sendIsOverUsingALittle($group,$this->subscriptionSystem->getOverCost($group));
@@ -186,9 +189,9 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
                 $endDate = new \DateTime();
                 $dateInterval = $this->subscriptionSystem->getEndDate($group)->diff($this->subscriptionSystem->getStartDate($group));
                 $endDate->add($dateInterval);
-                $cost = $sub->getBalance()+$this->subscriptionSystem->getRemainingBalance($group);
+                $cost = $sub->getSubscribedBalance()+$this->subscriptionSystem->getRemainingBalance($group);
                 //var_dump("auto renew");
-                return 13+$this->renew($group, $sub->getPricingPlan(), $sub->getBalance(), new \DateTime(), $endDate,$sub->getAutoWithdrawal(),$sub->getAutoRenew(),$cost);
+                return 13+$this->renew($group, $sub->getPricingPlan(), $sub->getSubscribedBalance(), new \DateTime(), $endDate,$sub->getAutoWithdrawal(),$sub->getAutoRenew(),$cost);
             } else {
                 //var_dump("passer en free");
                 $this->putInFree($group);
