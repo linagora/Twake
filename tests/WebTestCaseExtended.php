@@ -26,12 +26,12 @@ class WebTestCaseExtended extends WebTestCase
     }
 
 
-    public function newUser($name){
-        $userToken = $this->get("app.user")->subscribeMail($name."@PHPUNIT.fr");
-        $user = $this->get("app.user")->subscribe($userToken,null, $name,$name,true);
+    public function newUser(){
+        $userToken = $this->get("app.user")->subscribeMail("phpunit@PHPUNIT.fr");
+        $user = $this->get("app.user")->subscribe($userToken,null, "phpunit","phpunit",true);
 
         if (!$user) {
-            return $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => $name));
+            return $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "phpunit"));
         }
 
         $this->getDoctrine()->persist($user);
@@ -64,12 +64,14 @@ class WebTestCaseExtended extends WebTestCase
 
     public function newWorkspace($groupId){
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findByName("phpunit");
+       // $user = $userRepository->findByName("phpunit");
+        $user = $userRepository->findOneBy(Array("username" => "phpunit"));
         if (count($user) == 0) {
             $user = $this->newUser();
         }
-        $user = $user[0];
-        $userId = $user->getId();
+        //$user = $user[0];
+
+        $userId = $user->getId(); //TODO
         $work = $this->get("app.workspaces")->create("phpunit", $groupId, $userId); // Get a service and run function
         $this->getDoctrine()->persist($work);
         $this->getDoctrine()->flush();

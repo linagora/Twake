@@ -61,7 +61,7 @@ class Group
     /**
      * @ORM\Column(type="boolean")
      */
-    private $isBlocked;
+    private $isBlocked = false;
 
 
     public function __construct($name) {

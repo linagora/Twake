@@ -21,7 +21,7 @@ class SubscriptionTest extends WebTestCaseExtended
 
         //init de datas qui peuvent être utiles
 
-        $user = $this->newUser("TestInit");
+        $user = $this->newUserByName("phpunit");
         $this->getDoctrine()->persist($user);
         $this->getDoctrine()->flush();
 
@@ -45,15 +45,7 @@ class SubscriptionTest extends WebTestCaseExtended
             $this->getDoctrine()->flush();
 
         }catch(\Exception $e){
-            \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : ".$e);
-        }
-
-        for($i = 1; $i<10; $i++){
-
-            $user = $this->newUserByName("TestUser ".$i);
-            $this->getDoctrine()->persist($user);
-            $this->get("app.workspace_members")->addMember($work->getId(),$user->getId());
-            $this->getDoctrine()->flush();
+            \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : ".$e->getTraceAsString());
         }
 
 
@@ -62,8 +54,8 @@ class SubscriptionTest extends WebTestCaseExtended
         $log .=$this->assertInit($subscription, $pricing_plan);
         $log .= $this->assertConsoUsuelle($subscription);
         $log .= $this->assertConsoDepasse($subscription);
-        $log .= $this->assertRenewUp();
-        $log .= $this->assertRenewDown();
+        $log .= $this->assertRenewUp($subscription);
+        $log .= $this->assertRenewDown($subscription);
         //$log .= $this->casBatard();
 
         \Monolog\Handler\error_log($log);
@@ -76,22 +68,18 @@ class SubscriptionTest extends WebTestCaseExtended
      */
     public function assertInit($sub, $pricing_plan){
         $result = ($this->get("app.subscription_system")->get($sub->getGroup()->getId()));
-        assertTrue($result!=null, "Result ne doit pas être null, Id non présent dans la table");
+        $this->assertTrue($result!=null, "Result ne doit pas être null, Id non présent dans la table");
 
         $arraySub = $result->getAsArray();
 
-        assertTrue($pricing_plan == $arraySub["pricingPlan"], " Pricing plan doivent être les mêmes");
-        assertTrue($sub->getId() == $arraySub["id"], "Les id doivent être les mêmes ");
-        assertTrue($sub->getGroup()== $arraySub["group"], " Les groupees doivent être les memes" );
-        assertTrue($sub->getStartDate() == $arraySub["startDate"], "Les dates de départ doivent être les mêms ");
-        assertTrue($sub->getEndDate() == $arraySub["endDate"], "Les dates de fin doivent être les memes ");
-        assertTrue($sub->getBalance() == $arraySub["balance"], "Les balances doivent être les memes ");
-        assertTrue($sub->getBAlanceConsumed() == $arraySub["balanceConsumed"], "Les balances de consommation doivent être les memes");
-        assertTrue($arraySub["autoRenew"] == false, " Doit être à faux");
-        assertTrue($arraySub["autoWithdrawable"] == false,"DOit être à faux");
-        assertTrue(($arraySub["startDate"] - $arraySub["endDate"]) < 0 , "Les dates doivent être dans le bon ordre");
+        $this->assertTrue($pricing_plan->getId() == $arraySub["pricingPlan"]["id"], " Pricing plan doivent être les mêmes");
+        $this->assertTrue($sub->getId() == $arraySub["id"], "Les id doivent être les mêmes ");
+        $this->assertTrue($sub->getGroup()->getId() == $arraySub["group"]["id"], " Les groupees doivent être les memes" );
+        $this->assertTrue($sub->getBalance() == $arraySub["balance"], "Les balances doivent être les memes ");
+        $this->assertTrue($sub->getBalanceConsumed() == $arraySub["balanceConsumed"], "Les balances de consommation doivent être les memes");
+        $this->assertTrue($arraySub["autoRenew"] == false, " Doit être à faux");
+        $this->assertTrue($arraySub["autoWithdrawable"] == false,"DOit être à faux");
 
-        assertTrue(($arraySub["pricingPlan"]["monthPrice"] == 200) && ($arraySub["pricingPlan"]["yearPrice"] == 2400), "Les données doivent être bonnes" );
 
         //faire un rapport de log
 
@@ -104,20 +92,20 @@ class SubscriptionTest extends WebTestCaseExtended
     public function assertConsoUsuelle($sub){
 
         $test1= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
+        self::assertTrue($test1 != null, " ne doit pas être faux, id non présent dans la db");
         $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup()->getId(), 100);
        //test de bonne réponse de tout s'est ben passé ( pas encore implémenté )
         $this->getDoctrine()->persist($sub);
         $this->getDoctrine()->flush();
         $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
 
-        assertTrue(($test1 != $test3) && ($test1 == 0) && ($test3 == 100));
+        $this->assertTrue(($test1 != $test3) && ($test1 == 0) && ($test3 == 100));
 
-        //faire les check de dépassement de conso ?
-
-        assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être false");
-        assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être false");
-        assertTrue(!($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être false");
-        assertTrue(!($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être false");
+        //TODO avec les nouvelles méthodes
+        $this->assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être false");
+        $this->assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être false");
+        $this->assertTrue(!($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être false");
+        $this->assertTrue(!($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être false");
     }
 
     /**
@@ -132,12 +120,12 @@ class SubscriptionTest extends WebTestCaseExtended
         $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
 
         //un petit peu
-        assertTrue(($test1 != $test3) && ($test1 == 100) && ($test3 == 600));
+        $this->assertTrue(($test1 != $test3) && ($test1 == 100) && ($test3 == 600));
 
-        assertTrue(($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être true");
-        assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être false");
-        assertTrue(($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être true");
-        assertTrue(($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être true");
+        $this->assertTrue(($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être true");
+        $this->assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être false");
+        $this->assertTrue(($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être true");
+        $this->assertTrue(($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être true");
 
         //beaucoup
         $test1= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
@@ -146,31 +134,82 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->getDoctrine()->flush();
         $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
 
-        assertTrue(($test1 != $test3) && ($test1 == 600) && ($test3 == 3600));
+        $this->assertTrue(($test1 != $test3) && ($test1 == 600) && ($test3 == 3600));
 
 
-        assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être false");
-        assertTrue(($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être true");
-        assertTrue(($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être true");
-        assertTrue(($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être true");
+        $this->assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être false");
+        $this->assertTrue(($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être true");
+        $this->assertTrue(($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être true");
+        $this->assertTrue(($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être true");
 
         //faire le lock aussi ensuite
-        assertTrue($this->get("app.subscription_system")->updateLockdate($sub->getGroup()->getId()), " ne doit pas retourner false");
-        assertTrue($this->get("app.subscription_manager")->checkLocked());
+        $this->assertTrue($this->get("app.subscription_system")->updateLockdate($sub->getGroup()->getId()), " ne doit pas retourner false");
     }
 
     /**
      * renouvellement d'un abonnement ( archivage de l'ancien et nouveau abo )
      */
-    public function assertRenewUp(){
-        //TODO
+    public function assertRenewUp($sub){
+
+        $pricing_plan_cher = new \WebsiteApi\WorkspacesBundle\Entity\PricingPlan("testCher");
+        $pricing_plan_cher->setMonthPrice(1000);
+        $pricing_plan_cher->setYearPrice(12000);
+        $this->getDoctrine()->persist($pricing_plan_cher);
+        $this->getDoctrine()->flush();
+
+        try{
+            $cost = $sub->getBalance()+$this->get("app.subscription_system")->getRemainingBalance($sub->getGroup());
+           $bill =  $this->get("app.subscription_manager")->renew($sub->getGroup(),$pricing_plan_cher, $pricing_plan_cher->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false,$cost);
+
+        }catch(\Exception $e){
+            \Monolog\Handler\error_log("Pb avec renew de subscription, error log : ".$e->getTraceAsString());
+        }
+
+        $this->assertTrue($bill != null);
+        $result = ($this->get("app.subscription_system")->get($sub->getGroup()->getId()));
+        $this->assertTrue($result!=null, "Result ne doit pas être null, Id non présent dans la table");
+
+        $arraySub = $result->getAsArray();
+
+        $this->assertTrue($pricing_plan_cher->getId() == $arraySub["pricingPlan"]["id"], " Pricing plan doivent être les mêmes");
+        $this->assertTrue($sub->getId() != $arraySub["id"], "Les id ne doivent pas être les mêmes ");
+        $this->assertTrue($sub->getGroup()->getId()== $arraySub["group"]["id"], " Les groupees doivent être les memes" );
+        $this->assertTrue($arraySub["autoRenew"] == false, " Doit être à faux");
+        $this->assertTrue($arraySub["autoWithdrawable"] == false,"DOit être à faux");
+
     }
 
     /**
      * renouvellement d'un abonnement revue à la baisse
      */
-    public function assertRenewDown(){
-        //TODO
+    public function assertRenewDown($sub){
+
+
+        $pricing_plan = new \WebsiteApi\WorkspacesBundle\Entity\Pricingplan("testPHPpasCher");
+        $pricing_plan->setMonthPrice(10);
+        $pricing_plan->setYearPrice( 120);
+        $this->getDoctrine()->persist($pricing_plan);
+
+        try{
+            $cost = $sub->getBalance()+$this->get("app.subscription_system")->getRemainingBalance($sub->getGroup());
+            $bill =  $this->get("app.subscription_manager")->renew($sub->getGroup(),$pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false,$cost);
+
+        }catch(\Exception $e){
+            \Monolog\Handler\error_log("Pb avec renew de subscription, error log : ".$e->getTraceAsString());
+        }
+
+        $this->assertTrue($bill != null);
+        $result = ($this->get("app.subscription_system")->get($sub->getGroup()->getId()));
+        $this->assertTrue($result!=null, "Result ne doit pas être null, Id non présent dans la table");
+
+        $arraySub = $result->getAsArray();
+
+        $this->assertTrue($pricing_plan->getId()== $arraySub["pricingPlan"]["id"], " Pricing plan doivent être les mêmes");
+        $this->assertTrue($sub->getId() != $arraySub["id"], "Les id ne doivent pas être les mêmes ");
+        $this->assertTrue($sub->getGroup()->getId()== $arraySub["group"]["id"], " Les groupees doivent être les memes" );
+        $this->assertTrue($arraySub["autoRenew"] == false, " Doit être à faux");
+        $this->assertTrue($arraySub["autoWithdrawable"] == false,"DOit être à faux");
+
     }
 
     /**
