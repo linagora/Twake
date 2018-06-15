@@ -85,5 +85,70 @@ class GroupIdentity
         return $this->lockDate;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBillingAddress()
+    {
+        return $this->billingAddress;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAddress()
+    {
+        return $this->address;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMail()
+    {
+        return $this->mail;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPhoneNumber()
+    {
+        return $this->phoneNumber;
+    }
+
+
+
+    public function getAsArray() {
+
+        $group_identity =  Array(
+            "id" => $this->getId(),
+            "billing_address" => $this->getBillingAddress(),
+            "address" => $this->getAddress(),
+            "mail" => $this->getMail(),
+            "phone_number" => $this->getPhoneNumber(),
+            "lock_date" => $this-> getLockDate()
+        );
+
+        $group = $this->getGroup()->getAsArray();
+
+        return array_merge($group_identity,$group);
+    }
 
 }

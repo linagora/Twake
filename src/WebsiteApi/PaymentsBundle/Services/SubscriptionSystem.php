@@ -21,6 +21,22 @@ class SubscriptionSystem implements SubscriptionInterface
         $this->doctrine = $doctrine;
     }
 
+    private function convertToEntity($var, $repository)
+    {
+        if (is_string($var)) {
+            $var = intval($var);
+        }
+
+        if (is_int($var)) {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
+
     public function get($group){
         $subscriptionRepo = $this->doctrine->getRepository("TwakePaymentsBundle:Subscription");
 
@@ -33,9 +49,9 @@ class SubscriptionSystem implements SubscriptionInterface
         $sub = $this->get($group);
 
         if($sub)
-            $sub->getStartDate();
+            return $sub->getStartDate();
 
-        return false;
+        throw new SubscriptionNotFound();
     }
 
 
@@ -43,9 +59,9 @@ class SubscriptionSystem implements SubscriptionInterface
         $sub = $this->get($group);
 
         if($sub)
-            $sub->getEndDate();
+            return $sub->getEndDate();
 
-        return false;
+        throw new SubscriptionNotFound();
     }
 
     public function getAutoWithdrawal($group)
@@ -53,9 +69,9 @@ class SubscriptionSystem implements SubscriptionInterface
         $sub = $this->get($group);
 
         if($sub)
-            $sub->getAutoWithdrawal();
+            return $sub->getAutoWithdrawal();
 
-        return false;
+        throw new SubscriptionNotFound();
     }
 
     public function getAutoRenew($group)
@@ -63,17 +79,23 @@ class SubscriptionSystem implements SubscriptionInterface
         $sub = $this->get($group);
 
         if($sub)
-            $sub->getAutoRenew();
+            return $sub->getAutoRenew();
 
-        return false;
+        throw new SubscriptionNotFound();
     }
 
     public function create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew)
     {
+        $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
+        $group->setIsBlocked(false);
+        $pricing_plan = $this->convertToEntity($pricing_plan,"TwakeWorkspacesBundle:PricingPlan");
         $newSub = new Subscription($group,$pricing_plan,$balance,$start_date,$end_date,$auto_withdrawal,$auto_renew);
 
+        $this->doctrine->persist($group);
         $this->doctrine->persist($newSub);
         $this->doctrine->flush();
+
+        return $newSub;
     }
 
     public function archive($group)
@@ -106,6 +128,9 @@ class SubscriptionSystem implements SubscriptionInterface
         $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
         $identity = $groupIdentityRepo->findOneBy(Array("group"=>$group));
 
+        if($identity==null)
+            return false;
+
         $lockDate = new \DateTime();
         $fiveDays= new \DateInterval("P5D");
         $lockDate->add($fiveDays);
@@ -113,7 +138,7 @@ class SubscriptionSystem implements SubscriptionInterface
         $identity->setLockDate($lockDate);
     }
 
-    private function getGroupPeriod($group){
+    public function getGroupPeriod($group){
         $groupPeriodRepo = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
 
         return  $groupPeriodRepo->getLastGroupPeriod($group);
@@ -184,6 +209,6 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $gp = $this->getGroupPeriod($group);
 
-        return $gp->getPeriodStartedAt()->diff($gp->getPeriodEndedAt());
+        return $gp->getPeriodStartedAt()->diff($gp->getPeriodExpectedToEndAt());
     }
 }

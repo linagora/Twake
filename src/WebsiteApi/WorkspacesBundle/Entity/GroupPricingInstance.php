@@ -177,6 +177,17 @@ class GroupPricingInstance
 
 
 
+    public function getAsArray(){
+        return Array(
+            "id" => $this->getId(),
+            "group" => $this->getGroup(),
+            "cost" => $this->getCost(),
+            "billed_type" => $this->getBilledType(),
+            "started_at" => $this->getStartedAt(),
+            "end_at" => $this->getEndAt()
+        );
 
+
+    }
 
 }
