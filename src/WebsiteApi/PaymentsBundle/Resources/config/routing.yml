@@ -1,3 +1,7 @@
 citi_go_payments_send_mail:
     path:     /sendMail
     defaults: { _controller: TwakePaymentsBundle:Default:sendMail }
+
+citi_go_payments_test:
+    path:     /test
+    defaults: { _controller: TwakePaymentsBundle:Subscription:checkEndPeriod }
