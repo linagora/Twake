@@ -83,10 +83,11 @@ class Receipt
     {
         $this->issueDate = $issueDate;
         $this->startDateOfService = $startDateOfService;
+        $this->billId = $billId;
         $this->groupIdentity = $groupIdentity;
         $this->pricingPlan = $pricingPlan;
         $this->groupPricingInstance = $groupPricingInstance;
-        $this->groupPeriods = $groupPeriods;
+        $this->groupPeriods = json_encode($groupPeriods->getAsArray());
         $this->discount = $discount;
     }
 
@@ -175,8 +176,8 @@ class Receipt
 
         $receipt =  Array(
             "id" => $this->getId(),
-            "issue_date" => $this->getIssueDate(),
-            "start_date_of_service" => $this->getStartDateOfService(),
+            "issue_date" => date_format($this->getIssueDate(), "d-m-Y"),
+            "start_date_of_service" => date_format($this->getStartDateOfService(), "d-m-Y"),
             "bill_id" => $this->getBillId(),
             "group_periods" => $this->getGroupPeriods(),
             "discount" => $this->getDiscount()
@@ -188,12 +189,7 @@ class Receipt
 
         $group_princing_instance = $this->getGroupPricingInstance()->getAsArray();
 
-        $group_id = $this->getGroupIdentity()->getGroup()->getId();
-        $users_number = Array(
-            "users_number" => $this->get("app.groups")->countUsersGroup($group_id)
-        );
-
-        $res = array_merge($receipt, $group_identity,$pricing_plan, $group_princing_instance, $users_number);
+        $res = array_merge($receipt, $group_identity,$pricing_plan, $group_princing_instance);
         $res["id"] = $this->getId();
 
         return $res;
