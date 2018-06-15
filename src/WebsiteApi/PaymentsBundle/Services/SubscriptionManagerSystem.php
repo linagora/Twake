@@ -65,6 +65,9 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
 
     public function newSubscription($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost)
     {
+        $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
+        if($group==null)
+            return -1;
         $sub = $this->subscriptionSystem->create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
 
         return $this->billGroup($group,$cost, $sub);
