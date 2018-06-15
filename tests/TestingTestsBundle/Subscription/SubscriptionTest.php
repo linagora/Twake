@@ -56,6 +56,7 @@ class SubscriptionTest extends WebTestCaseExtended
         $log .= $this->assertConsoDepasse($subscription);
         $log .= $this->assertRenewUp($subscription);
         $log .= $this->assertRenewDown($subscription);
+        $log .= $this->assertCheckEndPeriod($group,$pricing_plan);
         //$log .= $this->casBatard();
 
         \Monolog\Handler\error_log($log);
@@ -222,7 +223,12 @@ class SubscriptionTest extends WebTestCaseExtended
 
     }
 
-    //TODO check end period
+    public function assertCheckEndPeriod($group,$pricing_plan){
+        $dateInterval = new \DateInterval("P1M");
+        $subscription = $this->newSubscription($group,$pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add($dateInterval), false, false);
+        $code = $this->get("app.subscription_manager")->checkEndPeriodByGroup($group);
+        $this->assertTrue($code==4);
+    }
 
     /**
 
