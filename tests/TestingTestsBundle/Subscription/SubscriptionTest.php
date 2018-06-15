@@ -51,15 +51,15 @@ class SubscriptionTest extends WebTestCaseExtended
 
         // methods Subscription
         $log = "";
-        $log .=$this->assertInit($subscription, $pricing_plan);
-        $log .= $this->assertConsoUsuelle($subscription);
-        $log .= $this->assertConsoDepasse($subscription);
-        $log .= $this->assertRenewUp($subscription);
-        $log .= $this->assertRenewDown($subscription);
-        $log .= $this->assertCheckEndPeriod($group,$pricing_plan);
+        $log .=$this->assertInit($subscription, $pricing_plan)."\n";
+        $log .= $this->assertConsoUsuelle($subscription)."\n";
+        $log .= $this->assertConsoDepasse($subscription)."\n";
+        $log .= $this->assertRenewUp($subscription)."\n";
+        $log .= $this->assertRenewDown($subscription)."\n";
+        $log .= $this->assertCheckEndPeriod($group,$pricing_plan)."\n";
         //$log .= $this->casBatard();
 
-        \Monolog\Handler\error_log($log);
+       var_dump($log);
     }
 
     //app.subscription_manager
@@ -224,11 +224,27 @@ class SubscriptionTest extends WebTestCaseExtended
 
     }
 
-    public function assertCheckEndPeriod($group,$pricing_plan){
-        $dateInterval = new \DateInterval("P1M");
+    public function assertCheckEndPeriodSpecPeriod($group,$pricing_plan, $time, $expectedCode){
+        $dateInterval = new \DateInterval($time);
         $subscription = $this->newSubscription($group,$pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add($dateInterval), false, false);
         $code = $this->get("app.subscription_manager")->checkEndPeriodByGroup($group);
-        $this->assertTrue($code==4);
+        $this->assertTrue($expectedCode==$code);
+    }
+
+    public function assertCheckEndPeriod($group,$pricing_plan){
+        /*
+         * 1 : bill mail
+         * 2 : unpaid mail
+         * 3 : 2 month left
+         * 4 : 1 month left
+         * 5 : 15 days left
+         * 6 : 7 days left
+         * 7 : 1 day left*/
+        $this->assertCheckEndPeriodSpecPeriod($group,$pricing_plan,"P2M",3);
+        $this->assertCheckEndPeriodSpecPeriod($group,$pricing_plan,"P1M",4);
+        $this->assertCheckEndPeriodSpecPeriod($group,$pricing_plan,"P15D",5);
+        $this->assertCheckEndPeriodSpecPeriod($group,$pricing_plan,"P7D",6);
+        $this->assertCheckEndPeriodSpecPeriod($group,$pricing_plan,"P1D",7);
     }
 
     /**

@@ -83,9 +83,6 @@ class WebTestCaseExtended extends WebTestCase
 
         $sub = $this->get("app.subscription_system")->create($group,$pricing_plan,$balanceInit,$start_date,$end_date ,$autowithdraw,$autorenew);
 
-        $this->getDoctrine()->persist($sub);
-        $this->getDoctrine()->flush();
-
         return $sub;
     }
 
