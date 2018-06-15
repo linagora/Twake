@@ -67,7 +67,7 @@ class TwakeMailer
 
     }
 
-    public function sendHtml($mail, $html)
+    public function sendHtml($mail, $html, $pdfPathFiles)
     {
 
         $privateKey = "-----BEGIN RSA PRIVATE KEY-----
@@ -103,6 +103,11 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
                 $this->html2txt($html),
                 'text/plain'
             );
+
+        foreach ( $pdfPathFiles as $pathFile) {
+            $message->attach(Swift_Attachment::fromPath($pathFile));
+        }
+
 
         $message->attachSigner($signer);
 

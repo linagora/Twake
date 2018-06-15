@@ -21,10 +21,28 @@ class SubscriptionSystem implements SubscriptionInterface
         $this->doctrine = $doctrine;
     }
 
+    private function convertToEntity($var, $repository)
+    {
+        if (is_string($var)) {
+            $var = intval($var);
+        }
+
+        if (is_int($var)) {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
+
     public function get($group){
         $subscriptionRepo = $this->doctrine->getRepository("TwakePaymentsBundle:Subscription");
 
         $subscription = $subscriptionRepo->findOneBy(Array( "group" => $group, "archived" => false));
+
+        var_dump($subscription->getAsArray());
 
         return $subscription;
     }
@@ -55,7 +73,7 @@ class SubscriptionSystem implements SubscriptionInterface
         if($sub)
             $sub->getAutoWithdrawal();
 
-        return false;
+        throw new SubscriptionNotFound();
     }
 
     public function getAutoRenew($group)
@@ -70,6 +88,8 @@ class SubscriptionSystem implements SubscriptionInterface
 
     public function create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew)
     {
+        $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
+        $pricing_plan = $this->convertToEntity($pricing_plan,"TwakeWorkspacesBundle:PricingPlan");
         $newSub = new Subscription($group,$pricing_plan,$balance,$start_date,$end_date,$auto_withdrawal,$auto_renew);
 
         $this->doctrine->persist($newSub);
@@ -105,6 +125,9 @@ class SubscriptionSystem implements SubscriptionInterface
     public function updateLockDate($group){
         $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
         $identity = $groupIdentityRepo->findOneBy(Array("group"=>$group));
+
+        if($identity==null)
+            return false;
 
         $lockDate = new \DateTime();
         $fiveDays= new \DateInterval("P5D");

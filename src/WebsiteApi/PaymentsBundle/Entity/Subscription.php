@@ -89,7 +89,7 @@ class Subscription
     public function __construct($group, $pricingPlan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew)
     {
         $this->group = $group;
-        $this->pricing_plan_id = $pricingPlan;
+        $this->pricingPlan = $pricingPlan;
         $this->balance = $balance;
         $this->startDate = $start_date;
         $this->endDate = $end_date;

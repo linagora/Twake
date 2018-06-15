@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        table#t01{
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        table#t01 td, table#t01 th{
+            border: 1px solid black;
+        }
+        table#t01 th {
+            background-color: #bfbfbf;
+            color: black;
+        }
+        body#b01 {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+<body id="b01">
+
+<br>
+
+<img src="/home/lucie/Téléchargements/withname_bottom.png" style="float:left;width:8%;height:8%;">
+
+
+<table  style="width:100%" border="0">
+    <tr>
+        <th align="left" >Twake</th>
+        <th align="right">Client</th>
+    </tr>
+    <tr>
+        <td>Avenue des fleurs</td>
+        <td align="right">Avenue des Lilas</td>
+    </tr>
+    <tr>
+        <td>Nancy</td>
+        <td align="right">Metz</td>
+    </tr>
+</table>
+
+
+<br>
+
+<h3 align="right">Today</h3>
+
+<h1 align="center">Facture {{billId}}</h1>
+
+    <br>
+
+    <table style="width:100%" id="t01" align="center">
+        <tr>
+            <th align="left">Désignation</th>
+            <th style="width:15%" align="right">Prix unitaire</th>
+            <th style="width:15%" align="right">Prix HT</th>
+        </tr>
+        <tr>
+            <td align="left"> Prix utilisateur</td>
+            <td align="right"> 15 €</td>
+            <td align="right"> 150 €</td>
+        </tr>
+        <tr>
+            <td align="left">Prix application</td>
+            <td align="right">0 €</td>
+            <td align="right">0 €</td>
+        </tr>
+    </table>
+
+    <br>
+
+    <table style="width:30%" id="t01" align="right">
+        <tr>
+            <th style="width:15%" align="right">Total HT </th>
+            <td style="width:15%" align="right">?</td>
+        </tr>
+        <tr>
+            <th align="right">TVA</th>
+            <td align="right">?</td>
+        </tr>
+        <tr>
+            <th align="right">Total TTC</th>
+            <td align="right">?</td>
+        </tr>
+    </table>
+
+
+</body>
+</html>
