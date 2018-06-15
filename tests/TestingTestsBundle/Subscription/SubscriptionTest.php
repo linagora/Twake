@@ -60,9 +60,8 @@ class SubscriptionTest extends WebTestCaseExtended
         // methods Subscription
         $log = "";
         $log .=$this->assertInit($subscription, $pricing_plan);
-        $log .= $this->assertInitFail();
         $log .= $this->assertConsoUsuelle($subscription);
-        $log .= $this->assertConsoDepasse();
+        $log .= $this->assertConsoDepasse($subscription);
         $log .= $this->assertRenewUp();
         $log .= $this->assertRenewDown();
         //$log .= $this->casBatard();
@@ -76,7 +75,7 @@ class SubscriptionTest extends WebTestCaseExtended
      *  Vérifcation des données de base
      */
     public function assertInit($sub, $pricing_plan){
-        $result = ($this->get("app.subscriptionSystem")->get($sub->getGroup()->getId()));
+        $result = ($this->get("app.subscription_system")->get($sub->getGroup()->getId()));
         assertTrue($result!=null, "Result ne doit pas être null, Id non présent dans la table");
 
         $arraySub = $result->getAsArray();
@@ -98,86 +97,80 @@ class SubscriptionTest extends WebTestCaseExtended
 
     }
 
-    /**
-     * Un utilisateur obtient un abonnement, pour une raison X ou Y les données ne sont pas bonnes ( test de la prog défensive)
-     */
-    public function assertInitFail(){
-
-        $user = $this->newUser("testInitFail");
-        $this->getDoctrine()->persist($user);
-        $this->getDoctrine()->flush();
-
-        $group = $this->newGroup($user->getId());
-        $this->getDoctrine()->persist($group);
-        $this->getDoctrine()->flush();
-
-        $pricing_plan = new \WebsiteApi\WorkspacesBundle\Entity\Pricingplan("testPHP2");
-        $pricing_plan->setMonthPrice(200);
-        $pricing_plan->setYearPrice( 2400);
-        $this->getDoctrine()->persist($pricing_plan);
-
-        //inversion des dates pour vérifier défensivité
-        try{
-
-            $sub = $this->newSubscription($group,$pricing_plan, $pricing_plan->getMonthPrice(), (new \DateTime('now'))->add(new \DateInterval("P5D")), new \DateTime('now'), false, false);
-            $this->getDoctrine()->persist($sub);
-            $this->getDoctrine()->flush();
-
-        }catch(\Exception $e){
-            \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : ".$e);
-        }
-
-        $result = ($this->get("app.subscriptionSystem")->get($group->getId()));
-        assertTrue($result!=null, "Result ne doit pas être null, Id non présent dans la table");
-
-        $arraySub = $result->getAsArray();
-
-        assertTrue($pricing_plan == $arraySub["pricingPlan"], " Pricing plan doivent être les mêmes");
-        assertTrue($sub->getId() == $arraySub["id"], "Les id doivent être les mêmes ");
-        assertTrue($sub->getGroup()== $arraySub["group"], " Les groupees doivent être les memes" );
-        assertTrue($sub->getStartDate() == $arraySub["startDate"], "Les dates de départ doivent être les mêms ");
-        assertTrue($sub->getEndDate() == $arraySub["endDate"], "Les dates de fin doivent être les memes ");
-        assertTrue($sub->getBalance() == $arraySub["balance"], "Les balances doivent être les memes ");
-        assertTrue($sub->getBAlanceConsumed() == $arraySub["balanceConsumed"], "Les balances de consommation doivent être les memes");
-        assertTrue($arraySub["autoRenew"] == false, " Doit être à faux");
-        assertTrue($arraySub["autoWithdrawable"] == false,"DOit être à faux");
-        assertTrue(($arraySub["startDate"] - $arraySub["endDate"]) < 0 , "Les dates doivent être dans le bon ordre");
-
-        assertTrue(($arraySub["pricingPlan"]["monthPrice"] == 200) && ($arraySub["pricingPlan"]["yearPrice"] == 2400), "Les données doivent être bonnes" );
-    }
 
     /**
      * Consommation usuelle d'un abonnement
      */
     public function assertConsoUsuelle($sub){
 
-        $sub = $this->get("app.subscriptionSystem")->addBalanceConsumption($sub->getGroup()->getId(), );
-
-        $sub = $this->get("app.subscriptionSystem")->addBalanceConsumption($sub->getGroup()->getId(), );
+        $test1= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
+        $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup()->getId(), 100);
+       //test de bonne réponse de tout s'est ben passé ( pas encore implémenté )
         $this->getDoctrine()->persist($sub);
         $this->getDoctrine()->flush();
+        $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
 
+        assertTrue(($test1 != $test3) && ($test1 == 0) && ($test3 == 100));
+
+        //faire les check de dépassement de conso ?
+
+        assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être false");
+        assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être false");
+        assertTrue(!($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être false");
+        assertTrue(!($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être false");
     }
 
     /**
      * consommation d'un abonnement mais qui dépasse
      */
-    public function assertConsoDepasse(){
+    public function assertConsoDepasse($sub){
 
+        $test1= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
+        $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup()->getId(), 500);
+        $this->getDoctrine()->persist($sub);
+        $this->getDoctrine()->flush();
+        $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
+
+        //un petit peu
+        assertTrue(($test1 != $test3) && ($test1 == 100) && ($test3 == 600));
+
+        assertTrue(($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être true");
+        assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être false");
+        assertTrue(($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être true");
+        assertTrue(($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être true");
+
+        //beaucoup
+        $test1= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
+        $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup()->getId(), 3000);
+        $this->getDoctrine()->persist($sub);
+        $this->getDoctrine()->flush();
+        $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
+
+        assertTrue(($test1 != $test3) && ($test1 == 600) && ($test3 == 3600));
+
+
+        assertTrue(!($this->get("app.subscription_system")->groupIsOverUsingALittle($sub->getGroup()->getId())), "Doit être false");
+        assertTrue(($this->get("app.subscription_system")->groupIsOverUsingALot($sub->getGroup()->getId())), "Doit être true");
+        assertTrue(($this->get("app.subscription_system")->groupWillBeOVerUsing($sub->getGroup()->getId())), "Doit être true");
+        assertTrue(($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être true");
+
+        //faire le lock aussi ensuite
+        assertTrue($this->get("app.subscription_system")->updateLockdate($sub->getGroup()->getId()), " ne doit pas retourner false");
+        assertTrue($this->get("app.subscription_manager")->checkLocked());
     }
 
     /**
      * renouvellement d'un abonnement ( archivage de l'ancien et nouveau abo )
      */
     public function assertRenewUp(){
-
+        //TODO
     }
 
     /**
      * renouvellement d'un abonnement revue à la baisse
      */
     public function assertRenewDown(){
-
+        //TODO
     }
 
     /**
