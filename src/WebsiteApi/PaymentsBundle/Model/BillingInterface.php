@@ -12,6 +12,6 @@ namespace WebsiteApi\PaymentsBundle\Model;
 interface BillingInterface
 {
     //@recordTransaction record a transaction in bdd
-    public function recordTransaction($group, $pricingPlan, $period);
+    public function recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt);
 
 }

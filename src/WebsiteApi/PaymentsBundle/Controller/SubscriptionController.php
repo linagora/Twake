@@ -25,19 +25,13 @@ class SubscriptionController extends Controller
         $auto_withdrawal = true;
         $cost = $balance;
 
-        $this->get("app.subscription_manager")->newSubscription($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost);
-
-        return new JsonResponse();
+        return new JsonResponse($this->get("app.subscription_manager")->newSubscription($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost));
     }
 
     public function checkOverusingAction(){
-        $this->get("app.subscription_manager")->checkOverusing();
-
-        return new JsonResponse();
+        return new JsonResponse($this->get("app.subscription_manager")->checkOverusing());
     }
     public function checkEndPeriodAction(){
-        $this->get("app.subscription_manager")->checkEndPeriod();
-
-        return new JsonResponse();
+        return new JsonResponse($this->get("app.subscription_manager")->checkEndPeriod());
     }
 }

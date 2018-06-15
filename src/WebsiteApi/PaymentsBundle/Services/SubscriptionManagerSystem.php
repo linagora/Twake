@@ -35,6 +35,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     var $mailSender;
     var $billing;
     var $pdfBuilder;
+    var $groups;
 
     private function convertToEntity($var, $repository)
     {
@@ -52,43 +53,55 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
 
     }
 
-    public function __construct($doctrine, $subscriptionSystem, $mailSender, $billing, $pdfBuilder)
+    public function __construct($doctrine, $subscriptionSystem, $mailSender, $billing, $pdfBuilder, $groups)
     {
         $this->doctrine = $doctrine;
         $this->subscriptionSystem = $subscriptionSystem;
         $this->mailSender = $mailSender;
         $this->billing = $billing;
         $this->pdfBuilder = $pdfBuilder;
+        $this->groups = $groups;
     }
 
     public function newSubscription($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost)
     {
         $sub = $this->subscriptionSystem->create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
 
-        $this->billGroup($group,$cost, $sub);
+        return $this->billGroup($group,$cost, $sub);
     }
 
     public function checkOverusing(){
         $groupRepo = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
         $groups = $groupRepo->findBy(Array());
 
+        $res = array();
+
         foreach ($groups as $group) {
-            $this->checkOverusingByGroup($group);
+            $res[$group->getId()] = $this->checkOverusingByGroup($group);
         }
+
+        return $res;
     }
 
     public function billGroup($group, $cost, $sub)
-    {        //var_dump($this->subscriptionSystem->getAutoWithdrawal($group));
+    {
+        $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
+        //var_dump($this->subscriptionSystem->getAutoWithdrawal($group));
         if ($this->subscriptionSystem->getAutoWithdrawal($group)){
             //var_dump("send bill : ".$cost);
             $period = $this->subscriptionSystem->getGroupPeriod($group);
             $startDateOfService = $sub->getStartDate();
-            $pricingPlan = $sub->getPrincingPlan();
-            $endedAt = $sub->getEndAt();
+            $pricingPlan = $sub->getPricingPlan();
+            $endedAt = $sub->getEndDate();
             $billedType = $sub->getStartDate()->diff($endedAt)->m==1 ? "monthly" : "year";
+
             $bill = $this->billing->recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt);
 
-            $pdfPath = $this->pdfBuilder->makeBillPDF($bill);
+            $users_number = Array(
+                "users_number" => $this->groups->countUsersGroup($group)
+            );
+
+            $pdfPath = $this->pdfBuilder->makeBillPDF(array_merge($bill, $users_number));
 
             $this->mailSender->sendBill($group,Array($pdfPath));
             return 1;
@@ -126,10 +139,13 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     {
         $groupRepo = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
         $groups = $groupRepo->findBy(Array());
+        $res = array();
 
         foreach ($groups as $group) {
-            $this->checkEndPeriodByGroup($group);
+            $res[$group->getId()] = $this->checkEndPeriodByGroup($group);
         }
+
+        return $res;
     }
 
     public function checkEndPeriodByGroup($group)
@@ -195,9 +211,14 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
         $identities = $groupIdentityRepo->findByLockDateExpire();
 
+        $res = array();
+
         foreach ($identities as $identity){
             $this->putInFree($identity->getGroup());
+            $res[$identity->getGroup()->getId()] = true;
         }
+
+        return $res;
     }
 
     public function putInFree($group){
