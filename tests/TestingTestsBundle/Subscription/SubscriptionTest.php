@@ -91,9 +91,9 @@ class SubscriptionTest extends WebTestCaseExtended
      */
     public function assertConsoUsuelle($sub){
 
-        $test1= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
-        self::assertTrue($test1 != null, " ne doit pas être faux, id non présent dans la db");
-        $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup()->getId(), 100);
+        $test1= $this->get("app.subscription_system")->get($sub->getGroup());
+        $this->assertTrue($test1 != null, " ne doit pas être faux, id non présent dans la db");
+        $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup(), 100);
        //test de bonne réponse de tout s'est ben passé ( pas encore implémenté )
         $this->getDoctrine()->persist($sub);
         $this->getDoctrine()->flush();
@@ -113,11 +113,11 @@ class SubscriptionTest extends WebTestCaseExtended
      */
     public function assertConsoDepasse($sub){
 
-        $test1= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
-        $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup()->getId(), 500);
+        $test1= $this->get("app.subscription_system")->get($sub->getGroup());
+        $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup(), 500);
         $this->getDoctrine()->persist($sub);
         $this->getDoctrine()->flush();
-        $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
+        $test3= $this->get("app.subscription_system")->get($sub->getGroup());
 
         //un petit peu
         $this->assertTrue(($test1 != $test3) && ($test1 == 100) && ($test3 == 600));
@@ -128,11 +128,11 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertTrue(($this->get("app.subscription_system")->getOverCost($sub->getGroup()->getId())), "Doit être true");
 
         //beaucoup
-        $test1= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
+        $test1= $this->get("app.subscription_system")->get($sub->getGroup());
         $test2= $this->get("app.subscription_system")->addBalanceConsumption($sub->getGroup()->getId(), 3000);
         $this->getDoctrine()->persist($sub);
         $this->getDoctrine()->flush();
-        $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
+        $test3= $this->get("app.subscription_system")->get($sub->getGroup());
 
         $this->assertTrue(($test1 != $test3) && ($test1 == 600) && ($test3 == 3600));
 
@@ -166,7 +166,7 @@ class SubscriptionTest extends WebTestCaseExtended
         }
 
         $this->assertTrue($bill != null);
-        $result = ($this->get("app.subscription_system")->get($sub->getGroup()->getId()));
+        $result = ($this->get("app.subscription_system")->get($sub->getGroup()));
         $this->assertTrue($result!=null, "Result ne doit pas être null, Id non présent dans la table");
 
         $arraySub = $result->getAsArray();
