@@ -87,9 +87,11 @@ class SubscriptionSystem implements SubscriptionInterface
     public function create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew)
     {
         $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
+        $group->setIsBlocked(false);
         $pricing_plan = $this->convertToEntity($pricing_plan,"TwakeWorkspacesBundle:PricingPlan");
         $newSub = new Subscription($group,$pricing_plan,$balance,$start_date,$end_date,$auto_withdrawal,$auto_renew);
 
+        $this->doctrine->persist($group);
         $this->doctrine->persist($newSub);
         $this->doctrine->flush();
 

@@ -36,6 +36,22 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     var $billing;
     var $pdfBuilder;
 
+    private function convertToEntity($var, $repository)
+    {
+        if (is_string($var)) {
+            $var = intval($var);
+        }
+
+        if (is_int($var)) {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
+
     public function __construct($doctrine, $subscriptionSystem, $mailSender, $billing, $pdfBuilder)
     {
         $this->doctrine = $doctrine;
@@ -159,7 +175,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
                 return 13+$this->renew($group, $sub->getPricingPlan(), $sub->getBalance(), new \DateTime(), $endDate,$sub->getAutoWithdrawal(),$sub->getAutoRenew(),$cost);
             } else {
                 //var_dump("passer en free");
-                //TODO : passer en free
+                $this->putInFree($group);
                 return 13;
             }
         }
@@ -180,7 +196,14 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         $identities = $groupIdentityRepo->findByLockDateExpire();
 
         foreach ($identities as $identity){
-            //TODO : passer en free
+            $this->putInFree($identity->getGroup());
         }
+    }
+
+    public function putInFree($group){
+        $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
+        $group->setIsBlocked(true);
+        $this->doctrine->persist($group);
+        $this->doctrine->flush();
     }
 }
