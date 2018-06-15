@@ -78,7 +78,10 @@ class PricingPlan implements PricingPlanInterface
         if ($group == null) {
             $pricing = $pricingRepository->findOneBy(Array("label" => "private"));
         } else {
-            $pricing = $pricingRepository->findOneBy(Array("id" => ($group->getPricingPlan())));
+            if($group->getIsBlocked())
+                $pricing = $this->getMinimalPricing();
+            else
+                $pricing = $pricingRepository->findOneBy(Array("id" => ($group->getPricingPlan())));
         }
 
         return $pricing;
