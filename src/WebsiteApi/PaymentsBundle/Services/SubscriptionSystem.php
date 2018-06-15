@@ -112,11 +112,18 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $sub = $this->get($group);
         $sub->addBalanceConsumed($value);
+
+        $this->doctrine->persist($sub);
+        $this->doctrine->flush();
+
     }
     public function addBalance($value, $group)
     {
         $sub = $this->get($group);
         $sub->addBalance($value);
+
+        $this->doctrine->persist($sub);
+        $this->doctrine->flush();
     }
 
 
@@ -164,7 +171,7 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $delta = $this->getRemainingBalance($group);
 
-        if(!$delta)
+        if($delta===false)
             throw new GroupNotFoundExecption();
 
         if($delta>=0)
@@ -178,7 +185,7 @@ class SubscriptionSystem implements SubscriptionInterface
     public function getOverCost($group){
         $delta = $this->getRemainingBalance($group);
 
-        if(!$delta)
+        if($delta===false)
             throw new GroupNotFoundExecption();
 
         if($delta>=0)
@@ -200,7 +207,7 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $delta = $this->getRemainingBalance($group);
 
-        if(!$delta)
+        if($delta===false)
             throw new GroupNotFoundExecption();
 
         if($delta>=0)
