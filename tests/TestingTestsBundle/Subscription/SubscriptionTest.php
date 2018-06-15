@@ -94,6 +94,7 @@ class SubscriptionTest extends WebTestCaseExtended
         $test1= $this->get("app.subscription_system")->get($sub->getGroup());
         $this->assertTrue($test1 != null, " ne doit pas être faux, id non présent dans la db");
 
+        $this->assertTrue($test1->getBalanceConsumed()==0, "Test1 : ". $test1->getBalanceConsumed());
         $test2= $this->get("app.subscription_system")->addBalanceConsumption(100 ,$sub->getGroup());
 
         $this->getDoctrine()->persist($sub);
@@ -101,7 +102,7 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
 
-       // $this->assertTrue(($test1 == 0) && ($test3 == 100));
+       $this->assertTrue(($test3->getBalanceConsumed() == 100), " Test 3 ". $test3->getBalanceConsumed());
 
         $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($sub->getGroup());
 
@@ -116,6 +117,8 @@ class SubscriptionTest extends WebTestCaseExtended
         $test1= $this->get("app.subscription_system")->get($sub->getGroup());
         $this->assertTrue($test1 != null, " ne doit pas être faux, id non présent dans la db");
 
+        $this->assertTrue($test1->getBalanceConsumed()==100, "Test1 : ". $test1->getBalanceConsumed());
+
         $test2= $this->get("app.subscription_system")->addBalanceConsumption(500 ,$sub->getGroup());
         $this->getDoctrine()->persist($sub);
         $this->getDoctrine()->flush();
@@ -123,7 +126,7 @@ class SubscriptionTest extends WebTestCaseExtended
         $test3= $this->get("app.subscription_system")->get($sub->getGroup());
 
         //un petit peu
-        $this->assertTrue(($test1 != $test3) && ($test1 == 100) && ($test3 == 600));
+        $this->assertTrue(($test3->getBalanceConsumed() == 600));
 
         $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($sub->getGroup());
 
@@ -133,13 +136,16 @@ class SubscriptionTest extends WebTestCaseExtended
         $test1= $this->get("app.subscription_system")->get($sub->getGroup());
         $this->assertTrue($test1 != null, " ne doit pas être faux, id non présent dans la db");
 
+
+        $this->assertTrue($test1->getBalanceConsumed()==600, "Test1 : ". $test1->getBalanceConsumed());
+
         $test2= $this->get("app.subscription_system")->addBalanceConsumption( 3000,$sub->getGroup());
         $this->getDoctrine()->persist($sub);
         $this->getDoctrine()->flush();
 
         $test3= $this->get("app.subscription_system")->get($sub->getGroup());
 
-        $this->assertTrue(($test1 != $test3) && ($test1 == 600) && ($test3 == 3600));
+        $this->assertTrue(($test3->getBalanceConsumed() == 3600));
 
 
         $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($sub->getGroup());
