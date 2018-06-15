@@ -40,7 +40,7 @@ class SubscriptionSystem implements SubscriptionInterface
     public function get($group){
         $subscriptionRepo = $this->doctrine->getRepository("TwakePaymentsBundle:Subscription");
 
-        $subscription = $subscriptionRepo->findOneBy(Array( "group" => $group, "archived" => false));
+        $subscription = $subscriptionRepo->findLastActiveSub($group);
 
         return $subscription;
     }
@@ -220,8 +220,8 @@ class SubscriptionSystem implements SubscriptionInterface
 
     public function getEndPeriodTimeLeft($group)
     {
-        $gp = $this->getGroupPeriod($group);
+        $sub = $this->get($group);
 
-        return $gp->getPeriodStartedAt()->diff($gp->getPeriodExpectedToEndAt());
+        return $sub->getStartDate()->diff($sub->getEndDate());
     }
 }
