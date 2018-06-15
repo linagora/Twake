@@ -26,12 +26,12 @@ class WebTestCaseExtended extends WebTestCase
     }
 
 
-    public function newUser(){
-        $userToken = $this->get("app.user")->subscribeMail("PHPUNIT@PHPUNIT.fr");
-        $user = $this->get("app.user")->subscribe($userToken,null, "phpunit","phpunit",true);
+    public function newUser($name){
+        $userToken = $this->get("app.user")->subscribeMail($name."@PHPUNIT.fr");
+        $user = $this->get("app.user")->subscribe($userToken,null, $name,$name,true);
 
         if (!$user) {
-            return $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "phpunit"));
+            return $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => $name));
         }
 
         $this->getDoctrine()->persist($user);
@@ -76,5 +76,16 @@ class WebTestCaseExtended extends WebTestCase
 
         return $work;
     }
+
+    public function newSubscription($group,$pricing_plan, $balanceInit, $start_date, $end_date, $autowithdraw, $autorenew){
+
+        $sub = $this->get("app.subscriptionSystem")->create($group,$pricing_plan,$balanceInit,$start_date,$end_date ,$autowithdraw,$autorenew);
+
+        $this->getDoctrine()->persist($sub);
+        $this->getDoctrine()->flush();
+
+        return $sub;
+    }
+
 
 }
