@@ -18,7 +18,11 @@ class Billing extends BillingInterface{
         $this->doctrine = $doctrine;
     }
 
-    public function recordTransaction($group, $pricingPlan, $period, $startDateOfService, $groupPricingInstance){
+    public function recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt){
+        $groupPricingInstance = new GroupPricingInstance($group,$billedType,$pricingPlan);
+        $groupPricingInstance->setCost($cost);
+        $groupPricingInstance->setStartedAt($startDateOfService);
+        $groupPricingInstance->setEndAt($endedAt);
         $issueDate = new \DateTime();
         $transaction = new Billing($issueDate,$startDateOfService,$group, $pricingPlan,$period,$groupPricingInstance);
         $id = $transaction->getId();

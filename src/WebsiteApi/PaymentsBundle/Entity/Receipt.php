@@ -173,17 +173,30 @@ class Receipt
 
     public function getAsArray() {
 
-        return Array(
+        $receipt =  Array(
             "id" => $this->getId(),
             "issue_date" => $this->getIssueDate(),
             "start_date_of_service" => $this->getStartDateOfService(),
             "bill_id" => $this->getBillId(),
-            "group_identity" => $this->getGroupIdentity(),
-            "pricing_plan" => $this->getPricingPlan(),
-            "group_pricing_instance" => $this->getGroupPricingInstance(),
             "group_periods" => $this->getGroupPeriods(),
             "discount" => $this->getDiscount()
         );
+
+        $group_identity = $this->getGroupIdentity()->getAsArray();
+
+        $pricing_plan = $this->getPricingPlan()->getAsArray();
+
+        $group_princing_instance = $this->getGroupPricingInstance()->getAsArray();
+
+        $group_id = $this->getGroupIdentity()->getGroup()->getId();
+        $users_number = Array(
+            "users_number" => $this->get("app.groups")->countUsersGroup($group_id)
+        );
+
+        $res = array_merge($receipt, $group_identity,$pricing_plan, $group_princing_instance, $users_number);
+        $res["id"] = $this->getId();
+
+        return $res;
     }
 
 }

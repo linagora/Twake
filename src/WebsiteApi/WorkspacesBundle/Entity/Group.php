@@ -58,8 +58,13 @@ class Group
 	 * @ORM\Column(type="datetime")
 	 */
 	private $date_added;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isBlocked;
 
-	public function __construct($name) {
+
+    public function __construct($name) {
 		$this->name = $name;
 		$this->date_added = new \DateTime();
 	}
@@ -189,5 +194,21 @@ class Group
 			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):"")
 		);
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getIsBlocked()
+    {
+        return $this->isBlocked;
+    }
+
+    /**
+     * @param mixed $isBlocked
+     */
+    public function setIsBlocked($isBlocked)
+    {
+        $this->isBlocked = $isBlocked;
+    }
 
 }
