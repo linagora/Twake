@@ -29,24 +29,28 @@
 <table  style="width:100%" border="0">
     <tr>
         <th align="left" >Twake</th>
-        <th align="right">Client</th>
+        <th align="right">{{ name }}</th>
     </tr>
     <tr>
-        <td>Avenue des fleurs</td>
-        <td align="right">Avenue des Lilas</td>
+        <td>Avenue des Lila</td>
+        <td align="right">{{ billing_address }}</td>
     </tr>
     <tr>
-        <td>Nancy</td>
-        <td align="right">Metz</td>
+        <td>mail : ..</td>
+        <td align="right">{{ mail }}</td>
+    </tr>
+    <tr>
+        <td>tel</td>
+        <td align="right">{{ phone_number }}</td>
     </tr>
 </table>
 
 
 <br>
 
-<h3 align="right">Today</h3>
+<h3 align="right">{{ issue_date }}</h3>
 
-<h1 align="center">Facture {{billId}}</h1>
+<h1 align="center">Facture {{ bill_id }}</h1>
 
     <br>
 
@@ -58,8 +62,8 @@
         </tr>
         <tr>
             <td align="left"> Prix utilisateur</td>
-            <td align="right"> 15 €</td>
-            <td align="right"> 150 €</td>
+            <td align="right"> {{ month_price }}</td>
+            <td align="right">{{ month_price * users_number }}</td>
         </tr>
         <tr>
             <td align="left">Prix application</td>
@@ -81,7 +85,7 @@
         </tr>
         <tr>
             <th align="right">Total TTC</th>
-            <td align="right">?</td>
+            <td align="right">{{ cost }}</td>
         </tr>
     </table>
 
