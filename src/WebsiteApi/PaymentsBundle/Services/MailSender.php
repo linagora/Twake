@@ -39,8 +39,13 @@ class MailSender implements MailSenderInterface
         return $infos;
     }
 
-    public function sendBill($group, $billFile){
-        // TODO: Implement sendEndPeriodsMail() method.
+    public function sendBill($group, $pathFiles){
+        $list = $this->getList($group);
+        foreach ($list as $user){
+            $mail = $user["mail"];
+            $username = $user["username"];
+            $this->mailer->send($mail,"Bill",Array("username"=>$username),"TwakePaymentsBundle:Mail",$pathFiles);
+        }
     }
 
     public function sendEndPeriodsMail($group, $timeleft){

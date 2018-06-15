@@ -35,7 +35,7 @@ class TwakeMailer
 
     }
 
-	public function send($mail, $template, $data = Array(), $templateDirectory = "TwakeCoreBundle:Mail"){
+	public function send($mail, $template, $data = Array(), $templateDirectory = "TwakeCoreBundle:Mail", $pdfPathFiles = Array()){
 
 
 		$data["mail"] = $mail;
@@ -48,7 +48,7 @@ class TwakeMailer
 		);
 
         if ($this->standalone) {
-            $this->sendHtml($mail, $html);
+            $this->sendHtml($mail, $html, $pdfPathFiles);
         } else {
             $this->sendHtmlViaRemote($mail, $html);
         }
