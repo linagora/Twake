@@ -14,9 +14,24 @@ use WebsiteApi\PaymentsBundle\Model\PDFBuilderInterface;
 
 class PDFBuilderSystem implements PDFBuilderInterface
 {
+    private $templating;
+
+    public function __construct($templating)
+    {
+        $this->templating = $templating;
+    }
+
     public function makeBillPDF($data)
     {
-        // TODO: Implement makeBillPDF() method.
+        $html =  $this->templating->render(
+            "TwakePaymentsBundle:Pdf:bill.html.twig",
+            $data
+        );
+        $name = $data["bill_id"].".pdf";
+
+        $this->makePDFFromHtml($html,$name);
+
+        return $name;
     }
 
     public function makePDFFromHtml($html, $name){
@@ -29,6 +44,8 @@ class PDFBuilderSystem implements PDFBuilderInterface
 
         $output = $dompdf->output();
         file_put_contents($name, $output);
+
+        return $name;
     }
 
     public function makeUsageStatPDF($data)

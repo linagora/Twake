@@ -92,6 +92,8 @@ class SubscriptionSystem implements SubscriptionInterface
 
         $this->doctrine->persist($newSub);
         $this->doctrine->flush();
+
+        return $newSub;
     }
 
     public function archive($group)
@@ -134,7 +136,7 @@ class SubscriptionSystem implements SubscriptionInterface
         $identity->setLockDate($lockDate);
     }
 
-    private function getGroupPeriod($group){
+    public function getGroupPeriod($group){
         $groupPeriodRepo = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
 
         return  $groupPeriodRepo->getLastGroupPeriod($group);
