@@ -101,15 +101,18 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
 
             $bill = $this->billing->recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt);
 
-            $users_number = Array(
-                "users_number" => $this->groups->countUsersGroup($group)
-            );
-
             //stats
             $apps = $this->groupApps->getApps($group);
 
             $groupPeriodRepo = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
             $groupPeriod = $groupPeriodRepo->getLastGroupPeriod($group);
+
+
+            $users_number = Array(
+                "users_number" => $this->groups->countUsersGroup($group),
+                "group_id" => $groupPeriod->getGroup()->getId(),
+                "group_name" => $groupPeriod->getGroup()->getName()
+            );
 
             $list = array();
             foreach ($apps as $app){
@@ -117,15 +120,18 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
                     continue;
                 }
                 $element = array(
-                  "app" => $app->getApp()->getAsArray(),
-                  "usage" => $groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()]
+                    "app" => $app->getApp()->getAsArray(),
+                    "usage" => $groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()],
                 );
                 $list[] = $element;
             }
 
             $pdfStat = $this->pdfBuilder->makeUsageStatPDF(Array(
                 "list" => $list,
-                "stat_id" => $bill["id"]
+                "connexion" => $groupPeriod->getConnexions(),
+                "stat_id" => $bill["id"],
+                "group_id" => $groupPeriod->getGroup()->getId(),
+                "group_name" => $groupPeriod->getGroup()->getName()
             ));
 
             //bill
