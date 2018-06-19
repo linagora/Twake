@@ -21,7 +21,7 @@ class SubscriptionSystem implements SubscriptionInterface
         $this->doctrine = $doctrine;
     }
 
-    private function convertToEntity($var, $repository)
+    public function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
             $var = intval($var);
@@ -96,6 +96,10 @@ class SubscriptionSystem implements SubscriptionInterface
         $this->doctrine->flush();
 
         return $newSub;
+    }
+
+    public function getPricingPlans(){
+        return $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan")->findBy(Array());
     }
 
     public function archive($group)
