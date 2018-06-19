@@ -36,6 +36,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     var $billing;
     var $pdfBuilder;
     var $groups;
+    var $groupApps;
 
     private function convertToEntity($var, $repository)
     {
@@ -53,14 +54,14 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
 
     }
 
-    public function __construct($doctrine, $subscriptionSystem, $mailSender, $billing, $pdfBuilder, $groups)
-    {
+    public function __construct($doctrine, $subscriptionSystem, $mailSender, $billing, $pdfBuilder, $groups, $groupApps){
         $this->doctrine = $doctrine;
         $this->subscriptionSystem = $subscriptionSystem;
         $this->mailSender = $mailSender;
         $this->billing = $billing;
         $this->pdfBuilder = $pdfBuilder;
         $this->groups = $groups;
+        $this->groupApps = $groupApps;
     }
 
     public function newSubscription($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost)
@@ -100,13 +101,43 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
 
             $bill = $this->billing->recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt);
 
+            //stats
+            $apps = $this->groupApps->getApps($group);
+
+            $groupPeriodRepo = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+            $groupPeriod = $groupPeriodRepo->getLastGroupPeriod($group);
+
+
             $users_number = Array(
-                "users_number" => $this->groups->countUsersGroup($group)
+                "users_number" => $this->groups->countUsersGroup($group),
+                "group_id" => $groupPeriod->getGroup()->getId(),
+                "group_name" => $groupPeriod->getGroup()->getName()
             );
 
+            $list = array();
+            foreach ($apps as $app){
+                if(!$groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()]){
+                    continue;
+                }
+                $element = array(
+                    "app" => $app->getApp()->getAsArray(),
+                    "usage" => $groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()],
+                );
+                $list[] = $element;
+            }
+
+            $pdfStat = $this->pdfBuilder->makeUsageStatPDF(Array(
+                "list" => $list,
+                "connexion" => $groupPeriod->getConnexions(),
+                "stat_id" => $bill["id"],
+                "group_id" => $groupPeriod->getGroup()->getId(),
+                "group_name" => $groupPeriod->getGroup()->getName()
+            ));
+
+            //bill
             $pdfPath = $this->pdfBuilder->makeBillPDF(array_merge($bill, $users_number));
 
-            $this->mailSender->sendBill($group,Array($pdfPath));
+            $this->mailSender->sendBill($group,Array($pdfPath,$pdfStat));
             return 1;
         }
         else { //Cas batard

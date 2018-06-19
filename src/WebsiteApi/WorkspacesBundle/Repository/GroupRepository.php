@@ -10,4 +10,14 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  */
 class GroupRepository extends \Doctrine\ORM\EntityRepository
 {
+
+    public function getGroup($group_id){
+        $qb = $this->createQueryBuilder('g')
+            ->select('g')
+            ->where('g.id = :id')
+            ->setParameter('id', $group_id)
+            ->getQuery();
+
+        return $qb->getQuery()->getResult();
+    }
 }

@@ -15,11 +15,29 @@ class SubscriptionTest extends WebTestCaseExtended
 {
 
 
-    public function testIndex(){
+    public function testIndex()
+    {
 
         //détruire les données avant de refaire les tests
 
         //init de datas qui peuvent être utiles
+
+        $this->InitScenario("benoit.tallandier@telecomnancy.net", "Benoit", "riri", "gp_test", "ws_test");
+        $this->addMember("damien.vantourout@telecomnancy.net", "Paulo", "fifi", 1);
+        $this->addMember("dylan.acary@telecomnancy.net", "Dylan", "loulou", 1);
+        $this->addMember("xavier.farchetto@telecomnancy.net", "Fourchette&Couteaux", "toto", 1);
+        $this->addMember("thimene.marmorat@telecomnancy.net", "Titi", "titi", 1);
+        $this->addMember("zoe.geoffroy@telecomnancy.net", "Zoé", "zozo", 1);
+        $this->addMember("lucie.martin@telecomnancy.net", "Lulu", "lulu", 1);
+        $this->addMember("romaric.mourgues@twakeapp.com", "Grand Manitou", 1, 1);
+
+        $list = [1, 3, 5, 7, 3, 2, 1, 1];
+        for ($i = 1; $i <= 20; $i++)
+            $this->DayByDayScenario($list, $i);
+
+        $list_group = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod")->findBy(Array());
+        var_dump(count($list_group));
+        $this->EndScenario($list_group);
 
         $user = $this->newUserByName("phpunit");
         $this->getDoctrine()->persist($user);
@@ -35,31 +53,31 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $pricing_plan = new \WebsiteApi\WorkspacesBundle\Entity\Pricingplan("testPHP");
         $pricing_plan->setMonthPrice(100);
-        $pricing_plan->setYearPrice( 1200);
+        $pricing_plan->setYearPrice(1200);
         $this->getDoctrine()->persist($pricing_plan);
         //$this->getDoctrine()->flush();
-        try{
+        try {
 
-            $subscription = $this->newSubscription($group,$pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false);
+            $subscription = $this->newSubscription($group, $pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false);
             $this->getDoctrine()->persist($subscription);
             $this->getDoctrine()->flush();
 
-        }catch(\Exception $e){
-            \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : ".$e->getTraceAsString());
+        } catch (\Exception $e) {
+            \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : " . $e->getTraceAsString());
         }
 
 
         // methods Subscription
         $log = "";
-        $log .=$this->assertInit($subscription, $pricing_plan)."\n";
-        $log .= $this->assertConsoUsuelle($subscription)."\n";
-        $log .= $this->assertConsoDepasse($subscription)."\n";
-        $log .= $this->assertRenewUp($subscription)."\n";
-        $log .= $this->assertRenewDown($subscription)."\n";
-        $log .= $this->assertCheckEndPeriod($group,$pricing_plan)."\n";
+        $log .= $this->assertInit($subscription, $pricing_plan) . "\n";
+        $log .= $this->assertConsoUsuelle($subscription) . "\n";
+        $log .= $this->assertConsoDepasse($subscription) . "\n";
+        $log .= $this->assertRenewUp($subscription) . "\n";
+        $log .= $this->assertRenewDown($subscription) . "\n";
+        $log .= $this->assertCheckEndPeriod($group, $pricing_plan) . "\n";
         //$log .= $this->casBatard();
 
-       var_dump($log);
+        var_dump($log);
     }
 
     //app.subscription_manager
@@ -81,9 +99,9 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertTrue($arraySub["autoRenew"] == false, " Doit être à faux");
         $this->assertTrue($arraySub["autoWithdrawable"] == false,"DOit être à faux");
 
+        $log = "Le scénario d'initialisation s'est bien déroulé. Un utilisateur a été créé. Un groupe lui est associé. Un abonnement a été créé. \n";
 
-        //faire un rapport de log
-
+        return $log;
     }
 
 
@@ -98,16 +116,17 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertTrue($test1->getBalanceConsumed()==0, "Test1 : ". $test1->getBalanceConsumed());
         $test2= $this->get("app.subscription_system")->addBalanceConsumption(100 ,$sub->getGroup());
 
-        $this->getDoctrine()->persist($sub);
-        $this->getDoctrine()->flush();
-
         $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
 
-       $this->assertTrue(($test3->getBalanceConsumed() == 100), " Test 3 ". $test3->getBalanceConsumed());
+        $this->assertTrue(($test3->getBalanceConsumed() == 100), " Test 3 ". $test3->getBalanceConsumed());
 
         $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($sub->getGroup());
 
         $this->assertTrue($testOverUsing==12, "Doit être vrai car ne génère pas de dépassement");
+
+        $log = "Le scénario de vérification de la consommation usuelle s'est bien déroulé. L'utilisateur a bien un solde initialement nul. Il a consommé 100 unités et il n'est pas en surconsommation. \n";
+
+        return $log;
     }
 
     /**
@@ -121,9 +140,6 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertTrue($test1->getBalanceConsumed()==100, "Test1 : ". $test1->getBalanceConsumed());
 
         $test2= $this->get("app.subscription_system")->addBalanceConsumption(500 ,$sub->getGroup());
-        $this->getDoctrine()->persist($sub);
-        $this->getDoctrine()->flush();
-
         $test3= $this->get("app.subscription_system")->get($sub->getGroup());
 
         //un petit peu
@@ -141,9 +157,6 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertTrue($test1->getBalanceConsumed()==600, "Test1 : ". $test1->getBalanceConsumed());
 
         $test2= $this->get("app.subscription_system")->addBalanceConsumption( 3000,$sub->getGroup());
-        $this->getDoctrine()->persist($sub);
-        $this->getDoctrine()->flush();
-
         $test3= $this->get("app.subscription_system")->get($sub->getGroup());
 
         $this->assertTrue(($test3->getBalanceConsumed() == 3600));
@@ -155,6 +168,11 @@ class SubscriptionTest extends WebTestCaseExtended
 
         //Deplacer la date de 5 jours et faire le test suivant :
         //$this->assertTrue($this->get("app.subscription_manager")->checkLocked()[$sub->getGroup()->getId()],"Doit être true car lock avec le overusing");
+
+        $log = "Le scénario de consommation d'un abonnement avec dépassement s'est bien déroulé. Le solde de la consommation initiale est de 100 unités. On ajoute une consommation de 500 unités 
+        pour avoir un petit dépassement. On gère les petits dépassements. On ajoute une consommation de 3 000 unités pour avoir un ENOME dépassement. On gère les gros dépassements. \n";
+
+        return $log;
 
     }
 
@@ -189,6 +207,10 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertTrue($arraySub["autoRenew"] == false, " Doit être à faux");
         $this->assertTrue($arraySub["autoWithdrawable"] == false,"DOit être à faux");
 
+        $log = "Le scénario du renouvellement d'un abonnement à la hausse s'est bien déroulé. On archive l'ancien abonnement et on en crée un nouveau. Les prix annuel et mensuel sont désormais de 12 000 et 1 000 unités. 
+        Le renouvellement d'abonnement et le prévlèvement ne sont pas automatiques.\n";
+
+        return $log;
     }
 
     /**
@@ -220,7 +242,12 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertTrue($sub->getId() != $arraySub["id"], "Les id ne doivent pas être les mêmes ");
         $this->assertTrue($sub->getGroup()->getId()== $arraySub["group"]["id"], " Les groupees doivent être les memes" );
         $this->assertTrue($arraySub["autoRenew"] == false, " Doit être à faux");
-        $this->assertTrue($arraySub["autoWithdrawable"] == false,"DOit être à faux");
+        $this->assertTrue($arraySub["autoWithdrawable"] == false,"Doit être à faux");
+
+        $log = "Le scénario de renouvellement à la baisse s'est bien déroulé. On archive l'ancien abonnement et on en crée un nouveau. 
+        Les prix annuel et mensuel sont désormais de 120 et 10 unités. Le renouvellement d'abonnement et le prévlèvement ne sont pas automatiques\n";
+
+        return $log;
 
     }
 
@@ -229,6 +256,7 @@ class SubscriptionTest extends WebTestCaseExtended
         $subscription = $this->newSubscription($group,$pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add($dateInterval), false, false);
         $code = $this->get("app.subscription_manager")->checkEndPeriodByGroup($group);
         $this->assertTrue($expectedCode==$code);
+
     }
 
     public function assertCheckEndPeriod($group,$pricing_plan){
@@ -245,6 +273,11 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertCheckEndPeriodSpecPeriod($group,$pricing_plan,"P15D",5);
         $this->assertCheckEndPeriodSpecPeriod($group,$pricing_plan,"P7D",6);
         $this->assertCheckEndPeriodSpecPeriod($group,$pricing_plan,"P1D",7);
+
+        $log = "Le scénario de vérification d'envoie de mail en cas d'approche d'une fin d'abonnement s'est bien déroulé. Si on est à 2 mois, 1 mois, 15 jours, 7 jours ou 1 jour de la fin de l'abonnement, 
+        on envoie un mail au client. Et on vérifie que ce mail a bien été envoyé.";
+
+        return $log;
     }
 
     /**
@@ -273,4 +306,45 @@ class SubscriptionTest extends WebTestCaseExtended
 
     }
      */
+
+    public function InitScenario($user_mail, $pseudo, $password,$group_name, $workspace_name){
+        $token = $this->get("app.user")->subscribeMail($user_mail);
+        $user = $this->get("app.user")->subscribe($token, null, $pseudo, $password, true);
+
+        $uniquename = $this->get("app.string_cleaner")->simplify($group_name);
+        $plan = $this->get("app.pricing_plan")->getMinimalPricing();
+        $planId = $plan->getId();
+        $group = $this->get("app.groups")->create($user->getId(), $group_name, $uniquename, $planId);
+
+        $groupId = $group->getId();
+        $this->get("app.workspaces")->create($workspace_name, $groupId, $user->getId());
+    }
+
+    public function addMember($user_mail, $pseudo, $password, $workspace_id){
+        $token = $this->get("app.user")->subscribeMail($user_mail);
+        $user = $this->get("app.user")->subscribe($token, null, $pseudo, $password, true);
+
+        $this->get("app.workspace_members")->addMember($workspace_id, $user->getId(), false, null, null);
+    }
+
+    public function DayByDayScenario($list, $day)
+    {
+        for ($i = 0; $i < count($list); $i++) {
+            $group = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser")->findOneBy(Array("user" => $i + 1));
+            if ($group == null)
+                break;
+            if (($day % $list[$i]) == 0) {
+                $group->increaseConnectionsPeriod();
+                $this->getDoctrine()->persist($group);
+            }
+        }
+        $this->getDoctrine()->flush();
+    }
+
+
+
+    public function EndScenario($list_group){
+
+        $this->get("app.pricing_plan")->calculatePrice($list_group);
+    }
 }

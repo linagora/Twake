@@ -183,7 +183,9 @@ class Receipt
             "discount" => $this->getDiscount()
         );
 
-        $group_identity = $this->getGroupIdentity()->getAsArray();
+        //if ($this->getGroupIdentity() != null){
+            $group_identity = $this->getGroupIdentity()->getAsArray();
+        //}
 
         $pricing_plan = $this->getPricingPlan()->getAsArray();
 
