@@ -57,6 +57,51 @@ class SubscriptionController extends Controller
         return new JsonResponse($data);
     }
 
+    public function getSubscriptionInfoAction(Request $request){
+        $group = $request->request->get("groupId");
+
+        $data["errors"] = Array();
+
+        if(!is_numeric($group)){
+            $data["errors"][] = "group error";
+            return new JsonResponse($data);
+        }
+
+        $sub = $this->get("app.subscription_system")->get($group);
+
+        if($sub==null){
+            $data["errors"][] = 0;
+            $data["errors"][] = "no subscription for this group";
+            return new JsonResponse($data);
+        }
+
+        $data["data"] = $sub->getAsArray();
+
+        $gp = $this->get("app.subscription_system")->getGroupPeriod($group);
+
+        if($gp==null){
+            $data["errors"][] = 0;
+            $data["errors"][] = "no group period for this group";
+            return new JsonResponse($data);
+        }
+
+        $data["data"] = array_merge($sub->getAsArray(), $gp->getAsArray());
+
+        return new JsonResponse($data);
+    }
+
+    public function getPricingPlansAction(){
+        $pricingPlans = $this->get("app.subscription_system")->getPricingPlans();
+
+        $pricingPlansArray = Array();
+
+        foreach ($pricingPlans as $pp){
+            array_push($pricingPlansArray,$pp->getAsArray());
+        }
+
+        return new JsonResponse($pricingPlansArray);
+    }
+
     public function checkOverusingAction(){
         return new JsonResponse($this->get("app.subscription_manager")->checkOverusing());
     }

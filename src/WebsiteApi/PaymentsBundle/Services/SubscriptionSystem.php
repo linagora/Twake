@@ -98,6 +98,10 @@ class SubscriptionSystem implements SubscriptionInterface
         return $newSub;
     }
 
+    public function getPricingPlans(){
+        return $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan")->findBy(Array());
+    }
+
     public function archive($group)
     {
         $sub = $this->get($group);
