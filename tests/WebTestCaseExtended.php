@@ -59,6 +59,10 @@ class WebTestCaseExtended extends WebTestCase
         $this->getDoctrine()->persist($group);
         $this->getDoctrine()->flush();
 
+        $groupIdentity = $this->get("app.group_identitys")->create($group, "fake","fake","fake",0);
+        $this->getDoctrine()->persist($groupIdentity);
+        $this->getDoctrine()->flush();
+
         return $group;
     }
 

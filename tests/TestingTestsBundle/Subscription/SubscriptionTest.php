@@ -50,16 +50,16 @@ class SubscriptionTest extends WebTestCaseExtended
 
 
         // methods Subscription
-        $log = "";
-        $log .=$this->assertInit($subscription, $pricing_plan)."\n";
-        $log .= $this->assertConsoUsuelle($subscription)."\n";
-        $log .= $this->assertConsoDepasse($subscription)."\n";
-        $log .= $this->assertRenewUp($subscription)."\n";
-        $log .= $this->assertRenewDown($subscription)."\n";
-        $log .= $this->assertCheckEndPeriod($group,$pricing_plan)."\n";
-        //$log .= $this->casBatard();
+          $log = "";
+       // $log .=$this->assertInit($subscription, $pricing_plan)."\n";
+       // $log .= $this->assertConsoUsuelle($subscription)."\n";
+        //$log .= $this->assertConsoDepasse($subscription)."\n";
+        //$log .= $this->assertRenewUp($subscription)."\n";
+        //$log .= $this->assertRenewDown($subscription)."\n";
+        //$log .= $this->assertCheckEndPeriod($group,$pricing_plan)."\n";
+        $log .= $this->assertUpdateLockDate($group,$work);
 
-       var_dump($log);
+      // var_dump($log);
     }
 
     //app.subscription_manager
@@ -153,9 +153,14 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $this->assertTrue($testOverUsing==9, "Doit être vrai car génère gros depassement");
 
-        //Deplacer la date de 5 jours et faire le test suivant :
+        //Deplacer la date de 5 jours et faire les tests suivant :
+
+        //TODO
+        $testLocked = $this->get("app.subscription_manager")->checkLocked();
+        $this->assertTrue(count($testLocked)>0 , " Count doit être au moins de 1, il est de ".count($testLocked));
         //$this->assertTrue($this->get("app.subscription_manager")->checkLocked()[$sub->getGroup()->getId()],"Doit être true car lock avec le overusing");
 
+        //changer la date encore une fois pour revenir à la normale
     }
 
     /**
@@ -247,30 +252,84 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertCheckEndPeriodSpecPeriod($group,$pricing_plan,"P1D",7);
     }
 
+    //shell_exec('date +%Y%m%d -s "20081128"')
+    //shell_exec('date +%Y%m%d -s "'.date("Ymd", date("U")+60*60*24).'"')
     /**
+     * shell_exec('date')
+    string(29) "Wed Mar  6 14:18:08 PST 2013\n"
+    > exec('date')
+    string(28) "Wed Mar  6 14:18:12 PST 2013"
 
+     */
 
+    //exec('sudo -u root -S {{ your command }} < ~/.sudopass/sudopass.secret');
+    /**
+     * https://github.com/wolfcw/libfaketime pour les tests de date ( à installer en lcoal )
+     * @throws \Exception
+     */
     public function assertUpdateLockDate(){
 
-    // Verif que la lockdate est mise à jour sur demande ( récupérer groupIdentity )
+        $user = $this->newUserByName("phpunit2");
+        $this->getDoctrine()->persist($user);
+        $this->getDoctrine()->flush();
 
-    $result = ($this->get("service.subscriptionSystem")->get($sub->getId()))->getAsArray();
-    assert($result != null, "Result ne doit pas être null, Id non présent ");
+        $group = $this->newGroup($user->getId());
+        $this->getDoctrine()->persist($group);
+        $this->getDoctrine()->flush();
 
-    $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
-    $identity = $groupIdentityRepo->findOneBy(Array("group"=>$sub->getGroup()->getId()));
+        $pricing_plan = new \WebsiteApi\WorkspacesBundle\Entity\Pricingplan("testPHPLock");
+        $pricing_plan->setMonthPrice(100);
+        $pricing_plan->setYearPrice( 1200);
+        $this->getDoctrine()->persist($pricing_plan);
+        //$this->getDoctrine()->flush();
+        try{
 
-    assert($groupIdentityRepo != null && $identity != null);
-    $oldLock = $identity->getLockDate();
-    $dateLock = (new \DateTime('now'))->add(new \DateInterval("P5D"));
-    assert($oldLock == null, "ancienne date doit etre null car non lock par defaut au départ");
+            $subscription = $this->newSubscription($group,$pricing_plan, $pricing_plan->getMonthPrice(), (new \DateTime('now'))->sub(new \DateInterval("P5D")), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false);
+            $this->getDoctrine()->persist($subscription);
+            $this->getDoctrine()->flush();
 
-    $result = ($this->get("service.subscriptionSystem")->updateLockDate($sub->getGroup->getId()));
+        }catch(\Exception $e){
+            \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : ".$e->getTraceAsString());
+        }
 
-    $identity = $groupIdentityRepo->findOneBy(Array("group"=>$sub->getGroup()->getId()));
 
-    assert(($dateLock->getTimestamp() - $identity->getLockDate()) == 0, "doit être egal à 0 " ) ;
+        $test2= $this->get("app.subscription_system")->addBalanceConsumption( 3000,$subscription->getGroup());
 
+        $test3= $this->get("app.subscription_system")->get($subscription->getGroup());
+
+        $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($subscription->getGroup());
+
+
+        //Deplacer la date de 5 jours et faire les tests suivant :
+
+        $testLocked = $this->get("app.subscription_manager")->checkLocked();
+
+        $this->assertTrue(count($testLocked)>0 , " Count doit être au moins de 1, il est de ".count($testLocked));
+
+        //modif de la date en bd
+
+        $testLockDate = $this->get("app.subscription_system")->testChangeLockDate($group);
+
+        $this->assertTrue($this->get("app.subscription_manager")->checkLocked()[$subscription->getGroup()->getId()],"Doit être true car lock avec le overusing");
+
+
+        var_dump($testLockDate);
+
+        //print de la date d'aujourdhui
+    /**
+        var_dump((new \DateTime('now'))->format("Ymd"));
+        //modif de la date pour le jour de demain
+        $dateFuture = ((new \DateTime('now'))->add(new \DateInterval("P10D")))->format("Ymd");
+
+        // $dateModif = shell_exec('sudo -u root -S date +%Y%m%d -s "'.$dateFuture.'" < ~/.sudopass/sudopass.secret' );
+
+       // var_dump(shell_exec('cat ~/.sudopass/sudopass.secret'));
+        var_dump(shell_exec(" ./changeDate.sh"));
+        //print pour la date modif
+        //var_dump($dateModif);
+        var_dump((new \DateTime('now'))->format("Ymd"));
+        var_dump(shell_exec('date '));
+    */
     }
-     */
+
 }
