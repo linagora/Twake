@@ -397,7 +397,6 @@ class SubscriptionTest extends WebTestCaseExtended
     }
 
 
-
     public function EndScenario($list_group){
 
         $this->get("app.pricing_plan")->calculatePrice($list_group);
