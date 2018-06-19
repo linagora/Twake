@@ -21,7 +21,7 @@ class SubscriptionSystem implements SubscriptionInterface
         $this->doctrine = $doctrine;
     }
 
-    private function convertToEntity($var, $repository)
+    public function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
             $var = intval($var);

@@ -15,11 +15,29 @@ class SubscriptionTest extends WebTestCaseExtended
 {
 
 
-    public function testIndex(){
+    public function testIndex()
+    {
 
         //détruire les données avant de refaire les tests
 
         //init de datas qui peuvent être utiles
+
+        $this->InitScenario("benoit.tallandier@telecomnancy.net", "Benoit", "riri", "gp_test", "ws_test");
+        $this->addMember("damien.vantourout@telecomnancy.net", "Paulo", "fifi", 1);
+        $this->addMember("dylan.acary@telecomnancy.net", "Dylan", "loulou", 1);
+        $this->addMember("xavier.farchetto@telecomnancy.net", "Fourchette&Couteaux", "toto", 1);
+        $this->addMember("thimene.marmorat@telecomnancy.net", "Titi", "titi", 1);
+        $this->addMember("zoe.geoffroy@telecomnancy.net", "Zoé", "zozo", 1);
+        $this->addMember("lucie.martin@telecomnancy.net", "Lulu", "lulu", 1);
+        $this->addMember("romaric.mourgues@twakeapp.com", "Grand Manitou", 1, 1);
+
+        $list = [1, 3, 5, 7, 3, 2, 1, 1];
+        for ($i = 1; $i <= 20; $i++)
+            $this->DayByDayScenario($list, $i);
+
+        $list_group = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod")->findBy(Array());
+        var_dump(count($list_group));
+        $this->EndScenario($list_group);
 
         $user = $this->newUserByName("phpunit");
         $this->getDoctrine()->persist($user);
@@ -35,31 +53,31 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $pricing_plan = new \WebsiteApi\WorkspacesBundle\Entity\Pricingplan("testPHP");
         $pricing_plan->setMonthPrice(100);
-        $pricing_plan->setYearPrice( 1200);
+        $pricing_plan->setYearPrice(1200);
         $this->getDoctrine()->persist($pricing_plan);
         //$this->getDoctrine()->flush();
-        try{
+        try {
 
-            $subscription = $this->newSubscription($group,$pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false);
+            $subscription = $this->newSubscription($group, $pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false);
             $this->getDoctrine()->persist($subscription);
             $this->getDoctrine()->flush();
 
-        }catch(\Exception $e){
-            \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : ".$e->getTraceAsString());
+        } catch (\Exception $e) {
+            \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : " . $e->getTraceAsString());
         }
 
 
         // methods Subscription
         $log = "";
-        $log .=$this->assertInit($subscription, $pricing_plan)."\n";
-        $log .= $this->assertConsoUsuelle($subscription)."\n";
-        $log .= $this->assertConsoDepasse($subscription)."\n";
-        $log .= $this->assertRenewUp($subscription)."\n";
-        $log .= $this->assertRenewDown($subscription)."\n";
-        $log .= $this->assertCheckEndPeriod($group,$pricing_plan)."\n";
+        $log .= $this->assertInit($subscription, $pricing_plan) . "\n";
+        $log .= $this->assertConsoUsuelle($subscription) . "\n";
+        $log .= $this->assertConsoDepasse($subscription) . "\n";
+        $log .= $this->assertRenewUp($subscription) . "\n";
+        $log .= $this->assertRenewDown($subscription) . "\n";
+        $log .= $this->assertCheckEndPeriod($group, $pricing_plan) . "\n";
         //$log .= $this->casBatard();
 
-       var_dump($log);
+        var_dump($log);
     }
 
     //app.subscription_manager
@@ -288,4 +306,45 @@ class SubscriptionTest extends WebTestCaseExtended
 
     }
      */
+
+    public function InitScenario($user_mail, $pseudo, $password,$group_name, $workspace_name){
+        $token = $this->get("app.user")->subscribeMail($user_mail);
+        $user = $this->get("app.user")->subscribe($token, null, $pseudo, $password, true);
+
+        $uniquename = $this->get("app.string_cleaner")->simplify($group_name);
+        $plan = $this->get("app.pricing_plan")->getMinimalPricing();
+        $planId = $plan->getId();
+        $group = $this->get("app.groups")->create($user->getId(), $group_name, $uniquename, $planId);
+
+        $groupId = $group->getId();
+        $this->get("app.workspaces")->create($workspace_name, $groupId, $user->getId());
+    }
+
+    public function addMember($user_mail, $pseudo, $password, $workspace_id){
+        $token = $this->get("app.user")->subscribeMail($user_mail);
+        $user = $this->get("app.user")->subscribe($token, null, $pseudo, $password, true);
+
+        $this->get("app.workspace_members")->addMember($workspace_id, $user->getId(), false, null, null);
+    }
+
+    public function DayByDayScenario($list, $day)
+    {
+        for ($i = 0; $i < count($list); $i++) {
+            $group = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser")->findOneBy(Array("user" => $i + 1));
+            if ($group == null)
+                break;
+            if (($day % $list[$i]) == 0) {
+                $group->increaseConnectionsPeriod();
+                $this->getDoctrine()->persist($group);
+            }
+        }
+        $this->getDoctrine()->flush();
+    }
+
+
+
+    public function EndScenario($list_group){
+
+        $this->get("app.pricing_plan")->calculatePrice($list_group);
+    }
 }
