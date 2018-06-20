@@ -15,13 +15,12 @@ use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;
 class SubscriptionTest extends WebTestCaseExtended
 {
 
-
+    /**
+     * @throws \Exception
+     */
     public function testIndex()
     {
-
-        //détruire les données avant de refaire les tests
-
-        //init de datas qui peuvent être utiles
+        //détruire init les données avant de refaire les tests
 
         $pricing_plan = new Pricingplan("testPHP");
         $pricing_plan->setMonthPrice(100);
@@ -54,10 +53,7 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->getDoctrine()->flush();
 
 
-
         $this->EndScenario();
-
-
 
 
         $user = $this->newUserByName("phpunit");
@@ -83,7 +79,6 @@ class SubscriptionTest extends WebTestCaseExtended
             \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : " . $e->getTraceAsString());
         }
 
-
         // methods Subscription
         $log = "";
         $log .=$this->assertInit($subscription, $pricing_plan)."\n";
@@ -93,7 +88,6 @@ class SubscriptionTest extends WebTestCaseExtended
         $log .= $this->assertRenewDown($subscription)."\n";
         $log .= $this->assertCheckEndPeriod($group,$pricing_plan)."\n";
         $log .= $this->assertUpdateLockDate($group,$work). "\n";
-        //$log .= $this->casBatard();
 
         var_dump($log);
     }
@@ -102,6 +96,10 @@ class SubscriptionTest extends WebTestCaseExtended
     /**
      * Scénario : un utilisateur est créé, il a un group qui correspond, il possède un premier abonnement qui est créé
      *  Vérifcation des données de base
+     *
+     * @param $sub
+     * @param $pricing_plan
+     * @return string
      */
     public function assertInit($sub, $pricing_plan){
         $result = ($this->get("app.subscription_system")->get($sub->getGroup()->getId()));
@@ -125,6 +123,9 @@ class SubscriptionTest extends WebTestCaseExtended
 
     /**
      * Consommation usuelle d'un abonnement
+     *
+     * @param $sub
+     * @return string
      */
     public function assertConsoUsuelle($sub){
 
@@ -132,10 +133,9 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertTrue($test1 != null, " ne doit pas être faux, id non présent dans la db");
 
         $this->assertTrue($test1->getBalanceConsumed()==0, "Test1 : ". $test1->getBalanceConsumed());
-        $test2= $this->get("app.subscription_system")->addBalanceConsumption(100 ,$sub->getGroup());
+        $this->get("app.subscription_system")->addBalanceConsumption(100 ,$sub->getGroup());
 
         $test3= $this->get("app.subscription_system")->get($sub->getGroup()->getId());
-
         $this->assertTrue(($test3->getBalanceConsumed() == 100), " Test 3 ". $test3->getBalanceConsumed());
 
         $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($sub->getGroup());
@@ -143,12 +143,14 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->assertTrue($testOverUsing==12, "Doit être vrai car ne génère pas de dépassement");
 
         $log = "Le scénario de vérification de la consommation usuelle s'est bien déroulé. L'utilisateur a bien un solde initialement nul. Il a consommé 100 unités et il n'est pas en surconsommation. \n";
-
         return $log;
     }
 
     /**
      * consommation d'un abonnement mais qui dépasse
+     *
+     * @param $sub
+     * @return string
      */
     public function assertConsoDepasse($sub){
 
@@ -157,45 +159,36 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $this->assertTrue($test1->getBalanceConsumed()==100, "Test1 : ". $test1->getBalanceConsumed());
 
-        $test2= $this->get("app.subscription_system")->addBalanceConsumption(500 ,$sub->getGroup());
+        $this->get("app.subscription_system")->addBalanceConsumption(500 ,$sub->getGroup());
         $test3= $this->get("app.subscription_system")->get($sub->getGroup());
 
         //un petit peu
         $this->assertTrue(($test3->getBalanceConsumed() == 600));
-
         $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($sub->getGroup());
-
         $this->assertTrue($testOverUsing==10, "Doit être vrai car génère petit depassement");
 
         //beaucoup
         $test1= $this->get("app.subscription_system")->get($sub->getGroup());
         $this->assertTrue($test1 != null, " ne doit pas être faux, id non présent dans la db");
-
-
         $this->assertTrue($test1->getBalanceConsumed()==600, "Test1 : ". $test1->getBalanceConsumed());
 
-        $test2= $this->get("app.subscription_system")->addBalanceConsumption( 3000,$sub->getGroup());
+        $this->get("app.subscription_system")->addBalanceConsumption( 3000,$sub->getGroup());
         $test3= $this->get("app.subscription_system")->get($sub->getGroup());
-
         $this->assertTrue(($test3->getBalanceConsumed() == 3600));
 
-
         $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($sub->getGroup());
-
         $this->assertTrue($testOverUsing==9, "Doit être vrai car génère gros depassement");
-
-        //Deplacer la date de 5 jours et faire le test suivant :
-        //$this->assertTrue($this->get("app.subscription_manager")->checkLocked()[$sub->getGroup()->getId()],"Doit être true car lock avec le overusing");
 
         $log = "Le scénario de consommation d'un abonnement avec dépassement s'est bien déroulé. Le solde de la consommation initiale est de 100 unités. On ajoute une consommation de 500 unités 
         pour avoir un petit dépassement. On gère les petits dépassements. On ajoute une consommation de 3 000 unités pour avoir un ENOME dépassement. On gère les gros dépassements. \n";
-
         return $log;
 
     }
 
     /**
      * renouvellement d'un abonnement ( archivage de l'ancien et nouveau abo )
+     * @param sub subscription
+     * @return string log
      */
     public function assertRenewUp($sub){
 
@@ -227,12 +220,14 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $log = "Le scénario du renouvellement d'un abonnement à la hausse s'est bien déroulé. On archive l'ancien abonnement et on en crée un nouveau. Les prix annuel et mensuel sont désormais de 12 000 et 1 000 unités. 
         Le renouvellement d'abonnement et le prévlèvement ne sont pas automatiques.\n";
-
         return $log;
     }
 
     /**
      * renouvellement d'un abonnement revue à la baisse
+     *
+     * @param $sub
+     * @return string
      */
     public function assertRenewDown($sub){
 
@@ -264,19 +259,31 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $log = "Le scénario de renouvellement à la baisse s'est bien déroulé. On archive l'ancien abonnement et on en crée un nouveau. 
         Les prix annuel et mensuel sont désormais de 120 et 10 unités. Le renouvellement d'abonnement et le prévlèvement ne sont pas automatiques\n";
-
         return $log;
 
     }
 
+    /**
+     * @param $group
+     * @param $pricing_plan
+     * @param $time
+     * @param $expectedCode
+     * @throws \Exception
+     */
     public function assertCheckEndPeriodSpecPeriod($group,$pricing_plan, $time, $expectedCode){
         $dateInterval = new \DateInterval($time);
-        $subscription = $this->newSubscription($group,$pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add($dateInterval), false, false);
+        $this->newSubscription($group,$pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add($dateInterval), false, false);
         $code = $this->get("app.subscription_manager")->checkEndPeriodByGroup($group);
         $this->assertTrue($expectedCode==$code);
 
     }
 
+    /**
+     * @param $group
+     * @param $pricing_plan
+     * @return string
+     * @throws \Exception
+     */
     public function assertCheckEndPeriod($group,$pricing_plan){
         /*
          * 1 : bill mail
@@ -294,10 +301,12 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $log = "Le scénario de vérification d'envoie de mail en cas d'approche d'une fin d'abonnement s'est bien déroulé. Si on est à 2 mois, 1 mois, 15 jours, 7 jours ou 1 jour de la fin de l'abonnement, 
         on envoie un mail au client. Et on vérifie que ce mail a bien été envoyé.";
-
         return $log;
     }
 
+    /**
+     * @return string
+     */
     public function assertUpdateLockDate(){
 
         $user = $this->newUserByName("phpunit2");
@@ -348,6 +357,14 @@ class SubscriptionTest extends WebTestCaseExtended
     }
 
 
+    /**
+     * @param $user_mail
+     * @param $pseudo
+     * @param $password
+     * @param $group_name
+     * @param $workspace_name
+     * @param $pricing_plan
+     */
     public function InitScenario($user_mail, $pseudo, $password,$group_name, $workspace_name, $pricing_plan){
         $token = $this->get("app.user")->subscribeMail($user_mail);
         $user = $this->get("app.user")->subscribe($token, null, $pseudo, $password, true);
@@ -359,6 +376,12 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->get("app.workspaces")->create($workspace_name, $groupId, $user->getId());
     }
 
+    /**
+     * @param $user_mail
+     * @param $pseudo
+     * @param $password
+     * @param $workspace_id
+     */
     public function addMember($user_mail, $pseudo, $password, $workspace_id){
         $token = $this->get("app.user")->subscribeMail($user_mail);
         $user = $this->get("app.user")->subscribe($token, null, $pseudo, $password, true);
@@ -366,6 +389,10 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->get("app.workspace_members")->addMember($workspace_id, $user->getId(), false, null, null);
     }
 
+    /**
+     * @param $list
+     * @param $day
+     */
     public function DayByDayScenario($list, $day){
         for ($i = 0; $i < count($list); $i++) {
             $group = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser")->findOneBy(Array("user" => $i + 1));
@@ -379,9 +406,10 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->getDoctrine()->flush();
     }
 
-
+    /**
+     *
+     */
     public function EndScenario(){
-
 
         $this->get("app.pricing_plan")->dailyDataGroupUser();
         $this->get("app.pricing_plan")->groupPeriodUsage();
