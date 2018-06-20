@@ -9,6 +9,6 @@ namespace WebsiteApi\WorkspacesBundle\Model;
  */
 interface GroupPeriodInterface
 {
-	public function init($group);
+	public function init($group, $pricing_plan);
 
 }

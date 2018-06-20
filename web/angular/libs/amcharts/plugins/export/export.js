@@ -2415,7 +2415,7 @@ if ( !AmCharts.translations[ "export" ][ "en" ] ) {
 			},
 
 			/**
-			 * Generates PDF; returns base64 datastring
+			 * Generates Pdf; returns base64 datastring
 			 */
 			toPDF: function( options, callback ) {
 				var cfg = _this.deepMerge( _this.deepMerge( {
@@ -2517,7 +2517,7 @@ if ( !AmCharts.translations[ "export" ][ "en" ] ) {
 					cfg.content = pageContent;
 				}
 
-				// Create PDF instance
+				// Create Pdf instance
 				data = new pdfMake.createPdf( cfg );
 
 				if ( callback ) {

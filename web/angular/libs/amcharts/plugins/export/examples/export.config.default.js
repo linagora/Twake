@@ -10,7 +10,7 @@
 
 
 /**
- * PDF-specfic configuration
+ * Pdf-specfic configuration
  */
 AmCharts.exportPDF = {
 	"format": "PDF",

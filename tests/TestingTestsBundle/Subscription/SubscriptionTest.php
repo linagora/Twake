@@ -28,11 +28,9 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->getDoctrine()->persist($pricing_plan);
         $this->getDoctrine()->flush();
 
-        $pricing_plan_id = $pricing_plan->getId();
-        var_dump($pricing_plan_id);
 
         $this->InitScenario("benoit.tallandier@telecomnancy.net", "Benoit", "riri",
-            "gp_test", "ws_test", 3);
+            "gp_test", "ws_test", $pricing_plan);
         $this->addMember("damien.vantourout@telecomnancy.net", "Paulo", "fifi", 1);
         $this->addMember("dylan.acary@telecomnancy.net", "Dylan", "loulou", 1);
         $this->addMember("xavier.farchetto@telecomnancy.net", "Fourchette&Couteaux", "toto", 1);
@@ -40,6 +38,12 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->addMember("zoe.geoffroy@telecomnancy.net", "Zoé", "zozo", 1);
         $this->addMember("lucie.martin@telecomnancy.net", "Lulu", "lulu", 1);
         $this->addMember("romaric.mourgues@twakeapp.com", "Grand Manitou", 1, 1);
+
+        $group_id = 1;
+
+        $fp = fopen('file.csv', 'w');
+        $csv = array();
+        array_push($csv,array("day","current_cost","estimated_cost"));
 
         $list = [1, 3, 5, 7, 3, 2, 1, 1];
         for ($i = 1; $i <= 20; $i++)
@@ -56,6 +60,7 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->EndScenario();
 
 
+        fclose($fp);
         $user = $this->newUserByName("phpunit");
         $this->getDoctrine()->persist($user);
         $this->getDoctrine()->flush();
@@ -87,7 +92,8 @@ class SubscriptionTest extends WebTestCaseExtended
         $log .= $this->assertRenewUp($subscription)."\n";
         $log .= $this->assertRenewDown($subscription)."\n";
         $log .= $this->assertCheckEndPeriod($group,$pricing_plan)."\n";
-        $log .= $this->assertUpdateLockDate($group,$work). "\n";
+        //$log .= $this->assertUpdateLockDate($group,$work). "\n";
+        //$log .= $this->casBatard();
 
         var_dump($log);
     }
@@ -357,61 +363,7 @@ class SubscriptionTest extends WebTestCaseExtended
     }
 
 
-    /**
-     * @param $user_mail
-     * @param $pseudo
-     * @param $password
-     * @param $group_name
-     * @param $workspace_name
-     * @param $pricing_plan
-     */
-    public function InitScenario($user_mail, $pseudo, $password,$group_name, $workspace_name, $pricing_plan){
-        $token = $this->get("app.user")->subscribeMail($user_mail);
-        $user = $this->get("app.user")->subscribe($token, null, $pseudo, $password, true);
 
-        $uniquename = $this->get("app.string_cleaner")->simplify($group_name);
-        $group = $this->get("app.groups")->create($user->getId(), $group_name, $uniquename, $pricing_plan);
 
-        $groupId = $group->getId();
-        $this->get("app.workspaces")->create($workspace_name, $groupId, $user->getId());
-    }
 
-    /**
-     * @param $user_mail
-     * @param $pseudo
-     * @param $password
-     * @param $workspace_id
-     */
-    public function addMember($user_mail, $pseudo, $password, $workspace_id){
-        $token = $this->get("app.user")->subscribeMail($user_mail);
-        $user = $this->get("app.user")->subscribe($token, null, $pseudo, $password, true);
-
-        $this->get("app.workspace_members")->addMember($workspace_id, $user->getId(), false, null, null);
-    }
-
-    /**
-     * @param $list
-     * @param $day
-     */
-    public function DayByDayScenario($list, $day){
-        for ($i = 0; $i < count($list); $i++) {
-            $group = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser")->findOneBy(Array("user" => $i + 1));
-            if ($group == null)
-                break;
-            if (($day % $list[$i]) == 0) {
-                $group->increaseConnectionsPeriod();
-                $this->getDoctrine()->persist($group);
-            }
-        }
-        $this->getDoctrine()->flush();
-    }
-
-    /**
-     *
-     */
-    public function EndScenario(){
-
-        $this->get("app.pricing_plan")->dailyDataGroupUser();
-        $this->get("app.pricing_plan")->groupPeriodUsage();
-    }
 }

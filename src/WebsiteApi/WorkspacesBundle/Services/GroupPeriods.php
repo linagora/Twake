@@ -151,17 +151,15 @@ class GroupPeriods implements GroupPeriodInterface
         $this->doctrine->flush();
     }
 
-    public function init($group){
+    public function init($group, $pricing_plan){
         $groupPeriodRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
-        $planRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
-        $pricing = $planRepository->findOneBy(Array("id"=>1));
 
         $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
 
         if($groupPeriod){
             return false;
         }else{
-            $groupPricing = new GroupPricingInstance($group ,"monthly",$pricing );
+            $groupPricing = new GroupPricingInstance($group ,"monthly",$pricing_plan );
             $date = new \DateTime();
             $date->modify('+1 month');
             $groupPricing->setEndAt($date);
