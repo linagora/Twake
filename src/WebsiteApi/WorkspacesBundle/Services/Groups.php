@@ -58,7 +58,7 @@ class Groups implements GroupsInterface
         $this->gms->addManager($group->getId(), $userId, 3, true);
 
 		$this->init($group);
-		$this->gps->init($group);
+		$this->gps->init($group, $plan);
 
 		return $group;
 

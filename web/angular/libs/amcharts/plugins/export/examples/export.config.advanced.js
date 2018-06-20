@@ -6,7 +6,7 @@
  */
 
 /**
- * PDF-specfic configuration
+ * Pdf-specfic configuration
  */
 AmCharts.exportDrawingMenu = [ {
   class: "export-drawing",
@@ -187,7 +187,7 @@ AmCharts.exportCFG = {
             } );
           }
         }, {
-          label: "PDF + data",
+          label: "Pdf + data",
           click: function() {
             this.capture( {}, function() {
               var tableData = this.setup.chart.dataProvider;
