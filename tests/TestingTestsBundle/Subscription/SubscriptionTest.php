@@ -10,6 +10,7 @@ namespace Tests\TestingTestsBundle\Subscription;
 
 
 use Tests\WebTestCaseExtended;
+use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;
 
 class SubscriptionTest extends WebTestCaseExtended
 {
@@ -22,7 +23,17 @@ class SubscriptionTest extends WebTestCaseExtended
 
         //init de datas qui peuvent être utiles
 
-        $this->InitScenario("benoit.tallandier@telecomnancy.net", "Benoit", "riri", "gp_test", "ws_test");
+        $pricing_plan = new Pricingplan("testPHP");
+        $pricing_plan->setMonthPrice(100);
+        $pricing_plan->setYearPrice(1200);
+        $this->getDoctrine()->persist($pricing_plan);
+        $this->getDoctrine()->flush();
+
+        $pricing_plan_id = $pricing_plan->getId();
+        var_dump($pricing_plan_id);
+
+        $this->InitScenario("benoit.tallandier@telecomnancy.net", "Benoit", "riri",
+            "gp_test", "ws_test", 3);
         $this->addMember("damien.vantourout@telecomnancy.net", "Paulo", "fifi", 1);
         $this->addMember("dylan.acary@telecomnancy.net", "Dylan", "loulou", 1);
         $this->addMember("xavier.farchetto@telecomnancy.net", "Fourchette&Couteaux", "toto", 1);
@@ -35,9 +46,19 @@ class SubscriptionTest extends WebTestCaseExtended
         for ($i = 1; $i <= 20; $i++)
             $this->DayByDayScenario($list, $i);
 
-        $list_group = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod")->findBy(Array());
-        var_dump(count($list_group));
-        $this->EndScenario($list_group);
+        $gp = $this->get("app.subscription_system")->getGroupPeriod(1);
+        $startAt = $gp->getPeriodStartedAt();
+        $startAt->sub(new \DateInterval("P1M"));
+        $gp->setPeriodStartedAt($startAt);
+        $this->getDoctrine()->persist($gp);
+        $this->getDoctrine()->flush();
+
+
+
+        $this->EndScenario();
+
+
+
 
         $user = $this->newUserByName("phpunit");
         $this->getDoctrine()->persist($user);
@@ -51,11 +72,7 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->getDoctrine()->persist($work);
         $this->getDoctrine()->flush();
 
-        $pricing_plan = new \WebsiteApi\WorkspacesBundle\Entity\Pricingplan("testPHP");
-        $pricing_plan->setMonthPrice(100);
-        $pricing_plan->setYearPrice(1200);
-        $this->getDoctrine()->persist($pricing_plan);
-        //$this->getDoctrine()->flush();
+
         try {
 
             $subscription = $this->newSubscription($group, $pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false);
@@ -331,14 +348,12 @@ class SubscriptionTest extends WebTestCaseExtended
     }
 
 
-    public function InitScenario($user_mail, $pseudo, $password,$group_name, $workspace_name){
+    public function InitScenario($user_mail, $pseudo, $password,$group_name, $workspace_name, $pricing_plan){
         $token = $this->get("app.user")->subscribeMail($user_mail);
         $user = $this->get("app.user")->subscribe($token, null, $pseudo, $password, true);
 
         $uniquename = $this->get("app.string_cleaner")->simplify($group_name);
-        $plan = $this->get("app.pricing_plan")->getMinimalPricing();
-        $planId = $plan->getId();
-        $group = $this->get("app.groups")->create($user->getId(), $group_name, $uniquename, $planId);
+        $group = $this->get("app.groups")->create($user->getId(), $group_name, $uniquename, $pricing_plan);
 
         $groupId = $group->getId();
         $this->get("app.workspaces")->create($workspace_name, $groupId, $user->getId());
@@ -351,8 +366,7 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->get("app.workspace_members")->addMember($workspace_id, $user->getId(), false, null, null);
     }
 
-    public function DayByDayScenario($list, $day)
-    {
+    public function DayByDayScenario($list, $day){
         for ($i = 0; $i < count($list); $i++) {
             $group = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser")->findOneBy(Array("user" => $i + 1));
             if ($group == null)
@@ -366,8 +380,11 @@ class SubscriptionTest extends WebTestCaseExtended
     }
 
 
-    public function EndScenario($list_group){
+    public function EndScenario(){
 
-        $this->get("app.pricing_plan")->calculatePrice($list_group);
+
+
+        $this->get("app.pricing_plan")->dailyDataGroupUser();
+        $this->get("app.pricing_plan")->groupPeriodUsage();
     }
 }
