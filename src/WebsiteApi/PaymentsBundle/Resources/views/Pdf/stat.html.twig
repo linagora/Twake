@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <style>
+        table#t01{
+            border: 1px solid black;
+            border-collapse: collapse;
+        }
+        table#t01 td, table#t01 th{
+            border: 1px solid black;
+        }
+        table#t01 th {
+            background-color: #bfbfbf;
+            color: black;
+        }
+        body#b01 {
+            font-family: Arial, Helvetica, sans-serif;
+        }
+    </style>
+</head>
+<body id="b01">
+
+<br>
+
+<h1 align="center"> Statistics of your group </h1>
+
+<br>
+
+Your ID group is {{ group_id }}.
+Your name's group is {{ group_name }}.
+
+<br>
+<br>
+
+<table  style="width:100%" id="t01">
+    <tr>
+        <th></th>
+        <th style="width:20%"> none </th>
+        <th style="width:20%"> partial </th>
+        <th style="width:20%"> total </th>
+    </tr>
+        <tr>
+            <td>Number of connexions</td>
+            <td align="right">
+                {% if connexion.none is defined %}
+                    {{connexion.none}}
+                {%else%}
+                    0
+                {%endif%}
+            </td>
+            <td align="right">{{ (connexion.partial is defined) ?  connexion.partial:0 }}</td>
+            <td align="right"> {{ (connexion.total is defined) ?  connexion.total:0 }}</td>
+        </tr>
+</table>
+
+<br>
+<br>
+
+<table style="width:100%" id="t01">
+    <tr>
+        <th></th>
+        <th style="width:20%"> none </th>
+        <th style="width:20%"> partial </th>
+        <th style="width:20%"> total </th>
+    </tr>
+
+    {% for element in list %}
+        <tr>
+            <td>{{ element.app.name }}</td>
+            <td align="right">{{ element.usage.none }} </td>
+            <td align="right">{{ element.usage.partial }}</td>
+            <td align="right">{{ element.usage.total }}</td>
+        </tr>
+    {% endfor %}
+
+</table>
+
+
+</body>
+</html>

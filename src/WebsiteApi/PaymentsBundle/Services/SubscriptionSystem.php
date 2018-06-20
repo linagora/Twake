@@ -21,7 +21,7 @@ class SubscriptionSystem implements SubscriptionInterface
         $this->doctrine = $doctrine;
     }
 
-    private function convertToEntity($var, $repository)
+    public function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
             $var = intval($var);
@@ -40,7 +40,7 @@ class SubscriptionSystem implements SubscriptionInterface
     public function get($group){
         $subscriptionRepo = $this->doctrine->getRepository("TwakePaymentsBundle:Subscription");
 
-        $subscription = $subscriptionRepo->findOneBy(Array( "group" => $group, "archived" => false));
+        $subscription = $subscriptionRepo->findLastActiveSub($group);
 
         return $subscription;
     }
@@ -98,6 +98,10 @@ class SubscriptionSystem implements SubscriptionInterface
         return $newSub;
     }
 
+    public function getPricingPlans(){
+        return $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan")->findBy(Array());
+    }
+
     public function archive($group)
     {
         $sub = $this->get($group);
@@ -112,7 +116,20 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $sub = $this->get($group);
         $sub->addBalanceConsumed($value);
+
+        $this->doctrine->persist($sub);
+        $this->doctrine->flush();
+
     }
+    public function addBalance($value, $group)
+    {
+        $sub = $this->get($group);
+        $sub->addBalance($value);
+
+        $this->doctrine->persist($sub);
+        $this->doctrine->flush();
+    }
+
 
     public function getRemainingBalance($group)
     {
@@ -138,6 +155,32 @@ class SubscriptionSystem implements SubscriptionInterface
         $identity->setLockDate($lockDate);
     }
 
+    public function testChangeLockDate($group){
+        $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
+        $identity = $groupIdentityRepo->findOneBy(Array("group"=>$group));
+
+        if($identity==null)
+            return false;
+
+        $lockDate = new \DateTime();
+        //$fiveDays= new \DateInterval("P5D");
+        //$lockDate->sub($fiveDays);
+
+        $identity->setLockDate($lockDate);
+        return $identity->getLockDate();
+    }
+
+    public function checkLockDate($group){
+
+        $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
+        $identity = $groupIdentityRepo->findOneBy(Array("group"=>$group));
+
+        if($identity==null)
+            return false;
+
+        return $identity->getLockDate();
+    }
+
     public function getGroupPeriod($group){
         $groupPeriodRepo = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
 
@@ -158,7 +201,7 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $delta = $this->getRemainingBalance($group);
 
-        if(!$delta)
+        if($delta===false)
             throw new GroupNotFoundExecption();
 
         if($delta>=0)
@@ -172,7 +215,7 @@ class SubscriptionSystem implements SubscriptionInterface
     public function getOverCost($group){
         $delta = $this->getRemainingBalance($group);
 
-        if(!$delta)
+        if($delta===false)
             throw new GroupNotFoundExecption();
 
         if($delta>=0)
@@ -194,7 +237,7 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $delta = $this->getRemainingBalance($group);
 
-        if(!$delta)
+        if($delta===false)
             throw new GroupNotFoundExecption();
 
         if($delta>=0)
@@ -207,8 +250,8 @@ class SubscriptionSystem implements SubscriptionInterface
 
     public function getEndPeriodTimeLeft($group)
     {
-        $gp = $this->getGroupPeriod($group);
+        $sub = $this->get($group);
 
-        return $gp->getPeriodStartedAt()->diff($gp->getPeriodExpectedToEndAt());
+        return $sub->getStartDate()->diff($sub->getEndDate());
     }
 }

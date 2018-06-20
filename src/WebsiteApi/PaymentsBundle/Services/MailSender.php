@@ -39,12 +39,38 @@ class MailSender implements MailSenderInterface
         return $infos;
     }
 
-    public function sendBill($group, $billFile){
-        // TODO: Implement sendEndPeriodsMail() method.
+    private function getListUsersLevel3($group){
+        $list = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser")->findBy(Array("group" => $group, "level" => 3));
+        $infos = array();
+        foreach ($list as $item){
+            $info = array();
+            $user = $item->getUser();
+            $mail = $user->getEmail();
+            $username = $user->getUsername();
+            $info["username"] = $username;
+            $info["mail"] = $mail;
+            array_push($infos,$info);
+        }
+        return $infos;
+    }
+
+    public function sendBill($group, $pathFiles){
+        $list = $this->getList($group);
+        if (count($list)==0){
+            $list =$this->getListUsersLevel3($group);
+        }
+        foreach ($list as $user){
+            $mail = $user["mail"];
+            $username = $user["username"];
+            $this->mailer->send($mail,"Bill",Array("username"=>$username),"TwakePaymentsBundle:Mail",$pathFiles);
+        }
     }
 
     public function sendEndPeriodsMail($group, $timeleft){
         $list = $this->getList($group);
+        if (count($list)==0){
+            $list =$this->getListUsersLevel3($group);
+        }
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
@@ -54,6 +80,9 @@ class MailSender implements MailSenderInterface
 
     public function sendIsOverUsingALittle($group, $overuse){
         $list = $this->getList($group);
+        if (count($list)==0){
+            $list =$this->getListUsersLevel3($group);
+        }
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
@@ -63,6 +92,9 @@ class MailSender implements MailSenderInterface
 
     public function sendWillBeOverUsing($group, $overuse){
         $list = $this->getList($group);
+        if (count($list)==0){
+            $list =$this->getListUsersLevel3($group);
+        }
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
@@ -72,6 +104,9 @@ class MailSender implements MailSenderInterface
 
     public function sendIsOverUsingALot($group, $overuse){
         $list = $this->getList($group);
+        if (count($list)==0){
+            $list =$this->getListUsersLevel3($group);
+        }
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
@@ -81,6 +116,9 @@ class MailSender implements MailSenderInterface
 
     public function sendDirectDebitNotification($group, $howMuch){
         $list = $this->getList($group);
+        if (count($list)==0){
+            $list =$this->getListUsersLevel3($group);
+        }
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
@@ -104,6 +142,9 @@ class MailSender implements MailSenderInterface
 
     public function sendUnpaidSubscription($group){
         $list = $this->getList($group);
+        if (count($list)==0){
+            $list =$this->getListUsersLevel3($group);
+        }
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];

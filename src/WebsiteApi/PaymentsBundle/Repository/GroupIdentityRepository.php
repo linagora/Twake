@@ -13,9 +13,8 @@ class GroupIdentityRepository extends \Doctrine\ORM\EntityRepository
     public function findByLockDateExpire()
     {
         $qb = $this->createQueryBuilder('u');
-        $qb->where('u.lock_date != :null_idf')
-            ->andWhere('u.lock_date >= :current_date')
-            ->setParameter('null_idf', null)
+        $qb->where('u.lockDate IS NOT NULL')
+            ->andWhere('u.lockDate >= :current_date')
             ->setParameter('current_date', new \DateTime());
 
         return $qb->getQuery()

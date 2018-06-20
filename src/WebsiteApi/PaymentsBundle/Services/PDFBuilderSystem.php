@@ -16,7 +16,7 @@ class PDFBuilderSystem implements PDFBuilderInterface
 {
     private $templating;
 
-    public function __construct($templating)
+    public function __construct($doctrine, $templating)
     {
         $this->templating = $templating;
     }
@@ -34,6 +34,7 @@ class PDFBuilderSystem implements PDFBuilderInterface
         return $name;
     }
 
+
     public function makePDFFromHtml($html, $name){
         $dompdf = new Dompdf();
         $dompdf->loadHtml($html);
@@ -48,8 +49,17 @@ class PDFBuilderSystem implements PDFBuilderInterface
         return $name;
     }
 
-    public function makeUsageStatPDF($data)
-    {
-        // TODO: Implement makeUsageStatPDF() method.
+    public function makeUsageStatPDF($data){
+        $html =  $this->templating->render(
+            "TwakePaymentsBundle:Pdf:stat.html.twig",
+            $data
+        );
+
+        $name = $data["stat_id"].".pdf";
+
+        $this->makePDFFromHtml($html,$name);
+
+
+        return $name;
     }
 }

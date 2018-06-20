@@ -10,4 +10,22 @@ namespace WebsiteApi\PaymentsBundle\Repository;
  */
 class SubscriptionRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findLastActiveSub($group){
+        $qb = $this->createQueryBuilder('f')
+            ->select('max(f.id)')
+            ->where('f.group = :group')
+            ->setParameter("group", $group);
+
+        $lastId = $qb->getQuery()->getResult()[0];
+
+
+        $qb = $this->createQueryBuilder('f')
+            ->select('f')
+            ->where('f.group = :group')
+            ->andWhere('f.id = :last_id')
+            ->setParameter("group", $group)
+            ->setParameter("last_id", $lastId);
+
+        return $qb->getQuery()->getResult()[0];
+    }
 }

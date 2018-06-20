@@ -27,7 +27,7 @@ class WebTestCaseExtended extends WebTestCase
 
 
     public function newUser(){
-        $userToken = $this->get("app.user")->subscribeMail("PHPUNIT@PHPUNIT.fr");
+        $userToken = $this->get("app.user")->subscribeMail("phpunit@PHPUNIT.fr");
         $user = $this->get("app.user")->subscribe($userToken,null, "phpunit","phpunit",true);
 
         if (!$user) {
@@ -59,22 +59,36 @@ class WebTestCaseExtended extends WebTestCase
         $this->getDoctrine()->persist($group);
         $this->getDoctrine()->flush();
 
+        $groupIdentity = $this->get("app.group_identitys")->create($group, "fake","fake","fake",0);
+        $this->getDoctrine()->persist($groupIdentity);
+        $this->getDoctrine()->flush();
+
         return $group;
     }
 
     public function newWorkspace($groupId){
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findByName("phpunit");
+       // $user = $userRepository->findByName("phpunit");
+        $user = $userRepository->findOneBy(Array("username" => "phpunit"));
         if (count($user) == 0) {
             $user = $this->newUser();
         }
-        $user = $user[0];
-        $userId = $user->getId();
+        //$user = $user[0];
+
+        $userId = $user->getId(); //TODO
         $work = $this->get("app.workspaces")->create("phpunit", $groupId, $userId); // Get a service and run function
         $this->getDoctrine()->persist($work);
         $this->getDoctrine()->flush();
 
         return $work;
     }
+
+    public function newSubscription($group,$pricing_plan, $balanceInit, $start_date, $end_date, $autowithdraw, $autorenew){
+
+        $sub = $this->get("app.subscription_system")->create($group,$pricing_plan,$balanceInit,$start_date,$end_date ,$autowithdraw,$autorenew);
+
+        return $sub;
+    }
+
 
 }
