@@ -383,7 +383,6 @@ class SubscriptionTest extends WebTestCaseExtended
     public function EndScenario(){
 
 
-
         $this->get("app.pricing_plan")->dailyDataGroupUser();
         $this->get("app.pricing_plan")->groupPeriodUsage();
     }
