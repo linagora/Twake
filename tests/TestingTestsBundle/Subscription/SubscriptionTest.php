@@ -281,21 +281,6 @@ class SubscriptionTest extends WebTestCaseExtended
         return $log;
     }
 
-    //shell_exec('date +%Y%m%d -s "20081128"')
-    //shell_exec('date +%Y%m%d -s "'.date("Ymd", date("U")+60*60*24).'"')
-    /**
-     * shell_exec('date')
-    string(29) "Wed Mar  6 14:18:08 PST 2013\n"
-    > exec('date')
-    string(28) "Wed Mar  6 14:18:12 PST 2013"
-
-     */
-
-    //exec('sudo -u root -S {{ your command }} < ~/.sudopass/sudopass.secret');
-    /**
-     * https://github.com/wolfcw/libfaketime pour les tests de date ( à installer en lcoal )
-     * @throws \Exception
-     */
     public function assertUpdateLockDate(){
 
         $user = $this->newUserByName("phpunit2");
@@ -311,8 +296,8 @@ class SubscriptionTest extends WebTestCaseExtended
         $pricing_plan->setYearPrice( 1200);
         $this->getDoctrine()->persist($pricing_plan);
         //$this->getDoctrine()->flush();
-        try{
 
+        try{
             $subscription = $this->newSubscription($group,$pricing_plan, $pricing_plan->getMonthPrice(), (new \DateTime('now'))->sub(new \DateInterval("P5D")), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false);
             $this->getDoctrine()->persist($subscription);
             $this->getDoctrine()->flush();
@@ -321,44 +306,28 @@ class SubscriptionTest extends WebTestCaseExtended
             \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : ".$e->getTraceAsString());
         }
 
-
-        $test2= $this->get("app.subscription_system")->addBalanceConsumption( 3000,$subscription->getGroup());
-
-        $test3= $this->get("app.subscription_system")->get($subscription->getGroup());
-
-        $testOverUsing = $this->get("app.subscription_manager")->checkOverusingByGroup($subscription->getGroup());
-
-
-        //Deplacer la date de 5 jours et faire les tests suivant :
+        $this->get("app.subscription_system")->addBalanceConsumption( 3000,$subscription->getGroup());
+        $this->get("app.subscription_system")->get($subscription->getGroup());
+        $this->get("app.subscription_manager")->checkOverusingByGroup($subscription->getGroup());
 
         $testLocked = $this->get("app.subscription_manager")->checkLocked();
-
+        //var_dump( $testLocked);
         $this->assertTrue(count($testLocked)>0 , " Count doit être au moins de 1, il est de ".count($testLocked));
 
         //modif de la date en bd
-
         $testLockDate = $this->get("app.subscription_system")->testChangeLockDate($group);
-
+        //var_dump($testLockDate);
+        $this->getDoctrine()->persist($group);
+        $this->getDoctrine()->flush();
         $this->assertTrue($this->get("app.subscription_manager")->checkLocked()[$subscription->getGroup()->getId()],"Doit être true car lock avec le overusing");
 
 
-        var_dump($testLockDate);
+        $testLocked = $this->get("app.subscription_manager")->checkLocked();
+        $this->assertTrue(count($testLocked)>1 , " Count doit être au moins de 2, il est de ".count($testLocked));
 
-        //print de la date d'aujourdhui
-    /**
-        var_dump((new \DateTime('now'))->format("Ymd"));
-        //modif de la date pour le jour de demain
-        $dateFuture = ((new \DateTime('now'))->add(new \DateInterval("P10D")))->format("Ymd");
-
-        // $dateModif = shell_exec('sudo -u root -S date +%Y%m%d -s "'.$dateFuture.'" < ~/.sudopass/sudopass.secret' );
-
-       // var_dump(shell_exec('cat ~/.sudopass/sudopass.secret'));
-        var_dump(shell_exec(" ./changeDate.sh"));
-        //print pour la date modif
-        //var_dump($dateModif);
-        var_dump((new \DateTime('now'))->format("Ymd"));
-        var_dump(shell_exec('date '));
-    */
+       // $testDate = $this->get("app.subscription_system")->checkLockDate($group);
+        //var_dump($testDate);
+        return "Le scénario consiste à provoquer un blocage de l'abonnement pour un groupe, ensuite cette date est changée manuellement dans la base de données pour simuler une avancée dans le temps ( par un recul ). L'abonnement est bien lock, le scéanario s'est bien passé.";
     }
 
 

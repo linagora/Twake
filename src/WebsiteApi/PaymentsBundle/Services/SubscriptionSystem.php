@@ -163,10 +163,21 @@ class SubscriptionSystem implements SubscriptionInterface
             return false;
 
         $lockDate = new \DateTime();
-        $fiveDays= new \DateInterval("P5D");
-        $lockDate->sub($fiveDays);
+        //$fiveDays= new \DateInterval("P5D");
+        //$lockDate->sub($fiveDays);
 
         $identity->setLockDate($lockDate);
+        return $identity->getLockDate();
+    }
+
+    public function checkLockDate($group){
+
+        $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
+        $identity = $groupIdentityRepo->findOneBy(Array("group"=>$group));
+
+        if($identity==null)
+            return false;
+
         return $identity->getLockDate();
     }
 
