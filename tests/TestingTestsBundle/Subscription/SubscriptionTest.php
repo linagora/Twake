@@ -22,45 +22,19 @@ class SubscriptionTest extends WebTestCaseExtended
     {
         //détruire init les données avant de refaire les tests
 
-        $pricing_plan = new Pricingplan("testPHP");
+        $pricing_plan = new PricingPlan("testPHP");
         $pricing_plan->setMonthPrice(100);
         $pricing_plan->setYearPrice(1200);
         $this->getDoctrine()->persist($pricing_plan);
         $this->getDoctrine()->flush();
 
 
-        $this->InitScenario("benoit.tallandier@telecomnancy.net", "Benoit", "riri",
-            "gp_test", "ws_test", $pricing_plan);
-        $this->addMember("damien.vantourout@telecomnancy.net", "Paulo", "fifi", 1);
-        $this->addMember("dylan.acary@telecomnancy.net", "Dylan", "loulou", 1);
-        $this->addMember("xavier.farchetto@telecomnancy.net", "Fourchette&Couteaux", "toto", 1);
-        $this->addMember("thimene.marmorat@telecomnancy.net", "Titi", "titi", 1);
-        $this->addMember("zoe.geoffroy@telecomnancy.net", "Zoé", "zozo", 1);
-        $this->addMember("lucie.martin@telecomnancy.net", "Lulu", "lulu", 1);
-        $this->addMember("romaric.mourgues@twakeapp.com", "Grand Manitou", 1, 1);
-
-        $group_id = 1;
-
-        $fp = fopen('file.csv', 'w');
-        $csv = array();
-        array_push($csv,array("day","current_cost","estimated_cost"));
-
-        $list = [1, 3, 5, 7, 3, 2, 1, 1];
-        for ($i = 1; $i <= 20; $i++)
-            $this->DayByDayScenario($list, $i);
-
-        $gp = $this->get("app.subscription_system")->getGroupPeriod(1);
-        $startAt = $gp->getPeriodStartedAt();
-        $startAt->sub(new \DateInterval("P1M"));
-        $gp->setPeriodStartedAt($startAt);
-        $this->getDoctrine()->persist($gp);
-        $this->getDoctrine()->flush();
+        $list_freq = [1, 3, 5, 7, 3, 2, 1, 1];
+        $scenario = new ScenarioPayment($this,"lucie.martin@telecomnancy.net", "Lulu", "lulu", "Group_Test", "Project",$pricing_plan,
+            8, $this->getDoctrine(), new \DateInterval("P30D"), $list_freq);
+        $scenario->exec();
 
 
-        $this->EndScenario();
-
-
-        fclose($fp);
         $user = $this->newUserByName("phpunit");
         $this->getDoctrine()->persist($user);
         $this->getDoctrine()->flush();
@@ -96,6 +70,10 @@ class SubscriptionTest extends WebTestCaseExtended
         //$log .= $this->casBatard();
 
         var_dump($log);
+    }
+
+    public function myGet($s){
+        return $this->get($s);
     }
 
     //app.subscription_manager
