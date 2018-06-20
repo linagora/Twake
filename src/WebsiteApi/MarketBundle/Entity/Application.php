@@ -178,6 +178,11 @@ class Application
     private $cgu ;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $urlApp = false;
+
+    /**
      * @ORM\Column(type="string", length = 256, nullable = true)
      */
     private $domain_name;
@@ -707,7 +712,24 @@ class Application
         $this->domain_name = $domain_name;
     }
 
-	public function getAsArray()
+    /**
+     * @return mixed
+     */
+    public function getUrlApp()
+    {
+        return $this->urlApp;
+    }
+
+    /**
+     * @param mixed $urlApp
+     */
+    public function setUrlApp($urlApp)
+    {
+        $this->urlApp = $urlApp;
+    }
+
+
+    public function getAsArray()
 	{
 		return Array(
 			"id" => $this->id,
@@ -741,7 +763,8 @@ class Application
             "publicKey" => $this->getPublicKey(),
             "cgu"=> $this->getCgu(),
             "editableRights" => $this->getEditableRights(),
-            "domain_name" => $this->getDomainName()
+            "domain_name" => $this->getDomainName(),
+            "urlapp" => $this->getUrlApp()
         );
 	}
 

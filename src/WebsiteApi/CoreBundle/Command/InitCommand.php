@@ -187,8 +187,8 @@ class InitCommand extends ContainerAwareCommand
 
 
         $apps = [
-            @["/medias/apps/web/vectr.png", "Vectr", "vectr.com", "vectr", "E63B42", Array()],
-            @["/medias/apps/web/webflow.jpeg", "Webflow", "webflow.com", "webflow", "E63B42", Array()],
+            @["/medias/apps/web/vectr.png", "Vectr", "vectr.com", "vectr", "101010", Array()],
+            @["/medias/apps/web/webflow.jpeg", "Webflow", "webflow.com", "webflow", "354145", Array()],
             ["/medias/apps/web/witeboard.jpeg", "Witeboard", "witeboard.com", "witeboard", "E63B42", Array()],
             ["/medias/apps/web/flat_io.jpeg", "Flat.io", "flat.io/score", "flat_io", "E63B42", Array()],
             ["/medias/apps/web/play_canvas.jpeg", "Play Canvas", "playcanvas.com/editor", "playcanvas", "E63B42", Array()],
@@ -202,14 +202,14 @@ class InitCommand extends ContainerAwareCommand
             ["/medias/apps/web/atlassian.jpeg", "Atlassian", "atlassian.net/projects", "atlassian", "E63B42", Array()],
 
             //gSuite
-            @["/medias/apps/web/google_hangouts.png", "Google Hangouts", "hangouts.google.com", "hangouts.google", "E63B42", Array()],
+            @["/medias/apps/web/google_hangouts.png", "Google Hangouts", "hangouts.google.com", "hangouts.google", "50AF55", Array()],
             ["/medias/apps/web/google_sites.jpeg", "Google Sites", "sites.google.com", "sites.google", "E63B42", Array()],
-            @["/medias/apps/web/google_docs_document.png", "Google Docs Document", "docs.google.com/document", "document.docs.google", "E63B42", Array()],
-            @["/medias/apps/web/google_docs_spreadsheets.png", "Google Docs Spreadsheets", "docs.google.com/spreadsheets", "spreadsheets.docs.google", "E63B42", Array()],
-            @["/medias/apps/web/google_docs_presentation.png", "Google Docs Presentation", "docs.google.com/presentation", "presentation.docs.google", "E63B42", Array()],
+            @["/medias/apps/web/google_docs_document.png", "Google Docs Document", "docs.google.com/document", "document.docs.google", "367FDF", Array()],
+            @["/medias/apps/web/google_docs_spreadsheets.png", "Google Docs Spreadsheets", "docs.google.com/spreadsheets", "spreadsheets.docs.google", "50AF55", Array()],
+            @["/medias/apps/web/google_docs_presentation.png", "Google Docs Presentation", "docs.google.com/presentation", "presentation.docs.google", "F9D548", Array()],
             ["/medias/apps/web/google_docs_drawings.jpeg", "Google Docs Drawings", "docs.google.com/drawings", "drawings.docs.google", "E63B42", Array()],
-            @["/medias/apps/web/google_docs_forms.png", "Google Docs Forms", "docs.google.com/forms", "forms.docs.google", "E63B42", Array()],
-            @["/medias/apps/web/google_gmail.png", "Gmail", "mail.google.com", "mail.google", "E63B42", Array()],
+            @["/medias/apps/web/google_docs_forms.png", "Google Docs Forms", "docs.google.com/forms", "forms.docs.google", "7457C7", Array()],
+            @["/medias/apps/web/google_gmail.png", "Gmail", "mail.google.com", "mail.google", "ED5938", Array()],
 
             //apple
             ["/medias/apps/web/icloud_keynote.jpeg", "iCloud Keynote", "icloud.com/keynote", "keynote.icloud", "E63B42", Array()],
@@ -250,8 +250,8 @@ class InitCommand extends ContainerAwareCommand
             $app->setEnabled(1);
             $app->setColor($application[4]);
             $app->setCanCreateFile(0);
-            $app->setIsCapable(0);
-            $app->setDefault(1);
+            $app->setIsCapable(1);
+            $app->setDefault(0);
             $app->setCreateFileData(json_decode("", true));
             $app->setMessageModule(0);
             $app->setOrder(2);
@@ -259,6 +259,7 @@ class InitCommand extends ContainerAwareCommand
             $app->setMessageModuleUrl("");
             $app->setEditableRights(0);
             $app->setCgu("");
+            $app->setUrlApp(1);
             $manager->persist($app);
         }
 

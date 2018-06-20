@@ -122,7 +122,7 @@ class DriveFile
      * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $default_app;
+    private $default_web_app;
 
 
     public function __construct($group, $parent, $name, $isDirectory = false,$directoryToCopy = null, $url = null)
@@ -472,15 +472,17 @@ class DriveFile
     /**
      * @return mixed
      */
-    public function getDefaultApp(){
-        return $this->default_app;
+    public function getDefaultWebApp()
+    {
+        return $this->default_web_app;
     }
 
     /**
-     * @param $default_app
+     * @param $default_web_app
      */
-    public function setDefaultApp($default_app){
-        $this->default_app = $default_app;
+    public function setDefaultWebApp($default_web_app)
+    {
+        $this->default_web_app = $default_web_app;
     }
 
     public function getAsArray()
@@ -503,7 +505,7 @@ class DriveFile
             "shared" => $this->getShared(),
             "url" => $this->getUrl(),
             "opening_rate" => $this->getOpeningRate(),
-            "default_app" => $this->getDefaultApp()
+            "default_web_app_id" => $this->getDefaultWebApp()->getId()
         );
     }
 

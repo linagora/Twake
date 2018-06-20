@@ -22,15 +22,26 @@ class UrlController extends Controller
     public function testUrlAction(Request $request)
     {
 
+        $data = Array(
+            "errors" => Array(),
+            "data" => null
+        );
+
+        $user = $this->getUser();
+        if ($user == null)
+            return new JsonResponse($data);
+
         $url = $request->request->get("url", "");
 
         $res = $this->get("website_api_market.applications")->getAppForUrl($url);
 
         if ($res) {
-            $res = $res->getAsArray();
+            $data["data"] = $res->getAsArray();
+        } else {
+            $data["errors"] = ["app_not_found"];
         }
 
-        return new JsonResponse($res);
+        return new JsonResponse($data);
 
     }
 
