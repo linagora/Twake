@@ -116,7 +116,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setDescription("The powerful Twake messaging app.");
         $app->setShortDescription("The powerful Twake messaging app.");
         $app->setUrl("messages-auto");
-        $app->setUserRights(json_decode('{"general":{"create":true,"view":true,"post":true,"pin":true}}', true));
+        $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "post":true, "pin":true}}', true));
         $app->setApplicationRights(json_decode('{"messages":"manage"}', true));
         $app->setEnabled(1);
         $app->setColor("0992D6");
@@ -142,7 +142,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setDescription("Twake storage app.");
         $app->setShortDescription("Twake storage app.");
         $app->setUrl("drive");
-        $app->setUserRights(json_decode('{"general":{"create":true,"view":true,"edit":true}}', true));
+        $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
         $app->setApplicationRights(json_decode('{"drive":"manage"}', true));
         $app->setEnabled(1);
         $app->setColor("FFAC3C");
@@ -167,7 +167,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setDescription("Twake calendar app.");
         $app->setShortDescription("Twake calendar app.");
         $app->setUrl("calendar");
-        $app->setUserRights(json_decode('{"general":{"create":true,"view":true,"edit":true}}', true));
+        $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
         $app->setApplicationRights(json_decode('{"calendar":"manage"}', true));
         $app->setEnabled(1);
         $app->setColor("E63B42");
@@ -187,8 +187,51 @@ class InitCommand extends ContainerAwareCommand
 
 
         $apps = [
-            ["/medias/apps/vectr.png", "Vectr","vectr.com","vectr","E63B42",Array()],
-            ["/medias/apps/webflow.jpeg", "Webflow","webflow.com","webflow","E63B42",Array()]
+            @["/medias/apps/web/vectr.png", "Vectr", "vectr.com", "vectr", "E63B42", Array()],
+            @["/medias/apps/web/webflow.jpeg", "Webflow", "webflow.com", "webflow", "E63B42", Array()],
+            ["/medias/apps/web/witeboard.jpeg", "Witeboard", "witeboard.com", "witeboard", "E63B42", Array()],
+            ["/medias/apps/web/flat_io.jpeg", "Flat.io", "flat.io/score", "flat_io", "E63B42", Array()],
+            ["/medias/apps/web/play_canvas.jpeg", "Play Canvas", "playcanvas.com/editor", "playcanvas", "E63B42", Array()],
+            ["/medias/apps/web/tuzzit_board.jpeg", "Tuzzit", "board.tuzzit.com", "board.tuzzit", "E63B42", Array()],
+            ["/medias/apps/web/hackmd.jpeg", "HackMd", "hackmd.io", "hackmd", "E63B42", Array()],
+            ["/medias/apps/web/trello.jpeg", "Trello", "trello.com", "trello", "E63B42", Array()],
+            ["/medias/apps/web/gitlab.jpeg", "Gitlab", "gitlab.com", "gitlab", "E63B42", Array()],
+            ["/medias/apps/web/github.jpeg", "Github", "github.com", "github", "E63B42", Array()],
+
+            //Altassian
+            ["/medias/apps/web/atlassian.jpeg", "Atlassian", "atlassian.net/projects", "atlassian", "E63B42", Array()],
+
+            //gSuite
+            @["/medias/apps/web/google_hangouts.png", "Google Hangouts", "hangouts.google.com", "hangouts.google", "E63B42", Array()],
+            ["/medias/apps/web/google_sites.jpeg", "Google Sites", "sites.google.com", "sites.google", "E63B42", Array()],
+            @["/medias/apps/web/google_docs_document.png", "Google Docs Document", "docs.google.com/document", "document.docs.google", "E63B42", Array()],
+            @["/medias/apps/web/google_docs_spreadsheets.png", "Google Docs Spreadsheets", "docs.google.com/spreadsheets", "spreadsheets.docs.google", "E63B42", Array()],
+            @["/medias/apps/web/google_docs_presentation.png", "Google Docs Presentation", "docs.google.com/presentation", "presentation.docs.google", "E63B42", Array()],
+            ["/medias/apps/web/google_docs_drawings.jpeg", "Google Docs Drawings", "docs.google.com/drawings", "drawings.docs.google", "E63B42", Array()],
+            @["/medias/apps/web/google_docs_forms.png", "Google Docs Forms", "docs.google.com/forms", "forms.docs.google", "E63B42", Array()],
+            @["/medias/apps/web/google_gmail.png", "Gmail", "mail.google.com", "mail.google", "E63B42", Array()],
+
+            //apple
+            ["/medias/apps/web/icloud_keynote.jpeg", "iCloud Keynote", "icloud.com/keynote", "keynote.icloud", "E63B42", Array()],
+            ["/medias/apps/web/icloud_numbers.jpeg", "iCloud Numbers", "icloud.com/numbers", "numbers.icloud", "E63B42", Array()],
+            ["/medias/apps/web/icloud_pages.jpeg", "iCloud Pages", "icloud.com/pages", "pages.icloud", "E63B42", Array()],
+            ["/medias/apps/web/icloud_notes.jpeg", "iCloud Notes", "icloud.com/#notes", "notes.icloud", "E63B42", Array()],
+            ["/medias/apps/web/icloud_reminders.jpeg", "iCloud Reminders", "icloud.com/#reminders", "reminders.icloud", "E63B42", Array()],
+            ["/medias/apps/web/icloud_contacts.jpeg", "iCloud Contacts", "icloud.com/#contacts", "contacts.icloud", "E63B42", Array()],
+            ["/medias/apps/web/icloud_photos.jpeg", "iCloud Photos", "icloud.com/#photos", "photos.icloud", "E63B42", Array()],
+
+            //Microsoft
+            ["/medias/apps/web/office_365_skype.jpeg", "Skype", "web.skype.com", "skype", "E63B42", Array()],
+            ["/medias/apps/web/office_365_calendar.jpeg", "Outlook Calendar", "outlook.live.com/calendar", "calendar.office_365", "E63B42", Array()],
+            ["/medias/apps/web/office_365_outlook.jpeg", "Outlook ", "outlook.live.com/mail", "outlook.office_365", "E63B42", Array()],
+            ["/medias/apps/web/office_365_contacts.jpeg", "Outlook Contacts", "outlook.live.com/people", "contacts.office_365", "E63B42", Array()],
+            ["/medias/apps/web/office_365_sway.jpeg", "Sway", "sway.com", "sway.office_365", "E63B42", Array()],
+            ["/medias/apps/web/office_365_onenote.jpeg", "OneNote", "onedrive.live.com/onenote", "onenote.office_365", "E63B42", Array()],
+            ["/medias/apps/web/office_365_powerpoint.jpeg", "PowerPoint", "onedrive.live.com/powerpoint", "powerpoint.office_365", "E63B42", Array()],
+            ["/medias/apps/web/office_365_word.jpeg", "Word", "onedrive.live.com/word", "word.office_365", "E63B42", Array()],
+            ["/medias/apps/web/office_365_excel.jpeg", "Excel", "onedrive.live.com/excel", "excel.office_365", "E63B42", Array()],
+
+
         ];
 
         foreach ($apps as $application){
@@ -202,7 +245,7 @@ class InitCommand extends ContainerAwareCommand
             $app->setShortDescription("");
             $app->setUrl(null);
             $app->setDomainName($application[2]);
-            $app->setUserRights(json_decode('{"general":{"create":true,"view":true,"edit":true}}', true));
+            $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
             $app->setApplicationRights(json_decode('{}', true));
             $app->setEnabled(1);
             $app->setColor($application[4]);
