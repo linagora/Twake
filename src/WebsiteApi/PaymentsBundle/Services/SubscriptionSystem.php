@@ -258,6 +258,6 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $sub = $this->get($group);
 
-        return $sub->getStartDate()->diff($sub->getEndDate());
+        return $sub->getEndDate()->diff(new \DateTime());
     }
 }
