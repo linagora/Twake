@@ -99,12 +99,12 @@ class ScenarioPayment {
 
             $this->addUserToList($day."romaric.t"."@twakeapp.com",$day."romaric",$day."blabla",1);
 
-        /*if ($day == 5){
+        if ($day == 5){
             $this->addUserToList("damien.vantourout@telecomnancy.net","POLO","b",1);
         }
         if ($day == 15){
-            $this->addUserToList("jeremy.hynes@telecomnancy.net","Jeremy","b",1);
-        }*/
+            $this->addUserToList("johan.labrado@telecomnancy.net","L'homme sec","b",1);
+        }
 
         $gp = $this->services->myGet("app.subscription_system")->getGroupPeriod($group_id);
         $startAt = $gp->getPeriodStartedAt();

@@ -64,6 +64,7 @@ class GroupPeriods implements GroupPeriodInterface
 
             $newGroupPricing->setEndAt($date);
             $newGroupPeriod = new GroupPeriod($group);
+            $newGroupPeriod->setExpectedCost($groupPeriod->getExpectedCost());
             $newGroupPeriod->setGroupPricingInstance($newGroupPricing);
 
             if($groupPricingInstance){
