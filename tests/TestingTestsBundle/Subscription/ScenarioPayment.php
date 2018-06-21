@@ -34,6 +34,7 @@ class ScenarioPayment {
         $this->services = $services;
         $this->doctrine = $doctrine;
 
+
         $pricing_plan_id = $pricing_plan->getId();
         $token = $this->services->myGet("app.user")->subscribeMail($user_mail);
         $user = $this->services->myGet("app.user")->subscribe($token, null, $pseudo, $password, true);
@@ -98,11 +99,11 @@ class ScenarioPayment {
         $gp->setPeriodStartedAt($startAt);
         $this->doctrine->persist($gp);
 
-        /*$periodExpectedToEndAt = $gp->getPeriodExpectedToEndAt();
+        $periodExpectedToEndAt = $gp->getPeriodExpectedToEndAt();
         $periodExpectedToEndAt->sub(new \DateInterval("P1D"));
         $gp->setPeriodExpectedToEndAt($periodExpectedToEndAt);
         $this->doctrine->persist($gp);
-*/        $this->doctrine->flush();
+        $this->doctrine->flush();
 
         $this->services->myGet("app.pricing_plan")->dailyDataGroupUser();
         $this->services->myGet("app.pricing_plan")->groupPeriodUsage();
