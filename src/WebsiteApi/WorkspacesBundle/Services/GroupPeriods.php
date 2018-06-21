@@ -14,10 +14,12 @@ class GroupPeriods implements GroupPeriodInterface
 {
 
 	private $doctrine;
+	private $subscriptionSystem;
 
-	public function __construct($doctrine)
+	public function __construct($doctrine, $subscriptionSystem)
 	{
 		$this->doctrine = $doctrine;
+		$this->subscriptionSystem = $subscriptionSystem;
 	}
 
 	public function changePlanOrRenew($group, $billingType ,$planId){
@@ -51,6 +53,7 @@ class GroupPeriods implements GroupPeriodInterface
                 $this->doctrine->persist($newAppPricing);
             }
             $newGroupPricing = new GroupPricingInstance($group ,$billingType,$pricing );
+            $this->subscriptionSystem->addBalanceConsumption($groupPeriod->getCurrentCost(),$group);
             $date = new \DateTime();
 
             if ($billingType == "monthly"){
