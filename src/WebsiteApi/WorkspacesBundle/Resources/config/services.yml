@@ -14,7 +14,7 @@ services:
 
     app.group_period:
         class: WebsiteApi\WorkspacesBundle\Services\GroupPeriods
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.subscription_system"]
 
     app.pricing_plan:
         class: WebsiteApi\WorkspacesBundle\Services\PricingPlan
