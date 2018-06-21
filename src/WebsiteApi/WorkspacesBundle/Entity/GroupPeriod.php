@@ -91,8 +91,8 @@ class GroupPeriod
 	public function getAsArray(){
 	    return Array(
 	        "groupId" => $this->group->getId(),
-            "connexions" => $this->connexions,
-            "appsUsage" => $this->appsUsage,
+            "connexions" => $this->getConnexions(),
+            "appsUsage" => $this->getAppsUsagePeriod(),
             "periodStartedAt" => $this->periodStartedAt ,
             "periodEndedAt" => $this->periodEndedAt,
             "periodExpectedToEndAt" => $this->periodExpectedToEndAt,

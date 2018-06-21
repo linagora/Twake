@@ -176,6 +176,12 @@ class SubscriptionSystem implements SubscriptionInterface
         return  $groupPeriodRepo->getLastGroupPeriod($group);
     }
 
+    public function getExpectedUserCount($group){
+        $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
+        $sub = $this->get($group);
+        return $sub->getBalance()/$sub->getPricingPlan()->getMonthPrice();
+    }
+
     public function getCorrectBalanceConsumed($group){
         $sub = $this->get($group);
         if(!$sub)
