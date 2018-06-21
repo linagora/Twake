@@ -91,6 +91,9 @@ class SubscriptionSystem implements SubscriptionInterface
         $pricing_plan = $this->convertToEntity($pricing_plan,"TwakeWorkspacesBundle:PricingPlan");
         $newSub = new Subscription($group,$pricing_plan,$balance,$start_date,$end_date,$auto_withdrawal,$auto_renew);
 
+        $gp = $this->getGroupPeriod($group);
+        $gp->setExpectedCost($balance);
+
         $this->doctrine->persist($group);
         $this->doctrine->persist($newSub);
         $this->doctrine->flush();
