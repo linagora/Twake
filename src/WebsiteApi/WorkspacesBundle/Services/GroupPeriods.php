@@ -53,7 +53,6 @@ class GroupPeriods implements GroupPeriodInterface
                 $this->doctrine->persist($newAppPricing);
             }
             $newGroupPricing = new GroupPricingInstance($group ,$billingType,$pricing );
-            $this->subscriptionSystem->addBalanceConsumption($groupPeriod->getCurrentCost(),$group);
             $date = new \DateTime();
 
             if ($billingType == "monthly"){
@@ -105,6 +104,7 @@ class GroupPeriods implements GroupPeriodInterface
 
     public function groupPeriodOverCost($groupPeriod){
 
+        $this->subscriptionSystem->addBalanceConsumption($groupPeriod->getCurrentCost(),$groupPeriod->getGroup());
         $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
 
         $newGroupPeriod = new GroupPeriod($groupPeriod->getGroup());

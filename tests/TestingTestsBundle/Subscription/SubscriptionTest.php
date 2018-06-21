@@ -31,8 +31,9 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $list_freq = [1, 3, 5, 7, 3, 2, 1, 1];
         $scenario = new ScenarioPayment($this,"lucie.martin@telecomnancy.net", "Lulu", "lulu", "Group_Test", "Project",$pricing_plan,
-            8, $this->getDoctrine(), new \DateInterval("P30D"), $list_freq);
+            8, $this->getDoctrine(), new \DateInterval("P40D"), $list_freq);
         $scenario->exec();
+
 
 
         $user = $this->newUserByName("phpunit");
@@ -65,7 +66,7 @@ class SubscriptionTest extends WebTestCaseExtended
         $log .= $this->assertConsoDepasse($subscription)."\n";
         $log .= $this->assertRenewUp($subscription)."\n";
         $log .= $this->assertRenewDown($subscription)."\n";
-        $log .= $this->assertCheckEndPeriod($group,$pricing_plan)."\n";
+       // $log .= $this->assertCheckEndPeriod($group,$pricing_plan)."\n";
         //$log .= $this->assertUpdateLockDate($group,$work). "\n";
         //$log .= $this->casBatard();
 

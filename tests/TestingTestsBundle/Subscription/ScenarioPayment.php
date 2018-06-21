@@ -25,6 +25,8 @@ class ScenarioPayment {
 
     var $services;
 
+    var $subscription;
+
     /**
      * ScenarioPayment constructor.
      */
@@ -33,7 +35,7 @@ class ScenarioPayment {
         $this->date_interval = $date_interval;
         $this->services = $services;
         $this->doctrine = $doctrine;
-
+        $this->workspace_name = $workspace_name;
 
         $pricing_plan_id = $pricing_plan->getId();
         $token = $this->services->myGet("app.user")->subscribeMail($user_mail);
@@ -44,15 +46,17 @@ class ScenarioPayment {
 
         $this->group_id = $group->getId();
         $this->services->myGet("app.workspaces")->create($workspace_name, $this->group_id, $user->getId());
-        $balance = $pricing_plan->getMonthPrice();
+        $balance = $pricing_plan->getMonthPrice()*$nb_total_users;
 
+        $end_date =  (new \DateTime('now'))->sub(($this->date_interval));
+        $start_date = (new \DateTime('now'))->sub(($this->date_interval));
 
-        $subscription = $this->services->myGet("app.subscription_manager")->newSubscription($group,$pricing_plan, $balance,
-            (new \DateTime('now'))->sub($this->date_interval), (new \DateTime('now')), false, false, $balance);
+        $this->subscription = $this->services->myGet("app.subscription_manager")->newSubscription($group,$pricing_plan, $balance,
+            $start_date->sub(($this->date_interval)), $end_date, false, false, $balance);
 
 
         for($i=1;$i<$nb_total_users;$i++){
-            $this->addMember($i."benoit.tallandier@telecomnancy.net", $i."Benoit", "lulu", $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("name" => $workspace_name)));
+            $this->addMember($i."benoit.tallandier@telecomnancy.net", $i."Benoit", "lulu", $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("name" => $this->workspace_name)));
         }
     }
 
@@ -60,7 +64,7 @@ class ScenarioPayment {
     public function exec(){
         $this->fp = fopen('file.csv', 'w');
         $csv = array();
-        array_push($csv,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not"));
+        array_push($csv,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not","overCost"));
 
         $days = $this->date_interval->d;
 
@@ -93,6 +97,15 @@ class ScenarioPayment {
             }
         }
 
+            $this->addUserToList($day."romaric.t"."@twakeapp.com",$day."romaric",$day."blabla",1);
+
+        /*if ($day == 5){
+            $this->addUserToList("damien.vantourout@telecomnancy.net","POLO","b",1);
+        }
+        if ($day == 15){
+            $this->addUserToList("jeremy.hynes@telecomnancy.net","Jeremy","b",1);
+        }*/
+
         $gp = $this->services->myGet("app.subscription_system")->getGroupPeriod($group_id);
         $startAt = $gp->getPeriodStartedAt();
         $startAt->sub(new \DateInterval("P1D"));
@@ -103,6 +116,18 @@ class ScenarioPayment {
         $periodExpectedToEndAt->sub(new \DateInterval("P1D"));
         $gp->setPeriodExpectedToEndAt($periodExpectedToEndAt);
         $this->doctrine->persist($gp);
+
+        $startDate = $this->subscription->getStartDate();
+        $startDate->add(new \DateInterval("P1D"));
+        $this->subscription->setStartDate($startDate);
+        $this->doctrine->persist($this->subscription);
+
+
+        $endDate = $this->subscription->getEndDate();
+        $endDate->add(new \DateInterval("P1D"));
+        $this->subscription->setEndDate($endDate);
+        $this->doctrine->persist($this->subscription);
+
         $this->doctrine->flush();
 
         $this->services->myGet("app.pricing_plan")->dailyDataGroupUser();
@@ -110,13 +135,19 @@ class ScenarioPayment {
         $checkEndPeriodByGroup = $this->services->myGet("app.subscription_manager")->checkEndPeriodByGroup($group_id);
         $checkOverusingByGroup = $this->services->myGet("app.subscription_manager")->checkOverusingByGroup($group_id);
 
+        $overCost = 0;
+        if ($checkOverusingByGroup !=12 && $checkOverusingByGroup != 11){
+            $overCost = $this->services->myGet("app.subscription_system")->getOverCost($group_id);
+        }
 
         $gp_current_cost = $gp->getCurrentCost();
         $gp_estimated_cost = $gp->getEstimatedCost();
 
-        var_dump($day." ".$gp_current_cost."\n");
+        $subcription2 = $this->services->myGet("app.subscription_system")->get($group_id);
+        $balance = $subcription2->getBalance();
+        $balance_consumed = $subcription2->getBalanceConsumed();
 
-        $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup);
+        $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup, $overCost, $balance, $balance_consumed);
         array_push($csv,$line_csv);
 
 
@@ -132,6 +163,17 @@ class ScenarioPayment {
         foreach ($csv as $item) {
             fputcsv($fp, $item);
         }
+
+    }
+
+
+    public function changeFreq($freq, $user_id){
+        $this->list_freq[$user_id -1] = $freq;
+    }
+
+    public function addUserToList($user_mail, $pseudo, $password, $freq){
+        $this->addMember($user_mail, $pseudo, $password, $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("name" => $this->workspace_name)));
+        array_push($this->list_freq,$freq);
 
     }
 

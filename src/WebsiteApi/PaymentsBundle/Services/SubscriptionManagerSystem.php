@@ -70,8 +70,8 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         if($group==null)
             return -1;
         $sub = $this->subscriptionSystem->create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
-
-        return $this->billGroup($group,$cost, $sub);
+        $this->billGroup($group,$cost, $sub);
+        return $sub ;
     }
 
     public function checkOverusing(){
@@ -232,6 +232,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
                 return 13;
             }
         }
+        return $dateInterval->format('%a');
     }
 
     public function renew($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost)
