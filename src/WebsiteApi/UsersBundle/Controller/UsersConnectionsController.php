@@ -83,6 +83,70 @@ class UsersConnectionsController extends Controller
 
 	}
 
+    public function identiconAction(Request $request)
+    {
+        //Generate identicon
+        $draw = new \ImagickDraw();
+
+        $username = $request->query->get("username", "");
+        $md5 = substr(md5($username), 0, 9);
+
+        srand(intval(hexdec(bin2hex($md5))));
+
+        $colors = ["#F66", "#66F", "#8D6", "#E6D"];
+
+        $choosenColors = Array();
+        for ($i = 0; $i < 1; $i++) {
+            $choosenColors[] = $colors[rand(0, count($colors) - 1)];
+        }
+
+        $equilateralMultiplicator = 0.86602540378;
+        $triangleSize = 70;
+        $cote = 6;
+
+        $colored = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0);
+        for ($i = 0; $i < 36; $i++) {
+            if ($username != "admin" && $username != "benoit" && $username != "romaric") {
+                $colored[$i] = rand(0, 1 + $colored[$i] * 3);
+            }
+        }
+
+        for ($i = 0; $i < 36; $i++) {
+            $j = intval($i / 2);
+            $offsetX = -32 + intval($j / $cote) * $triangleSize * $equilateralMultiplicator;
+            $offsetY = -60 + ($j % $cote) * $triangleSize - (intval($j / $cote) % 2) * $triangleSize / 2 - $triangleSize / 2;
+            if ($i % 2) {
+                $points = [
+                    ['x' => $offsetX, 'y' => $offsetY],
+                    ['x' => $offsetX, 'y' => $offsetY + $triangleSize],
+                    ['x' => $offsetX + $triangleSize * $equilateralMultiplicator, 'y' => $offsetY + $triangleSize / 2]
+                ];
+            } else {
+                $points = [
+                    ['x' => $offsetX + $triangleSize * $equilateralMultiplicator, 'y' => $offsetY + $triangleSize / 2],
+                    ['x' => $offsetX + $triangleSize * $equilateralMultiplicator, 'y' => $offsetY + $triangleSize + $triangleSize / 2],
+                    ['x' => $offsetX, 'y' => $offsetY + $triangleSize]
+                ];
+            }
+            $draw->setFillColor("#FFF");
+            if ($colored[$i]) {
+                $draw->setFillColor($choosenColors[rand(0, count($choosenColors) - 1)]);
+            }
+            $draw->polygon($points);
+        }
+
+        $image = new \Imagick();
+        $image->newImage(300, 300, "#FFF");
+        $image->setImageFormat("png");
+        $image->drawImage($draw);
+        $image->flopImage();
+        $image->drawImage($draw);
+
+        header("Content-Type: image/png");
+        echo $image->getImageBlob();
+        die();
+    }
+
 	public function currentUserAction(Request $request)
 	{
 

@@ -74,7 +74,6 @@ citi_go_workspaces:
 citi_go_users:
     resource: "@TwakeUsersBundle/Resources/config/routing.yml"
     prefix:   /ajax/users/
-    methods: [POST]
 
 citi_go_core:
     resource: "@TwakeCoreBundle/Resources/config/routing.yml"

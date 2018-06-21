@@ -506,7 +506,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         if ($url!=null){
             $app = $this->applicationService->getAppForUrl($url);
-            $newFile->setDefaultApp($app);
+            $newFile->setDefaultWebApp($app);
         }
 
         $newFile->setDetachedFile($detached_file);

@@ -103,8 +103,51 @@ class MarketApplication implements MarketApplicationInterface
             }else{
                 $domain_name = $tmp;
             }
-            $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("domain_name" => $domain_name));
-            return $app;
+
+            //Look up to 2 sub dir in url
+            $url_tmp = str_replace("://", "", $url);
+            $url_tmp = str_replace("//", "/", $url_tmp);
+            $pattern = '/\/[^\/]+/';
+            preg_match_all($pattern, $url_tmp, $matches, PREG_OFFSET_CAPTURE);
+
+            //Test without first sub_domain (ex. twake.atlassian.net)
+            $tmp = explode(".", $domain_name);
+            array_shift($tmp);
+            $domain_name_2 = join(".", $tmp);
+
+            $i = 1;
+            $to_test = Array($domain_name);
+            foreach ($matches[0] as $match) {
+                $to_test[] = $to_test[count($to_test) - 1] . $match[0];
+                $i++;
+                if ($i >= 2) {
+                    break;
+                }
+            }
+            $to_test[] = $domain_name_2;
+            foreach ($matches[0] as $match) {
+                $to_test[] = $to_test[count($to_test) - 1] . $match[0];
+                $i++;
+                if ($i >= 2) {
+                    break;
+                }
+            }
+
+            //For microsoft office apps...
+            if (strpos($url, "app=") > 0) {
+                preg_match("/(?:&|\?)app=([A-Za-z0-9]+)/", $url, $app, PREG_OFFSET_CAPTURE);
+                $to_test[] = $domain_name . "/" . $app[1][0];
+            }
+
+            foreach ($to_test as $url) {
+                $url = strtolower($url);
+                $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("domain_name" => $url));
+                if ($app) {
+                    return $app;
+                }
+            }
+
+            return false;
         }
     }
 }
