@@ -490,9 +490,9 @@ class FilesController extends Controller
             "data" => Array(),
             "errors" => Array()
         );
-        $file = $request->request->get("file", null);
+        $file = $request->request->get("id", null);
         $bool = $this->get('app.drive.FileSystem')->open($file);
-        var_dump($file);
+
         if ($bool){
             $data["data"][] ="success";
         }else{
@@ -503,19 +503,33 @@ class FilesController extends Controller
     }
 
     public function getFilesFromAppAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
 
-        $workspace_id = $request->request->get("workspace_id", 0);
-        $app = $request->request->get("app", 0);
+        if ($this->getUser()) {
 
-        $list = $this->get('app.drive.FileSystem')->getFilesFromApp($app,$workspace_id);
+            $workspace_id = $request->request->get("workspace_id", 0);
+            $app = $request->request->get("app", 0);
 
-        $response = Array();
-        var_dump(count($list));
-        foreach ($list as $element){
-            $infos = $this->get("app.drive.FileSystem")->getInfos($workspace_id, $element, false);
-            array_push($response,$infos);
+            if ($this->get('app.workspace_levels')->can($workspace_id, $this->getUser()->getId(), "")) {
+
+                $list = $this->get('app.drive.FileSystem')->getFilesFromApp($app, $workspace_id);
+
+                $response = Array();
+                foreach ($list as $element) {
+                    $infos = $this->get("app.drive.FileSystem")->getInfos($workspace_id, $element, false);
+                    $response[] = $infos;
+                }
+
+                $data["data"] = $response;
+
+            }
+
         }
-        return new JsonResponse($response);
+
+        return new JsonResponse($data);
     }
 
 }

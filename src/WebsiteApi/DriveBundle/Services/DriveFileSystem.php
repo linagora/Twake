@@ -1357,7 +1357,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     public function getFilesFromApp($app,$workspace_id){
         $app = $this->convertToEntity($app, "TwakeMarketBundle:Application");
 
-        $listFiles = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(array('default_app' => $app, 'group' => $workspace_id),array('opening_rate'=> 'desc'),20);
+        $listFiles = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(array('default_web_app' => $app, 'group' => $workspace_id), array('opening_rate' => 'desc'), 20);
         return $listFiles;
     }
 }

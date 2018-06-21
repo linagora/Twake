@@ -207,7 +207,7 @@ class InitCommand extends ContainerAwareCommand
             @["/medias/apps/web/google_docs_document.png", "Google Docs Document", "docs.google.com/document", "document.docs.google", "367FDF", Array()],
             @["/medias/apps/web/google_docs_spreadsheets.png", "Google Docs Spreadsheets", "docs.google.com/spreadsheets", "spreadsheets.docs.google", "50AF55", Array()],
             @["/medias/apps/web/google_docs_presentation.png", "Google Docs Presentation", "docs.google.com/presentation", "presentation.docs.google", "F9D548", Array()],
-            @["/medias/apps/web/google_docs_drawings.jpg", "Google Docs Drawings", "docs.google.com/drawings", "drawings.docs.google", "E63B42", Array()],
+            @["/medias/apps/web/google_drawings.png", "Google Drawings", "docs.google.com/drawings", "drawings.docs.google", "E63B42", Array()],
             @["/medias/apps/web/google_docs_forms.png", "Google Docs Forms", "docs.google.com/forms", "forms.docs.google", "7457C7", Array()],
             @["/medias/apps/web/google_gmail.png", "Gmail", "mail.google.com", "mail.google", "ED5938", Array()],
 
@@ -221,7 +221,7 @@ class InitCommand extends ContainerAwareCommand
             @["/medias/apps/web/icloud_photos.png", "iCloud Photos", "icloud.com/#photos", "photos.icloud", "E47563", Array()],
 
             //Microsoft
-            @["/medias/apps/web/office_365_skype.jpg", "Skype", "web.skype.com", "skype", "00aff0", Array()],
+            @["/medias/apps/web/office_365_skype.png", "Skype", "web.skype.com", "skype", "00aff0", Array()],
             @["/medias/apps/web/office_365_calendar.png", "Outlook Calendar", "outlook.live.com/calendar", "calendar.office_365", "0072c7", Array()],
             @["/medias/apps/web/office_365_outlook.png", "Outlook ", "outlook.live.com/mail", "outlook.office_365", "0072c6", Array()],
             @["/medias/apps/web/office_365_contacts.png", "Outlook Contacts", "outlook.live.com/people", "contacts.office_365", "0072c7", Array()],

@@ -144,7 +144,7 @@ class DriveFile
             $this->setUrl($url);
         }
         $this->opening_rate = 0;
-        $this->default_app = null;
+        $this->default_web_app = null;
     }
 
     public function getId()
