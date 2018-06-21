@@ -189,7 +189,7 @@ class InitCommand extends ContainerAwareCommand
         $apps = [
             @["/medias/apps/web/vectr.png", "Vectr", "vectr.com", "vectr", "101010", Array()],
             @["/medias/apps/web/webflow.jpeg", "Webflow", "webflow.com", "webflow", "354145", Array()],
-            ["/medias/apps/web/witeboard.png", "Witeboard", "witeboard.com", "witeboard", "222222", Array()],
+            @["/medias/apps/web/witeboard.png", "Witeboard", "witeboard.com", "witeboard", "222222", Array()],
             @["/medias/apps/web/flat_io.png", "Flat.io", "flat.io/score", "flat_io", "390f8", Array()],
             @["/medias/apps/web/play_canvas.png", "Play Canvas", "playcanvas.com/editor", "playcanvas", "d64e0e", Array()],
             @["/medias/apps/web/tuzzit_board.png", "Tuzzit", "board.tuzzit.com", "board.tuzzit", "4ab5a3", Array()],
@@ -221,15 +221,15 @@ class InitCommand extends ContainerAwareCommand
             @["/medias/apps/web/icloud_photos.png", "iCloud Photos", "icloud.com/#photos", "photos.icloud", "E47563", Array()],
 
             //Microsoft
-            ["/medias/apps/web/office_365_skype.jpeg", "Skype", "web.skype.com", "skype", "E63B42", Array()],
-            ["/medias/apps/web/office_365_calendar.jpeg", "Outlook Calendar", "outlook.live.com/calendar", "calendar.office_365", "E63B42", Array()],
-            ["/medias/apps/web/office_365_outlook.jpeg", "Outlook ", "outlook.live.com/mail", "outlook.office_365", "E63B42", Array()],
-            ["/medias/apps/web/office_365_contacts.jpeg", "Outlook Contacts", "outlook.live.com/people", "contacts.office_365", "E63B42", Array()],
-            ["/medias/apps/web/office_365_sway.jpeg", "Sway", "sway.com", "sway.office_365", "E63B42", Array()],
-            ["/medias/apps/web/office_365_onenote.jpeg", "OneNote", "onedrive.live.com/onenote", "onenote.office_365", "E63B42", Array()],
-            ["/medias/apps/web/office_365_powerpoint.jpeg", "PowerPoint", "onedrive.live.com/powerpoint", "powerpoint.office_365", "E63B42", Array()],
-            ["/medias/apps/web/office_365_word.jpeg", "Word", "onedrive.live.com/word", "word.office_365", "E63B42", Array()],
-            ["/medias/apps/web/office_365_excel.jpeg", "Excel", "onedrive.live.com/excel", "excel.office_365", "E63B42", Array()],
+            @["/medias/apps/web/office_365_skype.jpg", "Skype", "web.skype.com", "skype", "00aff0", Array()],
+            @["/medias/apps/web/office_365_calendar.png", "Outlook Calendar", "outlook.live.com/calendar", "calendar.office_365", "0072c7", Array()],
+            @["/medias/apps/web/office_365_outlook.png", "Outlook ", "outlook.live.com/mail", "outlook.office_365", "0072c6", Array()],
+            @["/medias/apps/web/office_365_contacts.png", "Outlook Contacts", "outlook.live.com/people", "contacts.office_365", "0072c7", Array()],
+            @["/medias/apps/web/office_365_sway.png", "Sway", "sway.com", "sway.office_365", "16897c", Array()],
+            @["/medias/apps/web/office_365_onenote.png", "OneNote", "onedrive.live.com/onenote", "onenote.office_365", "793474", Array()],
+            @["/medias/apps/web/office_365_powerpoint.png", "PowerPoint", "onedrive.live.com/powerpoint", "powerpoint.office_365", "d34725", Array()],
+            @["/medias/apps/web/office_365_word.png", "Word", "onedrive.live.com/word", "word.office_365", "2a5699", Array()],
+            @["/medias/apps/web/office_365_excel.png", "Excel", "onedrive.live.com/excel", "excel.office_365", "1e6e42", Array()],
 
 
         ];
