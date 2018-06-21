@@ -98,7 +98,7 @@ class MailSender implements MailSenderInterface
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
-            $this->mailer->send($mail,"WillOverUsingALittle",Array("overuse"=>$overuse,"username"=>$username),"TwakePaymentsBundle:Mail");
+            $this->mailer->send($mail,"WillBeOverUsing",Array("overuse"=>$overuse,"username"=>$username),"TwakePaymentsBundle:Mail");
         }
     }
 

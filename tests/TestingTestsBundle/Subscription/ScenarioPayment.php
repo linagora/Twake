@@ -44,8 +44,11 @@ class ScenarioPayment {
         $this->group_id = $group->getId();
         $this->services->myGet("app.workspaces")->create($workspace_name, $this->group_id, $user->getId());
         $balance = $pricing_plan->getMonthPrice();
+
+
         $subscription = $this->services->myGet("app.subscription_manager")->newSubscription($group,$pricing_plan, $balance,
             (new \DateTime('now'))->sub($this->date_interval), (new \DateTime('now')), false, false, $balance);
+
 
         for($i=1;$i<$nb_total_users;$i++){
             $this->addMember($i."benoit.tallandier@telecomnancy.net", $i."Benoit", "lulu", $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("name" => $workspace_name)));
@@ -56,7 +59,7 @@ class ScenarioPayment {
     public function exec(){
         $this->fp = fopen('file.csv', 'w');
         $csv = array();
-        array_push($csv,array("day","current_cost","estimated_cost"));
+        array_push($csv,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not"));
 
         $days = $this->date_interval->d;
 
@@ -94,15 +97,25 @@ class ScenarioPayment {
         $startAt->sub(new \DateInterval("P1D"));
         $gp->setPeriodStartedAt($startAt);
         $this->doctrine->persist($gp);
-        $this->doctrine->flush();
+
+        /*$periodExpectedToEndAt = $gp->getPeriodExpectedToEndAt();
+        $periodExpectedToEndAt->sub(new \DateInterval("P1D"));
+        $gp->setPeriodExpectedToEndAt($periodExpectedToEndAt);
+        $this->doctrine->persist($gp);
+*/        $this->doctrine->flush();
 
         $this->services->myGet("app.pricing_plan")->dailyDataGroupUser();
         $this->services->myGet("app.pricing_plan")->groupPeriodUsage();
+        $checkEndPeriodByGroup = $this->services->myGet("app.subscription_manager")->checkEndPeriodByGroup($group_id);
+        $checkOverusingByGroup = $this->services->myGet("app.subscription_manager")->checkOverusingByGroup($group_id);
+
 
         $gp_current_cost = $gp->getCurrentCost();
         $gp_estimated_cost = $gp->getEstimatedCost();
 
-        $line_csv = array($day, $gp_current_cost, $gp_estimated_cost);
+        var_dump($day." ".$gp_current_cost."\n");
+
+        $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup);
         array_push($csv,$line_csv);
 
 
