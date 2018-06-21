@@ -109,6 +109,7 @@ class GroupPeriods implements GroupPeriodInterface
         $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
 
         $newGroupPeriod = new GroupPeriod($groupPeriod->getGroup());
+        $newGroupPeriod->setExpectedCost($groupPeriod->getExpectedCost());
         $date = new \DateTime();
         $date->modify('+1 day');
         $newGroupPeriod->setPeriodStartedAt($date);

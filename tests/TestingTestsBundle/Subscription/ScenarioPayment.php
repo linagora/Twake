@@ -9,6 +9,7 @@
 namespace Tests\TestingTestsBundle\Subscription;
 
 use Tests\WebTestCaseExtended;
+use WebsiteApi\PaymentsBundle\Entity\GroupIdentity;
 use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;
 
 class ScenarioPayment {
@@ -43,6 +44,9 @@ class ScenarioPayment {
 
         $uniquename = $this->services->myGet("app.string_cleaner")->simplify($group_name);
         $group = $this->services->myGet("app.groups")->create($user->getId(), $group_name, $uniquename, $pricing_plan_id);
+        $group_identity = new GroupIdentity($group, "twakeapp", "twakeapp", "damien.vantourout@telecomnancy.net", "06 06 49 36 81");
+        $this->doctrine->persist($group_identity);
+        $this->doctrine->flush();
 
         $this->group_id = $group->getId();
         $this->services->myGet("app.workspaces")->create($workspace_name, $this->group_id, $user->getId());
@@ -51,8 +55,8 @@ class ScenarioPayment {
         $end_date =  (new \DateTime('now'))->sub(($this->date_interval));
         $start_date = (new \DateTime('now'))->sub(($this->date_interval));
 
-        $this->subscription = $this->services->myGet("app.subscription_manager")->newSubscription($group,$pricing_plan, $balance,
-            $start_date->sub(($this->date_interval)), $end_date, false, false, $balance);
+        $this->subscription = $this->services->myGet("app.subscription_manager")->newSubscription($group,$pricing_plan,
+            $balance,$start_date->sub(($this->date_interval)), $end_date, false, false, $balance);
 
 
         for($i=1;$i<$nb_total_users;$i++){
@@ -64,7 +68,8 @@ class ScenarioPayment {
     public function exec(){
         $this->fp = fopen('file.csv', 'w');
         $csv = array();
-        array_push($csv,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not","overCost"));
+        array_push($csv,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not",
+            "overCost", "balance", "balance_consumed", "expected_cost", "is_blocked","lock_date"));
 
         $days = $this->date_interval->d;
 
@@ -97,7 +102,9 @@ class ScenarioPayment {
             }
         }
 
-            $this->addUserToList($day."romaric.t"."@twakeapp.com",$day."romaric",$day."blabla",1);
+        //$this->addUserToList($day."romaric.t"."@twakeapp.com",$day."romaric",$day."blabla",1);
+
+        //$this->changeFreq(100, 6);
 
         if ($day == 5){
             $this->addUserToList("damien.vantourout@telecomnancy.net","POLO","b",1);
@@ -142,12 +149,16 @@ class ScenarioPayment {
 
         $gp_current_cost = $gp->getCurrentCost();
         $gp_estimated_cost = $gp->getEstimatedCost();
+        $gp_expected_cost = $gp->getExpectedCost();
+        $lock_date = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity")->findOneBy(Array("group" => $group_id))->getLockDate()->format('%a');
+        $is_blocked = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group")->findOneBy(Array("id" => $group_id))->getIsBlocked();
 
         $subcription2 = $this->services->myGet("app.subscription_system")->get($group_id);
         $balance = $subcription2->getBalance();
         $balance_consumed = $subcription2->getBalanceConsumed();
 
-        $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup, $overCost, $balance, $balance_consumed);
+        $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup,
+            $overCost, $balance, $balance_consumed, $gp_expected_cost, $is_blocked, $lock_date);
         array_push($csv,$line_csv);
 
 
