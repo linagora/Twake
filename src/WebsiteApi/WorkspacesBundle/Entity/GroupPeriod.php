@@ -102,6 +102,37 @@ class GroupPeriod
             "expectedCost" => $this->expectedCost
         );
     }
+
+
+    public function isEquivalentTo($group_period){
+	    if ($this->getConnexions() != $group_period->getConnexions()){
+	        return false;
+        }
+        if ($this->getAppsUsagePeriod() != $group_period->getAppsUsagePeriod()){
+	        return false;
+        }
+        if ($this->getPeriodStartedAt() != $group_period->getPeriodStartedAt()){
+	        return false;
+        }
+        if ($this->getPeriodEndedAt() != $group_period->getPeriodEndedAt()){
+	        return false;
+        }
+        if ($this->getPeriodExpectedToEndAt() != $group_period->getPeriodExpectedToEndAt()){
+	        return false;
+        }
+        if ($this->getCurrentCost() != $group_period->getCurrentCost()){
+	        return false;
+        }
+        if ($this->getExpectedCost() != $group_period->getExpectedCost()){
+	        return false;
+        }
+        if ($this->getEstimatedCost() != $group_period->getEstimatedCost()){
+	        return false;
+        }
+        return true;
+	}
+
+
     /**
      * @return mixed
      */
