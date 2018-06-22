@@ -58,6 +58,20 @@ class GroupIdentity
      */
     private $lockDate;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $haveAlreadySendIsOverUsingALotMail;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $haveAlreadySendIsOverUsingALittleMail;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $haveAlreadySendWillBeOverUsingMail;
 
     public function __construct($group, $billingAddress, $address, $mail, $phoneNumber)
     {
@@ -66,6 +80,9 @@ class GroupIdentity
         $this->address = $address;
         $this->mail = $mail;
         $this->phoneNumber = $phoneNumber;
+        $this->haveAlreadySendIsOverUsingALittleMail = false;
+        $this->haveAlreadySendIsOverUsingALotMail = false;
+        $this->haveAlreadySendWillBeOverUsingMail = false;
     }
 
     /**
@@ -148,6 +165,54 @@ class GroupIdentity
         $group = $this->getGroup()->getAsArray();
 
         return array_merge($group_identity,$group);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHaveAlreadySendIsOverUsingALotMail()
+    {
+        return $this->haveAlreadySendIsOverUsingALotMail;
+    }
+
+    /**
+     * @param mixed $haveAlreadySendIsOverUsingALotMail
+     */
+    public function setHaveAlreadySendIsOverUsingALotMail($haveAlreadySendIsOverUsingALotMail)
+    {
+        $this->haveAlreadySendIsOverUsingALotMail = $haveAlreadySendIsOverUsingALotMail;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHaveAlreadySendIsOverUsingALittleMail()
+    {
+        return $this->haveAlreadySendIsOverUsingALittleMail;
+    }
+
+    /**
+     * @param mixed $haveAlreadySendIsOverUsingALittleMail
+     */
+    public function setHaveAlreadySendIsOverUsingALittleMail($haveAlreadySendIsOverUsingALittleMail)
+    {
+        $this->haveAlreadySendIsOverUsingALittleMail = $haveAlreadySendIsOverUsingALittleMail;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHaveAlreadySendWillBeOverUsingMail()
+    {
+        return $this->haveAlreadySendWillBeOverUsingMail;
+    }
+
+    /**
+     * @param mixed $haveAlreadySendWillBeOverUsingMail
+     */
+    public function setHaveAlreadySendWillBeOverUsingMail($haveAlreadySendWillBeOverUsingMail)
+    {
+        $this->haveAlreadySendWillBeOverUsingMail = $haveAlreadySendWillBeOverUsingMail;
     }
 
 }

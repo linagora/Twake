@@ -94,9 +94,16 @@ class SubscriptionSystem implements SubscriptionInterface
         $gp = $this->getGroupPeriod($group);
         $gp->setExpectedCost($balance);
 
+        $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
+        $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
+        $identity->setHaveAlreadySendIsOverUsingALotMail(false);
+        $identity->setHaveAlreadySendIsOverUsingALittleMail(false);
+        $identity->setHaveAlreadySendWillBeOverUsingMail(false);
+
         $this->doctrine->persist($gp);
         $this->doctrine->persist($group);
         $this->doctrine->persist($newSub);
+        $this->doctrine->persist($identity);
         $this->doctrine->flush();
 
         //var_dump("create");
