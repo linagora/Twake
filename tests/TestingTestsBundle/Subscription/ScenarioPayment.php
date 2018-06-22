@@ -142,6 +142,7 @@ class ScenarioPayment {
         $this->services->myGet("app.pricing_plan")->groupPeriodUsage();
         $checkEndPeriodByGroup = $this->services->myGet("app.subscription_manager")->checkEndPeriodByGroup($group_id);
         $checkOverusingByGroup = $this->services->myGet("app.subscription_manager")->checkOverusingByGroup($group_id);
+        $this->services->myGet("app.subscription_manager")->checkLocked();
 
         $overCost = 0;
         if ($checkOverusingByGroup !=12 && $checkOverusingByGroup != 11){
@@ -177,7 +178,7 @@ class ScenarioPayment {
         }
 
         if (($this->day_over_cost +5) == $day){
-            $this->services->myGet("app.subscription_manager")->billGroup($group_id, $overCost, $this->subscription, true);
+            $this->services->myGet("app.subscription_manager")->payOverCost($group_id, $this->subscription);
         }
 
         $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup,

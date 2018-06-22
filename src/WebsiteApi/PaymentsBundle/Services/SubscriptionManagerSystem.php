@@ -92,6 +92,12 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         return $res;
     }
 
+    public function payOverCost($group, $sub){
+        $overCost = $this->subscriptionSystem->getOverCost($group);
+        $this->subscriptionSystem->addBalance($overCost,$group);
+        $this->billGroup($group,$overCost,$sub,true);
+    }
+
     public function billGroup($group, $cost, $sub, $alreadyPaied)
     {
         $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
