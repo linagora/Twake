@@ -172,14 +172,13 @@ class ScenarioPayment {
         $balance_consumed = $this->services->myGet("app.subscription_system")->getCorrectBalanceConsumed($group_id);
 
 
-       /* if($checkOverusingByGroup == 9){
+        if($checkOverusingByGroup == 9){
             $this->day_over_cost = $day;
         }
 
         if (($this->day_over_cost +5) == $day){
-            var_dump("COUCOU");
             $this->services->myGet("app.subscription_manager")->billGroup($group_id, $overCost, $this->subscription, true);
-        }*/
+        }
 
         $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup,
             $overCost, $balance, $balance_consumed, $gp_expected_cost, $is_blocked, $lock_date);
