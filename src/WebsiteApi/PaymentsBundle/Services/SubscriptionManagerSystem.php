@@ -27,6 +27,7 @@ use WebsiteApi\PaymentsBundle\Model\SubscriptionManagerInterface;
  * 13 : passer en free
  * 14 : auto renew and bill mail
  * 15 : auto renew and unpaid mail
+ * 16 : lock date set
  *  */
 class SubscriptionManagerSystem implements SubscriptionManagerInterface
 {
@@ -92,6 +93,12 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
         //var_dump($this->subscriptionSystem->getAutoWithdrawal($group));
         if ($this->subscriptionSystem->getAutoWithdrawal($group) || $alreadyPaied){
+            $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
+            $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
+            $identity->setLockDate(null);
+            $this->doctrine->persist($identity);
+            $this->doctrine->flush();
+
             //var_dump("send bill : ".$cost);
             $period = $this->subscriptionSystem->getGroupPeriod($group);
             $startDateOfService = $sub->getStartDate();
@@ -150,6 +157,10 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
 
     public function checkOverusingByGroup($group)
     {
+        $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
+        $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
+        if($identity->getLockDate()==null)
+            return 16;
         if ($this->subscriptionSystem->groupIsOverUsingALot($group)) {
             //var_dump("over using a lot : ".$this->subscriptionSystem->getOverCost($group));
             $this->mailSender->sendIsOverUsingALot($group,$this->subscriptionSystem->getOverCost($group));

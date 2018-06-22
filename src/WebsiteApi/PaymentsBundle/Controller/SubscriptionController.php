@@ -85,9 +85,15 @@ class SubscriptionController extends Controller
             $data["errors"][] = "no group period for this group";
             return new JsonResponse($data);
         }
+        $closedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
+        $closedGroupPeriods = $closedGroupPeriodRepository->findBy(Array("group" => $group));
 
         $data["data"] = array_merge($sub->getAsArray(), $gp->getAsArray());
         $data["data"]["userCount"] = $this->get("app.subscription_system")->getExpectedUserCount($group);
+        $data["data"]["closeGroupPeriod"] = Array();
+        foreach ($closedGroupPeriods as $closedGroupPeriod){
+            array_push($data["data"]["closeGroupPeriod"],$closedGroupPeriod->getAsArray());
+        }
 
         return new JsonResponse($data);
     }
