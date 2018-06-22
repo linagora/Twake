@@ -257,7 +257,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
                 $endDate->add($dateInterval);
                 $cost = $sub->getSubscribedBalance()+$this->subscriptionSystem->getRemainingBalance($group);
                 //var_dump("auto renew");
-                return 13+$this->renew($group, $sub->getPricingPlan(), $sub->getSubscribedBalance(), new \DateTime(), $endDate,$sub->getAutoWithdrawal(),$sub->getAutoRenew(),$cost);
+                return 13+$this->renew($group, $sub->getPricingPlan(), $sub->getSubscribedBalance(), new \DateTime(), $endDate,$sub->getAutoWithdrawal(),$sub->getAutoRenew(),$cost, false);
             } else {
                 //var_dump("passer en free");
                 $this->putInFree($group);

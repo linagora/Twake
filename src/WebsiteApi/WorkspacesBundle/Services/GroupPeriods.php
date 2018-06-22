@@ -149,6 +149,7 @@ class GroupPeriods implements GroupPeriodInterface
             $this->doctrine->remove($appPricing);
         }
 
+
         $this->doctrine->persist($groupPeriod);
         $this->doctrine->persist($group);
         $this->doctrine->persist($closedGroupPeriod);
