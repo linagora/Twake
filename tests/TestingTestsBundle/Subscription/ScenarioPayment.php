@@ -151,6 +151,13 @@ class ScenarioPayment {
         $gp_current_cost = $gp->getCurrentCost();
         $gp_estimated_cost = $gp->getEstimatedCost();
         $gp_expected_cost = $gp->getExpectedCost();
+        if($checkOverusingByGroup == 9) {
+            $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
+            $identity = $groupIdentityRepo->findOneBy(Array("group" => $group_id));
+            $newLockDate = $endDate;
+            $identity->setLockDate($newLockDate->add(new \DateInterval("P5D")));
+            $this->doctrine->persist($identity);
+        }
         $lock_date_tmp = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity")->findOneBy(Array("group" => $group_id))->getLockDate();
         if ($lock_date_tmp != null){
             $lock_date = $lock_date_tmp->format('Y-m-d');
@@ -163,6 +170,7 @@ class ScenarioPayment {
         $subcription2 = $this->services->myGet("app.subscription_system")->get($group_id);
         $balance = $subcription2->getBalance();
         $balance_consumed = $this->services->myGet("app.subscription_system")->getCorrectBalanceConsumed($group_id);
+
 
        /* if($checkOverusingByGroup == 9){
             $this->day_over_cost = $day;
