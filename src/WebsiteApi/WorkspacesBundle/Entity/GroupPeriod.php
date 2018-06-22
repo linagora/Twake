@@ -97,9 +97,9 @@ class GroupPeriod
             "periodEndedAt" => $this->periodEndedAt,
             "periodExpectedToEndAt" => $this->periodExpectedToEndAt,
             "groupPricingInstanceId" => $this->groupPricingInstance==null ?  null : $this->groupPricingInstance->getId(),
-            "currentCost" => $this->currentCost = 0,
-            "estimatedCost" => $this->estimatedCost = 0,
-            "expectedCost" => $this->expectedCost= 0
+            "currentCost" => $this->currentCost,
+            "estimatedCost" => $this->estimatedCost,
+            "expectedCost" => $this->expectedCost
         );
     }
     /**

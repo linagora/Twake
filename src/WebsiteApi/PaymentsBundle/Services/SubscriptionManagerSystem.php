@@ -71,7 +71,11 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         if($group==null)
             return -1;
         $sub = $this->subscriptionSystem->create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
+        //var_dump(73);
+        //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
         $this->billGroup($group,$cost, $sub, true);
+        //var_dump(76);
+        //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
         return $sub ;
     }
 
@@ -105,9 +109,11 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
             $pricingPlan = $sub->getPricingPlan();
             $endedAt = $sub->getEndDate();
             $billedType = $sub->getStartDate()->diff($endedAt)->m==1 ? "monthly" : "year";
-
+            //var_dump(106);
+            //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
             $bill = $this->billing->recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt);
-
+            //var_dump(108);
+            //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
             //stats
             $apps = $this->groupApps->getApps($group);
 
@@ -123,14 +129,17 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
 
             $list = array();
             foreach ($apps as $app){
-                if(!$groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()]){
-                    continue;
+                if (count($groupPeriod->getAppsUsagePeriod()) != 0){
+                    if(!$groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()]){
+                        continue;
+                    }
+                    $element = array(
+                        "app" => $app->getApp()->getAsArray(),
+                        "usage" => $groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()],
+                    );
+                    $list[] = $element;
                 }
-                $element = array(
-                    "app" => $app->getApp()->getAsArray(),
-                    "usage" => $groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()],
-                );
-                $list[] = $element;
+
             }
 
             $pdfStat = $this->pdfBuilder->makeUsageStatPDF(Array(
@@ -159,7 +168,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     {
         $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
         $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
-        if($identity->getLockDate()==null)
+        if($identity->getLockDate()!=null)
             return 16;
         if ($this->subscriptionSystem->groupIsOverUsingALot($group)) {
             //var_dump("over using a lot : ".$this->subscriptionSystem->getOverCost($group));

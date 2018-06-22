@@ -94,9 +94,13 @@ class SubscriptionSystem implements SubscriptionInterface
         $gp = $this->getGroupPeriod($group);
         $gp->setExpectedCost($balance);
 
+        $this->doctrine->persist($gp);
         $this->doctrine->persist($group);
         $this->doctrine->persist($newSub);
         $this->doctrine->flush();
+
+        //var_dump("create");
+        //var_dump($gp->getExpectedCost());
 
         return $newSub;
     }
