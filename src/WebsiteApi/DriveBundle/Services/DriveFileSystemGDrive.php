@@ -411,30 +411,39 @@ class DriveFileSystemGDrive implements DriveFileSystemInterface
 
     }
 
-    public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false)
+    public function create($workspace, $directoryId, $filename, $content = "", $isDirectory = false, $detached_file = false)
     {
-
-        if ($directory == 0 || $detached_file) {
-            $directory = null;
+        if ($directoryId == 0 || $detached_file) {
+            $directoryId = null;
         }
 
-        if (!$this->isWorkspaceAllowed($workspace, $directory)) {
-            return false;
-        }
-
-        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
-
-        if (!$detached_file && ($workspace == null || $this->getFreeSpace($workspace) <= 0)) {
-            return false;
-        }
 
         $newFile = new DriveFile(
             $workspace,
-            $directory,
+            $directoryId,
             $filename,
             $isDirectory
         );
+        $json = "{";
+
+        if($isDirectory){
+            $json .= "\"name\": \"$filename\",";
+            if($directoryId!=0)
+                $json .= "\"parents\" : [\"$directoryId\"],";
+            $json .= "\"mimeType\": \"application/vnd.google-apps.folder\"";
+        }else{
+            $json .= "\"name\": \"$filename\"";
+            if($directoryId!=0)
+                $json .= ",\"parents\" : [\"$directoryId\"]";
+        }
+
+        $json .= "}";
+
+        $data = $this->restClient->post('https://www.googleapis.com/drive/v3/files', $json,
+            array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->gdriveApi->getGDriveToken(), "Content-Type: application/json")));
+        return $newFile;
+
 
         $newFile->setDetachedFile($detached_file);
 

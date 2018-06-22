@@ -66,7 +66,7 @@ class GDriveApiSystem
     }
 
     public function getGDriveToken(){
-        return "ya29.GlzYBXpJ34CkzeZkzTMNGQrUpLK0bXi554PVfu9HjzLYsQLNU6lETQdIoTj5WqtZGkTwJccQpMsxEAcRSbewXVzmuzu_y47RkUr6guQMfCdDrxoOpCFb5Ax3NJX7uQ";
+        return $this->getClient()->getAccessToken()["access_token"];
     }
 
     public function getGDriveFileFromGDriveId($gdriveId){
