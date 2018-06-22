@@ -266,7 +266,19 @@ class ClosedGroupPeriod
         $this->billed = $billed;
     }
 
-
+    public function getAsArray(){
+        return Array(
+            "connexions" => $this->getConnexions(),
+            "appUsage" => $this->getAppsUsagePeriod(),
+            "periodStartedAt" => $this->getPeriodStartedAt(),
+        "periodEndedAt" => $this->getPeriodEndedAt(),
+        "periodExpectedToEndAt" => $this->getPeriodExpectedToEndAt(),
+        "currentCost" => $this->getCurrentCost(),
+        "estimatedCost" => $this->getEstimatedCost(),
+        "expectedCost" => $this->getExpectedCost(),
+        "billed" => $this->getBilled()
+        );
+    }
 
 
 

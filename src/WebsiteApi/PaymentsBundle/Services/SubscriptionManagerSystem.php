@@ -27,6 +27,7 @@ use WebsiteApi\PaymentsBundle\Model\SubscriptionManagerInterface;
  * 13 : passer en free
  * 14 : auto renew and bill mail
  * 15 : auto renew and unpaid mail
+ * 16 : lock date set
  *  */
 class SubscriptionManagerSystem implements SubscriptionManagerInterface
 {
@@ -70,8 +71,12 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         if($group==null)
             return -1;
         $sub = $this->subscriptionSystem->create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
-
-        return $this->billGroup($group,$cost, $sub);
+        //var_dump(73);
+        //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
+        $this->billGroup($group,$cost, $sub, true);
+        //var_dump(76);
+        //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
+        return $sub ;
     }
 
     public function checkOverusing(){
@@ -87,20 +92,34 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         return $res;
     }
 
-    public function billGroup($group, $cost, $sub)
+    public function payOverCost($group, $sub){
+        $overCost = $this->subscriptionSystem->getOverCost($group);
+        $this->subscriptionSystem->addBalance($overCost,$group);
+        $this->billGroup($group,$overCost,$sub,true);
+    }
+
+    public function billGroup($group, $cost, $sub, $alreadyPaied)
     {
         $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
         //var_dump($this->subscriptionSystem->getAutoWithdrawal($group));
-        if ($this->subscriptionSystem->getAutoWithdrawal($group)){
+        if ($this->subscriptionSystem->getAutoWithdrawal($group) || $alreadyPaied){
+            $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
+            $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
+            $identity->setLockDate(null);
+            $this->doctrine->persist($identity);
+            $this->doctrine->flush();
+
             //var_dump("send bill : ".$cost);
             $period = $this->subscriptionSystem->getGroupPeriod($group);
             $startDateOfService = $sub->getStartDate();
             $pricingPlan = $sub->getPricingPlan();
             $endedAt = $sub->getEndDate();
             $billedType = $sub->getStartDate()->diff($endedAt)->m==1 ? "monthly" : "year";
-
+            //var_dump(106);
+            //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
             $bill = $this->billing->recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt);
-
+            //var_dump(108);
+            //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
             //stats
             $apps = $this->groupApps->getApps($group);
 
@@ -116,14 +135,17 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
 
             $list = array();
             foreach ($apps as $app){
-                if(!$groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()]){
-                    continue;
+                if (count($groupPeriod->getAppsUsagePeriod()) != 0){
+                    if(!$groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()]){
+                        continue;
+                    }
+                    $element = array(
+                        "app" => $app->getApp()->getAsArray(),
+                        "usage" => $groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()],
+                    );
+                    $list[] = $element;
                 }
-                $element = array(
-                    "app" => $app->getApp()->getAsArray(),
-                    "usage" => $groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()],
-                );
-                $list[] = $element;
+
             }
 
             $pdfStat = $this->pdfBuilder->makeUsageStatPDF(Array(
@@ -150,10 +172,14 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
 
     public function checkOverusingByGroup($group)
     {
+        $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
+        $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
+        if($identity->getLockDate()!=null)
+            return 16;
         if ($this->subscriptionSystem->groupIsOverUsingALot($group)) {
             //var_dump("over using a lot : ".$this->subscriptionSystem->getOverCost($group));
             $this->mailSender->sendIsOverUsingALot($group,$this->subscriptionSystem->getOverCost($group));
-            $res = $this->billGroup($group, $this->subscriptionSystem->getOverCost($group), $this->subscriptionSystem->get($group));
+            $res = $this->billGroup($group, $this->subscriptionSystem->getOverCost($group), $this->subscriptionSystem->get($group), false);
             if($res==1)
                 $this->subscriptionSystem->addBalance($this->subscriptionSystem->getOverCost($group),$group);
             return 7+$res;
@@ -232,15 +258,16 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
                 return 13;
             }
         }
+        return $dateInterval->format('%a');
     }
 
-    public function renew($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost)
+    public function renew($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost, $manual)
     {
         //var_dump("renew");
         $this->subscriptionSystem->archive($group);
         $sub = $this->subscriptionSystem->create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
 
-        return $this->billGroup($group,$cost, $sub);
+        return $this->billGroup($group,$cost, $sub, $manual);
     }
 
     public function checkLocked()

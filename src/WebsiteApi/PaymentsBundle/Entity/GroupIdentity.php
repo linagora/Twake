@@ -61,7 +61,6 @@ class GroupIdentity
 
     public function __construct($group, $billingAddress, $address, $mail, $phoneNumber)
     {
-        $this->lockDate = null;
         $this->group = $group;
         $this->billingAddress = $billingAddress;
         $this->address = $address;

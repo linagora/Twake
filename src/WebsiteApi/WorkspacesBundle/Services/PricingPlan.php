@@ -176,7 +176,7 @@ class PricingPlan implements PricingPlanInterface
         foreach ($listGroupUser as $ga) {
             $groupPeriod = $groupPeriodUsageRepository->findOneBy(Array("group" => $ga->getGroup()));
             if (!$groupPeriod) {
-                $this->groupPeriod->init($ga->getGroup());
+                $this->groupPeriod->init($ga->getGroup(),$this->getMinimalPricing());
                 $groupPeriod = $groupPeriodUsageRepository->findOneBy(Array("group" => $ga->getGroup()));
             }
             $connexions = $groupPeriod->getConnexions();

@@ -59,17 +59,17 @@ class GroupPeriod
     private $groupPricingInstance;
 
     /**
-     * @ORM\Column(name="current_cost", type="decimal", precision=12, scale=3)
+     * @ORM\Column(name="current_cost", type="decimal", precision=65, scale=3)
      */
     protected $currentCost;
 
     /**
-     * @ORM\Column(name="expected_cost", type="decimal" , precision=12, scale=3)
+     * @ORM\Column(name="expected_cost", type="decimal" , precision=15, scale=3)
      */
     protected $expectedCost;
 
     /**
-     * @ORM\Column(name="estimated_cost", type="decimal", precision=12, scale=3)
+     * @ORM\Column(name="estimated_cost", type="decimal", precision=15, scale=3)
      */
     protected $estimatedCost;
 
@@ -97,9 +97,9 @@ class GroupPeriod
             "periodEndedAt" => $this->periodEndedAt,
             "periodExpectedToEndAt" => $this->periodExpectedToEndAt,
             "groupPricingInstanceId" => $this->groupPricingInstance==null ?  null : $this->groupPricingInstance->getId(),
-            "currentCost" => $this->currentCost = 0,
-            "estimatedCost" => $this->estimatedCost = 0,
-            "expectedCost" => $this->expectedCost= 0
+            "currentCost" => $this->currentCost,
+            "estimatedCost" => $this->estimatedCost,
+            "expectedCost" => $this->expectedCost
         );
     }
     /**
