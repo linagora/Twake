@@ -13,3 +13,12 @@ calendar_workspace_topic:
     requirements:
         id:
             pattern: "[0-9]+"
+
+
+calendar_activity_topic:
+    channel: calendarActivity/workspace/{id}
+    handler:
+        callback: 'calendar_activity.topic'
+    requirements:
+             id:
+                pattern: "[0-9]+"
