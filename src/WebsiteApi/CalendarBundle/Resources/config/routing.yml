@@ -59,3 +59,19 @@ calendar_events_share:
 calendar_events_unshare:
     path:     /events/removeUsers
     defaults: { _controller: TwakeCalendarBundle:Event:removeUsers }
+
+
+calendar_activitys_create:
+    path: /calendarActivitys/create
+    defaults: { _controller: TwakeCalendarBundle:CalendarActivity:create }
+calendar_activitys_get:
+    path: /calendarActivitys/get
+    defaults: { _controller: TwakeCalendarBundle:CalendarActivity:get }
+
+calendar_activitys_readAll:
+    path: /calendarActivitys/readAll
+    defaults: { _controller: TwakeCalendarBundle:CalendarActivity:readAll }
+
+calendar_activitys_delete:
+    path: /calendarActivitys/delete
+    defaults: { _controller: TwakeCalendarBundle:CalendarActivity:delete}

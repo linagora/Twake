@@ -223,6 +223,8 @@ class CalendarEvents implements CalendarEventsInterface
             "event" => $event->getAsArray()
         );
         $this->pusher->push($data, "calendar/".$calendarId);
+
+        $this->get('app.calendarActivity')->pushTable(true, $workspace, $user, null, "test ajout calendar activity", Array());
         return true;
 
     }
