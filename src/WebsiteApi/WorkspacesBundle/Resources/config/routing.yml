@@ -10,6 +10,14 @@ twake_workspaces_delete:
     path:     /delete
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:delete }
 
+twake_workspaces_archive_workspace:
+    path:     /archive
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:archiveWorkspace }
+
+twake_workspaces_unarchive_workspace:
+    path:     /unarchive
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:unarchiveWorkspace }
+
 # Edit workspace data
 
 twake_workspaces_get_data:
@@ -50,6 +58,7 @@ twake_workspaces_disable_app:
     path:     /apps/disable
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:disableApp }
 
+
 # Groups
 twake_groups_get_users:
     path:     /group/getUsers
@@ -66,6 +75,10 @@ twake_groups_remove_user:
 twake_groups_set_name:
     path:     /group/data/name
     defaults: { _controller: TwakeWorkspacesBundle:Group:changeName }
+
+twake_groups_get_workspaces:
+    path:     /group/getWorkspaces
+    defaults: { _controller: TwakeWorkspacesBundle:Group:getWorkspaces }
 
 twake_groups_use_apps:
     path:     /group/app/use
@@ -151,6 +164,9 @@ twake_workspaces_levels_get_by_label:
     path:     /levels/getByLabel
     defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLevels:getByLabel }
 
+twake_workspaces_members_get_workspaces:
+    path:     /members/getWorkspaces
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:getWorkspaces }
 
 
 #twake_workspace_group_create:

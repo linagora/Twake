@@ -136,12 +136,14 @@ class Groups implements GroupsInterface
 
 	public function getWorkspaces($groupId, $currentUserId=null)
 	{
-		if($currentUserId==null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "VIEW_WORKSPACES")){
+ 		if($currentUserId!=null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "VIEW_WORKSPACES")){
 
 			$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
 			$group = $groupRepository->find($groupId);
 
+
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $tmp = $workspaceRepository->findBy(Array("group"=>$group));
 
 			return $workspaceRepository->findBy(Array("group"=>$group));
 		}
@@ -340,7 +342,6 @@ class Groups implements GroupsInterface
             return $users;
 
         }
-
         return false;
 
 
