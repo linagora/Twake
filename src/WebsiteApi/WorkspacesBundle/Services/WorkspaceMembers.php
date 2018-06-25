@@ -449,6 +449,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         return $workspaces;
     }
 
+
     public function init($workspaceUser)
     {
         $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
