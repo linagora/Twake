@@ -6,7 +6,7 @@ services:
 
     app.drive.FileSystem_:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystemGDrive
-        arguments: ["@doctrine.orm.entity_manager", "@app.drive.GDriveApiSystem", '@app.pusher',"@circle.restclient", '@app.drive.FileSystem_']
+        arguments: ["@doctrine.orm.entity_manager", "@app.drive.GDriveApiSystem", '@app.pusher',"@circle.restclient", '@app.drive.FileSystem']
 
     app.drive.ExternalDriveDataCacheSystem:
         class: WebsiteApi\DriveBundle\Services\ExternalDriveDataCacheSystem

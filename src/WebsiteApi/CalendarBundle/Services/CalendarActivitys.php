@@ -27,16 +27,14 @@ class CalendarActivitys implements CalendarActivityInterface
         $this->pusher = $pusher;
     }
 
-    public function pushTable($pushNotif = true, $application, $workspace, $user = null, $levels = null, $texte = null, $type = Array())
+    public function pushTable($pushNotif = true, $workspace, $user = null, $levels = null, $texte = null, $type = Array())
     {
         //ajotuer dans la table CalendarActivity
         if($workspace != null){
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }
 
-        if($application != null) {
-            $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($application);
-        }
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calendar"));
 
         $cal = new CalendarActivity($application, $workspace, $user);
 
@@ -70,6 +68,7 @@ class CalendarActivitys implements CalendarActivityInterface
         if($title){
             $cal->setTitle($title);
         }
+        var_dump($cal);
 
         $this->doctrine->persist($cal);
         $data["action"] = "add";
@@ -112,7 +111,7 @@ class CalendarActivitys implements CalendarActivityInterface
     public function readAll($application, $workspace, $user)
     {
 
-        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+        $nRepo = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarActivity");
 
         $search = Array(
             "user" => $user

@@ -1,18 +1,21 @@
 <?php
 namespace WebsiteApi\CalendarBundle\Entity;
+
+
+use Doctrine\ORM\Mapping as ORM;
 /**
  * Created by PhpStorm.
  * User: laura
  * Date: 25/06/18
  * Time: 09:23
  */
-use Doctrine\ORM\Mapping as ORM;
+
 
 /**
  * Class CalendarActivity
  * @package WebsiteApi\CalendarBundle\Entity
  *
- * @ORM/Table(name="CalendarActivity", options={"engine":"MyISAM"})
+ * @ORM\Table(name="CalendarActivity", options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\CalendarActivityEntity")
  */
 class CalendarActivity
@@ -35,17 +38,17 @@ class CalendarActivity
     private $workspace;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entoity\User")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
      */
     private $user;
 
     /**
-     * @ORM/Column(type="text", length=64, nullable=true)
+     * @ORM\Column(type="text", length=64, nullable=true)
      */
     private $title;
 
     /**
-     * @ORM/Column(type="text", length=512, nullable=true)
+     * @ORM\Column(type="text", length=512, nullable=true)
      */
     private $text;
 
@@ -60,7 +63,7 @@ class CalendarActivity
     private $data;
 
     /**
-     * @ORM\COlumn(type="boolean")
+     * @ORM\Column(type="boolean")
      */
     private $read=false;
 

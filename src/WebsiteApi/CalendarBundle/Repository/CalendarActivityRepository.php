@@ -1,4 +1,6 @@
 <?php
+
+namespace WebsiteApi\CalendarBundle\Repository;
 /**
  * Created by PhpStorm.
  * User: laura
@@ -6,7 +8,6 @@
  * Time: 09:27
  */
 
-namespace WebsiteApi\CalendarBundle\Repository;
 
 
 class CalendarActivityRepository extends \Doctrine\ORM\EntityRepository
