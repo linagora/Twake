@@ -118,3 +118,15 @@ twake_drive_trash_empty:
     path:     /trash/empty
     defaults: { _controller: TwakeDriveBundle:Files:emptyTrash }
     methods: [POST]
+
+# UsersToNotify
+
+twake_drive_get_users_to_notify:
+    path:     /users_to_notify/get
+    defaults: { _controller: TwakeDriveBundle:UsersToNotify:getUsers }
+    methods: [POST]
+
+twake_drive_set_users_to_notify:
+    path:     /users_to_notify/set
+    defaults: { _controller: TwakeDriveBundle:UsersToNotify:setUsers }
+    methods: [POST]

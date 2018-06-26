@@ -176,22 +176,28 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
         if($identity->getLockDate()!=null)
             return 16;
-        if ($this->subscriptionSystem->groupIsOverUsingALot($group)) {
+        if ($this->subscriptionSystem->groupIsOverUsingALot($group) && !$identity->getHaveAlreadySendIsOverUsingALotMail()) {
             //var_dump("over using a lot : ".$this->subscriptionSystem->getOverCost($group));
             $this->mailSender->sendIsOverUsingALot($group,$this->subscriptionSystem->getOverCost($group));
+            $identity->setHaveAlreadySendIsOverUsingALotMail(true);
             $res = $this->billGroup($group, $this->subscriptionSystem->getOverCost($group), $this->subscriptionSystem->get($group), false);
             if($res==1)
                 $this->subscriptionSystem->addBalance($this->subscriptionSystem->getOverCost($group),$group);
             return 7+$res;
-        } else if ($this->subscriptionSystem->groupIsOverUsingALittle($group)) {
+        } else if ($this->subscriptionSystem->groupIsOverUsingALittle($group) && !$identity->getHaveAlreadySendIsOverUsingALittleMail()) {
             //var_dump("over using a little : ".$this->subscriptionSystem->getOverCost($group));
+            $identity->setHaveAlreadySendIsOverUsingALittleMail(true);
             $this->mailSender->sendIsOverUsingALittle($group,$this->subscriptionSystem->getOverCost($group));
             return 10;
-        } else if ($this->subscriptionSystem->groupWillBeOverUsing($group)) {
+        } else if ($this->subscriptionSystem->groupWillBeOverUsing($group) && !$identity->getHaveAlreadySendWillBeOverUsingMail()) {
             //var_dump("will be over using".$this->subscriptionSystem->getOverCost($group));
+            $identity->setHaveAlreadySendWillBeOverUsingMail(true);
             $this->mailSender->sendWillBeOverUsing($group,$this->subscriptionSystem->getOverCost($group));
             return 11;
         }
+
+        $this->doctrine->persist($identity);
+        $this->doctrine->flush($identity);
 
         return 12;
         //else
@@ -251,7 +257,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
                 $endDate->add($dateInterval);
                 $cost = $sub->getSubscribedBalance()+$this->subscriptionSystem->getRemainingBalance($group);
                 //var_dump("auto renew");
-                return 13+$this->renew($group, $sub->getPricingPlan(), $sub->getSubscribedBalance(), new \DateTime(), $endDate,$sub->getAutoWithdrawal(),$sub->getAutoRenew(),$cost);
+                return 13+$this->renew($group, $sub->getPricingPlan(), $sub->getSubscribedBalance(), new \DateTime(), $endDate,$sub->getAutoWithdrawal(),$sub->getAutoRenew(),$cost, false);
             } else {
                 //var_dump("passer en free");
                 $this->putInFree($group);

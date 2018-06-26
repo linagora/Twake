@@ -6,7 +6,7 @@ services:
 
     app.drive.FileSystem_:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystemGDrive
-        arguments: ["@doctrine.orm.entity_manager", "@app.drive.GDriveApiSystem", '@app.pusher',"@circle.restclient"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.drive.GDriveApiSystem", '@app.pusher',"@circle.restclient", '@app.drive.FileSystem']
 
     app.drive.ExternalDriveDataCacheSystem:
         class: WebsiteApi\DriveBundle\Services\ExternalDriveDataCacheSystem
@@ -14,7 +14,7 @@ services:
 
     app.drive.GDriveApiSystem:
         class: WebsiteApi\DriveBundle\Services\GDriveApiSystem
-        arguments: ["@doctrine.orm.entity_manager", "@circle.restclient", "@app.drive.ExternalDriveDataCacheSystem", '@app.pusher']
+        arguments: ["@doctrine.orm.entity_manager", "@circle.restclient", "@app.drive.ExternalDriveDataCacheSystem", '@website_api_market.applications']
 
     app.drive.SmartFolders:
         class: WebsiteApi\DriveBundle\Services\DriveSmartFolders
@@ -28,6 +28,9 @@ services:
       class: WebsiteApi\DriveBundle\Services\DrivePreview
       arguments: ["@doctrine.orm.entity_manager"]
 
+    app.drive.UserToNotifyService:
+      class: WebsiteApi\DriveBundle\Services\UserToNotifyService
+      arguments: ["@doctrine.orm.entity_manager"]
     drive.topic:
         class: WebsiteApi\DriveBundle\Topic\DriveTopic
         tags:

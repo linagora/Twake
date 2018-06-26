@@ -19,13 +19,15 @@ class CalendarEvents implements CalendarEventsInterface
     var $pusher;
     var $workspaceLevels;
     var $notifications;
+    var $calendarActivity;
 
-    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications)
+    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceCalendarActivity)
     {
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
         $this->workspaceLevels = $workspaceLevels;
         $this->notifications = $notifications;
+        $this->calendarActivity = $serviceCalendarActivity;
     }
 
     public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false,$participants=Array())
@@ -184,6 +186,7 @@ class CalendarEvents implements CalendarEventsInterface
 
     public function addUsers($workspaceId, $calendarId, $eventId, $usersId, $currentUserId = null)
     {
+        error_log("ADD USERS");
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
@@ -203,6 +206,7 @@ class CalendarEvents implements CalendarEventsInterface
             return null;
         }
 
+        error_log("ENTREE DE BOUCLE ");
         foreach ($usersId as $userId) {
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
             $eventUserRepo = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser");
@@ -216,6 +220,9 @@ class CalendarEvents implements CalendarEventsInterface
                 $participantArray[] = $user->getAsArray();
                 $event->setParticipant($participantArray);
             }
+
+            $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User added to activity", Array());
+            error_log("BOUCLE ");
         }
         $this->doctrine->flush();
         $data = Array(
@@ -258,8 +265,11 @@ class CalendarEvents implements CalendarEventsInterface
                     $participantArray = array_splice($participantArray, $i, 1);
                 }
             }
+
             $event->setParticipant($participantArray);
             $this->doctrine->persist($event);
+            $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User removed from activity", Array());
+
         }
         $this->doctrine->flush();
         $data = Array(

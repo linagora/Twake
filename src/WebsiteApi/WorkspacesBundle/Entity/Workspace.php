@@ -81,8 +81,15 @@ class Workspace
 	 */
 	private $isDeleted = false;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+	private $isArchived = false;
 
-
+    /**
+     * Workspace constructor.
+     * @param $name
+     */
 	public function __construct($name) {
 		$this->name = $name;
 		$this->date_added = new \DateTime();
@@ -259,6 +266,24 @@ class Workspace
         $this->color = $color;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getisArchived()
+    {
+        return $this->isArchived;
+    }
+
+    /**
+     * @param mixed $isArchived
+     */
+    public function setIsArchived($isArchived)
+    {
+        $this->isArchived = $isArchived;
+    }
+
+
+
 	public function getAsArray(){
 		return Array(
 			"id"=> $this->getId(),
@@ -269,7 +294,8 @@ class Workspace
 			"group" => (($this->getGroup())?$this->getGroup()->getAsArray():null),
 			"name" => $this->getName(),
             "total_members" => $this->getMemberCount(),
-            "uniqueName" => $this->getUniqueName()
+            "uniqueName" => $this->getUniqueName(),
+            "isArchived" => $this->getisArchived()
 		);
 	}
 
