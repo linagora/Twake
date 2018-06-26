@@ -505,7 +505,7 @@ class DriveFile
             "shared" => $this->getShared(),
             "url" => $this->getUrl(),
             "opening_rate" => $this->getOpeningRate(),
-            "default_web_app_id" => $this->getDefaultWebApp()->getId()
+            "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null
         );
     }
 

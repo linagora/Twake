@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\MarketBundle\Services;
 
+use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\MarketBundle\Model\MarketApplicationInterface;
 use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
 use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
@@ -11,6 +12,7 @@ class MarketApplication implements MarketApplicationInterface
     private $doctrine;
     private $gms;
     private $pricingPlan;
+
     public function __construct($doctrine, $group_managers_service, $pricing)
     {
         $this->doctrine = $doctrine;
@@ -25,6 +27,7 @@ class MarketApplication implements MarketApplicationInterface
 
         return $applications;
     }
+
     public function getAppsByName($name)
     {
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
@@ -40,7 +43,20 @@ class MarketApplication implements MarketApplicationInterface
         return $applications;
     }
 
-    public function addApplication($groupId,$appId, $currentUserId = null, $init = null){
+    public function addFreeApplication($groupId, $appId, $currentUserId = null, $init = null)
+    {
+        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        /** @var Application $application */
+        $application = $applicationRepository->find($appId);
+
+        if ($application->getPriceMonthly() == 0 && $application->getPriceUser() == 0) {
+            $this->addApplication($groupId, $appId);
+        }
+
+    }
+
+    public function addApplication($groupId, $appId, $currentUserId = null, $init = null)
+    {
 
         if($groupId == null || $appId == null){
             return false;
