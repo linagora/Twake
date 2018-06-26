@@ -87,11 +87,6 @@ class Workspace
 	private $isArchived = false;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isHidden = false;
-
-    /**
      * Workspace constructor.
      * @param $name
      */
@@ -280,14 +275,6 @@ class Workspace
     }
 
     /**
-     * @return mixed
-     */
-    public function getisHidden()
-    {
-        return $this->isHidden;
-    }
-
-    /**
      * @param mixed $isArchived
      */
     public function setIsArchived($isArchived)
@@ -308,8 +295,7 @@ class Workspace
 			"name" => $this->getName(),
             "total_members" => $this->getMemberCount(),
             "uniqueName" => $this->getUniqueName(),
-            "isArchived" => $this->getisArchived(),
-            "isHidden" => $this->getisHidden()
+            "isArchived" => $this->getisArchived()
 		);
 	}
 
