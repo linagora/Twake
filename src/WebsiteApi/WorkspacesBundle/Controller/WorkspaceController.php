@@ -271,4 +271,50 @@ class WorkspaceController extends Controller
 
         return new JsonResponse($response);
     }
+
+    /**
+     * Archiver un workspace
+     */
+    public function archiveWorkspaceAction(Request $request){
+        $response = Array(
+            "errors"=>Array(),
+            "data"=>Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId");
+        $groupId = $response->request->get("groupId");
+
+        $res = $this->get("app.workspaces")->archive($groupId, $workspaceId, $this->getUser()->getId());
+
+        if ($res == true){
+            $response["data"] = "success";
+        }else{
+            $response["errors"] = "impossible to archive";
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * Archiver un workspace
+     */
+    public function unarchiveWorkspaceAction(Request $request){
+        $response = Array(
+            "errors"=>Array(),
+            "data"=>Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId");
+        $groupId = $response->request->get("groupId");
+
+        $res = $this->get("app.workspaces")->unarchive($groupId, $workspaceId, $this->getUser()->getId());
+
+        if ($res == true){
+            $response["data"] = "success";
+        }else{
+            $response["errors"] = "impossible to unarchive";
+        }
+
+        return new JsonResponse($response);
+    }
 }

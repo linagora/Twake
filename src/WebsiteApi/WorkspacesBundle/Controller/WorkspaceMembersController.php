@@ -7,6 +7,7 @@
  */
 
 namespace WebsiteApi\WorkspacesBundle\Controller;
+use PHPUnit\Util\Json;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -159,4 +160,26 @@ class WorkspaceMembersController extends Controller
 		return new JsonResponse($response);
 	}
 
+
+	public function getWorkspacesAction(Request $request){
+	    $response = Array(
+	        "errors" => Array(),
+            "data" => Array()
+        );
+
+	    $workspaces = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
+
+	    foreach ($workspaces as $workspace){
+            $response["data"][] = Array(
+                "workspace" => $workspace["workspace"]->getAsArray()
+            );
+        }
+
+	    if (count($workspaces)==0){
+	        $response["errors"][] = "empty list";
+        }
+
+
+	    return new JsonResponse($response);
+    }
 }

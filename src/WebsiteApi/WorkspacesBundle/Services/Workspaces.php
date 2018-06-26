@@ -378,4 +378,57 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
+
+    public function archive($groupId, $workspaceId, $currentUserId = null){
+
+        if ($currentUserId == null
+            || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
+                && count($this->wms->getMembers($workspaceId)) <= 1
+            )
+            || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
+        ) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->find($workspaceId);
+
+            $isArchived = $workspace->getisArchived();
+            $isDeleted = $workspace->getisDeleted();
+
+            if ($isDeleted == false && $isArchived == false){
+                $workspace->setIsArchived(true);
+            }
+
+            $this->doctrine->persist($workspace);
+            $this->doctrine->flush();
+
+            return true;
+        }
+        return false;
+
+    }
+
+    public function unarchive($groupId, $workspaceId, $currentUserId = null){
+        if ($currentUserId == null
+            || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
+                && count($this->wms->getMembers($workspaceId)) <= 1
+            )
+            || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
+        ) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->find($workspaceId);
+
+            $isArchived = $workspace->getisArchived();
+            $isDeleted = $workspace->getisDeleted();
+
+            if ($isDeleted == false && $isArchived == true){
+                $workspace->setIsArchived(false);
+            }
+
+            $this->doctrine->persist($workspace);
+            $this->doctrine->flush();
+
+            return true;
+        }
+        return false;
+    }
+
 }
