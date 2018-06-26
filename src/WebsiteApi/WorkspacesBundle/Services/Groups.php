@@ -141,9 +141,7 @@ class Groups implements GroupsInterface
 			$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
 			$group = $groupRepository->find($groupId);
 
-
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-            $tmp = $workspaceRepository->findBy(Array("group"=>$group));
 
 			return $workspaceRepository->findBy(Array("group"=>$group));
 		}
