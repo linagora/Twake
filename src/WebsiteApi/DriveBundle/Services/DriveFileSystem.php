@@ -823,6 +823,8 @@ class DriveFileSystem implements DriveFileSystemInterface
     private function recursDelete($fileOrDirectory)
     {
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
+        $userToNotifyRepo->deleteByDriveFile($fileOrDirectory);
 
         if ($fileOrDirectory == null) {
             return false;
