@@ -35,13 +35,12 @@ class UserToNotifyService
 
 	public function get($driveFile)
 	{
-	    $driveFile = $this->convertToEntity($driveFile, "TwakeDriveBundle:DriveFile");
 		$UsersToNotifyRepository = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
 		return $UsersToNotifyRepository->findBy(Array("driveFile" => $driveFile));
 	}
 
 	public function setUsersList($driveFile, $usersList){
-        $driveFile = $this->convertToEntity($driveFile, "TwakeDriveBundle:DriveFile");
+        $driveFile = strval($driveFile);
         $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
         $userToNotifyRepo->deleteByDriveFile($driveFile);
 
