@@ -3,6 +3,7 @@ namespace WebsiteApi\CalendarBundle\Services;
 
 use WebsiteApi\CalendarBundle\Entity\CalendarActivity;
 use WebsiteApi\CalendarBundle\Model\CalendarActivityInterface;
+use WebsiteApi\MarketBundle\Entity\Application;
 
 
 /**
@@ -20,41 +21,35 @@ class CalendarActivitys implements CalendarActivityInterface
 {
 
     var $doctrine;
+    var $notifService;
 
-    public function __construct($doctrine, $pusher)
+    public function __construct($doctrine, $pusher, $notifService)
     {
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
+        $this->notifService = $notifService;
     }
 
     public function pushTable($pushNotif = true, $workspace, $user = null, $levels = null, $texte = null, $type = Array())
     {
+        error_log("PUSH TABLE ");
         //ajotuer dans la table CalendarActivity
         if($workspace != null){
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }
+        error_log("WORKSPACE");
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'calendar'));
+       // $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'calendar'));
 
-        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calendar"));
-
+        error_log("APPLICATION");
         $cal = new CalendarActivity($application, $workspace, $user);
 
-        $title = "";
-        if ($workspace && $workspace->getGroup()) {
-            $title .= $workspace->getGroup()->getDisplayName() . " - ";
-            $title .= $workspace->getName() . " : ";
-        } else {
-            $title .= "Private : ";
-        }
-
-        if($application){
-            $title .= $application->getName();
-        }
-
+        error_log("cal avant modif ");
         $data = Array(
             "type"=>"add",
             "workspace_id"=>($workspace!=null?$workspace->getId():null),
             "app_id"=>($application!=null?$application->getId():null),
-            "title" => $title,
+            "title" => "",
             "text" => $texte
         );
 
@@ -65,19 +60,25 @@ class CalendarActivitys implements CalendarActivityInterface
         if($texte){
             $cal->setText($texte);
         }
-        if($title){
-            $cal->setTitle($title);
-        }
-        var_dump($cal);
+        $cal->setTitle("");
+
+        error_log("cal apres modif ");
+
+        var_dump($cal->getAsArray());
 
         $this->doctrine->persist($cal);
-        $data["action"] = "add";
-        $this->pusher->push($data, "calendarActivity/workspace/".$workspace->getId());
-        $this->doctrine->flush();
+        //$this->doctrine->flush();
+        error_log("Yo apres modif ");
+
+        $data = Array("action" => "addActiviy");
+        $this->pusher->push($data, "calendar/workspace/".$workspace->getId());
+
+        //$data = Array("action" => "add");
+        //$this->pusher->push($data, "calendarActivity/workspace/".$workspace->getId());
 
         //appel pour faire une notification
         if($pushNotif){
-            $this->get("app.notifications")->pushNotification($application,$workspace,$user,$levels,"calendarActivity",$texte,$type,null,true);
+            $this->notifService->pushNotification($application,$workspace,$user,$levels,"calendarActivity",$texte,$type,null,true);
 
         }
 
@@ -102,7 +103,7 @@ class CalendarActivitys implements CalendarActivityInterface
                 "type" => "update",
                 "calendarActivity" => $cal->getAsArray()
             );
-            $this->pusher->push($data, "calendarActivity/workspace/".$workspaceId);
+            $this->pusher->push($data, "calendar/workspace/".$workspaceId);
 
             return $cal;
         }
@@ -134,7 +135,7 @@ class CalendarActivitys implements CalendarActivityInterface
                 "CalendarActivity" => $not->getAsArray()
             );
             $data["CalendarActivity"]["read"] = true;
-            $this->pusher->push($data, "calendarActivity/workspace/". $not->getWorkspace()->getId());
+            $this->pusher->push($data, "calendar/workspace/". $not->getWorkspace()->getId());
         }
 
     }

@@ -25,15 +25,16 @@ class UserToNotify
      */
     private $user;
 
+
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
+     * @ORM\Column(type="string", length=512)
      */
     private $driveFile;
 
     public function __construct($user, $driveFile)
     {
         $this->setUser($user);
-        $this->setDriveFile($driveFile);
+        $this->setDriveFile(strval($driveFile));
     }
 
     public function getAsArray()
@@ -41,7 +42,7 @@ class UserToNotify
         return Array(
             "id" => $this->getId(),
             "user" => $this->getUser(),
-            "driveFile" => $this->getDriveFile()->getAsArray()
+            "driveFile" => $this->getDriveFile()
         );
     }
 
@@ -58,7 +59,7 @@ class UserToNotify
      */
     public function setUser($user)
     {
-        $this->users = $user;
+        $this->user = $user;
     }
 
     /**

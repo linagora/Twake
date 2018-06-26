@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\DriveBundle\Controller;
 
+use DateTime;
 use PHPUnit\Util\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -34,11 +35,11 @@ class UsersToNotifyController extends Controller
         $data["data"]["usersList"] = Array();
 
         foreach ($usersList as $user){
-            array_push($data["data"]["usersList"], $user->getUser()->getAsArray());
+            if($user!=null)
+                array_push($data["data"]["usersList"], $user->getUser()->getAsArray());
+            else
+                var_dump("null user to notify");
         }
-
-        var_dump("test");
-        var_dump($data);
 
         return new JsonResponse($data);
 
@@ -46,17 +47,38 @@ class UsersToNotifyController extends Controller
 
     public function setUsersAction(Request $request)
     {
-        //TODO : check auth
         $data = Array(
             "errors" => Array(),
             "data" => Array()
         );
+
+        //TODO : check auth
+
         $driveFileId = $request->request->get("driveFileId", 0);
         $usersList = $request->request->get("usersList", 0);
 
         $this->get("app.drive.UserToNotifyService")->setUsersList($driveFileId,$usersList);
 
-        return new JsonResponse($data);
+        return $this->getUsersAction($request);
     }
 
+    public function postGDriveNotificationAction(Request $request){
+        //TODO : check auth
+
+        $fileChangedId = $request->headers->get("x-goog-channel-id");
+
+        //TODO send the notif to the registered users
+
+/*
+        $s = (new DateTime())->format('Y-m-d H:i:s');
+        $file = fopen($s.'notif.txt', 'w+');
+        fputs($file, $fileChangedId);//x-goog-channel-token
+        fclose($file);
+        ob_flush();
+        ob_start();
+        var_dump($request);
+        file_put_contents($s."dump.txt", ob_get_flush());*/
+
+        return new JsonResponse();
+    }
 }

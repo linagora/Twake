@@ -2,7 +2,7 @@ services:
 
     app.calendar_events:
         class: WebsiteApi\CalendarBundle\Services\CalendarEvents
-        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels', '@app.notifications']
+        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels', '@app.notifications','@app.calendarActivity' ]
 
     app.calendars:
         class: WebsiteApi\CalendarBundle\Services\Calendars
@@ -26,4 +26,4 @@ services:
 
     app.calendarActivity:
         class: WebsiteApi\CalendarBundle\Services\CalendarActivitys
-        arguments: ["@doctrine.orm.entity_manager", "@app.pusher"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.pusher", "@app.notifications"]
