@@ -53,6 +53,21 @@ class WorkspaceUser
      */
     private $last_access;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isHidden = false;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isFavorite = false;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $hasNotifications = false;
+
 	public function __construct($workspace, $user, $level) {
 		$this->workspace = $workspace;
 		$this->user = $user;
@@ -140,5 +155,54 @@ class WorkspaceUser
     {
         $this->last_access = new \DateTime();
     }
+
+    /**
+     * @return mixed
+     */
+    public function getisHidden()
+    {
+        return $this->isHidden;
+    }
+
+    /**
+     * @param mixed $isHidden
+     */
+    public function setIsHidden($isHidden)
+    {
+        $this->isHidden = $isHidden;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getisFavorite()
+    {
+        return $this->isFavorite;
+    }
+
+    /**
+     * @param mixed $isFavorite
+     */
+    public function setIsFavorite($isFavorite)
+    {
+        $this->isFavorite = $isFavorite;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHasNotifications()
+    {
+        return $this->hasNotifications;
+    }
+
+    /**
+     * @param mixed $hasNotifications
+     */
+    public function setHasNotifications($hasNotifications)
+    {
+        $this->hasNotifications = $hasNotifications;
+    }
+
 
 }

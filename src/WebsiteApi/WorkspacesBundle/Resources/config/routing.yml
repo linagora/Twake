@@ -18,6 +18,30 @@ twake_workspaces_unarchive_workspace:
     path:     /unarchive
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:unarchiveWorkspace }
 
+twake_workspaces_hide_workspace:
+    path:     /hide
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:hideWorkspace }
+
+twake_workspaces_unhide_workspace:
+    path:     /unhide
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:unhideWorkspace }
+
+twake_workspaces_favorite_workspace:
+    path:     /favorite
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:favoriteWorkspace }
+
+twake_workspaces_unfavorite_workspace:
+    path:     /unfavorite
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:unfavoriteWorkspace }
+
+twake_workspaces_have_notifications_workspace:
+    path:     /notifications
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:haveNotificationsWorkspace }
+
+twake_workspaces_dont_have_notifications_workspace:
+    path:     /noNotifications
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:dontHaveNotificationsWorkspace }
+
 # Edit workspace data
 
 twake_workspaces_get_data:
