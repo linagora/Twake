@@ -18,13 +18,9 @@ twake_workspaces_unarchive_workspace:
     path:     /unarchive
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:unarchiveWorkspace }
 
-twake_workspaces_hide_workspace:
-    path:     /hide
-    defaults: { _controller: TwakeWorkspacesBundle:Workspace:hideWorkspace }
-
-twake_workspaces_unhide_workspace:
-    path:     /unhide
-    defaults: { _controller: TwakeWorkspacesBundle:Workspace:unhideWorkspace }
+twake_workspaces_hide_or_unhide_workspace:
+    path:     /hideOrNot
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:hideOrUnhideWorkspace }
 
 twake_workspaces_favorite_workspace:
     path:     /favorite
@@ -100,9 +96,9 @@ twake_groups_set_name:
     path:     /group/data/name
     defaults: { _controller: TwakeWorkspacesBundle:Group:changeName }
 
-twake_groups_get_workspaces:
-    path:     /group/getWorkspaces
-    defaults: { _controller: TwakeWorkspacesBundle:Group:getWorkspaces }
+#twake_groups_get_workspaces:
+#    path:     /group/getWorkspaces
+#    defaults: { _controller: TwakeWorkspacesBundle:Group:getWorkspaces }
 
 twake_groups_use_apps:
     path:     /group/app/use

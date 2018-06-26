@@ -95,20 +95,43 @@ class GroupController extends Controller
         return new JsonResponse($response);
     }
 
-    public function getWorkspacesAction(Request $request){
+    /*public function getWorkspacesAction(Request $request){
         $response = Array(
             "errors"=>Array(),
             "data"=>Array()
         );
 
         $groupId = $request->request->getInt("groupId");
+        $workspaceId = $request->request->get("workspaceId");
 
         $workspaces =  $this->get("app.groups")->getWorkspaces($groupId, $this->getUser()->getId());
 
+       // $isHidden = $this->get("app.workspaces")->getHide($groupId, $workspaceId,  $this->getUser()->getId());
+
         foreach ($workspaces as $workspace){
+            $isArchived = $this->get("app.workspaces")->getArchive($workspace->getGroup()->getId(), $workspace->getId(), $this->getUser()->getId());
+
             $response["data"][] = Array(
                 "workspace" => $workspace->getAsArray()
             );
+
+            if ($isArchived == "error"){
+                $response["errors"][] = "impossible to get isArchive";
+            }
+
+            $response["data"][] = Array(
+                "isArchived" => $isArchived
+            );
+
+            if ($isHidden == "error"){
+                $response["errors"][] = "impossible to get isHidden";
+            }
+
+            foreach ($isHidden as $item){
+                $response["data"][] = Array(
+                    "isHidden" => $item
+                );
+            }
         }
 
         if (count($workspaces)==0){
@@ -117,5 +140,5 @@ class GroupController extends Controller
 
 
         return new JsonResponse($response);
-    }
+    }*/
 }

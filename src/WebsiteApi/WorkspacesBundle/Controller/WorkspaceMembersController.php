@@ -171,8 +171,12 @@ class WorkspaceMembersController extends Controller
 
 	    foreach ($workspaces as $workspace){
             $response["data"][] = Array(
-                "workspace" => $workspace["workspace"]->getAsArray()
-            );
+                "workspace" => $workspace["workspace"]->getAsArray(),
+                "last_access" => $workspace["last_access"],
+                "isHidden" => $workspace["isHidden"],
+                "isFavorite" => $workspace["isFavorite"],
+                "hasNotifications" => $workspace["hasNotifications"],
+                "isArchived" => $workspace["isArchived"]            );
         }
 
 	    if (count($workspaces)==0){
@@ -182,4 +186,5 @@ class WorkspaceMembersController extends Controller
 
 	    return new JsonResponse($response);
     }
+
 }

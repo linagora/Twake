@@ -296,7 +296,7 @@ class WorkspaceController extends Controller
     }
 
     /**
-     * Archiver un workspace
+     * Ne plus archiver un workspace
      */
     public function unarchiveWorkspaceAction(Request $request){
         $response = Array(
@@ -319,18 +319,17 @@ class WorkspaceController extends Controller
     }
 
     /**
-     * Cacher un workspace
+     * Cacher ou non un workspace
      */
-    public function hideWorkspaceAction(Request $request){
+    public function hideOrUnhideWorkspaceAction(Request $request){
         $response = Array(
             "errors"=>Array(),
             "data"=>Array()
         );
 
         $workspaceId = $request->request->get("workspaceId");
-        $groupId = $request->request->get("groupId");
 
-        $res = $this->get("app.workspaces")->hideWorkspace($groupId, $workspaceId, $this->getUser()->getId());
+        $res = $this->get("app.workspaces")->hideOrUnhideWorkspace($workspaceId, $this->getUser()->getId());
 
         if ($res == true){
             $response["data"] = "success";
@@ -341,27 +340,7 @@ class WorkspaceController extends Controller
         return new JsonResponse($response);
     }
 
-    /**
-     * Ne plus cacher un workspace
-     */
-    public function unhideWorkspaceAction(Request $request){
-        $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
-        );
 
-        $workspaceId = $request->request->get("workspaceId");
-        $groupId = $request->request->get("groupId");
-
-        $res = $this->get("app.workspaces")->unhideWorkspace($groupId, $workspaceId, $this->getUser()->getId());
-
-        if ($res == true){
-            $response["data"] = "success";
-        }else{
-            $response["errors"] = "impossible to hide a workspace";
-        }
-        return new JsonResponse($response);
-    }
 
     /**
      * Mettre un workspace en favori
@@ -452,4 +431,7 @@ class WorkspaceController extends Controller
         }
         return new JsonResponse($response);
     }
+
+
+
 }

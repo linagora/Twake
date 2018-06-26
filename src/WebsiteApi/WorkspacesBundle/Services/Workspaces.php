@@ -431,10 +431,9 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-
-    public function hideWorkspace($groupId, $workspaceId, $currentUserId = null){
+    public function getArchive($groupId, $workspaceId, $currentUserId = null){
         if ($currentUserId == null
-            || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
+            || ($this->wls->can($workspaceId, $currentUserId, "workspace:read")
                 && count($this->wms->getMembers($workspaceId)) <= 1
             )
             || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
@@ -442,18 +441,29 @@ class Workspaces implements WorkspacesInterface
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $workspace = $workspaceRepository->find($workspaceId);
 
+            $isArchived = $workspace->getisArchived();
+
+            return $isArchived;
+        }
+        return "error";
+    }
+
+    public function hideOrUnhideWorkspace($workspaceId, $currentUserId = null)
+    {
+        if ($currentUserId != null) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
+            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
+
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-            $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
+            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
-            foreach ($workspacesUser as $workspaceUser){
-                $isHidden = $workspaceUser->getisHidden();
+            $isHidden = $workspaceUser->getisHidden();
+            $workspaceUser->setisHidden(!$isHidden);
 
-                if ($isHidden == false){
-                    $workspaceUser->setisHidden(true);
-                }
+            $this->doctrine->persist($workspaceUser);
 
-                $this->doctrine->persist($workspaceUser);
-            }
 
             $this->doctrine->flush();
             return true;
@@ -461,7 +471,7 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function unhideWorkspace($groupId, $workspaceId, $currentUserId = null){
+    public function getHide($groupId, $workspaceId, $currentUserId = null){
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
                 && count($this->wms->getMembers($workspaceId)) <= 1
@@ -474,21 +484,17 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
 
+            $arrayIsHidden = Array();
             foreach ($workspacesUser as $workspaceUser){
 
                 $isHidden = $workspaceUser->getisHidden();
+                array_push($arrayIsHidden,$isHidden);
 
-                if ($isHidden == true){
-                    $workspaceUser->setisHidden(false);
-                }
-
-                $this->doctrine->persist($workspaceUser);
             }
 
-            $this->doctrine->flush();
-            return true;
+            return $arrayIsHidden;
         }
-        return false;
+        return "error";
     }
 
     public function favoriteWorkspace($groupId, $workspaceId, $currentUserId = null){

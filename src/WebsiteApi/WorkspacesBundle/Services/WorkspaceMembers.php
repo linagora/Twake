@@ -441,7 +441,11 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             if ($workspace->getWorkspace()->getUser() == null && $workspace->getWorkspace()->getGroup() != null) {
                 $workspaces[] = Array(
                     "last_access" => $workspace->getLastAccess(),
-                    "workspace" => $workspace->getWorkspace()
+                    "workspace" => $workspace->getWorkspace(),
+                    "isHidden" => $workspace->getisHidden(),
+                    "isFavorite" => $workspace->getisFavorite(),
+                    "hasNotifications" => $workspace->getHasNotifications(),
+                    "isArchived" => $workspace->getWorkspace()->getisArchived()
                 );
             }
         }
