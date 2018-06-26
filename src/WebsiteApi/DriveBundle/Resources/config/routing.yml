@@ -124,9 +124,12 @@ twake_drive_trash_empty:
 twake_drive_get_users_to_notify:
     path:     /users_to_notify/get
     defaults: { _controller: TwakeDriveBundle:UsersToNotify:getUsers }
-    methods: [POST]
 
 twake_drive_set_users_to_notify:
     path:     /users_to_notify/set
     defaults: { _controller: TwakeDriveBundle:UsersToNotify:setUsers }
     methods: [POST]
+
+twake_drive_post_gdrive_notification:
+    path:     /users_to_notify/post_gdrive_notification
+    defaults: { _controller: TwakeDriveBundle:UsersToNotify:postGDriveNotification }

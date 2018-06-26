@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\DriveBundle\Controller;
 
+use DateTime;
 use PHPUnit\Util\Json;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -61,4 +62,23 @@ class UsersToNotifyController extends Controller
         return $this->getUsersAction($request);
     }
 
+    public function postGDriveNotificationAction(Request $request){
+        //TODO : check auth
+
+        $fileChangedId = $request->headers->get("x-goog-channel-id");
+
+        //TODO send the notif to the registered users
+
+/*
+        $s = (new DateTime())->format('Y-m-d H:i:s');
+        $file = fopen($s.'notif.txt', 'w+');
+        fputs($file, $fileChangedId);//x-goog-channel-token
+        fclose($file);
+        ob_flush();
+        ob_start();
+        var_dump($request);
+        file_put_contents($s."dump.txt", ob_get_flush());*/
+
+        return new JsonResponse();
+    }
 }

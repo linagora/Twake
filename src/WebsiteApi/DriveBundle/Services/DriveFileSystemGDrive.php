@@ -838,8 +838,6 @@ class DriveFileSystemGDrive implements DriveFileSystemInterface
 
     public function download($workspace, $file, $download)
     {
-        $this->copyFromExternalDrive($workspace,"",$file);
-        return true;
         $url = $this->gdriveApi->getOpenLink($file);
         if($url)
             header('Location:'.$url);
