@@ -184,7 +184,7 @@ class GDriveApiSystem
 
                 $this->externalCache->update($file->getId(),"gdrive",$data);
 
-                if(!$file->getTrashed()) {
+                if (!$file->getTrashed()) {
                     $res = $this->getDriveFileFromGDriveFile($workspace, $file);
 
                     array_push($list, $res);
@@ -197,7 +197,8 @@ class GDriveApiSystem
         return $list;
     }
 
-    public function listTrash($workspace){
+    public function listTrash($workspace)
+    {
         $service = new Google_Service_Drive($this->getClient());
 
         $list = Array();
@@ -210,17 +211,17 @@ class GDriveApiSystem
                 //'q' => "mimeType='application/vnd.google-apps.folder'",
                 'pageSize' => 100,
                 'pageToken' => $pageToken,
-                'fields' =>  'nextPageToken, files(id, parents, name, shared, trashed,mimeType, description, createdTime, size, fullFileExtension, hasThumbnail,thumbnailLink,webViewLink, webContentLink)'
+                'fields' => 'nextPageToken, files(id, parents, name, shared, trashed,mimeType, description, createdTime, size, fullFileExtension, hasThumbnail,thumbnailLink,webViewLink, webContentLink)'
 
             );
             $results = $service->files->listFiles($optParams);
 
             foreach ($results->getFiles() as $file) {
-                $data = $this->getArrayFromGDriveFile($file,Array( "id","parents","name","shared","trashed","mimeType","description","createdTime","size","fullFileExtension","hasThumbnail","thumbnailLink","webViewLink","webContentLink"));
+                $data = $this->getArrayFromGDriveFile($file, Array("id", "parents", "name", "shared", "trashed", "mimeType", "description", "createdTime", "size", "fullFileExtension", "hasThumbnail", "thumbnailLink", "webViewLink", "webContentLink"));
 
-                $this->externalCache->update($file->getId(),"gdrive",$data);
+                $this->externalCache->update($file->getId(), "gdrive", $data);
 
-                if($file->getTrashed()) {
+                if ($file->getTrashed()) {
                     $res = $this->getDriveFileFromGDriveFile($workspace, $file);
 
                     array_push($list, $res);
@@ -372,7 +373,8 @@ class GDriveApiSystem
         return $file;
     }
 
-    public function upload($file, $directory){
+    public function upload($file, $directory)
+    {
         $service = new Google_Service_Drive($this->getClient());
 
         $fileMetadata = new Google_Service_Drive_DriveFile(array(
@@ -386,23 +388,25 @@ class GDriveApiSystem
             'uploadType' => 'multipart',
             'fields' => 'id'));
 
-        if($directory!=0) {
+        if ($directory != 0) {
             $file = $this->move($file->getId(), $directory);
         }
 
         return $file;
     }
 
-    public function delete($gdriveId){
+    public function delete($gdriveId)
+    {
         $data = $this->restClient->delete('https://www.googleapis.com/drive/v3/files/' . $gdriveId,
             array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'", "Authorization: Bearer " . $this->getGDriveToken())));
 
         return $data;
     }
 
-    public function setTrashed($gdriveId, $trashed){
+    public function setTrashed($gdriveId, $trashed)
+    {
         $trashed = $trashed ? "true" : "false";
-        $data = $this->restClient->patch('https://www.googleapis.com/drive/v3/files/' . $gdriveId, '{ "trashed": '.$trashed.'}',
+        $data = $this->restClient->patch('https://www.googleapis.com/drive/v3/files/' . $gdriveId, '{ "trashed": ' . $trashed . '}',
             array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken(), "Content-Type: application/json")));
 
         $content = @json_decode($data->getContent(), true);

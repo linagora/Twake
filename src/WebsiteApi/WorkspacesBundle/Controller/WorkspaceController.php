@@ -275,10 +275,11 @@ class WorkspaceController extends Controller
     /**
      * Archiver un workspace
      */
-    public function archiveWorkspaceAction(Request $request){
+    public function archiveWorkspaceAction(Request $request)
+    {
         $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
+            "errors" => Array(),
+            "data" => Array()
         );
 
         $workspaceId = $request->request->get("workspaceId");
@@ -286,9 +287,9 @@ class WorkspaceController extends Controller
 
         $res = $this->get("app.workspaces")->archive($groupId, $workspaceId, $this->getUser()->getId());
 
-        if ($res == true){
+        if ($res == true) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "impossible to archive";
         }
 
@@ -298,10 +299,11 @@ class WorkspaceController extends Controller
     /**
      * Archiver un workspace
      */
-    public function unarchiveWorkspaceAction(Request $request){
+    public function unarchiveWorkspaceAction(Request $request)
+    {
         $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
+            "errors" => Array(),
+            "data" => Array()
         );
 
         $workspaceId = $request->request->get("workspaceId");
@@ -309,9 +311,9 @@ class WorkspaceController extends Controller
 
         $res = $this->get("app.workspaces")->unarchive($groupId, $workspaceId, $this->getUser()->getId());
 
-        if ($res == true){
+        if ($res == true) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "impossible to unarchive";
         }
 
@@ -321,10 +323,11 @@ class WorkspaceController extends Controller
     /**
      * Cacher un workspace
      */
-    public function hideWorkspaceAction(Request $request){
+    public function hideWorkspaceAction(Request $request)
+    {
         $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
+            "errors" => Array(),
+            "data" => Array()
         );
 
         $workspaceId = $request->request->get("workspaceId");
@@ -332,9 +335,9 @@ class WorkspaceController extends Controller
 
         $res = $this->get("app.workspaces")->hideWorkspace($groupId, $workspaceId, $this->getUser()->getId());
 
-        if ($res == true){
+        if ($res == true) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "impossible to hide a workspace";
         }
 
@@ -344,10 +347,11 @@ class WorkspaceController extends Controller
     /**
      * Ne plus cacher un workspace
      */
-    public function unhideWorkspaceAction(Request $request){
+    public function unhideWorkspaceAction(Request $request)
+    {
         $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
+            "errors" => Array(),
+            "data" => Array()
         );
 
         $workspaceId = $request->request->get("workspaceId");
@@ -355,9 +359,9 @@ class WorkspaceController extends Controller
 
         $res = $this->get("app.workspaces")->unhideWorkspace($groupId, $workspaceId, $this->getUser()->getId());
 
-        if ($res == true){
+        if ($res == true) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "impossible to hide a workspace";
         }
         return new JsonResponse($response);
@@ -366,10 +370,11 @@ class WorkspaceController extends Controller
     /**
      * Mettre un workspace en favori
      */
-    public function favoriteWorkspaceAction(Request $request){
+    public function favoriteWorkspaceAction(Request $request)
+    {
         $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
+            "errors" => Array(),
+            "data" => Array()
         );
 
         $workspaceId = $request->request->get("workspaceId");
@@ -377,9 +382,9 @@ class WorkspaceController extends Controller
 
         $res = $this->get("app.workspaces")->favoriteWorkspace($groupId, $workspaceId, $this->getUser()->getId());
 
-        if ($res == true){
+        if ($res == true) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "impossible to put as favorite a workspace";
         }
 
@@ -389,10 +394,11 @@ class WorkspaceController extends Controller
     /**
      * Retirer un workspace des favoris
      */
-    public function unfavoriteWorkspaceAction(Request $request){
+    public function unfavoriteWorkspaceAction(Request $request)
+    {
         $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
+            "errors" => Array(),
+            "data" => Array()
         );
 
         $workspaceId = $request->request->get("workspaceId");
@@ -400,9 +406,9 @@ class WorkspaceController extends Controller
 
         $res = $this->get("app.workspaces")->unfavoriteWorkspace($groupId, $workspaceId, $this->getUser()->getId());
 
-        if ($res == true){
+        if ($res == true) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "impossible to unput as favorite a workspace";
         }
         return new JsonResponse($response);
@@ -411,10 +417,11 @@ class WorkspaceController extends Controller
     /**
      * Recevoir les notifications d'un workspace
      */
-    public function haveNotificationsWorkspaceAction(Request $request){
+    public function haveNotificationsWorkspaceAction(Request $request)
+    {
         $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
+            "errors" => Array(),
+            "data" => Array()
         );
 
         $workspaceId = $request->request->get("workspaceId");
@@ -422,9 +429,9 @@ class WorkspaceController extends Controller
 
         $res = $this->get("app.workspaces")->haveNotificationsWorkspace($groupId, $workspaceId, $this->getUser()->getId());
 
-        if ($res == true){
+        if ($res == true) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "impossible to receive notifications";
         }
 
@@ -434,10 +441,11 @@ class WorkspaceController extends Controller
     /**
      * Ne plus recevoir les notifications d'un workspace
      */
-    public function dontHaveNotificationsWorkspaceAction(Request $request){
+    public function dontHaveNotificationsWorkspaceAction(Request $request)
+    {
         $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
+            "errors" => Array(),
+            "data" => Array()
         );
 
         $workspaceId = $request->request->get("workspaceId");
@@ -445,9 +453,9 @@ class WorkspaceController extends Controller
 
         $res = $this->get("app.workspaces")->dontHaveNotificationsWorkspace($groupId, $workspaceId, $this->getUser()->getId());
 
-        if ($res == true){
+        if ($res == true) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "impossible to not receive notifications";
         }
         return new JsonResponse($response);

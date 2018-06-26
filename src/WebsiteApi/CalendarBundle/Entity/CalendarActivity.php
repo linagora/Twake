@@ -1,8 +1,10 @@
 <?php
+
 namespace WebsiteApi\CalendarBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+
 /**
  * Created by PhpStorm.
  * User: laura
@@ -65,10 +67,11 @@ class CalendarActivity
     /**
      * @ORM\Column(name="isRead", type="boolean")
      */
-    private $read=false;
+    private $read = false;
 
 
-    public function __construct($application, $workspace, $user){
+    public function __construct($application, $workspace, $user)
+    {
         $this->date = new \DateTime();
         $this->workspace = $workspace;
         $this->user = $user;
@@ -171,12 +174,13 @@ class CalendarActivity
     {
         $this->date = $date;
     }
+
     /**
      * @return mixed
      */
     public function getData()
     {
-        if(!$this->data){
+        if (!$this->data) {
             return null;
         }
         return json_decode($this->data, 1);
@@ -223,12 +227,13 @@ class CalendarActivity
     }
 
 
-    public function getAsArray(){
+    public function getAsArray()
+    {
         return Array(
-            "id"=>$this->getId(),
+            "id" => $this->getId(),
             "date" => $this->getDate()->getTimestamp(),
-            "workspace_id" => ($this->getWorkspace()?$this->getWorkspace()->getID():null),
-            "app_id" => ($this->getApplication()?$this->getApplication()->getId():null),
+            "workspace_id" => ($this->getWorkspace() ? $this->getWorkspace()->getID() : null),
+            "app_id" => ($this->getApplication() ? $this->getApplication()->getId() : null),
             "title" => $this->getTitle(),
             "text" => $this->getText(),
             "data" => $this->getData(),

@@ -195,7 +195,7 @@ class InitCommand extends ContainerAwareCommand
             @["/medias/apps/web/tuzzit_board.png", "Tuzzit", "board.tuzzit.com", "board.tuzzit", "4ab5a3", Array()],
             @["/medias/apps/web/hackmd.png", "HackMd", "hackmd.io", "hackmd", "333333", Array()],
             @["/medias/apps/web/trello.png", "Trello", "trello.com", "trello", "0079bf", Array()],
-            @["/medias/apps/web/gitlab.png", "Gitlab", "gitlab.com", "gitlab", "0d4524", Array()],
+            @["/medias/apps/web/gitlab.png", "Gitlab", "gitlab.com", "gitlab", "fc9626", Array()],
             @["/medias/apps/web/github.png", "Github", "github.com", "github", "24292e", Array()],
 
             //Altassian

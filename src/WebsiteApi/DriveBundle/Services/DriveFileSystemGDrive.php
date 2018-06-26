@@ -76,7 +76,7 @@ class DriveFileSystemGDrive implements DriveFileSystemInterface
         $storageQuota = $content["storageQuota"];
 
         if(isset($storageQuota["limit"]))
-        return intval($storageQuota["limit"]);
+            return intval($storageQuota["limit"]);
         return 10000000000000000;
     }
 
@@ -430,14 +430,14 @@ class DriveFileSystemGDrive implements DriveFileSystemInterface
         );
         $json = "{";
 
-        if($isDirectory){
+        if ($isDirectory) {
             $json .= "\"name\": \"$filename\",";
-            if($directoryId!=0)
+            if ($directoryId != 0)
                 $json .= "\"parents\" : [\"$directoryId\"],";
             $json .= "\"mimeType\": \"application/vnd.google-apps.folder\"";
-        }else{
+        } else {
             $json .= "\"name\": \"$filename\"";
-            if($directoryId!=0)
+            if ($directoryId != 0)
                 $json .= ",\"parents\" : [\"$directoryId\"]";
         }
 
@@ -623,13 +623,13 @@ class DriveFileSystemGDrive implements DriveFileSystemInterface
         /*$label = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel")->find($label);
         if ($label->getWorkspace()->getId() == $workspace->getId()) {
             /** @var DriveFileLabel[] $filesLabels */
-            /*$filesLabels = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("label" => $label), Array(), $max, $offset);
-            foreach ($filesLabels as $fileLabel) {
-                $list[] = $fileLabel->getFile();
-            }
+        /*$filesLabels = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("label" => $label), Array(), $max, $offset);
+        foreach ($filesLabels as $fileLabel) {
+            $list[] = $fileLabel->getFile();
         }
+    }
 
-        return $list;*/
+    return $list;*/
 
     }
 
@@ -838,7 +838,7 @@ class DriveFileSystemGDrive implements DriveFileSystemInterface
 
     public function download($workspace, $file, $download)
     {
-        $this->copyFromExternalDrive($workspace,"",$file);
+        $this->copyFromExternalDrive($workspace, "", $file);
         return true;
         $url = $this->gdriveApi->getOpenLink($file);
         if($url)
@@ -856,7 +856,7 @@ class DriveFileSystemGDrive implements DriveFileSystemInterface
         $gdriveFile = $this->gdriveApi->getGDriveFileFromGDriveId($externalDriveFileId);
         $content = "";
 
-        if($gdriveFile->getWebContentLink()!=null) {
+        if ($gdriveFile->getWebContentLink() != null) {
             $service = new Google_Service_Drive($this->gdriveApi->getClient());
 
             $response = $service->files->get($externalDriveFileId, array(
@@ -869,6 +869,6 @@ class DriveFileSystemGDrive implements DriveFileSystemInterface
 
     public function copyToExternalDrive($workspace, $directory, $file)
     {
-        $this->upload($workspace,$directory,$file,null);
+        $this->upload($workspace, $directory, $file, null);
     }
 }

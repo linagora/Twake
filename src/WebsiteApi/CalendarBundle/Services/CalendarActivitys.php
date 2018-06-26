@@ -1,4 +1,5 @@
 <?php
+
 namespace WebsiteApi\CalendarBundle\Services;
 
 use WebsiteApi\CalendarBundle\Entity\CalendarActivity;
@@ -34,30 +35,30 @@ class CalendarActivitys implements CalendarActivityInterface
     {
         error_log("PUSH TABLE ");
         //ajotuer dans la table CalendarActivity
-        if($workspace != null){
+        if ($workspace != null) {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }
         error_log("WORKSPACE");
         $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'calendar'));
-       // $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'calendar'));
+        // $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'calendar'));
 
         error_log("APPLICATION");
         $cal = new CalendarActivity($application, $workspace, $user);
 
         error_log("cal avant modif ");
         $data = Array(
-            "type"=>"add",
-            "workspace_id"=>($workspace!=null?$workspace->getId():null),
-            "app_id"=>($application!=null?$application->getId():null),
+            "type" => "add",
+            "workspace_id" => ($workspace != null ? $workspace->getId() : null),
+            "app_id" => ($application != null ? $application->getId() : null),
             "title" => "",
             "text" => $texte
         );
 
-        if($data){
+        if ($data) {
             $cal->setData($data);
         }
 
-        if($texte){
+        if ($texte) {
             $cal->setText($texte);
         }
         $cal->setTitle("");
@@ -71,21 +72,22 @@ class CalendarActivitys implements CalendarActivityInterface
         error_log("Yo apres modif ");
 
         $data = Array("action" => "addActiviy");
-        $this->pusher->push($data, "calendar/workspace/".$workspace->getId());
+        $this->pusher->push($data, "calendar/workspace/" . $workspace->getId());
 
         //$data = Array("action" => "add");
         //$this->pusher->push($data, "calendarActivity/workspace/".$workspace->getId());
 
         //appel pour faire une notification
-        if($pushNotif){
-            $this->notifService->pushNotification($application,$workspace,$user,$levels,"calendarActivity",$texte,$type,null,true);
+        if ($pushNotif) {
+            $this->notifService->pushNotification($application, $workspace, $user, $levels, "calendarActivity", $texte, $type, null, true);
 
         }
 
     }
 
 
-    public function createCalendarActivity($application, $workspaceId, $user){
+    public function createCalendarActivity($application, $workspaceId, $user)
+    {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
 
@@ -94,7 +96,7 @@ class CalendarActivitys implements CalendarActivityInterface
         } else {
 
 
-            $cal = new CalendarActivity($application,$workspace,$user);
+            $cal = new CalendarActivity($application, $workspace, $user);
             $this->doctrine->persist($cal);
 
             $this->doctrine->flush();
@@ -103,7 +105,7 @@ class CalendarActivitys implements CalendarActivityInterface
                 "type" => "update",
                 "calendarActivity" => $cal->getAsArray()
             );
-            $this->pusher->push($data, "calendar/workspace/".$workspaceId);
+            $this->pusher->push($data, "calendar/workspace/" . $workspaceId);
 
             return $cal;
         }
@@ -129,17 +131,18 @@ class CalendarActivitys implements CalendarActivityInterface
         $notif = $nRepo->findBy($search);
 
 
-        foreach($notif as $not) {
+        foreach ($notif as $not) {
             $data = Array(
                 "type" => "update",
                 "CalendarActivity" => $not->getAsArray()
             );
             $data["CalendarActivity"]["read"] = true;
-            $this->pusher->push($data, "calendar/workspace/". $not->getWorkspace()->getId());
+            $this->pusher->push($data, "calendar/workspace/" . $not->getWorkspace()->getId());
         }
 
     }
-    public function removeAll($application, $workspace, $user, $code = null, $force=false)
+
+    public function removeAll($application, $workspace, $user, $code = null, $force = false)
     {
 
         $nRepo = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarActivity");
@@ -163,25 +166,25 @@ class CalendarActivitys implements CalendarActivityInterface
         $notif = $nRepo->findBy($search);
 
         $count = count($notif);
-        for($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             $this->doctrine->remove($notif[$i]);
         }
 
-        if ($count == 0){
+        if ($count == 0) {
             return false;
         }
 
-        if($count>0 || $force) {
+        if ($count > 0 || $force) {
             $this->doctrine->flush();
 
             $totalNotifications = $this->countAll($user);
 
             $data = Array(
-                "action"=>"remove",
-                "workspace_id"=>($workspace)?$workspace->getId():null,
-                "app_id"=>($application)?$application->getId():null
+                "action" => "remove",
+                "workspace_id" => ($workspace) ? $workspace->getId() : null,
+                "app_id" => ($application) ? $application->getId() : null
             );
-            $this->pusher->push($data, "calendarActivity/workspace/".$workspace->getId());
+            $this->pusher->push($data, "calendarActivity/workspace/" . $workspace->getId());
 
             $this->updateDeviceBadge($user, $totalNotifications);
             return true;
@@ -194,7 +197,7 @@ class CalendarActivitys implements CalendarActivityInterface
     public function getAll($user)
     {
         $nRepo = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarActivity");
-        $acti = $nRepo->findBy(Array("user"=>$user), Array("id" => "DESC"), 30); //Limit number of results
+        $acti = $nRepo->findBy(Array("user" => $user), Array("id" => "DESC"), 30); //Limit number of results
 
         return $acti;
     }

@@ -95,23 +95,24 @@ class GroupController extends Controller
         return new JsonResponse($response);
     }
 
-    public function getWorkspacesAction(Request $request){
+    public function getWorkspacesAction(Request $request)
+    {
         $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
+            "errors" => Array(),
+            "data" => Array()
         );
 
         $groupId = $request->request->getInt("groupId");
 
-        $workspaces =  $this->get("app.groups")->getWorkspaces($groupId, $this->getUser()->getId());
+        $workspaces = $this->get("app.groups")->getWorkspaces($groupId, $this->getUser()->getId());
 
-        foreach ($workspaces as $workspace){
+        foreach ($workspaces as $workspace) {
             $response["data"][] = Array(
                 "workspace" => $workspace->getAsArray()
             );
         }
 
-        if (count($workspaces)==0){
+        if (count($workspaces) == 0) {
             $response["errors"][] = "empty list";
         }
 

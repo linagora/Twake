@@ -11,7 +11,7 @@ use WebsiteApi\DriveBundle\Entity\UserToNotify;
 class UserToNotifyService
 {
 
-	var $doctrine;
+    var $doctrine;
 
     private function convertToEntity($var, $repository)
     {
@@ -29,33 +29,35 @@ class UserToNotifyService
 
     }
 
-	public function __construct($doctrine){
-		$this->doctrine = $doctrine;
-	}
+    public function __construct($doctrine)
+    {
+        $this->doctrine = $doctrine;
+    }
 
-	public function get($driveFile)
-	{
-		$UsersToNotifyRepository = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
-		return $UsersToNotifyRepository->findBy(Array("driveFile" => $driveFile));
-	}
+    public function get($driveFile)
+    {
+        $UsersToNotifyRepository = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
+        return $UsersToNotifyRepository->findBy(Array("driveFile" => $driveFile));
+    }
 
-	public function setUsersList($driveFile, $usersList){
+    public function setUsersList($driveFile, $usersList)
+    {
         $driveFile = strval($driveFile);
         $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
         $userToNotifyRepo->deleteByDriveFile($driveFile);
 
 
-        foreach ($usersList as $user){
-            $user = $this->convertToEntity($user,"TwakeUsersBundle:User");
+        foreach ($usersList as $user) {
+            $user = $this->convertToEntity($user, "TwakeUsersBundle:User");
             $userToNotify = $userToNotifyRepo->findOneBy(Array("user" => $user, "driveFile" => $driveFile));
 
-            if(!$userToNotify || $userToNotify==null)
-                $userToNotify = new UserToNotify($user,$driveFile);
+            if (!$userToNotify || $userToNotify == null)
+                $userToNotify = new UserToNotify($user, $driveFile);
 
             $this->doctrine->persist($userToNotify);
         }
 
-	    $this->doctrine->flush();
+        $this->doctrine->flush();
     }
 
 }

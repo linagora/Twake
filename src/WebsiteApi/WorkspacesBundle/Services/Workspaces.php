@@ -379,7 +379,8 @@ class Workspaces implements WorkspacesInterface
     }
 
 
-    public function archive($groupId, $workspaceId, $currentUserId = null){
+    public function archive($groupId, $workspaceId, $currentUserId = null)
+    {
 
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
@@ -393,7 +394,7 @@ class Workspaces implements WorkspacesInterface
             $isArchived = $workspace->getisArchived();
             $isDeleted = $workspace->getisDeleted();
 
-            if ($isDeleted == false && $isArchived == false){
+            if ($isDeleted == false && $isArchived == false) {
                 $workspace->setIsArchived(true);
             }
 
@@ -406,7 +407,8 @@ class Workspaces implements WorkspacesInterface
 
     }
 
-    public function unarchive($groupId, $workspaceId, $currentUserId = null){
+    public function unarchive($groupId, $workspaceId, $currentUserId = null)
+    {
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
                 && count($this->wms->getMembers($workspaceId)) <= 1
@@ -419,7 +421,7 @@ class Workspaces implements WorkspacesInterface
             $isArchived = $workspace->getisArchived();
             $isDeleted = $workspace->getisDeleted();
 
-            if ($isDeleted == false && $isArchived == true){
+            if ($isDeleted == false && $isArchived == true) {
                 $workspace->setIsArchived(false);
             }
 
@@ -432,7 +434,8 @@ class Workspaces implements WorkspacesInterface
     }
 
 
-    public function hideWorkspace($groupId, $workspaceId, $currentUserId = null){
+    public function hideWorkspace($groupId, $workspaceId, $currentUserId = null)
+    {
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
                 && count($this->wms->getMembers($workspaceId)) <= 1
@@ -445,10 +448,10 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
 
-            foreach ($workspacesUser as $workspaceUser){
+            foreach ($workspacesUser as $workspaceUser) {
                 $isHidden = $workspaceUser->getisHidden();
 
-                if ($isHidden == false){
+                if ($isHidden == false) {
                     $workspaceUser->setisHidden(true);
                 }
 
@@ -461,7 +464,8 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function unhideWorkspace($groupId, $workspaceId, $currentUserId = null){
+    public function unhideWorkspace($groupId, $workspaceId, $currentUserId = null)
+    {
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
                 && count($this->wms->getMembers($workspaceId)) <= 1
@@ -474,11 +478,11 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
 
-            foreach ($workspacesUser as $workspaceUser){
+            foreach ($workspacesUser as $workspaceUser) {
 
                 $isHidden = $workspaceUser->getisHidden();
 
-                if ($isHidden == true){
+                if ($isHidden == true) {
                     $workspaceUser->setisHidden(false);
                 }
 
@@ -491,7 +495,8 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function favoriteWorkspace($groupId, $workspaceId, $currentUserId = null){
+    public function favoriteWorkspace($groupId, $workspaceId, $currentUserId = null)
+    {
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
                 && count($this->wms->getMembers($workspaceId)) <= 1
@@ -504,11 +509,11 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
 
-            foreach ($workspacesUser as $workspaceUser){
+            foreach ($workspacesUser as $workspaceUser) {
 
                 $isFavorite = $workspaceUser->getisFavorite();
 
-                if ($isFavorite == false){
+                if ($isFavorite == false) {
                     $workspaceUser->setisFavorite(true);
                 }
                 $this->doctrine->persist($workspaceUser);
@@ -520,7 +525,8 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function unfavoriteWorkspace($groupId, $workspaceId, $currentUserId = null){
+    public function unfavoriteWorkspace($groupId, $workspaceId, $currentUserId = null)
+    {
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
                 && count($this->wms->getMembers($workspaceId)) <= 1
@@ -533,11 +539,11 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
 
-            foreach ($workspacesUser as $workspaceUser){
+            foreach ($workspacesUser as $workspaceUser) {
 
                 $isFavorite = $workspaceUser->getisFavorite();
 
-                if ($isFavorite == true){
+                if ($isFavorite == true) {
                     $workspaceUser->setisFavorite(false);
                 }
 
@@ -549,7 +555,8 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function haveNotificationsWorkspace($groupId, $workspaceId, $currentUserId = null){
+    public function haveNotificationsWorkspace($groupId, $workspaceId, $currentUserId = null)
+    {
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
                 && count($this->wms->getMembers($workspaceId)) <= 1
@@ -562,11 +569,11 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
 
-            foreach ($workspacesUser as $workspaceUser){
+            foreach ($workspacesUser as $workspaceUser) {
 
                 $hasNotifications = $workspaceUser->getHasNotifications();
 
-                if ($hasNotifications == false){
+                if ($hasNotifications == false) {
                     $workspaceUser->setHasNotifications(true);
                 }
                 $this->doctrine->persist($workspaceUser);
@@ -578,7 +585,8 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function dontHaveNotificationsWorkspace($groupId, $workspaceId, $currentUserId = null){
+    public function dontHaveNotificationsWorkspace($groupId, $workspaceId, $currentUserId = null)
+    {
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
                 && count($this->wms->getMembers($workspaceId)) <= 1
@@ -591,11 +599,11 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
 
-            foreach ($workspacesUser as $workspaceUser){
+            foreach ($workspacesUser as $workspaceUser) {
 
                 $hasNotifications = $workspaceUser->getHasNotifications();
 
-                if ($hasNotifications == true){
+                if ($hasNotifications == true) {
                     $workspaceUser->setHasNotifications(false);
                 }
                 $this->doctrine->persist($workspaceUser);
