@@ -58,7 +58,7 @@ class UserToNotify
      */
     public function setUser($user)
     {
-        $this->users = $user;
+        $this->user = $user;
     }
 
     /**

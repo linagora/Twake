@@ -34,11 +34,11 @@ class UsersToNotifyController extends Controller
         $data["data"]["usersList"] = Array();
 
         foreach ($usersList as $user){
-            array_push($data["data"]["usersList"], $user->getUser()->getAsArray());
+            if($user!=null)
+                array_push($data["data"]["usersList"], $user->getUser()->getAsArray());
+            else
+                var_dump("null user to notify");
         }
-
-        var_dump("test");
-        var_dump($data);
 
         return new JsonResponse($data);
 
@@ -46,17 +46,19 @@ class UsersToNotifyController extends Controller
 
     public function setUsersAction(Request $request)
     {
-        //TODO : check auth
         $data = Array(
             "errors" => Array(),
             "data" => Array()
         );
+
+        //TODO : check auth
+
         $driveFileId = $request->request->get("driveFileId", 0);
         $usersList = $request->request->get("usersList", 0);
 
         $this->get("app.drive.UserToNotifyService")->setUsersList($driveFileId,$usersList);
 
-        return new JsonResponse($data);
+        return $this->getUsersAction($request);
     }
 
 }
