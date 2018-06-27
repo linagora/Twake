@@ -133,3 +133,13 @@ twake_drive_set_users_to_notify:
 twake_drive_post_gdrive_notification:
     path:     /users_to_notify/post_gdrive_notification
     defaults: { _controller: TwakeDriveBundle:UsersToNotify:postGDriveNotification }
+
+# External drive handler
+
+twake_drive_add_google_drive:
+    path:     /gdrive/add
+    defaults: { _controller: TwakeDriveBundle:ExternalFiles:addNewExternalDrive }
+
+twake_drive_google_drive_response:
+    path:     /gdrive/fetchAccessTokenWithAuthCode
+    defaults: { _controller: TwakeDriveBundle:ExternalFiles:fetchAccessTokenWithAuthCode }

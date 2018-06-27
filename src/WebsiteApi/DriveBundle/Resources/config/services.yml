@@ -4,13 +4,17 @@ services:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystem
         arguments: ["@doctrine.orm.entity_manager", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@website_api_market.applications']
 
-    app.drive.FileSystem_:
+    app.drive.FileSystemGDrive:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystemGDrive
         arguments: ["@doctrine.orm.entity_manager", "@app.drive.GDriveApiSystem", '@app.pusher',"@circle.restclient", '@app.drive.FileSystem']
 
     app.drive.ExternalDriveDataCacheSystem:
         class: WebsiteApi\DriveBundle\Services\ExternalDriveDataCacheSystem
         arguments: ["@doctrine.orm.entity_manager"]
+
+    app.drive.ExternalDriveSystem:
+        class: WebsiteApi\DriveBundle\Services\ExternalDriveSystem
+        arguments: ["@doctrine.orm.entity_manager","@app.token_service"]
 
     app.drive.GDriveApiSystem:
         class: WebsiteApi\DriveBundle\Services\GDriveApiSystem
