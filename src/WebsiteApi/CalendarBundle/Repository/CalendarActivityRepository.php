@@ -9,7 +9,6 @@ namespace WebsiteApi\CalendarBundle\Repository;
  */
 
 
-
 class CalendarActivityRepository extends \Doctrine\ORM\EntityRepository
 {
 

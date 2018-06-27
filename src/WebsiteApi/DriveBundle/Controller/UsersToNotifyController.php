@@ -26,7 +26,7 @@ class UsersToNotifyController extends Controller
             "data" => Array()
         );
 
-        if($driveFileId==0){
+        if ($driveFileId == 0) {
             $data["errors"][] = "Error file not found";
             return new JsonResponse($data);
         }
@@ -34,8 +34,8 @@ class UsersToNotifyController extends Controller
         $usersList = $this->get("app.drive.UserToNotifyService")->get($driveFileId);
         $data["data"]["usersList"] = Array();
 
-        foreach ($usersList as $user){
-            if($user!=null)
+        foreach ($usersList as $user) {
+            if ($user != null)
                 array_push($data["data"]["usersList"], $user->getUser()->getAsArray());
             else
                 var_dump("null user to notify");
@@ -57,27 +57,28 @@ class UsersToNotifyController extends Controller
         $driveFileId = $request->request->get("driveFileId", 0);
         $usersList = $request->request->get("usersList", 0);
 
-        $this->get("app.drive.UserToNotifyService")->setUsersList($driveFileId,$usersList);
+        $this->get("app.drive.UserToNotifyService")->setUsersList($driveFileId, $usersList);
 
         return $this->getUsersAction($request);
     }
 
-    public function postGDriveNotificationAction(Request $request){
+    public function postGDriveNotificationAction(Request $request)
+    {
         //TODO : check auth
 
         $fileChangedId = $request->headers->get("x-goog-channel-id");
 
         //TODO send the notif to the registered users
 
-/*
-        $s = (new DateTime())->format('Y-m-d H:i:s');
-        $file = fopen($s.'notif.txt', 'w+');
-        fputs($file, $fileChangedId);//x-goog-channel-token
-        fclose($file);
-        ob_flush();
-        ob_start();
-        var_dump($request);
-        file_put_contents($s."dump.txt", ob_get_flush());*/
+        /*
+                $s = (new DateTime())->format('Y-m-d H:i:s');
+                $file = fopen($s.'notif.txt', 'w+');
+                fputs($file, $fileChangedId);//x-goog-channel-token
+                fclose($file);
+                ob_flush();
+                ob_start();
+                var_dump($request);
+                file_put_contents($s."dump.txt", ob_get_flush());*/
 
         return new JsonResponse();
     }

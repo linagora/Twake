@@ -84,7 +84,7 @@ class Workspace
     /**
      * @ORM\Column(type="boolean")
      */
-	private $isArchived = false;
+    private $isArchived = false;
 
     /**
      * Workspace constructor.
