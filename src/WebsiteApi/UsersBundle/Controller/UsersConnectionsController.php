@@ -89,32 +89,37 @@ class UsersConnectionsController extends Controller
         $draw = new \ImagickDraw();
 
         $username = $request->query->get("username", "");
-        $md5 = substr(md5($username), 0, 9);
+        $md5 = md5($username);
+        $seed1 = intval(hexdec(bin2hex(substr($md5, 0, 8))));
+        $seed2 = intval(hexdec(bin2hex(substr($md5, 10, 8))));
+        $seed3 = intval(hexdec(bin2hex(substr($md5, 20, 8))));
 
-        srand(intval(hexdec(bin2hex($md5))));
+        srand($seed1);
 
-        $colors = ["#F66", "#66F", "#8D6", "#E6D"];
+        $colors = ["#FEF380", "#4581F0", "#F1656F", "#0C1F43", "#FDB64C", "#86CE53", "#B001E5", "#23430C", "#47300D"];
 
         $choosenColors = Array();
-        for ($i = 0; $i < 1; $i++) {
+        for ($i = 0; $i < 2; $i++) {
             $choosenColors[] = $colors[rand(0, count($colors) - 1)];
         }
 
         $equilateralMultiplicator = 0.86602540378;
-        $triangleSize = 70;
+        $triangleSize = 140;
         $cote = 6;
 
+        srand($seed2);
         $colored = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0);
         for ($i = 0; $i < 36; $i++) {
-            if ($username != "admin" && $username != "benoit" && $username != "romaric") {
+            if ($username != "admin") {
                 $colored[$i] = rand(0, 1 + $colored[$i] * 3);
             }
         }
 
+        srand($seed3);
         for ($i = 0; $i < 36; $i++) {
             $j = intval($i / 2);
-            $offsetX = -32 + intval($j / $cote) * $triangleSize * $equilateralMultiplicator;
-            $offsetY = -60 + ($j % $cote) * $triangleSize - (intval($j / $cote) % 2) * $triangleSize / 2 - $triangleSize / 2;
+            $offsetX = -64 + intval($j / $cote) * $triangleSize * $equilateralMultiplicator;
+            $offsetY = -120 + ($j % $cote) * $triangleSize - (intval($j / $cote) % 2) * $triangleSize / 2 - $triangleSize / 2;
             if ($i % 2) {
                 $points = [
                     ['x' => $offsetX, 'y' => $offsetY],
@@ -136,11 +141,25 @@ class UsersConnectionsController extends Controller
         }
 
         $image = new \Imagick();
-        $image->newImage(300, 300, "#FFF");
+        $image->newImage(600, 600, "#FFF");
         $image->setImageFormat("png");
         $image->drawImage($draw);
         $image->flopImage();
         $image->drawImage($draw);
+
+        if (rand(0, 1)) {
+            $image->flipImage();
+        }
+
+        $r = rand(0, 22);
+        $image->rotateImage("#FFF", $r);
+        $w = 600 - $r * 7;
+        $image->cropImage($w, $w, (600 - $w) / 2, (600 - $w) / 2);
+
+        if (rand(0, 1)) {
+            $image->flopImage();
+        }
+
 
         header("Content-Type: image/png");
         echo $image->getImageBlob();

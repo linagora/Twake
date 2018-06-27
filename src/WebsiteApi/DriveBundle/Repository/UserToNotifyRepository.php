@@ -7,7 +7,8 @@ namespace WebsiteApi\DriveBundle\Repository;
  */
 class UserToNotifyRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function deleteByDriveFile($driveFile){
+    public function deleteByDriveFile($driveFile)
+    {
         $qb = $this->createQueryBuilder("t");
 
         $qb = $qb->delete()
