@@ -190,12 +190,12 @@ class InitCommand extends ContainerAwareCommand
             @["/medias/apps/web/vectr.png", "Vectr", "vectr.com", "vectr", "101010", Array()],
             @["/medias/apps/web/webflow.jpeg", "Webflow", "webflow.com", "webflow", "354145", Array()],
             @["/medias/apps/web/witeboard.png", "Witeboard", "witeboard.com", "witeboard", "222222", Array()],
-            @["/medias/apps/web/flat_io.png", "Flat.io", "flat.io/score", "flat_io", "390f8", Array()],
+            @["/medias/apps/web/flat_io.png", "Flat.io", "flat.io/score", "flat_io", "3990f8", Array()],
             @["/medias/apps/web/play_canvas.png", "Play Canvas", "playcanvas.com/editor", "playcanvas", "d64e0e", Array()],
             @["/medias/apps/web/tuzzit_board.png", "Tuzzit", "board.tuzzit.com", "board.tuzzit", "4ab5a3", Array()],
             @["/medias/apps/web/hackmd.png", "HackMd", "hackmd.io", "hackmd", "333333", Array()],
             @["/medias/apps/web/trello.png", "Trello", "trello.com", "trello", "0079bf", Array()],
-            @["/medias/apps/web/gitlab.png", "Gitlab", "gitlab.com", "gitlab", "0d4524", Array()],
+            @["/medias/apps/web/gitlab.png", "Gitlab", "gitlab.com", "gitlab", "fc9626", Array()],
             @["/medias/apps/web/github.png", "Github", "github.com", "github", "24292e", Array()],
 
             //Altassian
@@ -205,9 +205,9 @@ class InitCommand extends ContainerAwareCommand
             @["/medias/apps/web/google_hangouts.png", "Google Hangouts", "hangouts.google.com", "hangouts.google", "50AF55", Array()],
             @["/medias/apps/web/google_sites.png", "Google Sites", "sites.google.com", "sites.google", "E63B42", Array()],
             @["/medias/apps/web/google_docs_document.png", "Google Docs Document", "docs.google.com/document", "document.docs.google", "367FDF", Array()],
-            @["/medias/apps/web/google_docs_spreadsheets.png", "Google Docs Spreadsheets", "docs.google.com/spreadsheets", "spreadsheets.docs.google", "50AF55", Array()],
+            @["/medias/apps/web/google_docs_spreadsheeNULLts.png", "Google Docs Spreadsheets", "docs.google.com/spreadsheets", "spreadsheets.docs.google", "50AF55", Array()],
             @["/medias/apps/web/google_docs_presentation.png", "Google Docs Presentation", "docs.google.com/presentation", "presentation.docs.google", "F9D548", Array()],
-            @["/medias/apps/web/google_docs_drawings.jpg", "Google Docs Drawings", "docs.google.com/drawings", "drawings.docs.google", "E63B42", Array()],
+            @["/medias/apps/web/google_drawings.png", "Google Drawings", "docs.google.com/drawings", "drawings.docs.google", "F2B014", Array()],
             @["/medias/apps/web/google_docs_forms.png", "Google Docs Forms", "docs.google.com/forms", "forms.docs.google", "7457C7", Array()],
             @["/medias/apps/web/google_gmail.png", "Gmail", "mail.google.com", "mail.google", "ED5938", Array()],
 
@@ -221,7 +221,7 @@ class InitCommand extends ContainerAwareCommand
             @["/medias/apps/web/icloud_photos.png", "iCloud Photos", "icloud.com/#photos", "photos.icloud", "E47563", Array()],
 
             //Microsoft
-            @["/medias/apps/web/office_365_skype.jpg", "Skype", "web.skype.com", "skype", "00aff0", Array()],
+            @["/medias/apps/web/office_365_skype.png", "Skype", "web.skype.com", "skype", "00aff0", Array()],
             @["/medias/apps/web/office_365_calendar.png", "Outlook Calendar", "outlook.live.com/calendar", "calendar.office_365", "0072c7", Array()],
             @["/medias/apps/web/office_365_outlook.png", "Outlook ", "outlook.live.com/mail", "outlook.office_365", "0072c6", Array()],
             @["/medias/apps/web/office_365_contacts.png", "Outlook Contacts", "outlook.live.com/people", "contacts.office_365", "0072c7", Array()],
@@ -229,7 +229,7 @@ class InitCommand extends ContainerAwareCommand
             @["/medias/apps/web/office_365_onenote.png", "OneNote", "onedrive.live.com/onenote", "onenote.office_365", "793474", Array()],
             @["/medias/apps/web/office_365_powerpoint.png", "PowerPoint", "onedrive.live.com/powerpoint", "powerpoint.office_365", "d34725", Array()],
             @["/medias/apps/web/office_365_word.png", "Word", "onedrive.live.com/word", "word.office_365", "2a5699", Array()],
-            @["/medias/apps/web/office_365_excel.png", "Excel", "onedrive.live.com/excel", "excel.office_365", "1e6e42", Array()],
+            @["/medias/apps/web/office_365_excel.png", "Excel", "onedrive.live.com/excel", "excel.office_365", "1E683D", Array()],
 
 
         ];

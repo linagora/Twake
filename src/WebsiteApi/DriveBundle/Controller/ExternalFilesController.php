@@ -11,12 +11,62 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use WebsiteApi\DriveBundle\Entity\DriveFile;
 
-class FilesController extends Controller
+class ExternalFilesController extends Controller
 {
+    private function getUserTokenFromFileId($directoryId){
+        $userToken = $this->get("app.drive.ExternalDriveSystem")->getTokenFromFileId(strval($directoryId));
+        return $userToken;
+    }
+
+    public function fetchAccessTokenWithAuthCodeAction(Request $request){
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $code = $request->query->get('code');
+
+        $authCode = trim($code);
+
+        var_dump($authCode);
+
+        $this->get("app.drive.ExternalDriveSystem")->completeAddingNewGDrive($authCode,$this->getUser());
+
+        $url = "http://localhost:8080";
+        header('Location:'.$url);
+
+        return new JsonResponse();
+    }
+
+    public function addNewExternalDriveAction(Request $request){
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $targetUrl = $request->request->get("externalDriveUrl");
+        $workspaceId = $request->request->get("workspaceId");
+
+        if(count(explode("google",$targetUrl))>1){
+            $targetUrl = explode("folders/",$targetUrl);
+            if(count($targetUrl)<2)
+                $folderId = "root";
+            else
+                $folderId = $targetUrl[1];
+
+            $authUrl = $this->get("app.drive.ExternalDriveSystem")->addNewGDrive($folderId, $this->getUser(), $workspaceId);
+
+            $data["data"]["status"] = "auth req";
+            $data["data"]["url"] = $authUrl;
+        }
+        else
+            $data["error"][] = "External drive system not handled";
+
+        return new JsonResponse($data);
+    }
 
     public function createAction(Request $request)
     {
-
         $data = Array(
             "errors" => Array(),
             "data" => Array()
@@ -31,15 +81,20 @@ class FilesController extends Controller
         $isDirectory = $request->request->get("isDirectory", true);
         $url = $request->request->get("url",null);
 
+        $userToken = $this->getUserTokenFromFileId($parentId);
+
+        if(!$userToken){
+        }
+
         $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "drive:write");
 
         if (count($data["errors"]) == 0) {
 
-            if (!$this->get('app.drive.FileSystem')->canAccessTo($parentId, $groupId, $this->getUser())) {
+            if (!$this->get('app.drive.FileSystemGDrive')->canAccessTo($parentId, $groupId, $this->getUser())) {
                 $data["errors"] = "notallowed";
             } else {
 
-                $file = $this->get('app.drive.FileSystem')->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached,$url);
+                $file = $this->get('app.drive.FileSystemGDrive')->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached,$url);
 
                 if($model){
                     //IMPORTANT ! Disable local files !!!
@@ -49,7 +104,7 @@ class FilesController extends Controller
                         $model = "https://" . str_replace("https://", "", $model);
                     }
                     $content = file_get_contents($model);
-                    $this->get("app.drive.FileSystem")->setRawContent($file->getId(), $content);
+                    $this->get("app.drive.FileSystemGDrive")->setRawContent($file->getId(), $content);
 
                 }
 
@@ -77,7 +132,7 @@ class FilesController extends Controller
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
         if ($can) {
             foreach ($fileIds as $fileId){
-                $this->get('app.drive.FileSystem')->autoDelete($groupId,$fileId);
+                $this->get('app.drive.FileSystemGDrive')->autoDelete($groupId,$fileId);
             }
         }else{
             $data["errors"][] = "notallowed";
@@ -97,7 +152,7 @@ class FilesController extends Controller
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
 
         if ($can) {
-            if (!$this->get('app.drive.FileSystem')->emptyTrash($groupId)) {
+            if (!$this->get('app.drive.FileSystemGDrive')->emptyTrash($groupId)) {
                 $data["errors"][] = "unknown";
             }
         }
@@ -120,10 +175,10 @@ class FilesController extends Controller
 
             if ($fileIds != null) {
                 foreach ($fileIds as $fileId){
-                    $this->get('app.drive.FileSystem')->restore($fileId);
+                    $this->get('app.drive.FileSystemGDrive')->restore($fileId);
                 }
             } else {
-                $this->get('app.drive.FileSystem')->restoreTrash($groupId);
+                $this->get('app.drive.FileSystemGDrive')->restoreTrash($groupId);
             }
         }
 
@@ -144,14 +199,14 @@ class FilesController extends Controller
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read");
 
         if ($can) {
-            $data["data"] = $this->get('app.drive.FileSystem')->getInfos($groupId, $objectId, true);
+            $data["data"] = $this->get('app.drive.FileSystemGDrive')->getInfos($groupId, $objectId, true);
         }
 
         if (!$data["data"] && $this->get('app.workspace_levels')->can(
-                $this->get('app.drive.FileSystem')->getWorkspace($objectId),
+                $this->get('app.drive.FileSystemGDrive')->getWorkspace($objectId),
                 $this->getUser()->getId(), "drive:read")) {
-            $data["data"] = $this->get('app.drive.FileSystem')->getInfos(
-                $this->get('app.drive.FileSystem')->getWorkspace($objectId),
+            $data["data"] = $this->get('app.drive.FileSystemGDrive')->getInfos(
+                $this->get('app.drive.FileSystemGDrive')->getWorkspace($objectId),
                 $objectId, true);
         }
 
@@ -180,44 +235,44 @@ class FilesController extends Controller
 
             if($state == "new") {
 
-                $files = $this->get('app.drive.FileSystem')->listNew($groupId, $offset, $max);
+                $files = $this->get('app.drive.FileSystemGDrive')->listNew($groupId, $offset, $max);
 
             } else if ($state == "shared") {
 
                 if ($parentId != 0){
-                    $files = $this->get('app.drive.FileSystem')->listDirectory($groupId, $parentId);
+                    $files = $this->get('app.drive.FileSystemGDrive')->listDirectory($groupId, $parentId);
                 }else{
-                    $files = $this->get('app.drive.FileSystem')->listShared($groupId);
+                    $files = $this->get('app.drive.FileSystemGDrive')->listShared($groupId);
                 }
                 $genArbo = true;
 
             } else if ($state == "search") {
 
                 $query = $request->request->get("query", "");
-                $files = $this->get('app.drive.FileSystem')->search($groupId, $query, $offset, $max);
+                $files = $this->get('app.drive.FileSystemGDrive')->search($groupId, $query, $offset, $max);
 
             } else if (strpos($state, "label_") === 0) {
 
                 $label_id = explode("_", $state);
                 $label_id = intval($label_id[1]);
 
-                $files = $this->get('app.drive.FileSystem')->byLabel($groupId, $label_id, $offset, $max);
+                $files = $this->get('app.drive.FileSystemGDrive')->byLabel($groupId, $label_id, $offset, $max);
 
             } else {
 
                 $genArbo = true;
 
                 if ($isInTrash && $parentId == 0) {
-                    $files = $this->get('app.drive.FileSystem')->listTrash($groupId, $parentId);
+                    $files = $this->get('app.drive.FileSystemGDrive')->listTrash($groupId, $parentId);
                 } else {
-                    $files = $this->get('app.drive.FileSystem')->listDirectory($groupId, $parentId);
+                    $files = $this->get('app.drive.FileSystemGDrive')->listDirectory($groupId, $parentId);
                 }
 
             }
 
             if ($genArbo){
                 $arbo = [];
-                $parent = $this->get('app.drive.FileSystem')->getObject($parentId);
+                $parent = $this->get('app.drive.FileSystemGDrive')->getObject($parentId);
                 while ($parent != null) {
                     $arbo[] = Array("id" => $parent->getId(), "name" => $parent->getName(), "shared" => $parent->getShared());
                     $parent = $parent->getParent();
@@ -231,18 +286,18 @@ class FilesController extends Controller
                 foreach ($files as $index => $file) {
 
                     if ($file->getCopyOf() != null){//if it's a copy shortcut to another folder, link directly the folder
-                        $data["data"]["files"][] = $this->get('app.drive.FileSystem')->getInfos($groupId,$file->getCopyOf(),true);
+                        $data["data"]["files"][] = $this->get('app.drive.FileSystemGDrive')->getInfos($groupId,$file->getCopyOf(),true);
                         $data["data"]["files"][$index]["shortcut"] = true;
                     }else{
-                        $data["data"]["files"][] = $this->get('app.drive.FileSystem')->getInfos($groupId,$file,true);
+                        $data["data"]["files"][] = $this->get('app.drive.FileSystemGDrive')->getInfos($groupId,$file,true);
                         $data["data"]["files"][$index]["shortcut"] = false;
                     }
 
                 }
             }
 
-            $data["data"]["maxspace"] = $this->get('app.drive.FileSystem')->getTotalSpace($groupId);
-            $data["data"]["totalsize"] = $this->get('app.drive.FileSystem')->getUsedSpace($groupId);
+            $data["data"]["maxspace"] = $this->get('app.drive.FileSystemGDrive')->getTotalSpace($groupId);
+            $data["data"]["totalsize"] = $this->get('app.drive.FileSystemGDrive')->getUsedSpace($groupId);
 
 
         }
@@ -265,7 +320,7 @@ class FilesController extends Controller
 
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
 
-            $file = $this->get('app.drive.FileSystem')->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached);
+            $file = $this->get('app.drive.FileSystemGDrive')->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached);
 
             if ($file) {
                 $data["data"] = $file->getAsArray();
@@ -300,7 +355,7 @@ class FilesController extends Controller
 
         if ($can) {
 
-            $this->get('app.drive.FileSystem')->download($groupId, $fileId, $download);
+            $this->get('app.drive.FileSystemGDrive')->download($groupId, $fileId, $download);
 
         }
 
@@ -322,7 +377,7 @@ class FilesController extends Controller
 
         if (count($data["errors"]) == 0) {
 
-            if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
+            if (!$this->get('app.drive.FileSystemGDrive')->canAccessTo($fileId, $groupId, $this->getUser())) {
                 $data["errors"][] = "notallowed";
             } else {
 
@@ -335,7 +390,7 @@ class FilesController extends Controller
                 }
 
                 foreach ($toMove as $id){
-                    $res = $this->get('app.drive.FileSystem')->move($id, $newParentId,$groupId);
+                    $res = $this->get('app.drive.FileSystemGDrive')->move($id, $newParentId,$groupId);
                     if(!$res){
                         $data["errors"][] = "ヾ(⌐■_■)ノ Nice try ヾ(⌐■_■)ノ";
                     }
@@ -359,9 +414,9 @@ class FilesController extends Controller
         $newParentId = $request->request->get("newParentId", null);
 
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
-            if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
+            if (!$this->get('app.drive.FileSystemGDrive')->canAccessTo($fileId, $groupId, $this->getUser())) {
                 $data["errors"][] = "notallowed";
-            } else if (!$this->get('app.drive.FileSystem')->copy($fileId, $newParentId)) {
+            } else if (!$this->get('app.drive.FileSystemGDrive')->copy($fileId, $newParentId)) {
                 $data["errors"][] = "unknown";
             }
         }
@@ -384,9 +439,9 @@ class FilesController extends Controller
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
             if ($filename == "") {
                 $data["errors"][] = "emptyname";
-            } else if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())){
+            } else if (!$this->get('app.drive.FileSystemGDrive')->canAccessTo($fileId, $groupId, $this->getUser())){
                 $data["errors"][] = "notallowed";
-            } else if (!$this->get('app.drive.FileSystem')->rename($fileId, $filename, $description, $labels)) {
+            } else if (!$this->get('app.drive.FileSystemGDrive')->rename($fileId, $filename, $description, $labels)) {
                 $data["errors"][] = "unknown";
             }
         }
@@ -403,9 +458,9 @@ class FilesController extends Controller
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
 
             if ($original) {
-                $data = $this->get('app.drive.FileSystem')->getRawContent($groupId,$fileId);
+                $data = $this->get('app.drive.FileSystemGDrive')->getRawContent($groupId,$fileId);
             } else {
-                $data = $this->get('app.drive.FileSystem')->getPreview($groupId,$fileId);
+                $data = $this->get('app.drive.FileSystemGDrive')->getPreview($groupId,$fileId);
             }
             return new Response($data, 200);
 
@@ -425,7 +480,7 @@ class FilesController extends Controller
         $fileId = $request->request->get("fileSearchedId", 0);
 
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
-            $files = $this->get('app.drive.FileSystem')->getSharedWorkspace($groupId,$fileId);
+            $files = $this->get('app.drive.FileSystemGDrive')->getSharedWorkspace($groupId,$fileId);
             if (count($files) != 0 && !$files ) {
                 $data["errors"][] = "unknown";
             }else{
@@ -433,7 +488,7 @@ class FilesController extends Controller
                 foreach ($files as $file) {
                     $data["data"]["workspaces"][] = $file->getGroup()->getAsArray();
                 }
-                $data["data"]["owner"] = $this->get('app.drive.FileSystem')->isFolderOwner($groupId,$fileId);
+                $data["data"]["owner"] = $this->get('app.drive.FileSystemGDrive')->isFolderOwner($groupId,$fileId);
             }
         }else{
             $data["errors"][] = "notallowed";
@@ -453,9 +508,9 @@ class FilesController extends Controller
         $fileId = $request->request->get("fileToCopyId", 0);
 
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
-            if (!$this->get('app.drive.FileSystem')->canAccessTo($fileId, $groupId, $this->getUser())) {
+            if (!$this->get('app.drive.FileSystemGDrive')->canAccessTo($fileId, $groupId, $this->getUser())) {
                 $data["errors"][] = "notallowed";
-            } else if (!$this->get('app.drive.FileSystem')->share($groupId,$fileId,$workspaceId)) {
+            } else if (!$this->get('app.drive.FileSystemGDrive')->share($groupId,$fileId,$workspaceId)) {
                 $data["errors"][] = "unknown";
             }
         }else{
@@ -478,7 +533,7 @@ class FilesController extends Controller
 
         if (!$this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
             $data["errors"][] = "notallowed";
-        } else if (!$this->get('app.drive.FileSystem')->unshare($groupId,$fileId,$workspaceId,$removeAll)) {
+        } else if (!$this->get('app.drive.FileSystemGDrive')->unshare($groupId,$fileId,$workspaceId,$removeAll)) {
             $data["errors"][] = "unknown";
         }
 
@@ -490,9 +545,9 @@ class FilesController extends Controller
             "data" => Array(),
             "errors" => Array()
         );
-        $file = $request->request->get("id", null);
-        $bool = $this->get('app.drive.FileSystem')->open($file);
-
+        $file = $request->request->get("file", null);
+        $bool = $this->get('app.drive.FileSystemGDrive')->open($file);
+        var_dump($file);
         if ($bool){
             $data["data"][] ="success";
         }else{
@@ -503,33 +558,19 @@ class FilesController extends Controller
     }
 
     public function getFilesFromAppAction(Request $request){
-        $data = Array(
-            "data" => Array(),
-            "errors" => Array()
-        );
 
-        if ($this->getUser()) {
+        $workspace_id = $request->request->get("workspace_id", 0);
+        $app = $request->request->get("app", 0);
 
-            $workspace_id = $request->request->get("workspace_id", 0);
-            $app = $request->request->get("app", 0);
+        $list = $this->get('app.drive.FileSystemGDrive')->getFilesFromApp($app,$workspace_id);
 
-            if ($this->get('app.workspace_levels')->can($workspace_id, $this->getUser()->getId(), "")) {
-
-                $list = $this->get('app.drive.FileSystem')->getFilesFromApp($app, $workspace_id);
-
-                $response = Array();
-                foreach ($list as $element) {
-                    $infos = $this->get("app.drive.FileSystem")->getInfos($workspace_id, $element, false);
-                    $response[] = $infos;
-                }
-
-                $data["data"] = $response;
-
-            }
-
+        $response = Array();
+        var_dump(count($list));
+        foreach ($list as $element){
+            $infos = $this->get("app.drive.FileSystemGDrive")->getInfos($workspace_id, $element, false);
+            array_push($response,$infos);
         }
-
-        return new JsonResponse($data);
+        return new JsonResponse($response);
     }
 
 }

@@ -407,6 +407,7 @@ class Workspaces implements WorkspacesInterface
     }
 
     public function unarchive($groupId, $workspaceId, $currentUserId = null){
+
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
                 && count($this->wms->getMembers($workspaceId)) <= 1
@@ -429,30 +430,16 @@ class Workspaces implements WorkspacesInterface
             return true;
         }
         return false;
+
     }
 
-    public function getArchive($groupId, $workspaceId, $currentUserId = null){
-        if ($currentUserId == null
-            || ($this->wls->can($workspaceId, $currentUserId, "workspace:read")
-                && count($this->wms->getMembers($workspaceId)) <= 1
-            )
-            || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
-        ) {
-            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
-
-            $isArchived = $workspace->getisArchived();
-
-            return $isArchived;
-        }
-        return "error";
-    }
 
     public function hideOrUnhideWorkspace($workspaceId, $currentUserId = null)
     {
         if ($currentUserId != null) {
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
+
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
             $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
 
@@ -471,54 +458,20 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function getHide($groupId, $workspaceId, $currentUserId = null){
-        if ($currentUserId == null
-            || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
-                && count($this->wms->getMembers($workspaceId)) <= 1
-            )
-            || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
-        ) {
+    public function favoriteOrUnfavoriteWorkspace($workspaceId, $currentUserId = null){
+        if ($currentUserId != null) {
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
+
+            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
 
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-            $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
+            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
-            $arrayIsHidden = Array();
-            foreach ($workspacesUser as $workspaceUser){
-
-                $isHidden = $workspaceUser->getisHidden();
-                array_push($arrayIsHidden,$isHidden);
-
-            }
-
-            return $arrayIsHidden;
-        }
-        return "error";
-    }
-
-    public function favoriteWorkspace($groupId, $workspaceId, $currentUserId = null){
-        if ($currentUserId == null
-            || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
-                && count($this->wms->getMembers($workspaceId)) <= 1
-            )
-            || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
-        ) {
-            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
-
-            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-            $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
-
-            foreach ($workspacesUser as $workspaceUser){
-
-                $isFavorite = $workspaceUser->getisFavorite();
-
-                if ($isFavorite == false){
-                    $workspaceUser->setisFavorite(true);
-                }
-                $this->doctrine->persist($workspaceUser);
-            }
+            $isFavorite = $workspaceUser->getisFavorite();
+            $workspaceUser->setisFavorite(!$isFavorite);
+            $this->doctrine->persist($workspaceUser);
 
             $this->doctrine->flush();
             return true;
@@ -526,90 +479,25 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function unfavoriteWorkspace($groupId, $workspaceId, $currentUserId = null){
-        if ($currentUserId == null
-            || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
-                && count($this->wms->getMembers($workspaceId)) <= 1
-            )
-            || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
-        ) {
+    public function haveNotificationsOrNotWorkspace($workspaceId, $currentUserId = null){
+        if ($currentUserId != null) {
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
+            $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
+
+            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
 
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-            $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
+            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
-            foreach ($workspacesUser as $workspaceUser){
+            $hasNotifications = $workspaceUser->getHasNotifications();
+            $workspaceUser->setHasNotifications(!$hasNotifications);
 
-                $isFavorite = $workspaceUser->getisFavorite();
-
-                if ($isFavorite == true){
-                    $workspaceUser->setisFavorite(false);
-                }
-
-                $this->doctrine->persist($workspaceUser);
-            }
+            $this->doctrine->persist($workspaceUser);
             $this->doctrine->flush();
             return true;
         }
         return false;
     }
 
-    public function haveNotificationsWorkspace($groupId, $workspaceId, $currentUserId = null){
-        if ($currentUserId == null
-            || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
-                && count($this->wms->getMembers($workspaceId)) <= 1
-            )
-            || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
-        ) {
-            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
-
-            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-            $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
-
-            foreach ($workspacesUser as $workspaceUser){
-
-                $hasNotifications = $workspaceUser->getHasNotifications();
-
-                if ($hasNotifications == false){
-                    $workspaceUser->setHasNotifications(true);
-                }
-                $this->doctrine->persist($workspaceUser);
-            }
-
-            $this->doctrine->flush();
-            return true;
-        }
-        return false;
-    }
-
-    public function dontHaveNotificationsWorkspace($groupId, $workspaceId, $currentUserId = null){
-        if ($currentUserId == null
-            || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
-                && count($this->wms->getMembers($workspaceId)) <= 1
-            )
-            || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
-        ) {
-            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
-
-            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-            $workspacesUser = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
-
-            foreach ($workspacesUser as $workspaceUser){
-
-                $hasNotifications = $workspaceUser->getHasNotifications();
-
-                if ($hasNotifications == true){
-                    $workspaceUser->setHasNotifications(false);
-                }
-                $this->doctrine->persist($workspaceUser);
-            }
-
-            $this->doctrine->flush();
-            return true;
-        }
-        return false;
-    }
 }

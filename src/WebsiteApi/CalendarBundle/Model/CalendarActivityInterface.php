@@ -13,7 +13,7 @@ interface CalendarActivityInterface
 {
 
     // @pushNotification add new notification
-    public function pushTable($pushNotif=true, $workspace, $users=null, $levels=null, $texte=null, $type=Array());
+    public function pushTable($pushNotif = true, $workspace, $users = null, $levels = null, $texte = null, $type = Array());
 
     // @readAll remove all notifications for this
     public function readAll($application, $workspace, $user);

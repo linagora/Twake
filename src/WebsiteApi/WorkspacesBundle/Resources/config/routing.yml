@@ -22,21 +22,13 @@ twake_workspaces_hide_or_unhide_workspace:
     path:     /hideOrNot
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:hideOrUnhideWorkspace }
 
-twake_workspaces_favorite_workspace:
+twake_workspaces_favorite_or_unfavorite_workspace:
     path:     /favorite
-    defaults: { _controller: TwakeWorkspacesBundle:Workspace:favoriteWorkspace }
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:favoriteOrUnfavoriteWorkspace }
 
-twake_workspaces_unfavorite_workspace:
-    path:     /unfavorite
-    defaults: { _controller: TwakeWorkspacesBundle:Workspace:unfavoriteWorkspace }
-
-twake_workspaces_have_notifications_workspace:
+twake_workspaces_have_notifications_or_not_workspace:
     path:     /notifications
-    defaults: { _controller: TwakeWorkspacesBundle:Workspace:haveNotificationsWorkspace }
-
-twake_workspaces_dont_have_notifications_workspace:
-    path:     /noNotifications
-    defaults: { _controller: TwakeWorkspacesBundle:Workspace:dontHaveNotificationsWorkspace }
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:haveNotificationsOrNotWorkspace }
 
 # Edit workspace data
 
@@ -96,9 +88,9 @@ twake_groups_set_name:
     path:     /group/data/name
     defaults: { _controller: TwakeWorkspacesBundle:Group:changeName }
 
-#twake_groups_get_workspaces:
-#    path:     /group/getWorkspaces
-#    defaults: { _controller: TwakeWorkspacesBundle:Group:getWorkspaces }
+twake_groups_get_workspaces:
+    path:     /group/getWorkspaces
+    defaults: { _controller: TwakeWorkspacesBundle:Group:getWorkspaces }
 
 twake_groups_use_apps:
     path:     /group/app/use
@@ -135,6 +127,7 @@ twake_groups_manager_remove:
 twake_groups_manager_edit:
     path:     /group/manager/edit
     defaults: { _controller: TwakeWorkspacesBundle:GroupManager:editManagers }
+
 
 # Edit members
 
