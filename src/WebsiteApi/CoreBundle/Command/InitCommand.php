@@ -205,7 +205,7 @@ class InitCommand extends ContainerAwareCommand
             @["/medias/apps/web/google_hangouts.png", "Google Hangouts", "hangouts.google.com", "hangouts.google", "50AF55", Array()],
             @["/medias/apps/web/google_sites.png", "Google Sites", "sites.google.com", "sites.google", "E63B42", Array()],
             @["/medias/apps/web/google_docs_document.png", "Google Docs Document", "docs.google.com/document", "document.docs.google", "367FDF", Array()],
-            @["/medias/apps/web/google_docs_spreadsheets.png", "Google Docs Spreadsheets", "docs.google.com/spreadsheets", "spreadsheets.docs.google", "50AF55", Array()],
+            @["/medias/apps/web/google_docs_spreadsheeNULLts.png", "Google Docs Spreadsheets", "docs.google.com/spreadsheets", "spreadsheets.docs.google", "50AF55", Array()],
             @["/medias/apps/web/google_docs_presentation.png", "Google Docs Presentation", "docs.google.com/presentation", "presentation.docs.google", "F9D548", Array()],
             @["/medias/apps/web/google_drawings.png", "Google Drawings", "docs.google.com/drawings", "drawings.docs.google", "F2B014", Array()],
             @["/medias/apps/web/google_docs_forms.png", "Google Docs Forms", "docs.google.com/forms", "forms.docs.google", "7457C7", Array()],

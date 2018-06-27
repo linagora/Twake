@@ -22,7 +22,7 @@ website_api_app_add_app:
     path:     /app/add/application
     defaults: { _controller: TwakeMarketBundle:Application:addApp }
 
-website_api_app_add_app:
+website_api_app_add_free_app:
     path:     /app/add/freeApplication
     defaults: { _controller: TwakeMarketBundle:Application:addFreeApp }
 

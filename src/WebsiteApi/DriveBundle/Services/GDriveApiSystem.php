@@ -414,18 +414,19 @@ class GDriveApiSystem
         return $content;
     }
 
-    public function watchFile($gdriveID){
+    public function watchFile($gdriveID)
+    {
         $webSiteAddress = "5d7427bc.ngrok.io";
         $json = "{
                   \"kind\": \"api#channel\",
-                  \"id\": \"".$gdriveID."\",
+                  \"id\": \"" . $gdriveID . "\",
                   \"type\": \"web_hook\",
-                  \"address\": \"https://".$webSiteAddress."/ajax/drive/users_to_notify/post_gdrive_notification\"
+                  \"address\": \"https://" . $webSiteAddress . "/ajax/drive/users_to_notify/post_gdrive_notification\"
                 }";
 
         var_dump($json);
 
-        $data = $this->restClient->post('https://www.googleapis.com/drive/v3/files/'.$gdriveID.'/watch', $json,
+        $data = $this->restClient->post('https://www.googleapis.com/drive/v3/files/' . $gdriveID . '/watch', $json,
             array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken(), "Content-Type: application/json")));
 
         return $data;
