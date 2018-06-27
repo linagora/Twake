@@ -249,7 +249,7 @@ class DriveFileSystemGDrive
 
     public function create($workspace, $directoryId, $filename, $content = "", $isDirectory, $userToken)
     {
-        if ($directoryId == 0 || $detached_file) {
+        if ($directoryId == 0) {
             $directoryId = null;
         }
 
