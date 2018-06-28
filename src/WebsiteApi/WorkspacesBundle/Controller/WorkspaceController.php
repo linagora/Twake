@@ -273,7 +273,7 @@ class WorkspaceController extends Controller
     }
 
     /**
-     * Archiver un workspace
+     * Archiver archiver un workspace
      */
     public function archiveWorkspaceAction(Request $request){
         $response = Array(
@@ -296,7 +296,7 @@ class WorkspaceController extends Controller
     }
 
     /**
-     * Ne plus archiver un workspace
+     * Désarchiver archiver un workspace
      */
     public function unarchiveWorkspaceAction(Request $request){
         $response = Array(
@@ -312,7 +312,7 @@ class WorkspaceController extends Controller
         if ($res == true){
             $response["data"] = "success";
         }else{
-            $response["errors"] = "impossible to unarchive";
+            $response["errors"] = "impossible to archive";
         }
 
         return new JsonResponse($response);
@@ -340,21 +340,18 @@ class WorkspaceController extends Controller
         return new JsonResponse($response);
     }
 
-
-
     /**
      * Mettre un workspace en favori
      */
-    public function favoriteWorkspaceAction(Request $request){
+    public function favoriteOrUnfavoriteWorkspace(Request $request){
         $response = Array(
             "errors"=>Array(),
             "data"=>Array()
         );
 
         $workspaceId = $request->request->get("workspaceId");
-        $groupId = $request->request->get("groupId");
 
-        $res = $this->get("app.workspaces")->favoriteWorkspace($groupId, $workspaceId, $this->getUser()->getId());
+        $res = $this->get("app.workspaces")->favoriteWorkspace($workspaceId, $this->getUser()->getId());
 
         if ($res == true){
             $response["data"] = "success";
@@ -366,40 +363,17 @@ class WorkspaceController extends Controller
     }
 
     /**
-     * Retirer un workspace des favoris
+     * Recevoir ou non les notifications d'un workspace
      */
-    public function unfavoriteWorkspaceAction(Request $request){
+    public function haveNotificationsOrNotWorkspaceAction(Request $request){
         $response = Array(
             "errors"=>Array(),
             "data"=>Array()
         );
 
         $workspaceId = $request->request->get("workspaceId");
-        $groupId = $request->request->get("groupId");
 
-        $res = $this->get("app.workspaces")->unfavoriteWorkspace($groupId, $workspaceId, $this->getUser()->getId());
-
-        if ($res == true){
-            $response["data"] = "success";
-        }else{
-            $response["errors"] = "impossible to unput as favorite a workspace";
-        }
-        return new JsonResponse($response);
-    }
-
-    /**
-     * Recevoir les notifications d'un workspace
-     */
-    public function haveNotificationsWorkspaceAction(Request $request){
-        $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
-        );
-
-        $workspaceId = $request->request->get("workspaceId");
-        $groupId = $request->request->get("groupId");
-
-        $res = $this->get("app.workspaces")->haveNotificationsWorkspace($groupId, $workspaceId, $this->getUser()->getId());
+        $res = $this->get("app.workspaces")->haveNotificationsOrNotWorkspace($workspaceId, $this->getUser()->getId());
 
         if ($res == true){
             $response["data"] = "success";
@@ -409,29 +383,5 @@ class WorkspaceController extends Controller
 
         return new JsonResponse($response);
     }
-
-    /**
-     * Ne plus recevoir les notifications d'un workspace
-     */
-    public function dontHaveNotificationsWorkspaceAction(Request $request){
-        $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
-        );
-
-        $workspaceId = $request->request->get("workspaceId");
-        $groupId = $request->request->get("groupId");
-
-        $res = $this->get("app.workspaces")->dontHaveNotificationsWorkspace($groupId, $workspaceId, $this->getUser()->getId());
-
-        if ($res == true){
-            $response["data"] = "success";
-        }else{
-            $response["errors"] = "impossible to not receive notifications";
-        }
-        return new JsonResponse($response);
-    }
-
-
 
 }

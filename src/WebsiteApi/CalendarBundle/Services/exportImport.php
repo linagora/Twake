@@ -17,9 +17,10 @@ class exportImport {
     /**
      * see https://github.com/markuspoerschke/iCal
      */
-    public function generateIcsFileorCalendar($workspace_id, $calendar_id)
+    public function generateIcsFileForCalendar($workspace_id, $calendar_id)
     {
 
+        error_log("GENRETA ICS FILE");
         $vCalendar = new Component\Calendar('twakeapp.com');
 
         $data = $this->get("app.calendar_events")->getEventsByCalendar($workspace_id, $calendar_id, null);
@@ -70,7 +71,7 @@ class exportImport {
 
     function parseCalendar( $workspace_id, $calendar_id)
     {
-
+        error_log("PARSE CALENDAR");
         try {
 
             $ical = new ICal('ICal.ics', array(
