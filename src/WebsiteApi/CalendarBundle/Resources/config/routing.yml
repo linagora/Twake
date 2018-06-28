@@ -1,6 +1,7 @@
 calendar_get_calendars:
     path:     /calendars/get
     defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendars }
+    methods: [POST]
 
 calendar_get_calendars:
     path:     /calendars/getById

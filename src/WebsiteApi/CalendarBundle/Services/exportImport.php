@@ -46,7 +46,6 @@ class exportImport implements exportImportInterface{
                 $vEvent = new Component\Event();
                 error_log("pouet");
                 $evt = $event->getAsArray();
-                var_dump($evt);
 
                 $evt = $evt["event"];
                 if( isset($evt["from"])){
@@ -73,11 +72,14 @@ class exportImport implements exportImportInterface{
                 $vCalendar->addComponent($vEvent);
             }
         }
-        return new Response(
+       return new Response(
             $vCalendar->render(), 200, array(
             'Content-Type' => 'text/calendar; charset=utf-8',
             'Content-Disposition' => 'attachment; filename="cal.ics"',
         ));
+        //header('Content-Type: application/octet-stream');
+        //header("Content-type: application/force-download");
+        //header('Content-Description: File Transfer');
 
     }
     /**
