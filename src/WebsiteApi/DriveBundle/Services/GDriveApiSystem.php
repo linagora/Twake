@@ -9,6 +9,7 @@
 namespace WebsiteApi\DriveBundle\Services;
 
 
+use WebsiteApi\UsersBundle\Entity\Token;
 use Google_Client;
 use Google_Service_Drive;
 use Google_Service_Drive_DriveFile;
@@ -21,16 +22,18 @@ class GDriveApiSystem
     private $doctrine;
     private $externalCache;
     private $marketApplication;
+    private $tokenService;
 
-    public function __construct($doctrine, $restClient, $externalCache, $marketApplication)
+    public function __construct($doctrine, $restClient, $externalCache, $marketApplication, $tokenService)
     {
         $this->restClient = $restClient;
         $this->doctrine = $doctrine;
         $this->externalCache = $externalCache;
         $this->marketApplication = $marketApplication;
+        $this->tokenService = $tokenService;
     }
 
-    public function getClient()
+    public function getClient(Token $userToken)
     {
         $client = new Google_Client();
         $client->setApplicationName('Google Drive API PHP Quickstart');
@@ -38,17 +41,14 @@ class GDriveApiSystem
         $client->setAuthConfig('../client_secret.json');
         $client->setAccessType('offline');
 
-        // Load previously authorized credentials from a file.
-        $credentialsPath = $this->expandHomeDirectory('credentials.json');
-        if (file_exists($credentialsPath)) {
-            $accessToken = json_decode(file_get_contents($credentialsPath), true);
-        }
+        $accessToken = json_decode($userToken->getToken());
         $client->setAccessToken($accessToken);
 
         // Refresh the token if it's expired.
         if ($client->isAccessTokenExpired()) {
             $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            file_put_contents($credentialsPath, json_encode($client->getAccessToken()));
+            $userToken->setToken(json_encode($client->getAccessToken()));
+            $this->tokenService->refreshToken($userToken);
         }
         return $client;
     }
@@ -67,16 +67,17 @@ class GDriveApiSystem
         return str_replace('~', realpath($homeDirectory), $path);
     }
 
-    public function getGDriveToken(){
-        return $this->getClient()->getAccessToken()["access_token"];
+    public function getGDriveToken(Token $userToken){
+        return $this->getClient($userToken)->getAccessToken()["access_token"];
     }
 
-    public function getGDriveFileFromGDriveId($gdriveId){
-        $data = $this->restClient->get('https://www.googleapis.com/drive/v3/files/' . $gdriveId, array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'", "Authorization: Bearer " . $this->getGDriveToken())));
+    public function getGDriveFileFromGDriveId($gdriveId,Token $userToken){
+        $data = $this->restClient->get('https://www.googleapis.com/drive/v3/files/' . $gdriveId, array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'",
+            "Authorization: Bearer " . $this->getGDriveToken($userToken))));
 
         $content = @json_decode($data->getContent(), true);
 
-        $service = new Google_Service_Drive($this->getClient());
+        $service = new Google_Service_Drive($this->getClient($userToken));
 
 
         $optParams = array(
@@ -92,9 +93,9 @@ class GDriveApiSystem
         return false;
     }
 
-    public function getDriveFileFromGDriveId($workspace, $gdriveId)
+    public function getDriveFileFromGDriveId($workspace, $gdriveId, Token $userToken)
     {
-        return $this->getDriveFileFromGDriveFile($workspace, $this->getGDriveFileFromGDriveId($gdriveId));
+        return $this->getDriveFileFromGDriveFile($workspace, $this->getGDriveFileFromGDriveId($gdriveId, $userToken));
     }
 
     public function getDriveFileFromGDriveFile($workspace, $file){
@@ -161,8 +162,8 @@ class GDriveApiSystem
         return $data;
     }
 
-    public function listFiles($workspace, $directory){
-        $service = new Google_Service_Drive($this->getClient());
+    public function listFiles($workspace, $directory, Token $userToken){
+        $service = new Google_Service_Drive($this->getClient($userToken));
 
         $list = Array();
         $pageToken = null;
@@ -184,7 +185,7 @@ class GDriveApiSystem
 
                 $this->externalCache->update($file->getId(),"gdrive",$data);
 
-                if (!$file->getTrashed()) {
+                if(!$file->getTrashed()) {
                     $res = $this->getDriveFileFromGDriveFile($workspace, $file);
 
                     array_push($list, $res);
@@ -197,9 +198,8 @@ class GDriveApiSystem
         return $list;
     }
 
-    public function listTrash($workspace)
-    {
-        $service = new Google_Service_Drive($this->getClient());
+    public function listTrash($workspace, Token $userToken){
+        $service = new Google_Service_Drive($this->getClient($userToken));
 
         $list = Array();
         $pageToken = null;
@@ -211,17 +211,17 @@ class GDriveApiSystem
                 //'q' => "mimeType='application/vnd.google-apps.folder'",
                 'pageSize' => 100,
                 'pageToken' => $pageToken,
-                'fields' => 'nextPageToken, files(id, parents, name, shared, trashed,mimeType, description, createdTime, size, fullFileExtension, hasThumbnail,thumbnailLink,webViewLink, webContentLink)'
+                'fields' =>  'nextPageToken, files(id, parents, name, shared, trashed,mimeType, description, createdTime, size, fullFileExtension, hasThumbnail,thumbnailLink,webViewLink, webContentLink)'
 
             );
             $results = $service->files->listFiles($optParams);
 
             foreach ($results->getFiles() as $file) {
-                $data = $this->getArrayFromGDriveFile($file, Array("id", "parents", "name", "shared", "trashed", "mimeType", "description", "createdTime", "size", "fullFileExtension", "hasThumbnail", "thumbnailLink", "webViewLink", "webContentLink"));
+                $data = $this->getArrayFromGDriveFile($file,Array( "id","parents","name","shared","trashed","mimeType","description","createdTime","size","fullFileExtension","hasThumbnail","thumbnailLink","webViewLink","webContentLink"));
 
-                $this->externalCache->update($file->getId(), "gdrive", $data);
+                $this->externalCache->update($file->getId(),"gdrive",$data);
 
-                if ($file->getTrashed()) {
+                if($file->getTrashed()) {
                     $res = $this->getDriveFileFromGDriveFile($workspace, $file);
 
                     array_push($list, $res);
@@ -234,8 +234,8 @@ class GDriveApiSystem
         return $list;
     }
 
-    public function searchNameContains($workspace, $query, $offset, $max){
-        $service = new Google_Service_Drive($this->getClient());
+    public function searchNameContains($workspace, $query, $offset, $max, Token $userToken){
+        $service = new Google_Service_Drive($this->getClient($userToken));
 
         $list = Array();
         $index = -$max;
@@ -265,7 +265,7 @@ class GDriveApiSystem
         }
     }
 
-    public function getPreview($fileid)
+    public function getPreview($fileid,Token $userToken)
     {
         $repo = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDriveDataCache");
 
@@ -282,7 +282,7 @@ class GDriveApiSystem
             if ($hasThumbnail)
                 $url = $dataCache["thumbnailLink"];
         } else {
-            $file = $this->getGDriveFileFromGDriveId($fileid);
+            $file = $this->getGDriveFileFromGDriveId($fileid, $userToken);
             if ($file) {
                 $hasThumbnail = $file->getHasThumbnail();
                 if ($hasThumbnail)
@@ -295,7 +295,7 @@ class GDriveApiSystem
                     array(
                         'method'  => 'GET',
                         'header'  =>
-                            "Authorization: Bearer ".$this->getGDriveToken()
+                            "Authorization: Bearer ".$this->getGDriveToken($userToken)
                     )
                 );
 
@@ -307,10 +307,10 @@ class GDriveApiSystem
         return null;
     }
 
-    public function getInfos($workspace, $fileOrDirectory)
+    public function getInfos($workspace, $fileOrDirectory, Token $userToken)
     {
         if(is_string($fileOrDirectory)) {
-            $file = $this->getDriveFileFromGDriveId($workspace, $fileOrDirectory);
+            $file = $this->getDriveFileFromGDriveId($workspace, $fileOrDirectory, $userToken);
             if($file)
                 return $file->getAsArray();
         }
@@ -319,9 +319,9 @@ class GDriveApiSystem
         return null;
     }
 
-    public function rename($gdriveId,$filename,$description){
+    public function rename($gdriveId,$filename,$description, Token $userToken){
         $data = $this->restClient->patch('https://www.googleapis.com/drive/v3/files/' . $gdriveId, '{ "name": "'.$filename.'", "description": "'.$description.'"}',
-            array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken(), "Content-Type: application/json")));
+            array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken($userToken), "Content-Type: application/json")));
 
         $content = @json_decode($data->getContent(), true);
 
@@ -355,8 +355,8 @@ class GDriveApiSystem
         return false;
     }
 
-    public function move($gdriveFileId, $gdriveFolderId){
-        $service = new Google_Service_Drive($this->getClient());
+    public function move($gdriveFileId, $gdriveFolderId, Token $userToken){
+        $service = new Google_Service_Drive($this->getClient($userToken));
 
         $fileId = $gdriveFileId;
         $folderId = $gdriveFolderId;
@@ -373,9 +373,8 @@ class GDriveApiSystem
         return $file;
     }
 
-    public function upload($file, $directory)
-    {
-        $service = new Google_Service_Drive($this->getClient());
+    public function upload($file, $directory, Token $userToken){
+        $service = new Google_Service_Drive($this->getClient($userToken));
 
         $fileMetadata = new Google_Service_Drive_DriveFile(array(
             'name' => $file["name"]));
@@ -388,46 +387,43 @@ class GDriveApiSystem
             'uploadType' => 'multipart',
             'fields' => 'id'));
 
-        if ($directory != 0) {
+        if($directory!=0) {
             $file = $this->move($file->getId(), $directory);
         }
 
         return $file;
     }
 
-    public function delete($gdriveId)
-    {
+    public function delete($gdriveId, Token $userToken){
         $data = $this->restClient->delete('https://www.googleapis.com/drive/v3/files/' . $gdriveId,
-            array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'", "Authorization: Bearer " . $this->getGDriveToken())));
+            array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'", "Authorization: Bearer " . $this->getGDriveToken($userToken))));
 
         return $data;
     }
 
-    public function setTrashed($gdriveId, $trashed)
-    {
+    public function setTrashed($gdriveId, $trashed, Token $userToken){
         $trashed = $trashed ? "true" : "false";
-        $data = $this->restClient->patch('https://www.googleapis.com/drive/v3/files/' . $gdriveId, '{ "trashed": ' . $trashed . '}',
-            array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken(), "Content-Type: application/json")));
+        $data = $this->restClient->patch('https://www.googleapis.com/drive/v3/files/' . $gdriveId, '{ "trashed": '.$trashed.'}',
+            array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken($userToken), "Content-Type: application/json")));
 
         $content = @json_decode($data->getContent(), true);
 
         return $content;
     }
 
-    public function watchFile($gdriveID)
-    {
+    public function watchFile($gdriveID, Token $userToken){
         $webSiteAddress = "5d7427bc.ngrok.io";
         $json = "{
                   \"kind\": \"api#channel\",
-                  \"id\": \"" . $gdriveID . "\",
+                  \"id\": \"".$gdriveID."\",
                   \"type\": \"web_hook\",
-                  \"address\": \"https://" . $webSiteAddress . "/ajax/drive/users_to_notify/post_gdrive_notification\"
+                  \"address\": \"https://".$webSiteAddress."/ajax/drive/users_to_notify/post_gdrive_notification\"
                 }";
 
         var_dump($json);
 
-        $data = $this->restClient->post('https://www.googleapis.com/drive/v3/files/' . $gdriveID . '/watch', $json,
-            array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken(), "Content-Type: application/json")));
+        $data = $this->restClient->post('https://www.googleapis.com/drive/v3/files/'.$gdriveID.'/watch', $json,
+            array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken($userToken), "Content-Type: application/json")));
 
         return $data;
     }

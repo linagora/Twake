@@ -32,7 +32,7 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $list_freq = [1, 3, 5, 7, 3, 2, 1, 1];
         $scenario = new ScenarioPayment($this,"lucie.martin@telecomnancy.net", "Lulu", "lulu", "Group_Test", "Project",$pricing_plan,
-            8, $this->getDoctrine(), new \DateInterval("P90D"), $list_freq, false, true);
+            8, $this->getDoctrine(), new \DateInterval("P90D"), $list_freq, false,true);
         $scenario->exec();
         //$scenario->exec();
 
@@ -76,9 +76,8 @@ class SubscriptionTest extends WebTestCaseExtended
         var_dump($log);
     }
 
-    public function isEquivalentTo($isEquivalentTo)
-    {
-        $this->assertTrue($isEquivalentTo == true, "archivage correct du group_period");
+    public function isEquivalentTo($isEquivalentTo){
+        $this->assertTrue($isEquivalentTo==true,"archivage correct du group_period");
     }
 
     public function myGet($s){

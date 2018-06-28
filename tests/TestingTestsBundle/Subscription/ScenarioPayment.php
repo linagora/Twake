@@ -32,8 +32,7 @@ class ScenarioPayment {
     /**
      * ScenarioPayment constructor.
      */
-    public function __construct($services, $user_mail, $pseudo, $password, $group_name, $workspace_name, $pricing_plan, $nb_total_users, $doctrine, $date_interval, $list_freq, $auto_withdrawal, $auto_renew)
-    {
+    public function __construct($services, $user_mail, $pseudo, $password, $group_name, $workspace_name,$pricing_plan, $nb_total_users, $doctrine, $date_interval, $list_freq, $auto_withdrawal, $auto_renew){
         $this->list_freq = $list_freq;
         $this->date_interval = $date_interval;
         $this->services = $services;
@@ -65,7 +64,7 @@ class ScenarioPayment {
         $end_date =  (new \DateTime('now'))->sub(($this->date_interval));
         $start_date = (new \DateTime('now'))->sub(($this->date_interval));
         $this->subscription = $this->services->myGet("app.subscription_manager")->newSubscription($group,$pricing_plan,
-            $balance, $start_date->sub(($this->date_interval)), $end_date, $auto_withdrawal, $auto_renew, $balance);
+            $balance,$start_date->sub(($this->date_interval)), $end_date, $auto_withdrawal, $auto_renew, $balance);
 
         //Ajout autres utilisateurs au groupe
         for($i=1;$i<$nb_total_users;$i++){
@@ -136,7 +135,7 @@ class ScenarioPayment {
         $this->doctrine->flush();
 
         $gp_saved = null;
-        if ($periodExpectedToEndAt->format('d') === (new \DateTime('now'))->format('d')) {
+        if($periodExpectedToEndAt->format('d') === (new \DateTime('now'))->format('d')){
             $gp_saved = clone $gp;
         }
 
@@ -223,8 +222,7 @@ class ScenarioPayment {
 
     }
 
-    public function addMember($user_mail, $pseudo, $password, $workspace_id)
-    {
+    public function addMember($user_mail, $pseudo, $password, $workspace_id){
         $token = $this->services->myGet("app.user")->subscribeMail($user_mail);
         $user = $this->services->myGet("app.user")->subscribe($token, null, $pseudo, $password, true);
 

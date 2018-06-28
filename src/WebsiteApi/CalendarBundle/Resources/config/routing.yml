@@ -31,6 +31,13 @@ calendar_get_share_calendar:
     defaults: { _controller: TwakeCalendarBundle:Calendar:getShareCalendar }
 
 
+calendar_import:
+    path: /calendars/import
+    defaults: { _controller: TwakeCalendarBundle:Calendar:importCalendar}
+calendar_export:
+    path: /calendars/export
+    defaults: { _controller: TwakeCalendarBundle:Calendar:exportCalendar}
+
 
 calendar_events_get:
     path:     /events/get
@@ -60,7 +67,6 @@ calendar_events_unshare:
     path:     /events/removeUsers
     defaults: { _controller: TwakeCalendarBundle:Event:removeUsers }
 
-
 calendar_activitys_create:
     path: /calendarActivitys/create
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:create }
@@ -75,3 +81,4 @@ calendar_activitys_readAll:
 calendar_activitys_delete:
     path: /calendarActivitys/delete
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:delete}
+

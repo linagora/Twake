@@ -132,4 +132,24 @@ class CalendarController extends Controller
         return new JsonResponse($data);
     }
 
+    public function importCalendarAction(Request $request){
+        //TODO
+        error_log("IMPORT CALENDAR ACTION");
+        $workspaceID = $request->request->get("workspaceId");
+        $calendarId = $request->request->get("calendarId");
+
+        $parsing = $this->get("app.export_import")->parseCalendar($workspaceID,$calendarId);
+        return $parsing;
+    }
+
+    public function exportCalendarAction(Request $request){
+        //TODO
+        error_log("ENTREE EXPORT CALENDAR ACTION");
+        $workspaceID = $request->request->get("workspaceId");
+        $calendarId = $request->request->get("calendarId");
+
+        $parsing = $this->get("app.export_import")->generateIcsFileForCalendar($workspaceID,$calendarId);
+        return $parsing;
+    }
+
 }
