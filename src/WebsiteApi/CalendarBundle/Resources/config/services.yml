@@ -22,7 +22,7 @@ services:
 
     app.export_import:
         class: WebsiteApi\CalendarBundle\Services\exportImport
-        arguments: []
+        arguments: ["@app.calendar_events","@api.v1.api_status"]
 
     app.calendarActivity:
         class: WebsiteApi\CalendarBundle\Services\CalendarActivitys

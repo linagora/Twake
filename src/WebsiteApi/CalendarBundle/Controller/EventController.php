@@ -17,7 +17,6 @@ class EventController extends Controller
             'errors' => Array(),
             'data' => Array()
         );
-
         $useMine = $request->request->get("mine");
         $workspaceId = $request->request->getInt("workspaceId");
         $to = $request->request->get("to");

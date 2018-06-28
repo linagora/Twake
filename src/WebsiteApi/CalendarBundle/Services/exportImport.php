@@ -1,4 +1,6 @@
 <?php
+
+namespace WebsiteApi\CalendarBundle\Services;
 /**
  * Created by PhpStorm.
  * User: laura
@@ -9,24 +11,89 @@
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use \Eluceo\iCal\Component ;
+use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\CalendarBundle\Model\exportImportInterface;
 
 
-class exportImport {
+
+class exportImport implements exportImportInterface{
+
+    var $calendarEventService;
+    var $errorService;
+
+    public function __construct($calendarEventService, $errorService)
+    {
+        $this->calendarEventService = $calendarEventService;
+        $this->errorService = $errorService;
+    }
+
+    public function generateICsFileWithUrl($workspace_id,$calendar_id,$mine,$from,$to, $user_id){
+        $vCalendar = new Component\Calendar('twakeapp.com');
+
+        $calendar_tab = explode(",", $calendar_id);
+
+        if($mine) {
+            $events = $this->calendarEventService->getEventsForUser($workspace_id, $from, $to, $user_id);
+        }else{
+            $events = $this->calendarEventService->getEventsForWorkspace($workspace_id, $from, $to, $calendar_tab, $user_id);
+        }
+
+        $tz = new \DateTimeZone("Etc/UTC");
+        date_default_timezone_set("Etc/UTC");
+
+        if($events){
+            foreach ($events as $event){
+                $vEvent = new Component\Event();
+                error_log("pouet");
+                $evt = $event->getAsArray();
+
+                $evt = $evt["event"];
+                if( isset($evt["from"])){
+                    $dateStart= new \DateTime(date("c", (int)$evt["from"]), $tz);
+                }else{
+                    return (new JsonResponse($this->errorService->getError(4015)));
+                }
+                if( isset($evt["to"])){
+                    $dateEnd = new \DateTime(date("c", (int)$evt["to"]), $tz);
+                }else{
+                    return new JsonResponse($this->errorService->getError(4015));
+                }
 
 
+                $vEvent
+                    ->setDtStart($dateStart)
+                    ->setDtEnd($dateEnd)
+                    ->setSummary($evt["title"])
+                    ->setDescription($evt["description"])
+                    ->setLocation($evt["location"]);
+
+                $vEvent->setUseTimezone(true);
+
+                $vCalendar->addComponent($vEvent);
+            }
+        }
+       return new Response(
+            $vCalendar->render(), 200, array(
+            'Content-Type' => 'text/calendar; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="cal.ics"',
+        ));
+        //header('Content-Type: application/octet-stream');
+        //header("Content-type: application/force-download");
+        //header('Content-Description: File Transfer');
+
+    }
     /**
      * see https://github.com/markuspoerschke/iCal
      */
     public function generateIcsFileForCalendar($workspace_id, $calendar_id)
     {
 
-        error_log("GENRETA ICS FILE");
         $vCalendar = new Component\Calendar('twakeapp.com');
 
-        $data = $this->get("app.calendar_events")->getEventsByCalendar($workspace_id, $calendar_id, null);
+        $data = $this->calendarEventService->getEventsByCalendar($workspace_id, $calendar_id, null);
 
         if ($data == null) {
-            return new JsonResponse(($this->get("api.v1.api_status")->getError(4013)));
+            return new JsonResponse(($this->errorService->getError(4013)));
         }
 
         $tz = new \DateTimeZone("Etc/UTC");
@@ -37,15 +104,19 @@ class exportImport {
 
             $vEvent = new Component\Event();
 
-            $test = false;
             $evt = $evt["event"];
 
-            $dateStart = isset($evt["from"]) ? new \DateTime(date("c", (int)$evt["from"]), $tz) : $test = new JsonResponse($this->get("api.v1.api_status")->getError(4015));
-            $dateEnd = isset($evt["to"]) ? new \DateTime(date("c", (int)$evt["to"]), $tz) : $test = new JsonResponse($this->get("api.v1.api_status")->getError(4015));
-
-            if ($test != false) {
-                return $test;
+            if( isset($evt["from"])){
+                $dateStart = new \DateTime(date("c", (int)$evt["from"]), $tz);
+            }else{
+                return (new JsonResponse($this->errorService->getError(4015)));
             }
+            if(isset($evt["to"])){
+                $dateEnd =  new \DateTime(date("c", (int)$evt["to"]), $tz);
+            }else{
+                return new JsonResponse($this->errorService->getError(4015));
+            }
+
 
             $vEvent
                 ->setDtStart($dateStart)
@@ -71,7 +142,7 @@ class exportImport {
 
     function parseCalendar( $workspace_id, $calendar_id)
     {
-        error_log("PARSE CALENDAR");
+
         try {
 
             $ical = new ICal('ICal.ics', array(
@@ -114,14 +185,14 @@ class exportImport {
             isset($evt->location)? $eventCreate["location"] = $evt->location : null ;
             isset($evt->description)? $eventCreate["description"] = $evt->description : null;
 
-            $result = $this->get("app.calendar_events")->createEvent($workspace_id, $calendar_id, $eventCreate, null, false, $participants);
+            $result = $this->calendarEventService->createEvent($workspace_id, $calendar_id, $eventCreate, null, false, $participants);
 
             //   var_dump($eventCreate);
             if ($result == false || $result == null) {
-                $data = $this->get("api.v1.api_status")->getError(4001);
+                $data = $this->errorService->getError(4001);
                 $data["data"] = "";
             } else {
-                $data = $this->get("api.v1.api_status")->getSuccess();
+                $data = $this->errorService->getSuccess();
                 $data["data"] = $result;
             }
 
@@ -142,7 +213,7 @@ class exportImport {
         $tz  = 'Europe/Paris';
         date_default_timezone_set($tz);
 
-        $data =$this->get("app.calendar_events")->getEventById($workspace_id, $event_id, null);
+        $data =$this->calendarEventService->getEventById($workspace_id, $event_id, null);
         $event = $data["event"];
 
         $dateStart = new \DateTime(date( "c", (int)$event["from"]));

@@ -206,7 +206,6 @@ class CalendarEvents implements CalendarEventsInterface
             return null;
         }
 
-        error_log("ENTREE DE BOUCLE ");
         foreach ($usersId as $userId) {
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
             $eventUserRepo = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser");
@@ -222,7 +221,6 @@ class CalendarEvents implements CalendarEventsInterface
             }
 
             $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User added to activity", Array());
-            error_log("BOUCLE ");
         }
         $this->doctrine->flush();
         $data = Array(
@@ -295,13 +293,19 @@ class CalendarEvents implements CalendarEventsInterface
     }
     //
     public function getEventsByCalendar($workspaceId, $calendarsId, $currentUserId = null){
+       error_log("GET EVENT BY CALENDAR");
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+var_dump($workspaceId);
+var_dump($calendarsId);
         if($workspace == null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read"))){
             return null;
         }
-
+        error_log("TEST PASSAGE DU NULL");
         $events = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->getAllCalendarEventsByCalendar($calendarsId);
 
+        if($events == null){
+            error_log("PAS D EVENT ....");
+        }
         foreach ($events as $link) {
             $evt = $link->getAsArray();
 

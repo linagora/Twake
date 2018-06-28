@@ -143,3 +143,7 @@ twake_drive_add_google_drive:
 twake_drive_google_drive_response:
     path:     /gdrive/fetchAccessTokenWithAuthCode
     defaults: { _controller: TwakeDriveBundle:ExternalFiles:fetchAccessTokenWithAuthCode }
+
+twake_drive_get_external_drives:
+    path:     /gdrive/getExternalDrives
+    defaults: { _controller: TwakeDriveBundle:ExternalFiles:getExternalDrives }
