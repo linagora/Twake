@@ -99,7 +99,7 @@ class Token
     }
 
     /**
-     * @param string $token
+     * @param array $token
      */
     public function setToken($token)
     {

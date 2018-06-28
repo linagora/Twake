@@ -400,6 +400,14 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
 
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
             return true;
         }
         return false;
@@ -427,6 +435,14 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
 
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
             return true;
         }
         return false;
@@ -453,6 +469,15 @@ class Workspaces implements WorkspacesInterface
 
 
             $this->doctrine->flush();
+
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
             return true;
         }
         return false;
@@ -474,6 +499,15 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($workspaceUser);
 
             $this->doctrine->flush();
+
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
             return true;
         }
         return false;

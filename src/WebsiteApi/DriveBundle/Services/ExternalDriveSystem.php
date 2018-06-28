@@ -16,6 +16,7 @@ class ExternalDriveSystem
 
     var $doctrine;
     var $token_service;
+    var $gdriveApi;
 
 
     private function convertToEntity($var, $repository)
@@ -34,14 +35,19 @@ class ExternalDriveSystem
 
     }
 
-    public function __construct($doctrine, $token_service)
+    public function __construct($doctrine, $token_service, $gdriveApi)
     {
         $this->doctrine = $doctrine;
         $this->token_service = $token_service;
+        $this->gdriveApi = $gdriveApi;
+    }
+
+    public function setRootDirectory($directory){
+        $this->rootDirectory = $directory;
     }
 
     public function getTokenFromFileId($fileId){
-        $externalDriveRepository = $this->doctrine->getRepository("TwakeDrievBundle:ExternalDrive");
+        $externalDriveRepository = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive");
         $externalDrive = $externalDriveRepository->findOneBy(Array("fileId" => $fileId));
 
         if(!$externalDrive)
@@ -54,10 +60,7 @@ class ExternalDriveSystem
         $user = $this->convertToEntity($user,"TwakeUsersBundle:User");
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
 
-
-        //TODO : vérfier si un token existant permet déjà l'accès au nouveau dossier
-        $redirectionUrl = "http://localhost:8080/ajax/drive/gdrive/fetchAccessTokenWithAuthCode";
-        $authUrl = $this->token_service->requestNewTokenUrlForGDrive($redirectionUrl);
+        $authUrl = $this->token_service->requestNewTokenUrlForGDrive();
 
         $emptyUserToken = $this->token_service->makeNewEmptyToken($user,"google drive");
         $externalDrive = new ExternalDrive($folderId,$emptyUserToken,$workspace);
@@ -73,10 +76,20 @@ class ExternalDriveSystem
         $externalDrive = $this->doctrine->getrepository("TwakeDriveBundle:ExternalDrive")->findOneBy(Array("externalToken" => $userToken, "completed" => false));
 
         $externalDrive->setCompleted(true);
-        $redirectionUrl = "http://localhost:8080/ajax/drive/gdrive/fetchAccessTokenWithAuthCode";
-        $this->token_service->updateEmptyTokenWithAuthCode($authCode,$user,"google drive",$redirectionUrl);
+        $this->token_service->updateEmptyTokenWithAuthCode($authCode,$user,"google drive");
+
+        if($externalDrive->getFileId()=="root")
+            $externalDrive->setFileId($this->gdriveApi->getGDriveBasicInfo("root",$userToken)["id"]);
 
         $this->doctrine->persist($externalDrive);
         $this->doctrine->flush();
+    }
+
+    public function getExternalDrives($workspace){
+        $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
+
+        $externalDrives = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findBy(Array("workspace" => $workspace));
+
+        return $externalDrives;
     }
 }
