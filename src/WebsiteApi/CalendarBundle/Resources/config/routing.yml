@@ -31,12 +31,20 @@ calendar_get_share_calendar:
     defaults: { _controller: TwakeCalendarBundle:Calendar:getShareCalendar }
 
 
-calendar_import:
-    path: /calendars/import
-    defaults: { _controller: TwakeCalendarBundle:Calendar:importCalendar}
-calendar_export:
-    path: /calendars/export
-    defaults: { _controller: TwakeCalendarBundle:Calendar:exportCalendar}
+calendar_do_import:
+    path:     /calendars/import
+    defaults: { _controller: TwakeCalendarBundle:Calendar:importCalendar }
+
+calendar_do_export:
+    path:     /calendars/export/{workspaceId}/{calendarsIds}/{useMine}/{from}/{to}
+    defaults: { _controller: TwakeCalendarBundle:Calendar:exportCalendar }
+    requirements:
+              workspaceId: "[0-9]+"
+              calendarsIds: "[0-9]+(,[0-9]+)*"
+              useMine: "[0-1]"
+              from: "[0-9]+"
+              to: "[0-9]+"
+
 
 
 calendar_events_get:

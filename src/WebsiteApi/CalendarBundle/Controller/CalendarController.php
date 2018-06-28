@@ -142,13 +142,18 @@ class CalendarController extends Controller
         return $parsing;
     }
 
-    public function exportCalendarAction(Request $request){
-        //TODO
-        error_log("ENTREE EXPORT CALENDAR ACTION");
-        $workspaceID = $request->request->get("workspaceId");
-        $calendarId = $request->request->get("calendarId");
+    public function exportCalendarAction(Request $request, $workspaceId, $calendarsIds, $useMine, $from, $to){
+        if($useMine==1){
+            $user_id = $this->getUser()->getId();
 
-        $parsing = $this->get("app.export_import")->generateIcsFileForCalendar($workspaceID,$calendarId);
+        }else{
+            $user_id = null;
+        }
+        $from = ($from>=(strtotime('-1 year', (new \DateTime())->getTimestamp())) && $from <=strtotime('-1 year', (new \DateTime())->getTimestamp())) ? $from : (new \DateTime())->getTimestamp();
+        $to = ($to<=(strtotime('-1 year', (new \DateTime())->getTimestamp())) && $to>=strtotime('+1 year', (new \DateTime())->getTimestamp())) ? $to : strtotime('+1 year', (new \DateTime())->getTimestamp()) ;
+
+        $parsing = $this->get("app.export_import")->generateIcsFileWithUrl($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id);
+        //$parsing = $this->get("app.export_import")->generateIcsFileForCalendar($workspaceId,$calendarId);
         return $parsing;
     }
 
