@@ -35,7 +35,7 @@ class ExternalDrive
 
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\Token")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
      */
     private $workspace;
 
@@ -131,5 +131,4 @@ class ExternalDrive
     {
         $this->completed = $completed;
     }
-
 }

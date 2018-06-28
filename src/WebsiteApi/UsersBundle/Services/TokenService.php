@@ -40,6 +40,8 @@ class TokenService implements TokenServiceInterface
 
     public function getGDriveClient(){
         $client = new Google_Client();
+        $redirectionUrl = "http://localhost:8080/ajax/drive/gdrive/fetchAccessTokenWithAuthCode";
+        $client->setRedirectUri($redirectionUrl);
         $client->setApplicationName('Twake');
         $client->setScopes(Google_Service_Drive::DRIVE);
         $client->setAuthConfig('../client_secret.json');
@@ -48,9 +50,9 @@ class TokenService implements TokenServiceInterface
         return $client;
     }
 
-    public function requestNewTokenUrlForGDrive($redirectionUrl){
+    public function requestNewTokenUrlForGDrive(){
         $client = $this->getGDriveClient();
-        $client->setRedirectUri($redirectionUrl);
+        $client->setApprovalPrompt("force");
         return $client->createAuthUrl();
     }
 
@@ -61,9 +63,8 @@ class TokenService implements TokenServiceInterface
         return $userToken;
     }
 
-    public function updateEmptyTokenWithAuthCode($authCode,$user, $externalDriveName,$redirectionUrl){
+    public function updateEmptyTokenWithAuthCode($authCode,$user, $externalDriveName){
         $client = $this->getGDriveClient();
-        $client->setRedirectUri($redirectionUrl);
         $accessToken = $client->fetchAccessTokenWithAuthCode($authCode);
         $user = $this->convertToEntity($user,"TwakeUsersBundle:User");
         $userToken = $this->doctrine->getRepository("TwakeUsersBundle:Token")->findOneBy(Array("user" => $user, "token" => null, "externalServiceName" => $externalDriveName));

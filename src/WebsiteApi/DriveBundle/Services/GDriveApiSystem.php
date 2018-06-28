@@ -33,6 +33,22 @@ class GDriveApiSystem
         $this->tokenService = $tokenService;
     }
 
+    private function convertToEntity($var, $repository)
+    {
+        if (is_string($var)) {
+            $var = intval($var);
+        }
+
+        if (is_int($var)) {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
+
     public function getClient(Token $userToken)
     {
         $client = new Google_Client();
@@ -41,13 +57,13 @@ class GDriveApiSystem
         $client->setAuthConfig('../client_secret.json');
         $client->setAccessType('offline');
 
-        $accessToken = json_decode($userToken->getToken());
-        $client->setAccessToken($accessToken);
+        $accessToken = $userToken->getToken();
+        $client->setAccessToken(json_encode($accessToken));
 
         // Refresh the token if it's expired.
         if ($client->isAccessTokenExpired()) {
             $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
-            $userToken->setToken(json_encode($client->getAccessToken()));
+            $userToken->setToken($client->getAccessToken());
             $this->tokenService->refreshToken($userToken);
         }
         return $client;
@@ -71,11 +87,17 @@ class GDriveApiSystem
         return $this->getClient($userToken)->getAccessToken()["access_token"];
     }
 
-    public function getGDriveFileFromGDriveId($gdriveId,Token $userToken){
+    public function getGDriveBasicInfo($gdriveId,Token $userToken){
         $data = $this->restClient->get('https://www.googleapis.com/drive/v3/files/' . $gdriveId, array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'",
             "Authorization: Bearer " . $this->getGDriveToken($userToken))));
 
         $content = @json_decode($data->getContent(), true);
+
+        return $content;
+    }
+
+    public function getGDriveFileFromGDriveId($gdriveId,Token $userToken){
+        $content = $this->getGDriveBasicInfo($gdriveId,$userToken);
 
         $service = new Google_Service_Drive($this->getClient($userToken));
 
@@ -99,6 +121,7 @@ class GDriveApiSystem
     }
 
     public function getDriveFileFromGDriveFile($workspace, $file){
+        $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
         $name = $file->getName();
         $extension = $file->getFullFileExtension();
 
