@@ -42,9 +42,9 @@ class TokenService implements TokenServiceInterface
         $client = new Google_Client();
         $redirectionUrl = "http://localhost:8080/ajax/drive/gdrive/fetchAccessTokenWithAuthCode";
         $client->setRedirectUri($redirectionUrl);
-        $client->setApplicationName('Twake');
+        $client->setApplicationName('Twake Drive');
         $client->setScopes(Google_Service_Drive::DRIVE);
-        $client->setAuthConfig('../client_secret.json');
+        $client->setAuthConfig('../app/Ressources/Apis/client_secret.json');
         $client->setAccessType('offline');
 
         return $client;

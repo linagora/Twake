@@ -25,10 +25,7 @@ class ExternalFilesController extends Controller
 
         $this->get("app.drive.ExternalDriveSystem")->completeAddingNewGDrive($authCode,$this->getUser());
 
-        $url = "http://localhost:8080";
-        header('Location:'.$url);
-
-        return new JsonResponse();
+        return new Response("<script>window.close();</script>");
     }
 
     public function addNewExternalDriveAction(Request $request){

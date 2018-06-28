@@ -52,9 +52,9 @@ class GDriveApiSystem
     public function getClient(Token $userToken)
     {
         $client = new Google_Client();
-        $client->setApplicationName('Google Drive API PHP Quickstart');
+        $client->setApplicationName('Twake Drive');
         $client->setScopes(Google_Service_Drive::DRIVE);
-        $client->setAuthConfig('../client_secret.json');
+        $client->setAuthConfig('../app/Ressources/Apis/client_secret.json');
         $client->setAccessType('offline');
 
         $accessToken = $userToken->getToken();
