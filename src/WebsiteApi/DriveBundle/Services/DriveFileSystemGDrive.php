@@ -562,4 +562,14 @@ class DriveFileSystemGDrive
     {
         $this->upload($workspace,$directory,$file);
     }
+
+    public function unwatchFile($fileId, $rootDirectory){
+        $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("fileId" => $rootDirectory));
+        $this->gdriveApi->unwatchFile($fileId,$externalDrive->getWorkspace(),$rootDirectory);
+    }
+
+    public function watchFile($fileId, $rootDirectory){
+        $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("fileId" => $rootDirectory));
+        $this->gdriveApi->watchFile($fileId,$externalDrive->getWorkspace(),$rootDirectory);
+    }
 }

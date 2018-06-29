@@ -468,11 +468,11 @@ class GDriveApiSystem
         return $content;
     }
 
-    public function watchFile($gdriveID, Token $userToken){
+    public function watchFile($gdriveID, $workspaceId, Token $userToken){
         $webSiteAddress = "5d7427bc.ngrok.io";
         $json = "{
                   \"kind\": \"api#channel\",
-                  \"id\": \"".$gdriveID."\",
+                  \"id\": \"".$gdriveID."/".$workspaceId."\",
                   \"type\": \"web_hook\",
                   \"address\": \"https://".$webSiteAddress."/ajax/drive/users_to_notify/post_gdrive_notification\"
                 }";
@@ -480,6 +480,18 @@ class GDriveApiSystem
         var_dump($json);
 
         $data = $this->restClient->post('https://www.googleapis.com/drive/v3/files/'.$gdriveID.'/watch', $json,
+            array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken($userToken), "Content-Type: application/json")));
+
+        return $data;
+    }
+    public function unwatchFile($gdriveID, $workspaceId, Token $userToken){
+        $json = "{
+                  \"kind\": \"api#channel\",
+                  \"id\": \"".$gdriveID."/".$workspaceId."\",
+                  \"type\": \"web_hook\",
+                }";
+
+        $data = $this->restClient->post('https://www.googleapis.com/drive/v3/channels/stop', $json,
             array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken($userToken), "Content-Type: application/json")));
 
         return $data;

@@ -55,9 +55,10 @@ class UsersToNotifyController extends Controller
         //TODO : check auth
 
         $driveFileId = $request->request->get("driveFileId", 0);
+        $rootDirectory = $request->request->get("directory", false);
         $usersList = $request->request->get("usersList", 0);
 
-        $this->get("app.drive.UserToNotifyService")->setUsersList($driveFileId, $usersList);
+        $this->get("app.drive.UserToNotifyService")->setUsersList($driveFileId, $rootDirectory, $usersList);
 
         return $this->getUsersAction($request);
     }
@@ -66,12 +67,13 @@ class UsersToNotifyController extends Controller
     {
         //TODO : check auth
 
-        $fileChangedId = $request->headers->get("x-goog-channel-id");
+        $id = explode("/", $request->headers->get("x-goog-channel-id"));
 
-        //TODO send the notif to the registered users
+        $fileChangedId = $id[0];
+        $workspaceId = $id[1];
 
-        /*
-                $s = (new DateTime())->format('Y-m-d H:i:s');
+        $this->get("app.drive.UserToNotifyService")->notifyUsers($fileChangedId,$workspaceId);
+        /*      $s = (new DateTime())->format('Y-m-d H:i:s');
                 $file = fopen($s.'notif.txt', 'w+');
                 fputs($file, $fileChangedId);//x-goog-channel-token
                 fclose($file);
