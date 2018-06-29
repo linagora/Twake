@@ -381,7 +381,6 @@ class FilesController extends Controller
             $fileSystem->setRootDirectory($directory);
         }
 
-
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read");
 
         if ($can) {

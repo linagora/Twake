@@ -10,6 +10,7 @@ namespace WebsiteApi\DriveBundle\Services;
 
 
 use WebsiteApi\DriveBundle\Entity\ExternalDrive;
+use WebsiteApi\UsersBundle\Entity\Token;
 
 class ExternalDriveSystem
 {
@@ -64,14 +65,7 @@ class ExternalDriveSystem
         $user = $this->convertToEntity($user,"TwakeUsersBundle:User");
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
 
-        $authUrl = $this->token_service->requestNewTokenUrlForGDrive();
-
-        $emptyUserToken = $this->token_service->makeNewEmptyToken($user,"google drive");
-        $externalDrive = new ExternalDrive($folderId,$emptyUserToken,$workspace);
-
-        $this->doctrine->persist($externalDrive);
-        $this->doctrine->flush();
-
+        $authUrl = $this->token_service->requestNewTokenUrlForGDrive($workspace->getId(),$folderId);
         return $authUrl;
     }
 
@@ -89,11 +83,44 @@ class ExternalDriveSystem
         $this->doctrine->flush();
     }
 
-    public function getExternalDrives($workspace){
+    public function getExternalDrives($workspace, $completed = true){
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
 
-        $externalDrives = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findBy(Array("workspace" => $workspace));
+        $externalDrives = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findBy(Array("workspace" => $workspace, "completed" => $completed));
 
         return $externalDrives;
+    }
+
+    public function addNewExternalDrive($fileId, $workspace, $authCode, $user)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        $user = $this->convertToEntity($user, "TwakeUsersBundle:User");
+
+        $token = $this->token_service->newToken($authCode, $user);
+
+        if($fileId=='root'){
+            $fileId = $this->gdriveApi->getGDriveBasicInfo("root",$token)["id"];
+        }
+
+        var_dump($this->gdriveApi->getHaveAccessTo($fileId,$token));
+        if($this->gdriveApi->getHaveAccessTo($fileId,$token))
+            $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findBy(Array("fileId" => $fileId));
+        else
+            $externalDrive = true;
+
+        if($externalDrive) {
+            $this->token_service->deleteToken($token);
+            return false;
+        }
+
+
+        $externalDrive = new ExternalDrive($fileId, $token, $workspace);
+
+        $externalDrive->setCompleted(true);
+
+        $this->doctrine->persist($externalDrive);
+        $this->doctrine->flush();
+
+        return true;
     }
 }

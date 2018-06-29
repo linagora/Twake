@@ -528,9 +528,10 @@ class DriveFileSystemGDrive
 
     }
 
-    public function download($file)
+    public function download($workspace, $file, $download)
     {
         $url = $this->gdriveApi->download($file);
+
         if($url)
             header('Location:'.$url);
     }
