@@ -533,12 +533,17 @@ class Workspaces implements WorkspacesInterface
             $hasNotifications = $workspaceUser->getHasNotifications();
             $workspaceUser->setHasNotifications(!$hasNotifications);
 
-            /*$notificationPreference = $currentUser->getNotificationPreference();
+            $notificationPreference = $currentUser->getNotificationPreference();
             $disabled_ws = $notificationPreference["disabled_workspaces"];
             if (in_array($workspaceId, $disabled_ws) && $hasNotifications){
-                //unset(valeur)
+                $position = array_search($workspaceId,$disabled_ws);
+                unset($disabled_ws[$position]);
             }
-*/
+
+            if (!in_array($workspaceId, $disabled_ws) && !$hasNotifications){
+                array_push($disabled_ws, $workspaceId);
+            }
+
             $this->doctrine->persist($workspaceUser);
             $this->doctrine->flush();
             return true;

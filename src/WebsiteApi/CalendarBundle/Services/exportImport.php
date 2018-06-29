@@ -72,14 +72,22 @@ class exportImport implements exportImportInterface{
                 $vCalendar->addComponent($vEvent);
             }
         }
-       return new Response(
+
+        return new Response(
             $vCalendar->render(), 200, array(
-            'Content-Type' => 'text/calendar; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="cal.ics"',
-        ));
-        //header('Content-Type: application/octet-stream');
-        //header("Content-type: application/force-download");
-        //header('Content-Description: File Transfer');
+                'Content-Type' => 'application/octet-stream',
+                'Content-Description' => 'File Transfer',
+
+                'Content-Disposition' => 'attachment; filename="cal.ics"',
+
+                'Expires' =>  '0',
+                'Cache-Control' =>  'must-revalidate',
+                'Pragma' => 'public',
+
+
+
+            )
+        );
 
     }
     /**
