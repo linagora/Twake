@@ -87,6 +87,20 @@ class GDriveApiSystem
         return $this->getClient($userToken)->getAccessToken()["access_token"];
     }
 
+    public function getRootIdFromAuthCode($accessToken){
+        $client = new Google_Client();
+        $client->setApplicationName('Twake Drive');
+        $client->setScopes(Google_Service_Drive::DRIVE);
+        $client->setAuthConfig('../app/Ressources/Apis/client_secret.json');
+        $client->setAccessType('offline');
+        $data = $this->restClient->get('https://www.googleapis.com/drive/v3/files/root' , array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'",
+            "Authorization: Bearer " . $accessToken)));
+
+        $content = @json_decode($data->getContent(), true);
+
+        return $content["id"];
+    }
+
     public function getGDriveBasicInfo($gdriveId,Token $userToken){
         $data = $this->restClient->get('https://www.googleapis.com/drive/v3/files/' . $gdriveId, array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'",
             "Authorization: Bearer " . $this->getGDriveToken($userToken))));
@@ -94,6 +108,11 @@ class GDriveApiSystem
         $content = @json_decode($data->getContent(), true);
 
         return $content;
+    }
+
+    public function getHaveAccessTo($gdriveId, $userToken){
+        $content = $this->getGDriveBasicInfo($gdriveId,$userToken);
+        return !isset($content["error"]);
     }
 
     public function getGDriveFileFromGDriveId($gdriveId,Token $userToken)
@@ -131,7 +150,7 @@ class GDriveApiSystem
             return false;
     }
 
-    public function getDriveFileFromGDriveFile($workspace, $file){
+    public function getDriveFileFromGDriveFile($workspace,Google_Service_Drive_DriveFile $file){
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
         $name = $file->getName();
         $extension = $file->getFullFileExtension();
@@ -150,7 +169,8 @@ class GDriveApiSystem
         $driveFile->setOldParent(null);
         $driveFile->setShared($isShared);
         $driveFile->setSize($size);
-        $driveFile->setUrl($file->getWebViewLink());
+        if($file->getWebContentLink()==null)
+            $driveFile->setUrl($file->getWebViewLink());
         $driveFile->setDefaultWebApp($this->marketApplication->getAppForUrl($file->getWebViewLink()));
         $lastVersion = new DriveFileVersion($driveFile);
         $driveFile->setLastVersion($lastVersion);
@@ -368,6 +388,7 @@ class GDriveApiSystem
         $repo = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDriveDataCache");
 
         $fileCache = $repo->findOneBy(Array("id" => $gdriveId, "drive" => "gdrive"));
+
         if($fileCache==null)
             return false;
         $dataCache = $fileCache->getData();

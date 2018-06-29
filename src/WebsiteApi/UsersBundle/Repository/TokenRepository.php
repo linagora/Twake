@@ -2,6 +2,8 @@
 
 namespace WebsiteApi\UsersBundle\Repository;
 
+use WebsiteApi\UsersBundle\Entity\Token;
+
 /**
  * TokenRepository
  *
@@ -10,4 +12,11 @@ namespace WebsiteApi\UsersBundle\Repository;
  */
 class TokenRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function deleteToken(Token $userToken){
+        $qb = $this->createQueryBuilder('s');
+        $qb->delete();
+        $qb->where('s.id = :id');
+        $qb->setParameter('id', $userToken->getId());
+        $qb->getQuery()->execute();
+    }
 }
