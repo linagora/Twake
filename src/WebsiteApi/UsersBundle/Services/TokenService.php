@@ -49,10 +49,16 @@ class TokenService implements TokenServiceInterface
 
         return $client;
     }
+    private function base64UrlEncode($inputStr)
+    {
+        return strtr(base64_encode($inputStr), '+/=', '-_,');
+    }
 
-    public function requestNewTokenUrlForGDrive(){
+    public function requestNewTokenUrlForGDrive($workspaceId, $fileId){
         $client = $this->getGDriveClient();
         $client->setApprovalPrompt("force");
+        $state = $this->base64UrlEncode(json_encode(array('fileId' => $fileId, 'workspaceId' => $workspaceId),true));
+        $client->setState($state);
         return $client->createAuthUrl();
     }
 
@@ -73,6 +79,10 @@ class TokenService implements TokenServiceInterface
         return $userToken;
     }
 
+    public function deleteToken(Token $userToken){
+        $this->doctrine->getRepository("TwakeUsersBundle:Token")->deleteToken($userToken);
+    }
+
     public function makeNewEmptyToken($user, $externalDriveName){
         $user = $this->convertToEntity($user,"TwakeUsersBundle:User");
         $userToken = new Token(null, $user,$externalDriveName);
@@ -84,5 +94,14 @@ class TokenService implements TokenServiceInterface
         $user = $this->convertToEntity($user,"TwakeUsersBundle:User");
         $userToken = $this->doctrine->getRepository("TwakeUsersBundle:Token")->findOneBy(Array("user" => $user, "token" => null, "externalServiceName" => $externalDriveName));
 	    return $userToken;
+    }
+
+    public function newToken($authCode, $user){
+        $accessToken = $this->getGDriveClient()->fetchAccessTokenWithAuthCode($authCode);
+        $userToken = new Token($accessToken, $user,"google drive");
+
+        $this->doctrine->persist($userToken);
+        $this->doctrine->flush();
+        return $userToken;
     }
 }

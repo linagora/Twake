@@ -13,17 +13,20 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 
 class ExternalFilesController extends Controller
 {
+    private function base64UrlDecode($inputStr)
+    {
+        return base64_decode(strtr($inputStr, '-_,', '+/='));
+    }
     public function fetchAccessTokenWithAuthCodeAction(Request $request){
-        $data = Array(
-            "errors" => Array(),
-            "data" => Array()
-        );
-
         $code = $request->query->get('code');
+        $state = $this->base64UrlDecode($request->query->get('state'));
+        $state = json_decode($state, true);
+        $fileId = $state["fileId"];
+        $workspaceId = $state["workspaceId"];
 
         $authCode = trim($code);
 
-        $this->get("app.drive.ExternalDriveSystem")->completeAddingNewGDrive($authCode,$this->getUser());
+        $this->get("app.drive.ExternalDriveSystem")->addNewExternalDrive($fileId, $workspaceId,$authCode,$this->getUser());
 
         return new Response("<script>window.close();</script>");
     }

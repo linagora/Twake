@@ -8,6 +8,7 @@ namespace WebsiteApi\CalendarBundle\Services;
  * Time: 16:14
  */
 
+use ICal\ICal;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use \Eluceo\iCal\Component ;
@@ -43,8 +44,6 @@ class exportImport implements exportImportInterface{
 
         if($events){
             foreach ($events as $event){
-                $vEvent = new Component\Event();
-                error_log("pouet");
                 $evt = $event->getAsArray();
 
                 $evt = $evt["event"];
@@ -59,6 +58,7 @@ class exportImport implements exportImportInterface{
                     return new JsonResponse($this->errorService->getError(4015));
                 }
 
+                $vEvent = new Component\Event();
 
                 $vEvent
                     ->setDtStart($dateStart)
@@ -72,14 +72,22 @@ class exportImport implements exportImportInterface{
                 $vCalendar->addComponent($vEvent);
             }
         }
-       return new Response(
+
+        return new Response(
             $vCalendar->render(), 200, array(
-            'Content-Type' => 'text/calendar; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="cal.ics"',
-        ));
-        //header('Content-Type: application/octet-stream');
-        //header("Content-type: application/force-download");
-        //header('Content-Description: File Transfer');
+                'Content-Type' => 'application/octet-stream',
+                'Content-Description' => 'File Transfer',
+
+                'Content-Disposition' => 'attachment; filename="cal.ics"',
+
+                'Expires' =>  '0',
+                'Cache-Control' =>  'must-revalidate',
+                'Pragma' => 'public',
+
+
+
+            )
+        );
 
     }
     /**
@@ -145,7 +153,7 @@ class exportImport implements exportImportInterface{
 
         try {
 
-            $ical = new ICal('ICal.ics', array(
+            $ical = new ICal($_FILES["file"]["tmp_name"], array(
                 'defaultSpan' => 2,     // Default value
                 'defaultTimeZone' => 'UTC',
                 'defaultWeekStart' => 'MO',  // Default value
