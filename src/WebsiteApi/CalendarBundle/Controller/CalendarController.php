@@ -55,8 +55,9 @@ class CalendarController extends Controller
         $calendarId = $request->request->get("calendarId");
         $label = $request->request->get("name");
         $color = $request->request->get("color");
+        $autoParticipant = $request->get("autoParticipant");
 
-        $data['data'] = $this->get("app.calendars")->updateCalendar($workspaceId, $calendarId, $label, $color, $this->getUser()->getId());
+        $data['data'] = $this->get("app.calendars")->updateCalendar($workspaceId, $calendarId, $label, $color, $this->getUser()->getId(), $autoParticipant);
 
         return new JsonResponse($data);
     }
@@ -133,11 +134,9 @@ class CalendarController extends Controller
     }
 
     public function importCalendarAction(Request $request){
-        //TODO
-        error_log("IMPORT CALENDAR ACTION");
-        $workspaceID = $request->request->get("workspaceId");
-        $calendarId = $request->request->get("calendarId");
 
+        $workspaceID = $_POST["workspaceId"];
+        $calendarId = $_POST["calendarId"];
         $parsing = $this->get("app.export_import")->parseCalendar($workspaceID,$calendarId);
         return $parsing;
     }
@@ -153,7 +152,6 @@ class CalendarController extends Controller
         $to = ($to<=(strtotime('-1 year', (new \DateTime())->getTimestamp())) && $to>=strtotime('+1 year', (new \DateTime())->getTimestamp())) ? $to : strtotime('+1 year', (new \DateTime())->getTimestamp()) ;
 
         $parsing = $this->get("app.export_import")->generateIcsFileWithUrl($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id);
-        //$parsing = $this->get("app.export_import")->generateIcsFileForCalendar($workspaceId,$calendarId);
         return $parsing;
     }
 

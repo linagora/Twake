@@ -37,10 +37,17 @@ class Calendar {
      */
     private $workspacesNumber = 1;
 
+    /**
+     * @ORM\Column(name="autoShareList", type="json_array", nullable=true)
+     */
+    private $autoParticipantList;
+
+
     public  function __construct($title,$color)
     {
         $this->setTitle($title);
         $this->setColor($color);
+        $this->autoParticipantList = null;
     }
 
     /**
@@ -49,6 +56,22 @@ class Calendar {
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAutoParticipantList()
+    {
+        return $this->autoParticipantList;
+    }
+
+    /**
+     * @param mixed $autoParticipantList
+     */
+    public function setAutoParticipantList($autoParticipantList)
+    {
+        $this->autoParticipantList = $autoParticipantList;
     }
 
     /**

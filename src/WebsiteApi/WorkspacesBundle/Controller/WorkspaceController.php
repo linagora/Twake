@@ -328,8 +328,9 @@ class WorkspaceController extends Controller
         );
 
         $workspaceId = $request->request->get("workspaceId");
+        $wantedValue = $request->request->get("wantedValue");
 
-        $res = $this->get("app.workspaces")->hideOrUnhideWorkspace($workspaceId, $this->getUser()->getId());
+        $res = $this->get("app.workspaces")->hideOrUnhideWorkspace($workspaceId, $this->getUser()->getId(), $wantedValue);
 
         if ($res == true){
             $response["data"] = "success";
@@ -372,8 +373,9 @@ class WorkspaceController extends Controller
         );
 
         $workspaceId = $request->request->get("workspaceId");
+        $wantedValue = $request->request->get("wantedValue");
 
-        $res = $this->get("app.workspaces")->haveNotificationsOrNotWorkspace($workspaceId, $this->getUser()->getId());
+        $res = $this->get("app.workspaces")->haveNotificationsOrNotWorkspace($workspaceId, $this->getUser()->getId(), $wantedValue);
 
         if ($res == true){
             $response["data"] = "success";

@@ -450,7 +450,7 @@ class Workspaces implements WorkspacesInterface
     }
 
 
-    public function hideOrUnhideWorkspace($workspaceId, $currentUserId = null)
+    public function hideOrUnhideWorkspace($workspaceId, $currentUserId = null, $wanted_value=null)
     {
         if ($currentUserId != null) {
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -462,12 +462,13 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
-            $isHidden = $workspaceUser->getisHidden();
-            $workspaceUser->setisHidden(!$isHidden);
+            if($wanted_value === null) {
+                $isHidden = $workspaceUser->getisHidden();
+                $workspaceUser->setisHidden(!$isHidden);
+            }
+            $workspaceUser->setisHidden($wanted_value);
 
             $this->doctrine->persist($workspaceUser);
-
-
             $this->doctrine->flush();
 
             $datatopush = Array(
@@ -478,6 +479,41 @@ class Workspaces implements WorkspacesInterface
             );
             $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
+            return true;
+        }
+        return false;
+    }
+
+    public function haveNotificationsOrNotWorkspace($workspaceId, $currentUserId = null, $wanted_value = null){
+        if ($currentUserId != null) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
+
+            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
+
+            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
+
+            if($wanted_value === null) {
+                $hasNotifications = $workspaceUser->getHasNotifications();
+                $workspaceUser->setHasNotifications(!$hasNotifications);
+            }
+            $workspaceUser->setHasNotifications($wanted_value);
+
+            $notificationPreference = $currentUser->getNotificationPreference();
+            $disabled_ws = $notificationPreference["disabled_workspaces"];
+            if (in_array($workspaceId, $disabled_ws) && $workspaceUser->getHasNotifications()){
+                $position = array_search($workspaceId,$disabled_ws);
+                unset($disabled_ws[$position]);
+            }
+
+            if (!in_array($workspaceId, $disabled_ws) && !$workspaceUser->getHasNotifications()){
+                array_push($disabled_ws, $workspaceId);
+            }
+
+            $this->doctrine->persist($workspaceUser);
+            $this->doctrine->flush();
             return true;
         }
         return false;
@@ -519,36 +555,5 @@ class Workspaces implements WorkspacesInterface
         return $result;
     }
 
-    public function haveNotificationsOrNotWorkspace($workspaceId, $currentUserId = null){
-        if ($currentUserId != null) {
-            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-            $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
-
-            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-            $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
-
-            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
-
-            $hasNotifications = $workspaceUser->getHasNotifications();
-            $workspaceUser->setHasNotifications(!$hasNotifications);
-
-            $notificationPreference = $currentUser->getNotificationPreference();
-            $disabled_ws = $notificationPreference["disabled_workspaces"];
-            if (in_array($workspaceId, $disabled_ws) && $hasNotifications){
-                $position = array_search($workspaceId,$disabled_ws);
-                unset($disabled_ws[$position]);
-            }
-
-            if (!in_array($workspaceId, $disabled_ws) && !$hasNotifications){
-                array_push($disabled_ws, $workspaceId);
-            }
-
-            $this->doctrine->persist($workspaceUser);
-            $this->doctrine->flush();
-            return true;
-        }
-        return false;
-    }
 
 }
