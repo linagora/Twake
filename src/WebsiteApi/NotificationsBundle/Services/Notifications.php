@@ -74,6 +74,13 @@ class Notifications implements NotificationsInterface
 
             $notificationPreference = $user->getNotificationPreference();
             $useDevices = false;
+            if( $data["workspace_id"] != null){
+                $workspace_id = $data["workspace_id"];
+                $disabled_workspaces = $notificationPreference["disabled_workspaces"];
+                if (in_array($workspace_id,$disabled_workspaces)){
+                    return false;
+                }
+            }
             if($notificationPreference["devices"]==0){
                 $useDevices = true;
             }

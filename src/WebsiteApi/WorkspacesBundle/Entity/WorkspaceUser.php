@@ -66,7 +66,7 @@ class WorkspaceUser
     /**
      * @ORM\Column(type="boolean")
      */
-    private $hasNotifications = false;
+    private $hasNotifications = true;
 
 	public function __construct($workspace, $user, $level) {
 		$this->workspace = $workspace;

@@ -191,7 +191,8 @@ class Group
 			"name" => $this->getDisplayName(),
 			"plan" => $this->getPricingPlan()->getLabel(),
 			"id" => $this->getId(),
-			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):"")
+			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):""),
+            "isBlocked" => $this->getIsBlocked()
 		);
 	}
 
