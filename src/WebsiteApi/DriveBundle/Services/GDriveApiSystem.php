@@ -96,28 +96,39 @@ class GDriveApiSystem
         return $content;
     }
 
-    public function getGDriveFileFromGDriveId($gdriveId,Token $userToken){
-        $content = $this->getGDriveBasicInfo($gdriveId,$userToken);
+    public function getGDriveFileFromGDriveId($gdriveId,Token $userToken)
+    {
+        $content = $this->getGDriveBasicInfo($gdriveId, $userToken);
 
         $service = new Google_Service_Drive($this->getClient($userToken));
 
 
         $optParams = array(
-            'q' => "name = '" . $content["name"] . "'",
+            'q' => "name = '" . addslashes($content["name"]) . "'",
             'fields' => 'nextPageToken, files(id, parents, name, shared, trashed,mimeType, description, createdTime, size, fullFileExtension, hasThumbnail,thumbnailLink,webViewLink, webContentLink)'
-
         );
         $results = $service->files->listFiles($optParams);
 
         if (count($results->getFiles()) > 0)
             return $results->getFiles()[0];
 
-        return false;
+        $gfile = new Google_Service_Drive_DriveFile();
+
+        $gfile->setName($content["name"]);
+        $gfile->setId($content["id"]);
+        $gfile->setMimeType($content["mimeType"]);
+        $gfile->setKind($content["kind"]);
+
+        return $gfile;
     }
 
     public function getDriveFileFromGDriveId($workspace, $gdriveId, Token $userToken)
     {
-        return $this->getDriveFileFromGDriveFile($workspace, $this->getGDriveFileFromGDriveId($gdriveId, $userToken));
+        $file = $this->getGDriveFileFromGDriveId($gdriveId, $userToken);
+        if($file)
+            return $this->getDriveFileFromGDriveFile($workspace, $file);
+        else
+            return false;
     }
 
     public function getDriveFileFromGDriveFile($workspace, $file){
@@ -286,6 +297,8 @@ class GDriveApiSystem
 
             array_push($list, $res);
         }
+
+        return $list;
     }
 
     public function getPreview($fileid,Token $userToken)
