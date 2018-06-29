@@ -8,6 +8,7 @@ namespace WebsiteApi\CalendarBundle\Services;
  * Time: 16:14
  */
 
+use ICal\ICal;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use \Eluceo\iCal\Component ;
@@ -43,8 +44,6 @@ class exportImport implements exportImportInterface{
 
         if($events){
             foreach ($events as $event){
-                $vEvent = new Component\Event();
-                error_log("pouet");
                 $evt = $event->getAsArray();
 
                 $evt = $evt["event"];
@@ -59,6 +58,7 @@ class exportImport implements exportImportInterface{
                     return new JsonResponse($this->errorService->getError(4015));
                 }
 
+                $vEvent = new Component\Event();
 
                 $vEvent
                     ->setDtStart($dateStart)
@@ -153,7 +153,7 @@ class exportImport implements exportImportInterface{
 
         try {
 
-            $ical = new ICal('ICal.ics', array(
+            $ical = new ICal($_FILES["file"]["tmp_name"], array(
                 'defaultSpan' => 2,     // Default value
                 'defaultTimeZone' => 'UTC',
                 'defaultWeekStart' => 'MO',  // Default value
