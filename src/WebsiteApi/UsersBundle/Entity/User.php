@@ -287,6 +287,7 @@ class User extends BaseUser
 		$preferences["privacy"] = (isset($preferences["privacy"]))?$preferences["privacy"]:0;
 		$preferences["dont_use_keywords"] = (isset($preferences["dont_use_keywords"]))?$preferences["dont_use_keywords"]:1;
 		$preferences["keywords"] = (isset($preferences["keywords"]))?$preferences["keywords"]:"";
+        $preferences["disabled_workspaces"] = (isset($preferences["disabled_workspaces"]))?$preferences["disabled_workspaces"]:[];
 
 		return $preferences;
 	}
@@ -303,6 +304,15 @@ class User extends BaseUser
 		@$preferences["privacy"] = intval($notification_preference["privacy"]);
 		@$preferences["dont_use_keywords"] = intval($notification_preference["use_keywords"]);
 		@$preferences["keywords"] = substr($notification_preference["keywords"], 0, 512);
+
+		$token = explode("[",$notification_preference["disabled_workspaces"])[1];
+		$token2 = explode("]", $token)[0];
+        $token3 = explode(",", $token2);
+
+        foreach ($token3 as $item) {
+            @$preferences["disabled_workspaces"][] = intval($item);
+        }
+
 		$this->notification_preference = json_encode($notification_preference);
 	}
 

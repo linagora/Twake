@@ -343,7 +343,7 @@ class WorkspaceController extends Controller
     /**
      * Mettre un workspace en favori
      */
-    public function favoriteOrUnfavoriteWorkspace(Request $request){
+    public function favoriteOrUnfavoriteWorkspaceAction(Request $request){
         $response = Array(
             "errors"=>Array(),
             "data"=>Array()
@@ -351,10 +351,10 @@ class WorkspaceController extends Controller
 
         $workspaceId = $request->request->get("workspaceId");
 
-        $res = $this->get("app.workspaces")->favoriteWorkspace($workspaceId, $this->getUser()->getId());
+        $res = $this->get("app.workspaces")->favoriteOrUnfavoriteWorkspace($workspaceId, $this->getUser()->getId());
 
-        if ($res == true){
-            $response["data"] = "success";
+        if ($res["answer"]){
+            $response["data"] = $res["isFavorite"];
         }else{
             $response["errors"] = "impossible to put as favorite a workspace";
         }

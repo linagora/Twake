@@ -484,6 +484,8 @@ class Workspaces implements WorkspacesInterface
     }
 
     public function favoriteOrUnfavoriteWorkspace($workspaceId, $currentUserId = null){
+        $result = Array ();
+
         if ($currentUserId != null) {
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
@@ -508,9 +510,13 @@ class Workspaces implements WorkspacesInterface
             );
             $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
-            return true;
+            $result["answer"] = true;
+            $result["isFavorite"] = $workspaceUser->getisFavorite();
+
+            return $result;
         }
-        return false;
+        $result["answer"] = false;
+        return $result;
     }
 
     public function haveNotificationsOrNotWorkspace($workspaceId, $currentUserId = null){
@@ -526,6 +532,17 @@ class Workspaces implements WorkspacesInterface
 
             $hasNotifications = $workspaceUser->getHasNotifications();
             $workspaceUser->setHasNotifications(!$hasNotifications);
+
+            $notificationPreference = $currentUser->getNotificationPreference();
+            $disabled_ws = $notificationPreference["disabled_workspaces"];
+            if (in_array($workspaceId, $disabled_ws) && $hasNotifications){
+                $position = array_search($workspaceId,$disabled_ws);
+                unset($disabled_ws[$position]);
+            }
+
+            if (!in_array($workspaceId, $disabled_ws) && !$hasNotifications){
+                array_push($disabled_ws, $workspaceId);
+            }
 
             $this->doctrine->persist($workspaceUser);
             $this->doctrine->flush();

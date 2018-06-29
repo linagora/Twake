@@ -530,9 +530,13 @@ class DriveFileSystemGDrive
 
     public function download($file)
     {
-        $url = $this->gdriveApi->getOpenLink($file);
+        $url = $this->gdriveApi->download($file);
         if($url)
             header('Location:'.$url);
+    }
+
+    public function open($file){
+        return true;
     }
 
     public function copyFromExternalDrive($workspace, $directory, $externalDriveFileId)
