@@ -29,12 +29,12 @@ class FilesController extends Controller
         $isDetached = $request->request->get("isDetached", false);
         $isDirectory = $request->request->get("isDirectory", true);
         $url = $request->request->get("url",null);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -81,12 +81,12 @@ class FilesController extends Controller
 
         $groupId = $request->request->get("groupId", 0);
         $fileIds = $request->request->get("fileIds", Array());
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -110,12 +110,12 @@ class FilesController extends Controller
         );
 
         $groupId = $request->request->get("groupId", 0);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -140,12 +140,12 @@ class FilesController extends Controller
 
         $groupId = $request->request->get("groupId", 0);
         $fileIds = $request->request->get("fileIds", null);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -177,12 +177,12 @@ class FilesController extends Controller
 
         $groupId = $request->request->get("groupId", 0);
         $objectId = $request->request->get("id", 0);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -193,13 +193,20 @@ class FilesController extends Controller
             $data["data"] = $fileSystem->getInfos($groupId, $objectId, true);
         }
 
-        if (!$data["data"] && $this->get('app.workspace_levels')->can(
-                $fileSystem->getWorkspace($objectId),
-                $this->getUser()->getId(), "drive:read")) {
+        if(!$externalDrive)
+            $haveReadAccess = $this->get('app.workspace_levels')->can(
+            $fileSystem->getWorkspace($objectId),
+            $this->getUser()->getId(), "drive:read");
+        else
+            $haveReadAccess = true;
+
+        if (!$data["data"] && $haveReadAccess) {
             $data["data"] = $fileSystem->getInfos(
                 $fileSystem->getWorkspace($objectId),
                 $objectId, true);
         }
+
+        $data["data"]["drive"] = $directory;
 
         return new JsonResponse($data);
     }
@@ -216,12 +223,12 @@ class FilesController extends Controller
         $state = $request->request->get("state", "");
         $offset = $request->request->get("offset", 0);
         $max = $request->request->get("max", 50);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -303,6 +310,9 @@ class FilesController extends Controller
 
         }
 
+        for($i=0;$i<count($data["data"]["files"]);$i++)
+            $data["data"]["files"][$i]["drive"] = $directory;
+
         return new JsonResponse($data);
     }
 
@@ -316,12 +326,12 @@ class FilesController extends Controller
         $groupId = $request->request->has("groupId") ? $request->request->get("groupId") : 0;
         $parentId = $request->request->has("parentId") ? $request->request->get("parentId") : 0;
         $isDetached = $request->request->getBoolean("isDetached", false);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -354,18 +364,19 @@ class FilesController extends Controller
             $groupId = $request->query->get("groupId", 0);
             $fileId = $request->query->get("fileId", 0);
             $download = $request->query->get("download", 1);
+            $directory = $request->query->get("directory", false);
         }
         else {
             $groupId = $request->request->get("groupId", 0);
             $fileId = $request->request->get("fileId", 0);
             $download = $request->request->get("download", 1);
+            $directory = $request->request->get("directory", false);
         }
-        $externalDrive = $request->request->get("externalDrive", false);
-        $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -392,12 +403,12 @@ class FilesController extends Controller
         $fileId = $request->request->get("fileToMoveId", 0);
         $fileIds = $request->request->get("fileToMoveIds", 0);
         $newParentId = $request->request->get("newParentId", 0);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -442,12 +453,12 @@ class FilesController extends Controller
         $groupId = $request->request->get("groupId", 0);
         $fileId = $request->request->get("fileToCopyId", 0);
         $newParentId = $request->request->get("newParentId", null);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -475,12 +486,12 @@ class FilesController extends Controller
         $filename = $request->request->get("name", "");
         $description = $request->request->get("description", "");
         $labels = $request->request->get("labels", Array());
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -504,12 +515,12 @@ class FilesController extends Controller
         $groupId = $request->query->get("groupId", 0);
         $fileId = $request->query->get("fileId", 0);
         $original = $request->query->get("original", 0);
-        $externalDrive = $request->request->get("externalDrive", false);
-        $directory = $request->request->get("directory", false);
+        $directory = $request->query->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -539,12 +550,12 @@ class FilesController extends Controller
 
         $groupId = $request->request->get("groupId", 0);
         $fileId = $request->request->get("fileSearchedId", 0);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -577,12 +588,12 @@ class FilesController extends Controller
         $groupId = $request->request->get("groupId", 0);
         $workspaceId = $request->request->get("sharedWorkspaceId", 0);
         $fileId = $request->request->get("fileToCopyId", 0);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -611,12 +622,12 @@ class FilesController extends Controller
         $workspaceId = $request->request->get("unshareWorkspaceId", 0);
         $fileId = $request->request->get("fileToUnshareId", 0);
         $removeAll = $request->request->get("totallyUnshare", false);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -637,12 +648,12 @@ class FilesController extends Controller
             "errors" => Array()
         );
         $file = $request->request->get("id", null);
-        $externalDrive = $request->request->get("externalDrive", false);
         $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive) {
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -668,12 +679,12 @@ class FilesController extends Controller
 
             $workspace_id = $request->request->get("workspace_id", 0);
             $app = $request->request->get("app", 0);
-            $externalDrive = $request->request->get("externalDrive", false);
             $directory = $request->request->get("directory", false);
+            $externalDrive = $directory;
 
             $fileSystem = $this->get('app.drive.FileSystem');
 
-            if($externalDrive) {
+            if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
                 $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
                 $fileSystem->setRootDirectory($directory);
             }

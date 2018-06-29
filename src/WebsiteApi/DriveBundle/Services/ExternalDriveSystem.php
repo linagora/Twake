@@ -13,7 +13,6 @@ use WebsiteApi\DriveBundle\Entity\ExternalDrive;
 
 class ExternalDriveSystem
 {
-
     var $doctrine;
     var $token_service;
     var $gdriveApi;
@@ -32,7 +31,6 @@ class ExternalDriveSystem
         } else {
             return null;
         }
-
     }
 
     public function __construct($doctrine, $token_service, $gdriveApi)
@@ -54,6 +52,12 @@ class ExternalDriveSystem
             return false;
 
         return $externalDrive->getExternalToken();
+    }
+
+    public function isAValideRootDirectory($directory){
+        $externalDriveRepository = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive");
+        $externalDrive = $externalDriveRepository->findOneBy(Array("fileId" => $directory));
+        return $externalDrive;
     }
 
     public function addNewGDrive($folderId, $user, $workspace){
