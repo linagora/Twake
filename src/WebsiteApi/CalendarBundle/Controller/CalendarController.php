@@ -55,8 +55,9 @@ class CalendarController extends Controller
         $calendarId = $request->request->get("calendarId");
         $label = $request->request->get("name");
         $color = $request->request->get("color");
+        $autoParticipant = $request->get("autoParticipant");
 
-        $data['data'] = $this->get("app.calendars")->updateCalendar($workspaceId, $calendarId, $label, $color, $this->getUser()->getId());
+        $data['data'] = $this->get("app.calendars")->updateCalendar($workspaceId, $calendarId, $label, $color, $this->getUser()->getId(), $autoParticipant);
 
         return new JsonResponse($data);
     }

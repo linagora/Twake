@@ -124,7 +124,7 @@ class Calendars implements CalendarsInterface
         }
     }
 
-    public function updateCalendar($workspaceId, $calendarId, $title, $color, $currentUserId=null)
+    public function updateCalendar($workspaceId, $calendarId, $title, $color, $currentUserId=null, $autoParticipate = null )
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
@@ -138,7 +138,9 @@ class Calendars implements CalendarsInterface
         if(!$calendarLink || !$calendarLink->getCalendarRight()){
             return null;
         }
-
+        if($autoParticipate!=null){
+            $calendar->setAutoParticipateList($autoParticipate);
+        }
         $calendar->setTitle($title);
         $calendar->setColor($color);
         $this->doctrine->persist($calendar);
