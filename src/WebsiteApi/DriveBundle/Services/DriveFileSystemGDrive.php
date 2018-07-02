@@ -561,15 +561,22 @@ class DriveFileSystemGDrive
         $this->upload($workspace,$directory,$file);
     }
 
-    public function unwatchFile($fileId, $rootDirectory){
+    public function unwatchFile($fileId, $rootDirectory, $additionalData){
         $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findOneBy(Array("fileId" => $rootDirectory));
-        $this->gdriveApi->unwatchFile($fileId,$externalDrive->getWorkspace()->getId(),$externalDrive->getExternalToken());
+        $this->gdriveApi->unwatchFile($fileId,$externalDrive->getWorkspace()->getId(),$externalDrive->getExternalToken(),$additionalData["resourceId"]);
+
+        return $additionalData;
     }
 
-    public function watchFile($fileId, $rootDirectory){
+    public function watchFile($fileId, $rootDirectory, $additionalData){
         $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findOneBy(Array("fileId" => $rootDirectory));
-        $this->gdriveApi->watchFile($fileId,$externalDrive->getWorkspace()->getId(),$externalDrive->getExternalToken());
+        $data = $this->gdriveApi->watchFile($fileId,$externalDrive->getWorkspace()->getId(),$externalDrive->getExternalToken());
+
+        $additionalData["resourceId"] = $data["resourceId"];
+
+        return $additionalData;
     }
+
     public function getDriveType($rootDirectory){
         if($rootDirectory){
             return "gdrive";

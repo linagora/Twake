@@ -480,13 +480,14 @@ class GDriveApiSystem
         $data = $this->restClient->post('https://www.googleapis.com/drive/v3/files/'.$gdriveID.'/watch', $json,
             array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken($userToken), "Content-Type: application/json")));
 
-        return $data;
+        return json_decode($data->getContent(),true);
     }
-    public function unwatchFile($gdriveID, $workspaceId, Token $userToken){
+    public function unwatchFile($gdriveID, $workspaceId, Token $userToken, $resourceId){
         $json = "{
                   \"kind\": \"api#channel\",
                   \"id\": \"".$gdriveID."/".$workspaceId."\",
-                  \"type\": \"web_hook\",
+                  \"resourceId\":\"".$resourceId."\",
+                  \"type\": \"web_hook\"
                 }";
 
         $data = $this->restClient->post('https://www.googleapis.com/drive/v3/channels/stop', $json,

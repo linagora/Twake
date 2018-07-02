@@ -39,6 +39,7 @@ services:
     app.drive.UserToNotifyService:
       class: WebsiteApi\DriveBundle\Services\UserToNotifyService
       arguments: ["@doctrine.orm.entity_manager","@app.drive.FileSystemExternalDrive", "@app.drive.DriveActivities"]
+
     drive.topic:
         class: WebsiteApi\DriveBundle\Topic\DriveTopic
         tags:
