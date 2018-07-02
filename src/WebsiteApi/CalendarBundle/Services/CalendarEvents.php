@@ -64,10 +64,17 @@ class CalendarEvents implements CalendarEventsInterface
             $user = $this->doctrine->getRepository("TwakeUserBundle:User")->find($participant);
             $participantsArray[] = $user->getAsArray();
         }
+        $calArray = $calendar->getAsArray();
+
         $event->setParticipant($participantsArray);
 
         $this->doctrine->persist($event);
         $this->doctrine->flush();
+
+        if($calArray["autoParticipate"]!=null){
+            $this->addUsers($workspaceId, $calendarId, $event->getId(),$calArray["autoParticipate"], $currentUserId);
+        }
+        //TODO
 
         if($addMySelf){
             $this->addUsers($workspaceId, $calendarId, $event->getId(), Array($currentUserId), $currentUserId);

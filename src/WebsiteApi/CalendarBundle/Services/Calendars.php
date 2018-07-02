@@ -4,6 +4,7 @@
 namespace WebsiteApi\CalendarBundle\Services;
 
 use phpDocumentor\Reflection\Types\Array_;
+use PHPUnit\Util\Json;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
 use WebsiteApi\CalendarBundle\Model\CalendarsInterface;
@@ -89,8 +90,7 @@ class Calendars implements CalendarsInterface
         }
     }
 
-    public function createCalendar($workspaceId, $title, $color, $currentUserId=null)
-    {
+    public function createCalendar($workspaceId, $title, $color, $currentUserId=null){
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
@@ -120,6 +120,7 @@ class Calendars implements CalendarsInterface
             );
             $this->pusher->push($data, "calendar/workspace/".$workspaceId);
 
+
             return $cal;
         }
     }
@@ -135,14 +136,20 @@ class Calendars implements CalendarsInterface
         $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
         $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
 
+
         if(!$calendarLink || !$calendarLink->getCalendarRight()){
             return null;
         }
-        if($autoParticipate!=null){
-            $calendar->setAutoParticipateList($autoParticipate);
-        }
+
         $calendar->setTitle($title);
         $calendar->setColor($color);
+
+        $arrayParticipate = Array();
+        foreach($autoParticipate as $partUser){
+            array_push($arrayParticipate, $partUser["id"]);
+        }
+        $calendar->setAutoParticipantList($arrayParticipate);
+
         $this->doctrine->persist($calendar);
         $this->doctrine->flush();
 
