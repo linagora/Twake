@@ -36,7 +36,7 @@ class UserToNotifyService
     public function __construct($doctrine, $externalDriveFileSystem, $driveActivities)
     {
         $this->doctrine = $doctrine;
-        $this->$externalDriveFileSystem = $externalDriveFileSystem;
+        $this->externalDriveFileSystem = $externalDriveFileSystem;
         $this->driveActivities = $driveActivities;
     }
 

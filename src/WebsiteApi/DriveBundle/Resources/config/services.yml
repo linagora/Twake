@@ -32,9 +32,13 @@ services:
       class: WebsiteApi\DriveBundle\Services\DrivePreview
       arguments: ["@doctrine.orm.entity_manager"]
 
+    app.drive.DriveActivities:
+      class: WebsiteApi\DriveBundle\Services\DriveActivities
+      arguments: ["@doctrine.orm.entity_manager",  '@app.pusher', "@app.notifications"]
+
     app.drive.UserToNotifyService:
       class: WebsiteApi\DriveBundle\Services\UserToNotifyService
-      arguments: ["@doctrine.orm.entity_manager"]
+      arguments: ["@doctrine.orm.entity_manager","@app.drive.ExternalDriveSystem", "@app.drive.DriveActivities"]
     drive.topic:
         class: WebsiteApi\DriveBundle\Topic\DriveTopic
         tags:
