@@ -13,7 +13,7 @@ interface DriveActivityInterface
 {
 
     // @pushNotification add new notification
-    public function pushActivity($pushNotif, $workspace, $users = null, $levels = null, $text = null, $type = Array());
+    public function pushActivity($pushNotif, $workspace, $user = null, $levels = null, $title = null, $text = null, $type = Array(), $additionalData = null);
 
     // @readAll remove all notifications for this
     public function readAll($application, $workspace, $user);

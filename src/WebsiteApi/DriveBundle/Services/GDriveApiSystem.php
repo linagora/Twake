@@ -469,15 +469,13 @@ class GDriveApiSystem
     }
 
     public function watchFile($gdriveID, $workspaceId, Token $userToken){
-        $webSiteAddress = "5d7427bc.ngrok.io";
+        $webSiteAddress = "fd244445.ngrok.io";
         $json = "{
                   \"kind\": \"api#channel\",
                   \"id\": \"".$gdriveID."/".$workspaceId."\",
                   \"type\": \"web_hook\",
                   \"address\": \"https://".$webSiteAddress."/ajax/drive/users_to_notify/post_gdrive_notification\"
                 }";
-
-        var_dump($json);
 
         $data = $this->restClient->post('https://www.googleapis.com/drive/v3/files/'.$gdriveID.'/watch', $json,
             array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken($userToken), "Content-Type: application/json")));
