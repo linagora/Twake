@@ -87,6 +87,11 @@ class Workspace
     private $isArchived = false;
 
     /**
+     * @ORM\Column(type="boolean")
+     */
+    private $hasMembers = false;
+
+    /**
      * Workspace constructor.
      * @param $name
      */

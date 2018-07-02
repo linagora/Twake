@@ -34,6 +34,11 @@ twake_user_alive:
     methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersConnections:alive }
 
+twake_set_is_new:
+    path:     /set/isNew
+    methods: [POST]
+    defaults: { _controller: TwakeUsersBundle:UsersConnections:setIsNew }
+
 # Contacts
 
 twake_contact_add:

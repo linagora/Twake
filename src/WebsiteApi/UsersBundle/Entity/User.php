@@ -91,6 +91,11 @@ class User extends BaseUser
      */
     protected $phone = "";
 
+    /**
+     * @ORM\Column(name="isNew", type="boolean")
+     */
+    protected $isNew = true;
+
 
 
     public function __construct()
@@ -273,6 +278,22 @@ class User extends BaseUser
         $this->phone = $phone;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getisNew()
+    {
+        return $this->isNew;
+    }
+
+    /**
+     * @param mixed $isNew
+     */
+    public function setIsNew($isNew)
+    {
+        $this->isNew = $isNew;
+    }
+
 
 
 	/**
@@ -325,7 +346,8 @@ class User extends BaseUser
 			"lastname" => $this->getLastName(),
 			"thumbnail" => ($this->getThumbnail()==null)?null:$this->getThumbnail()->getPublicURL(2),
             "connected" => $this->isConnected(),
-			"language" => $this->getLanguage()
+			"language" => $this->getLanguage(),
+            "isNew" => $this->getisNew()
 		);
 		return $return;
 	}
