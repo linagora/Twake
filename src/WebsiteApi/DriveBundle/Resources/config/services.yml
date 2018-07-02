@@ -2,11 +2,11 @@ services:
 
     app.drive.FileSystem:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystem
-        arguments: ["@doctrine.orm.entity_manager", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@website_api_market.applications']
+        arguments: ["@doctrine.orm.entity_manager", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@website_api_market.applications','@app.drive.UserToNotifyService']
 
     app.drive.FileSystemExternalDrive:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystemGDrive
-        arguments: ["@doctrine.orm.entity_manager", "@app.drive.GDriveApiSystem", '@app.pusher',"@circle.restclient", '@app.drive.FileSystem', '@app.drive.ExternalDriveSystem']
+        arguments: ["@doctrine.orm.entity_manager", "@app.drive.GDriveApiSystem", '@app.pusher',"@circle.restclient", '@app.drive.ExternalDriveSystem']
 
     app.drive.ExternalDriveDataCacheSystem:
         class: WebsiteApi\DriveBundle\Services\ExternalDriveDataCacheSystem
@@ -38,7 +38,8 @@ services:
 
     app.drive.UserToNotifyService:
       class: WebsiteApi\DriveBundle\Services\UserToNotifyService
-      arguments: ["@doctrine.orm.entity_manager","@app.drive.ExternalDriveSystem", "@app.drive.DriveActivities"]
+      arguments: ["@doctrine.orm.entity_manager","@app.drive.FileSystemExternalDrive", "@app.drive.DriveActivities"]
+
     drive.topic:
         class: WebsiteApi\DriveBundle\Topic\DriveTopic
         tags:
