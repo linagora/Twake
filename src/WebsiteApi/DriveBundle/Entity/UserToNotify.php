@@ -37,11 +37,18 @@ class UserToNotify
     private $driveType;
 
 
-    public function __construct($user, $driveFile, $driveType)
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $additionalData;
+
+
+    public function __construct($user, $driveFile, $driveType, $additionalData=Array())
     {
         $this->setUser($user);
         $this->setDriveFile($driveFile);
         $this->setDriveType($driveType);
+        $this->setAdditionalData($additionalData);
     }
 
     public function getAsArray()
@@ -50,7 +57,8 @@ class UserToNotify
             "id" => $this->getId(),
             "user" => $this->getUser(),
             "driveFile" => $this->getDriveFile(),
-            "driveType" => $this->getDriveType()
+            "driveType" => $this->getDriveType(),
+            "additionalData" => $this->getAdditionalData()
         );
     }
 
@@ -108,6 +116,22 @@ class UserToNotify
     public function setDriveType($driveType)
     {
         $this->driveType = $driveType;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAdditionalData()
+    {
+        return json_decode($this->additionalData, true);
+    }
+
+    /**
+     * @param mixed $additionalData
+     */
+    public function setAdditionalData($additionalData)
+    {
+        $this->additionalData = json_encode($additionalData);
     }
 
 }

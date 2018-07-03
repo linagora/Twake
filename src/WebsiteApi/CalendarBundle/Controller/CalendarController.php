@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\CalendarBundle\Controller;
 
+use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +29,18 @@ class CalendarController extends Controller
         return new JsonResponse($data);
     }
 
+    public function getAutoParticipateByCalendar(Request $request){
+        $data = Array(
+            'error' => Array(),
+            'data' => Array()
+        );
+        $workspaceId = $request->request->get("workpsaceId");
+        $calendarId = $request->request->get("calendarId");
+        $calendar = ($this->get("app.calendars")->getCalendarById($workspaceId,$calendarId))->getAsArray();
+
+        $data['data'] = $calendar["autoParticpate"] ;
+        return new JsonResponse($data);
+    }
     public function createCalendarAction(Request $request)
     {
         $data = Array(
@@ -55,9 +68,9 @@ class CalendarController extends Controller
         $calendarId = $request->request->get("calendarId");
         $label = $request->request->get("name");
         $color = $request->request->get("color");
-        $autoParticipant = $request->get("autoParticipant");
+        $autoParticipant = $request->get("autoParticipate");
 
-        $data['data'] = $this->get("app.calendars")->updateCalendar($workspaceId, $calendarId, $label, $color, $this->getUser()->getId(), $autoParticipant);
+        $data['data'] = $this->get("app.calendars")->updateCalendar($workspaceId, $calendarId, $label, $color, $this->getUser(), $autoParticipant);
 
         return new JsonResponse($data);
     }

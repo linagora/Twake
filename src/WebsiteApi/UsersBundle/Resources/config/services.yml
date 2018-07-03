@@ -24,3 +24,9 @@ services:
         class: WebsiteApi\UsersBundle\Topic\PingTopic
         tags:
             - { name: gos_web_socket.rpc }
+
+    sharing_view.topic:
+        class: WebsiteApi\UsersBundle\Topic\SharingViewTopic
+        tags:
+            - { name: gos_web_socket.topic }
+        arguments: ["@gos_web_socket.websocket.client_manipulator"]

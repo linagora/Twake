@@ -13,7 +13,7 @@ class CalendarEventRepository extends \Doctrine\ORM\EntityRepository
 
     public function removeAllByCalendar($calendar){
         $qb = $this->createQueryBuilder('e');
-        $qb->delete('e');
+        $qb->delete();
         $qb->where('e.calendar = :calendar');
         $qb->setParameter('calendar', $calendar);
         $q = $qb->getQuery();

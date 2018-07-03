@@ -49,15 +49,21 @@ class UserToNotifyService
     public function setUsersList($driveFile, $rootDirectory, $usersList)
     {
         $driveFile = strval($driveFile);
+        $additionalData = $this->getAdditionalData($driveFile);
         $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
         $userToNotifyRepo->deleteByDriveFile($driveFile);
 
-        if (count($usersList) == 0 && $rootDirectory != 0)
-            $this->externalDriveFileSystem->unwatchFile($driveFile, $rootDirectory);
-        else
-            $this->externalDriveFileSystem->watchFile($driveFile, $rootDirectory);
+        $driveType = $this->externalDriveFileSystem->getDriveType($rootDirectory);
 
-        $driveType = $this->externalDriveFileSystem->getDriveType($driveFile);
+        if($driveType == "gdrive") {
+            if (count($usersList) == 0)
+                $additionalData = $this->externalDriveFileSystem->unwatchFile($driveFile, $rootDirectory,$additionalData);
+            else
+                $additionalData = $this->externalDriveFileSystem->watchFile($driveFile, $rootDirectory,$additionalData);
+
+            //$this->updateAdditionalData($driveFile,$additionalData);
+        }
+
 
         foreach ($usersList as $user) {
             $user = $this->convertToEntity($user, "TwakeUsersBundle:User");
@@ -66,22 +72,56 @@ class UserToNotifyService
             if (!$userToNotify || $userToNotify == null)
                 $userToNotify = new UserToNotify($user, $driveFile,$driveType);
 
+            $userToNotify->setAdditionalData($additionalData);
+
             $this->doctrine->persist($userToNotify);
         }
 
         $this->doctrine->flush();
     }
 
-    public function notifyUsers($driveFile, $workspace){
+    public function notifyUsers($driveFile, $workspace, $title = "Drive", $text= "", $fileId = null){
         $driveFile = strval($driveFile);
 
-        $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle");
+        $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
         $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
 
-        $usersToNotify = $userToNotifyRepo->findOneBy(Array("driveFile" => $driveFile));
+        $usersToNotify = $userToNotifyRepo->findBy(Array("driveFile" => $driveFile));
 
+        if($fileId==null)
+            $fileId="";
+        else
+            $fileId = "/".$fileId;
+
+        if(!$usersToNotify)
+            return false;
         foreach ($usersToNotify as $userToNotify){
-            $this->driveActivities->pushActivity(true,$workspace, $userToNotify->getUser(),null,$userToNotify->getDriveType()."/".$driveFile);
+            $this->driveActivities->pushActivity(true,$workspace, $userToNotify->getUser(),null,$title,$text,Array(),$userToNotify->getDriveType()."/".$driveFile.$fileId);
         }
+        return true;
+    }
+
+    public function getAdditionalData($driveFile)
+    {
+        $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
+
+        $usersToNotify = $userToNotifyRepo->findBy(Array("driveFile" => $driveFile));
+
+        if(count($usersToNotify)==0)
+            return Array();
+
+        return $usersToNotify[0]->getAdditionalData();
+    }
+
+    public function updateAdditionalData($driveFile, $additionalData)
+    {
+        $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
+
+        $usersToNotify = $userToNotifyRepo->findBy(Array("driveFile" => $driveFile));
+        foreach ($usersToNotify as $userToNotify){
+            $userToNotify->setAdditionalDatta($additionalData);
+            $this->doctrine->persist($userToNotify);
+        }
+        $this->doctrine->flush();
     }
 }

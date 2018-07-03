@@ -64,10 +64,20 @@ class CalendarEvents implements CalendarEventsInterface
             $user = $this->doctrine->getRepository("TwakeUserBundle:User")->find($participant);
             $participantsArray[] = $user->getAsArray();
         }
+        $calArray = $calendar->getAsArray();
+
         $event->setParticipant($participantsArray);
 
         $this->doctrine->persist($event);
         $this->doctrine->flush();
+
+        if($calArray["autoParticipate"]!=null || array_count_values($calArray["autoParticipate"])!=0){
+            foreach ($calArray["autoParticipate"] as $userAuto){
+                error_log($userAuto);
+                $this->addUsers($workspaceId, $calendarId, $event->getId(),Array($userAuto["id"]), $currentUserId);
+            }
+        }
+        //TODO
 
         if($addMySelf){
             $this->addUsers($workspaceId, $calendarId, $event->getId(), Array($currentUserId), $currentUserId);
@@ -207,17 +217,20 @@ class CalendarEvents implements CalendarEventsInterface
         }
 
         foreach ($usersId as $userId) {
-            $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
-            $eventUserRepo = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser");
-            $userLink = $eventUserRepo->findBy(Array("user"=>$user,"event"=>$event));
-            if($userLink== false){
-                $userLinked = new LinkEventUser($user, $event);
-                $userLinked->setFrom($event->getFrom());
-                $userLinked->setTo($event->getTo());
-                $this->doctrine->persist($userLinked);
-                $participantArray = $event->getParticipant();
-                $participantArray[] = $user->getAsArray();
-                $event->setParticipant($participantArray);
+            if($userId != null){ //pour eviter un bug du front
+                $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
+                $eventUserRepo = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser");
+                $userLink = $eventUserRepo->findBy(Array("user"=>$user,"event"=>$event));
+                if($userLink== false){
+                    $userLinked = new LinkEventUser($user, $event);
+                    $userLinked->setFrom($event->getFrom());
+                    $userLinked->setTo($event->getTo());
+                    $this->doctrine->persist($userLinked);
+                    $participantArray = $event->getParticipant();
+                    $participantArray[] = $user->getAsArray();
+                    $event->setParticipant($participantArray);
+                }
+
             }
 
             $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User added to activity", Array());
@@ -293,19 +306,14 @@ class CalendarEvents implements CalendarEventsInterface
     }
     //
     public function getEventsByCalendar($workspaceId, $calendarsId, $currentUserId = null){
-       error_log("GET EVENT BY CALENDAR");
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
-var_dump($workspaceId);
-var_dump($calendarsId);
+        var_dump($workspaceId);
+        var_dump($calendarsId);
         if($workspace == null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read"))){
             return null;
         }
-        error_log("TEST PASSAGE DU NULL");
         $events = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->getAllCalendarEventsByCalendar($calendarsId);
 
-        if($events == null){
-            error_log("PAS D EVENT ....");
-        }
         foreach ($events as $link) {
             $evt = $link->getAsArray();
 

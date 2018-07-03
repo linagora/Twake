@@ -68,4 +68,17 @@ class CalendarActivityController extends Controller
         $user = $this->getUser();
         $delete = $this->get('app.calendarActivity')->getAll($user);
     }
+
+    public function getActivityToDisplayAction(Request $request){
+
+
+        $user = $this->getUser();
+        $workspace = $request->request->get("workspace");
+        $offset = $request->request->get("offset");
+        $limit = $request->request->get("limit");
+
+        $data = $this->get('app.calendarActivity')->getActivityToDisplay($user, $workspace,$offset,$limit);
+        return new JsonResponse($data);
+
+    }
 }

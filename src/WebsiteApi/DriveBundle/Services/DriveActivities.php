@@ -31,7 +31,7 @@ class DriveActivities implements DriveActivityInterface
         $this->notifService = $notifService;
     }
 
-    public function pushActivity($pushNotif, $workspace, $user = null, $levels = null, $text = null, $type = Array())
+    public function pushActivity($pushNotif, $workspace, $user = null, $levels = null, $title = null, $text = null, $type = Array(), $additionalData = null)
     {
         error_log("PUSH TABLE ");
         //ajotuer dans la table DriveActivity
@@ -50,8 +50,9 @@ class DriveActivities implements DriveActivityInterface
             "type" => "add",
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
             "app_id" => ($application != null ? $application->getId() : null),
-            "title" => "",
-            "text" => $text
+            "title" => $title,
+            "text" => $text,
+            "data" => $additionalData
         );
 
         if ($data) {
@@ -61,11 +62,11 @@ class DriveActivities implements DriveActivityInterface
         if ($text) {
             $driveActivity->setText($text);
         }
-        $driveActivity->setTitle("");
+
+        if($title)
+            $driveActivity->setTitle($title);
 
         error_log("driveActivity apres modif ");
-
-        var_dump($driveActivity->getAsArray());
 
         $this->doctrine->persist($driveActivity);
         //$this->doctrine->flush();
@@ -79,7 +80,7 @@ class DriveActivities implements DriveActivityInterface
 
         //appel pour faire une notification
         if ($pushNotif) {
-            $this->notifService->pushNotification($application, $workspace, $user, $levels, "driveActivity", $text, $type, null, true);
+            $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "driveActivity", $text, $type, null, true);
 
         }
 

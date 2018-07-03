@@ -21,8 +21,10 @@ class DriveFileSystem implements DriveFileSystemInterface
     var $pricingService;
     var $preview;
     var $pusher;
+    /* @var UserToNotifyService $userToNotifyService */
+    var $userToNotifyService;
 
-    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService)
+    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService, $userToNotifyService)
     {
         $this->doctrine = $doctrine;
         $this->root = $rootDirectory;
@@ -31,6 +33,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->preview = $preview;
         $this->pusher = $pusher;
         $this->applicationService = $applicationService;
+        $this->userToNotifyService = $userToNotifyService;
     }
 
     private function convertToEntity($var, $repository)
@@ -547,6 +550,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($newFile);
         $this->doctrine->flush();
 
+        $this->userToNotifyService->notifyUsers($directory->getId(),$workspace,"New file",$newFile->getName()." has been added to directory ".$directory->getName(),$newFile->getId());
         $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
 
         return $newFile;
