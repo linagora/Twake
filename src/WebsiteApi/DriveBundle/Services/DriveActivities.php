@@ -22,6 +22,7 @@ class DriveActivities implements DriveActivityInterface
 {
 
     var $doctrine;
+    var $pusher;
     var $notifService;
 
     public function __construct($doctrine, $pusher, $notifService)
@@ -81,7 +82,7 @@ class DriveActivities implements DriveActivityInterface
         //appel pour faire une notification
         if ($pushNotif) {
             $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "driveActivity", $text, $type, null, true);
-
+            $this->pusher->push($data, "drive/activity");
         }
 
     }
