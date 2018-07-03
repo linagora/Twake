@@ -89,7 +89,7 @@ class Workspace
     /**
      * @ORM\Column(type="boolean")
      */
-    private $hasMembers = false;
+    private $isNew = true;
 
     /**
      * Workspace constructor.
@@ -287,6 +287,21 @@ class Workspace
         $this->isArchived = $isArchived;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getisNew()
+    {
+        return $this->isNew;
+    }
+
+    /**
+     * @param mixed $isNew
+     */
+    public function setIsNew($isNew)
+    {
+        $this->isNew = $isNew;
+    }
 
 
 	public function getAsArray(){
@@ -300,7 +315,8 @@ class Workspace
 			"name" => $this->getName(),
             "total_members" => $this->getMemberCount(),
             "uniqueName" => $this->getUniqueName(),
-            "isArchived" => $this->getisArchived()
+            "isArchived" => $this->getisArchived(),
+            "isNew" => $this->getisNew()
 		);
 	}
 

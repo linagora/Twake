@@ -555,5 +555,22 @@ class Workspaces implements WorkspacesInterface
         return $result;
     }
 
+    public function setIsNew($value, $workspaceId, $currentUserId = null){
+        if ($currentUserId != null) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->findOneBy(Array("id" =>$workspaceId));
+
+            if($workspace != null){
+
+                $workspace->setisNew($value);
+                $this->doctrine->persist($workspace);
+                $this->doctrine->flush();
+
+                return true;
+            }
+            return false;
+        }
+        return false;
+    }
 
 }
