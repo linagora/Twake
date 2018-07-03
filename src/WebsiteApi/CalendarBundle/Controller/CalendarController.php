@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\CalendarBundle\Controller;
 
+use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +29,18 @@ class CalendarController extends Controller
         return new JsonResponse($data);
     }
 
+    public function getAutoParticipateByCalendar(Request $request){
+        $data = Array(
+            'error' => Array(),
+            'data' => Array()
+        );
+        $workspaceId = $request->request->get("workpsaceId");
+        $calendarId = $request->request->get("calendarId");
+        $calendar = ($this->get("app.calendars")->getCalendarById($workspaceId,$calendarId))->getAsArray();
+
+        $data['data'] = $calendar["autoParticpate"] ;
+        return new JsonResponse($data);
+    }
     public function createCalendarAction(Request $request)
     {
         $data = Array(

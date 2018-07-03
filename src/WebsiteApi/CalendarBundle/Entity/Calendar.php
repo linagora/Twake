@@ -38,7 +38,7 @@ class Calendar {
     private $workspacesNumber = 1;
 
     /**
-     * @ORM\Column(name="autoShareList", type="string", length=264, nullable=true)
+     * @ORM\Column(name="autoParticipateList", type="string", length=264, nullable=false)
      */
     private $autoParticipantList;
 
@@ -47,7 +47,7 @@ class Calendar {
     {
         $this->setTitle($title);
         $this->setColor($color);
-        $this->autoParticipantList = null;
+        $this->setAutoParticipantList(Array());
     }
 
     /**
@@ -63,8 +63,11 @@ class Calendar {
      */
     public function getAutoParticipantList()
     {
-      return json_decode($this->autoParticipantList, true );
-       // return $this->autoParticipantList;
+        if($this->autoParticipantList == null){
+            return null;
+        }else{
+            return json_decode($this->autoParticipantList, true );
+        }
     }
 
     /**
@@ -73,7 +76,6 @@ class Calendar {
     public function setAutoParticipantList($autoParticipantList)
     {
         $this->autoParticipantList = json_encode($autoParticipantList);
-       // $this->autoParticipantList = $autoParticipantList;
     }
 
     /**

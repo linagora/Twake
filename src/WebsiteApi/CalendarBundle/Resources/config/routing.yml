@@ -3,6 +3,11 @@ calendar_get_calendars:
     defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendars }
     methods: [POST]
 
+calendar_get_autoParticipate:
+    path:     /calendars/get/autoParticipate
+    defaults: { _controller: TwakeCalendarBundle:Calendar:getAutoParticipateByCalendar}
+    methods: [POST]
+
 calendar_get_calendars:
     path:     /calendars/getById
     defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendarById }
