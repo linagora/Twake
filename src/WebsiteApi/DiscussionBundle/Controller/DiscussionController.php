@@ -270,6 +270,67 @@ class DiscussionController extends Controller
         return new JsonResponse($data);
     }
 
+    public function addStream(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
 
+        $streamName = $request->request->get("name","");
+        $streamIsPrivate = $request->request->get("isPrivate",false);
+        $streamDescription = $request->request->get("description","");
+        $workspaceId = $request->request->get("workspaceId",0);
 
+        //Warning, auth done in service
+        $res = $this->get("app.streamSystem")->createStream($this->getUser(),$workspaceId,$streamName,$streamDescription,$streamIsPrivate);
+
+        if(!$res)
+            $data["errors"][] = "Fail to add stream";
+        else
+            $data["data"][] = "success";
+
+        return new JsonResponse($data);
+    }
+
+    public function removeStream(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $id = $request->request->get("id",0);
+
+        //Warning, auth done in service
+        $res = $this->get("app.streamSystem")->deleteStream($this->getUser(),$id);
+
+        if(!$res)
+            $data["errors"][] = "Fail to remove stream";
+        else
+            $data["data"][] = "success";
+
+        return new JsonResponse($data);
+    }
+
+    public function editStream(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $id = $request->request->get("id",0);
+        $name = $request->request->get("name","");
+        $isPrivate = $request->request->get("isPrivate",false);
+        $streamDescription = $request->request->get("description","");
+        $members = $request->request->get("members",Array());
+
+        //Warning, auth done in service
+        $res = $this->get("app.streamSystem")->editStream($this->getUser(),"s-".$id,$name,$streamDescription,$isPrivate,$members);
+
+        if(!$res)
+            $data["errors"][] = "Fail to edit stream";
+        else
+            $data["data"][] = "success";
+
+        return new JsonResponse($data);
+    }
 }
