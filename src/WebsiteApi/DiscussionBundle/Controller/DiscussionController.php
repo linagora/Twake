@@ -270,7 +270,7 @@ class DiscussionController extends Controller
         return new JsonResponse($data);
     }
 
-    public function addStream(Request $request){
+    public function addStreamAction(Request $request){
         $data = Array(
             'errors' => Array(),
             'data' => Array()
@@ -292,7 +292,7 @@ class DiscussionController extends Controller
         return new JsonResponse($data);
     }
 
-    public function removeStream(Request $request){
+    public function removeStreamAction(Request $request){
         $data = Array(
             'errors' => Array(),
             'data' => Array()
@@ -311,7 +311,7 @@ class DiscussionController extends Controller
         return new JsonResponse($data);
     }
 
-    public function editStream(Request $request){
+    public function editStreamAction(Request $request){
         $data = Array(
             'errors' => Array(),
             'data' => Array()
