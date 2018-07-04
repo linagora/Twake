@@ -33,19 +33,15 @@ class CalendarActivitys implements CalendarActivityInterface
 
     public function pushTable($pushNotif = true, $workspace, $user = null, $levels = null, $texte = null, $type = Array())
     {
-        error_log("PUSH TABLE ");
         //ajotuer dans la table CalendarActivity
         if ($workspace != null) {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }
-        error_log("WORKSPACE");
         $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'calendar'));
         // $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'calendar'));
 
-        error_log("APPLICATION");
         $cal = new CalendarActivity($application, $workspace, $user);
 
-        error_log("cal avant modif ");
         $data = Array(
             "type" => "add",
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
@@ -63,13 +59,8 @@ class CalendarActivitys implements CalendarActivityInterface
         }
         $cal->setTitle("");
 
-        error_log("cal apres modif ");
-
-        var_dump($cal->getAsArray());
 
         $this->doctrine->persist($cal);
-        //$this->doctrine->flush();
-        error_log("Yo apres modif ");
 
         $data = Array("action" => "addActiviy");
         $this->pusher->push($data, "calendar/workspace/" . $workspace->getId());
@@ -201,5 +192,18 @@ class CalendarActivitys implements CalendarActivityInterface
         $acti = $nRepo->findBy(Array("user" => $user), Array("id" => "DESC"), 30); //Limit number of results
 
         return $acti;
+    }
+
+    public function getActivityToDisplay($user, $workspace, $offset, $limit){
+        $nRepo = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarActivity");
+        $acti = $nRepo->findBy(Array("user"=> $user, "workspace" => $workspace), Array("id" => "DESC"),$limit,$offset);
+        $data = Array();
+        foreach($acti as $a){
+
+            array_push($data, $a->getAsArray());
+        }
+
+        return $data;
+
     }
 }

@@ -386,4 +386,22 @@ class WorkspaceController extends Controller
         return new JsonResponse($response);
     }
 
+
+    public function setIsNewAction(Request $request){
+        $response = Array(
+            "errors"=>Array(),
+            "data"=>Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId");
+        $value = $request->request->get("value");
+
+        $res = $this->get("app.workspaces")->setIsNew($value,$workspaceId,$this->getUser()->getId());
+        if($res){
+            $response["data"] = "success";
+        }else{
+            $response["data"] = "Set has not been done";
+        }
+        return new JsonResponse($response);
+    }
 }

@@ -207,4 +207,26 @@ class UsersConnectionsController extends Controller
 
 	}
 
+	public function setIsNewAction(Request $request){
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $value=$request->request->get("value");
+
+        $ok = $this->get("app.user")->current();
+        if(!$ok){
+            $data["errors"][] = "disconnected";
+        }else{
+
+            $user = $this->getUser()->getId();
+            $this->get("app.user")->setIsNew($value, $user);
+
+        }
+
+        return new JsonResponse($data);
+
+    }
+
 }

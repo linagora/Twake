@@ -45,6 +45,7 @@ class CalendarActivityController extends Controller
 
         $user = $this->getUser();
         $delete = $this->get('app.calendarActivity')->removeAll($application, $workspace_id, $user, null, true);
+        return new JsonResponse();
 
     }
 
@@ -59,13 +60,23 @@ class CalendarActivityController extends Controller
 
         $user = $this->getUser();
         $read = $this->get('app.calendarActivity')->readAll($application, $workspace_id, $user);
+        return new JsonResponse();
     }
 
-    public function getAction(Request $request)
-    {
+
+    public function getActivityToDisplayAction(Request $request){
 
 
         $user = $this->getUser();
-        $delete = $this->get('app.calendarActivity')->getAll($user);
+        $workspace = $request->request->get("workspaceId");
+        $offset = $request->request->get("offset");
+        $limit = $request->request->get("limit");
+
+        $data = Array(
+            'errors' => Array(),
+            'data' => $this->get('app.calendarActivity')->getActivityToDisplay($user, $workspace,$offset,$limit)
+        );
+        return new JsonResponse($data);
+
     }
 }

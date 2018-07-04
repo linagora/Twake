@@ -760,4 +760,17 @@ class User implements UserInterface
 
 		}
 	}
+
+	public function setIsNew($value, $userId){
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($userId);
+
+        if($user != null){
+
+            $user->setisNew($value);
+            $this->em->persist($user);
+            $this->em->flush();
+
+        }
+    }
 }
