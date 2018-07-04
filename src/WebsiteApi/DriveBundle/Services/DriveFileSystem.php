@@ -550,7 +550,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($newFile);
         $this->doctrine->flush();
 
-        $this->userToNotifyService->notifyUsers($directory->getId(),$workspace,"New file",$newFile->getName()." has been added to directory ".$directory->getName(),$newFile->getId());
+        $dirName = "root";
+        $dirid = 0;
+
+        if($directory!=null){
+            $dirid = $directory->getId();
+            $dirName = $directory->getName();
+        }
+        $this->userToNotifyService->notifyUsers($dirid,$workspace,"New file",$newFile->getName()." has been added to ". $dirName,$newFile->getId());
         $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
 
         return $newFile;

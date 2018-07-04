@@ -183,6 +183,84 @@ class InitCommand extends ContainerAwareCommand
         $app->setCgu("");
         $manager->persist($app);
 
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "imageviewer"));
+        if (!$app) {
+            $app = new Application();
+        }
+        $app->setPublicKey("imageviewer");
+        $app->setName("Image viewer");
+        $app->setDescription("Twake imageviewer app.");
+        $app->setShortDescription("Twake imageviewer app.");
+        $app->setUrl("imageviewer");
+        $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
+        $app->setApplicationRights(json_decode('{"imageviewer":"manage"}', true));
+        $app->setEnabled(1);
+        $app->setColor("E63B42");
+        $app->setCanCreateFile(0);
+        $app->setIsCapable(0);
+        $app->setDefault(1);
+        $app->setCreateFileData(json_decode("", true));
+        $app->setMessageModule(0);
+        $app->setOrder(0);
+        $app->setThumbnail($serverbase . "/medias/apps/imageviewer.png");
+        $app->setMessageModuleUrl("");
+        $app->setEditableRights(1);
+        $app->setCgu("");
+        $app->setFilesTypes(Array("main" => Array("png","jpg","jpeg","gif","bmp","tiff"), "other" => Array()));
+        $manager->persist($app);
+
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "pdfviewer"));
+        if (!$app) {
+            $app = new Application();
+        }
+        $app->setPublicKey("pdfviewer");
+        $app->setName("PDF viewer");
+        $app->setDescription("Twake pdfviewer app.");
+        $app->setShortDescription("Twake pdfviewer app.");
+        $app->setUrl("pdfviewer");
+        $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
+        $app->setApplicationRights(json_decode('{"pdfviewer":"manage"}', true));
+        $app->setEnabled(1);
+        $app->setColor("E63B42");
+        $app->setCanCreateFile(0);
+        $app->setIsCapable(0);
+        $app->setDefault(1);
+        $app->setCreateFileData(json_decode("", true));
+        $app->setMessageModule(0);
+        $app->setOrder(0);
+        $app->setThumbnail($serverbase . "/medias/apps/pdfviewer.png");
+        $app->setMessageModuleUrl("");
+        $app->setEditableRights(1);
+        $app->setCgu("");
+        $app->setFilesTypes(Array("main" => Array("pdf"), "other" => Array()));
+        $manager->persist($app);
+
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "note"));
+        if (!$app) {
+            $app = new Application();
+        }
+        $app->setPublicKey("note");
+        $app->setName("Note");
+        $app->setDescription("Twake note app.");
+        $app->setShortDescription("Twake note app.");
+        $app->setUrl("note");
+        $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
+        $app->setApplicationRights(json_decode('{"note":"manage"}', true));
+        $app->setEnabled(1);
+        $app->setColor("E63B42");
+        $app->setCanCreateFile(0);
+        $app->setIsCapable(0);
+        $app->setDefault(1);
+        $app->setCreateFileData(json_decode("", true));
+        $app->setMessageModule(0);
+        $app->setOrder(0);
+        $app->setThumbnail($serverbase . "/medias/apps/note.png");
+        $app->setMessageModuleUrl("");
+        $app->setEditableRights(1);
+        $app->setCgu("");
+        $app->setFilesTypes(Array("main" => Array("txt"), "other" => Array()));
+        $manager->persist($app);
+
         $manager->flush();
 
 
