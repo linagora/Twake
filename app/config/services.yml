@@ -78,6 +78,7 @@ services:
 
     group.topic:
         class: WebsiteApi\WorkspacesBundle\Topic\GroupTopic
+        arguments: ["@gos_web_socket.websocket.client_manipulator"]
         tags:
             - { name: gos_web_socket.topic }
 
