@@ -109,6 +109,11 @@ calendar_activitys_readAll:
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:readAll }
     methods: [POST]
 
+calendar_activitys_readOne:
+    path: /calendarActivitys/readOne
+    defaults: { _controller: TwakeCalendarBundle:CalendarActivity:readOne}
+    methods: [POST]
+
 calendar_activitys_delete:
     path: /calendarActivitys/delete
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:delete}

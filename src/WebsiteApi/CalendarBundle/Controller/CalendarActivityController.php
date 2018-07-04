@@ -6,6 +6,7 @@ namespace WebsiteApi\CalendarBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Intl\Tests\Data\Provider\Json\JsonScriptDataProviderTest;
 
 /**
  * Created by PhpStorm.
@@ -52,17 +53,24 @@ class CalendarActivityController extends Controller
     public function readAllAction(Request $request)
     {
 
-        $application_tmp = $request->request->get("application");
-        $workspace_id_tmp = $request->request->get("workspace_id");
+        $workspace_id_tmp = $request->request->get("workspaceId");
 
         $workspace_id = $this->getDoctrine()->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
-        $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->find($application_tmp);
 
         $user = $this->getUser();
-        $read = $this->get('app.calendarActivity')->readAll($application, $workspace_id, $user);
+        $read = $this->get('app.calendarActivity')->readAll($workspace_id, $user);
         return new JsonResponse();
     }
 
+    public function readOneAction(Request $request){
+
+        $activity_id = $request->request->get("activityId");
+        $workspace_id= $request->request->get("workspaceId");
+
+        $workspaceId = $this->getDoctrine()->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id);
+        $read = $this->get('app.calendarActivity')->readOne($workspaceId,$activity_id);
+        return new JsonResponse();
+    }
 
     public function getActivityToDisplayAction(Request $request){
 

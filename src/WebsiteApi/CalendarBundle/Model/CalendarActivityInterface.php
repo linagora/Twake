@@ -16,7 +16,7 @@ interface CalendarActivityInterface
     public function pushTable($pushNotif = true, $workspace, $users = null, $levels = null, $texte = null, $type = Array());
 
     // @readAll remove all notifications for this
-    public function readAll($application, $workspace, $user);
+    public function readAll($workspace, $user);
 
     // @getAll return list of notifications for an user
     public function getAll($user);

@@ -93,16 +93,16 @@ class CalendarActivitys implements CalendarActivityInterface
             $this->doctrine->flush();
 
             $data = Array(
-                "type" => "update",
+                "type" => "create",
                 "calendarActivity" => $cal->getAsArray()
             );
-            $this->pusher->push($data, "calendar/workspace/" . $workspaceId);
+            $this->pusher->push($data, "calendarActivity/workspace/" . $workspaceId);
 
             return $cal;
         }
     }
 
-    public function readAll($application, $workspace, $user)
+    public function readAll($workspace, $user)
     {
 
         $nRepo = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarActivity");
@@ -110,10 +110,6 @@ class CalendarActivitys implements CalendarActivityInterface
         $search = Array(
             "user" => $user
         );
-
-        if ($application) {
-            $search["application"] = $application;
-        }
 
         if ($workspace) {
             $search["workspace"] = $workspace;
@@ -123,16 +119,32 @@ class CalendarActivitys implements CalendarActivityInterface
 
 
         foreach ($notif as $not) {
-            $data = Array(
-                "type" => "update",
-                "CalendarActivity" => $not->getAsArray()
-            );
-            $data["CalendarActivity"]["read"] = true;
-            $this->pusher->push($data, "calendar/workspace/" . $not->getWorkspace()->getId());
+            $not->setRead(1);
+            $this->doctrine->persist($not);
+
         }
+        $this->doctrine->flush();
+
 
     }
 
+    public function readOne($workspace, $activityId){
+        $repo = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarActivity");
+        $search = Array( "id" => $activityId);
+
+        if ($workspace) {
+            $search["workspace"] = $workspace;
+        }
+
+        $notif = $repo->findOneBy($search);
+
+
+        $notif->setRead(1);
+        $this->doctrine->persist($notif);
+
+        $this->doctrine->flush();
+
+    }
     public function removeAll($application, $workspace, $user, $code = null, $force = false)
     {
 
