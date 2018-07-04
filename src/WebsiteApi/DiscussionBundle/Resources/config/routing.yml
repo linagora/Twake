@@ -23,6 +23,18 @@ streams_mute:
     path:     /streams/mute
     defaults: { _controller: TwakeDiscussionBundle:Discussion:mute }
 
+streams_add:
+    path:     /streams/add
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:addStream }
+
+streams_remove:
+    path:     /streams/remove
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:removeStream }
+
+streams_edit:
+    path:     /streams/edit
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:editStream }
+
 subjectList_get:
     path:     /subject/getList
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getSubject }
