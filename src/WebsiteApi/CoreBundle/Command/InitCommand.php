@@ -193,7 +193,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setShortDescription("Twake imageviewer app.");
         $app->setUrl("imageviewer");
         $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
-        $app->setApplicationRights(json_decode('{"imageviewer":"manage"}', true));
+        $app->setApplicationRights(json_decode('{"drive":"read"}', true));
         $app->setEnabled(1);
         $app->setColor("424a60");
         $app->setCanCreateFile(0);
@@ -219,7 +219,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setShortDescription("Twake pdfviewer app.");
         $app->setUrl("pdfviewer");
         $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
-        $app->setApplicationRights(json_decode('{"pdfviewer":"manage"}', true));
+        $app->setApplicationRights(json_decode('{"drive":"read"}', true));
         $app->setEnabled(1);
         $app->setColor("ff4c4f");
         $app->setCanCreateFile(0);
@@ -245,7 +245,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setShortDescription("Twake note app.");
         $app->setUrl("note");
         $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
-        $app->setApplicationRights(json_decode('{"note":"manage"}', true));
+        $app->setApplicationRights(json_decode('{"drive":"read"}', true));
         $app->setEnabled(1);
         $app->setColor("545e73");
         $app->setCanCreateFile(0);
