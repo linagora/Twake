@@ -258,7 +258,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
         $app->setCgu("");
-        $app->setFilesTypes(Array("main" => Array("txt"), "other" => Array()));
+        $app->setFilesTypes(Array("main" => Array("php", "c", "cpp", "py", "html", "yml", "json","txt"), "other" => Array()));
         $manager->persist($app);
 
         $manager->flush();
