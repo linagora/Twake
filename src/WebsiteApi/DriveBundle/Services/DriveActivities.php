@@ -82,7 +82,7 @@ class DriveActivities implements DriveActivityInterface
         //appel pour faire une notification
         if ($pushNotif) {
             $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "driveActivity", $text, $type, null, true);
-            $this->pusher->push($data, "drive/activity");
+            $this->pusher->push($driveActivity->getAsArray(), "drive/activity");
         }
 
     }
@@ -176,5 +176,18 @@ class DriveActivities implements DriveActivityInterface
         $acti = $nRepo->findBy(Array("user" => $user), Array("id" => "DESC"), 30); //Limit number of results
 
         return $acti;
+    }
+
+    public function getActivityToDisplay($user, $workspace, $offset, $limit){
+        $nRepo = $this->doctrine->getRepository("TwakeDriveBundle:DriveActivity");
+        $acti = $nRepo->findBy(Array("user"=> $user, "workspace" => $workspace), Array("id" => "DESC"),$limit,$offset);
+        $data = Array();
+        foreach($acti as $a){
+
+            array_push($data, $a->getAsArray());
+        }
+
+        return $data;
+
     }
 }

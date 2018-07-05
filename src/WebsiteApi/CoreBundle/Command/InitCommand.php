@@ -195,7 +195,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
         $app->setApplicationRights(json_decode('{"drive":"read"}', true));
         $app->setEnabled(1);
-        $app->setColor("E63B42");
+        $app->setColor("424a60");
         $app->setCanCreateFile(0);
         $app->setIsCapable(0);
         $app->setDefault(1);
@@ -221,7 +221,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
         $app->setApplicationRights(json_decode('{"drive":"read"}', true));
         $app->setEnabled(1);
-        $app->setColor("E63B42");
+        $app->setColor("ff4c4f");
         $app->setCanCreateFile(0);
         $app->setIsCapable(0);
         $app->setDefault(1);
@@ -247,7 +247,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
         $app->setApplicationRights(json_decode('{"drive":"read"}', true));
         $app->setEnabled(1);
-        $app->setColor("E63B42");
+        $app->setColor("545e73");
         $app->setCanCreateFile(0);
         $app->setIsCapable(0);
         $app->setDefault(1);

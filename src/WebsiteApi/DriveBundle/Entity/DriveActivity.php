@@ -18,7 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @package WebsiteApi\DriveBundle\Entity
  *
  * @ORM\Table(name="drive_activity", options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveActivityEntity")
+ * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveActivityRepository")
  */
 class DriveActivity
 {
