@@ -649,7 +649,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($file);
         $this->doctrine->flush();
 
-        $this->genPreview($file);
+        //$this->genPreview($file);
 
         return true;
     }
@@ -667,6 +667,16 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $data = $fileOrDirectory->getAsArray();
+
+
+        $path = $this->getRoot() . $fileOrDirectory->getPath();
+        $this->verifyPath($path);
+
+        // return mime type ala mimetype extension
+        $finfo = finfo_open(FILEINFO_MIME);
+
+        //check to see if the mime-type starts with 'text'
+        //$data["binary"] = substr(finfo_file($finfo, $path), 0, 4) != 'text';
 
         return $data;
     }
@@ -1000,7 +1010,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $ext = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
 
         $path = $this->getRoot() . dirname($newFile->getPreviewPath()) . "/";
-        $this->preview->generatePreview($newFile->getLastVersion()->getRealName(), $real, $path, $ext);
+        //$this->preview->generatePreview($newFile->getLastVersion()->getRealName(), $real, $path, $ext);
 
         $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
 
@@ -1273,9 +1283,33 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $var;
     }
 
+    public function autoGenPreview(){
+        $start = microtime(true);
+        $time_elapsed_secs = 0;
+
+        while($time_elapsed_secs<5) {
+            /* @var DriveFile $file */
+            $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("previewHasBeenGenerated" => false));
+            if(count($files)==0){
+                sleep(1);
+            }else {
+                $file = $files[0];
+                $file->setPreviewHasBeenGenerated(true);
+                $this->doctrine->persist($file);
+                $this->doctrine->flush();
+
+                $this->genPreview($file);
+
+                $this->pusher->push(Array("action" => "update"), "drive/" . $file->getGroup()->getId());
+            }
+
+            $time_elapsed_secs = microtime(true) - $start;
+        }
+        return true;
+    }
+
     public function genPreview(DriveFile $file)
     {
-
         if (!$file->getIsDirectory() && $file->getLastVersion()) {
 
             $path = $this->getRoot() . "/" . $file->getPath();

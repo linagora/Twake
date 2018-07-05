@@ -98,6 +98,11 @@ class DriveFile
      */
     private $detached_file = false;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $previewHasBeenGenerated = false;
+
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
 	 */
@@ -145,6 +150,7 @@ class DriveFile
         }
         $this->opening_rate = 0;
         $this->default_web_app = null;
+        $this->setPreviewHasBeenGenerated(false);
     }
 
     public function getId()
@@ -505,8 +511,25 @@ class DriveFile
             "shared" => $this->getShared(),
             "url" => $this->getUrl(),
             "opening_rate" => $this->getOpeningRate(),
+            "previewHasBeenGenerated" => $this->getPreviewHasBeenGenerated(),
             "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPreviewHasBeenGenerated()
+    {
+        return $this->previewHasBeenGenerated;
+    }
+
+    /**
+     * @param mixed $previewHasBeenGenerated
+     */
+    public function setPreviewHasBeenGenerated($previewHasBeenGenerated)
+    {
+        $this->previewHasBeenGenerated = $previewHasBeenGenerated;
     }
 
 }
