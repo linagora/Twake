@@ -125,7 +125,7 @@ class Calendars implements CalendarsInterface
         }
     }
 
-    public function updateCalendar($workspaceId, $calendarId, $title, $color, $currentUserId=null, $autoParticipate = null )
+    public function updateCalendar($workspaceId, $calendarId, $title, $color, $currentUserId = null, $autoParticipate = Array())
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
@@ -144,11 +144,7 @@ class Calendars implements CalendarsInterface
         $calendar->setTitle($title);
         $calendar->setColor($color);
 
-        $arrayParticipate = Array();
-        foreach($autoParticipate as $partUser){
-            array_push($arrayParticipate, $partUser["id"]);
-        }
-        $calendar->setAutoParticipantList($arrayParticipate);
+        $calendar->setAutoParticipantList($autoParticipate);
 
         $this->doctrine->persist($calendar);
         $this->doctrine->flush();

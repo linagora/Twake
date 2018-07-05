@@ -16,8 +16,9 @@ use Gos\Bundle\WebSocketBundle\Router\WampRequest;
 
 class GroupTopic implements TopicInterface, PushableTopicInterface {
 
-  public function __construct()
-  {
+    public function __construct($clientManipulator)
+    {
+        $this->clientManipulator = $clientManipulator;
   }
 
   public function getName() {return 'group.topic';}

@@ -77,7 +77,6 @@ class CalendarEvents implements CalendarEventsInterface
                 $this->addUsers($workspaceId, $calendarId, $event->getId(),Array($userAuto["id"]), $currentUserId);
             }
         }
-        //TODO
 
         if($addMySelf){
             $this->addUsers($workspaceId, $calendarId, $event->getId(), Array($currentUserId), $currentUserId);
