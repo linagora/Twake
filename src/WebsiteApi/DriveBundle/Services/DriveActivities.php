@@ -118,6 +118,28 @@ class DriveActivities implements DriveActivityInterface
 
     }
 
+    public function readOne($workspace, $activityId){
+        $repo = $this->doctrine->getRepository("TwakeDriveBundle:DriveActivity");
+        $search = Array( "id" => $activityId);
+
+        if ($workspace) {
+            $search["workspace"] = $workspace;
+        }
+
+        $notif = $repo->findOneBy($search);
+
+        if($notif==null)
+            return false;
+
+
+        $notif->setRead(1);
+        $this->doctrine->persist($notif);
+
+        $this->doctrine->flush();
+
+        return true;
+    }
+
     public function removeAll($application, $workspace, $user, $code = null, $force = false)
     {
 
@@ -180,7 +202,7 @@ class DriveActivities implements DriveActivityInterface
 
     public function getActivityToDisplay($user, $workspace, $offset, $limit){
         $nRepo = $this->doctrine->getRepository("TwakeDriveBundle:DriveActivity");
-        $acti = $nRepo->findBy(Array("user"=> $user, "workspace" => $workspace), Array("id" => "DESC"),$limit,$offset);
+        $acti = $nRepo->findBy(Array("user"=> $user, "workspace" => $workspace, "read" => false), Array("id" => "DESC"),$limit,$offset);
         $data = Array();
         foreach($acti as $a){
 
