@@ -147,3 +147,35 @@ twake_drive_google_drive_response:
 twake_drive_get_external_drives:
     path:     /gdrive/getExternalDrives
     defaults: { _controller: TwakeDriveBundle:ExternalFiles:getExternalDrives }
+    
+# Activity
+
+drive_activities_create:
+    path: /driveActivitys/create
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:create }
+    methods: [POST]
+
+drive_activities_get:
+    path: /driveActivitys/get
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:get }
+    methods: [POST]
+
+drive_activities_readAll:
+    path: /driveActivitys/readAll
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:readAll }
+    methods: [POST]
+
+drive_activities_readOne:
+    path: /driveActivitys/readOne
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:readOne}
+    methods: [POST]
+
+drive_activities_delete:
+    path: /driveActivitys/delete
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:delete}
+    methods: [POST]
+
+drive_activities_getActivityToDisplay:
+    path: /driveActivities/getActivityToDisplay
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:getActivityToDisplay}
+    methods: [POST]

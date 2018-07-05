@@ -15,7 +15,7 @@ use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
 
-class DriveActivityTopic implements TopicInterface
+class DriveActivityTopic implements TopicInterface,PushableTopicInterface
 {
 
     /**

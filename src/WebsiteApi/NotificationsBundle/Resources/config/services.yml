@@ -10,3 +10,14 @@ services:
         tags:
             - { name: gos_web_socket.topic }
         arguments: ["@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager"]
+
+
+    drive.activity.topic:
+        class: WebsiteApi\NotificationsBundle\Topic\DriveActivityTopic
+        tags:
+            - { name: gos_web_socket.topic }
+
+    calendar.activity.topic:
+        class: WebsiteApi\NotificationsBundle\Topic\CalendarActivityTopic
+        tags:
+            - { name: gos_web_socket.topic }
