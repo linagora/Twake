@@ -202,7 +202,7 @@ class DriveActivities implements DriveActivityInterface
 
     public function getActivityToDisplay($user, $workspace, $offset, $limit){
         $nRepo = $this->doctrine->getRepository("TwakeDriveBundle:DriveActivity");
-        $acti = $nRepo->findBy(Array("user"=> $user, "workspace" => $workspace, "read" => false), Array("id" => "DESC"),$limit,$offset);
+        $acti = $nRepo->findBy(Array("user"=> $user, "workspace" => $workspace), Array("id" => "DESC"),$limit,$offset);
         $data = Array();
         foreach($acti as $a){
 
