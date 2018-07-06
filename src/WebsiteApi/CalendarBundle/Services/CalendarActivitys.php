@@ -31,7 +31,7 @@ class CalendarActivitys implements CalendarActivityInterface
         $this->notifService = $notifService;
     }
 
-    public function pushTable($pushNotif = true, $workspace, $user = null, $levels = null, $texte = null, $type = Array())
+    public function pushTable($pushNotif = true, $workspace, $user = null, $levels = null, $texte = null, $type = Array(), $additionalData = Array())
     {
         //ajotuer dans la table CalendarActivity
         if ($workspace != null) {
@@ -47,7 +47,8 @@ class CalendarActivitys implements CalendarActivityInterface
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
             "app_id" => ($application != null ? $application->getId() : null),
             "title" => "",
-            "text" => $texte
+            "text" => $texte,
+            "data" => $additionalData
         );
 
         if ($data) {
@@ -70,9 +71,8 @@ class CalendarActivitys implements CalendarActivityInterface
 
         //appel pour faire une notification
         if ($pushNotif) {
-            $this->notifService->pushNotification($application, $workspace, $user, $levels, "calendarActivity", $texte, $type, null, true);
-            $this->pusher->push($data, "calendar/activity");
-
+            $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "calendarActivity", $texte, $type, null, true);
+            $this->pusher->push($cal->getAsArray(), "calendar/activity");
         }
 
     }
