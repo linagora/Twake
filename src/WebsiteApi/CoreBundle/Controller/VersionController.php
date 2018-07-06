@@ -28,6 +28,7 @@ class VersionController extends Controller
             Array("quote" => "We did not update our privacy policy.", "subquote" => "Did we? I don't know, check your e-mails."),
             Array("quote" => "Don't read that text.", "subquote" => "You just lost"),
             Array("quote" => "Don't worry, everything is under control.", "subquote" => "Dave"),
+            Array("quote" => "Dave is not available for now, please try again later.", "subquote" => "Dave"),
             Array("quote" => "Hello? Is there anyone here?", "subquote" => "Dave"),
             Array("quote" => "I don't work on weekends, or any other day that ends with \"Y\".", "subquote" => "Dave"),
             Array("quote" => "You look great today !", "subquote" => "The Twake team"),
@@ -45,7 +46,17 @@ class VersionController extends Controller
             Array("quote" => "You must do the thing you think you cannot do.", "subquote" => "Eleanor Roosevelt"),
             Array("quote" => "Life is trying things to see if they work.", "subquote" => "Ray Bradbury"),
             Array("quote" => "They didn't know it was impossible so they did it.", "subquote" => "Mark Twain"),
-            Array("quote" => "Mmmmmm… Doughnuts.", "subquote" => "Homer Simpson")
+            Array("quote" => "Mmmmmm… Doughnuts.", "subquote" => "Homer Simpson"),
+
+            Array("quote" => "You can open the notifications center with ⇧ + ⌘ + L or ⇧ + Ctrl + L", "subquote" => "Tips - #1"),
+            Array("quote" => "To show your workspaces you can use ⇧ + ⌘ + K or ⇧ + Ctrl + K", "subquote" => "Tips - #2"),
+            Array("quote" => "To show your last messages you can use ⇧ + ⌘ + M or ⇧ + Ctrl + M", "subquote" => "Tips - #3"),
+            Array("quote" => "Add a collaborative link or document with ⇧ + ⌘ + U or ⇧ + Ctrl + U", "subquote" => "Tips - #4"),
+            Array("quote" => "You can change your workspace wallpaper in workspace parameters.", "subquote" => "Tips - #5"),
+            Array("quote" => "Try to use the multi-windows feature to work in different apps at the same time.", "subquote" => "Tips - #6"),
+            Array("quote" => "If you need a new app, go on feedback.twakeapp.com !", "subquote" => "Tips - #7"),
+            Array("quote" => "You can sort your Drive files using labels.", "subquote" => "Tips - #8")
+
         );
 
         return new JsonResponse($quotes[random_int(0, count($quotes) - 1)]);

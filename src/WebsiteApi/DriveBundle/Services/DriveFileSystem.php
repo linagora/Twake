@@ -1007,10 +1007,6 @@ class DriveFileSystem implements DriveFileSystemInterface
         );
         $errors = $uploader->upload($file, $real, $context);
 
-        $ext = strtolower(pathinfo($file["name"], PATHINFO_EXTENSION));
-
-        $path = $this->getRoot() . dirname($newFile->getPreviewPath()) . "/";
-        //$this->preview->generatePreview($newFile->getLastVersion()->getRealName(), $real, $path, $ext);
 
         $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
 
@@ -1287,7 +1283,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $start = microtime(true);
         $time_elapsed_secs = 0;
 
-        while($time_elapsed_secs<5) {
+        while ($time_elapsed_secs < 60) {
             /* @var DriveFile $file */
             $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("previewHasBeenGenerated" => false));
             if(count($files)==0){
