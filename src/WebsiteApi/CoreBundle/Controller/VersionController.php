@@ -31,10 +31,10 @@ class VersionController extends Controller
             Array("quote" => "Dave is not available for now, please try again later.", "subquote" => "Dave"),
             Array("quote" => "Hello? Is there anyone here?", "subquote" => "Dave"),
             Array("quote" => "I don't work on weekends, or any other day that ends with \"Y\".", "subquote" => "Dave"),
-            Array("quote" => "You look great today !", "subquote" => "The Twake team"),
-            Array("quote" => "Have a great day !", "subquote" => "The Twake team"),
+            Array("quote" => "You look great today!", "subquote" => "The Twake team"),
+            Array("quote" => "Have a great day!", "subquote" => "The Twake team"),
             Array("quote" => "Don't worry, be happy.", "subquote" => "The Twake team"),
-            Array("quote" => "You're here? Today just got better !", "subquote" => "The Twake team"),
+            Array("quote" => "You're here? Today just got better!", "subquote" => "The Twake team"),
             Array("quote" => "Work hard. Dream big.", "subquote" => "The Twake team"),
             Array("quote" => "Love the life you live, and live the life you love.", "subquote" => "Bob Marley"),
             Array("quote" => "Try and fail, but never fail to try.", "subquote" => "Jared Leto"),
@@ -54,7 +54,7 @@ class VersionController extends Controller
             Array("quote" => "Add a collaborative link or document with ⇧ + ⌘ + U or ⇧ + Ctrl + U", "subquote" => "Tips - #4"),
             Array("quote" => "You can change your workspace wallpaper in workspace parameters.", "subquote" => "Tips - #5"),
             Array("quote" => "Try to use the multi-windows feature to work in different apps at the same time.", "subquote" => "Tips - #6"),
-            Array("quote" => "If you need a new app, go on feedback.twakeapp.com !", "subquote" => "Tips - #7"),
+            Array("quote" => "If you need a new app, tell us about it on feedback.twakeapp.com!", "subquote" => "Tips - #7"),
             Array("quote" => "You can sort your Drive files using labels.", "subquote" => "Tips - #8")
 
         );

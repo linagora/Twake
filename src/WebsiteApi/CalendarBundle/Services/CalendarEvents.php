@@ -71,7 +71,7 @@ class CalendarEvents implements CalendarEventsInterface
         $this->doctrine->persist($event);
         $this->doctrine->flush();
 
-        if($calArray["autoParticipate"]!=null || array_count_values($calArray["autoParticipate"])!=0){
+        if ($calArray["autoParticipate"] != null && is_array($calArray["autoParticipate"])) {
             foreach ($calArray["autoParticipate"] as $userAuto){
                 error_log($userAuto);
                 $this->addUsers($workspaceId, $calendarId, $event->getId(),Array($userAuto["id"]), $currentUserId);
