@@ -64,6 +64,11 @@ calendar_events_get:
     defaults: { _controller: TwakeCalendarBundle:Event:get }
     methods: [POST]
 
+calendar_events_get_one_event:
+    path:     /events/getOneEvent
+    defaults: { _controller: TwakeCalendarBundle:Event:getOneEvent }
+    methods: [POST]
+
 calendar_events_get_users:
     path:     /events/get/users
     defaults: { _controller: TwakeCalendarBundle:Event:getUsers }

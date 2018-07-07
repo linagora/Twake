@@ -151,27 +151,27 @@ twake_drive_get_external_drives:
 # Activity
 
 drive_activities_create:
-    path: /driveActivitys/create
+    path: /driveActivities/create
     defaults: { _controller: TwakeDriveBundle:DriveActivity:create }
     methods: [POST]
 
 drive_activities_get:
-    path: /driveActivitys/get
+    path: /driveActivities/get
     defaults: { _controller: TwakeDriveBundle:DriveActivity:get }
     methods: [POST]
 
 drive_activities_readAll:
-    path: /driveActivitys/readAll
+    path: /driveActivities/readAll
     defaults: { _controller: TwakeDriveBundle:DriveActivity:readAll }
     methods: [POST]
 
 drive_activities_readOne:
-    path: /driveActivitys/readOne
+    path: /driveActivities/readOne
     defaults: { _controller: TwakeDriveBundle:DriveActivity:readOne}
     methods: [POST]
 
 drive_activities_delete:
-    path: /driveActivitys/delete
+    path: /driveActivities/delete
     defaults: { _controller: TwakeDriveBundle:DriveActivity:delete}
     methods: [POST]
 

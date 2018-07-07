@@ -96,7 +96,7 @@ class UserToNotifyService
         if(!$usersToNotify)
             return false;
         foreach ($usersToNotify as $userToNotify){
-            $this->driveActivities->pushActivity(true,$workspace, $userToNotify->getUser(),null,$title,$text,Array(),$userToNotify->getDriveType()."/".$driveFile.$fileId);
+            $this->driveActivities->pushActivity(true,$workspace, $userToNotify->getUser(),null,$title,$text,Array(),Array("notifCode" => $userToNotify->getDriveType()."/".$driveFile.$fileId));
         }
         return true;
     }

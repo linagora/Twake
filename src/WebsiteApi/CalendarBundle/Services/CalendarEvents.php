@@ -6,6 +6,7 @@ namespace WebsiteApi\CalendarBundle\Services;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\CalendarBundle\Entity\CalendarEvent;
 use WebsiteApi\CalendarBundle\Entity\Event;
+use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
 use WebsiteApi\CalendarBundle\Entity\LinkEventUser;
 use WebsiteApi\CalendarBundle\Model\CalendarEventsInterface;
 
@@ -232,7 +233,7 @@ class CalendarEvents implements CalendarEventsInterface
 
             }
 
-            $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User added to activity", Array());
+            $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User added to activity", Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
         }
         $this->doctrine->flush();
         $data = Array(
@@ -278,7 +279,7 @@ class CalendarEvents implements CalendarEventsInterface
 
             $event->setParticipant($participantArray);
             $this->doctrine->persist($event);
-            $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User removed from activity", Array());
+            $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User removed from activity", Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
 
         }
         $this->doctrine->flush();
@@ -302,6 +303,27 @@ class CalendarEvents implements CalendarEventsInterface
         $events = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->getCalendarsEventsBy($from, $to, $calendarsId);
 
         return $events;
+    }
+
+    public function getEvent($eventId,$workspaceId, $currentUserId){
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($workspace==null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read"))) {
+            return null;
+        }
+
+        /* @var CalendarEvent $event*/
+        $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->findOneBy(Array("id"=>$eventId));
+        /* @var LinkCalendarWorkspace $workspaceLink*/
+        $workspaceLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$event->getCalendar()));
+
+        if(!$workspaceLink)
+            return false;
+
+        if($workspaceLink->getWorkspace()->getId()==$workspaceId)
+            return $event;
+
+        return false;
     }
     //
     public function getEventsByCalendar($workspaceId, $calendarsId, $currentUserId = null){
