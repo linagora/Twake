@@ -1093,7 +1093,9 @@ class DriveFileSystem implements DriveFileSystemInterface
     public function download($workspace, $file, $download)
     {
 
-        header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+        if (isset($_SERVER['HTTP_ORIGIN'])) {
+            header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+        }
         header('Access-Control-Allow-Credentials: true');
 
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
