@@ -20,6 +20,7 @@ class CalendarEvents implements CalendarEventsInterface
     var $pusher;
     var $workspaceLevels;
     var $notifications;
+    /* @var CalendarActivities $calendarActivity */
     var $calendarActivity;
 
     public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceCalendarActivity)
@@ -31,7 +32,7 @@ class CalendarEvents implements CalendarEventsInterface
         $this->calendarActivity = $serviceCalendarActivity;
     }
 
-    public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false,$participants=Array())
+    public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false, $participants=Array())
     {
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
@@ -60,9 +61,11 @@ class CalendarEvents implements CalendarEventsInterface
         $event->setReminder();
         $event->setCalendar($calendar);
         $participantsArray = Array();
+        $this->doctrine->persist($event);
         foreach($participants as $participant)
         {
-            $user = $this->doctrine->getRepository("TwakeUserBundle:User")->find($participant);
+            $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($participant);
+            $this->addUsers($workspaceId,$calendarId,$event,Array($user->getId()));
             $participantsArray[] = $user->getAsArray();
         }
         $calArray = $calendar->getAsArray();
@@ -80,7 +83,7 @@ class CalendarEvents implements CalendarEventsInterface
         }
 
         if($addMySelf){
-            $this->addUsers($workspaceId, $calendarId, $event->getId(), Array($currentUserId), $currentUserId);
+            $this->addUsers($workspaceId, $calendarId, $event, Array($currentUserId), $currentUserId);
         }
 
 
@@ -112,6 +115,7 @@ class CalendarEvents implements CalendarEventsInterface
         if(!isset($eventArray["from"]) || !isset($eventArray["to"])){
             return null;
         }
+
 
         $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
 
@@ -194,8 +198,11 @@ class CalendarEvents implements CalendarEventsInterface
         return true;
     }
 
-    public function addUsers($workspaceId, $calendarId, $eventId, $usersId, $currentUserId = null)
+    public function addUsers($workspaceId, $calendarId, $event, $usersId, $currentUserId = null)
     {
+        $eventId = null;
+        if(is_int($event) || is_string($event))
+            $eventId = $event;
         error_log("ADD USERS");
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
@@ -210,11 +217,14 @@ class CalendarEvents implements CalendarEventsInterface
             return null;
         }
 
-        $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
+        if($eventId!=null)
+            $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
 
         if(!$event || $event->getCalendar()->getId() != $calendarId){
             return null;
         }
+
+        /* @var CalendarEvent $event */
 
         foreach ($usersId as $userId) {
             if($userId != null){ //pour eviter un bug du front
@@ -233,7 +243,7 @@ class CalendarEvents implements CalendarEventsInterface
 
             }
 
-            $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User added to activity", Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
+            $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$event->getEvent()["title"],"You have a new event the ".date('d/m/Y', $event->getFrom()), Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
         }
         $this->doctrine->flush();
         $data = Array(
@@ -266,22 +276,28 @@ class CalendarEvents implements CalendarEventsInterface
             return null;
         }
 
+        $participantArray = $event->getParticipant();
+        $participantArrayFinal = Array();
+
         foreach ($usersId as $userId){
+            $tokeep = true;
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
             $userLinked = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findOneBy(Array("user"=>$user, "event"=>$event));
             $this->doctrine->remove($userLinked);
-            $participantArray = $event->getParticipant();
             for($i=0;$i<count($participantArray);$i++){
                 if($participantArray[$i]["id"] == $user->getId()){
-                    $participantArray = array_splice($participantArray, $i, 1);
+                    $tokeep = false;
                 }
             }
 
-            $event->setParticipant($participantArray);
-            $this->doctrine->persist($event);
-            $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User removed from activity", Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
-
+            if(!$tokeep)
+                $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Removed  to ".$event->getEvent()["name"],"You have been removed from ".$event->getEvent()["name"], Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
+            else
+                array_push($participantArrayFinal,$user);
         }
+
+        $event->setParticipant($participantArrayFinal);
+        $this->doctrine->persist($event);
         $this->doctrine->flush();
         $data = Array(
             "type" => "update",
