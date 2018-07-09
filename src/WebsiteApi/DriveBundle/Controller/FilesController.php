@@ -310,8 +310,10 @@ class FilesController extends Controller
 
         }
 
-        for($i=0;$i<count($data["data"]["files"]);$i++)
-            $data["data"]["files"][$i]["drive"] = $directory;
+        if(isset($data["data"]["files"])) {
+            for ($i = 0; $i < count($data["data"]["files"]); $i++)
+                $data["data"]["files"][$i]["drive"] = $directory;
+        }
 
         return new JsonResponse($data);
     }
