@@ -35,4 +35,3 @@ services:
           class: WebsiteApi\DiscussionBundle\Topic\DiscussionSpaceTopic
           tags:
               - { name: gos_web_socket.topic }
-          arguments: ["@app.streamSystem", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager"]

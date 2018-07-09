@@ -21,13 +21,13 @@ class DiscussionController extends Controller
             $data['errors'][] = "notconnected";
         }
         else {
-            if(($request->request->get("discussionKey")==null && $request->request->get("discussionKey")!=0) ||  ($request->request->get("offset")==null && $request->request->get("offset")!=0) ){
+            if (($request->request->get("streamId") == null && $request->request->get("streamId") != 0) || ($request->request->get("offset") == null && $request->request->get("offset") != 0)) {
                 $data["errors"][] = "missingargument";
             }
             else{
                 $messages = [];
                 $offsetId= intval($request->request->get("offsetId"));
-                $messages = $this->get("app.messages")->getMessages($request->request->get("discussionKey"),$offsetId,$request->request->get("subject"),$this->getUser());
+                $messages = $this->get("app.messages")->getMessages("s-" . $request->request->get("streamId"), $offsetId, $request->request->get("subject"), $this->getUser());
 
                 error_log(count($messages));
                 $data["data"] = $messages;
