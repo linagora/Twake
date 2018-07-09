@@ -25,5 +25,5 @@ services:
         arguments: ["@app.calendar_events","@api.v1.api_status"]
 
     app.calendarActivity:
-        class: WebsiteApi\CalendarBundle\Services\CalendarActivitys
+        class: WebsiteApi\CalendarBundle\Services\CalendarActivities
         arguments: ["@doctrine.orm.entity_manager", "@app.pusher", "@app.notifications"]

@@ -18,7 +18,7 @@ use WebsiteApi\MarketBundle\Entity\Application;
  * Class CalendarActivity
  * @package WebsiteApi\CalendarBundle\Services
  */
-class CalendarActivitys implements CalendarActivityInterface
+class CalendarActivities implements CalendarActivityInterface
 {
 
     var $doctrine;
@@ -31,7 +31,7 @@ class CalendarActivitys implements CalendarActivityInterface
         $this->notifService = $notifService;
     }
 
-    public function pushTable($pushNotif = true, $workspace, $user = null, $levels = null, $texte = null, $type = Array(), $additionalData = Array())
+    public function pushActivity($pushNotif = true, $workspace, $user = null, $levels = null, $title="", $texte = null, $type = Array(), $additionalData = Array())
     {
         //ajotuer dans la table CalendarActivity
         if ($workspace != null) {
@@ -46,7 +46,7 @@ class CalendarActivitys implements CalendarActivityInterface
             "type" => "add",
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
             "app_id" => ($application != null ? $application->getId() : null),
-            "title" => "",
+            "title" => $title,
             "text" => $texte,
             "data" => $additionalData
         );
@@ -58,7 +58,7 @@ class CalendarActivitys implements CalendarActivityInterface
         if ($texte) {
             $cal->setText($texte);
         }
-        $cal->setTitle("");
+        $cal->setTitle($title);
 
 
         $this->doctrine->persist($cal);

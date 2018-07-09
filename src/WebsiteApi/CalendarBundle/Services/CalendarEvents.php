@@ -20,6 +20,7 @@ class CalendarEvents implements CalendarEventsInterface
     var $pusher;
     var $workspaceLevels;
     var $notifications;
+    /* @var CalendarActivities $calendarActivity */
     var $calendarActivity;
 
     public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceCalendarActivity)
@@ -222,6 +223,8 @@ class CalendarEvents implements CalendarEventsInterface
             return null;
         }
 
+        /* @var CalendarEvent $event */
+
         foreach ($usersId as $userId) {
             if($userId != null){ //pour eviter un bug du front
                 $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
@@ -239,7 +242,7 @@ class CalendarEvents implements CalendarEventsInterface
 
             }
 
-            $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User added to activity", Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
+            $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$event->getEvent()["title"],"You have a new event the ".date('d/m/Y', $event->getFrom()), Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
         }
         $this->doctrine->flush();
         $data = Array(
@@ -285,7 +288,7 @@ class CalendarEvents implements CalendarEventsInterface
 
             $event->setParticipant($participantArray);
             $this->doctrine->persist($event);
-            $this->calendarActivity->pushTable(true, $workspaceId, $user, null, "User removed from activity", Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
+            $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Removed  to ".$event->getEvent()["name"],"You have been removed from ".$event->getEvent()["name"], Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
 
         }
         $this->doctrine->flush();
