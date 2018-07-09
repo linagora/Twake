@@ -261,7 +261,7 @@ class MessageSystem implements MessagesSystemInterface
             $this->doctrine->persist($message);
             $this->doctrine->flush();
 
-            $this->notify($key, "C", $message->getAsArray());
+            $this->notify($stream->getId(), "C", $message->getAsArray());
 
             if ($sender != null) {
                 $this->messagesNotificationCenter->read($stream, $sender);
@@ -596,13 +596,13 @@ class MessageSystem implements MessagesSystemInterface
         return $retour;
     }
 
-    public function notify($discussionKey, $type, $messageArray)
+    public function notify($streamId, $type, $messageArray)
     {
         $data = Array(
             "type" => $type,
             "data" => $messageArray,
         );
-        $this->pusher->push($data, "discussion/".$discussionKey);
+        $this->pusher->push($data, "discussion/" . $streamId);
     }
 
 

@@ -36,8 +36,9 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 	//Post d'un message
 	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event = Array(), array $exclude = Array(), array $eligible = Array())
 	{
+
         $canBroadcast = true;
-		$key = $request->getAttributes()->get('key');
+        $key = "s-" . $request->getAttributes()->get('id');
 		$currentUser = $this->clientManipulator->getClient($connection);
 
 		//Verify user is logged in
@@ -55,6 +56,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 
 			//Ask for an initialization
             $operation = $event['type'];
+            error_log("==>(1)" . json_encode($event));
 
             if($operation == "N") { // Send notification
 	            if(isset($event["data"]["except"])) {
@@ -83,6 +85,7 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
 	            	$this->messagesService->sendMessageWithFile($currentUser->getId(), $key,$event['data']['content'],$event["data"]['workspace'], $event["data"]['subject'],$event["data"]['fileId'], false);
 				}
 				else{
+                    error_log(json_encode($event));
                     $this->messagesService->sendMessage($currentUser->getId(), $key, false, null, false, $event['data']['content'], $event["data"]['workspace'], $event["data"]['subject'], null, false, $event["data"]["front_id"]);
 				}
                 $canBroadcast = false;
@@ -124,11 +127,8 @@ class DiscussionTopic implements TopicInterface, PushableTopicInterface
                 else{
                     $canBroadcast = false;
                 }
-            }
-			elseif ($operation == 'W') { // is writing
-                if (isset($event['data']) && isset($event['data']['isWriting'])) {
-                    $event["data"]["id"] = $currentUser->getId();
-                }
+            } elseif ($operation == 'user_writing') { // is writing
+                $event["data"]["id"] = $currentUser->getId();
             }
             elseif ($operation == 'P'){ // pinned message
             	if(isset($event["data"]) && isset($event["data"]["id"]) && isset($event["data"]["pinned"])){

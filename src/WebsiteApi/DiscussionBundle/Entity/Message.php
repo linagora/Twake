@@ -26,10 +26,6 @@ class Message
 	 */
 	private $userSender;
 
-
-
-
-
     /**
      * @ORM\Column(type="string", length=1)
      */
@@ -71,6 +67,11 @@ class Message
 	 * @ORM\Column(type="datetime",nullable=true)
 	 */
 	private $date;
+
+    /**
+     * @ORM\Column(type="text", length=30000)
+     */
+    private $htmlContent = "";
 
 	/**
 	 * @ORM\Column(type="text", length=20000)
@@ -302,6 +303,31 @@ class Message
     /**
      * @return mixed
      */
+    public function getHtmlContent()
+    {
+        return base64_decode($this->content);
+    }
+
+    /**
+     * @param mixed $content
+     */
+    public function setHtmlContent($content)
+    {
+        $tmp = base64_encode($content);
+
+        //Important : remove dangerous html
+        $tmp = str_replace(
+            Array("<script"),
+            Array("&#60;script"),
+            $tmp
+        );
+
+        $this->content = $tmp;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getCleanContent()
     {
         return $this->cleanContent;
@@ -429,15 +455,12 @@ class Message
             "id" => $this->getId(),
             "front_id" => $this->getFrontId(),
             "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getId():null,
-
             "recieverType" => $this->getTypeReciever(),
             "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getId()  :null,
             "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
-
             "isApplicationMessage" => $this->getIsApplicationMessage(),
             "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getAsArray():null,
             "isSystemMessage" => $this->getIsSystemMessage(),
-
             "content" => $this->getContent(),
             "cleanContent" => $this->getCleanContent(),
             "date" => $this->getDate()?$this->getDate()->getTimestamp()*1000:null,
@@ -453,10 +476,9 @@ class Message
         return Array(
             "id" => $this->getId(),
             "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getId():null,
-
             "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getId()  :null,
             "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
-
+            "htmlContent" => $this->getHtmlContent(),
             "content" => $this->getContent(),
             "date" => $this->getDate()?$this->getDate()->getTimestamp()*1000:null,
             "edited" => $this->getEdited(),

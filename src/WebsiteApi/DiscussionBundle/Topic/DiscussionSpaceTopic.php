@@ -16,108 +16,25 @@ class DiscussionSpaceTopic implements TopicInterface, PushableTopicInterface
         return 'discussionspace.topic';
     }
 
-    private $streamService;
-    private $clientManipulator;
-    private $doctrine;
-
-    public function __construct($streamService, $clientManipulator, $doctrine)
+    public function __construct()
     {
-        $this->streamService = $streamService;
-        $this->clientManipulator = $clientManipulator;
-        $this->doctrine = $doctrine;
     }
 
-    /**
-     * @param Topic $topic
-     * @param WampRequest $request
-     * @param string|array $data
-     * @param string $provider
-     */
     public function onPush(Topic $topic, WampRequest $request, $data, $provider)
     {
-        // TODO: Implement onPush() method.
     }
 
-    /**
-     * @param  ConnectionInterface $connection
-     * @param  Topic $topic
-     * @param WampRequest $request
-     */
     public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
-        // TODO: Implement onSubscribe() method.
     }
 
-    /**
-     * @param  ConnectionInterface $connection
-     * @param  Topic $topic
-     * @param WampRequest $request
-     */
     public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
     {
-        // TODO: Implement onUnSubscribe() method.
     }
 
-    /**
-     * @param  ConnectionInterface $connection
-     * @param  Topic $topic
-     * @param WampRequest $request
-     * @param $event
-     * @param  array $exclude
-     * @param  array $eligible
-     */
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
     {
-        print_r($event);
-
-        $key = $request->getAttributes()->get('key');
-        $currentUser = $this->clientManipulator->getClient($connection);
-        if (!($currentUser instanceof User)) {
-            return;
-        }
-        //Verify user is logged in
-        if ($currentUser == null
-            || is_string($currentUser)
-        ) {
-            return; //Cancel operation
-        }
-        $currentUser = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneById($currentUser->getId());
-
-        $canBroadcast = true;
-
-
-        if($event["type"] == "C"){ // creation
-            $stream = $this->streamService->createStream($currentUser,$key,$event["data"]["name"],$event["data"]["description"],$event["data"]["isPrivate"]);
-            if($stream){
-                $event["data"] = $stream;
-            }
-            else{
-                $canBroadcast = false;
-            }
-        }
-        elseif($event["type"] == "E"){ // edition
-            if(isset($event["data"]["id"]) && isset($event["data"]["name"]) && isset($event["data"]["isPrivate"]) && isset($event["data"]["members"]) ){
-                $stream = $this->streamService->editStream($currentUser, $event["data"]["id"],$event["data"]["name"],$event["data"]["description"], $event["data"]["isPrivate"],$event["data"]["members"]);
-                if($stream){
-                    echo "YEEES";
-                    $event["data"] = $stream;
-                }
-                else{
-                    echo "NOOOOO";
-                    $canBroadcast = false;
-                }
-
-            }
-        }elseif($event["type"] == "D"){ // delete
-            if(isset($event["data"]["id"])){
-                $isOk = $this->streamService->deleteStream($currentUser, $event["data"]["id"]);
-                if(!$isOk){
-                    $canBroadcast = false;
-                }
-            }
-        }
-        if($canBroadcast){
-            $topic->broadcast($event);
-        }
+        $topic->broadcast($event);
     }
+
 }
