@@ -207,7 +207,7 @@ class MessageSystem implements MessagesSystemInterface
     }
 
 
-    public function sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify = true, $front_id = "")
+    public function sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify = true, $front_id = "", $respond_to = 0)
     {
 
         if ($workspace != null) {
@@ -254,6 +254,13 @@ class MessageSystem implements MessagesSystemInterface
             $dateTime = new \DateTime(date('Y-m-d H:i:s.' . $micro, $t));
             $message = new Message($sender, "S", $stream, $isApplicationMessage, $application, $isSystemMessage, $dateTime, $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), $subject);
             $message->setFrontId($front_id);
+
+            if ($respond_to > 0) {
+                $responseTo = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($respond_to);
+                if ($responseTo) {
+                    $message->setResponseTo($responseTo);
+                }
+            }
 
             if ($messageData != null) {
                 $message->setApplicationData($messageData);
