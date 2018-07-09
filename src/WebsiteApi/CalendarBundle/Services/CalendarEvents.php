@@ -116,6 +116,7 @@ class CalendarEvents implements CalendarEventsInterface
             return null;
         }
 
+
         $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
 
         if(!$event){
@@ -275,22 +276,28 @@ class CalendarEvents implements CalendarEventsInterface
             return null;
         }
 
+        $participantArray = $event->getParticipant();
+        $participantArrayFinal = Array();
+
         foreach ($usersId as $userId){
+            $tokeep = true;
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
             $userLinked = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findOneBy(Array("user"=>$user, "event"=>$event));
             $this->doctrine->remove($userLinked);
-            $participantArray = $event->getParticipant();
             for($i=0;$i<count($participantArray);$i++){
                 if($participantArray[$i]["id"] == $user->getId()){
-                    $participantArray = array_splice($participantArray, $i, 1);
+                    $tokeep = false;
                 }
             }
 
-            $event->setParticipant($participantArray);
-            $this->doctrine->persist($event);
-            $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Removed  to ".$event->getEvent()["name"],"You have been removed from ".$event->getEvent()["name"], Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
-
+            if(!$tokeep)
+                $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Removed  to ".$event->getEvent()["name"],"You have been removed from ".$event->getEvent()["name"], Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
+            else
+                array_push($participantArrayFinal,$user);
         }
+
+        $event->setParticipant($participantArrayFinal);
+        $this->doctrine->persist($event);
         $this->doctrine->flush();
         $data = Array(
             "type" => "update",
