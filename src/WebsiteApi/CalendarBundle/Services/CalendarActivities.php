@@ -31,7 +31,7 @@ class CalendarActivities implements CalendarActivityInterface
         $this->notifService = $notifService;
     }
 
-    public function pushActivity($pushNotif = true, $workspace, $user = null, $levels = null, $title="", $texte = null, $type = Array(), $additionalData = Array())
+    public function pushActivity($pushNotif = true, $workspace, $user = null, $levels = null, $title="", $text = null, $type = Array(), $additionalData = Array())
     {
         //ajotuer dans la table CalendarActivity
         if ($workspace != null) {
@@ -40,30 +40,30 @@ class CalendarActivities implements CalendarActivityInterface
         $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'calendar'));
         // $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'calendar'));
 
-        $cal = new CalendarActivity($application, $workspace, $user);
+        $calendarActivity = new CalendarActivity($application, $workspace, $user);
 
         $data = Array(
             "type" => "add",
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
             "app_id" => ($application != null ? $application->getId() : null),
             "title" => $title,
-            "text" => $texte,
+            "text" => $text,
             "data" => $additionalData
         );
 
         if ($data) {
-            $cal->setData($data);
+            $calendarActivity->setData($data);
         }
 
-        if ($texte) {
-            $cal->setText($texte);
+        if ($text) {
+            $calendarActivity->setText($text);
         }
-        $cal->setTitle($title);
+        $calendarActivity->setTitle($title);
 
 
-        $this->doctrine->persist($cal);
+        $this->doctrine->persist($calendarActivity);
 
-        $data = Array("action" => "addActiviy");
+        $data = Array("action" => "addActivity");
         $this->pusher->push($data, "calendar/workspace/" . $workspace->getId());
 
         //$data = Array("action" => "add");
@@ -71,8 +71,8 @@ class CalendarActivities implements CalendarActivityInterface
 
         //appel pour faire une notification
         if ($pushNotif) {
-            $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "calendarActivity", $texte, $type, null, true);
-            $this->pusher->push($cal->getAsArray(), "calendar/activity");
+            $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "calendarActivity", $text, $type, null, true);
+            $this->pusher->push($calendarActivity->getAsArray(), "calendar/activity");
         }
 
     }
@@ -88,18 +88,18 @@ class CalendarActivities implements CalendarActivityInterface
         } else {
 
 
-            $cal = new CalendarActivity($application, $workspace, $user);
-            $this->doctrine->persist($cal);
+            $calendarActivity = new CalendarActivity($application, $workspace, $user);
+            $this->doctrine->persist($calendarActivity);
 
             $this->doctrine->flush();
 
             $data = Array(
                 "type" => "create",
-                "calendarActivity" => $cal->getAsArray()
+                "calendarActivity" => $calendarActivity->getAsArray()
             );
             $this->pusher->push($data, "calendarActivity/workspace/" . $workspaceId);
 
-            return $cal;
+            return $calendarActivity;
         }
     }
 
