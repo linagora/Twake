@@ -140,6 +140,8 @@ class DriveFileSystem implements DriveFileSystemInterface
             }
         }
 
+        $fileOrDirectory->setExtension($originalExt);
+
         $i = 2;
 
         //Verify there is not already a number
