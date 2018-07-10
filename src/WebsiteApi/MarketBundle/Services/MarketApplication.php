@@ -113,6 +113,12 @@ class MarketApplication implements MarketApplicationInterface
             $pattern = '/\/\/([^\/]+)\//';
             $subject = $url;
             preg_match($pattern, $subject, $matches, PREG_OFFSET_CAPTURE);
+
+            // if link is like "https://trello.com"
+            if(count($matches)<2){
+                return false;
+            }
+
             $tmp = $matches[1][0];
             if(substr($tmp,0,4)=="www."){
                 $domain_name = substr($tmp,4);
