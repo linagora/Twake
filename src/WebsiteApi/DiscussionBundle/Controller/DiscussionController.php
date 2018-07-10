@@ -5,6 +5,7 @@ namespace WebsiteApi\DiscussionBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
+use WebsiteApi\DiscussionBundle\Services\MessageSystem;
 
 
 class DiscussionController extends Controller
@@ -328,6 +329,31 @@ class DiscussionController extends Controller
 
         if(!$res)
             $data["errors"][] = "Fail to edit stream";
+        else
+            $data["data"][] = "success";
+
+        return new JsonResponse($data);
+    }
+
+    public function sendMessageFileAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $streamId = $request->request->get("streamId",0);
+        $subjectId = $request->request->get("subjectId",0);
+        $fileId = $request->request->get("fileId",0);
+        $workspaceId = $request->request->get("workspaceId",0);
+
+        /* @var MessageSystem $messageSystem */
+
+        //Warning, auth done in service
+        $messageSystem = $this->get("app.messages");
+        $res = $messageSystem->sendMessageWithFile($this->getUser()->getId(),"s-".$streamId,"",$workspaceId,$subjectId,$fileId);
+
+        if(!$res)
+            $data["errors"][] = "Fail to send message file";
         else
             $data["data"][] = "success";
 
