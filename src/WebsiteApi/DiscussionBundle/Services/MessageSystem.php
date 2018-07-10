@@ -74,10 +74,10 @@ class MessageSystem implements MessagesSystemInterface
         if ($explode[0] == "s") {
 
             $s = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find(intval($explode[1]));
-            if (!$s || $s->getType() != "stream") {
+            if (!$s) {
                 return null;
             }
-            $streamObject["type"] = "stream";
+            $streamObject["type"] = $s->getType();
             $streamObject["object"] = $s;
             $streamObject["key"] = "s-" . intval($explode[1]);
 
@@ -258,6 +258,9 @@ class MessageSystem implements MessagesSystemInterface
             if ($respond_to > 0) {
                 $responseTo = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($respond_to);
                 if ($responseTo) {
+                    $responseTo->setHasResponses(true);
+                    $this->doctrine->persist($responseTo);
+
                     $message->setResponseTo($responseTo);
                 }
             }
@@ -337,7 +340,7 @@ class MessageSystem implements MessagesSystemInterface
             $message->setEdited(true);
             $this->doctrine->persist($message);
             $this->doctrine->flush();
-            return $this->getMessageAsArray($message, true, $message->getResponseTo() != null);
+            return $message->getAsArray();
         }
         return false;
     }
@@ -362,20 +365,17 @@ class MessageSystem implements MessagesSystemInterface
 
         if ($message != null) {
             if ($message->getResponseTo() != null) {
-                $messageParent = $message->getResponseTo();
                 $this->doctrine->remove($message);
                 $this->doctrine->flush();
-                $messageArray = $this->getMessageAsArray($messageParent);
             } else {
                 $responses = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo" => $message));
                 foreach ($responses as $response) {
                     $this->doctrine->remove($response);
                 }
-                $messageArray = $message->getAsArray();
                 $this->doctrine->remove($message);
                 $this->doctrine->flush();
             }
-            return $messageArray;
+            return $message->getAsArray();
         }
         return false;
     }
@@ -400,14 +400,20 @@ class MessageSystem implements MessagesSystemInterface
         $recieverId = $vals["id"];
         $recieverType = $vals["type"];
 
-        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverType, $recieverId, intval($maxId), $subjectId, $user->getId());
-        $messages = array_reverse($messages);
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverId, intval($maxId), $subjectId);
+
+        $headIds = [];
+        foreach ($messages as $message) {
+            if ($message->getHasResponses()) {
+                $headIds[] = $message->getId();
+            }
+        }
+
+        $messages = array_merge($messages, $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findResponsesOf($headIds, $recieverId, $subjectId));
+
         $retour = [];
         foreach ($messages as $message) {
-            $messageArray = $this->getMessageAsArray($message, $subjectId != null);
-            if ($messageArray) {
-                $retour[] = $messageArray;
-            }
+            $retour[] = $message->getAsArray();
         }
         return $retour;
     }
@@ -486,21 +492,17 @@ class MessageSystem implements MessagesSystemInterface
             return false;
         }
 
-        $from = $messageDragged->getResponseTo();
-
+        $messageDrop->setHasResponses(true);
         $messageDragged->setResponseTo($messageDrop);
+
+        $this->doctrine->persist($messageDrop);
         $this->doctrine->persist($messageDragged);
+
         $this->setResponseMessage($messageDragged, $messageDrop);
         $this->doctrine->flush();
-        if ($from != null) {
-            $from = $this->getMessageAsArray($from);
-        }
-        $messageDropArray = $this->getMessageAsArray($messageDrop, $messageDrop->getSubject() != null);
-        return Array(
-            "messageDrop" => $messageDropArray,
-            "idDragged" => $idDragged,
-            "from" => $from,
-        );
+
+        return $messageDragged->getAsArray();
+
     }
 
     public function moveMessageOutMessage($idDragged, $user)
@@ -518,12 +520,8 @@ class MessageSystem implements MessagesSystemInterface
         $this->doctrine->persist($messageDragged);
         $this->doctrine->flush();
 
-        $oldMessageArray = $this->getMessageAsArray($oldMessage, $oldMessage->getSubject() != null);
-        $messageDraggedArray = $this->getMessageAsArray($messageDragged, $messageDragged->getSubject() != null);
+        return $messageDragged->getAsArray();
 
-        $message["oldMessage"] = $oldMessageArray;
-        $message["messageDrag"] = $messageDraggedArray;
-        return $message;
     }
 
     public function getResponseMessages($messageParentId){
@@ -535,6 +533,10 @@ class MessageSystem implements MessagesSystemInterface
     private function setResponseMessage($messageParent, $messageDroped)
     {
         $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo" => $messageParent));
+
+        $messageDroped->setHasResponses(true);
+        $this->doctrine->persist($messageDroped);
+
         foreach ($messages as $message) {
             $message->setResponseTo($messageDroped);
             $this->doctrine->persist($message);

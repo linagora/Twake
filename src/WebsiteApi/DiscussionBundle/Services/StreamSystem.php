@@ -390,17 +390,19 @@ class StreamSystem implements StreamSystemInterface
 			            if ($stream) {
 				            $linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user" => $user, "stream" => $stream));
 
-				            $stream = $stream["object"];
-				            $notifications = $this->messageReadSystem->streamNotifications($stream, $user);
-				            $callInfos = $this->callSystem->getCallInfo($user, $stream->getAsArray()["key"]);
-				            $retour["stream"][] = array_merge($stream->getAsArray(), Array(
-					            "notifications" => $notifications["notifications"],
-                                "subject_notifications"=>$notifications["subject_notifications"],
-                                "lastread"=>$notifications["lastread"],
-					            "call" => $callInfos,
-					            "contact" => $member->getAsArray(),
-					            "mute" => $linkStream->getMute()
-				            ));
+                            if ($linkStream) {
+                                $stream = $stream["object"];
+                                $notifications = $this->messageReadSystem->streamNotifications($stream, $user);
+                                $callInfos = $this->callSystem->getCallInfo($user, $stream->getAsArray()["key"]);
+                                $retour["stream"][] = array_merge($stream->getAsArray(), Array(
+                                    "notifications" => $notifications["notifications"],
+                                    "subject_notifications" => $notifications["subject_notifications"],
+                                    "lastread" => $notifications["lastread"],
+                                    "call" => $callInfos,
+                                    "contact" => $member->getAsArray(),
+                                    "mute" => $linkStream->getMute()
+                                ));
+                            }
 			            }
 		            }
 	            }

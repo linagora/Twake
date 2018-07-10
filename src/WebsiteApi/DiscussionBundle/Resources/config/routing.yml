@@ -15,6 +15,11 @@ messages_get_drive_message:
     path:     /getDriveMessage
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getDriveMessage}
 
+messages_send_message_file:
+    path:     /sendMessageFile
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:sendMessageFile}
+
+
 streams_get:
     path:     /streams/get
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getStreams }
