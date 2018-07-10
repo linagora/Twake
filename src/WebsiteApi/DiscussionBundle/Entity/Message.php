@@ -62,7 +62,6 @@ class Message
 
 
 
-
     /**
 	 * @ORM\Column(type="datetime",nullable=true)
 	 */
@@ -99,6 +98,11 @@ class Message
 	 * @ORM\JoinColumn(nullable=true)
 	 */
 	private $responseTo = null;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $hasResponses = false;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Subject",cascade={"persist"})
@@ -392,6 +396,22 @@ class Message
     /**
      * @return mixed
      */
+    public function getHasResponses()
+    {
+        return $this->hasResponses;
+    }
+
+    /**
+     * @param mixed $hasResponses
+     */
+    public function setHasResponses($hasResponses)
+    {
+        $this->hasResponses = $hasResponses;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getSubject()
     {
         return $this->subject;
@@ -468,6 +488,7 @@ class Message
             "pinned" => $this->getPinned(),
             "subject" => ($this->getSubject()!=null)?$this->getSubject()->getAsArray():null,
             "applicationData" => $this->getApplicationData(),
+            "responseTo" => ($this->getResponseTo() != null) ? $this->getResponseTo()->getId() : null,
         );
 
     }
@@ -484,6 +505,7 @@ class Message
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),
             "subject" => ($this->getSubject()!=null)?$this->getSubject()->getAsArray():null,
+            "responseTo" => ($this->getResponseTo() != null) ? $this->getResponseTo()->getId() : null,
         );
     }
 

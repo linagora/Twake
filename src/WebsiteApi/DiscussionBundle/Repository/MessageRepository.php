@@ -81,32 +81,53 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
         return $result;
     }
 
-    public function findWithOffsetId($typeReciever,$recieverid,$maxId,$subjectId,$userId){
+    public function findWithOffsetId($streamId, $maxId, $subjectId)
+    {
+
         $qb = $this->createQueryBuilder("m");
-        $qb->where("m.typeReciever = :type");
-        $qb->setParameter("type",$typeReciever);
-        if($typeReciever=="S"){
-            $qb->andWhere("m.streamReciever = :streamId")
-                ->setParameter("streamId",$recieverid);
-        }
-        else{
-            $qb->andWhere('m.userSender = :id1 AND m.userReciever = :id2 OR m.userSender = :id2 AND m.userReciever = :id1')
-                ->setParameter("id1",$userId)
-                ->setParameter("id2",$recieverid);
-        }
+        $qb->andWhere("m.streamReciever = :streamId")
+            ->setParameter("streamId", $streamId);
+
+        $qb->andWhere("m.responseTo IS NULL");
+
         if($subjectId){
-        $qb->andWhere("m.subject = :subject")
-            ->setParameter("subject",$subjectId);
+            $qb->andWhere("m.subject = :subject")
+                ->setParameter("subject", $subjectId);
         }
 
         if($maxId>=0){
-            error_log("maxId");
             $qb->andWhere("m.id < :max")
                 ->setParameter("max",($maxId-1));
         }
-        $qb->orderBy('m.date', 'DESC');
+
+        $qb->orderBy('m.date', 'ASC');
         $qb->setMaxResults(50);
         $result = $qb->getQuery()->getResult();
+
+        return $result;
+    }
+
+    public function findResponsesOf($headIds, $streamId, $subjectId)
+    {
+
+        if (count($headIds) == 0) {
+            return Array();
+        }
+
+        $qb = $this->createQueryBuilder("m");
+        $qb->andWhere("m.streamReciever = :streamId")
+            ->setParameter("streamId", $streamId);
+
+        $qb->andWhere("m.responseTo IN (" . join(",", $headIds) . ")");
+
+        if ($subjectId) {
+            $qb->andWhere("m.subject = :subject")
+                ->setParameter("subject", $subjectId);
+        }
+
+        $qb->orderBy('m.date', 'ASC');
+        $result = $qb->getQuery()->getResult();
+
         return $result;
     }
 
