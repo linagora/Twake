@@ -365,20 +365,17 @@ class MessageSystem implements MessagesSystemInterface
 
         if ($message != null) {
             if ($message->getResponseTo() != null) {
-                $messageParent = $message->getResponseTo();
                 $this->doctrine->remove($message);
                 $this->doctrine->flush();
-                $messageArray = $this->getMessageAsArray($messageParent);
             } else {
                 $responses = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo" => $message));
                 foreach ($responses as $response) {
                     $this->doctrine->remove($response);
                 }
-                $messageArray = $message->getAsArray();
                 $this->doctrine->remove($message);
                 $this->doctrine->flush();
             }
-            return $messageArray;
+            return $message->getAsArray();
         }
         return false;
     }
