@@ -74,10 +74,10 @@ class MessageSystem implements MessagesSystemInterface
         if ($explode[0] == "s") {
 
             $s = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find(intval($explode[1]));
-            if (!$s || $s->getType() != "stream") {
+            if (!$s) {
                 return null;
             }
-            $streamObject["type"] = "stream";
+            $streamObject["type"] = $s->getType();
             $streamObject["object"] = $s;
             $streamObject["key"] = "s-" . intval($explode[1]);
 
@@ -257,10 +257,10 @@ class MessageSystem implements MessagesSystemInterface
 
             if ($respond_to > 0) {
                 $responseTo = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($respond_to);
-                $responseTo->setHasResponses(true);
-                $this->doctrine->persist($responseTo);
-
                 if ($responseTo) {
+                    $responseTo->setHasResponses(true);
+                    $this->doctrine->persist($responseTo);
+
                     $message->setResponseTo($responseTo);
                 }
             }
@@ -495,8 +495,6 @@ class MessageSystem implements MessagesSystemInterface
             return false;
         }
 
-        $from = $messageDragged->getResponseTo();
-
         $messageDrop->setHasResponses(true);
         $messageDragged->setResponseTo($messageDrop);
 
@@ -505,15 +503,9 @@ class MessageSystem implements MessagesSystemInterface
 
         $this->setResponseMessage($messageDragged, $messageDrop);
         $this->doctrine->flush();
-        if ($from != null) {
-            $from = $this->getMessageAsArray($from);
-        }
-        $messageDropArray = $this->getMessageAsArray($messageDrop, $messageDrop->getSubject() != null);
-        return Array(
-            "messageDrop" => $messageDropArray,
-            "idDragged" => $idDragged,
-            "from" => $from,
-        );
+
+        return $messageDragged->getAsArray();
+
     }
 
     public function moveMessageOutMessage($idDragged, $user)
