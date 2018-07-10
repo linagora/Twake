@@ -37,7 +37,7 @@ class CalendarEvents implements CalendarEventsInterface
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+        if ($workspace==null || $currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
             return null;
         }
 
@@ -74,11 +74,9 @@ class CalendarEvents implements CalendarEventsInterface
 
         $this->doctrine->persist($event);
         $this->doctrine->flush();
-
-        if ($calArray["autoParticipate"] != null && is_array($calArray["autoParticipate"])) {
+        if ($calArray["autoParticipate"] != null && is_array($calArray["autoParticipate"])){
             foreach ($calArray["autoParticipate"] as $userAuto){
-                error_log($userAuto);
-                $this->addUsers($workspaceId, $calendarId, $event->getId(),Array($userAuto["id"]), $currentUserId);
+                $this->addUsers($workspaceId, $calendarId, $event->getId(),Array($userAuto), $currentUserId);
             }
         }
 
@@ -231,7 +229,7 @@ class CalendarEvents implements CalendarEventsInterface
                 $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
                 $eventUserRepo = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser");
                 $userLink = $eventUserRepo->findBy(Array("user"=>$user,"event"=>$event));
-                if($userLink== false){
+                if($userLink == false){
                     $userLinked = new LinkEventUser($user, $event);
                     $userLinked->setFrom($event->getFrom());
                     $userLinked->setTo($event->getTo());
@@ -239,11 +237,11 @@ class CalendarEvents implements CalendarEventsInterface
                     $participantArray = $event->getParticipant();
                     $participantArray[] = $user->getAsArray();
                     $event->setParticipant($participantArray);
+                    $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$event->getEvent()["title"],"You have a new event the ".date('d/m/Y', $event->getFrom()), Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
                 }
 
             }
 
-            $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$event->getEvent()["title"],"You have a new event the ".date('d/m/Y', $event->getFrom()), Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
         }
         $this->doctrine->flush();
         $data = Array(
