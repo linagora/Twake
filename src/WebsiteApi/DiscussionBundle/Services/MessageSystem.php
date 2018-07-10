@@ -364,6 +364,9 @@ class MessageSystem implements MessagesSystemInterface
         }
 
         if ($message != null) {
+
+            $array = $message->getAsArray();
+
             if ($message->getResponseTo() != null) {
                 $this->doctrine->remove($message);
                 $this->doctrine->flush();
@@ -375,7 +378,7 @@ class MessageSystem implements MessagesSystemInterface
                 $this->doctrine->remove($message);
                 $this->doctrine->flush();
             }
-            return $message->getAsArray();
+            return $array;
         }
         return false;
     }
@@ -438,7 +441,7 @@ class MessageSystem implements MessagesSystemInterface
         $message->setPinned($pinned);
         $this->doctrine->persist($message);
         $this->doctrine->flush();
-        return $this->getMessageAsArray($message, true, false);
+        return $message->getAsArray();
     }
 
     public function moveMessageInSubject($idSubject, $idMessage, $user)
