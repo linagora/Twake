@@ -51,7 +51,7 @@ class Calendars implements CalendarsInterface
             if (count($links) == 0) {
                 $calendar = $this->createCalendar($workspaceId, "Default", "E2333A");
                 $cal = $calendar->getAsArray();
-                $cal["owner"] = $link->getOwner();
+                $cal["owner"] = true;
                 $result[] = $cal;
             }
 
