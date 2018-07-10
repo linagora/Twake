@@ -53,8 +53,8 @@ class DefaultController extends Controller
         $application_tmp = $request->request->get("application");
         $workspace_id_tmp = $request->request->get("workspace_id");
 
-        $workspace_id = $this->getDoctrine()->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
-        $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->find($application_tmp);
+        $workspace_id = $this->getDoctrine()->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$workspace_id_tmp));
+        $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("id"=>$application_tmp["id"]));
 
         $user = $this->getUser();
         $delete = $this->get('app.notifications')->readAll($application, $workspace_id, $user, null, false);
