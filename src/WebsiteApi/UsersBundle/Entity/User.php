@@ -326,11 +326,12 @@ class User extends BaseUser
 		@$preferences["dont_use_keywords"] = intval($notification_preference["use_keywords"]);
 		@$preferences["keywords"] = substr($notification_preference["keywords"], 0, 512);
 
-		$token = explode("[",$notification_preference["disabled_workspaces"])[1];
-		$token2 = explode("]", $token)[0];
-        $token3 = explode(",", $token2);
 
-        foreach ($token3 as $item) {
+		// $token = explode("[",$notification_preference["disabled_workspaces"])[1];
+		// $token2 = explode("]", $token)[0];
+        // $token3 = explode(",", $token2);
+
+        foreach ($notification_preference["disabled_workspaces"] as $item) {
             @$preferences["disabled_workspaces"][] = intval($item);
         }
 
