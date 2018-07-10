@@ -5,6 +5,7 @@ namespace WebsiteApi\CalendarBundle\Services;
 use WebsiteApi\CalendarBundle\Entity\CalendarActivity;
 use WebsiteApi\CalendarBundle\Model\CalendarActivityInterface;
 use WebsiteApi\MarketBundle\Entity\Application;
+use WebsiteApi\NotificationsBundle\Services\Notifications;
 
 
 /**
@@ -22,6 +23,7 @@ class CalendarActivities implements CalendarActivityInterface
 {
 
     var $doctrine;
+    /* @var Notifications $notifService */
     var $notifService;
 
     public function __construct($doctrine, $pusher, $notifService)
@@ -71,7 +73,7 @@ class CalendarActivities implements CalendarActivityInterface
 
         //appel pour faire une notification
         if ($pushNotif) {
-            $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "calendarActivity", $text, $type, null, true);
+            $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "calendarActivity", $text, $type, Array("data" => $additionalData), true);
             $this->pusher->push($calendarActivity->getAsArray(), "calendar/activity");
         }
 

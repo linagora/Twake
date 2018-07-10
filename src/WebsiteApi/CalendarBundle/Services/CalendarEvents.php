@@ -61,7 +61,10 @@ class CalendarEvents implements CalendarEventsInterface
         $event->setReminder();
         $event->setCalendar($calendar);
         $participantsArray = Array();
+        $event->setParticipant($participantsArray);
         $this->doctrine->persist($event);
+        $this->doctrine->flush();
+
         foreach($participants as $participant)
         {
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($participant);
@@ -73,7 +76,6 @@ class CalendarEvents implements CalendarEventsInterface
         $event->setParticipant($participantsArray);
 
         $this->doctrine->persist($event);
-        $this->doctrine->flush();
 
         if ($calArray["autoParticipate"] != null && is_array($calArray["autoParticipate"])) {
             foreach ($calArray["autoParticipate"] as $userAuto){
@@ -92,6 +94,7 @@ class CalendarEvents implements CalendarEventsInterface
             "event" => $event->getAsArray()
         );
         $this->pusher->push($data, "calendar/".$calendarId);
+        $this->doctrine->flush();
 
         return $event;
 
@@ -330,6 +333,8 @@ class CalendarEvents implements CalendarEventsInterface
 
         /* @var CalendarEvent $event*/
         $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->findOneBy(Array("id"=>$eventId));
+        if($event==null)
+            return; false;
         /* @var LinkCalendarWorkspace $workspaceLink*/
         $workspaceLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$event->getCalendar()));
 
