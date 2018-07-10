@@ -50,7 +50,7 @@ class Calendars implements CalendarsInterface
             //Create calendar if no calendar was found in this workspace
             if (count($links) == 0) {
                 $calendar = $this->createCalendar($workspaceId, "Default", "E2333A");
-                $cal = $calendar->getCalendar()->getAsArray();
+                $cal = $calendar->getAsArray();
                 $cal["owner"] = $link->getOwner();
                 $result[] = $cal;
             }
