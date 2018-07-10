@@ -523,12 +523,8 @@ class MessageSystem implements MessagesSystemInterface
         $this->doctrine->persist($messageDragged);
         $this->doctrine->flush();
 
-        $oldMessageArray = $this->getMessageAsArray($oldMessage, $oldMessage->getSubject() != null);
-        $messageDraggedArray = $this->getMessageAsArray($messageDragged, $messageDragged->getSubject() != null);
+        return $messageDragged->getAsArray();
 
-        $message["oldMessage"] = $oldMessageArray;
-        $message["messageDrag"] = $messageDraggedArray;
-        return $message;
     }
 
     public function getResponseMessages($messageParentId){
