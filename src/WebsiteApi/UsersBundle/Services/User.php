@@ -701,7 +701,7 @@ class User implements UserInterface
 
 			$user->setFirstName($firstName);
 			$user->setLastName($lastName);
-            if ($thumbnail === false || $thumbnail === 'false') {
+            if ($thumbnail === false || $thumbnail === 'null') {
                 $user->setThumbnail(null);
             } else if ($thumbnail != null && !is_string($thumbnail)) {
                 if ($user->getThumbnail()) {
