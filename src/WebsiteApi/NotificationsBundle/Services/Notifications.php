@@ -155,6 +155,7 @@ class Notifications implements NotificationsInterface
                 @$this->sendMail($application, $workspace, $user, $text);
             }
 
+            $data = $n->getAsArray();
             $data["action"] = "add";
             $this->pusher->push($data, "notifications/".$user->getId());
 
