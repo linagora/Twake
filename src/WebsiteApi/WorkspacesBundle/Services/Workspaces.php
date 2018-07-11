@@ -471,13 +471,15 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($workspaceUser);
             $this->doctrine->flush();
 
-            $datatopush = Array(
-                "type" => "CHANGE_WORKSPACE",
-                "data" => Array(
-                    "workspaceId" => $workspace->getId(),
-                )
-            );
-            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+            if ($currentUserId) {
+                $datatopush = Array(
+                    "type" => "USER_WORKSPACES",
+                    "data" => Array(
+                        "workspaceId" => $workspace->getId(),
+                    )
+                );
+                $this->pusher->push($datatopush, "notifications/" . $currentUserId);
+            }
 
             return true;
         }
@@ -538,13 +540,16 @@ class Workspaces implements WorkspacesInterface
 
             $this->doctrine->flush();
 
-            $datatopush = Array(
-                "type" => "CHANGE_WORKSPACE",
-                "data" => Array(
-                    "workspaceId" => $workspace->getId(),
-                )
-            );
-            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
+            if ($currentUserId) {
+                $datatopush = Array(
+                    "type" => "USER_WORKSPACES",
+                    "data" => Array(
+                        "workspaceId" => $workspace->getId(),
+                    )
+                );
+                $this->pusher->push($datatopush, "notifications/" . $currentUserId);
+            }
 
             $result["answer"] = true;
             $result["isFavorite"] = $workspaceUser->getisFavorite();

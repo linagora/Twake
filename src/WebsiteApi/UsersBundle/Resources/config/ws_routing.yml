@@ -11,6 +11,7 @@ sharing_view_topic:
     handler:
         callback: 'sharing_view.topic' #related to the getName() of your topic
 
+
 ping_rpc:
     channel: ping/{method}
     handler:

@@ -701,7 +701,13 @@ class User implements UserInterface
 
 			$user->setFirstName($firstName);
 			$user->setLastName($lastName);
-			if($thumbnail!=null) {
+            if ($thumbnail === false || $thumbnail === 'false') {
+                $user->setThumbnail(null);
+            } else if ($thumbnail != null && !is_string($thumbnail)) {
+                if ($user->getThumbnail()) {
+                    $user->getThumbnail()->deleteFromDisk();
+                    $this->em->remove($user->getThumbnail());
+                }
 				$user->setThumbnail($thumbnail);
 			}
 			$this->em->persist($user);
@@ -757,6 +763,13 @@ class User implements UserInterface
 			$user->setLanguage($language);
 			$this->em->persist($user);
 			$this->em->flush();
+
+            if ($userId) {
+                $datatopush = Array(
+                    "type" => "LANGUAGE"
+                );
+                $this->pusher->push($datatopush, "notifications/" . $userId);
+            }
 
 		}
 	}

@@ -210,6 +210,10 @@ class MessageSystem implements MessagesSystemInterface
     public function sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify = true, $front_id = "", $respond_to = 0)
     {
 
+        if (!$front_id || $front_id == "") {
+            $front_id = date("U") . bin2hex(random_bytes(10));
+        }
+
         if ($workspace != null) {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }
