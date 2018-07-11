@@ -100,9 +100,11 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
                 ->setParameter("max",($maxId-1));
         }
 
-        $qb->orderBy('m.date', 'ASC');
+        $qb->orderBy('m.date', 'DESC');
         $qb->setMaxResults(50);
         $result = $qb->getQuery()->getResult();
+
+        array_reverse($result);
 
         return $result;
     }
