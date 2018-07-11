@@ -261,6 +261,32 @@ class InitCommand extends ContainerAwareCommand
         $app->setFilesTypes(Array("main" => Array("php", "c", "cpp", "py", "html", "yml", "json","txt"), "other" => Array()));
         $manager->persist($app);
 
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calls"));
+        if (!$app) {
+            $app = new Application();
+        }
+        $app->setPublicKey("calls");
+        $app->setName("Calls");
+        $app->setDescription("Twake video-conferencing app.");
+        $app->setShortDescription("Twake video-conferencing app.");
+        $app->setUrl("./calls.html");
+        $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
+        $app->setApplicationRights(json_decode('{"messages":"write"}', true));
+        $app->setEnabled(1);
+        $app->setColor("00cc00");
+        $app->setCanCreateFile(0);
+        $app->setIsCapable(0);
+        $app->setDefault(1);
+        $app->setCreateFileData(json_decode("", true));
+        $app->setMessageModule(1);
+        $app->setOrder(0);
+        $app->setThumbnail($serverbase . "/medias/apps/calls.png");
+        $app->setMessageModuleUrl("/calls.html?message=true");
+        $app->setEditableRights(1);
+        $app->setCgu("");
+        $app->setFilesTypes(Array());
+        $manager->persist($app);
+
         $manager->flush();
 
 
