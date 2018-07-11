@@ -57,7 +57,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
             $workspace = (
             $stream->getWorkspace()
                 ? $stream->getWorkspace()
-                : $this->workspaces->getPrivate($user->getId())
+                : null
             );
             $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
                 ->findOneBy(Array("url" => "messages-auto"));
