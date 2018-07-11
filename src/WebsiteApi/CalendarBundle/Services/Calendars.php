@@ -48,10 +48,10 @@ class Calendars implements CalendarsInterface
             }
 
             //Create calendar if no calendar was found in this workspace
-            if (count($links) == 0) {
+            if (count($links) == 0 && $currentUserId != null) {
                 $calendar = $this->createCalendar($workspaceId, "Default", "E2333A");
                 $cal = $calendar->getAsArray();
-                $cal["owner"] = true;
+                $cal["owner"] = $currentUserId;
                 $result[] = $cal;
             }
 
