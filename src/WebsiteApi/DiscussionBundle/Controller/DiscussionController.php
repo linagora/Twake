@@ -359,4 +359,26 @@ class DiscussionController extends Controller
 
         return new JsonResponse($data);
     }
+
+    public function newCallAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $streamId = $request->request->get("streamId",null);
+        $subjectId = $request->request->get("subjectId",null);
+        $workspaceId = $request->request->get("workspaceId",null);
+
+        /* @var MessageSystem $messageSystem */
+
+        $messageSystem = $this->get("app.messages");
+        $res = $messageSystem->makeCall($streamId,$subjectId,$workspaceId,$this->getUser());
+        if(!$res)
+            $data["errors"][] = "Fail to make a call";
+        else
+            $data["data"][] = "success";
+
+        return new JsonResponse($data);
+    }
 }

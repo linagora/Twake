@@ -269,7 +269,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setName("Calls");
         $app->setDescription("Twake video-conferencing app.");
         $app->setShortDescription("Twake video-conferencing app.");
-        $app->setUrl("./calls.html");
+        $app->setUrl("/calls.html");
         $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
         $app->setApplicationRights(json_decode('{"messages":"write"}', true));
         $app->setEnabled(1);

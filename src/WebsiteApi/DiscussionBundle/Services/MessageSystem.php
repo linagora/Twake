@@ -621,5 +621,19 @@ class MessageSystem implements MessagesSystemInterface
         $this->pusher->push($data, "discussion/" . $streamId);
     }
 
+    public function makeCall($streamId, $subjectId, $workspaceId, User $user)
+    {
+        $discussionKey = "twake-".bin2hex(random_bytes(20));
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calls"));
 
+        $url = Array("iframe" => "./calls.html?token=$discussionKey");
+
+
+        //sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify = true, $front_id = "")
+        $message = $this->sendMessage($user->getId(), "s-".$streamId, true, $app->getId(), false, "", $workspaceId, $subjectId, $url);
+        $messageArray = $message->getAsArray();
+        $this->notify("s-".$streamId,"C",$messageArray);
+
+        return true;
+    }
 }
