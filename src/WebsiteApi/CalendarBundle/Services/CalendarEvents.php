@@ -246,9 +246,8 @@ class CalendarEvents implements CalendarEventsInterface
                     $participantArray = $event->getParticipant();
                     $participantArray[] = $user->getId();
                 }
-
+                $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$event->getEvent()["title"],"You have a new event the ".date('d/m/Y', $event->getFrom()), Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
             }
-            $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$event->getEvent()["title"],"You have a new event the ".date('d/m/Y', $event->getFrom()), Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
         }
         $event->setParticipant($participantArray);
         $this->doctrine->flush();
