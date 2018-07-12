@@ -269,7 +269,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setName("Calls");
         $app->setDescription("Twake video-conferencing app.");
         $app->setShortDescription("Twake video-conferencing app.");
-        $app->setUrl("./calls.html");
+        $app->setUrl("calls");
         $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
         $app->setApplicationRights(json_decode('{"messages":"write"}', true));
         $app->setEnabled(1);
@@ -291,49 +291,49 @@ class InitCommand extends ContainerAwareCommand
 
 
         $apps = [
-            @["/medias/apps/web/vectr.png", "Vectr", "vectr.com", "vectr", "101010", Array()],
-            @["/medias/apps/web/webflow.jpeg", "Webflow", "webflow.com", "webflow", "354145", Array()],
-            @["/medias/apps/web/witeboard.png", "Witeboard", "witeboard.com", "witeboard", "222222", Array()],
-            @["/medias/apps/web/flat_io.png", "Flat.io", "flat.io/score", "flat_io", "3990f8", Array()],
-            @["/medias/apps/web/play_canvas.png", "Play Canvas", "playcanvas.com/editor", "playcanvas", "d64e0e", Array()],
-            @["/medias/apps/web/tuzzit_board.png", "Tuzzit", "board.tuzzit.com", "board.tuzzit", "4ab5a3", Array()],
-            @["/medias/apps/web/hackmd.png", "HackMd", "hackmd.io", "hackmd", "333333", Array()],
-            @["/medias/apps/web/trello.png", "Trello", "trello.com", "trello", "0079bf", Array()],
-            @["/medias/apps/web/gitlab.png", "Gitlab", "gitlab.com", "gitlab", "fc9626", Array()],
-            @["/medias/apps/web/github.png", "Github", "github.com", "github", "24292e", Array()],
+            ["/medias/apps/web/vectr.png", "Vectr", "vectr.com", "vectr", "101010", Array()],
+            ["/medias/apps/web/webflow.jpeg", "Webflow", "webflow.com", "webflow", "354145", Array()],
+            ["/medias/apps/web/witeboard.png", "Witeboard", "witeboard.com", "witeboard", "222222", Array()],
+            ["/medias/apps/web/flat_io.png", "Flat.io", "flat.io/score", "flat_io", "3990f8", Array()],
+            ["/medias/apps/web/play_canvas.png", "Play Canvas", "playcanvas.com/editor", "playcanvas", "d64e0e", Array()],
+            ["/medias/apps/web/tuzzit_board.png", "Tuzzit", "board.tuzzit.com", "board.tuzzit", "4ab5a3", Array()],
+            ["/medias/apps/web/hackmd.png", "HackMd", "hackmd.io", "hackmd", "333333", Array()],
+            ["/medias/apps/web/trello.png", "Trello", "trello.com", "trello", "0079bf", Array()],
+            ["/medias/apps/web/gitlab.png", "Gitlab", "gitlab.com", "gitlab", "fc9626", Array()],
+            ["/medias/apps/web/github.png", "Github", "github.com", "github", "24292e", Array()],
 
             //Altassian
-            @["/medias/apps/web/atlassian.png", "Atlassian", "atlassian.net/projects", "atlassian", "0047B3", Array()],
+            ["/medias/apps/web/atlassian.png", "Atlassian", "atlassian.net/projects", "atlassian", "0047B3", Array()],
 
             //gSuite
-            @["/medias/apps/web/google_hangouts.png", "Google Hangouts", "hangouts.google.com", "hangouts.google", "50AF55", Array()],
-            @["/medias/apps/web/google_sites.png", "Google Sites", "sites.google.com", "sites.google", "E63B42", Array()],
-            @["/medias/apps/web/google_docs_document.png", "Google Docs Document", "docs.google.com/document", "document.docs.google", "367FDF", Array()],
-            @["/medias/apps/web/google_docs_spreadsheets.png", "Google Docs Spreadsheets", "docs.google.com/spreadsheets", "spreadsheets.docs.google", "50AF55", Array()],
-            @["/medias/apps/web/google_docs_presentation.png", "Google Docs Presentation", "docs.google.com/presentation", "presentation.docs.google", "F9D548", Array()],
-            @["/medias/apps/web/google_drawings.png", "Google Drawings", "docs.google.com/drawings", "drawings.docs.google", "F2B014", Array()],
-            @["/medias/apps/web/google_docs_forms.png", "Google Docs Forms", "docs.google.com/forms", "forms.docs.google", "7457C7", Array()],
-            @["/medias/apps/web/google_gmail.png", "Gmail", "mail.google.com", "mail.google", "ED5938", Array()],
+            ["/medias/apps/web/google_hangouts.png", "Google Hangouts", "hangouts.google.com", "hangouts.google", "50AF55", Array()],
+            ["/medias/apps/web/google_sites.png", "Google Sites", "sites.google.com", "sites.google", "E63B42", Array()],
+            ["/medias/apps/web/google_docs_document.png", "Google Docs Document", "docs.google.com/document", "document.docs.google", "367FDF", Array()],
+            ["/medias/apps/web/google_docs_spreadsheets.png", "Google Docs Spreadsheets", "docs.google.com/spreadsheets", "spreadsheets.docs.google", "50AF55", Array()],
+            ["/medias/apps/web/google_docs_presentation.png", "Google Docs Presentation", "docs.google.com/presentation", "presentation.docs.google", "F9D548", Array()],
+            ["/medias/apps/web/google_drawings.png", "Google Drawings", "docs.google.com/drawings", "drawings.docs.google", "F2B014", Array()],
+            ["/medias/apps/web/google_docs_forms.png", "Google Docs Forms", "docs.google.com/forms", "forms.docs.google", "7457C7", Array()],
+            ["/medias/apps/web/google_gmail.png", "Gmail", "mail.google.com", "mail.google", "ED5938", Array()],
 
             //apple
-            @["/medias/apps/web/icloud_keynote.png", "iCloud Keynote", "icloud.com/keynote", "keynote.icloud", "1d73f2", Array()],
-            @["/medias/apps/web/icloud_numbers.png", "iCloud Numbers", "icloud.com/numbers", "numbers.icloud", "15d71f", Array()],
-            @["/medias/apps/web/icloud_pages.png", "iCloud Pages", "icloud.com/pages", "pages.icloud", "ff8800", Array()],
-            @["/medias/apps/web/icloud_notes.png", "iCloud Notes", "icloud.com/#notes", "notes.icloud", "ffce08", Array()],
-            @["/medias/apps/web/icloud_reminders.png", "iCloud Reminders", "icloud.com/#reminders", "reminders.icloud", "383836", Array()],
-            @["/medias/apps/web/icloud_contacts.png", "iCloud Contacts", "icloud.com/#contacts", "contacts.icloud", "BBBBBB", Array()],
-            @["/medias/apps/web/icloud_photos.png", "iCloud Photos", "icloud.com/#photos", "photos.icloud", "E47563", Array()],
+            ["/medias/apps/web/icloud_keynote.png", "iCloud Keynote", "icloud.com/keynote", "keynote.icloud", "1d73f2", Array()],
+            ["/medias/apps/web/icloud_numbers.png", "iCloud Numbers", "icloud.com/numbers", "numbers.icloud", "15d71f", Array()],
+            ["/medias/apps/web/icloud_pages.png", "iCloud Pages", "icloud.com/pages", "pages.icloud", "ff8800", Array()],
+            ["/medias/apps/web/icloud_notes.png", "iCloud Notes", "icloud.com/#notes", "notes.icloud", "ffce08", Array()],
+            ["/medias/apps/web/icloud_reminders.png", "iCloud Reminders", "icloud.com/#reminders", "reminders.icloud", "383836", Array()],
+            ["/medias/apps/web/icloud_contacts.png", "iCloud Contacts", "icloud.com/#contacts", "contacts.icloud", "BBBBBB", Array()],
+            ["/medias/apps/web/icloud_photos.png", "iCloud Photos", "icloud.com/#photos", "photos.icloud", "E47563", Array()],
 
             //Microsoft
-            @["/medias/apps/web/office_365_skype.png", "Skype", "web.skype.com", "skype", "00aff0", Array()],
-            @["/medias/apps/web/office_365_calendar.png", "Outlook Calendar", "outlook.live.com/calendar", "calendar.office_365", "0072c7", Array()],
-            @["/medias/apps/web/office_365_outlook.png", "Outlook ", "outlook.live.com/mail", "outlook.office_365", "0072c6", Array()],
-            @["/medias/apps/web/office_365_contacts.png", "Outlook Contacts", "outlook.live.com/people", "contacts.office_365", "0072c7", Array()],
-            @["/medias/apps/web/office_365_sway.png", "Sway", "sway.com", "sway.office_365", "16897c", Array()],
-            @["/medias/apps/web/office_365_onenote.png", "OneNote", "onedrive.live.com/onenote", "onenote.office_365", "793474", Array()],
-            @["/medias/apps/web/office_365_powerpoint.png", "PowerPoint", "onedrive.live.com/powerpoint", "powerpoint.office_365", "d34725", Array()],
-            @["/medias/apps/web/office_365_word.png", "Word", "onedrive.live.com/word", "word.office_365", "2a5699", Array()],
-            @["/medias/apps/web/office_365_excel.png", "Excel", "onedrive.live.com/excel", "excel.office_365", "1E683D", Array()],
+            ["/medias/apps/web/office_365_skype.png", "Skype", "web.skype.com", "skype", "00aff0", Array()],
+            ["/medias/apps/web/office_365_calendar.png", "Outlook Calendar", "outlook.live.com/calendar", "calendar.office_365", "0072c7", Array()],
+            ["/medias/apps/web/office_365_outlook.png", "Outlook ", "outlook.live.com/mail", "outlook.office_365", "0072c6", Array()],
+            ["/medias/apps/web/office_365_contacts.png", "Outlook Contacts", "outlook.live.com/people", "contacts.office_365", "0072c7", Array()],
+            ["/medias/apps/web/office_365_sway.png", "Sway", "sway.com", "sway.office_365", "16897c", Array()],
+            ["/medias/apps/web/office_365_onenote.png", "OneNote", "onedrive.live.com/onenote", "onenote.office_365", "793474", Array()],
+            ["/medias/apps/web/office_365_powerpoint.png", "PowerPoint", "onedrive.live.com/powerpoint", "powerpoint.office_365", "d34725", Array()],
+            ["/medias/apps/web/office_365_word.png", "Word", "onedrive.live.com/word", "word.office_365", "2a5699", Array()],
+            ["/medias/apps/web/office_365_excel.png", "Excel", "onedrive.live.com/excel", "excel.office_365", "1E683D", Array()],
 
 
         ];
