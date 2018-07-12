@@ -273,7 +273,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
         $app->setApplicationRights(json_decode('{"messages":"write"}', true));
         $app->setEnabled(1);
-        $app->setColor("00cc00");
+        $app->setColor("00ba4f");
         $app->setCanCreateFile(0);
         $app->setIsCapable(0);
         $app->setDefault(1);
