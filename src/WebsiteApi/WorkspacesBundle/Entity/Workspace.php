@@ -292,7 +292,7 @@ class Workspace
      */
     public function getisNew()
     {
-        return $this->isNew;
+        return $this->getGroup() != null && $this->isNew;
     }
 
     /**
