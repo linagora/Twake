@@ -99,7 +99,7 @@ class WorkspaceController extends Controller
 		$groupId = $request->request->getInt("groupId", 0);
 
 		if(!$groupId){
-			//Auto create group
+            //Auto create group
 			$uniquename = $this->get("app.string_cleaner")->simplify($name);
 			$plan = $this->get("app.pricing_plan")->getMinimalPricing();
 			$planId = $plan->getId();
