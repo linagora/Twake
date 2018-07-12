@@ -73,7 +73,7 @@ class CalendarActivities implements CalendarActivityInterface
 
         //appel pour faire une notification
         if ($pushNotif) {
-            $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "calendarActivity", $text, $type, Array("data" => $additionalData), true);
+            $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "calendarActivity", $text, $type, $additionalData, true);
             $this->pusher->push($calendarActivity->getAsArray(), "calendar/activity");
         }
 

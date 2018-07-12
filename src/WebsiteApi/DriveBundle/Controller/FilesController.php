@@ -46,7 +46,7 @@ class FilesController extends Controller
                 $data["errors"] = "notallowed";
             } else {
 
-                $file = $fileSystem->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached,$url);
+                $file = $fileSystem->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached,$url, $this->getUser()->getId());
 
                 if($model){
                     //IMPORTANT ! Disable local files !!!
@@ -341,7 +341,7 @@ class FilesController extends Controller
 
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
 
-            $file = $fileSystem->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached);
+            $file = $fileSystem->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId());
 
             if ($file) {
                 $data["data"] = $file->getAsArray();

@@ -90,11 +90,16 @@ class WorkspaceController extends Controller
 
 		$response = Array("errors"=>Array(), "data"=>Array());
 
-		$name = $request->request->get("name");
+        $name = $request->request->get("name", "");
+
+        if (strlen($name) == 0) {
+            $name = "Untitled";
+        }
+
 		$groupId = $request->request->getInt("groupId", 0);
 
 		if(!$groupId){
-			//Auto create group
+            //Auto create group
 			$uniquename = $this->get("app.string_cleaner")->simplify($name);
 			$plan = $this->get("app.pricing_plan")->getMinimalPricing();
 			$planId = $plan->getId();

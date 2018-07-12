@@ -83,7 +83,7 @@ class DriveActivities implements DriveActivityInterface
 
         //appel pour faire une notification
         if ($pushNotif) {
-            $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "driveActivity", $text, $type, Array("data" => $additionalData), true);
+            $this->notifService->pushNotification($application, $workspace, Array($user), $levels, "driveActivity", $text, $type, $additionalData, true);
             $this->pusher->push($driveActivity->getAsArray(), "drive/activity");
         }
 

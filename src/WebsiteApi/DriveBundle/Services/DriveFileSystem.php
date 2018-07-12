@@ -482,7 +482,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false, $url =null)
+    public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false, $url =null, $userId = 0)
     {
 
         if ($directory == 0 || $detached_file) {
@@ -559,7 +559,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             $dirid = $directory->getId();
             $dirName = $directory->getName();
         }
-        $this->userToNotifyService->notifyUsers($dirid,$workspace,"New file",$newFile->getName()." has been added to ". $dirName,$newFile->getId());
+        $this->userToNotifyService->notifyUsers($dirid,$workspace,"New file",$newFile->getName()." has been added to ". $dirName,$newFile->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
 
         return $newFile;
@@ -995,10 +995,10 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
     }
 
-    public function upload($workspace, $directory, $file, $uploader, $detached = false)
+    public function upload($workspace, $directory, $file, $uploader, $detached = false, $userId = 0)
     {
 
-        $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached);
+        $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached, null,$userId);
         if (!$file) {
             return false;
         }

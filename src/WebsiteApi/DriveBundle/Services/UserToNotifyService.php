@@ -7,6 +7,7 @@ use AESCryptFileLib;
 use MCryptAES256Implementation;
 use WebsiteApi\DriveBundle\Entity\DriveLabel;
 use WebsiteApi\DriveBundle\Entity\UserToNotify;
+use WebsiteApi\UsersBundle\Entity\User;
 
 class UserToNotifyService
 {
@@ -80,7 +81,7 @@ class UserToNotifyService
         $this->doctrine->flush();
     }
 
-    public function notifyUsers($driveFile, $workspace, $title = "Drive", $text= "", $fileId = null){
+    public function notifyUsers($driveFile, $workspace, $title = "Drive", $text= "", $fileId = null, $senderId){
         $driveFile = strval($driveFile);
 
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
@@ -96,7 +97,11 @@ class UserToNotifyService
         if(!$usersToNotify)
             return false;
         foreach ($usersToNotify as $userToNotify){
-            $this->driveActivities->pushActivity(true,$workspace, $userToNotify->getUser(),null,$title,$text,Array(),Array("notifCode" => $userToNotify->getDriveType()."/".$driveFile.$fileId));
+            var_dump("user id : ");
+            var_dump($userToNotify->getUser()->getId());
+            var_dump("sender id : ");
+            var_dump($senderId);
+            $this->driveActivities->pushActivity($userToNotify->getUser()->getId()!=$senderId,$workspace, $userToNotify->getUser(),null,$title,$text,Array(),Array("notifCode" => $userToNotify->getDriveType()."/".$driveFile.$fileId));
         }
         return true;
     }

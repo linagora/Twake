@@ -135,10 +135,13 @@ class CalendarEvents implements CalendarEventsInterface
             }
         }
 
+        /* @var CalendarEvent $event */
+
         $event->setCalendar($calendar);
         $event->setEvent($eventArray);
         $event->setFrom($eventArray["from"]);
         $event->setTo($eventArray["to"]);
+        $event->setParticipant($eventArray["participant"]);
         if (isset($eventArray["reminder"])) {
             $event->setReminder(intval($eventArray["reminder"]));
         } else {
@@ -243,9 +246,8 @@ class CalendarEvents implements CalendarEventsInterface
                     $participantArray = $event->getParticipant();
                     $participantArray[] = $user->getId();
                 }
-
+                $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$event->getEvent()["title"],"You have a new event the ".date('d/m/Y', $event->getFrom()), Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
             }
-            $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$event->getEvent()["title"],"You have a new event the ".date('d/m/Y', $event->getFrom()), Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
         }
         $event->setParticipant($participantArray);
         $this->doctrine->flush();
