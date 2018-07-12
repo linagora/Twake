@@ -19,6 +19,9 @@ messages_send_message_file:
     path:     /sendMessageFile
     defaults: { _controller: TwakeDiscussionBundle:Discussion:sendMessageFile}
 
+message_call:
+    path:     /newCall
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:newCall}
 
 streams_get:
     path:     /streams/get

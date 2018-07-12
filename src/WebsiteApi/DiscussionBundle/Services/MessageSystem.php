@@ -292,7 +292,7 @@ class MessageSystem implements MessagesSystemInterface
         }
     }
 
-    public function sendMessageWithFile($senderId, $key, $content, $workspace, $subjectId = null, $fileId)
+    public function sendMessageWithFile($senderId, $key, $content, $workspace, $subjectId = null, $fileId, $respond_to = 0)
     {
         if ($senderId == null) {
             return null;
@@ -303,7 +303,7 @@ class MessageSystem implements MessagesSystemInterface
 
         if ($file != null && $driveApplication != null) {
             $messageData = Array("file" => $file->getId());
-            return $this->sendMessage($senderId, $key, true, $driveApplication, false, $content, $workspace, $subjectId, $messageData, false);
+            return $this->sendMessage($senderId, $key, true, $driveApplication, false, $content, $workspace, $subjectId, $messageData, false,"",$respond_to);
         }
         return false;
     }
@@ -621,5 +621,19 @@ class MessageSystem implements MessagesSystemInterface
         $this->pusher->push($data, "discussion/" . $streamId);
     }
 
+    public function makeCall($streamId, $subjectId, $workspaceId, User $user, $respondTo)
+    {
+        $discussionKey = "twake-".bin2hex(random_bytes(20));
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calls"));
 
+        $url = Array("iframe" => "./calls.html?token=$discussionKey");
+
+
+        //sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify = true, $front_id = "")
+        $message = $this->sendMessage($user->getId(), "s-".$streamId, true, $app->getId(), false, "", $workspaceId, $subjectId, $url,true,"",$respondTo);
+        $messageArray = $message->getAsArray();
+        $this->notify("s-".$streamId,"C",$messageArray);
+
+        return true;
+    }
 }
