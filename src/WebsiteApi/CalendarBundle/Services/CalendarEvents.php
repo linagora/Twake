@@ -134,10 +134,13 @@ class CalendarEvents implements CalendarEventsInterface
             }
         }
 
+        /* @var CalendarEvent $event */
+
         $event->setCalendar($calendar);
         $event->setEvent($eventArray);
         $event->setFrom($eventArray["from"]);
         $event->setTo($eventArray["to"]);
+        $event->setParticipant($eventArray["participant"]);
         if (isset($eventArray["reminder"])) {
             $event->setReminder(intval($eventArray["reminder"]));
         } else {
