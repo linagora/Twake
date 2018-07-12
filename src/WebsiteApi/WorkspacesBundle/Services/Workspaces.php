@@ -49,6 +49,7 @@ class Workspaces implements WorkspacesInterface
 
         if (!$workspace) {
             $workspace = $this->create("private_workspace", null, $userId);
+            $workspace->setIsNew(false);
             $workspace->setUser($user);
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
@@ -106,8 +107,6 @@ class Workspaces implements WorkspacesInterface
         $workspace->setUniqueName($uniquenameIncremented);
 
         if ($groupId != null) {
-
-
             $limit = $this->pricing->getLimitation($groupId, "maxWorkspace", PHP_INT_MAX);
 
             $nbWorkspace = $workspaceRepository->findBy(Array("group" => $group, "isDeleted" => 0));
