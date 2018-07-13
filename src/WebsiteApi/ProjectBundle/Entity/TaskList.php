@@ -36,4 +36,44 @@ class TaskList
      * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\ListOfTasks")
      */
     private $listOfTask;
+
+
+    public  function __construct(BoardTask $boardTask, ListOfTasks $listOfTask)
+    {
+        $this->setBoardTask($boardTask);
+        $this->setListOfTask($listOfTask);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBoardTask()
+    {
+        return $this->boardTask;
+    }
+
+    /**
+     * @param mixed $boardTask
+     */
+    public function setBoardTask($boardTask)
+    {
+        $this->boardTask = $boardTask;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getListOfTask()
+    {
+        return $this->listOfTask;
+    }
+
+    /**
+     * @param mixed $listOfTask
+     */
+    public function setListOfTask($listOfTask)
+    {
+        $this->listOfTask = $listOfTask;
+    }
+
 }

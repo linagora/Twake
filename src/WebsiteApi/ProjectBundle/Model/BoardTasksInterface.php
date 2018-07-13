@@ -23,8 +23,8 @@ interface BoardTasksInterface
 
     public function removeUsers($workspaceId, $boardId, $taskId, $usersId, $currentUserId=null);
 
-    public function getTasksForWorkspace($workspaceId, $from, $to, $boardsId, $currentUserId=null);
+    public function getTasksForWorkspace($workspaceId, $boardsId, $currentUserId=null);
 
-    public function getTasksForUser($workspaceId, $from, $to, $currentUserId);
+    public function getTasksForUser($workspaceId, $currentUserId);
 
 }
