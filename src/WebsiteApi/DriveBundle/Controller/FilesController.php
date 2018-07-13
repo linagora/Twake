@@ -194,8 +194,8 @@ class FilesController extends Controller
 
         if(!$externalDrive)
             $haveReadAccess = $this->get('app.workspace_levels')->can(
-            $fileSystem->getWorkspace($objectId),
-            $this->getUser()->getId(), "drive:read");
+                $fileSystem->getWorkspace($objectId),
+                $this->getUser()->getId(), "drive:read");
         else
             $haveReadAccess = true;
 
@@ -308,6 +308,61 @@ class FilesController extends Controller
 
 
         }
+
+        if(isset($data["data"]["files"])) {
+            for ($i = 0; $i < count($data["data"]["files"]); $i++)
+                $data["data"]["files"][$i]["drive"] = $directory;
+        }
+
+        return new JsonResponse($data);
+    }
+
+    public function listLastUsedAction(Request $request){
+        //TODO
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+        $groupId = $request->request->get("groupId", 0);
+        $offset = $request->request->get("offset", 0);
+        $max = $request->request->get("max", 50);
+        $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
+
+        $fileSystem = $this->get('app.drive.FileSystem');
+
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
+            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
+            $fileSystem->setRootDirectory($directory);
+        }
+
+
+       if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
+
+
+            $files = $fileSystem->listLastUsed($groupId, $offset, $max);
+
+
+            if(count($files) != 0 && $files == false){
+                $data["data"]["error"] = "notauthorized";
+            }else{
+                foreach ($files as $index => $file) {
+
+                    if ($file->getCopyOf() != null){//if it's a copy shortcut to another folder, link directly the folder
+                        $data["data"]["files"][] = $fileSystem->getInfos($groupId,$file->getCopyOf(),true);
+                        $data["data"]["files"][$index]["shortcut"] = true;
+                    }else{
+                        $data["data"]["files"][] = $fileSystem->getInfos($groupId,$file,true);
+                        $data["data"]["files"][$index]["shortcut"] = false;
+                    }
+
+                }
+            }
+
+            $data["data"]["maxspace"] = $fileSystem->getTotalSpace($groupId);
+            $data["data"]["totalsize"] = $fileSystem->getUsedSpace($groupId);
+
+       }
 
         if(isset($data["data"]["files"])) {
             for ($i = 0; $i < count($data["data"]["files"]); $i++)

@@ -768,7 +768,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function listNew($workspace, $offset = 0, $max = 20)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
         if ($workspace == null) {
             return false;
@@ -776,6 +776,18 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
             ->search($workspace, Array(), Array("added" => "DESC"), $offset, $max);
+        return $list;
+    }
+
+    public function listLastUsed($workspace, $offset = 0, $max =20){
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+
+        if ($workspace == null) {
+            return false;
+        }
+
+        $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+            ->search($workspace, Array(), Array("last_modified" => "DESC"), $offset, $max);
         return $list;
     }
 
