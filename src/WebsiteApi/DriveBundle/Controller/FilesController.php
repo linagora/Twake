@@ -490,7 +490,7 @@ class FilesController extends Controller
                 }
 
                 foreach ($toMove as $id){
-                    $res = $fileSystem->move($id, $newParentId,$groupId);
+                    $res = $fileSystem->move($id, $newParentId,$groupId, $this->getUser()->getId());
                     if(!$res){
                         $data["errors"][] = "ヾ(⌐■_■)ノ Nice try ヾ(⌐■_■)ノ";
                     }

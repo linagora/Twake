@@ -169,9 +169,10 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
     }
 
-    public function move($fileOrDirectory, $directory, $groupId = null)
+    public function move($fileOrDirectory, $directory, $groupId = null, $userId = 0)
     {
-
+        /* @var DriveFile $fileOrDirectory */
+        /* @var DriveFile $directory */
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
         $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
 
@@ -207,6 +208,15 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($fileOrDirectory);
         $this->doctrine->flush();
 
+        $dirid = 0;
+        $dirName = "";
+
+        if($directory!=null) {
+            $dirid = $directory->getId();
+            $dirName = $directory->getName();
+        }
+
+        $this->userToNotifyService->notifyUsers($dirid,$groupId,"Move file",$fileOrDirectory->getName()." has been moved into ". $dirName,$fileOrDirectory->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
 
         return true;
