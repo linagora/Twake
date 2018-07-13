@@ -55,6 +55,8 @@ class GroupManagerController extends Controller
         $groupId = $request->request->getInt("groupId");
         $username = $request->request->get("username");
 
+        $username = str_replace(Array("@", " "), "", $username);
+
         $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("username"=>$username));
 
