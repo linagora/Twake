@@ -44,6 +44,10 @@ check:
 calendar:
     resource: "@TwakeCalendarBundle/Resources/config/routing.yml"
     prefix:   /ajax/calendar/
+    
+project:
+    resource: "@TwakeProjectBundle/Resources/config/routing.yml"
+    prefix:   /ajax/project/
 
 citi_go_discussion:
     resource: "@TwakeDiscussionBundle/Resources/config/routing.yml"
