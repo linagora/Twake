@@ -127,7 +127,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setMessageModule(0);
         $app->setOrder(0);
 
-        $app->setThumbnail($serverbase . "/medias/apps/messagerie.png");
+        $app->setThumbnail($serverbase . "/medias/apps/messages.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
         $app->setCgu("");
@@ -202,7 +202,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
         $app->setOrder(0);
-        $app->setThumbnail($serverbase . "/medias/apps/imageviewer.png");
+        $app->setThumbnail($serverbase . "/medias/apps/images_viewer.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
         $app->setCgu("");
@@ -228,7 +228,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
         $app->setOrder(0);
-        $app->setThumbnail($serverbase . "/medias/apps/pdfviewer.png");
+        $app->setThumbnail($serverbase . "/medias/apps/pdf_viewer.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
         $app->setCgu("");
@@ -258,7 +258,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
         $app->setCgu("");
-        $app->setFilesTypes(Array("main" => Array("php", "c", "cpp", "py", "html", "yml", "json","txt"), "other" => Array()));
+        $app->setFilesTypes(Array("main" => Array("php", "c", "cpp", "py", "html", "yml", "json", "txt", "md", "js", "xml", "php"), "other" => Array()));
         $manager->persist($app);
 
         $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calls"));

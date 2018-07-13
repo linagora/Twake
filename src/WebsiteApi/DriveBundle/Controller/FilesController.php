@@ -179,33 +179,37 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        if($objectId>0) {
 
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
+            $fileSystem = $this->get('app.drive.FileSystem');
+
+            if ($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
+                $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
+                $fileSystem->setRootDirectory($directory);
+            }
+
+            $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read");
+
+            if ($can) {
+                $data["data"] = $fileSystem->getInfos($groupId, $objectId, true);
+            }
+
+            if (!$externalDrive)
+                $haveReadAccess = $this->get('app.workspace_levels')->can(
+                    $fileSystem->getWorkspace($objectId),
+                    $this->getUser()->getId(), "drive:read");
+            else
+                $haveReadAccess = true;
+
+            if (!$data["data"] && $haveReadAccess) {
+                $data["data"] = $fileSystem->getInfos(
+                    $fileSystem->getWorkspace($objectId),
+                    $objectId, true);
+            }
+
+            $data["data"]["drive"] = $directory;
+
         }
-
-        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read");
-
-        if ($can) {
-            $data["data"] = $fileSystem->getInfos($groupId, $objectId, true);
-        }
-
-        if(!$externalDrive)
-            $haveReadAccess = $this->get('app.workspace_levels')->can(
-                $fileSystem->getWorkspace($objectId),
-                $this->getUser()->getId(), "drive:read");
-        else
-            $haveReadAccess = true;
-
-        if (!$data["data"] && $haveReadAccess) {
-            $data["data"] = $fileSystem->getInfos(
-                $fileSystem->getWorkspace($objectId),
-                $objectId, true);
-        }
-
-        $data["data"]["drive"] = $directory;
 
         return new JsonResponse($data);
     }
@@ -318,7 +322,7 @@ class FilesController extends Controller
     }
 
     public function listLastUsedAction(Request $request){
-        //TODO
+
         $data = Array(
             "data" => Array(),
             "errors" => Array()
@@ -409,7 +413,7 @@ class FilesController extends Controller
         return new JsonResponse($data);
     }
 
-    // TODO
+
     public function downloadAction(Request $request)
     {
         $data = Array(
