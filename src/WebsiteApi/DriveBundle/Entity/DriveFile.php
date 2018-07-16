@@ -4,6 +4,7 @@ namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
  * DriveFile
@@ -11,7 +12,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
  * @ORM\Table(name="drive_file",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileRepository")
  */
-class DriveFile
+class DriveFile implements ObjectLinksInterface
 {
     /**
      * @ORM\Column(name="id", type="integer")
@@ -532,4 +533,15 @@ class DriveFile
         $this->previewHasBeenGenerated = $previewHasBeenGenerated;
     }
 
+
+    public function getRepository(){
+        return "TwakeDriveBundle:DriveFile";
+    }
+
+    public function getAsArrayFormated(){
+        return Array(
+            "id" => $this->getId(),
+            "title" => "File",
+        );
+    }
 }
