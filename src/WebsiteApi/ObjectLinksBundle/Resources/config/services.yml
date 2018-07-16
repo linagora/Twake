@@ -2,4 +2,4 @@ services:
 
   app.objectLinks:
     class : WebsiteApi\ObjectLinksBundle\Services\ObjectLinks
-    arguments: []
+    arguments: ["@doctrine.orm.entity_manager", '@app.pusher']
