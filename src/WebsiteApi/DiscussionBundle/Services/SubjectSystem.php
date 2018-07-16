@@ -46,6 +46,11 @@ class SubjectSystem
         return false;
     }
 
+    public function createSubjectFromMessageFromApp($idMessage){
+        $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idMessage);
+        return $this->createSubjectFromMessage($idMessage,$message->getUserSender());
+    }
+
     public function createSubjectFromMessage($idMessage,$user){
         $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($idMessage);
         if ($message != null && $message->getSubject() == null && $message->getTypeReciever()=="S") {
@@ -75,6 +80,17 @@ class SubjectSystem
         }
         return false;
     }
+
+    public function getSubjectById($subjectId){
+        $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($subjectId);
+        return $subject;
+    }
+
+    public function closeSubject($idSubject,$user){
+        $subject = $this->getSubjectById($idSubject);
+        return $this->editSubject($idSubject,$subject->getName(),$subject->getDescription(),false,$user);
+    }
+
     public function editSubject($idSubject,$name,$description,$isOpen,$user){
         $subject = $this->doctrine->getRepository("TwakeDiscussionBundle:Subject")->find($idSubject);
         if($subject != null){
@@ -102,6 +118,13 @@ class SubjectSystem
         }
         $retour = array_reverse($retour);
         return $retour;
+    }
+
+    public function getSubjectFromMessage($messageId){
+        $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($messageId);
+        if($message!=null)
+            return $message->getSubject();
+        return null;
     }
 
     public function getMessages($subject){

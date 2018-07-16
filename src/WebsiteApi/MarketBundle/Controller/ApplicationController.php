@@ -158,6 +158,31 @@ class ApplicationController extends Controller
         return new JsonResponse($response);
     }
 
+    /*
+     * Add an application
+     */
+    public function addFreeAppAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
+
+        $groupId = $request->request->get("groupId");
+        $workspaceId = $request->request->get("workspaceId");
+        $appId = $request->request->get("appId");
+
+        if (isset($groupId) && isset($appId)) {
+            $this->get("website_api_market.applications")->addFreeApplication($groupId, $appId, $this->getUser()->getId());
+        }
+        $res = $this->get("app.workspaces_apps")->enableApp($workspaceId, $appId);
+
+        if (!$res) {
+            $response["errors"][] = "notallowed";
+        } else {
+            $response["data"][] = $res;
+        }
+
+        return new JsonResponse($response);
+    }
+
   /*
    *  Create an app
    */

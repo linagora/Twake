@@ -2,6 +2,7 @@
 
 
 namespace WebsiteApi\NotificationsBundle\Services;
+use phpDocumentor\Reflection\Types\Array_;
 use RMS\PushNotificationsBundle\Message\iOSMessage;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
 use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
@@ -32,7 +33,7 @@ class Notifications implements NotificationsInterface
         $this->licenceKey = $licenceKey;
     }
 
-    public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $data = null, $save_notification = true)
+    public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $_data = null, $save_notification = true)
     {
 
         if($workspace != null){
@@ -73,6 +74,13 @@ class Notifications implements NotificationsInterface
 
             $notificationPreference = $user->getNotificationPreference();
             $useDevices = false;
+            if( $data["workspace_id"] != null){
+                $workspace_id = $data["workspace_id"];
+                $disabled_workspaces = $notificationPreference["disabled_workspaces"];
+                if (in_array($workspace_id,$disabled_workspaces)){
+                    return false;
+                }
+            }
             if($notificationPreference["devices"]==0){
                 $useDevices = true;
             }
@@ -118,8 +126,8 @@ class Notifications implements NotificationsInterface
             }
 
             $n = new Notification($application, $workspace, $user);
-            if($data){
-                $n->setData($data);
+            if ($_data) {
+                $n->setData($_data);
             }
             if($code){
                 $n->setCode($code);
@@ -138,7 +146,7 @@ class Notifications implements NotificationsInterface
             if(in_array("push", $type)){
                 $totalNotifications = $this->countAll($user) + 1;
                 if($useDevices) {
-                    @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $data);
+                    @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $_data);
                 }else{
                     @$this->updateDeviceBadge($user, $totalNotifications);
                 }
@@ -147,6 +155,7 @@ class Notifications implements NotificationsInterface
                 @$this->sendMail($application, $workspace, $user, $text);
             }
 
+            $data = $n->getAsArray();
             $data["action"] = "add";
             $this->pusher->push($data, "notifications/".$user->getId());
 
@@ -164,25 +173,32 @@ class Notifications implements NotificationsInterface
     {
 
         $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
-        if(!$code){
-            $notif = $nRepo->findBy(Array(
-                "workspace"=>$workspace,
-                "application"=>$application,
-                "user"=>$user
-            ));
-        }else{
-            $notif = $nRepo->findBy(Array(
-                "workspace"=>$workspace,
-                "application"=>$application,
-                "user"=>$user,
-                "code"=>$code
-            ));
+
+        $search = Array(
+            "user" => $user
+        );
+
+        if ($code) {
+            $search["code"] = $code;
         }
+
+        if ($application) {
+            $search["application"] = $application;
+        }
+
+        if ($workspace) {
+            $search["workspace"] = $workspace;
+        }
+
+        $notif = $nRepo->findBy($search);
 
         $count = count($notif);
         for($i = 0; $i < $count; $i++) {
             $this->doctrine->remove($notif[$i]);
+        }
 
+        if ($count == 0){
+            return false;
         }
 
         if($count>0 || $force) {
@@ -198,8 +214,9 @@ class Notifications implements NotificationsInterface
             $this->pusher->push($data, "notifications/".$user->getId());
 
             $this->updateDeviceBadge($user, $totalNotifications);
+            return true;
         }
-
+        return true;
 
 
     }
@@ -269,7 +286,7 @@ class Notifications implements NotificationsInterface
     }
 
 
-    public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $data)
+    public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $_data)
     {
 
         if (strlen($deviceId) < 32) { //False device
@@ -279,7 +296,7 @@ class Notifications implements NotificationsInterface
         $data = Array(
             "message" => $message,
             "title" => $title,
-            "data" => $data,
+            "data" => $_data,
             "badge" => $badge,
             "device_id" => $deviceId,
             "type" => $type
@@ -301,4 +318,40 @@ class Notifications implements NotificationsInterface
             "text"=>$text
         ));
     }
+
+    public function deleteAllExceptMessages($user,$force=false){
+
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(array("publicKey" => "messages"));
+
+        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+        $notif = $nRepo->getAppNoMessages($app);
+        $count = count($notif);
+
+
+        if ($count == 0){
+            return false;
+        }
+        for($i = 0; $i < $count; $i++) {
+            $this->doctrine->remove($notif[$i]);
+
+        }
+
+        if($count>0 || $force) {
+            $this->doctrine->flush();
+
+            $totalNotifications = $this->countAll($user);
+
+            $data = Array(
+                "action" => "remove_all_non_messages"
+            );
+            //convert
+            $this->pusher->push($data, "notifications/".$user->getId());
+
+            $this->updateDeviceBadge($user, $totalNotifications);
+            return true;
+        }
+
+        return true;
+    }
+
 }

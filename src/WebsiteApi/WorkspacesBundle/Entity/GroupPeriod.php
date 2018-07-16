@@ -59,17 +59,17 @@ class GroupPeriod
     private $groupPricingInstance;
 
     /**
-     * @ORM\Column(name="current_cost", type="decimal", precision=5, scale=3)
+     * @ORM\Column(name="current_cost", type="decimal", precision=65, scale=3)
      */
     protected $currentCost;
 
     /**
-     * @ORM\Column(name="expected_cost", type="decimal" , precision=5, scale=3)
+     * @ORM\Column(name="expected_cost", type="decimal" , precision=15, scale=3)
      */
     protected $expectedCost;
 
     /**
-     * @ORM\Column(name="estimated_cost", type="decimal", precision=5, scale=3)
+     * @ORM\Column(name="estimated_cost", type="decimal", precision=15, scale=3)
      */
     protected $estimatedCost;
 
@@ -87,6 +87,52 @@ class GroupPeriod
         $this->estimatedCost = 0;
         $this->expectedCost= 0;
 	}
+
+	public function getAsArray(){
+	    return Array(
+	        "groupId" => $this->group->getId(),
+            "connexions" => $this->getConnexions(),
+            "appsUsage" => $this->getAppsUsagePeriod(),
+            "periodStartedAt" => $this->periodStartedAt ,
+            "periodEndedAt" => $this->periodEndedAt,
+            "periodExpectedToEndAt" => $this->periodExpectedToEndAt,
+            "groupPricingInstanceId" => $this->groupPricingInstance==null ?  null : $this->groupPricingInstance->getId(),
+            "currentCost" => $this->currentCost,
+            "estimatedCost" => $this->estimatedCost,
+            "expectedCost" => $this->expectedCost
+        );
+    }
+
+
+    public function isEquivalentTo($group_period)
+    {
+        if ($this->getConnexions() != $group_period->getConnexions()) {
+            return false;
+        }
+        if ($this->getAppsUsagePeriod() != $group_period->getAppsUsagePeriod()) {
+            return false;
+        }
+        if ($this->getPeriodStartedAt() != $group_period->getPeriodStartedAt()) {
+            return false;
+        }
+        if ($this->getPeriodEndedAt() != $group_period->getPeriodEndedAt()) {
+            return false;
+        }
+        if ($this->getPeriodExpectedToEndAt() != $group_period->getPeriodExpectedToEndAt()) {
+            return false;
+        }
+        if ($this->getCurrentCost() != $group_period->getCurrentCost()) {
+            return false;
+        }
+        if ($this->getExpectedCost() != $group_period->getExpectedCost()) {
+            return false;
+        }
+        if ($this->getEstimatedCost() != $group_period->getEstimatedCost()) {
+            return false;
+        }
+        return true;
+    }
+
 
     /**
      * @return mixed

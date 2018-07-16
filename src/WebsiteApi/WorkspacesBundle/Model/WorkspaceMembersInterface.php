@@ -14,7 +14,7 @@ interface WorkspaceMembersInterface
 	public function changeLevel($workspaceId, $userId, $levelId, $currentUserId=null);
 
 	// @addMember add user in workspace as member
-	public function addMember($workspaceId, $userId,$asExterne, $levelId=null, $currentUserId=null);
+    public function addMember($workspaceId, $userId, $asExterne = false, $levelId = null, $currentUserId = null);
 
 	// @removeMember remove member from workspace
 	public function removeMember($workspaceId, $userId, $currentUserId=null);

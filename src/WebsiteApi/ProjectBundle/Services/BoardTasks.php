@@ -1,0 +1,503 @@
+<?php
+
+
+namespace WebsiteApi\ProjectBundle\Services;
+
+use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\ProjectBundle\Entity\BoardTask;
+use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
+use WebsiteApi\ProjectBundle\Entity\LinkTaskUser;
+use WebsiteApi\ProjectBundle\Entity\TaskList;
+use WebsiteApi\ProjectBundle\Model\BoardTasksInterface;
+
+/**
+ * Manage board
+ */
+class BoardTasks implements BoardTasksInterface
+{
+
+    var $doctrine;
+    var $pusher;
+    var $workspaceLevels;
+    var $notifications;
+    /* @var BoardActivities $boardActivity */
+    var $boardActivity;
+
+    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceBoardActivity)
+    {
+        $this->doctrine = $doctrine;
+        $this->pusher = $pusher;
+        $this->workspaceLevels = $workspaceLevels;
+        $this->notifications = $notifications;
+        $this->boardActivity = $serviceBoardActivity;
+    }
+
+    public function createTask($workspaceId, $boardId, $task, $currentUserId = null, $addMySelf = false, $participants=Array())
+    {
+
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+            return null;
+        }
+
+        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
+        $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $board));
+
+        if(!$boardLink){
+            return null;
+        }
+
+        if(!isset($task["from"]) || !isset($task["to"])){
+            return null;
+        }
+
+        $task = new BoardTask($task, $task["from"], $task["to"]);
+        $taskModified = $task->getTask();
+        $taskModified["title"] = isset($task->getTask()["title"])? $task->getTask()["title"] : "task";
+        $taskModified["typeTask"] = isset($task->getTask()["typeTask"])? $task->getTask()["typeTask"] : "task";
+
+        $task->setTask($taskModified);
+        $task->setReminder();
+        $task->setBoard($board);
+        $participantsArray = Array();
+        $task->setParticipant($participantsArray);
+        $this->doctrine->persist($task);
+        $this->doctrine->flush();
+
+        foreach($participants as $participant)
+        {
+            $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($participant);
+            if($user != null){
+                $this->addUsers($workspaceId,$boardId,$task,Array($user->getId()));
+                $participantsArray[] = $user->getId();
+            }
+        }
+        $calArray = $board->getAsArray();
+
+        $task->setParticipant($participantsArray);
+
+        $this->doctrine->persist($task);
+
+        if ($calArray["autoParticipate"] != null && is_array($calArray["autoParticipate"])) {
+            foreach ($calArray["autoParticipate"] as $userAuto){
+                $this->addUsers($workspaceId, $boardId, $task->getId(),Array($userAuto), $currentUserId);
+            }
+        }
+
+        if($addMySelf){
+            $this->addUsers($workspaceId, $boardId, $task, Array($currentUserId), $currentUserId);
+        }
+
+
+        $data = Array(
+            "type" => "create",
+            "task" => $task->getAsArray()
+        );
+        $this->pusher->push($data, "board/".$boardId);
+        $this->doctrine->flush();
+
+        return $task;
+
+    }
+
+    public function updateTask($workspaceId, $boardId, $taskId, $taskArray, $currentUserId = null)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+            return null;
+        }
+
+        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
+        $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $board));
+
+        if(!$boardLink){
+            return null;
+        }
+
+        if(!isset($taskArray["from"]) || !isset($taskArray["to"])){
+            return null;
+        }
+
+
+        $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
+
+        if(!$task){
+            return null;
+        }
+
+        //If we changed board verify that old board is our board
+        if($task->getBoard()->getId() != $boardId){
+            $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $task->getBoard()));
+            if(!$boardLink){
+                return null;
+            }
+        }
+
+        /* @var BoardTask $task */
+
+        $task->setBoard($board);
+        $task->setTask($taskArray);
+        $task->setFrom($taskArray["from"]);
+        $task->setTo($taskArray["to"]);
+        $task->setParticipant($taskArray["participant"]);
+        if (isset($taskArray["reminder"])) {
+            $task->setReminder(intval($taskArray["reminder"]));
+        } else {
+            $task->setReminder();
+        }
+        $this->doctrine->persist($task);
+
+        $usersLinked = $this->doctrine->getRepository("TwakeProjectBundle:LinkTaskUser")->findBy(Array("task"=>$task));
+        foreach ($usersLinked as $userLinked){
+            $userLinked->setFrom($task->getFrom());
+            $userLinked->setTo($task->getTo());
+            $this->doctrine->persist($userLinked);
+        }
+
+        $this->doctrine->flush();
+
+        $data = Array(
+            "type" => "update",
+            "task" => $task->getAsArray()
+        );
+        $this->pusher->push($data, "board/".$boardId);
+
+        return $task;
+    }
+
+    public function removeTask($workspaceId, $boardId, $taskId, $currentUserId = null)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+            return null;
+        }
+
+        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
+        $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $board));
+
+        if(!$boardLink){
+            return null;
+        }
+
+        $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
+
+        if(!$task || $task->getBoard()->getId() != $boardId){
+            return null;
+        }
+
+        $usersLinked = $this->doctrine->getRepository("TwakeProjectBundle:LinkTaskUser")->findBy(Array("task"=>$task));
+        foreach ($usersLinked as $userLinked){
+            $this->doctrine->remove($userLinked);
+        }
+
+        $this->doctrine->remove($task);
+        $this->doctrine->flush();
+
+        $data = Array(
+            "type" => "remove",
+            "task_id" => $taskId
+        );
+        $this->pusher->push($data, "board/".$boardId);
+
+        return true;
+    }
+
+    public function addUsers($workspaceId, $boardId, $task, $usersId, $currentUserId = null)
+    {
+        $taskId = null;
+        if(is_int($task) || is_string($task))
+            $taskId = $task;
+        error_log("ADD USERS");
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+            return null;
+        }
+
+        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
+        $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $board));
+
+        if(!$boardLink){
+            return null;
+        }
+
+        if($taskId!=null)
+            $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
+
+        if(!$task || $task->getBoard()->getId() != $boardId){
+            return null;
+        }
+
+        /* @var BoardTask $task */
+
+        foreach ($usersId as $userId) {
+            if($userId != null){ //pour eviter un bug du front
+                $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
+                $taskUserRepo = $this->doctrine->getRepository("TwakeProjectBundle:LinkTaskUser");
+                $userLink = $taskUserRepo->findBy(Array("user"=>$user,"task"=>$task));
+                if($userLink== false){
+                    $userLinked = new LinkTaskUser($user, $task);
+                    $userLinked->setFrom($task->getFrom());
+                    $userLinked->setTo($task->getTo());
+                    $this->doctrine->persist($userLinked);
+                    $participantArray = $task->getParticipant();
+                    $participantArray[] = $user->getId();
+                }
+                $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$task->getTask()["title"],"You have a new task the ".date('d/m/Y', $task->getFrom()), Array(), Array("notifCode" => $task->getFrom()."/".$task->getId()));
+            }
+        }
+        $task->setParticipant($participantArray);
+        $this->doctrine->flush();
+        $data = Array(
+            "type" => "update",
+            "task" => $task->getAsArray()
+        );
+        $this->pusher->push($data, "board/".$boardId);
+        return true;
+
+    }
+
+    public function removeUsers($workspaceId, $boardId, $taskId, $usersId, $currentUserId = null)
+    {
+
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+            return null;
+        }
+
+        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
+        $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $board));
+
+        if(!$boardLink){
+            return null;
+        }
+
+        $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
+
+        if(!$task || $task->getBoard()->getId() != $boardId){
+            return null;
+        }
+
+
+        $participantArray = $task->getParticipant();
+        foreach ($usersId as $userId){
+            error_log("remove ".$userId);
+            $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
+            $userLinked = $this->doctrine->getRepository("TwakeProjectBundle:LinkTaskUser")->findOneBy(Array("user"=>$user, "task"=>$task));
+            $this->doctrine->remove($userLinked);
+            for($i=0;$i<count($participantArray);$i++){
+                if($participantArray[$i] == $user->getId()){
+                    error_log("remove from array ".$i.", ".json_encode($participantArray));
+                    unset($participantArray[$i]);
+                    $participantArray = array_values($participantArray);
+                    error_log("array after remove : ".json_encode($participantArray));
+                    $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Removed  to ".$task->getTask()["name"],"You have been removed from ".$task->getTask()["name"], Array(), Array("notifCode" => $task->getFrom()."/".$task->getId()));
+                    break;
+                }
+            }
+        }
+
+        $task->setParticipant($participantArray);
+        $this->doctrine->persist($task);
+        $this->doctrine->flush();
+        $data = Array(
+            "type" => "update",
+            "task" => $task->getAsArray()
+        );
+        $this->pusher->push($data, "board/".$boardId);
+
+        return true;
+
+    }
+
+    public function getTasksForWorkspace($workspaceId, $boardsId, $currentUserId = null)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($workspace==null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read"))) {
+            return null;
+        }
+
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("id" => $boardsId));
+
+        return $tasks;
+    }
+
+    public function getTask($taskId,$workspaceId, $currentUserId){
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($workspace==null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read"))) {
+            return null;
+        }
+
+        /* @var BoardTask $task*/
+        $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id"=>$taskId));
+        if($task==null)
+            return; false;
+        /* @var LinkBoardWorkspace $workspaceLink*/
+        $workspaceLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("board"=>$task->getBoard()));
+
+        if(!$workspaceLink)
+            return false;
+
+        if($workspaceLink->getWorkspace()->getId()==$workspaceId)
+            return $task;
+
+        return false;
+    }
+    //
+    public function getTasksByBoard($workspaceId, $boardsId, $currentUserId = null){
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        var_dump($workspaceId);
+        var_dump($boardsId);
+        if($workspace == null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read"))){
+            return null;
+        }
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->getAllBoardTasksByBoard($boardsId);
+
+        foreach ($tasks as $link) {
+            $evt = $link->getAsArray();
+
+            $result[] = $evt;
+        }
+
+        return $result;
+    }
+
+    public function getTasksForUser($workspaceId, $currentUserId)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read")) {
+            return null;
+        }
+
+        $tasksLinks = $this->doctrine->getRepository("TwakeProjectBundle:LinkTaskUser")->findBy(Array("user" => $currentUserId));
+
+        $tasks = Array();
+        foreach ($tasksLinks as $taskLink){
+            $tasks[] = $taskLink->getTask();
+        }
+
+        return $tasks;
+
+    }
+
+    public function getTaskById($workspaceId, $taskId, $currentUserId = null)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read")) {
+            return null;
+        }
+
+        if($workspace==null ){
+            return null;
+        }
+
+        $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
+        if(!$task){
+            return null;
+        }else{
+
+            $task = $task->getAsArray();
+
+        }
+
+
+        return $task;
+    }
+
+    public function getUsers( $taskId, $currentUserId = null)
+    {
+        $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
+
+        if(!$task ){
+            return null;
+        }
+
+        $taskUserRepo = $this->doctrine->getRepository("TwakeProjectBundle:LinkTaskUser");
+        $users = Array();
+        $taskUsers = $taskUserRepo->findBy(Array("task"=>$task));
+
+        foreach ($taskUsers as $user){
+            $users[] = $user->getUser()->getAsArray();
+        }
+
+        return $users;
+
+    }
+
+    /** Check all tasks that have to be reminded */
+    public function checkReminders()
+    {
+
+        /** @var BoardTask[] $tasks */
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->toRemind();
+        $linkRepo = $this->doctrine->getRepository("TwakeProjectBundle:LinkTaskUser");
+
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "board"));
+
+        foreach ($tasks as $task) {
+
+            $date = $task->getFrom();
+            $in = $date - date("U");
+            $in = $in / 60;
+            if ($in < 60) {
+                $in = intval($in) . " minute(s) ";
+            } else if ($in / 60 < 24) {
+                $in = intval($in / 60) . " hour(s) ";
+            } else {
+                $in = intval($in / (60 * 24)) . " day(s) ";
+            }
+
+            $title = "Task";
+            if (isset($task->getTask()["title"])) {
+                $title = $task->getTask()["title"];
+            }
+            $text = $title . " in " . $in;
+
+            $_users = $linkRepo->findBy(Array("task" => $task));
+            if (count($_users) > 0) {
+                $users = Array();
+                foreach ($_users as $user) {
+                    $users[] = $user->getUser()->getId();
+                }
+                $this->notifications->pushNotification($app, null, $users, null, "task_" . $task->getId(), $text, Array("push"), null, false);
+            }
+
+
+            $task->setNextReminder(0);
+            $this->doctrine->persist($task);
+
+        }
+
+        $this->doctrine->flush();
+        return true;
+    }
+
+    public function moveTaskToList($taskId, $listOfTasksId){
+        $boardTaskRepository = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask");
+        $listOfTasksRepository = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks");
+        $taskListRepository = $this->doctrine->getRepository("TwakeProjectBundle:TaskList");
+
+        /* @var \WebsiteApi\ProjectBundle\Entity\BoardTask $task */
+        $task = $boardTaskRepository->findOneBy(Array("id" => $taskId));
+        /* @var \WebsiteApi\ProjectBundle\Entity\ListOfTasks $listofTasks */
+        $listOfTasks = $listOfTasksRepository->findOneBy(Array("id" => $listOfTasksId));
+
+        /* @var \WebsiteApi\ProjectBundle\Entity\TaskList $taskList */
+        $taskList = $taskListRepository->findOneBy(Array("boardTask" => $task, "listOfTask" => $listOfTasks));
+
+        if($taskList==null) {
+            $taskList = new TaskList($task, $taskList);
+
+            $this->doctrine->persist($taskList);
+            $this->doctrine->flush();
+        }
+    }
+}

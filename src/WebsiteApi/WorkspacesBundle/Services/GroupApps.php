@@ -45,6 +45,38 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
+    public function getAppsForPDF($groupId, $currentUserId = null)
+    {
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $group = $groupRepository->find($groupId);
+
+        if ($group == null) {
+            return false;
+        }
+
+        if ($currentUserId == null
+            || $this->gms->hasPrivileges(
+                $this->gms->getLevel($groupId, $currentUserId),
+                "MANAGE_APPS"
+            )
+        ) {
+            //Group apps
+            $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+            $groupapps = $groupappsRepository->findBy(Array("group" => $group));
+
+            $apps = array();
+            foreach ($groupapps as $ga) {
+                $gaFormat["id"] = $ga->getId();
+                $gaFormat["name"] = $ga->getName();
+                $apps[] = $gaFormat;
+            }
+
+            return $apps;
+        }
+
+        return false;
+    }
+
     public function setWorkspaceDefault($groupId, $appId, $boolean, $currentUserId = null)
     {
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
@@ -119,7 +151,7 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
-    public function useApp($groupId, $userId, $appId)
+    public function useApp($groupId, $workspaceId, $userId, $appId)
     {
         $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
         $groupUser = $groupUserRepository->findOneBy(Array("group" => $groupId , "user" => $userId));
@@ -135,6 +167,13 @@ class GroupApps implements GroupAppsInterface
             if ( in_array($appId,$appUsed) ){
                 return true;
             }else{
+
+                if ($workspaceId) {
+                    $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+                    $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspaceId, "user" => $userId));
+                    $workspaceUser->setLastAccess();
+                    $this->doctrine->persist($workspaceUser);
+                }
 
                 if (!$groupUser->getDidConnectToday()) {
                     $groupUser->setDidConnectToday(true);

@@ -24,14 +24,39 @@ class MessageReadController extends Controller
             $data['errors'][] = "notconnected";
         }
         else {
-            if($request->request->get("key") != null){
-                if(!$this->get('app.messageReadSystem')->readByKey($request->request->get("key"),$request->request->get("workspace"),$this->getUser())){
+            if($request->request->get("stream_id") != null){
+                $tmp = $this->get('app.messages')->readStream($request->request->get("stream_id"), $this->getUser());
+                if($tmp != null){
                     $data["errors"][] = "errorSystem";
+                }else{
+                    $data["data"][] = "success";
                 }
             }
         }
         return new JsonResponse($data);
     }
 
+    public function readAllMessagesAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $securityContext = $this->get('security.authorization_checker');
+
+        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $data['errors'][] = "notconnected";
+        }
+        else {
+            $user = $this->getUser();
+            $tmp = $this->get("app.messagesNotificationsCenter")->readAll($user);
+            if($tmp) {
+                $data["errors"][] = "errorSystem";
+            }else{
+                $data["data"][] = "success";
+            }
+        }
+        return new JsonResponse($data);
+    }
 
 }

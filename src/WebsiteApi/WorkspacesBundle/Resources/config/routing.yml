@@ -10,6 +10,30 @@ twake_workspaces_delete:
     path:     /delete
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:delete }
 
+twake_workspaces_archive_workspace:
+    path:     /archive
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:archiveWorkspace }
+
+twake_workspaces_unarchive_workspace:
+    path:     /unarchive
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:unarchiveWorkspace }
+
+twake_workspaces_hide_or_unhide_workspace:
+    path:     /hideOrNot
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:hideOrUnhideWorkspace }
+
+twake_workspaces_favorite_or_unfavorite_workspace:
+    path:     /favorite
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:favoriteOrUnfavoriteWorkspace }
+
+twake_workspaces_have_notifications_or_not_workspace:
+    path:     /notifications
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:haveNotificationsOrNotWorkspace }
+
+twake_workspaces_set_isNew:
+    path:     /set/isNew
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:setIsNew }
+
 # Edit workspace data
 
 twake_workspaces_get_data:
@@ -50,6 +74,7 @@ twake_workspaces_disable_app:
     path:     /apps/disable
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:disableApp }
 
+
 # Groups
 twake_groups_get_users:
     path:     /group/getUsers
@@ -66,6 +91,10 @@ twake_groups_remove_user:
 twake_groups_set_name:
     path:     /group/data/name
     defaults: { _controller: TwakeWorkspacesBundle:Group:changeName }
+
+twake_groups_get_workspaces:
+    path:     /group/getWorkspaces
+    defaults: { _controller: TwakeWorkspacesBundle:Group:getWorkspaces }
 
 twake_groups_use_apps:
     path:     /group/app/use
@@ -102,6 +131,7 @@ twake_groups_manager_remove:
 twake_groups_manager_edit:
     path:     /group/manager/edit
     defaults: { _controller: TwakeWorkspacesBundle:GroupManager:editManagers }
+
 
 # Edit members
 
@@ -151,6 +181,9 @@ twake_workspaces_levels_get_by_label:
     path:     /levels/getByLabel
     defaults: { _controller: TwakeWorkspacesBundle:WorkspaceLevels:getByLabel }
 
+twake_workspaces_members_get_workspaces:
+    path:     /members/getWorkspaces
+    defaults: { _controller: TwakeWorkspacesBundle:WorkspaceMembers:getWorkspaces }
 
 
 #twake_workspace_group_create:

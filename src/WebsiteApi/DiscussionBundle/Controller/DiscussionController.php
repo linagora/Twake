@@ -5,9 +5,7 @@ namespace WebsiteApi\DiscussionBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use WebsiteApi\DiscussionBundle\Entity\Stream;
-use WebsiteApi\DiscussionBundle\Entity\StreamMember;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
+use WebsiteApi\DiscussionBundle\Services\MessageSystem;
 
 
 class DiscussionController extends Controller
@@ -24,13 +22,13 @@ class DiscussionController extends Controller
             $data['errors'][] = "notconnected";
         }
         else {
-            if(($request->request->get("discussionKey")==null && $request->request->get("discussionKey")!=0) ||  ($request->request->get("offset")==null && $request->request->get("offset")!=0) ){
+            if (($request->request->get("streamId") == null && $request->request->get("streamId") != 0) || ($request->request->get("offset") == null && $request->request->get("offset") != 0)) {
                 $data["errors"][] = "missingargument";
             }
             else{
                 $messages = [];
                 $offsetId= intval($request->request->get("offsetId"));
-                $messages = $this->get("app.messages")->getMessages($request->request->get("discussionKey"),$offsetId,$request->request->get("subject"),$this->getUser());
+                $messages = $this->get("app.messages")->getMessages("s-" . $request->request->get("streamId"), $offsetId, $request->request->get("subject"), $this->getUser());
 
                 error_log(count($messages));
                 $data["data"] = $messages;
@@ -241,4 +239,148 @@ class DiscussionController extends Controller
 	    return new JsonResponse($data);
     }
 
+    public function getLastMessagesAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $user = $this->getUser()->getId();
+
+        $list = $this->get('app.messages_master')->getLastMessages($user);
+        if(count($list)==0){
+            $data["errors"][] = "list empty";
+        }else {
+
+            $response = array();
+            foreach ($list as $element) {
+                if ($element["message"] != null){
+                    try {
+                        $responseElement["stream"] = $element["stream"]->getAsArray();
+                        $responseElement["message"] = $element["message"]->getAsArrayForClient();
+                        $responseElement["stream_member"] = $element["stream_member"]->getAsArray();
+                        $response[] = $responseElement;
+                    } catch (\Exception $e) {
+
+                    }
+                }
+            }
+
+            $data["data"] = $response;
+        }
+        return new JsonResponse($data);
+    }
+
+    public function addStreamAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $streamName = $request->request->get("name","");
+        $streamIsPrivate = $request->request->get("isPrivate",false);
+        $streamDescription = $request->request->get("description","");
+        $workspaceId = $request->request->get("workspaceId",0);
+
+        //Warning, auth done in service
+        $res = $this->get("app.streamSystem")->createStream($this->getUser(),$workspaceId,$streamName,$streamDescription,$streamIsPrivate);
+
+        if(!$res)
+            $data["errors"][] = "Fail to add stream";
+        else
+            $data["data"][] = "success";
+
+        return new JsonResponse($data);
+    }
+
+    public function removeStreamAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $id = $request->request->get("id",0);
+
+        //Warning, auth done in service
+        $res = $this->get("app.streamSystem")->deleteStream($this->getUser(),$id);
+
+        if(!$res)
+            $data["errors"][] = "Fail to remove stream";
+        else
+            $data["data"][] = "success";
+
+        return new JsonResponse($data);
+    }
+
+    public function editStreamAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $id = $request->request->get("id",0);
+        $name = $request->request->get("name","");
+        $isPrivate = $request->request->get("isPrivate",false);
+        $streamDescription = $request->request->get("description","");
+        $members = $request->request->get("members",Array());
+
+        //Warning, auth done in service
+        $res = $this->get("app.streamSystem")->editStream($this->getUser(),"s-".$id,$name,$streamDescription,$isPrivate,$members);
+
+        if(!$res)
+            $data["errors"][] = "Fail to edit stream";
+        else
+            $data["data"][] = "success";
+
+        return new JsonResponse($data);
+    }
+
+    public function sendMessageFileAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $streamId = $request->request->get("streamId",0);
+        $subjectId = $request->request->get("subjectId",0);
+        $fileId = $request->request->get("fileId",0);
+        $workspaceId = $request->request->get("workspaceId",0);
+        $respondTo = $request->request->get("respondTo",0);
+
+        /* @var MessageSystem $messageSystem */
+
+        //Warning, auth done in service
+        $messageSystem = $this->get("app.messages");
+        $res = $messageSystem->sendMessageWithFile($this->getUser()->getId(),"s-".$streamId,"",$workspaceId,$subjectId,$fileId,$respondTo);
+
+        if(!$res)
+            $data["errors"][] = "Fail to send message file";
+        else
+            $data["data"][] = "success";
+
+        return new JsonResponse($data);
+    }
+
+    public function newCallAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $streamId = $request->request->get("streamId",null);
+        $subjectId = $request->request->get("subjectId",null);
+        $respondTo = $request->request->get("respondTo",null);
+        $workspaceId = $request->request->get("workspaceId",null);
+
+        /* @var MessageSystem $messageSystem */
+
+        $messageSystem = $this->get("app.messages");
+        $res = $messageSystem->makeCall($streamId,$subjectId,$workspaceId,$this->getUser(),$respondTo);
+        if(!$res)
+            $data["errors"][] = "Fail to make a call";
+        else
+            $data["data"][] = "success";
+
+        return new JsonResponse($data);
+    }
 }

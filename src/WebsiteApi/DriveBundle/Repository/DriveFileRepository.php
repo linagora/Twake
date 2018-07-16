@@ -118,5 +118,11 @@ class DriveFileRepository extends \Doctrine\ORM\EntityRepository
         return $req->getQuery()->getResult();
     }
 
+    public function decreaseOpeningRate(){
+        $req = $this->createQueryBuilder('f')
+            ->update()
+            ->set('f.opening_rate', 'f.opening_rate*0.8');
+        $req->getQuery()->execute();
+    }
 
 }

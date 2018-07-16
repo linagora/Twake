@@ -1,24 +1,27 @@
-message_get_stream:
+#DiscussionController
+messages_get_stream:
     path:     /getStream
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getStream}
 
-
-message_get:
+messages_get:
     path:     /getMessage
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getMessage}
 
-message_search:
+messages_search:
     path:     /searchMessage
     defaults: { _controller: TwakeDiscussionBundle:Discussion:searchMessage}
 
-message_get_drive_message:
+messages_get_drive_message:
     path:     /getDriveMessage
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getDriveMessage}
 
-message_read:
-    path:     /read
-    defaults: { _controller: TwakeDiscussionBundle:MessageRead:readMessage}
+messages_send_message_file:
+    path:     /sendMessageFile
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:sendMessageFile}
 
+message_call:
+    path:     /newCall
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:newCall}
 
 streams_get:
     path:     /streams/get
@@ -28,6 +31,18 @@ streams_mute:
     path:     /streams/mute
     defaults: { _controller: TwakeDiscussionBundle:Discussion:mute }
 
+streams_add:
+    path:     /streams/add
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:addStream }
+
+streams_remove:
+    path:     /streams/remove
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:removeStream }
+
+streams_edit:
+    path:     /streams/edit
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:editStream }
+
 subjectList_get:
     path:     /subject/getList
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getSubject }
@@ -35,4 +50,17 @@ subjectList_get:
 subject_get_message:
     path:     /subject/getMessage
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getSubjectMessage }
+
+subject_get_last_messages:
+    path:     /getLastMessages
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:getLastMessages }
+
+#MessageReadController
+messages_read:
+    path:     /read
+    defaults: { _controller: TwakeDiscussionBundle:MessageRead:readMessage}
+
+messages_read_all:
+    path:     /readAll
+    defaults: { _controller: TwakeDiscussionBundle:MessageRead:readAllMessages}
 

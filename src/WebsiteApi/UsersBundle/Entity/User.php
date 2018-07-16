@@ -70,6 +70,12 @@ class User extends BaseUser
 	 */
 	protected $lastActivity = 0;
 
+    /**
+     * @var int
+     * @ORM\Column(type="datetime",nullable=true, options={"default" : "1970-01-02"})
+     */
+    protected $creationDate;
+
 	/**
 	 * @ORM\Column(name="language", type="string", length=64)
 	 */
@@ -84,6 +90,11 @@ class User extends BaseUser
      * @ORM\Column(name="phone", type="string", length=64)
      */
     protected $phone = "";
+
+    /**
+     * @ORM\Column(name="isNew", type="boolean")
+     */
+    protected $isNew = true;
 
 
 
@@ -133,6 +144,22 @@ class User extends BaseUser
 	{
 		$this->firstName = $firstName;
 	}
+
+    /**
+     * @return dateTime
+     */
+    public function getCreationDate()
+    {
+        return $this->creationDate;
+    }
+
+    /**
+     * @param datetime $creationDate
+     */
+    public function setCreationDate($creationDate)
+    {
+        $this->creationDate = $creationDate;
+    }
 
 	/**
 	 * @return mixed
@@ -251,6 +278,22 @@ class User extends BaseUser
         $this->phone = $phone;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getisNew()
+    {
+        return $this->isNew;
+    }
+
+    /**
+     * @param mixed $isNew
+     */
+    public function setIsNew($isNew)
+    {
+        $this->isNew = $isNew;
+    }
+
 
 
 	/**
@@ -265,6 +308,7 @@ class User extends BaseUser
 		$preferences["privacy"] = (isset($preferences["privacy"]))?$preferences["privacy"]:0;
 		$preferences["dont_use_keywords"] = (isset($preferences["dont_use_keywords"]))?$preferences["dont_use_keywords"]:1;
 		$preferences["keywords"] = (isset($preferences["keywords"]))?$preferences["keywords"]:"";
+        $preferences["disabled_workspaces"] = (isset($preferences["disabled_workspaces"]))?$preferences["disabled_workspaces"]:[];
 
 		return $preferences;
 	}
@@ -281,6 +325,16 @@ class User extends BaseUser
 		@$preferences["privacy"] = intval($notification_preference["privacy"]);
 		@$preferences["dont_use_keywords"] = intval($notification_preference["use_keywords"]);
 		@$preferences["keywords"] = substr($notification_preference["keywords"], 0, 512);
+
+
+		// $token = explode("[",$notification_preference["disabled_workspaces"])[1];
+		// $token2 = explode("]", $token)[0];
+        // $token3 = explode(",", $token2);
+
+        foreach ($notification_preference["disabled_workspaces"] as $item) {
+            @$preferences["disabled_workspaces"][] = intval($item);
+        }
+
 		$this->notification_preference = json_encode($notification_preference);
 	}
 
@@ -293,7 +347,8 @@ class User extends BaseUser
 			"lastname" => $this->getLastName(),
 			"thumbnail" => ($this->getThumbnail()==null)?null:$this->getThumbnail()->getPublicURL(2),
             "connected" => $this->isConnected(),
-			"language" => $this->getLanguage()
+			"language" => $this->getLanguage(),
+            "isNew" => $this->getisNew()
 		);
 		return $return;
 	}

@@ -114,7 +114,7 @@ class Connections
 	}
 	public function onClientError(ClientErrorEvent $event)
 	{
-		$this->removeConnection($event);
+        $this->removeConnection($event);
 	}
 	public function onClientRejected(ClientRejectedEvent $event)
 	{

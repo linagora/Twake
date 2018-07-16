@@ -146,7 +146,7 @@ class AdministrationServerStats
         return "done";
     }
 
-    public function getUsersConnected($limit = 0)
+    public function getUsersConnected($limit = 0, $granularity = "daily")
     {
         $repo = $this->doctrine->getRepository("AdministrationAuthenticationBundle:ServerUsersStats");
         $_list = $repo->findBy(Array(), Array("dateSave" => "DESC"), $limit * 24);
@@ -154,7 +154,11 @@ class AdministrationServerStats
         $day = 0;
         $currentValues = Array();
         foreach ($_list as $el) {
-            $elDay = date("z", $el->getDateSave()->getTimestamp());
+            if ($granularity == "daily") {
+                $elDay = date("z", $el->getDateSave()->getTimestamp());
+            } else {
+                $elDay = date("zH", $el->getDateSave()->getTimestamp());
+            }
             if ($day == 0) {
                 $day = $elDay;
             }

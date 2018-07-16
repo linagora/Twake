@@ -49,6 +49,7 @@ class Workspaces implements WorkspacesInterface
 
         if (!$workspace) {
             $workspace = $this->create("private_workspace", null, $userId);
+            $workspace->setIsNew(false);
             $workspace->setUser($user);
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
@@ -106,8 +107,6 @@ class Workspaces implements WorkspacesInterface
         $workspace->setUniqueName($uniquenameIncremented);
 
         if ($groupId != null) {
-
-
             $limit = $this->pricing->getLimitation($groupId, "maxWorkspace", PHP_INT_MAX);
 
             $nbWorkspace = $workspaceRepository->findBy(Array("group" => $group, "isDeleted" => 0));
@@ -259,8 +258,13 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function changeWallpaper($workspaceId, $wallpaper, $currentUserId = null)
+    public function changeWallpaper($workspaceId, $wallpaper, $color = null, $currentUserId = null)
     {
+
+        if ($color == null) {
+            $color = "#7E7A6D";
+        }
+
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
         ) {
@@ -273,6 +277,7 @@ class Workspaces implements WorkspacesInterface
                 $this->doctrine->remove($workspace->getWallpaper());
             }
             $workspace->setWallpaper($wallpaper);
+            $workspace->setColor($color);
 
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
@@ -369,6 +374,206 @@ class Workspaces implements WorkspacesInterface
         }
 
         //Déjà initialisé
+        return false;
+    }
+
+
+    public function archive($groupId, $workspaceId, $currentUserId = null){
+
+        if ($currentUserId == null
+            || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
+                && count($this->wms->getMembers($workspaceId)) <= 1
+            )
+            || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
+        ) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->find($workspaceId);
+
+            $isArchived = $workspace->getisArchived();
+            $isDeleted = $workspace->getisDeleted();
+
+            if ($isDeleted == false && $isArchived == false){
+                $workspace->setIsArchived(true);
+            }
+
+            $this->doctrine->persist($workspace);
+            $this->doctrine->flush();
+
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
+            return true;
+        }
+        return false;
+
+    }
+
+    public function unarchive($groupId, $workspaceId, $currentUserId = null){
+
+        if ($currentUserId == null
+            || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
+                && count($this->wms->getMembers($workspaceId)) <= 1
+            )
+            || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_WORKSPACES")
+        ) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->find($workspaceId);
+
+            $isArchived = $workspace->getisArchived();
+            $isDeleted = $workspace->getisDeleted();
+
+            if ($isDeleted == false && $isArchived == true){
+                $workspace->setIsArchived(false);
+            }
+
+            $this->doctrine->persist($workspace);
+            $this->doctrine->flush();
+
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
+            return true;
+        }
+        return false;
+
+    }
+
+
+    public function hideOrUnhideWorkspace($workspaceId, $currentUserId = null, $wanted_value=null)
+    {
+        if ($currentUserId != null) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
+
+            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
+
+            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
+
+            if($wanted_value === null) {
+                $isHidden = $workspaceUser->getisHidden();
+                $workspaceUser->setisHidden(!$isHidden);
+            }
+            $workspaceUser->setisHidden($wanted_value);
+
+            $this->doctrine->persist($workspaceUser);
+            $this->doctrine->flush();
+
+            if ($currentUserId) {
+                $datatopush = Array(
+                    "type" => "USER_WORKSPACES",
+                    "data" => Array(
+                        "workspaceId" => $workspace->getId(),
+                    )
+                );
+                $this->pusher->push($datatopush, "notifications/" . $currentUserId);
+            }
+
+            return true;
+        }
+        return false;
+    }
+
+    public function haveNotificationsOrNotWorkspace($workspaceId, $currentUserId = null, $wanted_value = null){
+        if ($currentUserId != null) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
+
+            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
+
+            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
+
+            if($wanted_value === null) {
+                $hasNotifications = $workspaceUser->getHasNotifications();
+                $workspaceUser->setHasNotifications(!$hasNotifications);
+            }
+            $workspaceUser->setHasNotifications($wanted_value);
+
+            $notificationPreference = $currentUser->getNotificationPreference();
+            $disabled_ws = $notificationPreference["disabled_workspaces"];
+            if (in_array($workspaceId, $disabled_ws) && $workspaceUser->getHasNotifications()){
+                $position = array_search($workspaceId,$disabled_ws);
+                unset($disabled_ws[$position]);
+            }
+
+            if (!in_array($workspaceId, $disabled_ws) && !$workspaceUser->getHasNotifications()){
+                array_push($disabled_ws, $workspaceId);
+            }
+
+            $this->doctrine->persist($workspaceUser);
+            $this->doctrine->flush();
+            return true;
+        }
+        return false;
+    }
+
+    public function favoriteOrUnfavoriteWorkspace($workspaceId, $currentUserId = null){
+        $result = Array ();
+
+        if ($currentUserId != null) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
+
+            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $currentUser = $userRepository->findOneBy(Array("id" => $currentUserId));
+
+            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
+
+            $isFavorite = $workspaceUser->getisFavorite();
+            $workspaceUser->setisFavorite(!$isFavorite);
+            $this->doctrine->persist($workspaceUser);
+
+            $this->doctrine->flush();
+
+
+            if ($currentUserId) {
+                $datatopush = Array(
+                    "type" => "USER_WORKSPACES",
+                    "data" => Array(
+                        "workspaceId" => $workspace->getId(),
+                    )
+                );
+                $this->pusher->push($datatopush, "notifications/" . $currentUserId);
+            }
+
+            $result["answer"] = true;
+            $result["isFavorite"] = $workspaceUser->getisFavorite();
+
+            return $result;
+        }
+        $result["answer"] = false;
+        return $result;
+    }
+
+    public function setIsNew($value, $workspaceId, $currentUserId = null){
+        if ($currentUserId != null) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->findOneBy(Array("id" =>$workspaceId));
+
+            if($workspace != null){
+
+                $workspace->setisNew($value);
+                $this->doctrine->persist($workspace);
+                $this->doctrine->flush();
+
+                return true;
+            }
+            return false;
+        }
         return false;
     }
 

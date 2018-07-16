@@ -16,7 +16,17 @@ services:
         class: WebsiteApi\UsersBundle\Services\Contacts
         arguments: ["@doctrine.orm.entity_manager", "@app.notifications"]
 
+    app.token_service:
+        class: WebsiteApi\UsersBundle\Services\TokenService
+        arguments: ["@doctrine.orm.entity_manager"]
+
     ping.rpc:
         class: WebsiteApi\UsersBundle\Topic\PingTopic
         tags:
             - { name: gos_web_socket.rpc }
+
+    sharing_view.topic:
+        class: WebsiteApi\UsersBundle\Topic\SharingViewTopic
+        tags:
+            - { name: gos_web_socket.topic }
+        arguments: ["@gos_web_socket.websocket.client_manipulator"]

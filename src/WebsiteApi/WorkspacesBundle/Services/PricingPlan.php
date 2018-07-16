@@ -78,7 +78,10 @@ class PricingPlan implements PricingPlanInterface
         if ($group == null) {
             $pricing = $pricingRepository->findOneBy(Array("label" => "private"));
         } else {
-            $pricing = $pricingRepository->findOneBy(Array("id" => ($group->getPricingPlan())));
+            if($group->getIsBlocked())
+                $pricing = $this->getMinimalPricing();
+            else
+                $pricing = $pricingRepository->findOneBy(Array("id" => ($group->getPricingPlan())));
         }
 
         return $pricing;
@@ -173,7 +176,7 @@ class PricingPlan implements PricingPlanInterface
         foreach ($listGroupUser as $ga) {
             $groupPeriod = $groupPeriodUsageRepository->findOneBy(Array("group" => $ga->getGroup()));
             if (!$groupPeriod) {
-                $this->groupPeriod->init($ga->getGroup());
+                $this->groupPeriod->init($ga->getGroup(),$this->getMinimalPricing());
                 $groupPeriod = $groupPeriodUsageRepository->findOneBy(Array("group" => $ga->getGroup()));
             }
             $connexions = $groupPeriod->getConnexions();

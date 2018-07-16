@@ -6,6 +6,12 @@ connections_topic:
          id_user:
             pattern: "[0-9]+"
 
+sharing_view_topic:
+    channel: sharing_view/{appname}
+    handler:
+        callback: 'sharing_view.topic' #related to the getName() of your topic
+
+
 ping_rpc:
     channel: ping/{method}
     handler:

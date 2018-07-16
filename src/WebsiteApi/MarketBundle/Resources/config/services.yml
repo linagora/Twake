@@ -6,3 +6,7 @@ services:
     website_api_market.applications:
         class: WebsiteApi\MarketBundle\Services\MarketApplication
         arguments: ["@doctrine.orm.entity_manager", "@app.group_managers","@app.pricing_plan"]
+
+    website_api_market.data_token:
+        class: WebsiteApi\MarketBundle\Services\DataTokenSystem
+        arguments: ["@doctrine.orm.entity_manager"]

@@ -53,4 +53,12 @@ class NotificationRepository extends \Doctrine\ORM\EntityRepository
 
     }
 
+    public function getAppNoMessages($app){
+        $qb = $this->createQueryBuilder('n');
+        $qb->where('n.application != :app');
+        $qb->setParameter('app',$app);
+
+        return $qb->getQuery()->getResult();
+    }
+
 }

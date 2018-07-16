@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\CalendarBundle\Controller;
 
+use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,6 +29,18 @@ class CalendarController extends Controller
         return new JsonResponse($data);
     }
 
+    public function getAutoParticipateByCalendar(Request $request){
+        $data = Array(
+            'error' => Array(),
+            'data' => Array()
+        );
+        $workspaceId = $request->request->get("workpsaceId");
+        $calendarId = $request->request->get("calendarId");
+        $calendar = ($this->get("app.calendars")->getCalendarById($workspaceId,$calendarId))->getAsArray();
+
+        $data['data'] = $calendar["autoParticpate"] ;
+        return new JsonResponse($data);
+    }
     public function createCalendarAction(Request $request)
     {
         $data = Array(
@@ -55,8 +68,9 @@ class CalendarController extends Controller
         $calendarId = $request->request->get("calendarId");
         $label = $request->request->get("name");
         $color = $request->request->get("color");
+        $autoParticipant = $request->get("autoParticipate");
 
-        $data['data'] = $this->get("app.calendars")->updateCalendar($workspaceId, $calendarId, $label, $color, $this->getUser()->getId());
+        $data['data'] = $this->get("app.calendars")->updateCalendar($workspaceId, $calendarId, $label, $color, $this->getUser(), $autoParticipant);
 
         return new JsonResponse($data);
     }
@@ -130,6 +144,28 @@ class CalendarController extends Controller
         $data['data'] = $calendars_formated;
 
         return new JsonResponse($data);
+    }
+
+    public function importCalendarAction(Request $request){
+
+        $workspaceID = $_POST["workspaceId"];
+        $calendarId = $_POST["calendarId"];
+        $parsing = $this->get("app.export_import")->parseCalendar($workspaceID,$calendarId);
+        return $parsing;
+    }
+
+    public function exportCalendarAction(Request $request, $workspaceId, $calendarsIds, $useMine, $from, $to){
+        if($useMine==1){
+            $user_id = $this->getUser()->getId();
+
+        }else{
+            $user_id = null;
+        }
+        $from = ($from>=(strtotime('-1 year', (new \DateTime())->getTimestamp())) && $from <=strtotime('-1 year', (new \DateTime())->getTimestamp())) ? $from : (new \DateTime())->getTimestamp();
+        $to = ($to<=(strtotime('-1 year', (new \DateTime())->getTimestamp())) && $to>=strtotime('+1 year', (new \DateTime())->getTimestamp())) ? $to : strtotime('+1 year', (new \DateTime())->getTimestamp()) ;
+
+        $parsing = $this->get("app.export_import")->generateIcsFileWithUrl($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id);
+        return $parsing;
     }
 
 }

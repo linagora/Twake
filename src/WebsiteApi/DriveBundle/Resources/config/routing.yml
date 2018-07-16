@@ -27,6 +27,11 @@ twake_drive_list:
     defaults: { _controller: TwakeDriveBundle:Files:list }
     methods: [POST]
 
+twake_drive_list_last_used:
+    path: /listLastUsed
+    defaults: { _controller: TwakeDriveBundle:Files:listLastUsed }
+    methods: [POST]
+
 twake_drive_preview:
     path:     /preview
     defaults: { _controller: TwakeDriveBundle:Files:preview }
@@ -92,11 +97,14 @@ twake_drive_content_set:
     defaults: { _controller: TwakeDriveBundle:Files:setContent }
     methods: [POST]
 
-# Sharing
+twake_drive_open:
+    path:     /open
+    defaults: { _controller: TwakeDriveBundle:Files:open }
+    methods: [POST]
 
-twake_drive_share:
-    path: /share
-    defaults: { _controller: TwakeDriveBundle:FilesSharing:share }
+twake_drive_getAppFiles:
+    path:     /getAppFiles
+    defaults: { _controller: TwakeDriveBundle:Files:getFilesFromApp }
     methods: [POST]
 
 # Trash
@@ -114,4 +122,65 @@ twake_drive_trash_restore:
 twake_drive_trash_empty:
     path:     /trash/empty
     defaults: { _controller: TwakeDriveBundle:Files:emptyTrash }
+    methods: [POST]
+
+# UsersToNotify
+
+twake_drive_get_users_to_notify:
+    path:     /users_to_notify/get
+    defaults: { _controller: TwakeDriveBundle:UsersToNotify:getUsers }
+
+twake_drive_set_users_to_notify:
+    path:     /users_to_notify/set
+    defaults: { _controller: TwakeDriveBundle:UsersToNotify:setUsers }
+    methods: [POST]
+
+twake_drive_post_gdrive_notification:
+    path:     /users_to_notify/post_gdrive_notification
+    defaults: { _controller: TwakeDriveBundle:UsersToNotify:postGDriveNotification }
+
+# External drive handler
+
+twake_drive_add_google_drive:
+    path:     /gdrive/add
+    defaults: { _controller: TwakeDriveBundle:ExternalFiles:addNewExternalDrive }
+
+twake_drive_google_drive_response:
+    path:     /gdrive/fetchAccessTokenWithAuthCode
+    defaults: { _controller: TwakeDriveBundle:ExternalFiles:fetchAccessTokenWithAuthCode }
+
+twake_drive_get_external_drives:
+    path:     /gdrive/getExternalDrives
+    defaults: { _controller: TwakeDriveBundle:ExternalFiles:getExternalDrives }
+    
+# Activity
+
+drive_activities_create:
+    path: /driveActivities/create
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:create }
+    methods: [POST]
+
+drive_activities_get:
+    path: /driveActivities/get
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:get }
+    methods: [POST]
+
+drive_activities_readAll:
+    path: /driveActivities/readAll
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:readAll }
+    methods: [POST]
+
+drive_activities_readOne:
+    path: /driveActivities/readOne
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:readOne}
+    methods: [POST]
+
+drive_activities_delete:
+    path: /driveActivities/delete
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:delete}
+    methods: [POST]
+
+drive_activities_getActivityToDisplay:
+    path: /driveActivities/getActivityToDisplay
+    defaults: { _controller: TwakeDriveBundle:DriveActivity:getActivityToDisplay}
     methods: [POST]

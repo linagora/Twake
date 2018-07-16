@@ -26,3 +26,8 @@ twake_version:
     path:     /version
     defaults: { _controller: TwakeCoreBundle:Version:get }
     methods:  [GET]
+
+twake_quote:
+    path:     /quote
+    defaults: { _controller: TwakeCoreBundle:Version:quote }
+    methods:  [GET]

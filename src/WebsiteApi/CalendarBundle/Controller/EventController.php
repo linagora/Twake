@@ -17,7 +17,6 @@ class EventController extends Controller
             'errors' => Array(),
             'data' => Array()
         );
-
         $useMine = $request->request->get("mine");
         $workspaceId = $request->request->getInt("workspaceId");
         $to = $request->request->get("to");
@@ -40,6 +39,24 @@ class EventController extends Controller
 
         return new JsonResponse($data);
     }
+    public function getOneEventAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+        $eventId = $request->request->get("eventId");
+        $workspaceId = $request->request->getInt("workspaceId");
+
+        $event = $this->get("app.calendar_events")->getEvent($eventId, $workspaceId, $this->getUser()->getId());
+
+        if($event){
+            $data["data"] = $event->getAsArray();
+        }
+
+        return new JsonResponse($data);
+    }
+
 
     public function createAction(Request $request)
     {
@@ -52,10 +69,14 @@ class EventController extends Controller
         $event = $request->request->get("event");
         $calendarId = $request->request->get("calendarId");
         $addMySelf = $request->request->get("addMe");
+        $participants = $event["participant"];
 
-        $event = $this->get("app.calendar_events")->createEvent($workspaceId, $calendarId, $event, $this->getUser()->getId(), $addMySelf);
+        $event = $this->get("app.calendar_events")->createEvent($workspaceId, $calendarId, $event, $this->getUser()->getId(), $addMySelf, $participants);
 
-        if($event){
+        if($event == null){
+            $data["errors"] = "error";
+        }
+        else{
             $data['data'] = $event->getAsArray();
         }
 

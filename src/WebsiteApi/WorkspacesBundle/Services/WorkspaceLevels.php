@@ -21,7 +21,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function can($workspaceId, $userId, $action)
 	{
 		//Load rights for this users
-
+        error_log("can");
 
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -31,6 +31,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 		$workspace = $workspaceRepository->find($workspaceId);
 
 		if(!$user || !$workspace){
+            error_log("no user / ws ");
 			return false;
 		}
 

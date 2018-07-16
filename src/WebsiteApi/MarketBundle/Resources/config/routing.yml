@@ -22,15 +22,32 @@ website_api_app_add_app:
     path:     /app/add/application
     defaults: { _controller: TwakeMarketBundle:Application:addApp }
 
+website_api_app_add_free_app:
+    path:     /app/add/freeApplication
+    defaults: { _controller: TwakeMarketBundle:Application:addFreeApp }
+
 
 website_api_cat_get:
     path:     /category/get
     defaults: { _controller: TwakeMarketBundle:Application:getCategory }
 
 
+website_api_url_getinfo:
+    path:     /url/test
+    defaults: { _controller: TwakeMarketBundle:Url:testUrl }
+
+website_api_get_data_token:
+    path:     /token
+    defaults: { _controller: TwakeMarketBundle:DataToken:makeToken }
+
+
+## Old code ?
+
+
 developers_api_users_gettoken:
     path:     /user/gettoken
     defaults: { _controller: TwakeMarketBundle:Application:getUserToken }
+
 
 website_api_app_acquire:
     path:     /group/acquire

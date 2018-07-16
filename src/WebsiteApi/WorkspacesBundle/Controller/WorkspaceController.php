@@ -71,7 +71,7 @@ class WorkspaceController extends Controller
                 $nbWorkspace = $workspaceRepository->findBy(Array("group"=>$group,"isDeleted"=>0));
 
                 $nbuserGroup = $groupUserRepository->findBy(Array("group"=>$wp->getGroup()));
-                $limitUser = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(),"maxUSer",PHP_INT_MAX);
+                $limitUser = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(), "maxUser", PHP_INT_MAX);
 
                 $response["data"]["maxWorkspace"] = $limit;
                 $response["data"]["currentNbWorkspace"] = count($nbWorkspace);
@@ -90,11 +90,16 @@ class WorkspaceController extends Controller
 
 		$response = Array("errors"=>Array(), "data"=>Array());
 
-		$name = $request->request->get("name");
+        $name = $request->request->get("name", "");
+
+        if (strlen($name) == 0) {
+            $name = "Untitled";
+        }
+
 		$groupId = $request->request->getInt("groupId", 0);
 
 		if(!$groupId){
-			//Auto create group
+            //Auto create group
 			$uniquename = $this->get("app.string_cleaner")->simplify($name);
 			$plan = $this->get("app.pricing_plan")->getMinimalPricing();
 			$planId = $plan->getId();
@@ -103,12 +108,14 @@ class WorkspaceController extends Controller
 		}
 
 		$ws = $this->get("app.workspaces")->create($name, $groupId, $this->getUser()->getId());
+        $ws_id = $ws->getId();
 
 		if(!$ws || is_string($ws)){
                 $response["errors"][] = "notallowed";
                 $response["errors"]["max"] = $ws;
 		}else{
-			$response["data"] = "success";
+			$response["data"]["status"] = "success";
+			$response["data"]["workspace_id"] = $ws_id;
 		}
 
 		return new JsonResponse($response);
@@ -132,40 +139,6 @@ class WorkspaceController extends Controller
 		}
 
 		return new JsonResponse($data);
-	}
-
-	public function setIdentityAction(Request $request)
-	{
-
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
-
-		if($this->getUser()){
-
-			$firstname = $request->request->get("firstname", "");
-			$lastname = $request->request->get("lastname", "");
-
-			if(isset($_FILES["thumbnail"])) {
-				$thumbnail = $this->get("app.uploader")->uploadFiles($this->getUser(), $_FILES["thumbnail"], "prfl");
-				$thumbnail = $thumbnail[0];
-
-				if (count($thumbnail["errors"])>0) {
-					$data["errors"][] = "badimage";
-				} else {
-					$this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail["file"]);
-				}
-			}else{
-				$this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname);
-			}
-
-		}else{
-			$data["errors"][] = "unknown";
-		}
-
-		return new JsonResponse($data);
-
 	}
 
     /**
@@ -269,6 +242,139 @@ class WorkspaceController extends Controller
         }
 
 
+        return new JsonResponse($response);
+    }
+
+    /**
+     * Archiver archiver un workspace
+     */
+    public function archiveWorkspaceAction(Request $request){
+        $response = Array(
+            "errors"=>Array(),
+            "data"=>Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId");
+        $groupId = $request->request->get("groupId");
+
+        $res = $this->get("app.workspaces")->archive($groupId, $workspaceId, $this->getUser()->getId());
+
+        if ($res == true){
+            $response["data"] = "success";
+        }else{
+            $response["errors"] = "impossible to archive";
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * Désarchiver archiver un workspace
+     */
+    public function unarchiveWorkspaceAction(Request $request){
+        $response = Array(
+            "errors"=>Array(),
+            "data"=>Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId");
+        $groupId = $request->request->get("groupId");
+
+        $res = $this->get("app.workspaces")->unarchive($groupId, $workspaceId, $this->getUser()->getId());
+
+        if ($res == true){
+            $response["data"] = "success";
+        }else{
+            $response["errors"] = "impossible to archive";
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * Cacher ou non un workspace
+     */
+    public function hideOrUnhideWorkspaceAction(Request $request){
+        $response = Array(
+            "errors"=>Array(),
+            "data"=>Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId");
+        $wantedValue = $request->request->get("wantedValue");
+
+        $res = $this->get("app.workspaces")->hideOrUnhideWorkspace($workspaceId, $this->getUser()->getId(), $wantedValue);
+
+        if ($res == true){
+            $response["data"] = "success";
+        }else{
+            $response["errors"] = "impossible to hide a workspace";
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * Mettre un workspace en favori
+     */
+    public function favoriteOrUnfavoriteWorkspaceAction(Request $request){
+        $response = Array(
+            "errors"=>Array(),
+            "data"=>Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId");
+
+        $res = $this->get("app.workspaces")->favoriteOrUnfavoriteWorkspace($workspaceId, $this->getUser()->getId());
+
+        if ($res["answer"]){
+            $response["data"] = $res["isFavorite"];
+        }else{
+            $response["errors"] = "impossible to put as favorite a workspace";
+        }
+
+        return new JsonResponse($response);
+    }
+
+    /**
+     * Recevoir ou non les notifications d'un workspace
+     */
+    public function haveNotificationsOrNotWorkspaceAction(Request $request){
+        $response = Array(
+            "errors"=>Array(),
+            "data"=>Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId");
+        $wantedValue = $request->request->get("wantedValue");
+
+        $res = $this->get("app.workspaces")->haveNotificationsOrNotWorkspace($workspaceId, $this->getUser()->getId(), $wantedValue);
+
+        if ($res == true){
+            $response["data"] = "success";
+        }else{
+            $response["errors"] = "impossible to receive notifications";
+        }
+
+        return new JsonResponse($response);
+    }
+
+
+    public function setIsNewAction(Request $request){
+        $response = Array(
+            "errors"=>Array(),
+            "data"=>Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId");
+        $value = $request->request->get("value");
+
+        $res = $this->get("app.workspaces")->setIsNew($value,$workspaceId,$this->getUser()->getId());
+        if($res){
+            $response["data"] = "success";
+        }else{
+            $response["data"] = "Set has not been done";
+        }
         return new JsonResponse($response);
     }
 }

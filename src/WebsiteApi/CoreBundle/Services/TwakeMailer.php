@@ -35,7 +35,7 @@ class TwakeMailer
 
     }
 
-	public function send($mail, $template, $data = Array()){
+	public function send($mail, $template, $data = Array(), $templateDirectory = "TwakeCoreBundle:Mail", $pdfPathFiles = Array()){
 
 
 		$data["mail"] = $mail;
@@ -43,12 +43,12 @@ class TwakeMailer
 		$data["twakeurl"] = $this->twakeurl;
 
 		$html = $this->templating->render(
-			'TwakeCoreBundle:Mail:'.$template.'.html.twig',
+			$templateDirectory.":".$template.'.html.twig',
 			$data
 		);
 
         if ($this->standalone) {
-            $this->sendHtml($mail, $html);
+            $this->sendHtml($mail, $html, $pdfPathFiles);
         } else {
             $this->sendHtmlViaRemote($mail, $html);
         }
@@ -64,10 +64,10 @@ class TwakeMailer
             "html" => $html
         );
         $result = $this->circle->post($masterServer . "/mail", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
-        error_log($result);
+
     }
 
-    public function sendHtml($mail, $html)
+    public function sendHtml($mail, $html, $pdfPathFiles)
     {
 
         $privateKey = "-----BEGIN RSA PRIVATE KEY-----
@@ -103,6 +103,11 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
                 $this->html2txt($html),
                 'text/plain'
             );
+
+        foreach ( $pdfPathFiles as $pathFile) {
+            $message->attach(Swift_Attachment::fromPath($pathFile));
+        }
+
 
         $message->attachSigner($signer);
 

@@ -4,6 +4,7 @@ namespace WebsiteApi\DiscussionBundle\Services;
 
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\DiscussionBundle\Entity\MessageNotification;
+use WebsiteApi\DiscussionBundle\Entity\StreamMember;
 use WebsiteApi\DiscussionBundle\Model\MessagesNotificationsCenterInterface;
 
 
@@ -22,7 +23,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 		$this->workspaces = $workspaces;
     }
 
-	public function read($stream, $user, $force=false){
+	public function read($stream, $user, $force=false, $noflush = false){
 
 		$linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
 			->findOneBy(Array("user"=>$user,"stream"=>$stream));
@@ -31,11 +32,39 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 			return true;
 		}
 
+        /** @var StreamMember $linkStream */
         $linkStream->setUnread(0);
         $linkStream->setSubjectUnread(0);
         $linkStream->setLastRead();
+        $linkStream->setLastUpdate();
         $this->doctrine->persist($linkStream);
-        $this->doctrine->flush();
+
+        // Read from notifications repository
+
+
+        if ($noflush == false){
+
+            $data = Array(
+                "action" => "remove_messages_from",
+                "stream" => $stream->getId()
+            );
+            //convert
+            $this->pusher->push($data, "notifications/" . $user->getId());
+
+            $this->doctrine->flush();
+
+
+            $workspace = (
+            $stream->getWorkspace()
+                ? $stream->getWorkspace()
+                : null
+            );
+            $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
+                ->findOneBy(Array("url" => "messages-auto"));
+            $this->notificationSystem->readAll($application, $workspace, $user, $stream->getId(), $force);
+
+            $this->doctrine->clear();
+        }
 
         $data = $linkStream->getAsArray();
         $data["id"] = $stream->getId();
@@ -45,27 +74,34 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
             ."/".($stream->getWorkspace()?$stream->getWorkspace()->getId():"")
         );
 
-		$otherStreams = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
-			->findBy(Array("user"=>$user,"workspace"=>$stream->getWorkspace(),"mute"=>false));
-
-		$totalUnread = 0;
-		foreach ($otherStreams as $otherStream){
-			$totalUnread += $otherStream->getUnread();
-		}
-
-		$workspace = (
-			$stream->getWorkspace()
-			?$stream->getWorkspace()
-			:$this->workspaces->getPrivate($user->getId())
-		);
-
-		if($totalUnread<=0){
-			$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
-				->findOneBy(Array("url" => "messages-auto"));
-			$this->notificationSystem->readAll($application, $workspace, $user, null, $force);
-		}
-
 	}
+
+	public function readAll($user){
+        $listStreamMember = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findUnreadMessage($user);
+
+        $ok = true;
+        foreach ($listStreamMember as $streamMember){
+            try {
+                $stream = $streamMember->getStream();
+                $ok = $ok && $this->read($stream, $user, false, true);
+            } catch (\Exception $e) {
+                error_log("missing entity");
+            }
+        }
+        $this->doctrine->flush();
+
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
+            ->findOneBy(Array("url" => "messages-auto"));
+        $this->notificationSystem->readAll($application, null, $user);
+
+        $data = Array(
+            "action" => "remove_all_messages"
+        );
+        //convert
+        $this->pusher->push($data, "notifications/" . $user->getId());
+
+        return $ok;
+    }
 
     public function notify($stream, $except_users_ids, $message)
     {
@@ -111,7 +147,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 			:$this->workspaces->getPrivate($users[0])
 		);
 
-		$this->sendNotification($message, $workspace, $users);
+        $this->sendNotification($message, $workspace, $users, $stream);
 
 		$this->doctrine->flush();
 
@@ -131,10 +167,14 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
     }
 
 
-	public function sendNotification($message, $workspace, $users)
+    public function sendNotification(Message $message, $workspace, $users, $stream)
 	{
         $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
             ->findOneBy(Array("url" => "messages-auto"));
+
+        $data = Array("app" => $application->getId(), "shortcut" => $message->getId() . "_" . $stream->getId());
+        $code = $stream->getId();
+
 		if ($message->getStreamReciever()->getType() != "user") {
 			$channelName = $message->getStreamReciever()->getName();
 			if($channelName[0]==":"){
@@ -162,7 +202,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
                 $msg = "@" . $message->getUserSender()->getUsername() . " : " . $message->getContent();
             }
 		}
-		$this->notificationSystem->pushNotification($application->getId(), $workspace->getId(), $users, null, null, $msg, Array("push"));
+        $this->notificationSystem->pushNotification($application->getId(), $workspace->getId(), $users, null, $code, $msg, Array("push"), $data);
 	}
 
 }

@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\MarketBundle\Services;
 
+use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\MarketBundle\Model\MarketApplicationInterface;
 use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
 use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
@@ -11,6 +12,7 @@ class MarketApplication implements MarketApplicationInterface
     private $doctrine;
     private $gms;
     private $pricingPlan;
+
     public function __construct($doctrine, $group_managers_service, $pricing)
     {
         $this->doctrine = $doctrine;
@@ -25,6 +27,7 @@ class MarketApplication implements MarketApplicationInterface
 
         return $applications;
     }
+
     public function getAppsByName($name)
     {
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
@@ -40,7 +43,20 @@ class MarketApplication implements MarketApplicationInterface
         return $applications;
     }
 
-    public function addApplication($groupId,$appId, $currentUserId = null, $init = null){
+    public function addFreeApplication($groupId, $appId, $currentUserId = null, $init = null)
+    {
+        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        /** @var Application $application */
+        $application = $applicationRepository->find($appId);
+
+        if ($application->getPriceMonthly() == 0 && $application->getPriceUser() == 0) {
+            $this->addApplication($groupId, $appId);
+        }
+
+    }
+
+    public function addApplication($groupId, $appId, $currentUserId = null, $init = null)
+    {
 
         if($groupId == null || $appId == null){
             return false;
@@ -89,5 +105,71 @@ class MarketApplication implements MarketApplicationInterface
             return true;
         }
         return false ;
+    }
+
+    public function getAppForUrl($url){
+        if ($url != null){
+
+            $pattern = '/\/\/([^\/]+)\//';
+            $subject = $url;
+            preg_match($pattern, $subject, $matches, PREG_OFFSET_CAPTURE);
+
+            // if link is like "https://trello.com"
+            if(count($matches)<2){
+                return false;
+            }
+
+            $tmp = $matches[1][0];
+            if(substr($tmp,0,4)=="www."){
+                $domain_name = substr($tmp,4);
+            }else{
+                $domain_name = $tmp;
+            }
+
+            //Look up to 2 sub dir in url
+            $url_tmp = str_replace("://", "", $url);
+            $url_tmp = str_replace("//", "/", $url_tmp);
+            $pattern = '/\/[^\/]+/';
+            preg_match_all($pattern, $url_tmp, $matches, PREG_OFFSET_CAPTURE);
+
+            //Test without first sub_domain (ex. twake.atlassian.net)
+            $tmp = explode(".", $domain_name);
+            array_shift($tmp);
+            $domain_name_2 = join(".", $tmp);
+
+            $i = 1;
+            $to_test = Array($domain_name);
+            foreach ($matches[0] as $match) {
+                $to_test[] = $to_test[count($to_test) - 1] . $match[0];
+                $i++;
+                if ($i >= 2) {
+                    break;
+                }
+            }
+            $to_test[] = $domain_name_2;
+            foreach ($matches[0] as $match) {
+                $to_test[] = $to_test[count($to_test) - 1] . $match[0];
+                $i++;
+                if ($i >= 2) {
+                    break;
+                }
+            }
+
+            //For microsoft office apps...
+            if (strpos($url, "app=") > 0) {
+                preg_match("/(?:&|\?)app=([A-Za-z0-9]+)/", $url, $app, PREG_OFFSET_CAPTURE);
+                $to_test[] = $domain_name . "/" . $app[1][0];
+            }
+
+            foreach ($to_test as $url) {
+                $url = strtolower($url);
+                $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("domain_name" => $url));
+                if ($app) {
+                    return $app;
+                }
+            }
+
+            return false;
+        }
     }
 }

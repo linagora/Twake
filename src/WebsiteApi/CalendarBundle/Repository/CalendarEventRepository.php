@@ -13,9 +13,12 @@ class CalendarEventRepository extends \Doctrine\ORM\EntityRepository
 
     public function removeAllByCalendar($calendar){
         $qb = $this->createQueryBuilder('e');
-        $qb->delete('e');
+        $qb->delete();
         $qb->where('e.calendar = :calendar');
         $qb->setParameter('calendar', $calendar);
+        $q = $qb->getQuery();
+
+        return $q->getResult();
     }
 
     public function getCalendarsEventsBy($from, $to, $calendarsId){
@@ -38,6 +41,15 @@ class CalendarEventRepository extends \Doctrine\ORM\EntityRepository
         $qb->where($qb->expr()->neq('e.nextReminder', '0'));
         $qb->andWhere($qb->expr()->lte('e.nextReminder', date("U")));
         $q = $qb->getQuery();
+
+        return $q->getResult();
+    }
+
+    public function getAllCalendarEventsByCalendar($calendarId){
+        $qb = $this->createQueryBuilder(e);
+        $qb->where($qb->expr()->in('e.calendar', '?1'))
+            ->setParameter(1, $calendarId);
+        $q= $qb->getQuery();
 
         return $q->getResult();
     }

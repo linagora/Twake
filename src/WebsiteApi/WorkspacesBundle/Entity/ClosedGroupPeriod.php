@@ -56,17 +56,17 @@ class ClosedGroupPeriod
     private $periodExpectedToEndAt;
 
     /**
-     * @ORM\Column(name="current_cost", type="decimal", precision=5, scale=3)
+     * @ORM\Column(name="current_cost", type="decimal", precision=15, scale=3)
      */
     protected $currentCost;
 
     /**
-     * @ORM\Column(name="current_estimated_cost", type="integer")
+     * @ORM\Column(name="current_estimated_cost",  type="decimal", precision=15, scale=3)
      */
     protected $estimatedCost;
 
     /**
-     * @ORM\Column(name="expected_cost", type="integer")
+     * @ORM\Column(name="expected_cost",  type="decimal", precision=15, scale=3)
      */
     protected $expectedCost;
 
@@ -266,7 +266,19 @@ class ClosedGroupPeriod
         $this->billed = $billed;
     }
 
-
+    public function getAsArray(){
+        return Array(
+            "connexions" => $this->getConnexions(),
+            "appUsage" => $this->getAppsUsagePeriod(),
+            "periodStartedAt" => $this->getPeriodStartedAt(),
+        "periodEndedAt" => $this->getPeriodEndedAt(),
+        "periodExpectedToEndAt" => $this->getPeriodExpectedToEndAt(),
+        "currentCost" => $this->getCurrentCost(),
+        "estimatedCost" => $this->getEstimatedCost(),
+        "expectedCost" => $this->getExpectedCost(),
+        "billed" => $this->getBilled()
+        );
+    }
 
 
 

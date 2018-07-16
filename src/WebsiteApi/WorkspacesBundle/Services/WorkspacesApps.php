@@ -104,6 +104,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
         ) {
             $workspaces = $group->getWorkspaces();
             foreach ($workspaces as $workspace){
+
                 $this->enableApp($workspace->getId(),$appId,$currentUserId);
 
                 $datatopush = Array(

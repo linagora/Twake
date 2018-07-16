@@ -158,13 +158,14 @@ class DefaultController extends Controller
 		$filename = isset($requestData["filename"]) ? $requestData["filename"] : 0;
 		$directory = (isset($requestData["directory"]) && $requestData["directory"] == true) ? true : false;
 		$content = isset($requestData["content"]) ? $requestData["content"] : "";
+		$url= isset($requestData["url"])?$requestData["url"]:null;
 
 		$data = Array(
 			"data" => Array(),
 			"errors" => Array()
 		);
 
-		$file = $this->get("app.drive.FileSystem")->create($request["workspace"], $directoryId, $filename, $content, $directory);
+		$file = $this->get("app.drive.FileSystem")->create($request["workspace"], $directoryId, $filename, $content, $directory,$url);
 		if (!$file) {
 			$data["errors"][] = 3001;
 		} else {

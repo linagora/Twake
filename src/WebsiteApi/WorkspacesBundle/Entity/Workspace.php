@@ -41,10 +41,15 @@ class Workspace
 	 */
 	private $logo;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
-	 */
-	private $wallpaper;
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
+     */
+    private $wallpaper;
+
+    /**
+     * @ORM\Column(name="wallpaper_color", type="string", length=50)
+     */
+    private $color = "#7E7A6D";
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
@@ -76,8 +81,20 @@ class Workspace
 	 */
 	private $isDeleted = false;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isArchived = false;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isNew = true;
 
+    /**
+     * Workspace constructor.
+     * @param $name
+     */
 	public function __construct($name) {
 		$this->name = $name;
 		$this->date_added = new \DateTime();
@@ -238,16 +255,68 @@ class Workspace
         $this->member_count = $member_count;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getColor()
+    {
+        return $this->color;
+    }
+
+    /**
+     * @param mixed $color
+     */
+    public function setColor($color)
+    {
+        $this->color = $color;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getisArchived()
+    {
+        return $this->isArchived;
+    }
+
+    /**
+     * @param mixed $isArchived
+     */
+    public function setIsArchived($isArchived)
+    {
+        $this->isArchived = $isArchived;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getisNew()
+    {
+        return $this->getGroup() != null && $this->isNew;
+    }
+
+    /**
+     * @param mixed $isNew
+     */
+    public function setIsNew($isNew)
+    {
+        $this->isNew = $isNew;
+    }
+
+
 	public function getAsArray(){
 		return Array(
 			"id"=> $this->getId(),
 			"private" => $this->getUser()!=null,
 			"logo" => (($this->getLogo())?$this->getLogo()->getPublicURL():""),
 			"wallpaper" => (($this->getWallpaper())?$this->getWallpaper()->getPublicURL():""),
+            "color" => $this->getColor(),
 			"group" => (($this->getGroup())?$this->getGroup()->getAsArray():null),
 			"name" => $this->getName(),
             "total_members" => $this->getMemberCount(),
-            "uniqueName" => $this->getUniqueName()
+            "uniqueName" => $this->getUniqueName(),
+            "isArchived" => $this->getisArchived(),
+            "isNew" => $this->getisNew()
 		);
 	}
 

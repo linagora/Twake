@@ -42,7 +42,7 @@ class Application
 	private $color; //Header color
 
 	/**
-	 * @ORM\Column(type="string", length=512)
+	 * @ORM\Column(type="string", length=512, nullable = true)
 	 */
 	private $url = "";
 
@@ -177,6 +177,16 @@ class Application
      */
     private $cgu ;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $urlApp = false;
+
+    /**
+     * @ORM\Column(type="string", length = 256, nullable = true)
+     */
+    private $domain_name;
+
 
     public function __construct()
 	{
@@ -187,6 +197,7 @@ class Application
 		$this->setApplicationRights(Array());
 		$this->enabled = false;
 		$this->messageModule = false;
+		$this->domain_name =null;
 	}
 
 	static public function generatePrivateKey()
@@ -690,9 +701,35 @@ class Application
         $this->priceUser = $priceUser;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDomainName(){
+        return $this->domain_name;
+    }
+
+    public function setDomainName($domain_name){
+        $this->domain_name = $domain_name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUrlApp()
+    {
+        return $this->urlApp;
+    }
+
+    /**
+     * @param mixed $urlApp
+     */
+    public function setUrlApp($urlApp)
+    {
+        $this->urlApp = $urlApp;
+    }
 
 
-	public function getAsArray()
+    public function getAsArray()
 	{
 		return Array(
 			"id" => $this->id,
@@ -725,7 +762,9 @@ class Application
             "messageModuleUrl" => $this->getMessageModuleUrl(),
             "publicKey" => $this->getPublicKey(),
             "cgu"=> $this->getCgu(),
-            "editableRights" => $this->getEditableRights()
+            "editableRights" => $this->getEditableRights(),
+            "domain_name" => $this->getDomainName(),
+            "urlapp" => $this->getUrlApp()
         );
 	}
 

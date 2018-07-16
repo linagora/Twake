@@ -10,4 +10,22 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  */
 class GroupPeriodRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function getLastGroupPeriod($group){
+        $qb = $this->createQueryBuilder('f')
+            ->select('max(f.periodStartedAt)')
+            ->where('f.group = :group')
+            ->setParameter("group", $group);
+
+        $lastDate = $qb->getQuery()->getResult()[0];
+
+
+        $qb = $this->createQueryBuilder('f')
+            ->select('f')
+            ->where('f.group = :group')
+            ->andWhere('f.periodStartedAt = :last_date')
+            ->setParameter("group", $group)
+            ->setParameter("last_date", $lastDate);
+
+        return $qb->getQuery()->getResult()[0];
+    }
 }

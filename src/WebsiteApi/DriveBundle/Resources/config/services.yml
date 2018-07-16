@@ -2,7 +2,23 @@ services:
 
     app.drive.FileSystem:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystem
-        arguments: ["@doctrine.orm.entity_manager", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher']
+        arguments: ["@doctrine.orm.entity_manager", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@website_api_market.applications','@app.drive.UserToNotifyService']
+
+    app.drive.FileSystemExternalDrive:
+        class: WebsiteApi\DriveBundle\Services\DriveFileSystemGDrive
+        arguments: ["@doctrine.orm.entity_manager", "@app.drive.GDriveApiSystem", '@app.pusher',"@circle.restclient", '@app.drive.ExternalDriveSystem']
+
+    app.drive.ExternalDriveDataCacheSystem:
+        class: WebsiteApi\DriveBundle\Services\ExternalDriveDataCacheSystem
+        arguments: ["@doctrine.orm.entity_manager"]
+
+    app.drive.ExternalDriveSystem:
+        class: WebsiteApi\DriveBundle\Services\ExternalDriveSystem
+        arguments: ["@doctrine.orm.entity_manager","@app.token_service", "@app.drive.GDriveApiSystem"]
+
+    app.drive.GDriveApiSystem:
+        class: WebsiteApi\DriveBundle\Services\GDriveApiSystem
+        arguments: ["@doctrine.orm.entity_manager", "@circle.restclient", "@app.drive.ExternalDriveDataCacheSystem", '@website_api_market.applications', '@app.token_service']
 
     app.drive.SmartFolders:
         class: WebsiteApi\DriveBundle\Services\DriveSmartFolders
@@ -15,6 +31,18 @@ services:
     app.drive.Preview:
       class: WebsiteApi\DriveBundle\Services\DrivePreview
       arguments: ["@doctrine.orm.entity_manager"]
+
+    app.drive.DriveActivities:
+      class: WebsiteApi\DriveBundle\Services\DriveActivities
+      arguments: ["@doctrine.orm.entity_manager",  '@app.pusher', "@app.notifications"]
+
+    app.drive.UserToNotifyService:
+      class: WebsiteApi\DriveBundle\Services\UserToNotifyService
+      arguments: ["@doctrine.orm.entity_manager","@app.drive.FileSystemExternalDrive", "@app.drive.DriveActivities"]
+
+    app.driveActivity:
+        class: WebsiteApi\DriveBundle\Services\DriveActivities
+        arguments: ["@doctrine.orm.entity_manager", "@app.pusher", "@app.notifications"]
 
     drive.topic:
         class: WebsiteApi\DriveBundle\Topic\DriveTopic

@@ -1,3 +1,5 @@
+
+
 administration_authentication:
     resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
     prefix:   /administration/ajax/authentication
@@ -42,7 +44,10 @@ check:
 calendar:
     resource: "@TwakeCalendarBundle/Resources/config/routing.yml"
     prefix:   /ajax/calendar/
-    methods: [POST]
+    
+project:
+    resource: "@TwakeProjectBundle/Resources/config/routing.yml"
+    prefix:   /ajax/project/
 
 citi_go_discussion:
     resource: "@TwakeDiscussionBundle/Resources/config/routing.yml"
@@ -72,7 +77,6 @@ citi_go_workspaces:
 citi_go_users:
     resource: "@TwakeUsersBundle/Resources/config/routing.yml"
     prefix:   /ajax/users/
-    methods: [POST]
 
 citi_go_core:
     resource: "@TwakeCoreBundle/Resources/config/routing.yml"
@@ -128,9 +132,33 @@ developers_api_messages:
     prefix:   /api/messages/
     methods: [POST]
 
+#API V1 pour les developpeurs
+developers_api_v1_messages:
+    resource: "@DevelopersApiV1MessagesBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/
+
+developers_api_v1_drive:
+    resource: "@DevelopersApiV1DriveBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/
+
+developers_api_v1_drive:
+    resource: "@DevelopersApiV1CalendarBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/
+
+developers_api_v1_calendar:
+    resource: "@DevelopersApiV1CalendarBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/
+
+developers_api_v1_workspaces:
+    resource: "@DevelopersApiV1WorkspacesBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/
+
+developers_api_v1_core:
+    resource: "@DevelopersApiV1CoreBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/
+
 developers_api_error:
     path:     /api/{req}
     defaults: { _controller: TwakeCheckBundle:Error:BadRequest }
     requirements:
       req: ".*"
-

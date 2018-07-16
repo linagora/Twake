@@ -5,10 +5,12 @@ imports:
     - { resource: ws_routing.yml }
     - { resource: admin_config.yml }
     - { resource: "@TwakeCalendarBundle/Resources/config/services.yml" }
+    - { resource: "@TwakeProjectBundle/Resources/config/services.yml" }
     - { resource: "@TwakeUsersBundle/Resources/config/services.yml" }
     - { resource: "@TwakeCoreBundle/Resources/config/services.yml" }
     - { resource: "@TwakeDiscussionBundle/Resources/config/services.yml" }
     - { resource: "@TwakeMarketBundle/Resources/config/services.yml" }
+    - { resource: "@TwakePaymentsBundle/Resources/config/services.yml" }
     - { resource: "@AdministrationAuthenticationBundle/Resources/config/services.yml" }
 
 # Put parameters here that don't need to change on each machine where the app is deployed

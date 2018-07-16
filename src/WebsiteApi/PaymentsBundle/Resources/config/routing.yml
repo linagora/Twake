@@ -1,19 +1,15 @@
-citi_go_payments_groups_get:
-    path:     /groups/get
-    defaults: { _controller: TwakePaymentsBundle:Default:getGroups }
+citi_go_payments_send_mail:
+    path:     /sendMail
+    defaults: { _controller: TwakePaymentsBundle:Default:sendMail }
 
-citi_go_payments_details_get:
-    path:     /details/get
-    defaults: { _controller: TwakePaymentsBundle:Default:getDetails }
+citi_go_payments_new_subscription:
+    path:     /newSubscription
+    defaults: { _controller: TwakePaymentsBundle:Subscription:newSubscription }
 
-citi_go_payments_prices_get:
-    path:     /prices/get
-    defaults: { _controller: TwakePaymentsBundle:Default:getPrices }
+citi_go_payments_get_subscription_info:
+    path:     /getSubscriptionInfo
+    defaults: { _controller: TwakePaymentsBundle:Subscription:getSubscriptionInfo }
+citi_go_payments_get_pricing_plans:
+    path:     /getPricingPlans
+    defaults: { _controller: TwakePaymentsBundle:Subscription:getPricingPlans }
 
-citi_go_payments_details_update:
-    path:     /details/update
-    defaults: { _controller: TwakePaymentsBundle:Default:updateDetails }
-
-citi_go_payments_history_get:
-    path:     /history/get
-    defaults: { _controller: TwakePaymentsBundle:Default:getHistory }

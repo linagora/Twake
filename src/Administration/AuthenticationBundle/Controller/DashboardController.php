@@ -47,10 +47,20 @@ class DashboardController extends Controller
         $accounts_chart->getOptions()->setHeight(200);
         $data["users"]["accounts_by_hours"] = $accounts_chart;
 
+
+        $_connections_usage_array = $this->get("admin.TwakeServerStats")->getUsersConnected(1000, "hourly");
+        $_connections_usage_array = array_reverse($_connections_usage_array);
+
+
         //messages by hour
         $array = [['Date', 'Messages']];
+        $last = -1;
         foreach ($_connections_usage_array as $datum) {
-            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["messages"]];
+            if ($last == -1) {
+                $last = $datum["messages"];
+            }
+            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["messages"]-$last];
+            $last = $datum["messages"];
         }
         $messages_chart = new AreaChart();
         $messages_chart->getData()->setArrayToDataTable($array);
@@ -59,8 +69,13 @@ class DashboardController extends Controller
 
         //files by hour
         $array = [['Date', 'Files']];
+        $last = -1;
         foreach ($_connections_usage_array as $datum) {
-            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["files"]];
+            if ($last == -1) {
+                $last = $datum["files"];
+            }
+            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["files"]-$last];
+            $last = $datum["files"];
         }
         $files_chart = new AreaChart();
         $files_chart->getData()->setArrayToDataTable($array);
@@ -69,8 +84,13 @@ class DashboardController extends Controller
 
         //event by hour
         $array = [['Date', 'Events']];
+        $last = -1;
         foreach ($_connections_usage_array as $datum) {
-            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["event"]];
+            if ($last == -1) {
+                $last = $datum["event"];
+            }
+            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["event"]-$last];
+            $last = $datum["event"];
         }
         $event_chart = new AreaChart();
         $event_chart->getData()->setArrayToDataTable($array);

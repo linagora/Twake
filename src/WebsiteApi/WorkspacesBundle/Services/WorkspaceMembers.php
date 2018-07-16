@@ -195,7 +195,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         return true;
     }
 
-    public function addMember($workspaceId, $userId, $asExterne, $levelId = null, $currentUserId = null)
+    public function addMember($workspaceId, $userId, $asExterne = false, $levelId = null, $currentUserId = null)
     {
         if ($currentUserId == null || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
@@ -207,7 +207,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             if ($workspace->getGroup() != null) {
                 $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
                 $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(),));
-                $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUSer", PHP_INT_MAX);
+                $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUser", PHP_INT_MAX);
 
                 if (count($nbuserGroup) >= $limit) {
                     return false;
@@ -218,12 +218,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
 
             if ($member != null) {
-                error_log("already added");
                 return false; //Already added
             }
 
             if ($workspace->getUser() != null && $workspace->getUser()->getId() != $userId) {
-                error_log("private workspace");
                 return false; //Private workspace, only one user
             }
 
@@ -257,6 +255,15 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $this->doctrine->persist($member);
             $this->doctrine->persist($groupmember);
             $this->doctrine->flush();
+
+            $datatopush = Array(
+                "type" => "CHANGE_MEMBERS",
+                "data" => Array(
+                    "id" => $userId,
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
             $datatopush = Array(
                 "type" => "GROUP",
@@ -306,11 +313,24 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $member = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $user));
 
+            if (!$member) {
+                return false;
+            }
+
             $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
             $groupmember = $groupUserRepository->findOneBy(Array("group" => $workspace->getGroup(), "user" => $user));
 
             $groupmember->decreaseNbWorkspace();
             $this->doctrine->persist($groupmember);
+
+            $datatopush = Array(
+                "type" => "CHANGE_MEMBERS",
+                "data" => Array(
+                    "id" => $userId,
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
             $datatopush = Array(
                 "action" => "RM",
@@ -437,12 +457,20 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         $workspaces = Array();
         foreach ($link as $workspace) {
             if ($workspace->getWorkspace()->getUser() == null && $workspace->getWorkspace()->getGroup() != null) {
-                $workspaces[] = $workspace->getWorkspace();
+                $workspaces[] = Array(
+                    "last_access" => $workspace->getLastAccess(),
+                    "workspace" => $workspace->getWorkspace(),
+                    "isHidden" => $workspace->getisHidden(),
+                    "isFavorite" => $workspace->getisFavorite(),
+                    "hasNotifications" => $workspace->getHasNotifications(),
+                    "isArchived" => $workspace->getWorkspace()->getisArchived()
+                );
             }
         }
 
         return $workspaces;
     }
+
 
     public function init($workspaceUser)
     {

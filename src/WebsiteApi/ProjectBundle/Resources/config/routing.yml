@@ -1,0 +1,130 @@
+board_get_boards:
+    path:     /boards/get
+    defaults: { _controller: TwakeProjectBundle:Board:getBoards }
+    methods: [POST]
+
+board_get_autoParticipate:
+    path:     /boards/get/autoParticipate
+    defaults: { _controller: TwakeProjectBundle:Board:getAutoParticipateByBoard}
+    methods: [POST]
+
+board_get_boards:
+    path:     /boards/getById
+    defaults: { _controller: TwakeProjectBundle:Board:getBoardById }
+    methods: [POST]
+
+board_create_board:
+    path:     /boards/create
+    defaults: { _controller: TwakeProjectBundle:Board:createBoard }
+    methods: [POST]
+
+board_update_board:
+    path:     /boards/update
+    defaults: { _controller: TwakeProjectBundle:Board:updateBoard }
+    methods: [POST]
+
+board_remove_board:
+    path:     /boards/remove
+    defaults: { _controller: TwakeProjectBundle:Board:removeBoard }
+    methods: [POST]
+
+board_share_board:
+    path:     /boards/share
+    defaults: { _controller: TwakeProjectBundle:Board:shareBoard }
+    methods: [POST]
+
+board_unshare_board:
+    path:     /boards/unshare
+    defaults: { _controller: TwakeProjectBundle:Board:unshareBoard }
+    methods: [POST]
+
+board_get_share_board:
+    path:     /boards/getShare
+    defaults: { _controller: TwakeProjectBundle:Board:getShareBoard }
+    methods: [POST]
+
+board_do_import:
+    path:     /boards/import
+    defaults: { _controller: TwakeProjectBundle:Board:importBoard }
+    methods: [POST]
+
+board_do_export:
+    path:     /boards/export/{workspaceId}/{boardsIds}/{useMine}/{from}/{to}
+    defaults: { _controller: TwakeProjectBundle:Board:exportBoard }
+    requirements:
+              workspaceId: "[0-9]+"
+              boardsIds: "[0-9]+(,[0-9]+)*"
+              useMine: "[0-1]"
+              from: "[0-9]+"
+              to: "[0-9]+"
+    methods: [GET]
+
+board_tasks_get:
+    path:     /tasks/get
+    defaults: { _controller: TwakeProjectBundle:Task:get }
+    methods: [POST]
+
+board_tasks_get_one_task:
+    path:     /tasks/getOneTask
+    defaults: { _controller: TwakeProjectBundle:Task:getOneTask }
+    methods: [POST]
+
+board_tasks_get_users:
+    path:     /tasks/get/users
+    defaults: { _controller: TwakeProjectBundle:Task:getUsers }
+    methods: [POST]
+
+board_tasks_create:
+    path:     /tasks/create
+    defaults: { _controller: TwakeProjectBundle:Task:create }
+    methods: [POST]
+
+board_tasks_update:
+    path:     /tasks/update
+    defaults: { _controller: TwakeProjectBundle:Task:update }
+    methods: [POST]
+
+board_tasks_remove:
+    path:     /tasks/remove
+    defaults: { _controller: TwakeProjectBundle:Task:remove }
+    methods: [POST]
+
+board_tasks_share:
+    path:     /tasks/addUsers
+    defaults: { _controller: TwakeProjectBundle:Task:addUsers }
+    methods: [POST]
+
+board_tasks_unshare:
+    path:     /tasks/removeUsers
+    defaults: { _controller: TwakeProjectBundle:Task:removeUsers }
+    methods: [POST]
+
+board_activitys_create:
+    path: /boardActivitys/create
+    defaults: { _controller: TwakeProjectBundle:BoardActivity:create }
+    methods: [POST]
+
+board_activitys_get:
+    path: /boardActivitys/get
+    defaults: { _controller: TwakeProjectBundle:BoardActivity:get }
+    methods: [POST]
+
+board_activitys_readAll:
+    path: /boardActivitys/readAll
+    defaults: { _controller: TwakeProjectBundle:BoardActivity:readAll }
+    methods: [POST]
+
+board_activitys_readOne:
+    path: /boardActivitys/readOne
+    defaults: { _controller: TwakeProjectBundle:BoardActivity:readOne}
+    methods: [POST]
+
+board_activitys_delete:
+    path: /boardActivitys/delete
+    defaults: { _controller: TwakeProjectBundle:BoardActivity:delete}
+    methods: [POST]
+
+board_activitys_getActivityToDisplay:
+    path: /boardActivitys/getActivityToDisplay
+    defaults: { _controller: TwakeProjectBundle:BoardActivity:getActivityToDisplay}
+    methods: [POST]

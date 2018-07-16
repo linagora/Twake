@@ -43,16 +43,37 @@ class WorkspaceUser
 	 */
 	private $level;
 
-	/**
-	 * @ORM\Column(type="datetime")
-	 */
-	private $date_added;
+    /**
+     * @ORM\Column(type="datetime")
+     */
+    private $date_added;
+
+    /**
+     * @ORM\Column(type="datetime", options={"default" : "1970-01-02"})
+     */
+    private $last_access;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isHidden = false;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isFavorite = false;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $hasNotifications = true;
 
 	public function __construct($workspace, $user, $level) {
 		$this->workspace = $workspace;
 		$this->user = $user;
 		$this->level = $level;
 		$this->date_added = new \DateTime();
+        $this->last_access = new \DateTime();
 	}
 
 	/**
@@ -119,6 +140,69 @@ class WorkspaceUser
         $this->groupUser = $groupUser;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getLastAccess()
+    {
+        return $this->last_access;
+    }
+
+    /**
+     * @param mixed $last_access
+     */
+    public function setLastAccess()
+    {
+        $this->last_access = new \DateTime();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getisHidden()
+    {
+        return $this->isHidden;
+    }
+
+    /**
+     * @param mixed $isHidden
+     */
+    public function setIsHidden($isHidden)
+    {
+        $this->isHidden = $isHidden;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getisFavorite()
+    {
+        return $this->isFavorite;
+    }
+
+    /**
+     * @param mixed $isFavorite
+     */
+    public function setIsFavorite($isFavorite)
+    {
+        $this->isFavorite = $isFavorite;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHasNotifications()
+    {
+        return $this->hasNotifications;
+    }
+
+    /**
+     * @param mixed $hasNotifications
+     */
+    public function setHasNotifications($hasNotifications)
+    {
+        $this->hasNotifications = $hasNotifications;
+    }
 
 
 }

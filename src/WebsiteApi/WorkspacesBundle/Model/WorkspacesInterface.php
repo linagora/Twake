@@ -24,6 +24,6 @@ interface WorkspacesInterface
 	public function changeLogo($workspaceId, $logo, $currentUserId = null);
 
 	// @changeData set workspace data
-	public function changeWallpaper($workspaceId, $wallpaper, $currentUserId = null);
+    public function changeWallpaper($workspaceId, $wallpaper, $color = null, $currentUserId = null);
 
 }

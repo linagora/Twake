@@ -2,7 +2,7 @@ services:
 
     app.calendar_events:
         class: WebsiteApi\CalendarBundle\Services\CalendarEvents
-        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels', '@app.notifications']
+        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels', '@app.notifications','@app.calendarActivity' ]
 
     app.calendars:
         class: WebsiteApi\CalendarBundle\Services\Calendars
@@ -19,3 +19,11 @@ services:
         tags:
             - { name: gos_web_socket.topic }
         arguments: []
+
+    app.export_import:
+        class: WebsiteApi\CalendarBundle\Services\exportImport
+        arguments: ["@app.calendar_events","@api.v1.api_status"]
+
+    app.calendarActivity:
+        class: WebsiteApi\CalendarBundle\Services\CalendarActivities
+        arguments: ["@doctrine.orm.entity_manager", "@app.pusher", "@app.notifications"]

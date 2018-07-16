@@ -98,6 +98,11 @@ class DriveFile
      */
     private $detached_file = false;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $previewHasBeenGenerated = false;
+
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
 	 */
@@ -108,8 +113,24 @@ class DriveFile
     */
     private $shared = false;
 
+    /**
+     * @ORM\Column(type="string", length=2048, nullable = true)
+     */
+    private $url;
 
-    public function __construct($group, $parent, $name, $isDirectory = false,$directoryToCopy = null)
+    /**
+     * @ORM\Column(type="decimal")
+     */
+    private $opening_rate;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $default_web_app;
+
+
+    public function __construct($group, $parent, $name, $isDirectory = false,$directoryToCopy = null, $url = null)
     {
         $this->group = $group;
         $this->setParent($parent);
@@ -124,11 +145,21 @@ class DriveFile
         if ($directoryToCopy){
             $this->copyOf = $directoryToCopy;
         }
+        if ($url != null){
+            $this->setUrl($url);
+        }
+        $this->opening_rate = 0;
+        $this->default_web_app = null;
+        $this->setPreviewHasBeenGenerated(false);
     }
 
     public function getId()
     {
         return $this->id;
+    }
+    public function setId($newId)
+    {
+        return $this->id = $newId;
     }
 
     /**
@@ -275,6 +306,14 @@ class DriveFile
     }
 
     /**
+     * @param mixed $added
+     */
+    public function setAdded($added)
+    {
+        $this->added = $added;
+    }
+
+    /**
      * @return mixed
      */
     public function getLastModified()
@@ -408,7 +447,49 @@ class DriveFile
         $this->shared = $shared;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getUrl(){
+        return $this->url;
+    }
 
+    /**
+     * @param $url
+     */
+    public function setUrl($url){
+        $this->url = $url;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOpeningRate(){
+        return $this->opening_rate;
+    }
+
+    /**
+     * @param $opening_rate
+     */
+    public function setOpeningRate($opening_rate){
+        $this->opening_rate = $opening_rate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefaultWebApp()
+    {
+        return $this->default_web_app;
+    }
+
+    /**
+     * @param $default_web_app
+     */
+    public function setDefaultWebApp($default_web_app)
+    {
+        $this->default_web_app = $default_web_app;
+    }
 
     public function getAsArray()
     {
@@ -427,9 +508,28 @@ class DriveFile
             "cache" => $this->getCache(),
             "preview" => $this->getPreviewPath(),
             "copyOf" => ($this->getCopyOf()?$this->getCopyOf()->getId():null),
-            "shared" => $this->getShared()
+            "shared" => $this->getShared(),
+            "url" => $this->getUrl(),
+            "opening_rate" => $this->getOpeningRate(),
+            "previewHasBeenGenerated" => $this->getPreviewHasBeenGenerated(),
+            "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null
         );
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPreviewHasBeenGenerated()
+    {
+        return $this->previewHasBeenGenerated;
+    }
+
+    /**
+     * @param mixed $previewHasBeenGenerated
+     */
+    public function setPreviewHasBeenGenerated($previewHasBeenGenerated)
+    {
+        $this->previewHasBeenGenerated = $previewHasBeenGenerated;
+    }
 
 }

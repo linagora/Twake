@@ -1,10 +1,10 @@
 discussion_topic:
-    channel: discussion/{key}
+    channel: discussion/{id}
     handler:
         callback: 'discussion.topic'
     requirements:
-        key:
-            pattern: "[a-z]-[a-zA-Z0-9_]+"
+        id:
+            pattern: "[0-9]+"
 
 discussion_notifications_topic:
     channel: discussion_notifications/{user_id}/{workspace_id}

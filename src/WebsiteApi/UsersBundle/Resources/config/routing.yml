@@ -1,106 +1,141 @@
 
 twake_user_login_check:
     path:     /login
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersConnections:login }
 
 twake_user_auto_login:
     path:     /autoLogin
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersConnections:autoLogin }
 
 twake_user_logout:
     path:     /logout
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersConnections:logout }
 
 twake_user_is_logged:
     path:     /current/isLogged
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersConnections:isLogged }
 
 twake_user_get:
     path:     /current/get
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersConnections:currentUser }
+
+twake_user_get_identicon:
+    path:     /current/identicon
+    defaults: { _controller: TwakeUsersBundle:UsersConnections:identicon }
+    methods: [GET]
 
 twake_user_alive:
     path:     /alive
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersConnections:alive }
+
+twake_set_is_new:
+    path:     /set/isNew
+    methods: [POST]
+    defaults: { _controller: TwakeUsersBundle:UsersConnections:setIsNew }
 
 # Contacts
 
 twake_contact_add:
     path:     /contacts/add
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:Contacts:add }
 
 twake_contact_remove:
     path:     /contacts/remove
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:Contacts:remove }
 
 twake_contact_get:
     path:     /contacts/get
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:Contacts:get }
 
 twake_contact_getAll:
     path:     /contacts/getAll
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:Contacts:getAll }
 
 twake_contact_getAllRequests:
     path:     /contacts/getAllRequests
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:Contacts:getAllRequests }
 
 twake_contact_getAllRequestsFromMe:
     path:     /contacts/getAllRequestsFromMe
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:Contacts:getAllRequestsFromMe }
 
 twake_contact_searchByUsername:
     path:     /contacts/search
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:Contacts:searchByUsername }
 
 twake_contact_searchUsersBuyUsername:
     path:     /contacts/search/users
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:Contacts:searchUsersByUsername }
 
 # Account
 
 twake_user_account_setbasic:
     path:     /account/identity
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:setIdentity }
 
 twake_user_account_setpseudo:
     path:     /account/username
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:setUsername }
 
 twake_user_account_setpassword:
     path:     /account/password
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:setPassword }
 
 twake_user_account_setmainmail:
     path:     /account/mainmail
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:setMainMail }
 
 twake_user_account_removemail:
     path:     /account/removemail
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:removeMail }
 
 twake_user_account_addmail:
     path:     /account/addmail
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:addMail }
 
 twake_user_account_getmails:
     path:     /account/mails
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:getMails }
 
 twake_user_account_addmailverify:
     path:     /account/addmailverify
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:addMailVerify }
 
 twake_user_account_setlanguage:
     path:     /account/language
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:setLanguage }
 
 twake_user_account_getnotification:
     path:     /account/get_notifications
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:getNotificationPreferences }
 
 twake_user_account_setnotification:
     path:     /account/set_notifications
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:setNotificationPreferences }
 
 
@@ -108,14 +143,17 @@ twake_user_account_setnotification:
 
 twake_user_subscribe_mail:
     path:     /subscribe/mail
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersSubscribe:mail }
 
 twake_user_subscribe_mailverify:
     path:     /subscribe/verifymail
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersSubscribe:verifyMail }
 
 twake_user_subscribe_identity:
     path:     /subscribe/identity
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersSubscribe:subscribe }
 
 
@@ -124,10 +162,12 @@ twake_user_subscribe_identity:
 
 twake_user_subscribe:
     path:     /subscribe/subscribe
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersSubscribe:subscribeTotaly }
 
 twake_user_subscribe_mailavaible:
     path:     /subscribe/availability
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersSubscribe:getAvaible }
 
 
@@ -135,13 +175,16 @@ twake_user_subscribe_mailavaible:
 
 twake_user_recover_mail:
     path:     /recover/mail
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersRecover:mail }
 
 twake_user_recover_verify:
     path:     /recover/verify
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersRecover:codeVerification }
 
 twake_user_recover_password:
     path:     /recover/password
+    methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersRecover:newPassword }
 

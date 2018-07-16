@@ -85,6 +85,7 @@ class UsersAccountController extends Controller
 
 			$firstname = $request->request->get("firstname", "");
 			$lastname = $request->request->get("lastname", "");
+            $thumbnail = $request->request->get("thumbnail", null);
 
 			if(isset($_FILES["thumbnail"])) {
 				$thumbnail = $this->get("app.uploader")->uploadFiles($this->getUser(), $_FILES["thumbnail"], "prfl");
@@ -96,7 +97,7 @@ class UsersAccountController extends Controller
 					$this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail["file"]);
 				}
 			}else{
-				$this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname);
+                $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail);
 			}
 
 		}else{

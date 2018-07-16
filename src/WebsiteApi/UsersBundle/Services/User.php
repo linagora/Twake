@@ -313,10 +313,10 @@ class User implements UserInterface
         $user->setFirstName($firstName);
         $user->setLastName($lastName);
         $user->setPhone($phone);
+        $user->setCreationDate(new \DateTime());
         $this->em->persist($user);
         $this->em->flush();
         if($workspace != "" && $workspace!=null){
-
             $uniquename = $this->string_cleaner->simplify($company);
             $plan = $this->pricing_plan->getMinimalPricing();
             $group = $this->group_service->create($user->getId(), $company, $uniquename,$plan);
@@ -641,6 +641,12 @@ class User implements UserInterface
 			$this->em->persist($user);
 			$this->em->flush();
 
+            $datatopush = Array(
+                "type" => "USER",
+                "action" => "changeUser"
+            );
+            $this->pusher->push($datatopush, "notifications/" . $user->getId());
+
 			return true;
 
 		}
@@ -695,11 +701,23 @@ class User implements UserInterface
 
 			$user->setFirstName($firstName);
 			$user->setLastName($lastName);
-			if($thumbnail!=null) {
+			if ($thumbnail == 'false' || $thumbnail == 'null') {
+                $user->setThumbnail(null);
+            } else if ($thumbnail != null && !is_string($thumbnail)) {
+                if ($user->getThumbnail()) {
+                    $user->getThumbnail()->deleteFromDisk();
+                    $this->em->remove($user->getThumbnail());
+                }
 				$user->setThumbnail($thumbnail);
 			}
-			$this->em->persist($user);
+            $this->em->persist($user);
 			$this->em->flush();
+
+            $datatopush = Array(
+                "type" => "USER",
+                "action" => "changeUser"
+            );
+            $this->pusher->push($datatopush, "notifications/" . $user->getId());
 
 		}
 
@@ -746,6 +764,26 @@ class User implements UserInterface
 			$this->em->persist($user);
 			$this->em->flush();
 
+            if ($userId) {
+                $datatopush = Array(
+                    "type" => "LANGUAGE"
+                );
+                $this->pusher->push($datatopush, "notifications/" . $userId);
+            }
+
 		}
 	}
+
+	public function setIsNew($value, $userId){
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($userId);
+
+        if($user != null){
+
+            $user->setisNew($value);
+            $this->em->persist($user);
+            $this->em->flush();
+
+        }
+    }
 }
