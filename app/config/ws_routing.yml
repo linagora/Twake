@@ -3,6 +3,7 @@ gos_web_socket:
         router:
             resources:
                 - '@TwakeDiscussionBundle/Resources/config/ws_routing.yml'
+                - '@TwakeObjectLinksBundle/Resources/config/ws_routing.yml'
                 - '@TwakeWorkspacesBundle/Resources/config/ws_routing.yml'
                 - '@TwakeCalendarBundle/Resources/config/ws_routing.yml'
                 - '@TwakeProjectBundle/Resources/config/ws_routing.yml'
