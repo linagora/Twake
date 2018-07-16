@@ -29,6 +29,7 @@ class AppKernel extends Kernel
 			new WebsiteApi\UploadBundle\TwakeUploadBundle(),
 			new WebsiteApi\DiscussionBundle\TwakeDiscussionBundle(),
 	        new WebsiteApi\CallsBundle\TwakeCallsBundle(),
+            new WebsiteApi\ObjectLinksBundle\TwakeObjectLinksBundle(),
 			new Administration\GeneralBundle\AdministrationGeneralBundle(),
 			new Gos\Bundle\WebSocketBundle\GosWebSocketBundle(),
 			new Gos\Bundle\PubSubRouterBundle\GosPubSubRouterBundle(),
