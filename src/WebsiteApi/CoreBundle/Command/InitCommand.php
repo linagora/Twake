@@ -183,6 +183,31 @@ class InitCommand extends ContainerAwareCommand
         $app->setCgu("");
         $manager->persist($app);
 
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "tasks"));
+        if (!$app) {
+            $app = new Application();
+        }
+        $app->setPublicKey("tasks");
+        $app->setName("Tasks");
+        $app->setDescription("Twake tasks manager.");
+        $app->setShortDescription("Twake tasks manager.");
+        $app->setUrl("tasks");
+        $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
+        $app->setApplicationRights(json_decode('{"tasks":"manage"}', true));
+        $app->setEnabled(1);
+        $app->setColor("51B75B");
+        $app->setCanCreateFile(0);
+        $app->setIsCapable(1);
+        $app->setDefault(1);
+        $app->setCreateFileData(json_decode("", true));
+        $app->setMessageModule(0);
+        $app->setOrder(0);
+        $app->setThumbnail($serverbase . "/medias/apps/tasks.png");
+        $app->setMessageModuleUrl("");
+        $app->setEditableRights(1);
+        $app->setCgu("");
+        $manager->persist($app);
+
         $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "imageviewer"));
         if (!$app) {
             $app = new Application();
