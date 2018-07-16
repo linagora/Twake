@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Class ObjectLinks
  * @package WebsiteApi\ObjectLinksBundle\Entity
- * @ORM\Table(name="objectLinks", option={"engine":"MyISAM"})
+ * @ORM\Table(name="objectLinks", options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\ObjectLinksBundle\Repository\ObjectLinksRepository")
  */
 class ObjectLinks
