@@ -1,0 +1,5 @@
+services:
+
+  app.objectLinks:
+    class : WebsiteApi\ObjectLinksBundle\Services\ObjectLinks
+    arguments: []

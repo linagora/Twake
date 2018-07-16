@@ -20,7 +20,7 @@ services:
             - { name: gos_web_socket.topic }
         arguments: []
 
-    app.export_import:
+    app.export_import_project:
         class: WebsiteApi\ProjectBundle\Services\exportImport
         arguments: ["@app.board_tasks","@api.v1.api_status"]
 
