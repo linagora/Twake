@@ -50,7 +50,7 @@ class DataToken
      */
     public function resetToken()
     {
-        $this->token = base64_encode(random_bytes(256));
+        $this->token = bin2hex(random_bytes(64));
     }
 
     /**
@@ -85,7 +85,8 @@ class DataToken
         $this->workspaceId = $workspaceId;
     }
 
-    public function __construct( $userId, $workspaceId){
+    public function __construct($workspaceId, $userId)
+    {
         $this->setId(1);
         $this->resetToken();
         $this->setUserId($userId);
