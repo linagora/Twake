@@ -53,9 +53,8 @@ class ObjectLinks
      * @param $typeB
      * @param $idB
      */
-    public function __construct($id, $typeA, $idA, $typeB, $idB)
+    public function __construct($typeA, $idA, $typeB, $idB)
     {
-        $this->id = $id;
         $this->typeA = $typeA;
         $this->idA = $idA;
         $this->typeB = $typeB;
