@@ -9,6 +9,7 @@
 namespace WebsiteApi\ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
  * TaskList
@@ -16,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="taskList",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\ProjectBundle\Repository\TaskListRepository")
  */
-class TaskList
+class TaskList implements ObjectLinksInterface
 {
     /**
      * @var int
@@ -76,4 +77,14 @@ class TaskList
         $this->listOfTask = $listOfTask;
     }
 
+    public function getRepository(){
+        return "TwakeProjectBundle:TaskList";
+    }
+
+    public function getAsArrayFormated(){
+        return Array(
+            "id" => $this->getId(),
+            "title" => "Task",
+        );
+    }
 }

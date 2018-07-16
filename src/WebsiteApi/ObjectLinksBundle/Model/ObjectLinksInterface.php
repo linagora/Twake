@@ -12,4 +12,7 @@ namespace WebsiteApi\ObjectLinksBundle\Model;
 interface ObjectLinksInterface
 {
 
+    public function getRepository();
+
+    public function getAsArrayFormated();
 }
