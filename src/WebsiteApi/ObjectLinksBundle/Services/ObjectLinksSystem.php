@@ -22,7 +22,7 @@ class ObjectLinksSystem
         return $this->doctrine->getRepository($repository)->findOneBy(Array("id" => $id));
     }
 
-    public function createLink($idA,$idB){
-        //TODO mais comment on siat c'est quel type de repo alor s?
+    public function createLink($idA,$idB, $typeA, $typeB){
+        //TODO
     }
 }
