@@ -11,5 +11,14 @@ namespace WebsiteApi\ObjectLinksBundle\Services;
 
 class ObjectLinksSystem
 {
+    var $doctrine;
 
+    public function __construct($doctrine)
+    {
+        $this->doctrine = $doctrine;
+    }
+
+    public function getObjectFromRepositoryAndId($repository, $id){
+        return $this->doctrine->getRepository($repository)->findOneBy(Array("id" => $id));
+    }
 }

@@ -28,20 +28,20 @@ class ObjectLinks
     private $id;
 
     /**
-     * @ORM\Column(name="typeA", type="string")
+     * @ORM\Column(type="string")
      */
     private $typeA;
 
     /**
-     * @ORM\Column(name="idA", type="integer")
+     * @ORM\Column(type="integer")
      */
     private $idA;
     /**
-     * @ORM\Column(name="typeB", type="string")
+     * @ORM\Column(type="string")
      */
     private $typeB;
     /**
-     * @ORM\Column(name="idB", type="integer")
+     * @ORM\Column(type="integer")
      */
     private $idB;
 
