@@ -99,32 +99,32 @@ calendar_events_unshare:
     defaults: { _controller: TwakeCalendarBundle:Event:removeUsers }
     methods: [POST]
 
-calendar_activitys_create:
-    path: /calendarActivitys/create
+calendar_activities_create:
+    path: /calendarActivities/create
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:create }
     methods: [POST]
 
-calendar_activitys_get:
-    path: /calendarActivitys/get
+calendar_activities_get:
+    path: /calendarActivities/get
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:get }
     methods: [POST]
 
-calendar_activitys_readAll:
-    path: /calendarActivitys/readAll
+calendar_activities_readAll:
+    path: /calendarActivities/readAll
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:readAll }
     methods: [POST]
 
-calendar_activitys_readOne:
-    path: /calendarActivitys/readOne
+calendar_activities_readOne:
+    path: /calendarActivities/readOne
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:readOne}
     methods: [POST]
 
-calendar_activitys_delete:
-    path: /calendarActivitys/delete
+calendar_activities_delete:
+    path: /calendarActivities/delete
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:delete}
     methods: [POST]
 
-calendar_activitys_getActivityToDisplay:
-    path: /calendarActivitys/getActivityToDisplay
+calendar_activities_getActivityToDisplay:
+    path: /calendarActivities/getActivityToDisplay
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:getActivityToDisplay}
     methods: [POST]
