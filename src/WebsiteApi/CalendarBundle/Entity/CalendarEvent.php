@@ -3,6 +3,7 @@
 namespace WebsiteApi\CalendarBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
  * Event
@@ -11,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\CalendarEventRepository")
  */
 
-class CalendarEvent {
+class CalendarEvent implements ObjectLinksInterface {
 
     /**
      * @var int
@@ -193,5 +194,14 @@ class CalendarEvent {
         );
     }
 
+    public function getRepository(){
+        return "TwakeCalendarBundle:CalendarEvent";
+    }
 
+    public function getAsArrayFormated(){
+        return Array(
+            "id" => $this->getId(),
+            "title" => "Event",
+        );
+    }
 }
