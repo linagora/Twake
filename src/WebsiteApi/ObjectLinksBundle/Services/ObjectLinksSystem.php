@@ -53,7 +53,7 @@ class ObjectLinksSystem
             $this->doctrine->flush();
             $link = "success";
         }else{
-            $link = "fail";
+            $link = "alreadyThere";
         }
 
         return $link;
