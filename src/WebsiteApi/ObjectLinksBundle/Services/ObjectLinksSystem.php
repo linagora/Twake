@@ -34,13 +34,13 @@ class ObjectLinksSystem
 
     public function createObjectLink(ObjectLinksInterface $objectA,ObjectLinksInterface $objectB){
         $link = new ObjectLinks($objectA->getRepository(), $objectA->getId(), $objectB->getRepository(), $objectB->getId());
-        $this->doctrine->persit($link);
+        $this->doctrine->persist($link);
         $this->doctrine->flush();
     }
 
     public function createObjectLinkFromType($typeA, $typeB, $idA, $idB){
         $link = new ObjectLinks(self::$keyMap[$typeA], $idA, self::$keyMap[$typeB], $idB);
-        $this->doctrine->persit($link);
+        $this->doctrine->persist($link);
         $this->doctrine->flush();
     }
 

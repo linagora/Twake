@@ -1,9 +1,6 @@
-#twake_calls_create:
-#    path:     /create
-#    defaults: { _controller: TwakeCallsBundle:Calls:create }
 
 
 objectLinks_create:
-    path:     /objectLinks/create
+    path:     /create
     defaults: { _controller: TwakeObjectLinksBundle:ObjectLinks:createLink }
     methods: [POST]
