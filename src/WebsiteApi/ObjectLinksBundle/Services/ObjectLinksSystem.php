@@ -28,6 +28,25 @@ class ObjectLinksSystem
         }
     }
 
+    public function getObjectLinksById($id){
+        $resA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $id));
+        $resB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $id));
+
+        $res = array_merge($resA,$resB);
+
+        $returnVal = Array();
+
+        foreach ($res as $entry){
+            /* @var ObjectLinks $entry  */
+            /* @var ObjectLinksInterface $obj  */
+            $repo = ($entry->getIdA()!=$id) ? $entry->getTypeA() : $entry->getTypeB();
+            $obj = $this->doctrine->getRepository()->findOneBy(Array("id" => $id));
+            array_push($returnVal, $obj);
+        }
+
+        return $returnVal;
+    }
+
     public function getObjectFromRepositoryAndId($repository, $id){
         return $this->doctrine->getRepository($repository)->findOneBy(Array("id" => $id));
     }
