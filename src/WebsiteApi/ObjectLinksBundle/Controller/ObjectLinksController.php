@@ -9,34 +9,57 @@ use Symfony\Component\HttpFoundation\Request;
 class ObjectLinksController extends Controller
 {
 
- public function createLinkAction(Request $request){
-     $data = Array(
-         'errors' => Array(),
-         'data' => Array()
-     );
+    public function getLinksAction(Request $request){
 
-     $tab = ["file","event","task"];
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
 
-     $typeA = $request->request->get("typeA");
-     $typeB = $request->request->get("typeB");
-     $idA = $request->request->get("idA");
-     $idB = $request->request->get("idB");
+        $id = $request->request->get("id");
 
-     if(in_array($typeA,$tab) && in_array($typeB,$tab)) {
+        $message = $this->get('app.objectLinks')->getObjectLinksById($id);
+        //TODO verification de message et faire valeur de retour
+        if($message){
+            $tab = Array();
+            foreach ($message as $link){
+                array_push($tab,$link->getAsArrayFormated());
+            }
+            $data["data"] = $tab;
+        }else{
+             $data["errors"] = "fail";
+        }
 
-         $message = $this->get("app.objectLinks")->createObjectLinkFromType($typeA, $typeB, $idA, $idB);
+        return new JsonResponse($data);
+    }
+    public function createLinkAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
 
-         if ($message == "success") {
+        $tab = ["file","event","task"];
 
-             $data['data'] = $message;
-         } else {
-             $data['errors'] = $message;
-         }
-     }else{
-         $data['errors'] = 'wrong data sent';
-     }
-     return new JsonResponse($data);
+        $typeA = $request->request->get("typeA");
+        $typeB = $request->request->get("typeB");
+        $idA = $request->request->get("idA");
+        $idB = $request->request->get("idB");
 
- }
+        if(in_array($typeA,$tab) && in_array($typeB,$tab)) {
+
+            $message = $this->get("app.objectLinks")->createObjectLinkFromType($typeA, $typeB, $idA, $idB);
+
+            if ($message == "success") {
+
+                $data['data'] = $message;
+            } else {
+                $data['errors'] = $message;
+            }
+        }else{
+            $data['errors'] = 'wrong data sent';
+        }
+        return new JsonResponse($data);
+
+    }
 
 }

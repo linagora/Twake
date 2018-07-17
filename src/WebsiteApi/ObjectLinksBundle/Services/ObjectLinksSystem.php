@@ -32,20 +32,24 @@ class ObjectLinksSystem
         $resA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $id));
         $resB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $id));
 
-        $res = array_merge($resA,$resB);
-
         $returnVal = Array();
+        if($resA || $resB) {
 
-        foreach ($res as $entry){
-            /* @var ObjectLinks $entry  */
-            /* @var ObjectLinksInterface $obj  */
-            $repo = ($entry->getIdA()!=$id) ? $entry->getTypeA() : $entry->getTypeB();
-            $entryId = ($entry->getIdA()!=$id) ? $entry->getIdA() : $entry->getIdB();
-            $obj = $this->doctrine->getRepository($repo)->findOneBy(Array("id" => $entryId));
-            array_push($returnVal, $obj);
+            $res = array_merge($resA, $resB);
+
+            foreach ($res as $entry) {
+                /* @var ObjectLinks $entry */
+                /* @var ObjectLinksInterface $obj */
+                $repo = ($entry->getIdA() != $id) ? $entry->getTypeA() : $entry->getTypeB();
+                $entryId = ($entry->getIdA() != $id) ? $entry->getIdA() : $entry->getIdB();
+                $obj = $this->doctrine->getRepository($repo)->findOneBy(Array("id" => $entryId));
+                array_push($returnVal, $obj);
+
+            }
+            return $returnVal;
+        }else{
+            return null;
         }
-
-        return $returnVal;
     }
 
     public function getObjectFromRepositoryAndId($repository, $id){
@@ -59,27 +63,27 @@ class ObjectLinksSystem
     }
 
     public function createObjectLinkFromType($typeA, $typeB, $idA, $idB){
-            $link = new ObjectLinks(self::$keyMap[$typeA], $idA, self::$keyMap[$typeB], $idB);
-            $exists = $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks')->findBy(array(
-                'idA' => $idA,
-                'idB' => $idB,
-                'typeA' => $link->getTypeA(),
-                'typeB' => $link->getTypeB()
-            ));
+        $link = new ObjectLinks(self::$keyMap[$typeA], $idA, self::$keyMap[$typeB], $idB);
+        $exists = $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks')->findBy(array(
+            'idA' => $idA,
+            'idB' => $idB,
+            'typeA' => $link->getTypeA(),
+            'typeB' => $link->getTypeB()
+        ));
 
-            if (!$exists) {
-                if($this->getObjectFromRepositoryAndId($link->getTypeA(), $idA) && $this->getObjectFromRepositoryAndId($link->getTypeB(), $idB)) {
-                    $this->doctrine->persist($link);
-                    $this->doctrine->flush();
-                    $link = "success";
-                }else{
-                    $link = "idNotFound";
-                }
-            } else {
-                $link = "alreadyThere";
+        if (!$exists) {
+            if($this->getObjectFromRepositoryAndId($link->getTypeA(), $idA) && $this->getObjectFromRepositoryAndId($link->getTypeB(), $idB)) {
+                $this->doctrine->persist($link);
+                $this->doctrine->flush();
+                $link = "success";
+            }else{
+                $link = "idNotFound";
             }
+        } else {
+            $link = "alreadyThere";
+        }
 
-            return $link;
+        return $link;
     }
 
     public function getRepositoryFromKey($key){
