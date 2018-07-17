@@ -48,10 +48,13 @@ class ObjectLinksSystem
             ));
 
             if (!$exists) {
-
-                $this->doctrine->persist($link);
-                $this->doctrine->flush();
-                $link = "success";
+                if($this->getObjectFromRepositoryAndId($link->getTypeA(), $idA) && $this->getObjectFromRepositoryAndId($link->getTypeB(), $idB)) {
+                    $this->doctrine->persist($link);
+                    $this->doctrine->flush();
+                    $link = "success";
+                }else{
+                    $link = "idNotFound";
+                }
             } else {
                 $link = "alreadyThere";
             }

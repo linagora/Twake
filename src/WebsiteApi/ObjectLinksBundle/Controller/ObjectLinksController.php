@@ -21,7 +21,8 @@ class ObjectLinksController extends Controller
      $typeB = $request->request->get("typeB");
      $idA = $request->request->get("idA");
      $idB = $request->request->get("idB");
-     if(array_key_exists($typeA,$tab) && array_key_exists($typeB,$tab)) {
+
+     if(in_array($typeA,$tab) && in_array($typeB,$tab)) {
 
          $message = $this->get("app.objectLinks")->createObjectLinkFromType($typeA, $typeB, $idA, $idB);
 
