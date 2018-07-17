@@ -39,24 +39,24 @@ class ObjectLinksSystem
     }
 
     public function createObjectLinkFromType($typeA, $typeB, $idA, $idB){
-        $link = new ObjectLinks(self::$keyMap[$typeA], $idA, self::$keyMap[$typeB], $idB);
-        $exists = $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks')->findBy(array(
-            'idA' => $idA,
-            'idB' => $idB,
-            'typeA'=>$link->getTypeA(),
-            'typeB' =>$link->getTypeB()
-        ));
+            $link = new ObjectLinks(self::$keyMap[$typeA], $idA, self::$keyMap[$typeB], $idB);
+            $exists = $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks')->findBy(array(
+                'idA' => $idA,
+                'idB' => $idB,
+                'typeA' => $link->getTypeA(),
+                'typeB' => $link->getTypeB()
+            ));
 
-        if(!$exists) {
+            if (!$exists) {
 
-            $this->doctrine->persist($link);
-            $this->doctrine->flush();
-            $link = "success";
-        }else{
-            $link = "alreadyThere";
-        }
+                $this->doctrine->persist($link);
+                $this->doctrine->flush();
+                $link = "success";
+            } else {
+                $link = "alreadyThere";
+            }
 
-        return $link;
+            return $link;
     }
 
     public function getRepositoryFromKey($key){

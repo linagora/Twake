@@ -15,19 +15,25 @@ class ObjectLinksController extends Controller
          'data' => Array()
      );
 
+     $tab = ["file","event","task"];
+
      $typeA = $request->request->get("typeA");
      $typeB = $request->request->get("typeB");
      $idA = $request->request->get("idA");
      $idB = $request->request->get("idB");
-     $message = $this->get("app.objectLinks")->createObjectLinkFromType($typeA, $typeB, $idA,$idB);
+     if(array_key_exists($typeA,$tab) && array_key_exists($typeB,$tab)) {
 
-     if($message=="success"){
+         $message = $this->get("app.objectLinks")->createObjectLinkFromType($typeA, $typeB, $idA, $idB);
 
-         $data['data'] = $message;
+         if ($message == "success") {
+
+             $data['data'] = $message;
+         } else {
+             $data['errors'] = $message;
+         }
      }else{
-         $data['errors'] = $message;
+         $data['errors'] = 'wrong data sent';
      }
-
      return new JsonResponse($data);
 
  }
