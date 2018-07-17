@@ -51,6 +51,9 @@ class ObjectLinksSystem
 
             $this->doctrine->persist($link);
             $this->doctrine->flush();
+            $link = "success";
+        }else{
+            $link = "fail";
         }
 
         return $link;
