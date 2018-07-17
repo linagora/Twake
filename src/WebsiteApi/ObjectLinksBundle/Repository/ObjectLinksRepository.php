@@ -6,10 +6,10 @@
  * Time: 09:50
  */
 
-namespace WebsiteApi\ObjectLinksBundle\Entity;
+namespace WebsiteApi\ObjectLinksBundle\Repository;
 
 
-class ObjectLinks extends \Doctrine\ORM\EntityRepository
+class ObjectLinksRepository extends \Doctrine\ORM\EntityRepository
 {
 
 }
