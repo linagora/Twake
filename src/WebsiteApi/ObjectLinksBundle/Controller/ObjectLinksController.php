@@ -19,7 +19,7 @@ class ObjectLinksController extends Controller
         $id = $request->request->get("id");
 
         $message = $this->get('app.objectLinks')->getObjectLinksById($id);
-        //TODO verification de message et faire valeur de retour
+
         if($message){
             $tab = Array();
             foreach ($message as $link){
