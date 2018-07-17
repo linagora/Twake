@@ -19,8 +19,14 @@ class ObjectLinksController extends Controller
      $typeB = $request->request->get("typeB");
      $idA = $request->request->get("idA");
      $idB = $request->request->get("idB");
+     $message = $this->get("app.objectLinks")->createObjectLinkFromType($typeA, $typeB, $idA,$idB);
 
-     $data['data'] = $this->get("app.objectLinks")->createObjectLinkFromType($typeA, $typeB, $idA,$idB);
+     if($message=="success"){
+
+         $data['data'] = $message;
+     }else{
+         $data['errors'] = $message;
+     }
 
      return new JsonResponse($data);
 
