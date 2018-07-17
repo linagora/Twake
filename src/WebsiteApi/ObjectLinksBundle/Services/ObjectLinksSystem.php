@@ -40,7 +40,8 @@ class ObjectLinksSystem
             /* @var ObjectLinks $entry  */
             /* @var ObjectLinksInterface $obj  */
             $repo = ($entry->getIdA()!=$id) ? $entry->getTypeA() : $entry->getTypeB();
-            $obj = $this->doctrine->getRepository($repo)->findOneBy(Array("id" => $id));
+            $entryId = ($entry->getIdA()!=$id) ? $entry->getIdA() : $entry->getIdB();
+            $obj = $this->doctrine->getRepository($repo)->findOneBy(Array("id" => $entryId));
             array_push($returnVal, $obj);
         }
 
