@@ -86,6 +86,32 @@ class ObjectLinksSystem
         return $link;
     }
 
+    public function deleteObjectLink($typeA,$typeB,$idA,$idB){
+        $link = new ObjectLinks(self::$keyMap[$typeA], $idA, self::$keyMap[$typeB], $idB);
+        $repo =  $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks');
+        $exists =$repo->findOneBy(array(
+            'idA' => $idA,
+            'idB' => $idB,
+            'typeA' => $link->getTypeA(),
+            'typeB' => $link->getTypeB()
+        ));
+
+        if ($exists) {
+            if($this->getObjectFromRepositoryAndId($link->getTypeA(), $idA) && $this->getObjectFromRepositoryAndId($link->getTypeB(), $idB)) {
+
+                $this->doctrine->remove($exists);
+                $this->doctrine->flush();
+                $link = "success";
+            }else{
+                $link = "idNotFound";
+            }
+        } else {
+            $link = "notThere";
+        }
+
+        return $link;
+    }
+
     public function getRepositoryFromKey($key){
         return self::$keyMap[$key];
     }
