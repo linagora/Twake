@@ -202,6 +202,8 @@ class CalendarEvent implements ObjectLinksInterface {
         return Array(
             "id" => $this->getId(),
             "title" => "Event",
+            "object_name" => $this->getEvent()["title"],
+            "key" => "calendar",
         );
     }
 }

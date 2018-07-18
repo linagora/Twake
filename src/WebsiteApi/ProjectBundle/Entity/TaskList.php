@@ -77,14 +77,5 @@ class TaskList implements ObjectLinksInterface
         $this->listOfTask = $listOfTask;
     }
 
-    public function getRepository(){
-        return "TwakeProjectBundle:TaskList";
-    }
 
-    public function getAsArrayFormated(){
-        return Array(
-            "id" => $this->getId(),
-            "title" => "Task",
-        );
-    }
 }
