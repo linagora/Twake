@@ -666,6 +666,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
+    public function getDriveFileVersions($fileId){
+        $file = $this->convertToEntity($fileId, "TwakeDriveBundle:DriveFile");
+
+        $driveFileVersions = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file" => $file));
+
+        return $driveFileVersions;
+    }
+
     public function getInfos($workspace, $fileOrDirectory, $forceAccess = false)
     {
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
@@ -1017,9 +1025,39 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
     }
 
+    public function uploadNewVersion($workspace, $directory, $fileData, $uploader, $detached = false, $userId = 0, $newVersion = 0)
+    {
+        $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $newVersion));
+        $lastVersion = new DriveFileVersion($file);
+        $this->doctrine->persist($lastVersion);
+        $file->setLastVersion($lastVersion);
+
+        if (!$fileData || !$file) {
+            return false;
+        }
+
+        $real = $this->getRoot() . $file->getPath();
+
+        $context = Array(
+            "max_size" => 100000000 // 100Mo
+        );
+        $errors = $uploader->upload($fileData, $real, $context);
+
+        $this->encode($this->getRoot() . $file->getPath(), $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+
+        $this->setRawContent($file);
+
+        if (count($errors["errors"]) > 0) {
+            $this->delete($file);
+            return false;
+        }
+
+        return $file;
+
+    }
+
     public function upload($workspace, $directory, $file, $uploader, $detached = false, $userId = 0)
     {
-
         $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached, null,$userId);
         if (!$file) {
             return false;

@@ -376,6 +376,28 @@ class FilesController extends Controller
         return new JsonResponse($data);
     }
 
+    public function getDriveFileVersionsAction(Request $request){
+
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+        $fileId = $request->request->get("fileId", 0);
+        $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
+
+        $fileSystem = $this->get('app.drive.FileSystem');
+
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
+            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
+            $fileSystem->setRootDirectory($directory);
+        }
+
+        $data["data"] = $fileSystem->getDriveFileVersions($fileId);
+
+        return new JsonResponse($data);
+    }
+
     public function uploadAction(Request $request)
     {
         $data = Array(
@@ -387,6 +409,9 @@ class FilesController extends Controller
         $parentId = $request->request->has("parentId") ? $request->request->get("parentId") : 0;
         $isDetached = $request->request->getBoolean("isDetached", false);
         $directory = $request->request->get("directory", false);
+        $newVersion = $request->request->get("newVersion", 0);
+        if($newVersion=="false")
+            $newVersion = false;
         $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
@@ -400,7 +425,10 @@ class FilesController extends Controller
 
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
 
-            $file = $fileSystem->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId());
+            if($newVersion)
+                $file = $fileSystem->uploadNewVersion($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId(), $newVersion);
+            else
+                $file = $fileSystem->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId());
 
             if ($file) {
                 $data["data"] = $file->getAsArray();
