@@ -78,4 +78,13 @@ class TaskList implements ObjectLinksInterface
     }
 
 
+    public function getRepository()
+    {
+        // TODO: Implement getRepository() method.
+    }
+
+    public function getAsArrayFormated()
+    {
+        // TODO: Implement getAsArrayFormated() method.
+    }
 }
