@@ -9,3 +9,9 @@ objectLinks_get:
     path:   /get
     defaults: {_controller: TwakeObjectLinksBundle:ObjectLinks:getLinks }
     methods: [POST]
+
+
+objectLinks_delete:
+    path: /delete
+    defaults: {_controller: TwakeObjectLinksBundle:ObjectLinks:deleteLinks }
+    methods: [POST]
