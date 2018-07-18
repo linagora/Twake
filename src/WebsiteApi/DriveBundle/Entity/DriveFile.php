@@ -542,6 +542,8 @@ class DriveFile implements ObjectLinksInterface
         return Array(
             "id" => $this->getId(),
             "title" => "File",
+            "object_name" => $this->getName(),
+            "key" => "drive",
         );
     }
 }

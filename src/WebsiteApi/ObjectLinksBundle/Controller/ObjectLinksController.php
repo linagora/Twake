@@ -38,18 +38,18 @@ class ObjectLinksController extends Controller
             'data' => Array()
         );
 
-        $tab = ["file","event","task"];
+     $tab = ["file","event","task"];
 
-        $typeA = $request->request->get("typeA");
-        $typeB = $request->request->get("typeB");
-        $idA = $request->request->get("idA");
-        $idB = $request->request->get("idB");
+     $typeA = $request->request->get("typeA");
+     $typeB = $request->request->get("typeB");
+     $idA = $request->request->get("idA");
+     $idB = $request->request->get("idB");
 
-        if(in_array($typeA,$tab) && in_array($typeB,$tab)) {
+     if(in_array($typeA,$tab) && in_array($typeB,$tab)) {
 
-            $message = $this->get("app.objectLinks")->createObjectLinkFromType($typeA, $typeB, $idA, $idB);
+         $message = $this->get("app.objectLinks")->createObjectLinkFromType($typeA, $typeB, $idA, $idB);
 
-            if ($message == "success") {
+         if ($message == "success") {
 
                 $data['data'] = $message;
             } else {
@@ -60,6 +60,6 @@ class ObjectLinksController extends Controller
         }
         return new JsonResponse($data);
 
-    }
+ }
 
 }
