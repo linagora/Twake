@@ -51,13 +51,20 @@ class DriveFileVersion
 	 */
 	private $date_added;
 
-	public function __construct($file)
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    private $fileName;
+
+
+	public function __construct(DriveFile $file)
 	{
 		$this->file = $file;
 		$this->setKey(base64_encode(random_bytes(256)));
 		$this->setSize(0);
 		$this->resetRealName();
 		$this->date_added = new \DateTime();
+		$this->setFileName($file->getName());
 	}
 
 	/**
@@ -127,6 +134,30 @@ class DriveFileVersion
 		return $this->mode;
 	}
 
+	public function getAsArray(){
+	    return Array(
+	        "id" => $this->id,
+	        "file" => $this->file->getAsArray(),
+            "name" => $this->getFileName(),
+            "date added" => $this->date_added,
+            "size" => $this->size
+            );
+    }
 
+    /**
+     * @return mixed
+     */
+    public function getFileName()
+    {
+        return $this->fileName;
+    }
+
+    /**
+     * @param mixed $fileName
+     */
+    public function setFileName($fileName)
+    {
+        $this->fileName = $fileName;
+    }
 
 }
