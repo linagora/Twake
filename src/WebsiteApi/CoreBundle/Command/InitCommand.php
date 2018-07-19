@@ -328,7 +328,7 @@ class InitCommand extends ContainerAwareCommand
             ["/medias/apps/web/github.png", "Github", "github.com", "github", "24292e", Array()],
 
             //Altassian
-            ["/medias/apps/web/atlassian.png", "Atlassian", "atlassian.net/projects", "atlassian", "0047B3", Array()],
+            ["/medias/apps/web/atlassian.png", "Atlassian", "atlassian.net", "atlassian", "0047B3", Array()],
 
             //gSuite
             ["/medias/apps/web/google_hangouts.png", "Google Hangouts", "hangouts.google.com", "hangouts.google", "50AF55", Array()],
