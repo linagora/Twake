@@ -94,6 +94,6 @@ interface DriveFileSystemInterface
 	public function upload($group, $directory, $file, $uploader, $detached=false);
 
 	//TO document
-	public function download($group, $file, $download);
+	public function download($group, $file, $download, $versionId=0);
 
 }

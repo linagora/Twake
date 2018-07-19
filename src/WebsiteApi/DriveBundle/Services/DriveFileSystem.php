@@ -1027,7 +1027,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function uploadNewVersion($workspace, $directory, $fileData, $uploader, $detached = false, $userId = 0, $newVersion = 0)
     {
+        /* @var DriveFile $file */
         $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $newVersion));
+        $file->setName($fileData["name"]);
         $lastVersion = new DriveFileVersion($file);
         $this->doctrine->persist($lastVersion);
         $file->setLastVersion($lastVersion);
@@ -1152,7 +1154,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return false;
     }
 
-    public function download($workspace, $file, $download)
+    public function download($workspace, $file, $download, $versionId=0)
     {
 
         if (isset($_SERVER['HTTP_ORIGIN'])) {
@@ -1213,6 +1215,11 @@ class DriveFileSystem implements DriveFileSystemInterface
             die();
 
         } else {
+            /* @var DriveFile $file*/
+            if($versionId!=0){
+                $version = $this->convertToEntity($versionId,"TwakeDriveBundle:DriveFileVersion");
+                $file->setLastVersion($version);
+            }
 
             $completePath = $this->getRoot() . $file->getPath();
 
