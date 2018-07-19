@@ -27,3 +27,7 @@ services:
     app.boardActivity:
         class: WebsiteApi\ProjectBundle\Services\BoardActivities
         arguments: ["@doctrine.orm.entity_manager", "@app.pusher", "@app.notifications"]
+
+    app.list_of_tasks_service:
+        class: WebsiteApi\ProjectBundle\Services\ListOfTasksService
+        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels']
