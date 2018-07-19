@@ -1053,6 +1053,14 @@ class DriveFileSystem implements DriveFileSystemInterface
             $this->delete($file);
             return false;
         }
+        $dirid = 0;
+
+        if($directory!=null) {
+            $dirid = $directory->getId();
+        }
+
+        $this->userToNotifyService->notifyUsers($dirid,$workspace,"Updated file",$file->getName()." has been update",$file->getId(), $userId);
+        $this->pusher->push(Array("action" => "update"), "drive/" . $file->getGroup()->getId());
 
         return $file;
 
