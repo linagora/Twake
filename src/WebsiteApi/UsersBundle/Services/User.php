@@ -712,7 +712,6 @@ class User implements UserInterface
 			}
             $this->em->persist($user);
 			$this->em->flush();
-            error_log("thumbnail : ".$user->getThumbnail);
 
             $datatopush = Array(
                 "type" => "USER",

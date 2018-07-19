@@ -5,6 +5,7 @@ gos_web_socket:
                 - '@TwakeDiscussionBundle/Resources/config/ws_routing.yml'
                 - '@TwakeWorkspacesBundle/Resources/config/ws_routing.yml'
                 - '@TwakeCalendarBundle/Resources/config/ws_routing.yml'
+                - '@TwakeProjectBundle/Resources/config/ws_routing.yml'
                 - '@TwakeDriveBundle/Resources/config/ws_routing.yml'
                 - '@TwakeUsersBundle/Resources/config/ws_routing.yml'
                 - '@TwakeNotificationsBundle/Resources/config/ws_routing.yml'

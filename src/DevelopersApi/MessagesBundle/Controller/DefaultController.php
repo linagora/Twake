@@ -19,7 +19,7 @@ class DefaultController extends Controller
 
         $workspaceId = $request["workspace"]->getId();
         $streamId = isset($requestData["streamId"]) ? $requestData["streamId"] : 0;
-        $subjectId = isset($requestData["subjectId"]) ? $requestData["subjectId"] : 0;
+        $subjectId = isset($requestData["subjectId"]) ? intval($requestData["subjectId"]) : 0;
         $userId = isset($requestData["userId"]) ? $requestData["userId"] : 0;
         $url = isset($requestData["url"]) ? $requestData["url"] : "";
         $appId = $request["application"]->getId();
@@ -28,6 +28,7 @@ class DefaultController extends Controller
             "data" => Array(),
             "errors" => Array()
         );
+
 
         $message = $this->get("app.messages")->sendMessage($userId, $streamId, true, $appId, false, null, $workspaceId, $subjectId, Array("iframe" => $url));
 

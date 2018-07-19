@@ -11,6 +11,7 @@ use Symfony\Component\HttpKernel\Event\FilterResponseEvent;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use WebsiteApi\CoreBundle\Entity\ZMQQueue;
 use WebsiteApi\CoreBundle\Services\RememberMe;
 
 class ZMQPusher
@@ -20,13 +21,46 @@ class ZMQPusher
     var $connection = null;
     var $host;
     var $port;
+    var $doctrine;
 
-	public function __construct($host, $port) {
+    public function __construct($host, $port, $em)
+    {
         $this->host = $host;
         $this->port = $port;
-	}
+        $this->doctrine = $em;
+    }
 
-	public function push($data, $route){
+    public function push($data, $route)
+    {
+        $data = Array(
+            "topic" => $route,
+            "data" => $data
+        );
+        $data = json_encode($data);
+
+        $job = new ZMQQueue($route, $data);
+        $this->doctrine->persist($job);
+        $this->doctrine->flush();
+    }
+
+    public function checkQueue()
+    {
+
+        $jobs = $this->doctrine->getRepository("TwakeCoreBundle:ZMQQueue")->findBy(Array(), Array(), 5000);
+
+        foreach ($jobs as $job) {
+            $this->doctrine->remove($job);
+            $this->doctrine->flush();
+        }
+
+        foreach ($jobs as $job) {
+            $this->pushForReal($job->getData(), $job->getRoute());
+        }
+
+    }
+
+    public function pushForReal($data, $route)
+    {
 
         if (false === $this->connected) {
             if (!extension_loaded('zmq')) {
@@ -51,13 +85,6 @@ class ZMQPusher
 
             $this->connected = true;
         }
-
-        $data = Array(
-            "topic" => $route,
-            "data" => $data
-        );
-
-        $data = json_encode($data);
 
         $this->connection->send($data);
 	}

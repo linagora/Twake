@@ -169,9 +169,10 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
     }
 
-    public function move($fileOrDirectory, $directory, $groupId = null)
+    public function move($fileOrDirectory, $directory, $groupId = null, $userId = 0)
     {
-
+        /* @var DriveFile $fileOrDirectory */
+        /* @var DriveFile $directory */
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
         $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
 
@@ -207,6 +208,15 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($fileOrDirectory);
         $this->doctrine->flush();
 
+        $dirid = 0;
+        $dirName = "";
+
+        if($directory!=null) {
+            $dirid = $directory->getId();
+            $dirName = $directory->getName();
+        }
+
+        $this->userToNotifyService->notifyUsers($dirid,$groupId,"Move file",$fileOrDirectory->getName()." has been moved into ". $dirName,$fileOrDirectory->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
 
         return true;
@@ -656,6 +666,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
+    public function getDriveFileVersions($fileId){
+        $file = $this->convertToEntity($fileId, "TwakeDriveBundle:DriveFile");
+
+        $driveFileVersions = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file" => $file));
+
+        return $driveFileVersions;
+    }
+
     public function getInfos($workspace, $fileOrDirectory, $forceAccess = false)
     {
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
@@ -768,7 +786,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function listNew($workspace, $offset = 0, $max = 20)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
         if ($workspace == null) {
             return false;
@@ -776,6 +794,18 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
             ->search($workspace, Array(), Array("added" => "DESC"), $offset, $max);
+        return $list;
+    }
+
+    public function listLastUsed($workspace, $offset = 0, $max =20){
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+
+        if ($workspace == null) {
+            return false;
+        }
+
+        $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+            ->search($workspace, Array(), Array("last_modified" => "DESC"), $offset, $max);
         return $list;
     }
 
@@ -995,9 +1025,49 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
     }
 
+    public function uploadNewVersion($workspace, $directory, $fileData, $uploader, $detached = false, $userId = 0, $newVersion = 0)
+    {
+        /* @var DriveFile $file */
+        $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $newVersion));
+        $file->setName($fileData["name"]);
+        $lastVersion = new DriveFileVersion($file);
+        $this->doctrine->persist($lastVersion);
+        $file->setLastVersion($lastVersion);
+
+        if (!$fileData || !$file) {
+            return false;
+        }
+
+        $real = $this->getRoot() . $file->getPath();
+
+        $context = Array(
+            "max_size" => 100000000 // 100Mo
+        );
+        $errors = $uploader->upload($fileData, $real, $context);
+
+        $this->encode($this->getRoot() . $file->getPath(), $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+
+        $this->setRawContent($file);
+
+        if (count($errors["errors"]) > 0) {
+            $this->delete($file);
+            return false;
+        }
+        $dirid = 0;
+
+        if($directory!=null) {
+            $dirid = $directory->getId();
+        }
+
+        $this->userToNotifyService->notifyUsers($dirid,$workspace,"Updated file",$file->getName()." has been update",$file->getId(), $userId);
+        $this->pusher->push(Array("action" => "update"), "drive/" . $file->getGroup()->getId());
+
+        return $file;
+
+    }
+
     public function upload($workspace, $directory, $file, $uploader, $detached = false, $userId = 0)
     {
-
         $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached, null,$userId);
         if (!$file) {
             return false;
@@ -1092,7 +1162,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return false;
     }
 
-    public function download($workspace, $file, $download)
+    public function download($workspace, $file, $download, $versionId=0)
     {
 
         if (isset($_SERVER['HTTP_ORIGIN'])) {
@@ -1153,6 +1223,11 @@ class DriveFileSystem implements DriveFileSystemInterface
             die();
 
         } else {
+            /* @var DriveFile $file*/
+            if($versionId!=0){
+                $version = $this->convertToEntity($versionId,"TwakeDriveBundle:DriveFileVersion");
+                $file->setLastVersion($version);
+            }
 
             $completePath = $this->getRoot() . $file->getPath();
 

@@ -100,31 +100,31 @@ calendar_events_unshare:
     methods: [POST]
 
 calendar_activitys_create:
-    path: /calendarActivitys/create
+    path: /calendarActivities/create
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:create }
     methods: [POST]
 
 calendar_activitys_get:
-    path: /calendarActivitys/get
+    path: /calendarActivities/get
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:get }
     methods: [POST]
 
 calendar_activitys_readAll:
-    path: /calendarActivitys/readAll
+    path: /calendarActivities/readAll
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:readAll }
     methods: [POST]
 
 calendar_activitys_readOne:
-    path: /calendarActivitys/readOne
+    path: /calendarActivities/readOne
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:readOne}
     methods: [POST]
 
 calendar_activitys_delete:
-    path: /calendarActivitys/delete
+    path: /calendarActivities/delete
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:delete}
     methods: [POST]
 
 calendar_activitys_getActivityToDisplay:
-    path: /calendarActivitys/getActivityToDisplay
+    path: /calendarActivities/getActivityToDisplay
     defaults: { _controller: TwakeCalendarBundle:CalendarActivity:getActivityToDisplay}
     methods: [POST]

@@ -257,6 +257,15 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $this->doctrine->flush();
 
             $datatopush = Array(
+                "type" => "CHANGE_MEMBERS",
+                "data" => Array(
+                    "id" => $userId,
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
+            $datatopush = Array(
                 "type" => "GROUP",
                 "action" => "addWorkspace",
                 "data" => Array(
@@ -313,6 +322,15 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $groupmember->decreaseNbWorkspace();
             $this->doctrine->persist($groupmember);
+
+            $datatopush = Array(
+                "type" => "CHANGE_MEMBERS",
+                "data" => Array(
+                    "id" => $userId,
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
             $datatopush = Array(
                 "action" => "RM",

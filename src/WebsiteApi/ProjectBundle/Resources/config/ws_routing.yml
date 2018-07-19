@@ -1,0 +1,24 @@
+board_topic:
+    channel: board/{id}
+    handler:
+        callback: 'board.topic'
+    requirements:
+        id:
+            pattern: "[0-9]+"
+
+board_workspace_topic:
+    channel: board/workspace/{id}
+    handler:
+        callback: 'board_workspace.topic'
+    requirements:
+        id:
+            pattern: "[0-9]+"
+
+
+board_activity_topic:
+    channel: boardActivity/workspace/{id}
+    handler:
+        callback: 'board_activity.topic'
+    requirements:
+             id:
+                pattern: "[0-9]+"

@@ -44,6 +44,10 @@ check:
 calendar:
     resource: "@TwakeCalendarBundle/Resources/config/routing.yml"
     prefix:   /ajax/calendar/
+    
+project:
+    resource: "@TwakeProjectBundle/Resources/config/routing.yml"
+    prefix:   /ajax/project/
 
 citi_go_discussion:
     resource: "@TwakeDiscussionBundle/Resources/config/routing.yml"
@@ -101,11 +105,18 @@ twake_notifications:
     prefix:   /ajax/notifications/
     methods: [POST, GET]
 
+
+twake_objectLinks:
+    resource: "@TwakeObjectLinksBundle/Resources/config/routing.yml"
+    prefix:   /ajax/objectLinks/
+    methods: [POST]
+
 twake_api_error:
     path:     /ajax/{req}
     defaults: { _controller: TwakeCheckBundle:Error:BadRequest }
     requirements:
       req: ".*"
+
 
 #API pour les developpeurs
 developers_api_users:

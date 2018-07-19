@@ -54,6 +54,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
                     $apps = $appRepository->findBy(Array("default"=>true, "messageModule"=>true));
                 }else{
                     $apps = $appRepository->findBy(Array("default"=>true));
+                    $apps = array_merge($apps, $appRepository->findBy(Array("urlApp" => true)));
                 }
                 return $apps;
             }

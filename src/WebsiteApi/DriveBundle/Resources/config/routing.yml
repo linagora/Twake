@@ -27,6 +27,11 @@ twake_drive_list:
     defaults: { _controller: TwakeDriveBundle:Files:list }
     methods: [POST]
 
+twake_drive_list_last_used:
+    path: /listLastUsed
+    defaults: { _controller: TwakeDriveBundle:Files:listLastUsed }
+    methods: [POST]
+
 twake_drive_preview:
     path:     /preview
     defaults: { _controller: TwakeDriveBundle:Files:preview }
@@ -101,6 +106,12 @@ twake_drive_getAppFiles:
     path:     /getAppFiles
     defaults: { _controller: TwakeDriveBundle:Files:getFilesFromApp }
     methods: [POST]
+
+twake_drive_getDriveFileVersion:
+    path:     /getDriveFileVersions
+    defaults: { _controller: TwakeDriveBundle:Files:getDriveFileVersions }
+    methods: [POST]
+
 
 # Trash
 
