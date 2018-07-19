@@ -86,18 +86,33 @@ class ObjectLinksSystem
         return $link;
     }
 
-    public function deleteObjectLink($typeA,$typeB,$idA,$idB){
-        $link = new ObjectLinks(self::$keyMap[$typeA], $idA, self::$keyMap[$typeB], $idB);
+    public function findOneTwoWays($typeA,$typeB,$idA,$idB){
         $repo =  $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks');
+
         $exists =$repo->findOneBy(array(
             'idA' => $idA,
             'idB' => $idB,
-            'typeA' => $link->getTypeA(),
-            'typeB' => $link->getTypeB()
+            'typeA' => self::$keyMap[$typeA],
+            'typeB' => self::$keyMap[$typeB]
         ));
 
+        if(!$exists){ //test inversion param
+            $exists =$repo->findOneBy(array(
+                'idA' => $idB,
+                'idB' => $idA,
+                'typeA' => self::$keyMap[$typeB],
+                'typeB' => self::$keyMap[$typeA]
+            ));
+        }
+
+        return $exists;
+
+    }
+
+    public function deleteObjectLink($typeA,$typeB,$idA,$idB){
+        $exists = $this->findOneTwoWays($typeA,$typeB,$idA,$idB);
         if ($exists) {
-            if($this->getObjectFromRepositoryAndId($link->getTypeA(), $idA) && $this->getObjectFromRepositoryAndId($link->getTypeB(), $idB)) {
+            if($this->getObjectFromRepositoryAndId(self::$keyMap[$typeA], $idA) && $this->getObjectFromRepositoryAndId(self::$keyMap[$typeB], $idB)) {
 
                 $this->doctrine->remove($exists);
                 $this->doctrine->flush();
