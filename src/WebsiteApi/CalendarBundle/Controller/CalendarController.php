@@ -168,4 +168,25 @@ class CalendarController extends Controller
         return $parsing;
     }
 
+    public function getCalendarExportTokenaction(Request $request, $workspaceId, $calendarsIds, $useMine, $from, $to){
+        $data = Array(
+            'errors' => Array()
+        );
+
+        if($useMine==1){
+            $user_id = $this->getUser()->getId();
+
+        }else{
+            $user_id = null;
+        }
+        $from = ($from>=(strtotime('-1 year', (new \DateTime())->getTimestamp())) && $from <=strtotime('-1 year', (new \DateTime())->getTimestamp())) ? $from : (new \DateTime())->getTimestamp();
+        $to = ($to<=(strtotime('-1 year', (new \DateTime())->getTimestamp())) && $to>=strtotime('+1 year', (new \DateTime())->getTimestamp())) ? $to : strtotime('+1 year', (new \DateTime())->getTimestamp()) ;
+
+        $token = $this->get("app.export_import")->generateCalendarExportToken($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id);
+
+        $data["data"] = $token;
+
+        return new JsonResponse($data);
+    }
+
 }

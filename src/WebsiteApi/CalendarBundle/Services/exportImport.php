@@ -250,4 +250,8 @@ class exportImport implements exportImportInterface{
 
     }
 
+    public function generateCalendarExportToken($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id){
+
+    }
+
 }
