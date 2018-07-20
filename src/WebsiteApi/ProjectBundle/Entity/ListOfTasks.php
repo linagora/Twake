@@ -28,17 +28,58 @@ class ListOfTasks
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\TaskList")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\Board")
      */
-    private $taskList;
+    private $board;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $name;
+    private $title
+    ;
 
     /**
      * @ORM\Column(type="string")
      */
     private $color;
+
+    public function getAsArray(){
+        return Array(
+            "id" => $this->id,
+            "label" => $this->title,
+            "color" => $this->color
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
+
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getColor()
+    {
+        return $this->color;
+    }
+
+    /**
+     * @param mixed $color
+     */
+    public function setColor($color)
+    {
+        $this->color = $color;
+    }
 }

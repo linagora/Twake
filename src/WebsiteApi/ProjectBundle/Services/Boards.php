@@ -26,6 +26,27 @@ class Boards implements BoardsInterface
         $this->workspaceLevels = $workspaceLevels;
     }
 
+    public function getBoard($board){
+        if(is_int($board))
+            $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->findOneBy(Array("id" => $board));
+
+        $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
+
+        $result = [];
+
+        foreach ($listOfTasks as $listOfTask){
+            $array = $listOfTask->getAsArray();
+
+            $tasksLists = $this->doctrine->getRepository("TwakeProjectBundle:TaskList")->findBy(Array("listOfTask" => $listOfTask));
+            $array["tasks"] = count($tasksLists);
+            $array["order"] = $listOfTask->getOrder();
+
+            $result[] = $array;
+        }
+
+        return $result;
+    }
+
     public function getBoards($workspaceId, $currentUserId=null)
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
@@ -41,10 +62,14 @@ class Boards implements BoardsInterface
 
             $links = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findBy(Array("workspace" => $workspace));
 
+            $boards = [];
+
             foreach ($links as $link) {
-                $cal = $link->getBoard()->getAsArray();
-                $cal["owner"] = $link->getOwner();
-                $result[] = $cal;
+                $boards[] = $link->getBoard();
+            }
+
+            foreach ($boards as $board){
+
             }
 
             //Create board if no board was found in this workspace
@@ -125,7 +150,7 @@ class Boards implements BoardsInterface
         }
     }
 
-    public function updateBoard($workspaceId, $boardId, $title, $color, $currentUserId = null, $autoParticipate = Array())
+    public function updateBoard($workspaceId, $boardId, $title, $color, $isPrivate, $currentUserId = null, $autoParticipate = Array())
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
@@ -143,6 +168,7 @@ class Boards implements BoardsInterface
 
         $board->setTitle($title);
         $board->setColor($color);
+        $board->setisPrivate($isPrivate);
 
         $board->setAutoParticipantList($autoParticipate);
 

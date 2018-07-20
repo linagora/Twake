@@ -393,7 +393,11 @@ class FilesController extends Controller
             $fileSystem->setRootDirectory($directory);
         }
 
-        $data["data"] = $fileSystem->getDriveFileVersions($fileId);
+        $objectsData = $fileSystem->getDriveFileVersions($fileId);
+
+        foreach ($objectsData as $object){
+            $data["data"][] = $object->getAsArray();
+        }
 
         return new JsonResponse($data);
     }
@@ -453,12 +457,14 @@ class FilesController extends Controller
             $fileId = $request->query->get("fileId", 0);
             $download = $request->query->get("download", 1);
             $directory = $request->query->get("directory", false);
+            $versionId = $request->query->get("versionId", 0);
         }
         else {
             $groupId = $request->request->get("groupId", 0);
             $fileId = $request->request->get("fileId", 0);
             $download = $request->request->get("download", 1);
             $directory = $request->request->get("directory", false);
+            $versionId = $request->request->get("versionId", 0);
         }
         $externalDrive = $directory;
 
@@ -473,7 +479,7 @@ class FilesController extends Controller
 
         if ($can) {
 
-            $fileSystem->download($groupId, $fileId, $download);
+            $fileSystem->download($groupId, $fileId, $download, $versionId);
 
         }
 

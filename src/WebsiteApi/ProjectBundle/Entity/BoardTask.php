@@ -29,6 +29,12 @@ class BoardTask {
     private $board;
 
     /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\BoardTask")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $dependingTask;
+
+    /**
      * @ORM\Column(name="next_reminder", type="bigint")
      */
     private $nextReminder = 0;
@@ -44,21 +50,34 @@ class BoardTask {
     private $to;
 
     /**
-     * @ORM\Column(name="task_json", type="text")
-     */
-    private $task;
-
-    /**
      * @ORM\Column(name="participant", type="text")
      */
     private $participant;
 
-    public  function __construct($task, $from, $to)
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $subscribers;
+
+    /**
+     * @ORM\Column(type="string", length=264)
+     */
+    private $name;
+
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $description;
+
+
+    public  function __construct($from, $to, $name, $description, $dependingTask)
     {
-        $this->setTask($task);
         $this->setFrom($from);
         $this->setTo($to);
         $this->setReminder();
+        $this->setName($name);
+        $this->setDescription($description);
+        $this->setDependingTask($dependingTask);
     }
 
     /**
@@ -128,22 +147,6 @@ class BoardTask {
     /**
      * @return mixed
      */
-    public function getTask()
-    {
-        return json_decode($this->task, 1);
-    }
-
-    /**
-     * @param mixed $task
-     */
-    public function setTask($task)
-    {
-        $this->task = json_encode($task);
-    }
-
-    /**
-     * @return mixed
-     */
     public function getParticipant()
     {
         return json_decode($this->participant, 1);
@@ -188,9 +191,56 @@ class BoardTask {
         return Array(
             "id" => $this->getId(),
             "board" => $this->getBoard()->getId(),
-            "task" => $this->getTask(),
             "participant" => $this->getParticipant(),
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDependingTask()
+    {
+        return $this->dependingTask;
+    }
+
+    /**
+     * @param mixed $dependingTask
+     */
+    public function setDependingTask($dependingTask)
+    {
+        $this->dependingTask = $dependingTask;
     }
 
 

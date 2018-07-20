@@ -39,6 +39,12 @@ class TaskList implements ObjectLinksInterface
     private $listOfTask;
 
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $order;
+
+
     public  function __construct(BoardTask $boardTask, ListOfTasks $listOfTask)
     {
         $this->setBoardTask($boardTask);
@@ -86,5 +92,21 @@ class TaskList implements ObjectLinksInterface
     public function getAsArrayFormated()
     {
         // TODO: Implement getAsArrayFormated() method.
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param mixed $order
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
     }
 }

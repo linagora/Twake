@@ -128,3 +128,13 @@ board_activitys_getActivityToDisplay:
     path: /boardActivitys/getActivityToDisplay
     defaults: { _controller: TwakeProjectBundle:BoardActivity:getActivityToDisplay}
     methods: [POST]
+
+board_list_of_tasks_update:
+    path: /ListOfTasks/update
+    defaults: { _controller: TwakeProjectBundle:ListOfTasks:update }
+    methods: [POST]
+
+board_list_of_tasks_get:
+    path: /ListOfTasks/get
+    defaults: { _controller: TwakeProjectBundle:ListOfTasks:get }
+    methods: [POST]

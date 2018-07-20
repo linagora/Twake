@@ -21,7 +21,7 @@ interface BoardsInterface
     public function createBoard($workspaceId, $label, $color, $currentUserId = null);
 
     // @removeBoard remove a board
-    public function updateBoard($workspaceId, $boardId, $label, $color, $currentUserId = null);
+    public function updateBoard($workspaceId, $boardId, $label, $color, $isPrivate, $currentUserId = null);
 
     // @removeBoard remove a board
     public function removeBoard($workspaceId, $boardId, $currentUserId = null);
