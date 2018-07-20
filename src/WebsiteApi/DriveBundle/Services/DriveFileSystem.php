@@ -10,6 +10,7 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 use WebsiteApi\DriveBundle\Entity\DriveFileLabel;
 use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
 use WebsiteApi\DriveBundle\Model\DriveFileSystemInterface;
+use WebsiteApi\UsersBundle\Entity\User;
 use ZipArchive;
 
 class DriveFileSystem implements DriveFileSystemInterface
@@ -260,11 +261,12 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
     }
 
-    public function copy($fileOrDirectory, $newParent = null)
+    public function copy($fileOrDirectory, $newParent = null, $userId=0)
     {
 
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
         $newParent = $this->convertToEntity($newParent, "TwakeDriveBundle:DriveFile");
+        $user = $this->convertToEntity($userId, "TwakeUsersBundle:User");
 
         if ($fileOrDirectory == null || $this->getFreeSpace($fileOrDirectory->getGroup()) <= 0) {
             return false;
@@ -294,7 +296,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             $this->doctrine->persist($newFile);
             $this->doctrine->flush();
 
-            $newVersion = new DriveFileVersion($newFile);
+            $newVersion = new DriveFileVersion($newFile, $user);
             $newFile->setLastVersion($newVersion);
 
             $newVersion->setKey($fileOrDirectory->getLastVersion()->getKey());
@@ -501,6 +503,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        $user = $this->convertToEntity($userId, "TwakeUsersBundle:User");
 
         if (!$this->isWorkspaceAllowed($workspace, $directory)) {
             return false;
@@ -537,7 +540,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             $this->doctrine->persist($newFile);
             $this->doctrine->flush();
 
-            $fileVersion = new DriveFileVersion($newFile);
+            $fileVersion = new DriveFileVersion($newFile, $user);
             $newFile->setLastVersion($fileVersion);
 
             $path = $this->getRoot() . $newFile->getPath();
@@ -624,7 +627,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $this->readDecode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
     }
 
-    public function setRawContent($file, $content = null, $newVersion = false)
+    public function setRawContent($file, $content = null, $newVersion = false, User $user=null)
     {
         /**
          * @var DriveFile
@@ -640,7 +643,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         if (file_exists($path)) {
 
             if ($newVersion) {
-                $newVersion = new DriveFileVersion($file);
+                $newVersion = new DriveFileVersion($file, $user);
                 $file->setLastVersion($newVersion);
                 $this->doctrine->persist($newVersion);
             }
@@ -1027,10 +1030,13 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function uploadNewVersion($workspace, $directory, $fileData, $uploader, $detached = false, $userId = 0, $newVersion = 0)
     {
+        if(is_numeric($directory))
+            $directory = intval($directory);
         /* @var DriveFile $file */
         $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $newVersion));
+        $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $userId));
         $file->setName($fileData["name"]);
-        $lastVersion = new DriveFileVersion($file);
+        $lastVersion = new DriveFileVersion($file,$user);
         $this->doctrine->persist($lastVersion);
         $file->setLastVersion($lastVersion);
 
@@ -1047,7 +1053,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $this->encode($this->getRoot() . $file->getPath(), $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
 
-        $this->setRawContent($file);
+        $this->setRawContent($file, null, false, $user);
 
         if (count($errors["errors"]) > 0) {
             $this->delete($file);
@@ -1055,9 +1061,10 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
         $dirid = 0;
 
-        if($directory!=null) {
+        if($directory!=null && !is_int($directory)) {
             $dirid = $directory->getId();
-        }
+        }else if(is_int($directory))
+            $dirid = $directory;
 
         $this->userToNotifyService->notifyUsers($dirid,$workspace,"Updated file",$file->getName()." has been update",$file->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $file->getGroup()->getId());
@@ -1069,6 +1076,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     public function upload($workspace, $directory, $file, $uploader, $detached = false, $userId = 0)
     {
         $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached, null,$userId);
+        $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $userId));
         if (!$file) {
             return false;
         }
@@ -1082,7 +1090,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
 
-        $this->setRawContent($newFile);
+        $this->setRawContent($newFile, null, false, $user);
 
         if (count($errors["errors"]) > 0) {
             $this->delete($newFile);

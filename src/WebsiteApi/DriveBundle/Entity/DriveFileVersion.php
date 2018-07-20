@@ -4,6 +4,7 @@ namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\UsersBundle\Entity\User;
 
 /**
  * DriveFile
@@ -25,6 +26,12 @@ class DriveFileVersion
 	 * @ORM\JoinColumn(nullable=false)
 	 */
 	private $file;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\JoinColumn(nullable=false)
+     */
+    private $user;
 
 	/**
 	 * @ORM\Column(type="string", length=255)
@@ -57,7 +64,7 @@ class DriveFileVersion
     private $fileName;
 
 
-	public function __construct(DriveFile $file)
+	public function __construct(DriveFile $file, User $user)
 	{
 		$this->file = $file;
 		$this->setKey(base64_encode(random_bytes(256)));
@@ -65,6 +72,7 @@ class DriveFileVersion
 		$this->resetRealName();
 		$this->date_added = new \DateTime();
 		$this->setFileName($file->getName());
+		$this->setUser($user);
 	}
 
 	/**
@@ -140,7 +148,8 @@ class DriveFileVersion
 	        "file" => $this->file->getAsArray(),
             "name" => $this->getFileName(),
             "date added" => $this->date_added,
-            "size" => $this->size
+            "size" => $this->size,
+            "user" => $this->user!=null ? $this->user->getAsArray() : ""
             );
     }
 
@@ -158,6 +167,22 @@ class DriveFileVersion
     public function setFileName($fileName)
     {
         $this->fileName = $fileName;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
     }
 
 }
