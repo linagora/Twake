@@ -29,7 +29,7 @@ class DriveFileVersion
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\JoinColumn(nullable=true)
      */
     private $user;
 
@@ -149,7 +149,7 @@ class DriveFileVersion
             "name" => $this->getFileName(),
             "date added" => $this->date_added,
             "size" => $this->size,
-            "user" => $this->user!=null ? $this->user->getAsArray() : ""
+            "user" => $this->user!=null ? $this->user->getId() != 0 ? $this->user->getAsArray() : "" : ""
             );
     }
 

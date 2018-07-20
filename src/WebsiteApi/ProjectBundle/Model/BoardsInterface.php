@@ -18,10 +18,10 @@ interface BoardsInterface
     public function getBoards($workspaceId, $currentUserId=null);
 
     // @createBoard creates a board
-    public function createBoard($workspaceId, $label, $color, $currentUserId = null);
+    public function createBoard($workspaceId, $title, $description, $isPrivate, $color, $currentUserId, $userIdToNotify);
 
-    // @removeBoard remove a board
-    public function updateBoard($workspaceId, $boardId, $label, $color, $isPrivate, $currentUserId = null);
+    // @updateBoard update a board
+    public function updateBoard($workspaceId, $boardId, $title, $description, $color, $isPrivate, $currentUserId = null, $autoParticipate = Array(), $userIdToNotify = Array());
 
     // @removeBoard remove a board
     public function removeBoard($workspaceId, $boardId, $currentUserId = null);

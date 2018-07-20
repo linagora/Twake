@@ -19,11 +19,21 @@ class Boards implements BoardsInterface
     var $doctrine;
     var $pusher;
     var $workspaceLevels;
+    /* @var BoardActivities $boardActivities */
+    var $boardActivities;
 
-    public function __construct($doctrine, $pusher, $workspaceLevels){
+    public function __construct($doctrine, $pusher, $workspaceLevels, $boardActivities){
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
         $this->workspaceLevels = $workspaceLevels;
+        $this->boardActivities = $boardActivities;
+    }
+
+    private function notifyParticipants($participants, $workspace, $title, $description, $notifCode){
+        foreach ($participants as $participant){
+            $user = $this->convertToEntity($participant,"TwakeUsersBundle:User");
+            $this->boardActivities->pushActivity(true,$workspace,$user,null,$title,$description,Array(),Array("notifCode" => $notifCode));
+        }
     }
 
     public function getBoard($board){
@@ -37,8 +47,8 @@ class Boards implements BoardsInterface
         foreach ($listOfTasks as $listOfTask){
             $array = $listOfTask->getAsArray();
 
-            $tasksLists = $this->doctrine->getRepository("TwakeProjectBundle:TaskList")->findBy(Array("listOfTask" => $listOfTask));
-            $array["tasks"] = count($tasksLists);
+            $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTask" => $listOfTask));
+            $array["tasks"] = count($tasks);
             $array["order"] = $listOfTask->getOrder();
 
             $result[] = $array;
@@ -47,6 +57,22 @@ class Boards implements BoardsInterface
         return $result;
     }
 
+
+    private function convertToEntity($var, $repository)
+    {
+        if (is_string($var)) {
+            $var = intval($var);
+        }
+
+        if (is_int($var)) {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
     public function getBoards($workspaceId, $currentUserId=null)
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
@@ -115,7 +141,7 @@ class Boards implements BoardsInterface
         }
     }
 
-    public function createBoard($workspaceId, $title, $color, $currentUserId=null){
+    public function createBoard($workspaceId, $title, $description, $isPrivate, $color, $currentUserId = null, $userIdToNotify = Array()){
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
@@ -130,27 +156,28 @@ class Boards implements BoardsInterface
                 $title = "New board";
             }
 
-            $cal = new Board($title, $color);
-            $cal->setWorkspacesNumber(1);
-            $this->doctrine->persist($cal);
+            $board = new Board($title, $color,$description,$isPrivate);
+            $board->setParticipants($userIdToNotify);
+            $board->setWorkspacesNumber(1);
+            $this->doctrine->persist($board);
 
-            $link = new LinkBoardWorkspace($workspace, $cal, true);
+            $link = new LinkBoardWorkspace($workspace, $board, true);
             $this->doctrine->persist($link);
 
             $this->doctrine->flush();
 
             $data = Array(
                 "type" => "update",
-                "board" => $cal->getAsArray()
+                "board" => $board->getAsArray()
             );
             $this->pusher->push($data, "board/workspace/".$workspaceId);
 
 
-            return $cal;
+            return $board;
         }
     }
 
-    public function updateBoard($workspaceId, $boardId, $title, $color, $isPrivate, $currentUserId = null, $autoParticipate = Array())
+    public function updateBoard($workspaceId, $boardId, $title, $description, $color, $isPrivate, $currentUserId = null, $autoParticipate = Array(), $userIdToNotify = Array())
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
@@ -158,6 +185,7 @@ class Boards implements BoardsInterface
             return null;
         }
 
+        /* @var Board $board */
         $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
         $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("board"=>$board, "workspace"=>$workspace));
 
@@ -169,6 +197,8 @@ class Boards implements BoardsInterface
         $board->setTitle($title);
         $board->setColor($color);
         $board->setisPrivate($isPrivate);
+        $board->setDescription($description);
+        $board->setParticipants($userIdToNotify);
 
         $board->setAutoParticipantList($autoParticipate);
 
@@ -183,6 +213,10 @@ class Boards implements BoardsInterface
             );
             $this->pusher->push($data, "board/workspace/" . $link->getWorkspace()->getId());
         }
+
+        $participants = $board->getParticipants();
+
+        $this->notifyParticipants($participants,$workspace, "", "", "");
 
         return $board;
 
@@ -214,6 +248,11 @@ class Boards implements BoardsInterface
             $this->pusher->push($data, "board/workspace/" . $link->getWorkspace()->getId());
             $this->doctrine->remove($link);
         }
+
+
+        $participants = $board->getParticipants();
+
+        $this->notifyParticipants($participants,$workspace, "", "", "");
 
         $this->doctrine->remove($board);
         $this->doctrine->flush();
@@ -267,6 +306,8 @@ class Boards implements BoardsInterface
         $this->pusher->push($data, "board/workspace/".$workspaceId);
         $this->pusher->push($data, "board/workspace/".$other_workspaceId);
 
+        $this->notifyParticipants($board->getParticipants(),$workspace, "", "", "");
+
         return 1;
     }
 
@@ -307,6 +348,7 @@ class Boards implements BoardsInterface
             "board_id" => $boardId
         );
         $this->pusher->push($data, "board/workspace/".$other_workspaceId);
+        $this->notifyParticipants($board->getParticipants(),$workspace, "", "", "");
 
         return 1;
     }
