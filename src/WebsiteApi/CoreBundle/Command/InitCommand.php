@@ -326,6 +326,8 @@ class InitCommand extends ContainerAwareCommand
             ["/medias/apps/web/trello.png", "Trello", "trello.com", "trello", "0079bf", Array()],
             ["/medias/apps/web/gitlab.png", "Gitlab", "gitlab.com", "gitlab", "fc9626", Array()],
             ["/medias/apps/web/github.png", "Github", "github.com", "github", "24292e", Array()],
+            ["/medias/apps/web/overleaf.png", "Overleaf", "overleaf.com", "overleaf", "61994F", Array()],
+            ["/medias/apps/web/sharelatex.png", "Sharelatex", "sharelatex.com", "sharelatex", "9F2E25", Array()],
 
             //Altassian
             ["/medias/apps/web/atlassian.png", "Atlassian", "atlassian.net", "atlassian", "0047B3", Array()],
