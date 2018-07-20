@@ -13,6 +13,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use \Eluceo\iCal\Component ;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\CalendarBundle\Entity\CalendarExportToken;
 use WebsiteApi\CalendarBundle\Model\exportImportInterface;
 
 
@@ -21,11 +22,13 @@ class exportImport implements exportImportInterface{
 
     var $calendarEventService;
     var $errorService;
+    var $doctrine;
 
-    public function __construct($calendarEventService, $errorService)
+    public function __construct($calendarEventService, $errorService, $doctrine)
     {
         $this->calendarEventService = $calendarEventService;
         $this->errorService = $errorService;
+        $this->doctrine = $doctrine;
     }
 
     public function generateICsFileWithUrl($workspace_id,$calendar_id,$mine,$from,$to, $user_id){
@@ -251,7 +254,21 @@ class exportImport implements exportImportInterface{
     }
 
     public function generateCalendarExportToken($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id){
+        if($user_id==null)
+            $user_id = 0;
+        $calendarExportToken = new CalendarExportToken(intval($workspaceId),$calendarsIds,intval($useMine),$from,$to, $user_id);
+        $token = $calendarExportToken->getToken();
+        $this->doctrine->persist($calendarExportToken);
+        $this->doctrine->flush();
 
+        return $token;
+    }
+
+    public function generateIcsFileForCalendarFromToken($token){
+        /* @var CalendarExportToken $calendarExportToken */
+        $calendarExportToken = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarExportToken")->findOneBy(Array("token"=>$token));
+        return $this->generateIcsFileForCalendar($calendarExportToken->getWorkspaceId(),
+            $calendarExportToken->getCalendarsIds(),$calendarExportToken->getUseMine(),$calendarExportToken->getFrom(),$calendarExportToken->getTo(), $calendarExportToken->getUserId());
     }
 
 }

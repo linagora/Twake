@@ -7,11 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Event
  *
- * @ORM\Table(name="calendar",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\CalendarRepository")
+ * @ORM\Table(name="calendar_export_token",options={"engine":"MyISAM"})
+ * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\CalendarExportTokenRepository")
  */
 
-class Calendar {
+class CalendarExportToken {
 
     /**
      * @var int
@@ -33,13 +33,14 @@ class Calendar {
      */
     private $useMine;
 
+
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="from_ts", type="bigint")
      */
     private $from;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="to_ts", type="bigint")
      */
     private $to;
 
@@ -49,16 +50,25 @@ class Calendar {
     private $user_id;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="string", length=10)
      */
     private $calendarsIds;
 
+    /**
+     * @ORM\Column(type="string", length=100)
+     */
+    private $token;
 
-    public  function __construct($title,$color)
+    public  function __construct($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id)
     {
-        $this->setTitle($title);
-        $this->setColor($color);
-        $this->setAutoParticipantList(Array());
+        $this->id = 0;
+        $this->workspaceId = $workspaceId;
+        $this->setCalendarsIds($calendarsIds);
+        $this->setUseMine($useMine);
+        $this->setFrom($from);
+        $this->setTo($to);
+        $this->setUserId($user_id);
+        $this->token = bin2hex(random_bytes(20));
     }
 
     /**
@@ -67,26 +77,6 @@ class Calendar {
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAutoParticipantList()
-    {
-        if($this->autoParticipantList == null){
-            return null;
-        }else{
-            return json_decode($this->autoParticipantList, true );
-        }
-    }
-
-    /**
-     * @param mixed $autoParticipantList
-     */
-    public function setAutoParticipantList($autoParticipantList)
-    {
-        $this->autoParticipantList = json_encode($autoParticipantList);
     }
 
     /**
@@ -100,67 +90,9 @@ class Calendar {
     /**
      * @return mixed
      */
-    public function getTitle()
-    {
-        return $this->title;
-    }
-
-    /**
-     * @param mixed $title
-     */
-    public function setTitle($title)
-    {
-        $this->title = $title;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getColor()
-    {
-        return $this->color;
-    }
-
-    /**
-     * @param mixed $color
-     */
-    public function setColor($color)
-    {
-        $this->color = $color;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getWorkspacesNumber()
-    {
-        return $this->workspacesNumber;
-    }
-
-    /**
-     * @param mixed $workspacesNumber
-     */
-    public function setWorkspacesNumber($workspacesNumber)
-    {
-        $this->workspacesNumber = $workspacesNumber;
-    }
-
-    public function getAsArray(){
-        return Array(
-            "id" => $this->getId(),
-            "name" => $this->getTitle(),
-            "color" => $this->getColor(),
-            "workspaces_number" => $this->getWorkspacesNumber(),
-            "autoParticipate" => $this->getAutoParticipantList()
-        );
-    }
-
-    /**
-     * @return mixed
-     */
     public function getCalendarsIds()
     {
-        return json_decode($this->calendarsIds,1);
+        return $this->calendarsIds;
     }
 
     /**
@@ -168,7 +100,103 @@ class Calendar {
      */
     public function setCalendarsIds($calendarsIds)
     {
-        $this->calendarsIds = json_encode($calendarsIds);
+        $this->calendarsIds = $calendarsIds;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspaceId()
+    {
+        return $this->workspaceId;
+    }
+
+    /**
+     * @param mixed $workspaceId
+     */
+    public function setWorkspaceId($workspaceId)
+    {
+        $this->workspaceId = $workspaceId;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUseMine()
+    {
+        return $this->useMine;
+    }
+
+    /**
+     * @param mixed $useMine
+     */
+    public function setUseMine($useMine)
+    {
+        $this->useMine = $useMine;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFrom()
+    {
+        return $this->from;
+    }
+
+    /**
+     * @param mixed $from
+     */
+    public function setFrom($from)
+    {
+        $this->from = $from;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTo()
+    {
+        return $this->to;
+    }
+
+    /**
+     * @param mixed $to
+     */
+    public function setTo($to)
+    {
+        $this->to = $to;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
+     * @param mixed $user_id
+     */
+    public function setUserId($user_id)
+    {
+        $this->user_id = $user_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param mixed $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
     }
 
 

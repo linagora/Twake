@@ -168,7 +168,11 @@ class CalendarController extends Controller
         return $parsing;
     }
 
-    public function getCalendarExportTokenaction(Request $request, $workspaceId, $calendarsIds, $useMine, $from, $to){
+    public function exportCalendarWithTokenAction(Request $request, $token){
+        return $this->get("app.export_import")->generateIcsFileForCalendarFromToken($token);
+    }
+
+    public function getCalendarExportTokenAction(Request $request, $workspaceId, $calendarsIds, $useMine, $from, $to){
         $data = Array(
             'errors' => Array()
         );
