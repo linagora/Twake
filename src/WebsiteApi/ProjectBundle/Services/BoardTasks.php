@@ -96,6 +96,7 @@ class BoardTasks implements BoardTasksInterface
         );
         $this->pusher->push($data, "board/".$boardId);
         $this->doctrine->flush();
+        $this->boardActivity->pushActivity(true, $workspaceId, $currentUserId, null, "Task ".$task->getName()." created","", Array(), Array("notifCode" => ""));
 
         return $task;
 
@@ -162,6 +163,7 @@ class BoardTasks implements BoardTasksInterface
             "type" => "update",
             "task" => $task->getAsArray()
         );
+        $this->boardActivity->pushActivity(true, $workspaceId, $currentUserId, null, "Task ".$task->getName()." updated","", Array(), Array("notifCode" => ""));
         $this->pusher->push($data, "board/".$boardId);
 
         return $task;
@@ -201,6 +203,7 @@ class BoardTasks implements BoardTasksInterface
             "task_id" => $taskId
         );
         $this->pusher->push($data, "board/".$boardId);
+        $this->boardActivity->pushActivity(true, $workspaceId, $currentUserId, null, "Task ".$task->getName()." deleted","", Array(), Array("notifCode" => ""));
 
         return true;
     }
@@ -246,7 +249,7 @@ class BoardTasks implements BoardTasksInterface
                     $participantArray = $task->getParticipant();
                     $participantArray[] = $user->getId();
                 }
-                $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$task->getTask()["title"],"You have a new task the ".date('d/m/Y', $task->getFrom()), Array(), Array("notifCode" => $task->getFrom()."/".$task->getId()));
+                $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$task->getName(),"", Array(), Array("notifCode" => ""));
             }
         }
         $task->setParticipant($participantArray);
@@ -295,7 +298,7 @@ class BoardTasks implements BoardTasksInterface
                     unset($participantArray[$i]);
                     $participantArray = array_values($participantArray);
                     error_log("array after remove : ".json_encode($participantArray));
-                    $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Removed  to ".$task->getTask()["name"],"You have been removed from ".$task->getTask()["name"], Array(), Array("notifCode" => $task->getFrom()."/".$task->getId()));
+                    $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Removed  from ".$task->getName(),"", Array(), Array("notifCode" => ""));
                     break;
                 }
             }
@@ -337,7 +340,7 @@ class BoardTasks implements BoardTasksInterface
         /* @var BoardTask $task*/
         $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id"=>$taskId));
         if($task==null)
-            return; false;
+            return false;
         /* @var LinkBoardWorkspace $workspaceLink*/
         $workspaceLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("board"=>$task->getBoard()));
 
@@ -498,6 +501,26 @@ class BoardTasks implements BoardTasksInterface
 
             $this->doctrine->persist($taskList);
             $this->doctrine->flush();
+            $this->boardActivity->pushActivity(true, null, null, null, "Task ".$task->getName()." moved","", Array(), Array("notifCode" => ""));
+        }
+    }
+
+    public function moveTaskToBoard($taskId, $boardId){
+        $boardTaskRepository = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask");
+        $boardRepository = $this->doctrine->getRepository("TwakeProjectBundle:Board");
+
+        /* @var \WebsiteApi\ProjectBundle\Entity\BoardTask $task */
+        $task = $boardTaskRepository->findOneBy(Array("id" => $taskId));
+
+        /* @var \WebsiteApi\ProjectBundle\Entity\Board $board */
+        $board = $boardRepository->findOneBy(Array("id" => $boardId));
+
+        if($task!=null && $board!=null) {
+            $task->setBoard($board);
+
+            $this->doctrine->persist($task);
+            $this->doctrine->flush();
+            $this->boardActivity->pushActivity(true, null, null, null, "Task ".$task->getName()." moved","", Array(), Array("notifCode" => ""));
         }
     }
 }
