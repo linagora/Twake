@@ -3,6 +3,7 @@
 
 namespace WebsiteApi\ProjectBundle\Services;
 
+use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\ProjectBundle\Entity\BoardTask;
 use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
@@ -525,5 +526,24 @@ class BoardTasks implements BoardTasksInterface
             $this->doctrine->flush();
             $this->notifyParticipants($task->getParticipants(),$workspaceId, "Task ".$task->getName()." moved", "", "");
         }
+    }
+
+    public function updateDependentTask($taskId, $taskIdToDependentOf){
+        $boardTaskRepository = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask");
+
+        /* @var \WebsiteApi\ProjectBundle\Entity\BoardTask $task */
+        $task = $boardTaskRepository->findOneBy(Array("id" => $taskId));
+        $taskToDependentOf = $boardTaskRepository->findOneBy(Array("id" => $taskIdToDependentOf));
+
+        $task->setDependingTask($taskToDependentOf);
+    }
+
+    public function getTaskByNameOrDescription($name, $description){
+        $boardTaskRepository = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask");
+
+        $taskName = $boardTaskRepository->findBy(Array("name"));
+        $taskDescription = $boardTaskRepository->findBy(Array("description"));
+
+        return array_unique(array_merge($taskName,$taskDescription), SORT_REGULAR);
     }
 }

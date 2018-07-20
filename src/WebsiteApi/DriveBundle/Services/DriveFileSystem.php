@@ -1035,6 +1035,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         /* @var DriveFile $file */
         $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $newVersion));
         $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $userId));
+        if($userId==0)
+            $user = null;
         $file->setName($fileData["name"]);
         $lastVersion = new DriveFileVersion($file,$user);
         $this->doctrine->persist($lastVersion);
@@ -1077,6 +1079,8 @@ class DriveFileSystem implements DriveFileSystemInterface
     {
         $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached, null,$userId);
         $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $userId));
+        if($userId==0)
+            $user = null;
         if (!$file) {
             return false;
         }
