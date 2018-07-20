@@ -47,6 +47,10 @@ class Board {
      */
     private $description;
 
+    /**
+     * @ORM\Column(name="participant", type="text")
+     */
+    private $participants;
 
     /**
      * @ORM\Column(type="boolean")
@@ -186,6 +190,22 @@ class Board {
     public function setIsPrivate($isPrivate)
     {
         $this->isPrivate = $isPrivate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParticipants()
+    {
+        return json_decode($this->participants,1);
+    }
+
+    /**
+     * @param mixed $participants
+     */
+    public function setParticipants($participants)
+    {
+        $this->participants = json_encode($participants);
     }
 
 

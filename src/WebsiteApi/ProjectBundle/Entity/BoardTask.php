@@ -29,6 +29,12 @@ class BoardTask {
     private $board;
 
     /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\ListOfTasks")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $listOfTasks;
+
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\BoardTask")
      * @ORM\JoinColumn(nullable=true)
      */
@@ -69,6 +75,10 @@ class BoardTask {
      */
     private $description;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\ListOfTasks",cascade={"persist"})
+     */
+    private $doneList;
 
     public  function __construct($from, $to, $name, $description, $dependingTask)
     {
@@ -241,6 +251,38 @@ class BoardTask {
     public function setDependingTask($dependingTask)
     {
         $this->dependingTask = $dependingTask;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getListOfTasks()
+    {
+        return $this->listOfTasks;
+    }
+
+    /**
+     * @param mixed $listOfTasks
+     */
+    public function setListOfTasks($listOfTasks)
+    {
+        $this->listOfTasks = $listOfTasks;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDoneList()
+    {
+        return $this->doneList;
+    }
+
+    /**
+     * @param mixed $doneList
+     */
+    public function setDoneList($doneList)
+    {
+        $this->doneList = $doneList;
     }
 
 

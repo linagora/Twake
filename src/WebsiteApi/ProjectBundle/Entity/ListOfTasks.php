@@ -43,6 +43,16 @@ class ListOfTasks
      */
     private $color;
 
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isDoneList;
+
+    /**
+     * @ORM\Column(name="participant", type="text")
+     */
+    private $participants;
+
     public function getAsArray(){
         return Array(
             "id" => $this->id,
@@ -81,5 +91,22 @@ class ListOfTasks
     public function setColor($color)
     {
         $this->color = $color;
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getParticipants()
+    {
+        return json_decode($this->participants,1);
+    }
+
+    /**
+     * @param mixed $participant
+     */
+    public function setParticipants($participants)
+    {
+        $this->participants = json_encode($participants);
     }
 }
