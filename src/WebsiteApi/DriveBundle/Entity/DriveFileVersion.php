@@ -145,9 +145,8 @@ class DriveFileVersion
 	public function getAsArray(){
 	    return Array(
 	        "id" => $this->id,
-	        "file" => $this->file->getAsArray(),
             "name" => $this->getFileName(),
-            "date added" => $this->date_added,
+            "added" => $this->date_added->getTimestamp(),
             "size" => $this->size,
             "user" => $this->user!=null ? $this->user->getId() != 0 ? $this->user->getAsArray() : "" : ""
             );
