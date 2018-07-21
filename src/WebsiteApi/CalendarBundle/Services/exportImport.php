@@ -66,9 +66,9 @@ class exportImport implements exportImportInterface{
                 $vEvent
                     ->setDtStart($dateStart)
                     ->setDtEnd($dateEnd)
-                    ->setSummary($evt["title"])
-                    ->setDescription($evt["description"])
-                    ->setLocation($evt["location"]);
+                    ->setSummary(isset($evt["title"]) ? $evt["title"] : "")
+                    ->setDescription(isset($evt["description"]) ? $evt["description"] : "")
+                    ->setLocation(isset($evt["location"]) ? $evt["location"] : "");
 
                 $vEvent->setUseTimezone(true);
 
@@ -86,69 +86,10 @@ class exportImport implements exportImportInterface{
                 'Expires' =>  '0',
                 'Cache-Control' =>  'must-revalidate',
                 'Pragma' => 'public',
-
-
-
             )
         );
 
     }
-    /**
-     * see https://github.com/markuspoerschke/iCal
-     */
-    public function generateIcsFileForCalendar($workspace_id, $calendar_id)
-    {
-
-        $vCalendar = new Component\Calendar('twakeapp.com');
-
-        $data = $this->calendarEventService->getEventsByCalendar($workspace_id, $calendar_id, null);
-
-        if ($data == null) {
-            return new JsonResponse(($this->errorService->getError(4013)));
-        }
-
-        $tz = new \DateTimeZone("Etc/UTC");
-
-        date_default_timezone_set("Etc/UTC");
-
-        foreach ($data as $evt) {
-
-            $vEvent = new Component\Event();
-
-            $evt = $evt["event"];
-
-            if( isset($evt["from"])){
-                $dateStart = new \DateTime(date("c", (int)$evt["from"]), $tz);
-            }else{
-                return (new JsonResponse($this->errorService->getError(4015)));
-            }
-            if(isset($evt["to"])){
-                $dateEnd =  new \DateTime(date("c", (int)$evt["to"]), $tz);
-            }else{
-                return new JsonResponse($this->errorService->getError(4015));
-            }
-
-
-            $vEvent
-                ->setDtStart($dateStart)
-                ->setDtEnd($dateEnd)
-                ->setSummary($evt["title"])
-                ->setDescription($evt["description"])
-                ->setLocation($evt["location"]);
-
-            $vEvent->setUseTimezone(true);
-
-            $vCalendar->addComponent($vEvent);
-        }
-
-        return new Response(
-            $vCalendar->render(), 200, array(
-            'Content-Type' => 'text/calendar; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="cal.ics"',
-        )); // split sur les \r\n et autres types de prog
-
-    }
-
 
 
     function parseCalendar( $workspace_id, $calendar_id)
@@ -213,45 +154,6 @@ class exportImport implements exportImportInterface{
 
 
     }
-    /**
-     * see https://github.com/markuspoerschke/iCal
-     */
-    public function generateIcsFileForEvent($workspace_id, $event_id){
-
-        $vCalendar = new Component\Calendar('twakeapp.com');
-        $vEvent = new Component\Event();
-
-        $tz  = 'Europe/Paris';
-        date_default_timezone_set($tz);
-
-        $data =$this->calendarEventService->getEventById($workspace_id, $event_id, null);
-        $event = $data["event"];
-
-        $dateStart = new \DateTime(date( "c", (int)$event["from"]));
-        // $dateStart = (new \DateTime($event["start"]));
-        $dateEnd = new \DateTime(date("c",(int)$event["to"]));
-        //$dateEnd = new \DateTime($event["end"]);
-
-        $vEvent
-            ->setDtStart($dateStart)
-            ->setDtEnd($dateEnd)
-            ->setSummary($event["title"])
-            ->setDescription($event["description"])
-            ->setLocation($event["location"])
-
-        ;
-        $vEvent->setUseTimezone(true);
-
-
-        $vCalendar->addComponent($vEvent);
-
-        return new Response(
-            $vCalendar->render(), 200, array(
-            'Content-Type' => 'text/calendar; charset=utf-8',
-            'Content-Disposition' => 'attachment; filename="cal.ics"',
-        )); // split sur les \r\n et autres types de prog
-
-    }
 
     public function generateCalendarExportToken($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id){
         if($user_id==null)
@@ -267,8 +169,14 @@ class exportImport implements exportImportInterface{
     public function generateIcsFileForCalendarFromToken($token){
         /* @var CalendarExportToken $calendarExportToken */
         $calendarExportToken = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarExportToken")->findOneBy(Array("token"=>$token));
-        return $this->generateIcsFileForCalendar($calendarExportToken->getWorkspaceId(),
-            $calendarExportToken->getCalendarsIds(),$calendarExportToken->getUseMine(),$calendarExportToken->getFrom(),$calendarExportToken->getTo(), $calendarExportToken->getUserId());
+        return $this->generateICsFileWithUrl(
+            $calendarExportToken->getWorkspaceId(),
+            $calendarExportToken->getCalendarsIds(),
+            $calendarExportToken->getUseMine(),
+            date("U") - 60 * 60 * 24 * 30,
+            max($calendarExportToken->getTo(), date("U") + 60 * 60 * 24 * 30 * 2),
+            $calendarExportToken->getUserId()
+        );
     }
 
 }

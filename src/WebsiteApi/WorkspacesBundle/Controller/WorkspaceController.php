@@ -32,9 +32,9 @@ class WorkspaceController extends Controller
 		}else{
 			$response["data"] = $ws->getAsArray();
 
-			$apps_obj = $this->get("app.workspaces_apps")->getApps($workspaceId);
+            $workspaceApps = $this->get("app.workspaces_apps")->getApps($workspaceId);
 			$apps = Array();
-			foreach ($apps_obj as $app_obj){
+            foreach ($workspaceApps as $app_obj) {
 				$apps[] = $app_obj->getAsArray();
 			}
             $response["data"]["apps"] = $apps;
@@ -48,7 +48,6 @@ class WorkspaceController extends Controller
 
             $response["data"]["currentUser"] = $this->getUser()->getAsArray();
             $level = $this->get("app.workspace_levels")->getLevel($workspaceId, $this->getUser()->getId());
-            $workspaceApps = $this->get("app.workspaces_apps")->getApps($workspaceId, $this->getUser()->getId(), false, false);
             $level = $this->get("app.workspace_levels")->fixLevels(Array($level),$workspaceApps)["levels"][0];
 
             $response["data"]["currentUser"]["level"] = $level;
