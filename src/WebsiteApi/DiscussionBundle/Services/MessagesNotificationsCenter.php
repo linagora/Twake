@@ -36,7 +36,6 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
         $linkStream->setUnread(0);
         $linkStream->setSubjectUnread(0);
         $linkStream->setLastRead();
-        $linkStream->setLastUpdate();
         $this->doctrine->persist($linkStream);
 
         // Read from notifications repository
@@ -118,7 +117,8 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 
 				$users[] = $link->getUser()->getId();
 
-				$link->setUnread($link->getUnread()+1);
+                $link->setLastUpdate();
+                $link->setUnread($link->getUnread() + 1);
 				if($message->getSubject()){
                     $link->setSubjectUnread($link->getSubjectUnread()+1);
                 }
