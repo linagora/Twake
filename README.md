@@ -1,3 +1,65 @@
+# Twake v1.1.001
+
+## Changelogs
+
+### Calendar
+- Add export link
+
+### Drive
+- Add files versions
+
+### General
+- Change private workspace conception
+- Add navigation buttons for external apps
+
+# Twake v1.1
+
+## Changelogs
+
+### Messages
+- New app with better performances
+- Remove temporarly subjects
+- New respond button
+
+### Apps
+- Ability to integrate external apps
+
+### Calendar
+- Ability to import and export ics
+- Ability to subscribe to calendar
+- Mini google map for event location
+
+### Drive
+- Ability to subscribe to directory
+- Async preview generation
+
+### General
+- Remove bootstrap and use ant.design
+- New workspace start page
+- New left bar with last messages and last notification
+- New icons
+- New subscribe popups
+- Ability to hide workspaces, make workspaces favorite
+- Ability to search in all workspaces
+- Show who is with you on the same page
+- New responsive UI for all apps
+- New activity center for all apps
+
+# Twake-react v1.0.310
+
+## Changelogs
+
+### Messages
+- Fix remove and add streams
+- Fix update stream badge
+
+### Apps
+- Calendar backend
+
+### General
+- Managers system
+- Group workspace unique name and identifier
+
 # Twake v1.0.300
 
 ## Changelogs
