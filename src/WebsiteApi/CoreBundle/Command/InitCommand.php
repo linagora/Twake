@@ -194,11 +194,11 @@ class InitCommand extends ContainerAwareCommand
         $app->setUrl("tasks");
         $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
         $app->setApplicationRights(json_decode('{"tasks":"manage"}', true));
-        $app->setEnabled(1);
+        $app->setEnabled(0);
         $app->setColor("51B75B");
         $app->setCanCreateFile(0);
         $app->setIsCapable(1);
-        $app->setDefault(1);
+        $app->setDefault(0);
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
         $app->setOrder(0);
