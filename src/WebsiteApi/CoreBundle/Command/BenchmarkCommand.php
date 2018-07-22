@@ -164,6 +164,7 @@ class BenchmarkCommand extends ContainerAwareCommand
         $continue = true;
         $i = 0;
         while ($continue) {
+            $this->doctrine->clear();
             $continue = $this->runScenario($services);
             if ($this->scenarios_current_user == 0) {
                 $interval = microtime(true) - $inter;

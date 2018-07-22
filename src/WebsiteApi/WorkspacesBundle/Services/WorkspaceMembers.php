@@ -204,6 +204,11 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $user = $userRepository->find($userId);
             $workspace = $workspaceRepository->find($workspaceId);
 
+            if ($workspace->getUser() != null && $currentUserId != null && $currentUserId != $userId) { //No other members in private group
+                return;
+            }
+
+
             if ($workspace->getGroup() != null) {
                 $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
                 $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(),));

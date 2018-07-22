@@ -16,19 +16,21 @@ class Workspaces implements WorkspacesInterface
     private $wms;
     private $gms;
     private $gas;
+    private $gs;
     private $ws;
     private $doctrine;
     private $pricing;
     private $string_cleaner;
     private $pusher;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $priceService, $cleaner, $pusher)
+    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $groups_service, $priceService, $cleaner, $pusher)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
         $this->wms = $workspaces_members_service;
         $this->gms = $groups_managers_service;
         $this->gas = $groups_apps_service;
+        $this->gs = $groups_service;
         $this->ws = $workspace_stats;
         $this->pricing = $priceService;
         $this->string_cleaner = $cleaner;
@@ -48,9 +50,25 @@ class Workspaces implements WorkspacesInterface
         $workspace = $workspaceRepository->findOneBy(Array("user" => $user));
 
         if (!$workspace) {
-            $workspace = $this->create("private_workspace", null, $userId);
+            $plan = $this->pricing->getMinimalPricing();
+            $group = $this->gs->create($userId, "private_group_" . $userId, "private_group_" . $userId, $plan->getId());
+            $group->setIsPrivate(true);
+            $workspace = $this->create("private_workspace", $group->getId(), $userId);
             $workspace->setIsNew(false);
             $workspace->setUser($user);
+            $this->doctrine->persist($group);
+            $this->doctrine->persist($workspace);
+            $this->doctrine->flush();
+        }
+
+        //Old groups to remove one day
+        if (!$workspace->getGroup()) {
+            $plan = $this->pricing->getMinimalPricing();
+            $group = $this->gs->create($userId, "private_group_" . $userId, "private_group_" . $userId, $plan->getId());
+            $group->setIsPrivate(true);
+            $workspace->setGroup($group);
+            $this->init($workspace);
+            $this->doctrine->persist($group);
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
         }

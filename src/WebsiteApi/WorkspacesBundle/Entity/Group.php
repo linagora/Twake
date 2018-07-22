@@ -62,6 +62,10 @@ class Group
      * @ORM\Column(type="boolean")
      */
     private $isBlocked = false;
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isPrivate = false;
 
 
     public function __construct($name) {
@@ -185,16 +189,21 @@ class Group
 		$this->date_added = $date_added;
 	}
 
-	public function getAsArray(){
-		return Array(
-			"unique_name" => $this->getName(),
-			"name" => $this->getDisplayName(),
-			"plan" => $this->getPricingPlan()->getLabel(),
-			"id" => $this->getId(),
-			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):""),
-            "isBlocked" => $this->getIsBlocked()
-		);
-	}
+    /**
+     * @return mixed
+     */
+    public function getisPrivate()
+    {
+        return $this->isPrivate;
+    }
+
+    /**
+     * @param mixed $isPrivate
+     */
+    public function setIsPrivate($isPrivate)
+    {
+        $this->isPrivate = $isPrivate;
+    }
 
     /**
      * @return mixed
@@ -211,5 +220,16 @@ class Group
     {
         $this->isBlocked = $isBlocked;
     }
+
+	public function getAsArray(){
+		return Array(
+			"unique_name" => $this->getName(),
+			"name" => $this->getDisplayName(),
+			"plan" => $this->getPricingPlan()->getLabel(),
+			"id" => $this->getId(),
+			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):""),
+            "isBlocked" => $this->getIsBlocked()
+		);
+	}
 
 }
