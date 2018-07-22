@@ -56,7 +56,8 @@ class exportImport implements exportImportInterface{
                     return (new JsonResponse($this->errorService->getError(4015)));
                 }
                 if( isset($evt["to"])){
-                    $dateEnd = new \DateTime(date("c", (int)$evt["to"]), $tz);
+                    //If allday we need to remove one day because we dont use the normal format
+                    $dateEnd = new \DateTime(date("c", (int)$evt["to"] - ((isset($evt["allDay"]) && $evt["allDay"]) ? (60 * 60 * 25) : 0)), $tz);
                 }else{
                     return new JsonResponse($this->errorService->getError(4015));
                 }
@@ -64,13 +65,13 @@ class exportImport implements exportImportInterface{
                 $vEvent = new Component\Event();
 
                 $vEvent
+                    ->setNoTime(isset($evt["allDay"]) ? $evt["allDay"] : false)
+                    ->setUseUtc(true)
                     ->setDtStart($dateStart)
                     ->setDtEnd($dateEnd)
                     ->setSummary(isset($evt["title"]) ? $evt["title"] : "")
                     ->setDescription(isset($evt["description"]) ? $evt["description"] : "")
                     ->setLocation(isset($evt["location"]) ? $evt["location"] : "");
-
-                $vEvent->setUseTimezone(true);
 
                 $vCalendar->addComponent($vEvent);
             }

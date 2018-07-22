@@ -155,8 +155,7 @@ class GroupManagers implements GroupManagersInterface
                 if ($createdWorkspace){
                     $manager = new GroupUser($group, $user);
                     $manager->setLevel($level);
-                    $this->twake_mailer->send($user->getEmail(), "addedToGroupManagersMail", Array("group"=>$group->getDisplayName(), "username"=>$user->getUsername()));
-
+                    
                     $this->doctrine->persist($manager);
                     $this->doctrine->flush();
 
