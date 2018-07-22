@@ -183,6 +183,31 @@ class InitCommand extends ContainerAwareCommand
         $app->setCgu("");
         $manager->persist($app);
 
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "tasks"));
+        if (!$app) {
+            $app = new Application();
+        }
+        $app->setPublicKey("tasks");
+        $app->setName("Tasks");
+        $app->setDescription("Twake tasks manager.");
+        $app->setShortDescription("Twake tasks manager.");
+        $app->setUrl("tasks");
+        $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
+        $app->setApplicationRights(json_decode('{"tasks":"manage"}', true));
+        $app->setEnabled(0);
+        $app->setColor("51B75B");
+        $app->setCanCreateFile(0);
+        $app->setIsCapable(1);
+        $app->setDefault(0);
+        $app->setCreateFileData(json_decode("", true));
+        $app->setMessageModule(0);
+        $app->setOrder(0);
+        $app->setThumbnail($serverbase . "/medias/apps/tasks.png");
+        $app->setMessageModuleUrl("");
+        $app->setEditableRights(1);
+        $app->setCgu("");
+        $manager->persist($app);
+
         $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "imageviewer"));
         if (!$app) {
             $app = new Application();
@@ -301,9 +326,11 @@ class InitCommand extends ContainerAwareCommand
             ["/medias/apps/web/trello.png", "Trello", "trello.com", "trello", "0079bf", Array()],
             ["/medias/apps/web/gitlab.png", "Gitlab", "gitlab.com", "gitlab", "fc9626", Array()],
             ["/medias/apps/web/github.png", "Github", "github.com", "github", "24292e", Array()],
+            ["/medias/apps/web/overleaf.png", "Overleaf", "overleaf.com", "overleaf", "61994F", Array()],
+            ["/medias/apps/web/sharelatex.png", "Sharelatex", "sharelatex.com", "sharelatex", "9F2E25", Array()],
 
             //Altassian
-            ["/medias/apps/web/atlassian.png", "Atlassian", "atlassian.net/projects", "atlassian", "0047B3", Array()],
+            ["/medias/apps/web/atlassian.png", "Atlassian", "atlassian.net", "atlassian", "0047B3", Array()],
 
             //gSuite
             ["/medias/apps/web/google_hangouts.png", "Google Hangouts", "hangouts.google.com", "hangouts.google", "50AF55", Array()],

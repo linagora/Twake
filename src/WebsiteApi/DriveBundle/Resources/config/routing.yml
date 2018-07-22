@@ -107,6 +107,12 @@ twake_drive_getAppFiles:
     defaults: { _controller: TwakeDriveBundle:Files:getFilesFromApp }
     methods: [POST]
 
+twake_drive_getDriveFileVersion:
+    path:     /getDriveFileVersions
+    defaults: { _controller: TwakeDriveBundle:Files:getDriveFileVersions }
+    methods: [POST]
+
+
 # Trash
 
 twake_drive_delete:

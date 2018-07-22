@@ -6,6 +6,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use WebsiteApi\MarketBundle\Entity\Application;
+use WebsiteApi\MarketBundle\Entity\DataToken;
 
 class CurrentUserController extends Controller
 {
@@ -26,24 +27,29 @@ class CurrentUserController extends Controller
 
         $manager = $this->getDoctrine()->getManager();
 
-	    $t = $manager->getRepository("DevelopersApiUsersBundle:Token")
-		    ->findOneBy(Array("token" => $requestData["token"]));
+        /** @var DataToken $t */
+        $t = $this->get("website_api_market.data_token")->getDataToken($requestData["token"]);
 	    if ($t == null) {
 		    $data["errors"][] = 2101;
         }
         else{
-	        $data["data"]["userId"] = $t->getUser()->getId();
-            $data["data"]["groupId"] = ($t->getWorkspace()->getGroup() == null ? null : $t->getWorkspace()->getGroup()->getId());
-            $data["data"]["workspaceId"] = $t->getWorkspace()->getId();
-	        $data["data"]["username"] = $t->getUser()->getUsername();
-	        $data["data"]["language"] = $t->getUser()->getLanguage();
-	        $data["data"]["userImage"] = "";
-	        $pimage = $t->getUser()->getThumbnail();
-	        if ($pimage) {
-		        $data["data"]["userImage"] = $this->getParameter('SERVER_NAME') . $pimage->getPublicURL(2);
-	        }
-	        $manager->remove($t);
-	        $manager->flush();
+            $user = $manager->getRepository("TwakeUsersBundle:User")->find($t["userId"]);
+            $workspace = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->find($t["workspaceId"]);
+
+            if ($user && $workspace) {
+
+                $data["data"]["userId"] = $user->getId();
+                $data["data"]["groupId"] = ($workspace->getGroup() == null ? null : $workspace->getGroup()->getId());
+                $data["data"]["workspaceId"] = $workspace->getId();
+                $data["data"]["username"] = $user->getUsername();
+                $data["data"]["language"] = $user->getLanguage();
+                $data["data"]["userImage"] = "";
+                $pimage = $user->getThumbnail();
+                if ($pimage) {
+                    $data["data"]["userImage"] = $this->getParameter('SERVER_NAME') . $pimage->getPublicURL(2);
+                }
+
+            }
         }
 
         return new JsonResponse($data);

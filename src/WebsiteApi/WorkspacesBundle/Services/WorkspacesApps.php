@@ -43,21 +43,6 @@ class WorkspacesApps implements WorkspacesAppsInterface
         if($currentUserId==null
             || $this->wls->can($workspaceId, $currentUserId, "")) {
 
-            if ($workspace->getUser() != null
-                && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
-            ) {
-                //Private ws apps
-                $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-                if ($onlyEditableRights){
-                    $apps = $appRepository->findBy(Array("default"=>true, "editableRights"=>true));
-                }elseif ($onlymessageModule){
-                    $apps = $appRepository->findBy(Array("default"=>true, "messageModule"=>true));
-                }else{
-                    $apps = $appRepository->findBy(Array("default"=>true));
-                }
-                return $apps;
-            }
-
             //Group apps
             $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
             $workspaceapps = $workspaceappsRepository->findBy(Array("workspace" => $workspace));
@@ -136,13 +121,6 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
         if($currentUserId==null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
-
-            if ($workspace->getUser() != null
-                && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
-            ) {
-                //cant enable in Private ws apps
-                return false;
-            }
 
             //Search in  GroupApp if the targeted app exists
             $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");

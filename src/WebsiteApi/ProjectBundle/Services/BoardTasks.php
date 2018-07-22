@@ -3,11 +3,11 @@
 
 namespace WebsiteApi\ProjectBundle\Services;
 
+use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\ProjectBundle\Entity\BoardTask;
 use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
 use WebsiteApi\ProjectBundle\Entity\LinkTaskUser;
-use WebsiteApi\ProjectBundle\Entity\TaskList;
 use WebsiteApi\ProjectBundle\Model\BoardTasksInterface;
 
 /**
@@ -30,6 +30,13 @@ class BoardTasks implements BoardTasksInterface
         $this->workspaceLevels = $workspaceLevels;
         $this->notifications = $notifications;
         $this->boardActivity = $serviceBoardActivity;
+    }
+
+    private function notifyParticipants($participants, $workspace, $title, $description, $notifCode){
+        foreach ($participants as $participant){
+            $user = $this->convertToEntity($participant,"TwakeUsersBundle:User");
+            $this->boardActivities->pushActivity(true,$workspace,$user,null,$title,$description,Array(),Array("notifCode" => $notifCode));
+        }
     }
 
     public function createTask($workspaceId, $boardId, $task, $currentUserId = null, $addMySelf = false, $participants=Array())
@@ -96,6 +103,7 @@ class BoardTasks implements BoardTasksInterface
         );
         $this->pusher->push($data, "board/".$boardId);
         $this->doctrine->flush();
+        $this->boardActivity->pushActivity(true, $workspaceId, $currentUserId, null, "Task ".$task->getName()." created","", Array(), Array("notifCode" => ""));
 
         return $task;
 
@@ -162,6 +170,9 @@ class BoardTasks implements BoardTasksInterface
             "type" => "update",
             "task" => $task->getAsArray()
         );
+
+        $this->notifyParticipants($board->getParticipants(),$workspace, "Task ".$task->getName()." updated", "", "");
+        $this->notifyParticipants($task->getParticipants(),$workspace, "Task ".$task->getName()." updated", "", "");
         $this->pusher->push($data, "board/".$boardId);
 
         return $task;
@@ -201,6 +212,8 @@ class BoardTasks implements BoardTasksInterface
             "task_id" => $taskId
         );
         $this->pusher->push($data, "board/".$boardId);
+        $this->notifyParticipants($board->getParticipants(),$workspace, "Task ".$task->getName()." deleted", "", "");
+        $this->notifyParticipants($task->getParticipants(),$workspace, "Task ".$task->getName()." deleted", "", "");
 
         return true;
     }
@@ -246,7 +259,7 @@ class BoardTasks implements BoardTasksInterface
                     $participantArray = $task->getParticipant();
                     $participantArray[] = $user->getId();
                 }
-                $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$task->getTask()["title"],"You have a new task the ".date('d/m/Y', $task->getFrom()), Array(), Array("notifCode" => $task->getFrom()."/".$task->getId()));
+                $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$task->getName(),"", Array(), Array("notifCode" => ""));
             }
         }
         $task->setParticipant($participantArray);
@@ -295,7 +308,7 @@ class BoardTasks implements BoardTasksInterface
                     unset($participantArray[$i]);
                     $participantArray = array_values($participantArray);
                     error_log("array after remove : ".json_encode($participantArray));
-                    $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Removed  to ".$task->getTask()["name"],"You have been removed from ".$task->getTask()["name"], Array(), Array("notifCode" => $task->getFrom()."/".$task->getId()));
+                    $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Removed  from ".$task->getName(),"", Array(), Array("notifCode" => ""));
                     break;
                 }
             }
@@ -337,7 +350,7 @@ class BoardTasks implements BoardTasksInterface
         /* @var BoardTask $task*/
         $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id"=>$taskId));
         if($task==null)
-            return; false;
+            return false;
         /* @var LinkBoardWorkspace $workspaceLink*/
         $workspaceLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("board"=>$task->getBoard()));
 
@@ -480,24 +493,57 @@ class BoardTasks implements BoardTasksInterface
         return true;
     }
 
-    public function moveTaskToList($taskId, $listOfTasksId){
+    public function moveTaskToList($taskId, $listOfTasksId, $workspaceId = 0){
         $boardTaskRepository = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask");
         $listOfTasksRepository = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks");
-        $taskListRepository = $this->doctrine->getRepository("TwakeProjectBundle:TaskList");
 
         /* @var \WebsiteApi\ProjectBundle\Entity\BoardTask $task */
         $task = $boardTaskRepository->findOneBy(Array("id" => $taskId));
         /* @var \WebsiteApi\ProjectBundle\Entity\ListOfTasks $listofTasks */
         $listOfTasks = $listOfTasksRepository->findOneBy(Array("id" => $listOfTasksId));
 
-        /* @var \WebsiteApi\ProjectBundle\Entity\TaskList $taskList */
-        $taskList = $taskListRepository->findOneBy(Array("boardTask" => $task, "listOfTask" => $listOfTasks));
+        $task->setListOfTasks($listOfTasks);
 
-        if($taskList==null) {
-            $taskList = new TaskList($task, $taskList);
+        $this->doctrine->persist($task);
+        $this->doctrine->flush();
+        $this->notifyParticipants($task->getParticipants(),$workspaceId, "Task ".$task->getName()." moved", "", "");
+    }
 
-            $this->doctrine->persist($taskList);
+    public function moveTaskToBoard($taskId, $boardId, $workspaceId = 0){
+        $boardTaskRepository = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask");
+        $boardRepository = $this->doctrine->getRepository("TwakeProjectBundle:Board");
+
+        /* @var \WebsiteApi\ProjectBundle\Entity\BoardTask $task */
+        $task = $boardTaskRepository->findOneBy(Array("id" => $taskId));
+
+        /* @var \WebsiteApi\ProjectBundle\Entity\Board $board */
+        $board = $boardRepository->findOneBy(Array("id" => $boardId));
+
+        if($task!=null && $board!=null) {
+            $task->setBoard($board);
+
+            $this->doctrine->persist($task);
             $this->doctrine->flush();
+            $this->notifyParticipants($task->getParticipants(),$workspaceId, "Task ".$task->getName()." moved", "", "");
         }
+    }
+
+    public function updateDependentTask($taskId, $taskIdToDependentOf){
+        $boardTaskRepository = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask");
+
+        /* @var \WebsiteApi\ProjectBundle\Entity\BoardTask $task */
+        $task = $boardTaskRepository->findOneBy(Array("id" => $taskId));
+        $taskToDependentOf = $boardTaskRepository->findOneBy(Array("id" => $taskIdToDependentOf));
+
+        $task->setDependingTask($taskToDependentOf);
+    }
+
+    public function getTaskByNameOrDescription($name, $description){
+        $boardTaskRepository = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask");
+
+        $taskName = $boardTaskRepository->findBy(Array("name"));
+        $taskDescription = $boardTaskRepository->findBy(Array("description"));
+
+        return array_unique(array_merge($taskName,$taskDescription), SORT_REGULAR);
     }
 }

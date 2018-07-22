@@ -1,0 +1,17 @@
+
+
+objectLinks_create:
+    path:     /create
+    defaults: { _controller: TwakeObjectLinksBundle:ObjectLinks:createLink }
+    methods: [POST]
+
+objectLinks_get:
+    path:   /get
+    defaults: {_controller: TwakeObjectLinksBundle:ObjectLinks:getLinks }
+    methods: [POST]
+
+
+objectLinks_delete:
+    path: /delete
+    defaults: {_controller: TwakeObjectLinksBundle:ObjectLinks:deleteLinks }
+    methods: [POST]

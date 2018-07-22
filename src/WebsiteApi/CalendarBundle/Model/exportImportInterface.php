@@ -11,8 +11,8 @@ namespace WebsiteApi\CalendarBundle\Model;
 
 interface exportImportInterface
 {
-    public function generateIcsFileForCalendar($workspace_id, $calendar_id);
-    function parseCalendar( $workspace_id, $calendar_id);
-    public function generateIcsFileForEvent($workspace_id, $event_id);
+    public function generateICsFileWithUrl($workspace_id, $calendar_id, $mine, $from, $to, $user_id);
 
-    }
+    public function parseCalendar($workspace_id, $calendar_id);
+
+}

@@ -42,12 +42,27 @@ class Board {
      */
     private $autoParticipantList;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $description;
 
-    public  function __construct($title,$color)
+    /**
+     * @ORM\Column(name="participant", type="text")
+     */
+    private $participants;
+
+    /**
+     * @ORM\Column(type="boolean")
+     */
+    private $isPrivate;
+
+    public  function __construct($title,$color,$description, $isPrivate)
     {
         $this->setTitle($title);
         $this->setColor($color);
         $this->setAutoParticipantList(Array());
+        $this->setDescription($description);
     }
 
     /**
@@ -139,9 +154,58 @@ class Board {
             "id" => $this->getId(),
             "name" => $this->getTitle(),
             "color" => $this->getColor(),
+            "description" => $this->getDescription(),
             "workspaces_number" => $this->getWorkspacesNumber(),
             "autoParticipate" => $this->getAutoParticipantList()
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
+
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getisPrivate()
+    {
+        return $this->isPrivate;
+    }
+
+    /**
+     * @param mixed $isPrivate
+     */
+    public function setIsPrivate($isPrivate)
+    {
+        $this->isPrivate = $isPrivate;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParticipants()
+    {
+        return json_decode($this->participants,1);
+    }
+
+    /**
+     * @param mixed $participants
+     */
+    public function setParticipants($participants)
+    {
+        $this->participants = json_encode($participants);
     }
 
 

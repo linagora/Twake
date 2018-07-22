@@ -66,7 +66,7 @@ class UsersConnectionsController extends Controller
     {
         $ok = $this->get("app.user")->current();
         if(!$ok){
-            return $this->redirect('https://twakeapp.com/signin');
+            return $this->redirect('https://app.twakeapp.com/?subscribe=1');
         }
         return $this->redirect($this->getParameter("SERVER_NAME"));
     }

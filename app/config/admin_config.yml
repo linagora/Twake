@@ -82,6 +82,7 @@ easy_admin:
             list:
                 title: "Twake groups"
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'pricingPlan', 'workspaces']
+                dql_filter: 'entity.is_private = 0'
             show:
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'pricingPlan']
             disabled_actions: ['new', 'edit', 'delete']

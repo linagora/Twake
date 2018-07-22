@@ -6,4 +6,4 @@ services:
 
     app.pusher:
         class: WebsiteApi\CoreBundle\Services\ZMQPusher
-        arguments: ["%websocket_pusher_remote_host%", "%websocket_pusher_port%"]
+        arguments: ["%websocket_pusher_remote_host%", "%websocket_pusher_port%", "@doctrine.orm.entity_manager"]

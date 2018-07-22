@@ -352,8 +352,8 @@ class CalendarEvents implements CalendarEventsInterface
     //
     public function getEventsByCalendar($workspaceId, $calendarsId, $currentUserId = null){
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
-        var_dump($workspaceId);
-        var_dump($calendarsId);
+        //var_dump($workspaceId);
+        //var_dump($calendarsId);
         if($workspace == null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read"))){
             return null;
         }
