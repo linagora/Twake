@@ -79,13 +79,13 @@ class ScenarioPayment {
         $csv = array();
         array_push($csv,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not",
             "overCost", "balance", "balance_consumed", "expected_cost", "is_blocked","lock_date"));
-
         $days = $this->date_interval->d;
-
-        for ($i = 1; $i <= $days; $i++)
+        for ($i = 1; $i <= $days; $i++) {
             $csv = $this->DayByDayScenario($this->list_freq, $i, $this->group_id, $csv);
+        }
 
         $this->EndScenario($this->fp,$csv);
+
     }
 
     private function increaseConnectionsPeriodForAllUsers($list,$day){
