@@ -94,17 +94,15 @@ class Boards implements BoardsInterface
                 $boards[] = $link->getBoard();
             }
 
-            foreach ($boards as $board){
-
-            }
-
             //Create board if no board was found in this workspace
             if (count($links) == 0 && $currentUserId != null) {
-                $board = $this->createBoard($workspaceId, "Default", "E2333A");
+                $board = $this->createBoard($workspaceId, "Default", "",true);
                 $cal = $board->getAsArray();
                 $cal["owner"] = $currentUserId;
                 $result[] = $cal;
             }
+            else
+                $result = $boards;
 
             return $result;
         }
@@ -141,7 +139,7 @@ class Boards implements BoardsInterface
         }
     }
 
-    public function createBoard($workspaceId, $title, $description, $isPrivate, $color, $currentUserId = null, $userIdToNotify = Array()){
+    public function createBoard($workspaceId, $title, $description, $isPrivate, $currentUserId = null, $userIdToNotify = Array()){
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
@@ -156,7 +154,7 @@ class Boards implements BoardsInterface
                 $title = "New board";
             }
 
-            $board = new Board($title, $color,$description,$isPrivate);
+            $board = new Board($title,$description,$isPrivate);
             $board->setParticipants($userIdToNotify);
             $board->setWorkspacesNumber(1);
             $this->doctrine->persist($board);

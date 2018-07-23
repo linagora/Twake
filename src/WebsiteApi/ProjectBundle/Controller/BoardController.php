@@ -18,9 +18,11 @@ class BoardController extends Controller
             'data' => Array()
         );
 
-        $workspaceId = $request->request->get("workspaceId");
-
-        $boards = $this->get("app.boards")->getBoards($workspaceId, $this->getUser()->getId());
+        $workspaceId = $request->request->get("workspaceId",0);
+        $title = $request->request->get("name", "");
+        $description = $request->request->get("description", "");
+        $isPrivate = $request->request->get("isPrivate",false);
+        $boards = $this->get("app.boards")->getBoards($workspaceId,$title,$description,$isPrivate, $this->getUser()->getId());
 
         if ($boards){
             $data['data'] = $boards;

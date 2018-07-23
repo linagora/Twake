@@ -28,11 +28,6 @@ class Board {
     private $title;
 
     /**
-     * @ORM\Column(name="color", type="string", nullable=true)
-     */
-    private $color;
-
-    /**
      * @ORM\Column(name="workspaces_number", type="integer", nullable=true)
      */
     private $workspacesNumber = 1;
@@ -57,10 +52,8 @@ class Board {
      */
     private $isPrivate;
 
-    public  function __construct($title,$color,$description, $isPrivate)
+    public  function __construct($title,$description, $isPrivate)
     {
-        $this->setTitle($title);
-        $this->setColor($color);
         $this->setAutoParticipantList(Array());
         $this->setDescription($description);
     }
@@ -120,22 +113,6 @@ class Board {
     /**
      * @return mixed
      */
-    public function getColor()
-    {
-        return $this->color;
-    }
-
-    /**
-     * @param mixed $color
-     */
-    public function setColor($color)
-    {
-        $this->color = $color;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getWorkspacesNumber()
     {
         return $this->workspacesNumber;
@@ -153,7 +130,6 @@ class Board {
         return Array(
             "id" => $this->getId(),
             "name" => $this->getTitle(),
-            "color" => $this->getColor(),
             "description" => $this->getDescription(),
             "workspaces_number" => $this->getWorkspacesNumber(),
             "autoParticipate" => $this->getAutoParticipantList()
