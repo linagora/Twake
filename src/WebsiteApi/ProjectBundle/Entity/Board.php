@@ -54,7 +54,10 @@ class Board {
 
     public  function __construct($title,$description, $isPrivate)
     {
+        $this->setTitle($title);
+        $this->setIsPrivate($isPrivate);
         $this->setAutoParticipantList(Array());
+        $this->setParticipants(Array());
         $this->setDescription($description);
     }
 

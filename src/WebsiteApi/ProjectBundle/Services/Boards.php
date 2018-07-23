@@ -97,9 +97,7 @@ class Boards implements BoardsInterface
             //Create board if no board was found in this workspace
             if (count($links) == 0 && $currentUserId != null) {
                 $board = $this->createBoard($workspaceId, "Default", "",true);
-                $cal = $board->getAsArray();
-                $cal["owner"] = $currentUserId;
-                $result[] = $cal;
+                $result[] = $board;
             }
             else
                 $result = $boards;

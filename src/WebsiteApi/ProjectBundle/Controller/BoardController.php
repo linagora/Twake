@@ -23,7 +23,9 @@ class BoardController extends Controller
 
         if ($boards){
             foreach ($boards as $board) {
-                $data['data'][] = $board->getAsArray();
+                $boardArray = $board->getAsArray();
+                $boardArray["owner"] = $this->getUser()->getAsArray();
+                $data['data'][] = $boardArray;
             }
         }
 
@@ -42,6 +44,7 @@ class BoardController extends Controller
         $data['data'] = $board["autoParticpate"] ;
         return new JsonResponse($data);
     }
+
     public function createBoardAction(Request $request)
     {
         $data = Array(
@@ -66,13 +69,13 @@ class BoardController extends Controller
             'data' => Array()
         );
 
-        $workspaceId = $request->request->get("workspaceId");
-        $boardId = $request->request->get("boardId");
-        $label = $request->request->get("name");
-        $color = $request->request->get("color");
-        $autoParticipant = $request->get("autoParticipate");
+        $boardId = $request->request->get("id");
+        $title = $request->request->get("name", "");
+        $description = $request->request->get("description", "");
+        $isPrivate = $request->request->get("isPrivate",false);
+        $autoParticipant = $request->request->get("members",Array());
 
-        $data['data'] = $this->get("app.boards")->updateBoard($workspaceId, $boardId, $label, $color, $this->getUser(), $autoParticipant);
+        $data['data'] = $this->get("app.boards")->updateBoard( $boardId, $title, $description, $isPrivate, $this->getUser(), $autoParticipant);
 
         return new JsonResponse($data);
     }
