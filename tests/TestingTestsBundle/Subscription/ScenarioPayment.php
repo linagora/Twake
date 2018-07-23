@@ -75,17 +75,24 @@ class ScenarioPayment {
 
     public function exec(){
         $this->fp = fopen('file.csv', 'w');
+        var_dump("new file");
         $csv = array();
+        var_dump("array");
         array_push($csv,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not",
             "overCost", "balance", "balance_consumed", "expected_cost", "is_blocked","lock_date"));
-
+        var_dump("array push");
         $days = $this->date_interval->d;
-
-        for ($i = 1; $i <= $days; $i++)
+        var_dump("days");
+        for ($i = 1; $i <= $days; $i++) {
+            var_dump("before day by day".$i);
             $csv = $this->DayByDayScenario($this->list_freq, $i, $this->group_id, $csv);
+            var_dump("after day by day".$i);
+        }
 
+        var_dump("before end scenario");
         $this->EndScenario($this->fp,$csv);
 
+        var_dump("after end scenario");
         fclose($this->fp);
     }
 
