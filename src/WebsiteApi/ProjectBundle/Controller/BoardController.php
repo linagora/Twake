@@ -59,6 +59,9 @@ class BoardController extends Controller
 
         $data['data'] = $this->get("app.boards")->createBoard($workspaceId, $title,$description,$isPrivate, $this->getUser()->getId());
 
+        if($data['data'])
+            $data['data'] = $data['data']->getAsArray();
+
         return new JsonResponse($data);
     }
 
