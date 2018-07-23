@@ -27,12 +27,22 @@ class WorkspacesController extends Controller
             return new JsonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
-        $list= $this->get("app.workspace_members")->getMembers($workspace_id, null);
+        $list = $this->get("app.workspace_members")->getMembers($workspace_id, null);
 
         if($list == false){
             return new JsonResponse($this->get("api.v1.api_status")->getError(1000));
         }
-        return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$list));
+
+        $users = [];
+        foreach ($list as $user) {
+            $users[] = Array(
+                "user" => $user["user"]->getAsArray(),
+                "level" => $user["level"]->getAsArray(),
+                "externe" => $user["externe"]
+            );
+        }
+
+        return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(), $users));
     }
 
 

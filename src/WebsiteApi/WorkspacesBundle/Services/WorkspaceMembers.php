@@ -405,14 +405,14 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
                 if ($user->getGroupUser()) { //Private workspaces does not have a group user assiociated
                     $users[] = Array(
-                        "user" => $user->getUser()->getAsArray(),
-                        "level" => $user->getLevel()->getAsArray(),
+                        "user" => $user->getUser(),
+                        "level" => $user->getLevel(),
                         "externe" => $user->getGroupUser()->getExterne()
                     );
                 } else {
                     $users[] = Array(
-                        "user" => $user->getUser()->getAsArray(),
-                        "level" => $user->getLevel()->getAsArray(),
+                        "user" => $user->getUser(),
+                        "level" => $user->getLevel(),
                     );
                 }
 
