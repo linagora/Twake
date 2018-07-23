@@ -9,7 +9,7 @@ namespace WebsiteApi\ProjectBundle\Repository;
  */
 
 
-class ListOfTaskRepository extends \Doctrine\ORM\EntityRepository
+class ListOfTasksRepository extends \Doctrine\ORM\EntityRepository
 {
 
 }

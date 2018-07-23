@@ -134,8 +134,10 @@ class Board {
             "id" => $this->getId(),
             "name" => $this->getTitle(),
             "description" => $this->getDescription(),
+            "isPrivate" => $this->getisPrivate(),
             "workspaces_number" => $this->getWorkspacesNumber(),
-            "autoParticipate" => $this->getAutoParticipantList()
+            "autoParticipate" => $this->getAutoParticipantList(),
+            "participants" => $this->getParticipants()
         );
     }
 
