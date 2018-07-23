@@ -29,9 +29,6 @@ class Billing implements BillingInterface{
         $groupPricingInstance->setStartedAt($startDateOfService);
         $groupPricingInstance->setEndAt($endedAt);
 
-        $this->doctrine->persist($groupPricingInstance);
-        $this->doctrine->flush();
-
         $issueDate = new \DateTime();
 
         $groupIdentity = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity")->findOneBy(Array("group" => $group));

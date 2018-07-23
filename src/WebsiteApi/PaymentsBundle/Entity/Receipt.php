@@ -53,7 +53,7 @@ class Receipt
      */
     private $pricingPlan;
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance",cascade={"persist"})
      */
     private $groupPricingInstance;
 

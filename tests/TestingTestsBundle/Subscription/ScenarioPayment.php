@@ -75,6 +75,7 @@ class ScenarioPayment {
 
     public function exec(){
         $this->fp = fopen('file.csv', 'w');
+        fclose($this->fp);
         $csv = array();
         array_push($csv,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not",
             "overCost", "balance", "balance_consumed", "expected_cost", "is_blocked","lock_date"));
@@ -85,13 +86,9 @@ class ScenarioPayment {
             $csv = $this->DayByDayScenario($this->list_freq, $i, $this->group_id, $csv);
 
         $this->EndScenario($this->fp,$csv);
-
-        fclose($this->fp);
     }
 
-
-
-    public function DayByDayScenario($list, $day, $group_id, $csv){
+    private function increaseConnectionsPeriodForAllUsers($list,$day){
         for ($i = 0; $i < count($list); $i++) {
             $group = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser")->findOneBy(Array("user" => $i + 1));
             if ($group == null)
@@ -101,12 +98,10 @@ class ScenarioPayment {
                 $this->doctrine->persist($group);
             }
         }
+    }
 
-        //Ajout d'un utilisateur tous les jours
-        //$this->addUserToList($day."romaric.t"."@twakeapp.com",$day."romaric",$day."blabla",1);
-
+    public function forwardOneDay($gp){
         //Group_period
-        $gp = $this->services->myGet("app.subscription_system")->getGroupPeriod($group_id);
 
         //Décale date de début de group_period
         $startAt = $gp->getPeriodStartedAt();
@@ -134,17 +129,40 @@ class ScenarioPayment {
 
         $this->doctrine->flush();
 
-        $gp_saved = null;
-        if($periodExpectedToEndAt->format('d') === (new \DateTime('now'))->format('d')){
-            $gp_saved = clone $gp;
-        }
+        return [$endDate,$periodExpectedToEndAt];
+    }
 
+    public function cronExec($group_id){
         //Récupère end_period et code de overusing
         $this->services->myGet("app.pricing_plan")->dailyDataGroupUser();
         $this->services->myGet("app.pricing_plan")->groupPeriodUsage();
         $checkEndPeriodByGroup = $this->services->myGet("app.subscription_manager")->checkEndPeriodByGroup($group_id);
         $checkOverusingByGroup = $this->services->myGet("app.subscription_manager")->checkOverusingByGroup($group_id);
         $this->services->myGet("app.subscription_manager")->checkLocked();
+        return [$checkEndPeriodByGroup, $checkOverusingByGroup];
+    }
+
+    public function DayByDayScenario($list, $day, $group_id, $csv){
+        $this->increaseConnectionsPeriodForAllUsers($list,$day);
+
+        //Ajout d'un utilisateur tous les jours
+        //$this->addUserToList($day."romaric.t"."@twakeapp.com",$day."romaric",$day."blabla",1);
+
+        $gp = $this->services->myGet("app.subscription_system")->getGroupPeriod($group_id);
+
+        $a = $this->forwardOneDay($gp);
+        $endDate = $a[0];
+        $periodExpectedToEndAt = $a[1];
+
+        $gp_saved = null;
+        if($periodExpectedToEndAt->format('d') === (new \DateTime('now'))->format('d')){
+            $gp_saved = clone $gp;
+        }
+
+        $a = $this->cronExec($group_id);
+
+        $checkEndPeriodByGroup = $a[0];
+        $checkOverusingByGroup = $a[1];
 
         $closed_gp = $this->doctrine->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod")->findOneBy(Array("group" => $group_id));
         /*if ($gp_saved != null){
@@ -204,7 +222,10 @@ class ScenarioPayment {
         //ajout au csv
         $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup,
             $overCost, $balance, $balance_consumed, $gp_expected_cost, $is_blocked, $lock_date);
-        array_push($csv,$line_csv);
+
+        $this->fp = fopen('file.csv', 'a');
+        fputcsv($this->fp, $line_csv);
+        fclose($this->fp);
 
 
         $this->doctrine->flush();
@@ -212,14 +233,9 @@ class ScenarioPayment {
     }
 
 
-    public function EndScenario($fp, $csv){
+    public function EndScenario($csv){
         $this->services->myGet("app.pricing_plan")->dailyDataGroupUser();
         $this->services->myGet("app.pricing_plan")->groupPeriodUsage();
-
-        foreach ($csv as $item) {
-            fputcsv($fp, $item);
-        }
-
     }
 
     public function addMember($user_mail, $pseudo, $password, $workspace_id){
