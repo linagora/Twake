@@ -217,6 +217,14 @@ class BoardTasks implements BoardTasksInterface
 
         return true;
     }
+    private function getWorkspaceFromBoard($boardId){
+        /* @var Board $board*/
+        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
+        /* @var LinkBoardWorkspace $linkBoardWorkspace*/
+        $linkBoardWorkspace = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("board" => $board));
+        return $linkBoardWorkspace->getWorkspace();
+    }
+
 
     public function addUsers($workspaceId, $boardId, $task, $usersId, $currentUserId = null)
     {
@@ -327,21 +335,21 @@ class BoardTasks implements BoardTasksInterface
 
     }
 
-    public function getTasksForWorkspace($workspaceId, $boardsId, $currentUserId = null)
+    public function getTasks($boardId, $currentUserId = null)
     {
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $workspace = $this->getWorkspaceFromBoard($boardId);
 
         if ($workspace==null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read"))) {
             return null;
         }
 
-        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("id" => $boardsId));
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("id" => $boardId));
 
         return $tasks;
     }
 
-    public function getTask($taskId,$workspaceId, $currentUserId){
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+    public function getTask($taskId, $currentUserId){
+        $workspace = $this->getWorkspaceFromTask($taskId);
 
         if ($workspace==null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read"))) {
             return null;
@@ -545,5 +553,13 @@ class BoardTasks implements BoardTasksInterface
         $taskDescription = $boardTaskRepository->findBy(Array("description"));
 
         return array_unique(array_merge($taskName,$taskDescription), SORT_REGULAR);
+    }
+
+    private function getWorkspaceFromTask($taskId)
+    {
+        /* @var BoardTask $task */
+        $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id" => $taskId));
+
+        return $this->getWorkspaceFromBoard($task->getBoard()->getId());
     }
 }

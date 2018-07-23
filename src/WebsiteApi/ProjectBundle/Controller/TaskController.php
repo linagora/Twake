@@ -17,17 +17,10 @@ class TaskController extends Controller
             'errors' => Array(),
             'data' => Array()
         );
-        $useMine = $request->request->get("mine");
-        $workspaceId = $request->request->getInt("workspaceId");
-        $to = $request->request->get("to");
-        $from = $request->request->get("from", 0);
-        $boardsIds = $request->request->get("boardsIds");
 
-        if($useMine) {
-            $tasks = $this->get("app.board_tasks")->getTasksForUser($workspaceId, $from, $to, $this->getUser()->getId());
-        }else{
-            $tasks = $this->get("app.board_tasks")->getTasksForWorkspace($workspaceId, $from, $to, $boardsIds, $this->getUser()->getId());
-        }
+        $boardId = $request->request->get("id",0);
+
+        $tasks = $this->get("app.board_tasks")->getTasks($boardId, $this->getUser()->getId());
 
         if($tasks){
             $tasks_formated = Array();
@@ -48,7 +41,7 @@ class TaskController extends Controller
         $taskId = $request->request->get("taskId");
         $workspaceId = $request->request->getInt("workspaceId");
 
-        $task = $this->get("app.board_tasks")->getTask($taskId, $workspaceId, $this->getUser()->getId());
+        $task = $this->get("app.board_tasks")->getTask($taskId, $this->getUser()->getId());
 
         if($task){
             $data["data"] = $task->getAsArray();
