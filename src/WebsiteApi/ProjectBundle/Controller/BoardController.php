@@ -90,8 +90,8 @@ class BoardController extends Controller
             'data' => Array()
         );
 
-        $workspaceId = $request->request->get("workspaceId");
-        $boardId = $request->request->get("boardId");
+        $workspaceId = $request->request->get("workspaceId",  0);
+        $boardId = $request->request->get("id",0);
 
         $data['data'] = $this->get("app.boards")->removeBoard($workspaceId, $boardId, $this->getUser()->getId());
 
