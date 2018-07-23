@@ -19,13 +19,12 @@ class BoardController extends Controller
         );
 
         $workspaceId = $request->request->get("workspaceId",0);
-        $title = $request->request->get("name", "");
-        $description = $request->request->get("description", "");
-        $isPrivate = $request->request->get("isPrivate",false);
-        $boards = $this->get("app.boards")->getBoards($workspaceId,$title,$description,$isPrivate, $this->getUser()->getId());
+        $boards = $this->get("app.boards")->getBoards($workspaceId, $this->getUser()->getId());
 
         if ($boards){
-            $data['data'] = $boards;
+            foreach ($boards as $board) {
+                $data['data'][] = $board->getAsArray();
+            }
         }
 
         return new JsonResponse($data);
@@ -51,10 +50,11 @@ class BoardController extends Controller
         );
 
         $workspaceId = $request->request->get("workspaceId");
-        $label = $request->request->get("name");
-        $color = $request->request->get("color");
+        $title = $request->request->get("name", "");
+        $description = $request->request->get("description", "");
+        $isPrivate = $request->request->get("isPrivate",false);
 
-        $data['data'] = $this->get("app.boards")->createBoard($workspaceId, $label, $color, $this->getUser()->getId());
+        $data['data'] = $this->get("app.boards")->createBoard($workspaceId, $title,$description,$isPrivate, $this->getUser()->getId());
 
         return new JsonResponse($data);
     }
