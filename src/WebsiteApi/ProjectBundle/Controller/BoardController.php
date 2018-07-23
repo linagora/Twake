@@ -76,9 +76,9 @@ class BoardController extends Controller
         $title = $request->request->get("name", "");
         $description = $request->request->get("description", "");
         $isPrivate = $request->request->get("isPrivate",false);
-        $autoParticipant = $request->request->get("members",Array());
+        $participants = $request->request->get("members",Array());
 
-        $data['data'] = $this->get("app.boards")->updateBoard( $boardId, $title, $description, $isPrivate, $this->getUser(), $autoParticipant);
+        $data['data'] = $this->get("app.boards")->updateBoard( $boardId, $title, $description, $isPrivate, $this->getUser(), Array(),$participants);
 
         return new JsonResponse($data);
     }
