@@ -104,30 +104,47 @@ class GroupPeriod
     }
 
 
-    public function isEquivalentTo($group_period)
-    {
-        if ($this->getConnexions() != $group_period->getConnexions()) {
+    public function isEquivalentTo($group_period){
+        /*var_dump("Connexions");
+	    var_dump($this->getConnexions());
+        var_dump($group_period->getConnexions());
+        */if ($this->getConnexions() != $group_period->getConnexions()) {
             return false;
         }
-        if ($this->getAppsUsagePeriod() != $group_period->getAppsUsagePeriod()) {
+        /*var_dump("Apps");
+        var_dump($this->getAppsUsagePeriod());
+        var_dump($group_period->getAppsUsagePeriod());
+        */if ($this->getAppsUsagePeriod() != $group_period->getAppsUsagePeriod()) {
             return false;
         }
-        if ($this->getPeriodStartedAt() != $group_period->getPeriodStartedAt()) {
+        /*var_dump("Period start");
+        var_dump($this->getPeriodStartedAt());
+        var_dump($group_period->getPeriodStartedAt());
+        */if ($this->getPeriodStartedAt() != $group_period->getPeriodStartedAt()) {
             return false;
         }
-        if ($this->getPeriodEndedAt() != $group_period->getPeriodEndedAt()) {
+        /*var_dump("Period expected to end");
+        var_dump($this->getPeriodExpectedToEndAt());
+        var_dump($group_period->getPeriodExpectedToEndAt());
+        */if ($this->getPeriodExpectedToEndAt() != $group_period->getPeriodExpectedToEndAt()) {
             return false;
         }
-        if ($this->getPeriodExpectedToEndAt() != $group_period->getPeriodExpectedToEndAt()) {
+        /*var_dump("Current cost");
+        var_dump($this->getCurrentCost());
+        var_dump($group_period->getCurrentCost());
+        */if ($this->getCurrentCost() != $group_period->getCurrentCost()) {
             return false;
         }
-        if ($this->getCurrentCost() != $group_period->getCurrentCost()) {
+        /*var_dump("Expected cost");
+        var_dump($this->getExpectedCost());
+        var_dump($group_period->getExpectedCost());
+        */if ($this->getExpectedCost() != $group_period->getExpectedCost()) {
             return false;
         }
-        if ($this->getExpectedCost() != $group_period->getExpectedCost()) {
-            return false;
-        }
-        if ($this->getEstimatedCost() != $group_period->getEstimatedCost()) {
+        /*var_dump("Estimated cost");
+        var_dump($this->getEstimatedCost());
+        var_dump($group_period->getEstimatedCost());
+        */if ($this->getEstimatedCost() != $group_period->getEstimatedCost()) {
             return false;
         }
         return true;
