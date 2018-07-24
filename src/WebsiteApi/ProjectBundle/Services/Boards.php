@@ -76,8 +76,8 @@ class Boards implements BoardsInterface
 
     }
 
-    public function getBoardPercent($boardId){
-        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->findOneBy(Array("id" => $boardId));
+    public function getBoardPercent($board){
+        $board = $this->convertToEntity($board,"TwakeProjectBundle:Board");
         $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("board" => $board));
 
         $total = 0.0;
@@ -91,7 +91,9 @@ class Boards implements BoardsInterface
                 $done++;
         }
 
-        return $done/$total;
+        if($total!=0)
+            return $done/$total;
+        return 0.0;
 
     }
 
