@@ -18,7 +18,7 @@ class TaskController extends Controller
             'data' => Array()
         );
 
-        $boardId = $request->request->get("id",0);
+        $boardId = $request->request->get("boardId", 0);
 
         $tasks = $this->get("app.board_tasks")->getTasks($boardId, $this->getUser()->getId());
 
