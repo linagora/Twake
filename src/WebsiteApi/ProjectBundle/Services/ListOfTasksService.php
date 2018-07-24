@@ -78,7 +78,7 @@ class ListOfTasksService
 
     public function createListOfTasks($newTitle, $newColor, $boardId,$userIdToNotify){
         $board = $this->convertToEntity($boardId, "TwakeProjectBundle:Board");
-        $workspace = $this->getWorkspaceFromBoard($board);
+        $workspace = $this->getWorkspaceFromBoard($board->getId());
 
         /* @var ListOfTasks $listOfTasks */
         $listOfTasks = new ListOfTasks($board,$newTitle,$newColor,false,$userIdToNotify);
@@ -104,10 +104,10 @@ class ListOfTasksService
         return $listOfTasks;
     }
 
-    public function updateListOfTasks($listOfTasksId, $newTitle, $newColor, $workspaceId,$userIdToNotify){
-
+    public function updateListOfTasks($listOfTasksId, $newTitle, $newColor,$userIdToNotify){
         /* @var ListOfTasks $listOfTasks */
         $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTasksId));
+        $workspace = $this->getWorkspaceFromBoard($listOfTasks->getBoard());
 
         if($listOfTasks==null){
             return false;
