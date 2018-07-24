@@ -94,6 +94,8 @@ class ListOfTasksService
 
         $listOfTasks->setUserIdToNotify($userIdToNotify);
 
+        $listOfTasks->setOrder($this->getMinOrder($board)-1);
+
         $this->doctrine->persist($listOfTasks);
         $this->doctrine->flush();
 
@@ -162,6 +164,20 @@ class ListOfTasksService
             return $done/$total;
         return 0.0;
 
+    }
+
+    private function getMinOrder($board)
+    {
+        $board = $this->convertToEntity($board,"TwakeProjectBundle:Board");
+
+        $ListsOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
+
+        $m = 0;
+        foreach ($ListsOfTasks as $list){
+            if($list->getOrder()<$m)
+                $m = $list->getOrder();
+        }
+        return $m;
     }
 
 }

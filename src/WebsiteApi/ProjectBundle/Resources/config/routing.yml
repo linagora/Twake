@@ -144,6 +144,11 @@ board_list_of_tasks_remove:
     defaults: { _controller: TwakeProjectBundle:ListOfTasks:remove }
     methods: [POST]
 
+board_list_of_tasks_move:
+    path: /lists/move
+    defaults: { _controller: TwakeProjectBundle:ListOfTasks:move }
+    methods: [POST]
+
 board_list_of_tasks_create:
     path: /lists/create
     defaults: { _controller: TwakeProjectBundle:ListOfTasks:create }
