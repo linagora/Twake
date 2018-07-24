@@ -18,7 +18,7 @@ class TaskController extends Controller
             'data' => Array()
         );
 
-        $boardId = $request->request->get("id",0);
+        $boardId = $request->request->get("boardId", 0);
 
         $tasks = $this->get("app.board_tasks")->getTasks($boardId, $this->getUser()->getId());
 
@@ -58,13 +58,17 @@ class TaskController extends Controller
             'data' => Array()
         );
 
-        $workspaceId = $request->request->get("workspaceId");
         $task = $request->request->get("task");
         $boardId = $request->request->get("boardId");
-        $addMySelf = $request->request->get("addMe");
-        $participants = $task["participant"];
+        $weight = $request->request->get("weight");
+        $name = $request->request->get("name");
+        $description = $request->request->get("description");
+        $startDate = $request->request->get("startDate");
+        $endDate = $request->request->get("endDate");
+        $dependingTaskId = $request->request->get("dependingTaskId");
+        $userToNotify = $request->request->get("watch_members");
 
-        $task = $this->get("app.board_tasks")->createTask($workspaceId, $boardId, $task, $this->getUser()->getId(), $addMySelf, $participants);
+        $task = $this->get("app.board_tasks")->createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify, $weight);
 
         if($task == null){
             $data["errors"] = "error";
@@ -105,6 +109,19 @@ class TaskController extends Controller
         $boardId = $request->request->get("boardId");
 
         $data['data'] = $this->get("app.board_tasks")->removeTask($workspaceId, $boardId, $taskId, $this->getUser()->getId());
+
+        return new JsonResponse($data);
+    }
+    public function moveAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $taskIdA = $request->request->get("idA");
+        $taskIdB = $request->request->get("idB");
+        $data['data'] = $this->get("app.board_tasks")->moveTask($taskIdA, $taskIdB, $this->getUser()->getId());
 
         return new JsonResponse($data);
     }

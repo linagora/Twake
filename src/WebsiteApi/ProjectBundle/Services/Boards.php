@@ -6,7 +6,9 @@ namespace WebsiteApi\ProjectBundle\Services;
 use phpDocumentor\Reflection\Types\Array_;
 use PHPUnit\Util\Json;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use WebsiteApi\ProjectBundle\Entity\BoardTask;
 use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
+use WebsiteApi\ProjectBundle\Entity\ListOfTasks;
 use WebsiteApi\ProjectBundle\Model\BoardsInterface;
 use WebsiteApi\ProjectBundle\Entity\Board;
 
@@ -21,12 +23,15 @@ class Boards implements BoardsInterface
     var $workspaceLevels;
     /* @var BoardActivities $boardActivities */
     var $boardActivities;
+    /* @var ListOfTasksService $listOfTaskService */
+    var $listOfTaskService;
 
-    public function __construct($doctrine, $pusher, $workspaceLevels, $boardActivities){
+    public function __construct($doctrine, $pusher, $workspaceLevels, $boardActivities, $listOfTaskService){
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
         $this->workspaceLevels = $workspaceLevels;
         $this->boardActivities = $boardActivities;
+        $this->listOfTaskService = $listOfTaskService;
     }
 
     private function notifyParticipants($participants, $workspace, $title, $description, $notifCode){
@@ -47,9 +52,10 @@ class Boards implements BoardsInterface
         foreach ($listOfTasks as $listOfTask){
             $array = $listOfTask->getAsArray();
 
-            $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTask" => $listOfTask));
+            $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTasks" => $listOfTask));
             $array["tasks"] = count($tasks);
             $array["order"] = $listOfTask->getOrder();
+            $array["percentage"] = $this->listOfTaskService->getListPercent($listOfTask);
 
             $result[] = $array;
         }
@@ -73,6 +79,28 @@ class Boards implements BoardsInterface
         }
 
     }
+
+    public function getBoardPercent($board){
+        $board = $this->convertToEntity($board,"TwakeProjectBundle:Board");
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("board" => $board));
+
+        $total = 0.0;
+        $done = 0.0;
+
+        foreach ($tasks as $task){
+            /* @var BoardTask $task */
+
+            $total+=$task->getWeight();
+            if($task->getListOfTasks()->getIsDoneList())
+                $done+=$task->getWeight();
+        }
+
+        if($total!=0)
+            return $done/$total;
+        return 0.0;
+
+    }
+
     public function getBoards($workspaceId, $currentUserId=null)
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
@@ -102,7 +130,21 @@ class Boards implements BoardsInterface
             else
                 $result = $boards;
 
-            return $result;
+            $final = [];
+
+            if($currentUserId!=null) {
+                foreach ($result as $res) {
+                    /* @var Board $res */
+                    if ($res->getisPrivate()) {
+                        $participants = $res->getParticipants();
+                        if(in_array($currentUserId,$participants))
+                            $final[] = $res;
+                    } else
+                        $final[] = $res;
+                }
+            }
+
+            return $final;
         }
     }
 
@@ -141,6 +183,9 @@ class Boards implements BoardsInterface
     }
 
     public function createBoard($workspaceId, $title, $description, $isPrivate, $currentUserId = null, $userIdToNotify = Array()){
+        if(count($userIdToNotify)==0)
+            $userIdToNotify = [$currentUserId];
+
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
@@ -160,6 +205,10 @@ class Boards implements BoardsInterface
             $board->setWorkspacesNumber(1);
             $this->doctrine->persist($board);
 
+            $doneListOfTasks = new ListOfTasks($board,"Done","#51b75b",true);
+            $this->doctrine->persist($doneListOfTasks);
+            $this->doctrine->flush();
+
             $link = new LinkBoardWorkspace($workspace, $board, true);
             $this->doctrine->persist($link);
 
@@ -176,12 +225,24 @@ class Boards implements BoardsInterface
         }
     }
 
-    public function updateBoard($workspaceId, $boardId, $title, $description, $color, $isPrivate, $currentUserId = null, $autoParticipate = Array(), $userIdToNotify = Array())
+    public function getParticipantsAsUser($board){
+        $board = $this->convertToEntity($board,"TwakeProjectBundle:Board");
+        $participants = $board->getParticipants();
+        $final = [];
+
+        foreach ($participants as $participant) {
+            $final[] = $this->convertToEntity($participant,"TwakeUsersBundle:User");
+        }
+
+        return $final;
+    }
+
+    public function updateBoard($boardId, $title, $description, $isPrivate, $currentUserId = null, $autoParticipate = Array(), $userIdToNotify = Array())
     {
-        if($workspaceId!=0)
-            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
-        else
-            $workspace = $this->getWorkspaceFromBoard($boardId);
+        if(count($userIdToNotify)==0) {
+            $userIdToNotify = [$currentUserId];
+        }
+        $workspace = $this->getWorkspaceFromBoard($boardId);
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
             return null;
@@ -197,7 +258,6 @@ class Boards implements BoardsInterface
         }
 
         $board->setTitle($title);
-        $board->setColor($color);
         $board->setisPrivate($isPrivate);
         $board->setDescription($description);
         $board->setParticipants($userIdToNotify);

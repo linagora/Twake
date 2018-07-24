@@ -33,13 +33,18 @@ class ListOfTasks
     private $board;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(name="order_ts",type="integer")
+     */
+    private $order;
+
+    /**
+     * @ORM\Column(type="string", length=255)
      */
     private $title
     ;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=10)
      */
     private $color;
 
@@ -49,15 +54,17 @@ class ListOfTasks
     private $isDoneList;
 
     /**
-     * @ORM\Column(name="participant", type="text")
+     * @ORM\Column(type="text")
      */
-    private $participants;
+    private $userIdToNotify;
 
     public function getAsArray(){
         return Array(
             "id" => $this->id,
             "label" => $this->title,
-            "color" => $this->color
+            "color" => $this->color,
+            "order" => $this->getOrder(),
+            "done" => $this->getisDoneList()
         );
     }
 
@@ -97,16 +104,76 @@ class ListOfTasks
     /**
      * @return mixed
      */
-    public function getParticipants()
+    public function getUserIdToNotify()
     {
-        return json_decode($this->participants,1);
+        return json_decode($this->userIdToNotify,1);
     }
 
     /**
      * @param mixed $participant
      */
-    public function setParticipants($participants)
+    public function setUserIdToNotify($userIdToNotify)
     {
-        $this->participants = json_encode($participants);
+        $this->userIdToNotify = json_encode($userIdToNotify);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getisDoneList()
+    {
+        return $this->isDoneList;
+    }
+
+    /**
+     * @param mixed $isDoneList
+     */
+    public function setIsDoneList($isDoneList)
+    {
+        $this->isDoneList = $isDoneList;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBoard()
+    {
+        return $this->board;
+    }
+
+    /**
+     * @param mixed $board
+     */
+    public function setBoard($board)
+    {
+        $this->board = $board;
+    }
+
+
+    public  function __construct($board, $title,$color, $isDoneList, $participants = Array())
+    {
+        $this->setTitle($title);
+        $this->setColor($color);
+        $this->setIsDoneList($isDoneList);
+        $this->setUserIdToNotify($participants);
+        $this->setBoard($board);
+        $this->setOrder(0);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param mixed $order
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+    }
+
 }

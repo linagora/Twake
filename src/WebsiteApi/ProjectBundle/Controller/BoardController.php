@@ -25,6 +25,12 @@ class BoardController extends Controller
             foreach ($boards as $board) {
                 $boardArray = $board->getAsArray();
                 $boardArray["owner"] = $this->getUser()->getAsArray();
+                $boardArray["percent"] = $this->get("app.boards")->getBoardPercent($board);
+                $participants = $this->get("app.boards")->getParticipantsAsUser($board);
+                $boardArray["participants"] = [];
+                $boardArray["lists"] = $this->get("app.boards")->getBoard($board);
+                foreach ($participants as $participant)
+                    $boardArray["participants"][] = $participant->getAsArray();
                 $data['data'][] = $boardArray;
             }
         }
@@ -55,9 +61,10 @@ class BoardController extends Controller
         $workspaceId = $request->request->get("workspaceId");
         $title = $request->request->get("name", "");
         $description = $request->request->get("description", "");
+        $members = $request->request->get("members", Array());
         $isPrivate = $request->request->get("isPrivate",false);
 
-        $data['data'] = $this->get("app.boards")->createBoard($workspaceId, $title,$description,$isPrivate, $this->getUser()->getId());
+        $data['data'] = $this->get("app.boards")->createBoard($workspaceId, $title,$description,$isPrivate, $this->getUser()->getId(), $members);
 
         if($data['data'])
             $data['data'] = $data['data']->getAsArray();
@@ -78,7 +85,10 @@ class BoardController extends Controller
         $isPrivate = $request->request->get("isPrivate",false);
         $participants = $request->request->get("members",Array());
 
-        $data['data'] = $this->get("app.boards")->updateBoard( $boardId, $title, $description, $isPrivate, $this->getUser(), Array(),$participants);
+        $data['data'] = $this->get("app.boards")->updateBoard($boardId, $title, $description, $isPrivate, $this->getUser()->getId(), Array(),$participants);
+
+        if($data['data'])
+            $data['data'] = $data['data']->getAsArray();
 
         return new JsonResponse($data);
     }

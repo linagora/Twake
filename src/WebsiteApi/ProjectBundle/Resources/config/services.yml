@@ -6,7 +6,7 @@ services:
 
     app.boards:
         class: WebsiteApi\ProjectBundle\Services\Boards
-        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels','@app.boardActivity']
+        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels','@app.boardActivity', '@app.list_of_tasks_service']
 
     board.topic:
         class: WebsiteApi\ProjectBundle\Topic\BoardTopic

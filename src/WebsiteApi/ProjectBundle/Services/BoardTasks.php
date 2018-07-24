@@ -5,6 +5,7 @@ namespace WebsiteApi\ProjectBundle\Services;
 
 use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\ProjectBundle\Entity\Board;
 use WebsiteApi\ProjectBundle\Entity\BoardTask;
 use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
 use WebsiteApi\ProjectBundle\Entity\LinkTaskUser;
@@ -39,10 +40,9 @@ class BoardTasks implements BoardTasksInterface
         }
     }
 
-    public function createTask($workspaceId, $boardId, $task, $currentUserId = null, $addMySelf = false, $participants=Array())
+    public function createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $addMySelf = false, $userIdsToNotify=Array(), $weight=1)
     {
-
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $workspace = $this->getWorkspaceFromBoard($boardId);
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
             return null;
@@ -59,43 +59,19 @@ class BoardTasks implements BoardTasksInterface
             return null;
         }
 
-        $task = new BoardTask($task, $task["from"], $task["to"]);
-        $taskModified = $task->getTask();
-        $taskModified["title"] = isset($task->getTask()["title"])? $task->getTask()["title"] : "task";
-        $taskModified["typeTask"] = isset($task->getTask()["typeTask"])? $task->getTask()["typeTask"] : "task";
+        //$from, $to, $name, $description, $dependingTask, $weight
+        if($dependingTaskId!=0)
+            $dependingTask = $this->convertToEntity($dependingTaskId,"TwakeProjectBundle:BoardTask");
+        else
+            $dependingTask = null;
+        $task = new BoardTask($startDate, $endDate, $name, $description, $dependingTask, $weight);
 
-        $task->setTask($taskModified);
-        $task->setReminder();
         $task->setBoard($board);
-        $participantsArray = Array();
-        $task->setParticipant($participantsArray);
+        $task->setUserIdToNotify($userIdsToNotify);
+        $task->setOrder($this->getMinOrder($board));
+
         $this->doctrine->persist($task);
         $this->doctrine->flush();
-
-        foreach($participants as $participant)
-        {
-            $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($participant);
-            if($user != null){
-                $this->addUsers($workspaceId,$boardId,$task,Array($user->getId()));
-                $participantsArray[] = $user->getId();
-            }
-        }
-        $calArray = $board->getAsArray();
-
-        $task->setParticipant($participantsArray);
-
-        $this->doctrine->persist($task);
-
-        if ($calArray["autoParticipate"] != null && is_array($calArray["autoParticipate"])) {
-            foreach ($calArray["autoParticipate"] as $userAuto){
-                $this->addUsers($workspaceId, $boardId, $task->getId(),Array($userAuto), $currentUserId);
-            }
-        }
-
-        if($addMySelf){
-            $this->addUsers($workspaceId, $boardId, $task, Array($currentUserId), $currentUserId);
-        }
-
 
         $data = Array(
             "type" => "create",
@@ -103,7 +79,7 @@ class BoardTasks implements BoardTasksInterface
         );
         $this->pusher->push($data, "board/".$boardId);
         $this->doctrine->flush();
-        $this->boardActivity->pushActivity(true, $workspaceId, $currentUserId, null, "Task ".$task->getName()." created","", Array(), Array("notifCode" => ""));
+        $this->notifyParticipants($userIdsToNotify,$workspace,"","","");
 
         return $task;
 
@@ -149,7 +125,7 @@ class BoardTasks implements BoardTasksInterface
         $task->setTask($taskArray);
         $task->setFrom($taskArray["from"]);
         $task->setTo($taskArray["to"]);
-        $task->setParticipant($taskArray["participant"]);
+        $task->setUserIdToNotify($taskArray["participant"]);
         if (isset($taskArray["reminder"])) {
             $task->setReminder(intval($taskArray["reminder"]));
         } else {
@@ -217,6 +193,33 @@ class BoardTasks implements BoardTasksInterface
 
         return true;
     }
+
+    public function moveTask($taskIdA,$taskIdB, $currentUserId = null)
+    {
+        $workspace = $this->getWorkspaceFromTask($taskIdA);
+        $workspaceB = $this->getWorkspaceFromTask($taskIdB);
+        /* @var BoardTask $taskA */
+        $taskA = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id" => $taskIdA));
+        /* @var BoardTask $taskB */
+        $taskB = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id" => $taskIdB));
+
+        if($workspace->getId()!=$workspaceB->getId())
+            return false;
+
+        if($taskA->getBoard()->getId()!=$taskB->getBoard()->getId())
+            return false;
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+            return null;
+        }
+
+        $order = $taskA->getOrder();
+        $taskA->setOrder($taskA->getOrder());
+        $taskB->setOrder($order);
+
+        return true;
+    }
+
     private function getWorkspaceFromBoard($boardId){
         /* @var Board $board*/
         $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
@@ -264,13 +267,13 @@ class BoardTasks implements BoardTasksInterface
                     $userLinked->setFrom($task->getFrom());
                     $userLinked->setTo($task->getTo());
                     $this->doctrine->persist($userLinked);
-                    $participantArray = $task->getParticipant();
+                    $participantArray = $task->getUserIdToNotify();
                     $participantArray[] = $user->getId();
                 }
                 $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$task->getName(),"", Array(), Array("notifCode" => ""));
             }
         }
-        $task->setParticipant($participantArray);
+        $task->setUserIdToNotify($participantArray);
         $this->doctrine->flush();
         $data = Array(
             "type" => "update",
@@ -561,5 +564,18 @@ class BoardTasks implements BoardTasksInterface
         $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id" => $taskId));
 
         return $this->getWorkspaceFromBoard($task->getBoard()->getId());
+    }
+    private function getMinOrder($board)
+    {
+        $board = $this->convertToEntity($board,"TwakeProjectBundle:Board");
+
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("board" => $board));
+
+        $m = 0;
+        foreach ($tasks as $list){
+            if($list->getOrder()<$m)
+                $m = $list->getOrder();
+        }
+        return $m;
     }
 }

@@ -19,12 +19,18 @@ class ListOfTasksController extends Controller
         );
 
         $boardId = $request->request->get("boardId", 0);
+        $lists = $this->get("app.list_of_tasks_service")->getListOfTasks($boardId);
 
-        if(!$this->get("app.list_of_tasks_service")->getListOfTasks($boardId)) {
+        if(!$lists) {
             $data["errors"][] = "Board not found or there are no task on this board";
         }
         else{
-            $data["data"] = "success";
+            foreach ($lists as $list)
+            {
+                $listArray = $list->getAsArray();
+                $listArray["percentage"] = $this->get("app.list_of_tasks_service")->getListPercent($list);
+                $data["data"][] = $listArray;
+            }
         }
 
         return new JsonResponse($data);
@@ -64,6 +70,49 @@ class ListOfTasksController extends Controller
         }
         else{
             $data["data"] = "success";
+        }
+
+        return new JsonResponse($data);
+    }
+
+    public function moveAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $listOfTaskAId = $request->request->get("idA", 0);
+        $listOfTaskBId = $request->request->get("idB", 0);
+
+        if(!$this->get("app.list_of_tasks_service")->moveListOfTasks($listOfTaskAId, $listOfTaskBId)) {
+            $data["errors"][] = "List of tasks not found";
+        }
+        else{
+            $data["data"] = "success";
+        }
+
+        return new JsonResponse($data);
+    }
+
+    public function createAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $newTitle = $request->request->get("name", "");
+        $newColor = $request->request->get("color", "");
+        $boardId = $request->request->get("boardId", 0);
+        $userIdToNotify = $request->request->get("watch_members", Array());
+
+        $listOfTasks  = $this->get("app.list_of_tasks_service")->createListOfTasks($newTitle, $newColor, $boardId,$userIdToNotify);
+        if(!$listOfTasks) {
+            $data["errors"][] = "Fail to create list of tasks";
+        }
+        else{
+            $data["data"] = $listOfTasks->getAsArray();
         }
 
         return new JsonResponse($data);
