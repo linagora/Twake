@@ -184,7 +184,7 @@ class Boards implements BoardsInterface
             $board->setWorkspacesNumber(1);
             $this->doctrine->persist($board);
 
-            $doneListOfTasks = new ListOfTasks($board,"Done","",true);
+            $doneListOfTasks = new ListOfTasks($board,"Done","#51b75b",true);
             $this->doctrine->persist($doneListOfTasks);
 
             $link = new LinkBoardWorkspace($workspace, $board, true);
@@ -203,12 +203,9 @@ class Boards implements BoardsInterface
         }
     }
 
-    public function updateBoard($workspaceId, $boardId, $title, $description, $color, $isPrivate, $currentUserId = null, $autoParticipate = Array(), $userIdToNotify = Array())
+    public function updateBoard($boardId, $title, $description, $isPrivate, $currentUserId = null, $autoParticipate = Array(), $userIdToNotify = Array())
     {
-        if($workspaceId!=0)
-            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
-        else
-            $workspace = $this->getWorkspaceFromBoard($boardId);
+        $workspace = $this->getWorkspaceFromBoard($boardId);
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
             return null;
@@ -224,7 +221,6 @@ class Boards implements BoardsInterface
         }
 
         $board->setTitle($title);
-        $board->setColor($color);
         $board->setisPrivate($isPrivate);
         $board->setDescription($description);
         $board->setParticipants($userIdToNotify);

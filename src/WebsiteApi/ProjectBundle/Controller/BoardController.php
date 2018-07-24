@@ -79,7 +79,10 @@ class BoardController extends Controller
         $isPrivate = $request->request->get("isPrivate",false);
         $participants = $request->request->get("members",Array());
 
-        $data['data'] = $this->get("app.boards")->updateBoard( $boardId, $title, $description, $isPrivate, $this->getUser(), Array(),$participants);
+        $data['data'] = $this->get("app.boards")->updateBoard($boardId, $title, $description, $isPrivate, $this->getUser(), Array(),$participants);
+
+        if($data['data'])
+            $data['data'] = $data['data']->getAsArray();
 
         return new JsonResponse($data);
     }
