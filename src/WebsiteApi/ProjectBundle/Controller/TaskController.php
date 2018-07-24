@@ -66,9 +66,9 @@ class TaskController extends Controller
         $startDate = $request->request->get("startDate");
         $endDate = $request->request->get("endDate");
         $dependingTaskId = $request->request->get("dependingTaskId");
-        $participants = $request->request->get("members");
+        $userToNotify = $request->request->get("watch_members");
 
-        $task = $this->get("app.board_tasks")->createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $participants, $weight);
+        $task = $this->get("app.board_tasks")->createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify, $weight);
 
         if($task == null){
             $data["errors"] = "error";

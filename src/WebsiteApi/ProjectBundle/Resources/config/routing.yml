@@ -140,11 +140,11 @@ board_list_of_tasks_get:
     methods: [POST]
 
 board_list_of_tasks_remove:
-    path: /ListOfTasks/remove
+    path: /lists/remove
     defaults: { _controller: TwakeProjectBundle:ListOfTasks:remove }
     methods: [POST]
 
 board_list_of_tasks_create:
-    path: /ListOfTasks/create
+    path: /lists/create
     defaults: { _controller: TwakeProjectBundle:ListOfTasks:create }
     methods: [POST]

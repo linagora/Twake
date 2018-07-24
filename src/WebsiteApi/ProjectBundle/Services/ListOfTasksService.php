@@ -69,7 +69,7 @@ class ListOfTasksService
     }
 
     public function getListOfTasks($boardId){
-        $board = $this->doctrine->getReposistory("TwakeProjectBundle:Board")->findOneBy(Array("id" => $boardId));
+        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->findOneBy(Array("id" => $boardId));
 
         $ListsOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
 
@@ -92,14 +92,14 @@ class ListOfTasksService
         if($newColor!=null)
             $listOfTasks->setColor($newColor);
 
-        $listOfTasks->setParticipants($userIdToNotify);
+        $listOfTasks->setUserIdToNotify($userIdToNotify);
 
         $this->doctrine->persist($listOfTasks);
         $this->doctrine->flush();
 
-        $this->notifyParticipants($listOfTasks->getParticipants(),$workspace->getId(), "List ".$listOfTasks->getTitle()." created", "", "");
+        $this->notifyParticipants($listOfTasks->getUserIdToNotify(),$workspace->getId(), "List ".$listOfTasks->getTitle()." created", "", "");
 
-        return true;
+        return $listOfTasks;
     }
 
     public function updateListOfTasks($listOfTasksId, $newTitle, $newColor, $workspaceId,$userIdToNotify){
@@ -116,12 +116,12 @@ class ListOfTasksService
         if($newColor!=null)
             $listOfTasks->setColor($newColor);
 
-        $listOfTasks->setParticipants($userIdToNotify);
+        $listOfTasks->setUserIdToNotify($userIdToNotify);
 
         $this->doctrine->persist($listOfTasks);
         $this->doctrine->flush();
 
-        $this->notifyParticipants($listOfTasks->getParticipants(),$workspaceId, "List ".$listOfTasks->getTitle()." updated", "", "");
+        $this->notifyParticipants($listOfTasks->getUserIdToNotify(),$workspaceId, "List ".$listOfTasks->getTitle()." updated", "", "");
 
         return true;
     }

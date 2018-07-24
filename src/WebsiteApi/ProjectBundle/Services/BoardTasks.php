@@ -5,6 +5,7 @@ namespace WebsiteApi\ProjectBundle\Services;
 
 use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\ProjectBundle\Entity\Board;
 use WebsiteApi\ProjectBundle\Entity\BoardTask;
 use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
 use WebsiteApi\ProjectBundle\Entity\LinkTaskUser;
@@ -66,7 +67,7 @@ class BoardTasks implements BoardTasksInterface
         $task = new BoardTask($startDate, $endDate, $name, $description, $dependingTask, $weight);
 
         $task->setBoard($board);
-        $task->setParticipant($participants);
+        $task->setUserIdToNotify($participants);
 
         $this->doctrine->persist($task);
         $this->doctrine->flush();
@@ -123,7 +124,7 @@ class BoardTasks implements BoardTasksInterface
         $task->setTask($taskArray);
         $task->setFrom($taskArray["from"]);
         $task->setTo($taskArray["to"]);
-        $task->setParticipant($taskArray["participant"]);
+        $task->setUserIdToNotify($taskArray["participant"]);
         if (isset($taskArray["reminder"])) {
             $task->setReminder(intval($taskArray["reminder"]));
         } else {
@@ -265,13 +266,13 @@ class BoardTasks implements BoardTasksInterface
                     $userLinked->setFrom($task->getFrom());
                     $userLinked->setTo($task->getTo());
                     $this->doctrine->persist($userLinked);
-                    $participantArray = $task->getParticipant();
+                    $participantArray = $task->getUserIdToNotify();
                     $participantArray[] = $user->getId();
                 }
                 $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$task->getName(),"", Array(), Array("notifCode" => ""));
             }
         }
-        $task->setParticipant($participantArray);
+        $task->setUserIdToNotify($participantArray);
         $this->doctrine->flush();
         $data = Array(
             "type" => "update",

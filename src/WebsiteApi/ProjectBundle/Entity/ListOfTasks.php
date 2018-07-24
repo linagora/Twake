@@ -56,13 +56,15 @@ class ListOfTasks
     /**
      * @ORM\Column(type="text")
      */
-    private $participants;
+    private $userIdToNotify;
 
     public function getAsArray(){
         return Array(
             "id" => $this->id,
             "label" => $this->title,
-            "color" => $this->color
+            "color" => $this->color,
+            "order" => $this->getOrder(),
+            "done" => $this->getisDoneList()
         );
     }
 
@@ -102,17 +104,17 @@ class ListOfTasks
     /**
      * @return mixed
      */
-    public function getParticipants()
+    public function getUserIdToNotify()
     {
-        return json_decode($this->participants,1);
+        return json_decode($this->userIdToNotify,1);
     }
 
     /**
      * @param mixed $participant
      */
-    public function setParticipants($participants)
+    public function setUserIdToNotify($userIdToNotify)
     {
-        $this->participants = json_encode($participants);
+        $this->userIdToNotify = json_encode($userIdToNotify);
     }
 
     /**
@@ -153,7 +155,7 @@ class ListOfTasks
         $this->setTitle($title);
         $this->setColor($color);
         $this->setIsDoneList($isDoneList);
-        $this->setParticipants($participants);
+        $this->setUserIdToNotify($participants);
         $this->setBoard($board);
         $this->setOrder(0);
     }

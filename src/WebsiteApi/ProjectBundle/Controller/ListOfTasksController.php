@@ -102,10 +102,10 @@ class ListOfTasksController extends Controller
             'data' => Array()
         );
 
-        $newTitle = $request->request->get("title", "");
+        $newTitle = $request->request->get("name", "");
         $newColor = $request->request->get("color", "");
         $boardId = $request->request->get("boardId", 0);
-        $userIdToNotify = $request->request->get("members", Array());
+        $userIdToNotify = $request->request->get("watch_members", Array());
 
         $listOfTasks  = $this->get("app.list_of_tasks_service")->createListOfTasks($newTitle, $newColor, $boardId,$userIdToNotify);
         if(!$listOfTasks) {

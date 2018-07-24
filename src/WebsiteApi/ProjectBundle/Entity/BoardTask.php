@@ -68,7 +68,7 @@ class BoardTask {
     /**
      * @ORM\Column(name="participant", type="text")
      */
-    private $participant;
+    private $userIdToNotify;
 
     /**
      * @ORM\Column(type="text")
@@ -168,17 +168,17 @@ class BoardTask {
     /**
      * @return mixed
      */
-    public function getParticipant()
+    public function getUserIdToNotify()
     {
-        return json_decode($this->participant, 1);
+        return json_decode($this->userIdToNotify, 1);
     }
 
     /**
      * @param mixed $task
      */
-    public function setParticipant($task)
+    public function setUserIdToNotify($task)
     {
-        $this->participant = json_encode($task);
+        $this->userIdToNotify = json_encode($task);
     }
 
     /**
@@ -212,7 +212,7 @@ class BoardTask {
         return Array(
             "id" => $this->getId(),
             "board" => $this->getBoard()->getId(),
-            "participant" => $this->getParticipant(),
+            "participant" => $this->getUserIdToNotify(),
             "order" => $this->getOrder(),
         );
     }
