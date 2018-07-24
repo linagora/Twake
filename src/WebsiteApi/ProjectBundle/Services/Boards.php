@@ -203,6 +203,18 @@ class Boards implements BoardsInterface
         }
     }
 
+    public function getParticipantsAsUser($board){
+        $board = $this->convertToEntity($board,"TwakeProjectBundle:Board");
+        $participants = $board->getParticipants();
+        $final = [];
+
+        foreach ($participants as $participant) {
+            $final[] = $this->convertToEntity($participant,"TwakeUsersBundle:User");
+        }
+
+        return $final;
+    }
+
     public function updateBoard($boardId, $title, $description, $isPrivate, $currentUserId = null, $autoParticipate = Array(), $userIdToNotify = Array())
     {
         $workspace = $this->getWorkspaceFromBoard($boardId);

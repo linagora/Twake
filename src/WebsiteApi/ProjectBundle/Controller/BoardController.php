@@ -26,6 +26,10 @@ class BoardController extends Controller
                 $boardArray = $board->getAsArray();
                 $boardArray["owner"] = $this->getUser()->getAsArray();
                 $boardArray["percent"] = $this->get("app.boards")->getBoardPercent($board);
+                $participants = $this->get("app.boards")->getParticipantsAsUser($board);
+                $boardArray["participants"] = [];
+                foreach ($participants as $participant)
+                    $boardArray["participants"][] = $participant->getAsArray();
                 $data['data'][] = $boardArray;
             }
         }
