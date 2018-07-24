@@ -254,7 +254,7 @@ class BoardTask {
     }
 
     /**
-     * @return mixed
+     * @return ListOfTasks
      */
     public function getListOfTasks()
     {

@@ -109,4 +109,47 @@ class ListOfTasks
     {
         $this->participants = json_encode($participants);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getisDoneList()
+    {
+        return $this->isDoneList;
+    }
+
+    /**
+     * @param mixed $isDoneList
+     */
+    public function setIsDoneList($isDoneList)
+    {
+        $this->isDoneList = $isDoneList;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBoard()
+    {
+        return $this->board;
+    }
+
+    /**
+     * @param mixed $board
+     */
+    public function setBoard($board)
+    {
+        $this->board = $board;
+    }
+
+
+    public  function __construct($board, $title,$color, $isDoneList, $participants = Array())
+    {
+        $this->setTitle($title);
+        $this->setColor($color);
+        $this->setIsDoneList($isDoneList);
+        $this->setParticipants($participants);
+        $this->setBoard($board);
+    }
+
 }

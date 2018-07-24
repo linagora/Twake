@@ -6,7 +6,9 @@ namespace WebsiteApi\ProjectBundle\Services;
 use phpDocumentor\Reflection\Types\Array_;
 use PHPUnit\Util\Json;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use WebsiteApi\ProjectBundle\Entity\BoardTask;
 use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
+use WebsiteApi\ProjectBundle\Entity\ListOfTasks;
 use WebsiteApi\ProjectBundle\Model\BoardsInterface;
 use WebsiteApi\ProjectBundle\Entity\Board;
 
@@ -73,6 +75,26 @@ class Boards implements BoardsInterface
         }
 
     }
+
+    public function getBoardPercent($boardId){
+        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->findOneBy(Array("id" => $boardId));
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("board" => $board));
+
+        $total = 0.0;
+        $done = 0.0;
+
+        foreach ($tasks as $task){
+            /* @var BoardTask $task */
+
+            $total++;
+            if($task->getListOfTasks()->getIsDoneList())
+                $done++;
+        }
+
+        return $done/$total;
+
+    }
+
     public function getBoards($workspaceId, $currentUserId=null)
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
@@ -159,6 +181,9 @@ class Boards implements BoardsInterface
             $board->setParticipants($userIdToNotify);
             $board->setWorkspacesNumber(1);
             $this->doctrine->persist($board);
+
+            $doneListOfTasks = new ListOfTasks($board,"Done","",true);
+            $this->doctrine->persist($doneListOfTasks);
 
             $link = new LinkBoardWorkspace($workspace, $board, true);
             $this->doctrine->persist($link);
