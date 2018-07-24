@@ -29,14 +29,22 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->getDoctrine()->persist($pricing_plan);
         $this->getDoctrine()->flush();
 
+        $pricing_plan_2 = new PricingPlan("testChangementPlan");
+        $pricing_plan_2->setMonthPrice(200);
+        $pricing_plan_2->setYearPrice(1400);
+        $this->getDoctrine()->persist($pricing_plan_2);
+        $this->getDoctrine()->flush();
+
 
         $list_freq = [1, 3, 5, 7, 3, 2, 1, 1];
         var_dump("before scenario");
-        $scenario = new ScenarioPayment($this,"lucie.martin@telecomnancy.net", "Lulu", "lulu", "Group_Test", "Project",$pricing_plan,
-            8, $this->getDoctrine(), new \DateInterval("P30D"), $list_freq, false,true);
+        $scenario = new ScenarioPayment($this,"benoit.tallandier@telecomnancy.net", "Lulu", "lulu", "Group_Test", "Project",$pricing_plan,
+            8, $this->getDoctrine(), new \DateInterval("P35D"), $list_freq, true,true, $pricing_plan_2);
         var_dump("after creation scenario");
         $scenario->exec();
-        var_dump("after exec scenario");
+        var_dump("after 1 exec scenario");
+        $scenario->exec('a');
+        var_dump("after 2 exec scenatrio");
 
         var_dump("end scenario");
         //Fin scénario
@@ -80,7 +88,7 @@ class SubscriptionTest extends WebTestCaseExtended
     }
 
     public function isEquivalentTo($isEquivalentTo){
-        $this->assertTrue($isEquivalentTo==true,"archivage correct du group_period");
+        $this->assertTrue($isEquivalentTo==true,"archivage incorrect du group_period");
     }
 
     public function myGet($s){
