@@ -58,14 +58,17 @@ class TaskController extends Controller
             'data' => Array()
         );
 
-        $workspaceId = $request->request->get("workspaceId");
         $task = $request->request->get("task");
         $boardId = $request->request->get("boardId");
-        $addMySelf = $request->request->get("addMe");
         $weight = $request->request->get("weight");
-        $participants = $task["participant"];
+        $name = $request->request->get("name");
+        $description = $request->request->get("description");
+        $startDate = $request->request->get("startDate");
+        $endDate = $request->request->get("endDate");
+        $dependingTaskId = $request->request->get("dependingTaskId");
+        $participants = $request->request->get("members");
 
-        $task = $this->get("app.board_tasks")->createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTask, $currentUserId, $addMySelf, $participants, $weight);
+        $task = $this->get("app.board_tasks")->createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $participants, $weight);
 
         if($task == null){
             $data["errors"] = "error";
