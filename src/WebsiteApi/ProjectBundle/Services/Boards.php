@@ -126,7 +126,21 @@ class Boards implements BoardsInterface
             else
                 $result = $boards;
 
-            return $result;
+            $final = [];
+
+            if($currentUserId!=null) {
+                foreach ($result as $res) {
+                    /* @var Board $res */
+                    if ($res->getisPrivate()) {
+                        $participants = $res->getParticipants();
+                        if(in_array($currentUserId,$participants))
+                            $final[] = $res;
+                    } else
+                        $final[] = $res;
+                }
+            }
+
+            return $final;
         }
     }
 
@@ -165,6 +179,9 @@ class Boards implements BoardsInterface
     }
 
     public function createBoard($workspaceId, $title, $description, $isPrivate, $currentUserId = null, $userIdToNotify = Array()){
+        if(count($userIdToNotify)==0)
+            $userIdToNotify = [$currentUserId];
+
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
@@ -217,6 +234,9 @@ class Boards implements BoardsInterface
 
     public function updateBoard($boardId, $title, $description, $isPrivate, $currentUserId = null, $autoParticipate = Array(), $userIdToNotify = Array())
     {
+        if(count($userIdToNotify)==0) {
+            $userIdToNotify = [$currentUserId];
+        }
         $workspace = $this->getWorkspaceFromBoard($boardId);
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
