@@ -9,6 +9,7 @@
 namespace WebsiteApi\ProjectBundle\Services;
 
 
+use WebsiteApi\ProjectBundle\Entity\BoardTask;
 use WebsiteApi\ProjectBundle\Entity\ListOfTasks;
 
 class ListOfTasksService
@@ -98,4 +99,43 @@ class ListOfTasksService
 
         return true;
     }
+
+    public function moveListOfTasks($listOfTasksIdA, $listOfTasksIdB){
+        /* @var ListOfTasks $listOfTasksA */
+        $listOfTasksA = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTasksIdA));
+
+        /* @var ListOfTasks $listOfTasksB */
+        $listOfTasksB = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTasksIdB));
+
+        $order = $listOfTasksA->getOrder();
+        $listOfTasksA->setOrder($listOfTasksB->getOrder());
+        $listOfTasksB->setOrder($order);
+        $this->doctrine->persist($listOfTasksA);
+        $this->doctrine->persist($listOfTasksB);
+        $this->doctrine->flush();
+
+        return true;
+    }
+
+    public function getListPercent($listOfTasks){
+        $listOfTasks = $this->convertToEntity($listOfTasks,"TwakeProjectBundle:Board");
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTasks" => $listOfTasks));
+
+        $total = 0.0;
+        $done = 0.0;
+
+        foreach ($tasks as $task){
+            /* @var BoardTask $task */
+
+            $total+=$task->getWeight();
+            if($task->getListOfTasks()->getIsDoneList())
+                $done+=$task->getWeight();
+        }
+
+        if($total!=0)
+            return $done/$total;
+        return 0.0;
+
+    }
+
 }

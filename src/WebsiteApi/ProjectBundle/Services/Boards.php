@@ -23,12 +23,15 @@ class Boards implements BoardsInterface
     var $workspaceLevels;
     /* @var BoardActivities $boardActivities */
     var $boardActivities;
+    /* @var ListOfTasksService $listOfTaskService */
+    var $listOfTaskService;
 
-    public function __construct($doctrine, $pusher, $workspaceLevels, $boardActivities){
+    public function __construct($doctrine, $pusher, $workspaceLevels, $boardActivities, $listOfTaskService){
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
         $this->workspaceLevels = $workspaceLevels;
         $this->boardActivities = $boardActivities;
+        $this->listOfTaskService = $listOfTaskService;
     }
 
     private function notifyParticipants($participants, $workspace, $title, $description, $notifCode){
@@ -52,6 +55,7 @@ class Boards implements BoardsInterface
             $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTask" => $listOfTask));
             $array["tasks"] = count($tasks);
             $array["order"] = $listOfTask->getOrder();
+            $array["percentage"] = $this->listOfTaskService->getListPercent($listOfTask);
 
             $result[] = $array;
         }
@@ -86,9 +90,9 @@ class Boards implements BoardsInterface
         foreach ($tasks as $task){
             /* @var BoardTask $task */
 
-            $total++;
+            $total+=$task->getWeight();
             if($task->getListOfTasks()->getIsDoneList())
-                $done++;
+                $done+=$task->getWeight();
         }
 
         if($total!=0)

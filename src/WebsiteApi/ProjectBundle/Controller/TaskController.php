@@ -62,9 +62,10 @@ class TaskController extends Controller
         $task = $request->request->get("task");
         $boardId = $request->request->get("boardId");
         $addMySelf = $request->request->get("addMe");
+        $weight = $request->request->get("weight");
         $participants = $task["participant"];
 
-        $task = $this->get("app.board_tasks")->createTask($workspaceId, $boardId, $task, $this->getUser()->getId(), $addMySelf, $participants);
+        $task = $this->get("app.board_tasks")->createTask($workspaceId, $boardId, $task, $this->getUser()->getId(), $addMySelf, $participants, $weight);
 
         if($task == null){
             $data["errors"] = "error";
@@ -105,6 +106,19 @@ class TaskController extends Controller
         $boardId = $request->request->get("boardId");
 
         $data['data'] = $this->get("app.board_tasks")->removeTask($workspaceId, $boardId, $taskId, $this->getUser()->getId());
+
+        return new JsonResponse($data);
+    }
+    public function moveAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $taskIdA = $request->request->get("idA");
+        $taskIdB = $request->request->get("idB");
+        $data['data'] = $this->get("app.board_tasks")->moveTask($taskIdA, $taskIdB, $this->getUser()->getId());
 
         return new JsonResponse($data);
     }

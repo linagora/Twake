@@ -39,9 +39,9 @@ class BoardTasks implements BoardTasksInterface
         }
     }
 
-    public function createTask($workspaceId, $boardId, $task, $currentUserId = null, $addMySelf = false, $participants=Array())
+    public function createTask($workspaceId, $boardId, $task, $dependingTask, $currentUserId = null, $addMySelf = false, $participants=Array(), $weight=1)
     {
-
+        //TODO : mettre name, descr, ect en var, datestart, dateend
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
@@ -59,7 +59,9 @@ class BoardTasks implements BoardTasksInterface
             return null;
         }
 
-        $task = new BoardTask($task, $task["from"], $task["to"]);
+        //$from, $to, $name, $description, $dependingTask, $weight
+        $dependingTask = $this->convertToEntity();
+        $task = new BoardTask($task["from"], $task["to"], $task["name"], $task["description"], $dependingTask, $weight);
         $taskModified = $task->getTask();
         $taskModified["title"] = isset($task->getTask()["title"])? $task->getTask()["title"] : "task";
         $taskModified["typeTask"] = isset($task->getTask()["typeTask"])? $task->getTask()["typeTask"] : "task";
@@ -217,6 +219,33 @@ class BoardTasks implements BoardTasksInterface
 
         return true;
     }
+
+    public function moveTask($taskIdA,$taskIdB, $currentUserId = null)
+    {
+        $workspace = $this->getWorkspaceFromTask($taskIdA);
+        $workspaceB = $this->getWorkspaceFromTask($taskIdB);
+        /* @var BoardTask $taskA */
+        $taskA = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id" => $taskIdA));
+        /* @var BoardTask $taskB */
+        $taskB = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id" => $taskIdB));
+
+        if($workspace->getId()!=$workspaceB->getId())
+            return false;
+
+        if($taskA->getBoard()->getId()!=$taskB->getBoard()->getId())
+            return false;
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+            return null;
+        }
+
+        $order = $taskA->getOrder();
+        $taskA->setOrder($taskA->getOrder());
+        $taskB->setOrder($order);
+
+        return true;
+    }
+
     private function getWorkspaceFromBoard($boardId){
         /* @var Board $board*/
         $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);

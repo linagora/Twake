@@ -33,6 +33,11 @@ class ListOfTasks
     private $board;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $order;
+
+    /**
      * @ORM\Column(type="string")
      */
     private $title
@@ -150,6 +155,22 @@ class ListOfTasks
         $this->setIsDoneList($isDoneList);
         $this->setParticipants($participants);
         $this->setBoard($board);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param mixed $order
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
     }
 
 }
