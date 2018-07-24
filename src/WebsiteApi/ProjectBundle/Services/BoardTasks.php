@@ -39,7 +39,7 @@ class BoardTasks implements BoardTasksInterface
         }
     }
 
-    public function createTask($workspaceId, $boardId, $task, $dependingTask, $currentUserId = null, $addMySelf = false, $participants=Array(), $weight=1)
+    public function createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTask, $currentUserId = null, $addMySelf = false, $participants=Array(), $weight=1)
     {
         //TODO : mettre name, descr, ect en var, datestart, dateend
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));

@@ -65,7 +65,7 @@ class TaskController extends Controller
         $weight = $request->request->get("weight");
         $participants = $task["participant"];
 
-        $task = $this->get("app.board_tasks")->createTask($workspaceId, $boardId, $task, $this->getUser()->getId(), $addMySelf, $participants, $weight);
+        $task = $this->get("app.board_tasks")->createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTask, $currentUserId, $addMySelf, $participants, $weight);
 
         if($task == null){
             $data["errors"] = "error";

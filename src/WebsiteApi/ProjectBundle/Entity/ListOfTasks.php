@@ -33,18 +33,18 @@ class ListOfTasks
     private $board;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="order_ts",type="integer")
      */
     private $order;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=255)
      */
     private $title
     ;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", length=10)
      */
     private $color;
 
@@ -54,7 +54,7 @@ class ListOfTasks
     private $isDoneList;
 
     /**
-     * @ORM\Column(name="participant", type="text")
+     * @ORM\Column(type="text")
      */
     private $participants;
 
@@ -155,6 +155,7 @@ class ListOfTasks
         $this->setIsDoneList($isDoneList);
         $this->setParticipants($participants);
         $this->setBoard($board);
+        $this->setOrder(0);
     }
 
     /**

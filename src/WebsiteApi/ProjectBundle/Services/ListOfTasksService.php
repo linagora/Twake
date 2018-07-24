@@ -31,6 +31,21 @@ class ListOfTasksService
         }
     }
 
+    private function convertToEntity($var, $repository)
+    {
+        if (is_string($var)) {
+            $var = intval($var);
+        }
+
+        if (is_int($var)) {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
     public function removeListOfTasks($listOfTaskId, $workspaceId = 0){
         $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTaskId));
 

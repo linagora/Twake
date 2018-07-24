@@ -23,7 +23,7 @@ class BoardTask {
     private $id;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="order_ts",type="integer")
      */
     private $order;
 

@@ -52,7 +52,7 @@ class Boards implements BoardsInterface
         foreach ($listOfTasks as $listOfTask){
             $array = $listOfTask->getAsArray();
 
-            $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTask" => $listOfTask));
+            $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTasks" => $listOfTask));
             $array["tasks"] = count($tasks);
             $array["order"] = $listOfTask->getOrder();
             $array["percentage"] = $this->listOfTaskService->getListPercent($listOfTask);
@@ -207,6 +207,7 @@ class Boards implements BoardsInterface
 
             $doneListOfTasks = new ListOfTasks($board,"Done","#51b75b",true);
             $this->doctrine->persist($doneListOfTasks);
+            $this->doctrine->flush();
 
             $link = new LinkBoardWorkspace($workspace, $board, true);
             $this->doctrine->persist($link);
