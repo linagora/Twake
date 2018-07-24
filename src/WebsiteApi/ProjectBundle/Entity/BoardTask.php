@@ -23,6 +23,16 @@ class BoardTask {
     private $id;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $order;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $weight;
+
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\Board")
      * @ORM\JoinColumn(nullable=true)
      */
@@ -80,7 +90,7 @@ class BoardTask {
      */
     private $doneList;
 
-    public  function __construct($from, $to, $name, $description, $dependingTask)
+    public  function __construct($from, $to, $name, $description, $dependingTask, $weight=1)
     {
         $this->setFrom($from);
         $this->setTo($to);
@@ -88,6 +98,7 @@ class BoardTask {
         $this->setName($name);
         $this->setDescription($description);
         $this->setDependingTask($dependingTask);
+        $this->setWeight($weight);
     }
 
     /**
@@ -202,6 +213,7 @@ class BoardTask {
             "id" => $this->getId(),
             "board" => $this->getBoard()->getId(),
             "participant" => $this->getParticipant(),
+            "order" => $this->getOrder(),
         );
     }
 
@@ -283,6 +295,38 @@ class BoardTask {
     public function setDoneList($doneList)
     {
         $this->doneList = $doneList;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param mixed $order
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWeight()
+    {
+        return $this->weight;
+    }
+
+    /**
+     * @param mixed $weight
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = $weight;
     }
 
 
