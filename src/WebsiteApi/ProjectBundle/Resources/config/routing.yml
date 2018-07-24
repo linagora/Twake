@@ -138,3 +138,13 @@ board_list_of_tasks_get:
     path: /ListOfTasks/get
     defaults: { _controller: TwakeProjectBundle:ListOfTasks:get }
     methods: [POST]
+
+board_list_of_tasks_remove:
+    path: /ListOfTasks/remove
+    defaults: { _controller: TwakeProjectBundle:ListOfTasks:remove }
+    methods: [POST]
+
+board_list_of_tasks_create:
+    path: /ListOfTasks/create
+    defaults: { _controller: TwakeProjectBundle:ListOfTasks:create }
+    methods: [POST]

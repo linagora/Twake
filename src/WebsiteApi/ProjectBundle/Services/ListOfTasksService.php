@@ -46,7 +46,7 @@ class ListOfTasksService
         }
 
     }
-    public function removeListOfTasks($listOfTaskId, $workspaceId = 0){
+    public function remove($listOfTaskId, $workspaceId = 0){
         $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTaskId));
 
         if(!$listOfTasks)
@@ -59,7 +59,7 @@ class ListOfTasksService
         return true;
     }
 
-    public function getListOfTasks($boardId){
+    public function get($boardId){
         $board = $this->doctrine->getReposistory("TwakeProjectBundle:Board")->findOneBy(Array("id" => $boardId));
 
         $ListsOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
@@ -67,7 +67,7 @@ class ListOfTasksService
         return $ListsOfTasks;
     }
 
-    public function createListOfTasks($newTitle, $newColor, $workspaceId,$userIdToNotify){
+    public function create($newTitle, $newColor, $workspaceId,$userIdToNotify){
 
         /* @var ListOfTasks $listOfTasks */
         $listOfTasks = new ListOfTasks();
@@ -91,7 +91,7 @@ class ListOfTasksService
         return true;
     }
 
-    public function updateListOfTasks($listOfTasksId, $newTitle, $newColor, $workspaceId,$userIdToNotify){
+    public function update($listOfTasksId, $newTitle, $newColor, $workspaceId,$userIdToNotify){
 
         /* @var ListOfTasks $listOfTasks */
         $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTasksId));
@@ -115,7 +115,7 @@ class ListOfTasksService
         return true;
     }
 
-    public function moveListOfTasks($listOfTasksIdA, $listOfTasksIdB){
+    public function move($listOfTasksIdA, $listOfTasksIdB){
         /* @var ListOfTasks $listOfTasksA */
         $listOfTasksA = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTasksIdA));
 
