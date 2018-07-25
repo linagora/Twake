@@ -120,8 +120,10 @@ class TaskController extends Controller
             'data' => Array()
         );
 
-        $idsOrderMap = $request->request->get("ids");
-        $data['data'] = $this->get("app.board_tasks")->moveTask($idsOrderMap);
+        $idsOrderMap = $request->request->get("orders");
+        $listId = $request->request->get("listId");
+        $boardId = $request->request->get("boardId");
+        $data['data'] = $this->get("app.board_tasks")->moveTask($idsOrderMap,$listId, $boardId);
 
         return new JsonResponse($data);
     }

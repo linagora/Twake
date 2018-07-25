@@ -189,13 +189,16 @@ class BoardTasks implements BoardTasksInterface
         return true;
     }
 
-    public function moveTask($idsOrderMap)
+    public function moveTask($idsOrderMap,$listId, $boardId)
     {
+        $board = $this->convertToEntity($boardId,"TwakeProjectBundle:Board");
+        $list = $this->convertToEntity($listId,"TwakeProjectBundle:ListOfTasks");
         foreach ($idsOrderMap as $id => $order){
-            /* @var BoardTasks $task */
-            $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTasks")->findOneBy(Array("id" => $id));
+            /* @var BoardTask $task */
+            $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTasks")->findOneBy(Array("id" => $id, "board" => $board));
             if($task==null)
                 continue;
+            $task->setListOfTasks($list);
             $task->setOrder($order);
             $this->doctrine->persist($task);
         }
