@@ -101,7 +101,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     public function billGroup($group, $cost, $sub, $alreadyPaied)
     {
         $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
-        //var_dump($this->subscriptionSystem->getAutoWithdrawal($group));
+        var_dump($this->subscriptionSystem->getAutoWithdrawal($group));
         if ($this->subscriptionSystem->getAutoWithdrawal($group) || $alreadyPaied){
             $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
             $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
@@ -109,17 +109,17 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
             $this->doctrine->persist($identity);
             $this->doctrine->flush();
 
-            //var_dump("send bill : ".$cost);
+            var_dump("send bill : ".$cost);
             $period = $this->subscriptionSystem->getGroupPeriod($group);
             $startDateOfService = $sub->getStartDate();
             $pricingPlan = $sub->getPricingPlan();
             $endedAt = $sub->getEndDate();
             $billedType = $sub->getStartDate()->diff($endedAt)->m==1 ? "monthly" : "year";
             //var_dump(106);
-            //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
+            var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
             $bill = $this->billing->recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt);
             //var_dump(108);
-            //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
+            var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
             //stats
             $apps = $this->groupApps->getApps($group);
 
