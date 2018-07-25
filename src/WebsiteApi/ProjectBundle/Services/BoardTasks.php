@@ -79,7 +79,7 @@ class BoardTasks implements BoardTasksInterface
 
         $task->setBoard($board);
         $task->setUserIdToNotify($userIdsToNotify);
-        $task->setOrder($this->getMinOrder($board));
+        $task->setOrder($this->getMinOrder($board)-1);
         $task->setListOfTasks($list);
 
         $this->doctrine->persist($task);
