@@ -17,7 +17,7 @@ interface SubscriptionManagerInterface
 
     public function checkEndPeriod();
 
-    public function renew($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $subscribedBalance, $cost, $manual);
+    public function renew($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost, $manual);
 
     public function checkLocked();
 }
