@@ -38,8 +38,10 @@ class SubscriptionTest extends WebTestCaseExtended
 
         $list_freq = [1, 3, 5, 7, 3, 2, 1, 1];
         var_dump("before scenario");
-        $scenario = new ScenarioPayment($this,"benoit.tallandier@telecomnancy.net", "Lulu", "lulu", "Group_Test", "Project",$pricing_plan,
-            8, $this->getDoctrine(), new \DateInterval("P35D"), $list_freq, true,true, $pricing_plan_2);
+        $scenario = new ScenarioPayment($this,"benoit.tallandier@telecomnancy.net", "Lulu",
+            "lulu", "Group_Test", "Project",$pricing_plan,
+            8, $this->getDoctrine(), new \DateInterval("P35D"), $list_freq,
+            true,true, $pricing_plan_2);
         var_dump("after creation scenario");
         $scenario->exec();
         var_dump("after 1 exec scenario");

@@ -271,7 +271,8 @@ class SubscriptionSystem implements SubscriptionInterface
     public function getEndPeriodTimeLeft($group)
     {
         $sub = $this->get($group);
-
+        //var_dump("getEndPeriod");
+        //var_dump($sub->getEndDate());
         return $sub->getEndDate()->diff(new \DateTime());
     }
 }

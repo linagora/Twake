@@ -79,6 +79,20 @@ class ScenarioPayment {
 
 
     public function exec($mode='w'){
+        $now = date_format(new \DateTime('now'), 'Y-m-d');
+        //var_dump($now);
+        $endDate = $this->subscription->getEndDate();
+        //var_dump($endDate);
+        $startDate = $this->subscription->getStartDate();
+        if (date_format($endDate, 'Y-m-d') == $now){
+            $this->subscription = $this->services->myGet("app.subscription_system")->get($this->group);
+            //var_dump($this->subscription->getId());
+            $this->subscription->setEndDate($endDate->sub($this->date_interval));
+            $this->subscription->setStartDate($startDate->sub($this->date_interval));
+            $this->doctrine->persist($this->subscription);
+            $this->doctrine->flush();
+        }
+
         $this->fp = fopen('file.csv', $mode);
         fputcsv($this->fp,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not",
             "overCost", "balance", "balance_consumed", "expected_cost", "is_blocked","lock_date"));
@@ -113,24 +127,32 @@ class ScenarioPayment {
         $startAt->sub(new \DateInterval("P1D"));
         $gp->setPeriodStartedAt($startAt);
         $this->doctrine->persist($gp);
+        //var_dump("start date");
+        //var_dump(date_format($startAt, 'Y-m-d H:i:s'));
 
         //Décale date de fin de group_period
         $periodExpectedToEndAt = $gp->getPeriodExpectedToEndAt();
         $periodExpectedToEndAt->sub(new \DateInterval("P1D"));
         $gp->setPeriodExpectedToEndAt($periodExpectedToEndAt);
         $this->doctrine->persist($gp);
+        //var_dump("expected to end at");
+        //var_dump(date_format($periodExpectedToEndAt, 'Y-m-d H:i:s'));
 
         //Décale date de début d'abonnement
         $startDate = $this->subscription->getStartDate();
         $startDate->add(new \DateInterval("P1D"));
         $this->subscription->setStartDate($startDate);
         $this->doctrine->persist($this->subscription);
+       // var_dump("start Date");
+       // var_dump(date_format($startDate, 'Y-m-d H:i:s'));
 
         //Décale date de fin d'abonnement
         $endDate = $this->subscription->getEndDate();
         $endDate->add(new \DateInterval("P1D"));
         $this->subscription->setEndDate($endDate);
         $this->doctrine->persist($this->subscription);
+        //var_dump("end Date");
+        //var_dump(date_format($endDate, 'Y-m-d H:i:s'));
 
         $this->doctrine->flush();
 
@@ -169,7 +191,7 @@ class ScenarioPayment {
         $a = $this->cronExec($group_id);
 
         $checkEndPeriodByGroup = $a[0];
-        var_dump($checkEndPeriodByGroup);
+        //var_dump($checkEndPeriodByGroup);
         $checkOverusingByGroup = $a[1];
 
         /*$closed_gp = $this->doctrine->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod")->findOneBy(Array("group" => $group_id));
@@ -218,7 +240,7 @@ class ScenarioPayment {
         $balance = $subcription2->getBalance();
         $balance_consumed = $this->services->myGet("app.subscription_system")->getCorrectBalanceConsumed($group_id);
 
-        //en cas de prélèvement non automatisé et de gros dépassement : paiement 5 jours après
+        //en cas de prélèvement automatisé et de gros dépassement : paiement 5 jours après
         if($checkOverusingByGroup == 9){
             $this->day_over_cost = $day;
         }
