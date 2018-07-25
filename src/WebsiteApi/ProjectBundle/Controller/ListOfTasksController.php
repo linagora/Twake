@@ -64,7 +64,7 @@ class ListOfTasksController extends Controller
             'data' => Array()
         );
 
-        $listOfTaskId = $request->request->get("listOfTaskId", 0);
+        $listOfTaskId = $request->request->get("id", 0);
 
         if(!$this->get("app.list_of_tasks_service")->removeListOfTasks($listOfTaskId)) {
             $data["errors"][] = "List of tasks not found";
