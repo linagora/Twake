@@ -13,6 +13,7 @@ use WebsiteApi\PaymentsBundle\Entity\GroupIdentity;
 use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
 use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;
 
+
 class ScenarioPayment {
 
     var $doctrine;
@@ -29,14 +30,18 @@ class ScenarioPayment {
     var $nb_total_users;
     var $new_pricing_plan;
     var $group;
+    var $events;
 
+    var $addUserCallback;
+    var $changePricingPlanCallback;
+    var $callbackMap;
 
     /**
      * ScenarioPayment constructor.
      */
     public function __construct($services, $user_mail, $pseudo, $password, $group_name, $workspace_name,$pricing_plan,
                                 $nb_total_users, $doctrine, $date_interval, $list_freq, $auto_withdrawal, $auto_renew,
-                                $new_pricing_plan = null){
+                                $events){
         $this->list_freq = $list_freq;
         $this->date_interval = $date_interval;
         $this->services = $services;
@@ -46,7 +51,18 @@ class ScenarioPayment {
         $this->auto_withdrawal = $auto_withdrawal;
         $this->pricing_plan = $pricing_plan;
         $this->nb_total_users = $nb_total_users;
-        $this->new_pricing_plan = $new_pricing_plan;
+        $this->events = $events;
+        $this->addUserCallback = function(ScenarioPayment $scenario, $data){
+            static $i = 0;
+            var_dump("coucou je passe dans la fonction");
+            $scenario->addUserToList("ben".$i."@gmail.com", "Ben".$i, "ben", $data);
+            $i++;
+        };
+        $this->changePricingPlanCallback = function (ScenarioPayment $scenario, $data){
+            $balance = $data->getMonthPrice()*$this->nb_total_users;
+            $this->services->myGet("app.subscription_manager")->renew($this->group, $data, $balance, new \DateTime('now'), $scenario->subscription->getEndDate(), $this->auto_withdrawal, $this->auto_renew, $balance, true);
+
+        };
 
         //Création user
         $pricing_plan_id = $pricing_plan->getId();
@@ -65,16 +81,21 @@ class ScenarioPayment {
         $this->services->myGet("app.workspaces")->create($workspace_name, $this->group_id, $user->getId());
         $balance = $pricing_plan->getMonthPrice()*$nb_total_users;
 
+        //Ajout autres utilisateurs au groupe
+        for($i=1;$i<$nb_total_users;$i++){
+            $this->addMember($i."benoit.tallandier@telecomnancy.net", $i."Benoit", "lulu", $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("name" => $this->workspace_name)));
+        }
+
         //Création abonnement
         $end_date =  (new \DateTime('now'))->sub(($this->date_interval));
         $start_date = (new \DateTime('now'))->sub(($this->date_interval));
         $this->subscription = $this->services->myGet("app.subscription_manager")->newSubscription($this->group,$pricing_plan,
             $balance,$start_date->sub(($this->date_interval)), $end_date, $auto_withdrawal, $auto_renew, $balance);
 
-        //Ajout autres utilisateurs au groupe
-        for($i=1;$i<$nb_total_users;$i++){
-            $this->addMember($i."benoit.tallandier@telecomnancy.net", $i."Benoit", "lulu", $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("name" => $this->workspace_name)));
-        }
+        //
+        $this->callbackMap=[];
+        $this->callbackMap["addUser"] = $this->addUserCallback;
+        $this->callbackMap["changePricingPlan"] = $this->changePricingPlanCallback;
     }
 
 
@@ -176,6 +197,14 @@ class ScenarioPayment {
         /*if($day < 30) {
             $this->addUserToList($day . "romaric.t" . "@twakeapp.com", $day . "romaric", $day . "blabla", 1);
         }*/
+        //var_dump($this->events);
+        //var_dump($day);
+        if(isset($this->events[$day])){
+            var_dump("OuhOuh je suis ici");
+            foreach ($this->events[$day]["callback"] as $key => $callback){
+                ($this->callbackMap[$callback])($this,$this->events[$day]["data"][$key]);
+            }
+        }
 
         $gp = $this->services->myGet("app.subscription_system")->getGroupPeriod($group_id);
 
@@ -241,12 +270,12 @@ class ScenarioPayment {
         $balance_consumed = $this->services->myGet("app.subscription_system")->getCorrectBalanceConsumed($group_id);
 
         //en cas de prélèvement automatisé et de gros dépassement : paiement 5 jours après
-        if($checkOverusingByGroup == 9){
+        /*if($checkOverusingByGroup == 9){
             $this->day_over_cost = $day;
         }
         if (($this->day_over_cost +5) == $day){
             $this->services->myGet("app.subscription_manager")->payOverCost($group_id, $this->subscription);
-        }
+        }*/
 
         //changement de pricing plan
         /*if ($day == 10){
