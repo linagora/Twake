@@ -319,7 +319,9 @@ class BoardTasks implements BoardTasksInterface
             return null;
         }
 
-        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("id" => $boardId));
+        $board = $this->convertToEntity($boardId,"TwakeProjectBundle:Board");
+
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("board" => $board));
 
         return $tasks;
     }
