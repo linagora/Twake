@@ -9,6 +9,7 @@
 namespace WebsiteApi\PaymentsBundle\Services;
 
 
+use WebsiteApi\PaymentsBundle\Entity\Subscription;
 use WebsiteApi\PaymentsBundle\Model\SubscriptionManagerInterface;
 
 /*Return code
@@ -255,9 +256,9 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
                 $endDate = new \DateTime();
                 $dateInterval = $this->subscriptionSystem->getEndDate($group)->diff($this->subscriptionSystem->getStartDate($group));
                 $endDate->add($dateInterval);
-                $cost = $sub->getSubscribedBalance()+$this->subscriptionSystem->getRemainingBalance($group);
+                $currentBalance = $sub->getSubscribedBalance()+$this->subscriptionSystem->getRemainingBalance($group);
                 //var_dump("auto renew");
-                return 13 + $this->renew($group, $sub->getPricingPlan(), $sub->getSubscribedBalance(), new \DateTime(), $endDate, $sub->getAutoWithdrawal(), $sub->getAutoRenew(), $cost, false);
+                return 13 + $this->renew($group, $sub->getPricingPlan(), $sub->getSubscribedBalance(), new \DateTime(), $endDate, $sub->getAutoWithdrawal(), $sub->getAutoRenew(),$currentBalance,$sub->getSubscribedBalance(), false);
             } else {
                 //var_dump("passer en free");
                 $this->putInFree($group);
@@ -267,11 +268,13 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         return $dateInterval->format('%a');
     }
 
-    public function renew($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost, $manual)
+    public function renew($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $currentBalance, $cost, $manual)
     {
         //var_dump("renew");
         $this->subscriptionSystem->archive($group);
+        /* @var Subscription $sub*/
         $sub = $this->subscriptionSystem->create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
+        $sub->setBalance($currentBalance);
 
         return $this->billGroup($group,$cost, $sub, $manual);
     }
