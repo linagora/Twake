@@ -179,4 +179,9 @@ class ListOfTasks
         $this->order = $order;
     }
 
+    public function getId()
+    {
+        return $this->id;
+    }
+
 }

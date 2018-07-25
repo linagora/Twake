@@ -9,6 +9,7 @@ use WebsiteApi\ProjectBundle\Entity\Board;
 use WebsiteApi\ProjectBundle\Entity\BoardTask;
 use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
 use WebsiteApi\ProjectBundle\Entity\LinkTaskUser;
+use WebsiteApi\ProjectBundle\Entity\ListOfTasks;
 use WebsiteApi\ProjectBundle\Model\BoardTasksInterface;
 
 /**
@@ -40,24 +41,33 @@ class BoardTasks implements BoardTasksInterface
         }
     }
 
-    public function createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $addMySelf = false, $userIdsToNotify=Array(), $weight=1)
+    private function convertToEntity($var, $repository)
     {
-        $workspace = $this->getWorkspaceFromBoard($boardId);
+        if (is_string($var)) {
+            $var = intval($var);
+        }
+
+        if (is_int($var)) {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
+
+    public function createTask($listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $userIdsToNotify=Array(), $weight=1)
+    {
+        /* @var ListOfTasks $list */
+        $list = $this->convertToEntity($listId,"TwakeProjectBundle:ListOfTasks");
+        $workspace = $this->getWorkspaceFromBoard($list->getBoard());
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
             return null;
         }
 
-        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
-        $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $board));
-
-        if(!$boardLink){
-            return null;
-        }
-
-        if(!isset($task["from"]) || !isset($task["to"])){
-            return null;
-        }
+        $board = $list->getBoard();
 
         //$from, $to, $name, $description, $dependingTask, $weight
         if($dependingTaskId!=0)
@@ -66,9 +76,11 @@ class BoardTasks implements BoardTasksInterface
             $dependingTask = null;
         $task = new BoardTask($startDate, $endDate, $name, $description, $dependingTask, $weight);
 
+
         $task->setBoard($board);
         $task->setUserIdToNotify($userIdsToNotify);
         $task->setOrder($this->getMinOrder($board));
+        $task->setListOfTasks($list);
 
         $this->doctrine->persist($task);
         $this->doctrine->flush();
@@ -77,8 +89,9 @@ class BoardTasks implements BoardTasksInterface
             "type" => "create",
             "task" => $task->getAsArray()
         );
-        $this->pusher->push($data, "board/".$boardId);
+        $this->pusher->push($data, "board/".$board->getId());
         $this->doctrine->flush();
+
         $this->notifyParticipants($userIdsToNotify,$workspace,"","","");
 
         return $task;
@@ -94,11 +107,6 @@ class BoardTasks implements BoardTasksInterface
         }
 
         $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
-        $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $board));
-
-        if(!$boardLink){
-            return null;
-        }
 
         if(!isset($taskArray["from"]) || !isset($taskArray["to"])){
             return null;
@@ -109,14 +117,6 @@ class BoardTasks implements BoardTasksInterface
 
         if(!$task){
             return null;
-        }
-
-        //If we changed board verify that old board is our board
-        if($task->getBoard()->getId() != $boardId){
-            $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $task->getBoard()));
-            if(!$boardLink){
-                return null;
-            }
         }
 
         /* @var BoardTask $task */
@@ -163,11 +163,6 @@ class BoardTasks implements BoardTasksInterface
         }
 
         $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
-        $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $board));
-
-        if(!$boardLink){
-            return null;
-        }
 
         $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
 
@@ -231,13 +226,6 @@ class BoardTasks implements BoardTasksInterface
             return null;
         }
 
-        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
-        $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $board));
-
-        if(!$boardLink){
-            return null;
-        }
-
         if($taskId!=null)
             $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
 
@@ -284,11 +272,6 @@ class BoardTasks implements BoardTasksInterface
         }
 
         $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
-        $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $workspace, "board" => $board));
-
-        if(!$boardLink){
-            return null;
-        }
 
         $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
 

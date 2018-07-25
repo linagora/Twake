@@ -66,14 +66,10 @@ class BoardTask {
     private $to;
 
     /**
-     * @ORM\Column(name="participant", type="text")
+     * @ORM\Column( type="text")
      */
     private $userIdToNotify;
 
-    /**
-     * @ORM\Column(type="text")
-     */
-    private $subscribers;
 
     /**
      * @ORM\Column(type="string", length=264)
@@ -212,8 +208,14 @@ class BoardTask {
         return Array(
             "id" => $this->getId(),
             "board" => $this->getBoard()->getId(),
-            "participant" => $this->getUserIdToNotify(),
+            "list" => $this->getListOfTasks()->getId(),
+            "dependingTask" => $this->getDependingTask()!=null ? $this->dependingTask->getId() : null,
+            "name" => $this->getName(),
+            "description" => $this->getDescription(),
+            "watch_members" => $this->getUserIdToNotify(),
             "order" => $this->getOrder(),
+            "from" => $this->getFrom(),
+            "to" => $this->getTo(),
         );
     }
 
