@@ -56,6 +56,7 @@ class ListOfTasksService
     }
 
     public function removeListOfTasks($listOfTaskId, $workspaceId = 0){
+        /* @var ListOfTasks $listOfTasks */
         $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTaskId));
 
         if(!$listOfTasks)
@@ -63,7 +64,7 @@ class ListOfTasksService
 
         $this->doctrine->remove($listOfTasks);
         $this->doctrine->flush();
-        $this->notifyParticipants($listOfTasks->getParticipants(),$workspaceId, "List ".$listOfTasks->getTitle()." removed", "", "");
+        $this->notifyParticipants($listOfTasks->getUserIdToNotify(),$workspaceId, "List ".$listOfTasks->getTitle()." removed", "", "");
 
         return true;
     }
@@ -94,7 +95,7 @@ class ListOfTasksService
 
         $listOfTasks->setUserIdToNotify($userIdToNotify);
 
-        $listOfTasks->setOrder($this->getMinOrder($board)-1);
+        $listOfTasks->setOrder($this->getMaxOrder($board)+1);
 
         $this->doctrine->persist($listOfTasks);
         $this->doctrine->flush();
@@ -128,14 +129,17 @@ class ListOfTasksService
         return true;
     }
 
-    public function moveListOfTasks($idsOrderMap){
+    public function moveListOfTasks($idsOrderMap, $boardId){
+        $order_used = [];
 
         foreach ($idsOrderMap as $id => $order){
+            $board = $this->convertToEntity($boardId,"TwakeProjectBundle:Board");
             /* @var ListOfTasks $listOfTasks */
-            $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $id));
-            if($listOfTasks==null)
+            $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $id, "board" => $board));
+            if($listOfTasks==null || $listOfTasks->getisDoneList() || in_array($order,$order_used))
                 continue;
             $listOfTasks->setOrder($order);
+            array_push($order_used,$order);
             $this->doctrine->persist($listOfTasks);
         }
 
@@ -179,4 +183,18 @@ class ListOfTasksService
         return $m;
     }
 
+
+    private function getMaxOrder($board)
+    {
+        $board = $this->convertToEntity($board,"TwakeProjectBundle:Board");
+
+        $ListsOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
+
+        $m = -100000;
+        foreach ($ListsOfTasks as $list){
+            if($list->getOrder()>$m && !$list->getisDoneList())
+                $m = $list->getOrder();
+        }
+        return $m;
+    }
 }

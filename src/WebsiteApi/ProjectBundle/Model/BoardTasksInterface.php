@@ -7,7 +7,7 @@ namespace WebsiteApi\ProjectBundle\Model;
  */
 interface BoardTasksInterface
 {
-    public function createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $addMySelf = false, $userIdsToNotify=Array(), $weight=1);
+    public function createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $userIdsToNotify=Array(), $weight=1);
 
     public function updateTask($workspaceId, $boardId, $taskId, $task, $currentUserId=null);
 
