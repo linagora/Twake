@@ -58,17 +58,18 @@ class TaskController extends Controller
             'data' => Array()
         );
 
-        $task = $request->request->get("task");
-        $boardId = $request->request->get("boardId");
-        $weight = $request->request->get("weight");
-        $name = $request->request->get("name");
-        $description = $request->request->get("description");
-        $startDate = $request->request->get("startDate");
-        $endDate = $request->request->get("endDate");
-        $dependingTaskId = $request->request->get("dependingTaskId");
-        $userToNotify = $request->request->get("watch_members");
+        $task = $request->request->get("task", Array());
+        $listId = $request->request->get("listId", 0);
+        $weight = $request->request->get("weight", 1);
+        $name = $request->request->get("name", "");
+        $description = $request->request->get("description","");
+        $startDate = $request->request->get("startDate",0);
+        $endDate = $request->request->get("endDate",0);
+        $dependingTaskId = $request->request->get("dependingTaskId",0);
+        $userToNotify = $request->request->get("watch_members",Array());
 
-        $task = $this->get("app.board_tasks")->createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify, $weight);
+        //$listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $addMySelf = false, $userIdsToNotify=Array(), $weight=1
+        $task = $this->get("app.board_tasks")->createTask($listId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify, $weight);
 
         if($task == null){
             $data["errors"] = "error";
@@ -119,8 +120,10 @@ class TaskController extends Controller
             'data' => Array()
         );
 
-        $idsOrderMap = $request->request->get("ids");
-        $data['data'] = $this->get("app.board_tasks")->moveTask($idsOrderMap);
+        $idsOrderMap = $request->request->get("orders");
+        $listId = $request->request->get("listId");
+        $boardId = $request->request->get("boardId");
+        $data['data'] = $this->get("app.board_tasks")->moveTask($idsOrderMap,$listId, $boardId);
 
         return new JsonResponse($data);
     }

@@ -89,6 +89,11 @@ board_tasks_remove:
     defaults: { _controller: TwakeProjectBundle:Task:remove }
     methods: [POST]
 
+board_tasks_move:
+    path:     /tasks/move
+    defaults: { _controller: TwakeProjectBundle:Task:move }
+    methods: [POST]
+
 board_tasks_share:
     path:     /tasks/addUsers
     defaults: { _controller: TwakeProjectBundle:Task:addUsers }
