@@ -194,28 +194,18 @@ class BoardTasks implements BoardTasksInterface
         return true;
     }
 
-    public function moveTask($taskIdA,$taskIdB, $currentUserId = null)
+    public function moveTask($idsOrderMap)
     {
-        $workspace = $this->getWorkspaceFromTask($taskIdA);
-        $workspaceB = $this->getWorkspaceFromTask($taskIdB);
-        /* @var BoardTask $taskA */
-        $taskA = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id" => $taskIdA));
-        /* @var BoardTask $taskB */
-        $taskB = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id" => $taskIdB));
-
-        if($workspace->getId()!=$workspaceB->getId())
-            return false;
-
-        if($taskA->getBoard()->getId()!=$taskB->getBoard()->getId())
-            return false;
-
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
-            return null;
+        foreach ($idsOrderMap as $id => $order){
+            /* @var BoardTasks $task */
+            $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTasks")->findOneBy(Array("id" => $id));
+            if($task==null)
+                continue;
+            $task->setOrder($order);
+            $this->doctrine->persist($task);
         }
 
-        $order = $taskA->getOrder();
-        $taskA->setOrder($taskA->getOrder());
-        $taskB->setOrder($order);
+        $this->doctrine->flush();
 
         return true;
     }
