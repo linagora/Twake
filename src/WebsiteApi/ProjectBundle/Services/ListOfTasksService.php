@@ -129,14 +129,17 @@ class ListOfTasksService
         return true;
     }
 
-    public function moveListOfTasks($idsOrderMap){
+    public function moveListOfTasks($idsOrderMap, $boardId){
+        $order_used = [];
 
         foreach ($idsOrderMap as $id => $order){
+            $board = $this->convertToEntity($boardId,"TwakeProjectBundle:Board");
             /* @var ListOfTasks $listOfTasks */
-            $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $id));
-            if($listOfTasks==null)
+            $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $id, "board" => $board));
+            if($listOfTasks==null || $listOfTasks->getisDoneList() || in_array($order,$order_used))
                 continue;
             $listOfTasks->setOrder($order);
+            array_push($order_used,$order);
             $this->doctrine->persist($listOfTasks);
         }
 

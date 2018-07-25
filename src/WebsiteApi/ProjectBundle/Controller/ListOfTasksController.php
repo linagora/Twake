@@ -84,8 +84,9 @@ class ListOfTasksController extends Controller
         );
 
         $idsOrderMap = $request->request->get("ids", Array());
+        $boardId = $request->request->get("boardId", 0);
 
-        if(!$this->get("app.list_of_tasks_service")->moveListOfTasks($idsOrderMap)) {
+        if(!$this->get("app.list_of_tasks_service")->moveListOfTasks($idsOrderMap, $boardId)) {
             $data["errors"][] = "List of tasks not found";
         }
         else{
