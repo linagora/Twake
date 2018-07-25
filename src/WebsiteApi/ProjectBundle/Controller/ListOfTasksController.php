@@ -43,11 +43,12 @@ class ListOfTasksController extends Controller
             'data' => Array()
         );
 
-        $listOfTasksId = $request->request->get("listOfTasksId", 0);
-        $newTitle = $request->request->get("newTitle", null);
-        $newColor = $request->request->get("newColor", null);
+        $listOfTasksId = $request->request->get("id", 0);
+        $newTitle = $request->request->get("name", null);
+        $newColor = $request->request->get("color", null);
+        $userIdsToNotify = $request->request->get("watch_members", Array());
 
-        if(!$this->get("app.list_of_tasks_service")->updateListOfTasks($listOfTasksId, $newTitle, $newColor)) {
+        if(!$this->get("app.list_of_tasks_service")->updateListOfTasks($listOfTasksId, $newTitle, $newColor,$userIdsToNotify)) {
             $data["errors"][] = "List of tasks not found";
         }
         else{
@@ -82,10 +83,9 @@ class ListOfTasksController extends Controller
             'data' => Array()
         );
 
-        $listOfTaskAId = $request->request->get("idA", 0);
-        $listOfTaskBId = $request->request->get("idB", 0);
+        $idsOrderMap = $request->request->get("ids", Array());
 
-        if(!$this->get("app.list_of_tasks_service")->moveListOfTasks($listOfTaskAId, $listOfTaskBId)) {
+        if(!$this->get("app.list_of_tasks_service")->moveListOfTasks($idsOrderMap)) {
             $data["errors"][] = "List of tasks not found";
         }
         else{

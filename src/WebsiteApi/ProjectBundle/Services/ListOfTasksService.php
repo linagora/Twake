@@ -78,7 +78,7 @@ class ListOfTasksService
 
     public function createListOfTasks($newTitle, $newColor, $boardId,$userIdToNotify){
         $board = $this->convertToEntity($boardId, "TwakeProjectBundle:Board");
-        $workspace = $this->getWorkspaceFromBoard($board);
+        $workspace = $this->getWorkspaceFromBoard($board->getId());
 
         /* @var ListOfTasks $listOfTasks */
         $listOfTasks = new ListOfTasks($board,$newTitle,$newColor,false,$userIdToNotify);
@@ -104,10 +104,10 @@ class ListOfTasksService
         return $listOfTasks;
     }
 
-    public function updateListOfTasks($listOfTasksId, $newTitle, $newColor, $workspaceId,$userIdToNotify){
-
+    public function updateListOfTasks($listOfTasksId, $newTitle, $newColor,$userIdToNotify){
         /* @var ListOfTasks $listOfTasks */
         $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTasksId));
+        $workspace = $this->getWorkspaceFromBoard($listOfTasks->getBoard());
 
         if($listOfTasks==null){
             return false;
@@ -123,23 +123,22 @@ class ListOfTasksService
         $this->doctrine->persist($listOfTasks);
         $this->doctrine->flush();
 
-        $this->notifyParticipants($listOfTasks->getUserIdToNotify(),$workspaceId, "List ".$listOfTasks->getTitle()." updated", "", "");
+        $this->notifyParticipants($listOfTasks->getUserIdToNotify(),$workspace->getId(), "List ".$listOfTasks->getTitle()." updated", "", "");
 
         return true;
     }
 
-    public function moveListOfTasks($listOfTasksIdA, $listOfTasksIdB){
-        /* @var ListOfTasks $listOfTasksA */
-        $listOfTasksA = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTasksIdA));
+    public function moveListOfTasks($idsOrderMap){
 
-        /* @var ListOfTasks $listOfTasksB */
-        $listOfTasksB = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTasksIdB));
+        foreach ($idsOrderMap as $id => $order){
+            /* @var ListOfTasks $listOfTasks */
+            $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $id));
+            if($listOfTasks==null)
+                continue;
+            $listOfTasks->setOrder($order);
+            $this->doctrine->persist($listOfTasks);
+        }
 
-        $order = $listOfTasksA->getOrder();
-        $listOfTasksA->setOrder($listOfTasksB->getOrder());
-        $listOfTasksB->setOrder($order);
-        $this->doctrine->persist($listOfTasksA);
-        $this->doctrine->persist($listOfTasksB);
         $this->doctrine->flush();
 
         return true;
