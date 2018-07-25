@@ -195,7 +195,7 @@ class BoardTasks implements BoardTasksInterface
         $list = $this->convertToEntity($listId,"TwakeProjectBundle:ListOfTasks");
         foreach ($idsOrderMap as $id => $order){
             /* @var BoardTask $task */
-            $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTasks")->findOneBy(Array("id" => $id, "board" => $board));
+            $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id" => $id, "board" => $board));
             if($task==null)
                 continue;
             $task->setListOfTasks($list);
