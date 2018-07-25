@@ -44,7 +44,7 @@ class ListOfTasksController extends Controller
         );
 
         $listOfTasksId = $request->request->get("id", 0);
-        $newTitle = $request->request->get("name", null);
+        $newTitle = $request->request->get("label", null);
         $newColor = $request->request->get("color", null);
         $userIdsToNotify = $request->request->get("watch_members", Array());
 
@@ -64,7 +64,7 @@ class ListOfTasksController extends Controller
             'data' => Array()
         );
 
-        $listOfTaskId = $request->request->get("listOfTaskId", 0);
+        $listOfTaskId = $request->request->get("id", 0);
 
         if(!$this->get("app.list_of_tasks_service")->removeListOfTasks($listOfTaskId)) {
             $data["errors"][] = "List of tasks not found";
@@ -102,7 +102,7 @@ class ListOfTasksController extends Controller
             'data' => Array()
         );
 
-        $newTitle = $request->request->get("name", "");
+        $newTitle = $request->request->get("label", "");
         $newColor = $request->request->get("color", "");
         $boardId = $request->request->get("boardId", 0);
         $userIdToNotify = $request->request->get("watch_members", Array());

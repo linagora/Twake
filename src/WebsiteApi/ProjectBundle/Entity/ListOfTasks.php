@@ -157,7 +157,10 @@ class ListOfTasks
         $this->setIsDoneList($isDoneList);
         $this->setUserIdToNotify($participants);
         $this->setBoard($board);
-        $this->setOrder(0);
+        if(!$isDoneList)
+            $this->setOrder(0);
+        else
+            $this->setOrder(10000);
     }
 
     /**
