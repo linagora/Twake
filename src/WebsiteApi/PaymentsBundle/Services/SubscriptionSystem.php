@@ -45,6 +45,12 @@ class SubscriptionSystem implements SubscriptionInterface
         return $subscription;
     }
 
+    public function getAll(){
+        $subscriptionRepo = $this->doctrine->getRepository("TwakePaymentsBundle:Subscription");
+
+        return $subscriptionRepo->findBy(array(), array('startDate' => 'DESC'));
+    }
+
     public function getStartDate($group){
         $sub = $this->get($group);
 
