@@ -11,6 +11,21 @@ use Symfony\Component\HttpFoundation\Request;
 class BoardController extends Controller
 {
 
+    private function convertObjectListToIdList($list){
+        if(count($list)==0)
+            return Array();
+
+        $final = Array();
+
+        foreach($list as $item) {
+            if(is_int($item))
+                return $list;
+            $final[] = $item["id"];
+        }
+
+        return $final;
+    }
+
     public function getBoardsAction(Request $request)
     {
         $data = Array(
@@ -61,7 +76,7 @@ class BoardController extends Controller
         $workspaceId = $request->request->get("workspaceId");
         $title = $request->request->get("name", "");
         $description = $request->request->get("description", "");
-        $members = $request->request->get("members", Array());
+        $members = $this->convertObjectListToIdList($request->request->get("members", Array()));
         $isPrivate = $request->request->get("isPrivate",false);
 
         $data['data'] = $this->get("app.boards")->createBoard($workspaceId, $title,$description,$isPrivate, $this->getUser()->getId(), $members);
@@ -83,7 +98,7 @@ class BoardController extends Controller
         $title = $request->request->get("name", "");
         $description = $request->request->get("description", "");
         $isPrivate = $request->request->get("isPrivate",false);
-        $participants = $request->request->get("members",Array());
+        $participants = $this->convertObjectListToIdList($request->request->get("members",Array()));
 
         $data['data'] = $this->get("app.boards")->updateBoard($boardId, $title, $description, $isPrivate, $this->getUser()->getId(), Array(),$participants);
 
