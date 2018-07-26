@@ -54,6 +54,9 @@ class Boards implements BoardsInterface
 
             $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTasks" => $listOfTask));
             $array["tasks"] = count($tasks);
+            $array["tasks_pondered"] = 0;
+            foreach ($tasks as $task)
+                $array["tasks_pondered"] += $task->getWeight();
             $array["order"] = $listOfTask->getOrder();
             $array["percentage"] = $this->listOfTaskService->getListPercent($listOfTask);
 
