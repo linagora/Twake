@@ -77,6 +77,21 @@ class TaskController extends Controller
         return new JsonResponse($data);
     }
 
+    private function convertObjectListToIdList($list){
+        if(count($list)==0)
+            return Array();
+
+        $final = Array();
+
+        foreach($list as $item) {
+            if(is_int($item))
+                return $list;
+            $final[] = $item["id"];
+        }
+
+        return $final;
+    }
+
 
     public function createAction(Request $request)
     {
@@ -93,8 +108,8 @@ class TaskController extends Controller
         $startDate = $request->request->get("startDate",0);
         $endDate = $request->request->get("endDate",0);
         $dependingTaskId = $request->request->get("dependingTaskId",0);
-        $userToNotify = $request->request->get("watch_members",Array());
-        $participants = $request->request->get("participants",Array());
+        $userToNotify = $this->convertObjectListToIdList($request->request->get("watch_members",Array()));
+        $participants = $this->convertObjectListToIdList($request->request->get("participants",Array()));
 
         //$listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $addMySelf = false, $userIdsToNotify=Array(),$participants, $weight=1
         $task = $this->get("app.board_tasks")->createTask($listId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify,$participants, $weight);
@@ -120,8 +135,10 @@ class TaskController extends Controller
         $taskId = $request->request->get("taskId");
         $task = $request->request->get("task");
         $boardId = $request->request->get("boardId");
+        $userToNotify = $this->convertObjectListToIdList($request->request->get("watch_members",Array()));
+        $participants = $this->convertObjectListToIdList($request->request->get("participants",Array()));
 
-        $data['data'] = $this->get("app.board_tasks")->updateTask($workspaceId, $boardId, $taskId, $task, $this->getUser()->getId());
+        $data['data'] = $this->get("app.board_tasks")->updateTask($workspaceId, $boardId, $taskId, $task, $this->getUser()->getId(),$userToNotify,$participants);
 
         return new JsonResponse($data);
     }

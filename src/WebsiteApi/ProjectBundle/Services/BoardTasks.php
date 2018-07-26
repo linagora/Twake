@@ -107,7 +107,7 @@ class BoardTasks implements BoardTasksInterface
         $this->flush($task);
     }
 
-    public function updateTask($workspaceId, $boardId, $taskId, $taskArray, $currentUserId = null,$participants = Array())
+    public function updateTask($workspaceId, $boardId, $taskId, $taskArray, $currentUserId = null,$userToNotify = Array(),$participants = Array())
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
@@ -133,6 +133,7 @@ class BoardTasks implements BoardTasksInterface
         $task->setBoard($board);
         $task->setTask($taskArray);
         $task->setParticipants($participants);
+        $task->setUserIdToNotify($userToNotify);
         $task->setFrom($taskArray["from"]);
         $task->setTo($taskArray["to"]);
         $task->setUserIdToNotify($taskArray["participant"]);
@@ -158,7 +159,7 @@ class BoardTasks implements BoardTasksInterface
         );
 
         $this->notifyParticipants($board->getParticipants(),$workspace, "Task ".$task->getName()." updated", "", "");
-        $this->notifyParticipants($task->getParticipants(),$workspace, "Task ".$task->getName()." updated", "", "");
+        $this->notifyParticipants($task->getUserIdToNotify(),$workspace, "Task ".$task->getName()." updated", "", "");
         $this->pusher->push($data, "board/".$boardId);
 
         return $task;
