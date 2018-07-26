@@ -51,9 +51,20 @@ class BoardTask {
     private $dependingTask;
 
     /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $user;
+
+    /**
      * @ORM\Column(name="next_reminder", type="bigint")
      */
     private $nextReminder = 0;
+
+    /**
+     * @ORM\Column(name="like_ts",type="bigint")
+     */
+    private $like;
 
     /**
      * @ORM\Column(name="from_ts", type="bigint")
@@ -70,6 +81,15 @@ class BoardTask {
      */
     private $userIdToNotify;
 
+    /**
+     * @ORM\Column( type="text")
+     */
+    private $participants;
+
+    /**
+     * @ORM\Column( type="text")
+     */
+    private $userWhoLiked;
 
     /**
      * @ORM\Column(type="string", length=264)
@@ -86,7 +106,7 @@ class BoardTask {
      */
     private $doneList;
 
-    public  function __construct($from, $to, $name, $description, $dependingTask, $weight=1)
+    public  function __construct($from, $to, $name, $description, $dependingTask, $participants, $user, $weight=1)
     {
         $this->setFrom($from);
         $this->setTo($to);
@@ -95,6 +115,19 @@ class BoardTask {
         $this->setDescription($description);
         $this->setDependingTask($dependingTask);
         $this->setWeight($weight);
+        $this->setParticipants($participants);
+        $this->setUser($user);
+        $this->setLike(0);
+    }
+
+    public function likeOne($userId){
+        $userWhoLike = $this->getUserWhoLiked();
+
+        if(!in_array($userId,$userWhoLike)) {
+            $this->like++;
+            $userWhoLike[] = $userId;
+            $this->setUserWhoLiked($userWhoLike);
+        }
     }
 
     /**
@@ -213,9 +246,13 @@ class BoardTask {
             "name" => $this->getName(),
             "description" => $this->getDescription(),
             "watch_members" => $this->getUserIdToNotify(),
+            "participants" => $this->getParticipants(),
             "order" => $this->getOrder(),
             "from" => $this->getFrom(),
             "to" => $this->getTo(),
+            "weight" => $this->getWeight(),
+            "like" => $this->getLike(),
+            "user" => $this->getUser() !=null ? $this->getUser()->getId() : 0,
         );
     }
 
@@ -329,6 +366,70 @@ class BoardTask {
     public function setWeight($weight)
     {
         $this->weight = $weight;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParticipants()
+    {
+        return json_decode($this->participants,1);
+    }
+
+    /**
+     * @param mixed $participants
+     */
+    public function setParticipants($participants)
+    {
+        $this->participants = json_encode($participants);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLike()
+    {
+        return $this->like;
+    }
+
+    /**
+     * @param mixed $like
+     */
+    public function setLike($like)
+    {
+        $this->like = $like;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUserWhoLiked()
+    {
+        return json_decode($this->userWhoLiked,1);
+    }
+
+    /**
+     * @param mixed $userWhoLiked
+     */
+    public function setUserWhoLiked($userWhoLiked)
+    {
+        $this->userWhoLiked = json_encode($userWhoLiked);
     }
 
 

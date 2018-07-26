@@ -35,20 +35,30 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->getDoctrine()->persist($pricing_plan_2);
         $this->getDoctrine()->flush();
 
-        //Events
+        //Events : ajout d'un utilisateur le 10ème et 15ème jour, changement de pricing plan le 20
         $events = Array();
         $events[10] = Array("callback" => [], "data" => []);
         $events[10]["callback"][] = "addUser";
         $events[10]["data"][] = 1;
+        $events[20] = Array("callback" => [], "data" => []);
         $events[20]["callback"][] = "changePricingPlan";
         $events[20]["data"][] = $pricing_plan_2;
+        $events[15] = Array("callback" => [], "data" => []);
+        $events[15]["callback"][] = "addUser";
+        $events[15]["data"][] = 3;
+
+        //Events :
+        $events2 = Array();
+        $events2[15] = Array("callback" => [], "data" => []);
+        $events2[15]["callback"][] = "changeWithdrawal";
+        $events2[15]["data"][] = false;
 
         $list_freq = [1, 3, 5, 7, 3, 2, 1, 1];
         var_dump("before scenario");
         $scenario = new ScenarioPayment($this,"benoit.frapiccini@telecomnancy.net", "Benoit",
             "BN", "Group_Test", "Project",$pricing_plan,
             8, $this->getDoctrine(), new \DateInterval("P35D"), $list_freq,
-            false,true, $events);
+            false,true, $events2);
         var_dump("after creation scenario");
         $scenario->exec();
         var_dump("after 1 exec scenario");

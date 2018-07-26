@@ -103,6 +103,10 @@ board_tasks_unshare:
     path:     /tasks/removeUsers
     defaults: { _controller: TwakeProjectBundle:Task:removeUsers }
     methods: [POST]
+board_tasks_like:
+    path:     /tasks/like
+    defaults: { _controller: TwakeProjectBundle:Task:like }
+    methods: [POST]
 
 board_activitys_create:
     path: /activities/create
