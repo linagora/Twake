@@ -62,6 +62,12 @@ class ListOfTasksService
         if(!$listOfTasks)
             return false;
 
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTasks" => $listOfTasks));
+
+        foreach ($tasks as $task){
+            $this->doctrine->remove($task);
+        }
+
         $this->doctrine->remove($listOfTasks);
         $this->doctrine->flush();
         $this->notifyParticipants($listOfTasks->getUserIdToNotify(),$workspaceId, "List ".$listOfTasks->getTitle()." removed", "", "");
