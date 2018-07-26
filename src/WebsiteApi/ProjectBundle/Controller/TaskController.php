@@ -43,15 +43,16 @@ class TaskController extends Controller
         if($tasks){
             $tasks_formated = Array();
             foreach ($tasks as $task){
-                $tasks_formated[] = $task->getAsArray();
+                $tasks_temp = $task->getAsArray();
                 $participants = $this->get("app.board_tasks")->getParticipantsAsUser($task);
-                $tasks_formated["participants"] = [];
+                $tasks_temp["participants"] = [];
                 foreach ($participants as $participant)
-                    $tasks_formated["participants"][] = $participant->getAsArray();
+                    $tasks_temp["participants"][] = $participant->getAsArray();
                 $usersToNotify = $this->get("app.board_tasks")->getUserToNotifyAsUser($task);
-                $tasks_formated["watch_members"] = [];
+                $tasks_temp["watch_members"] = [];
                 foreach ($usersToNotify as $userToNotify)
-                    $tasks_formated["watch_members"][] = $userToNotify->getAsArray();
+                    $tasks_temp["watch_members"][] = $userToNotify->getAsArray();
+                $tasks_formated[] = $tasks_temp;
             }
             $data["data"] = $tasks_formated;
         }
