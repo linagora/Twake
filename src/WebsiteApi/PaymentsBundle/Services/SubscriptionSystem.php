@@ -88,6 +88,7 @@ class SubscriptionSystem implements SubscriptionInterface
             $sub->setAutoWithdrawal($autoWithdrawal);
             $this->doctrine->persist($sub);
             $this->doctrine->flush();
+            return ;
         }
 
         throw new SubscriptionNotFound();

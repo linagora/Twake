@@ -34,6 +34,7 @@ class ScenarioPayment {
 
     var $addUserCallback;
     var $changePricingPlanCallback;
+    var $changeWithdrawalCallback;
     var $callbackMap;
 
     /**
@@ -61,6 +62,11 @@ class ScenarioPayment {
         $this->changePricingPlanCallback = function (ScenarioPayment $scenario, $data){
             $balance = $data->getMonthPrice()*$this->nb_total_users;
             $this->services->myGet("app.subscription_manager")->renew($this->group, $data, $balance, new \DateTime('now'), $scenario->subscription->getEndDate(), $this->auto_withdrawal, $this->auto_renew, $balance, true);
+
+        };
+        $this->changeWithdrawalCallback = function (ScenarioPayment $scenario, $data){
+            var_dump($scenario->group);
+            $this->services->myGet("app.subscription_system")->setAutoWithdrawal($scenario->group, $data);
 
         };
 
@@ -96,6 +102,7 @@ class ScenarioPayment {
         $this->callbackMap=[];
         $this->callbackMap["addUser"] = $this->addUserCallback;
         $this->callbackMap["changePricingPlan"] = $this->changePricingPlanCallback;
+        $this->callbackMap["changeWithdrawal"] = $this->changeWithdrawalCallback;
     }
 
 
@@ -193,12 +200,7 @@ class ScenarioPayment {
     public function DayByDayScenario($list, $day, $group_id, $csv){
         $this->increaseConnectionsPeriodForAllUsers($list,$day);
 
-        //Ajout d'un utilisateur tous les jours
-        /*if($day < 30) {
-            $this->addUserToList($day . "romaric.t" . "@twakeapp.com", $day . "romaric", $day . "blabla", 1);
-        }*/
-        //var_dump($this->events);
-        //var_dump($day);
+
         if(isset($this->events[$day])){
             var_dump("OuhOuh je suis ici");
             foreach ($this->events[$day]["callback"] as $key => $callback){
@@ -220,7 +222,6 @@ class ScenarioPayment {
         $a = $this->cronExec($group_id);
 
         $checkEndPeriodByGroup = $a[0];
-        //var_dump($checkEndPeriodByGroup);
         $checkOverusingByGroup = $a[1];
 
         /*$closed_gp = $this->doctrine->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod")->findOneBy(Array("group" => $group_id));
@@ -275,12 +276,6 @@ class ScenarioPayment {
         }
         if (($this->day_over_cost +5) == $day){
             $this->services->myGet("app.subscription_manager")->payOverCost($group_id, $this->subscription);
-        }*/
-
-        //changement de pricing plan
-        /*if ($day == 10){
-            $balance = $this->new_pricing_plan->getMonthPrice()*$this->nb_total_users;
-            $this->services->myGet("app.subscription_manager")->renew($this->group, $this->new_pricing_plan, $balance, new \DateTime('now'), $endDate, $this->auto_withdrawal, $this->auto_renew, $balance, true);
         }*/
 
         //ajout au csv
