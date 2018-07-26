@@ -10,6 +10,24 @@ use Symfony\Component\HttpFoundation\Request;
 class TaskController extends Controller
 {
 
+    public function likeAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $taskId = $request->request->get("id", 0);
+
+        $success = $this->get("app.board_tasks")->likeTask($taskId, $this->getUser()->getId());
+
+        if($success)
+            $data["data"][] = "success";
+        else
+            $data["error"][] = "fail";
+
+
+        return new JsonResponse($data);
+    }
 
     public function getAction(Request $request)
     {

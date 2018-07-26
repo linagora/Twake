@@ -87,6 +87,11 @@ class BoardTask {
     private $participants;
 
     /**
+     * @ORM\Column( type="text")
+     */
+    private $userWhoLiked;
+
+    /**
      * @ORM\Column(type="string", length=264)
      */
     private $name;
@@ -115,8 +120,14 @@ class BoardTask {
         $this->setLike(0);
     }
 
-    public function likeOne(){
-        $this->like++;
+    public function likeOne($userId){
+        $userWhoLike = $this->getUserWhoLiked();
+
+        if(!in_array($userId,$userWhoLike)) {
+            $this->like++;
+            $userWhoLike[] = $userId;
+            $this->setUserWhoLiked($userWhoLike);
+        }
     }
 
     /**
@@ -403,6 +414,22 @@ class BoardTask {
     public function setLike($like)
     {
         $this->like = $like;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUserWhoLiked()
+    {
+        return json_decode($this->userWhoLiked,1);
+    }
+
+    /**
+     * @param mixed $userWhoLiked
+     */
+    public function setUserWhoLiked($userWhoLiked)
+    {
+        $this->userWhoLiked = json_encode($userWhoLiked);
     }
 
 

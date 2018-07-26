@@ -98,6 +98,14 @@ class BoardTasks implements BoardTasksInterface
         return $task;
 
     }
+    public function likeTask($taskId, $userId){
+        /* @var BoardTask $task */
+
+        $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
+        $task->likeOne($userId);
+        $this->doctrine->persist($task);
+        $this->flush($task);
+    }
 
     public function updateTask($workspaceId, $boardId, $taskId, $taskArray, $currentUserId = null,$participants = Array())
     {
