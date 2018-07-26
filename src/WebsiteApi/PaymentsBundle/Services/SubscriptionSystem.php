@@ -80,6 +80,34 @@ class SubscriptionSystem implements SubscriptionInterface
         throw new SubscriptionNotFound();
     }
 
+    public function setAutoWithdrawal($group, $autoWithdrawal)
+    {
+        $sub = $this->get($group);
+
+        if($sub) {
+            $sub->setAutoWithdrawal($autoWithdrawal);
+            $this->doctrine->persist($sub);
+            $this->doctrine->flush();
+            return ;
+        }
+
+        throw new SubscriptionNotFound();
+    }
+
+    public function setAutoRenew($group, $autoRenew)
+    {
+        $sub = $this->get($group);
+
+        if($sub) {
+            $sub->setAutoRenew($autoRenew);
+            $this->doctrine->persist($sub);
+            $this->doctrine->flush();
+            return ;
+        }
+
+        throw new SubscriptionNotFound();
+    }
+
     public function getAutoRenew($group)
     {
         $sub = $this->get($group);
