@@ -132,13 +132,16 @@ class TaskController extends Controller
         );
 
         $workspaceId = $request->request->get("workspaceId");
-        $taskId = $request->request->get("taskId");
+        $taskId = $request->request->get("id");
         $task = $request->request->get("task");
         $boardId = $request->request->get("boardId");
         $userToNotify = $this->convertObjectListToIdList($request->request->get("watch_members",Array()));
         $participants = $this->convertObjectListToIdList($request->request->get("participants",Array()));
 
         $data['data'] = $this->get("app.board_tasks")->updateTask($workspaceId, $boardId, $taskId, $task, $this->getUser()->getId(),$userToNotify,$participants);
+
+        if($data['data'])
+            $data['data'] = $data['data']->getAsArray();
 
         return new JsonResponse($data);
     }
