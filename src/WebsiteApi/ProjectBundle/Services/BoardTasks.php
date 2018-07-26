@@ -90,7 +90,7 @@ class BoardTasks implements BoardTasksInterface
             "type" => "create",
             "task" => $task->getAsArray()
         );
-        $this->pusher->push($data, "board/".$board->getId());
+        
         $this->doctrine->flush();
 
         $this->notifyParticipants($userIdsToNotify,$workspace,"","","");
@@ -153,7 +153,7 @@ class BoardTasks implements BoardTasksInterface
 
         $this->notifyParticipants($board->getParticipants(),$workspace, "Task ".$task->getName()." updated", "", "");
         $this->notifyParticipants($task->getUserIdToNotify(),$workspace, "Task ".$task->getName()." updated", "", "");
-        $this->pusher->push($data, "board/".$boardId);
+        
 
         return $task;
     }
@@ -186,7 +186,7 @@ class BoardTasks implements BoardTasksInterface
             "type" => "remove",
             "task_id" => $taskId
         );
-        $this->pusher->push($data, "board/".$boardId);
+        
         $this->notifyParticipants($board->getParticipants(),$workspace, "Task ".$task->getName()." deleted", "", "");
         $this->notifyParticipants($task->getParticipants(),$workspace, "Task ".$task->getName()." deleted", "", "");
 
@@ -264,7 +264,7 @@ class BoardTasks implements BoardTasksInterface
             "type" => "update",
             "task" => $task->getAsArray()
         );
-        $this->pusher->push($data, "board/".$boardId);
+        
         return true;
 
     }
@@ -312,7 +312,7 @@ class BoardTasks implements BoardTasksInterface
             "type" => "update",
             "task" => $task->getAsArray()
         );
-        $this->pusher->push($data, "board/".$boardId);
+        
 
         return true;
 

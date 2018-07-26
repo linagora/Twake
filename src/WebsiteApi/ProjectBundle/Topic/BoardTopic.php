@@ -20,12 +20,13 @@ class BoardTopic implements TopicInterface, PushableTopicInterface
     public function __construct(){}
 
     public function onPush(Topic $topic, WampRequest $request, $data, $provider){
-        $topic->broadcast($data);
     }
 
     public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request){}
 
-    public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible){}
+    public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible){
+        $topic->broadcast($event);
+    }
 
     public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request){}
 

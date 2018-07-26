@@ -221,7 +221,6 @@ class Boards implements BoardsInterface
                 "type" => "update",
                 "board" => $board->getAsArray()
             );
-            $this->pusher->push($data, "board/workspace/".$workspaceId);
 
 
             return $board;
@@ -276,7 +275,6 @@ class Boards implements BoardsInterface
                 "type" => "update",
                 "board" => $board->getAsArray()
             );
-            $this->pusher->push($data, "board/workspace/" . $link->getWorkspace()->getId());
         }
 
         $participants = $board->getParticipants();
@@ -321,7 +319,7 @@ class Boards implements BoardsInterface
                 "type" => "remove",
                 "board_id" => $boardId
             );
-            $this->pusher->push($data, "board/workspace/" . $link->getWorkspace()->getId());
+
             $this->doctrine->remove($link);
         }
 
@@ -382,8 +380,6 @@ class Boards implements BoardsInterface
             "type" => "update",
             "board" => $board->getAsArray()
         );
-        $this->pusher->push($data, "board/workspace/".$workspaceId);
-        $this->pusher->push($data, "board/workspace/".$other_workspaceId);
 
         $this->notifyParticipants($board->getParticipants(),$workspace, "", "", "");
 
@@ -422,14 +418,13 @@ class Boards implements BoardsInterface
                 "type" => "update",
                 "board" => $board->getAsArray()
             );
-            $this->pusher->push($data, "board/workspace/".$workspaceId);
         }
 
         $data = Array(
             "type" => "delete",
             "board_id" => $boardId
         );
-        $this->pusher->push($data, "board/workspace/".$other_workspaceId);
+
         $this->notifyParticipants($board->getParticipants(),$workspace, "", "", "");
 
         return 1;
