@@ -105,32 +105,32 @@ board_tasks_unshare:
     methods: [POST]
 
 board_activitys_create:
-    path: /boardActivitys/create
+    path: /activities/create
     defaults: { _controller: TwakeProjectBundle:BoardActivity:create }
     methods: [POST]
 
 board_activitys_get:
-    path: /boardActivitys/get
+    path: /activities/get
     defaults: { _controller: TwakeProjectBundle:BoardActivity:get }
     methods: [POST]
 
 board_activitys_readAll:
-    path: /boardActivitys/readAll
+    path: /activities/readAll
     defaults: { _controller: TwakeProjectBundle:BoardActivity:readAll }
     methods: [POST]
 
 board_activitys_readOne:
-    path: /boardActivitys/readOne
+    path: /activities/readOne
     defaults: { _controller: TwakeProjectBundle:BoardActivity:readOne}
     methods: [POST]
 
 board_activitys_delete:
-    path: /boardActivitys/delete
+    path: /activities/delete
     defaults: { _controller: TwakeProjectBundle:BoardActivity:delete}
     methods: [POST]
 
 board_activitys_getActivityToDisplay:
-    path: /boardActivitys/getActivityToDisplay
+    path: /activities/getActivityToDisplay
     defaults: { _controller: TwakeProjectBundle:BoardActivity:getActivityToDisplay}
     methods: [POST]
 
