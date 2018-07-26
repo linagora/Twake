@@ -51,4 +51,10 @@ class Billing implements BillingInterface{
         return $transaction->getAsArray();
     }
 
+    public function getAllReceipt(){
+        $subscriptionRepo = $this->doctrine->getRepository("TwakePaymentsBundle:Receipt");
+
+        return $subscriptionRepo->findBy(array(), array('startDateOfService' => 'DESC'));
+    }
+
 }
