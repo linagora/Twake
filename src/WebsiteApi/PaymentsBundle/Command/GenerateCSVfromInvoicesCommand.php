@@ -20,7 +20,7 @@ class GenerateCSVfromInvoicesCommand extends ContainerAwareCommand
 
     protected function configure()
     {
-        //usage : php bin/console twake:generate_ics /mypath/ --nbData=5
+        //usage : php bin/console twake:generate_ics /mypath --nbData=5
         $this
             ->setHelp('usage : php bin/console twake:generate_ics [myPath] --nb={number}')
             ->setName("twake:generate_ics")
@@ -41,6 +41,8 @@ class GenerateCSVfromInvoicesCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+
+
 
         $DEFAULT_PATH = 'factures.csv';
         $delimiteur = "\t"; // ; ou , ou tab
@@ -67,16 +69,18 @@ class GenerateCSVfromInvoicesCommand extends ContainerAwareCommand
         $limit = $input->getOption('nbData');
 
         //data
-        $lignes[] = array("id subscription",
+        $lignes[] = array(
+            "id subscription",
+            "bill id ",
             "pricing plan",
-            "balance",
-            "autoRenew",
-            "autoPrelevement",
-            "Date de début",
-            "Date de fin",
-            "Groupe",
-            "id Groupe",
-            "archivé"
+            "month price",
+            "year price",
+            "discount",
+            "Start date",
+            "Issue date",
+            "Group",
+            "id Group",
+
         );
 
         $fichier_csv = fopen($pathFile, 'w+');
@@ -89,22 +93,28 @@ class GenerateCSVfromInvoicesCommand extends ContainerAwareCommand
         if($limit){
 
             $i=1;
-            foreach($services->get("app.subscription_system")->getAll() as $abo){
+            foreach($services->get("app.billing")->getAllReceipt() as $receipt){
 
                 // /!\ if value equals 0 its display nothing
-                if($abo && $i<=$limit){
-                    $abo = $abo->getAsArray();
+                if($receipt && $i<=$limit){
+
+                    $rEntity = $receipt;
+                    $receipt = $receipt->getAsArray();
                     $lignes[]= array(
-                        $abo["id"]?$abo["id"]: 0 ,
-                        $abo["pricingPlan"]["id"]?$abo["pricingPlan"]["id"] : 0,
-                        $abo["balance"] ? $abo["balance"]  : 0,
-                        $abo["autoRenew"]? $abo["autoRenew"] : 0,
-                        $abo["autoWithdrawable"]?$abo["autoWithdrawable"]:0,
-                        $abo["startDate"]?date("c",$abo["startDate"]):0,
-                        $abo["endDate"]?date("c",$abo["endDate"]):0,
-                        $abo["group"]["name"]?$abo["group"]["name"]:"NULL",
-                        $abo["group"]["id"] ? $abo["group"]["id"] : 0,
-                        $abo["archived"] ? $abo["archived"] : 0
+                        $receipt["id"]?$receipt["id"]: 0 ,
+                        $receipt["bill_id"] ? $receipt["bill_id"] : 0 ,
+
+                        $receipt["label"]?$receipt["label"] : 0,
+
+                        $receipt["month_price"] ? $receipt["month_price"] : 0,
+                        $receipt["year_price"] ? $receipt["year_price"] : 0,
+
+                        $receipt["discount"]? $receipt["discount"] : 0,
+                        $receipt["start_date_of_service"]?$receipt["start_date_of_service"]:0,
+                        $receipt["issue_date"]?$receipt["issue_date"]: 0,
+                        $rEntity->getGroupIdentity()->getGroup()->getName()? $rEntity->getGroupIdentity()->getGroup()->getName():"NULL",
+                        $rEntity->getGroupIdentity()->getId() ? $rEntity->getGroupIdentity()->getId() : 0,
+
                     );
                     $i++;
                 }
