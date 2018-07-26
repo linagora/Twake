@@ -105,8 +105,8 @@ class TaskController extends Controller
         $weight = $request->request->get("weight", 1);
         $name = $request->request->get("name", "");
         $description = $request->request->get("description","");
-        $startDate = $request->request->get("startDate",0);
-        $endDate = $request->request->get("endDate",0);
+        $startDate = $request->request->get("from", 0);
+        $endDate = $request->request->get("to", 0);
         $dependingTaskId = $request->request->get("dependingTaskId",0);
         $userToNotify = $this->convertObjectListToIdList($request->request->get("watch_members",Array()));
         $participants = $this->convertObjectListToIdList($request->request->get("participants",Array()));
