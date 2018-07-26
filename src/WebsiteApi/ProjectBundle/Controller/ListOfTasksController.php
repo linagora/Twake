@@ -36,6 +36,20 @@ class ListOfTasksController extends Controller
         return new JsonResponse($data);
     }
 
+    private function convertObjectListToIdList($list){
+        if(count($list)==0)
+            return Array();
+
+        $final = Array();
+
+        foreach($list as $item) {
+            if(is_int($item))
+                return $list;
+            $final[] = $item["id"];
+        }
+
+        return $final;
+    }
     public function updateAction(Request $request)
     {
         $data = Array(
@@ -46,7 +60,7 @@ class ListOfTasksController extends Controller
         $listOfTasksId = $request->request->get("id", 0);
         $newTitle = $request->request->get("label", null);
         $newColor = $request->request->get("color", null);
-        $userIdsToNotify = $request->request->get("watch_members", Array());
+        $userIdsToNotify = $this->convertObjectListToIdList($request->request->get("watch_members", Array()));
 
         if(!$this->get("app.list_of_tasks_service")->updateListOfTasks($listOfTasksId, $newTitle, $newColor,$userIdsToNotify)) {
             $data["errors"][] = "List of tasks not found";
@@ -106,7 +120,7 @@ class ListOfTasksController extends Controller
         $newTitle = $request->request->get("label", "");
         $newColor = $request->request->get("color", "");
         $boardId = $request->request->get("boardId", 0);
-        $userIdToNotify = $request->request->get("watch_members", Array());
+        $userIdToNotify = $this->convertObjectListToIdList($request->request->get("watch_members", Array()));
 
         $listOfTasks  = $this->get("app.list_of_tasks_service")->createListOfTasks($newTitle, $newColor, $boardId,$userIdToNotify);
         if(!$listOfTasks) {

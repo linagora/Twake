@@ -66,10 +66,8 @@ class BoardActivities implements BoardActivityInterface
         $this->doctrine->persist($boardActivity);
 
         $data = Array("action" => "addActivity");
-        $this->pusher->push($data, "board/workspace/" . $workspace->getId());
 
         //$data = Array("action" => "add");
-        //$this->pusher->push($data, "boardActivity/workspace/".$workspace->getId());
 
         //appel pour faire une notification
         if ($pushNotif) {
@@ -99,7 +97,6 @@ class BoardActivities implements BoardActivityInterface
                 "type" => "create",
                 "boardActivity" => $boardActivity->getAsArray()
             );
-            $this->pusher->push($data, "boardActivity/workspace/" . $workspaceId);
 
             return $boardActivity;
         }
@@ -190,7 +187,6 @@ class BoardActivities implements BoardActivityInterface
                 "workspace_id" => ($workspace) ? $workspace->getId() : null,
                 "app_id" => ($application) ? $application->getId() : null
             );
-            $this->pusher->push($data, "boardActivity/workspace/" . $workspace->getId());
 
             $this->updateDeviceBadge($user, $totalNotifications);
             return true;

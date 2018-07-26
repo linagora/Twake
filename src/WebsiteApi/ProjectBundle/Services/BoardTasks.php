@@ -22,8 +22,8 @@ class BoardTasks implements BoardTasksInterface
     var $pusher;
     var $workspaceLevels;
     var $notifications;
-    /* @var BoardActivities $boardActivity */
-    var $boardActivity;
+    /* @var BoardActivities $boardActivities */
+    var $boardActivities;
 
     public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceBoardActivity)
     {
@@ -31,7 +31,7 @@ class BoardTasks implements BoardTasksInterface
         $this->pusher = $pusher;
         $this->workspaceLevels = $workspaceLevels;
         $this->notifications = $notifications;
-        $this->boardActivity = $serviceBoardActivity;
+        $this->boardActivities = $serviceBoardActivity;
     }
 
     private function notifyParticipants($participants, $workspace, $title, $description, $notifCode){
@@ -57,11 +57,12 @@ class BoardTasks implements BoardTasksInterface
 
     }
 
-    public function createTask($listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $userIdsToNotify=Array(), $weight=1)
+    public function createTask($listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $userIdsToNotify=Array(), $participants=Array(), $weight=1)
     {
         /* @var ListOfTasks $list */
         $list = $this->convertToEntity($listId,"TwakeProjectBundle:ListOfTasks");
         $workspace = $this->getWorkspaceFromBoard($list->getBoard());
+        $user = $this->convertToEntity($currentUserId,"TwakeUsersBundle:User");
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
             return null;
@@ -74,7 +75,7 @@ class BoardTasks implements BoardTasksInterface
             $dependingTask = $this->convertToEntity($dependingTaskId,"TwakeProjectBundle:BoardTask");
         else
             $dependingTask = null;
-        $task = new BoardTask($startDate, $endDate, $name, $description, $dependingTask, $weight);
+        $task = new BoardTask($startDate, $endDate, $name, $description, $dependingTask,$participants,$user, $weight);
 
 
         $task->setBoard($board);
@@ -89,7 +90,7 @@ class BoardTasks implements BoardTasksInterface
             "type" => "create",
             "task" => $task->getAsArray()
         );
-        $this->pusher->push($data, "board/".$board->getId());
+        
         $this->doctrine->flush();
 
         $this->notifyParticipants($userIdsToNotify,$workspace,"","","");
@@ -97,48 +98,51 @@ class BoardTasks implements BoardTasksInterface
         return $task;
 
     }
+    public function likeTask($taskId, $userId){
+        /* @var BoardTask $task */
 
-    public function updateTask($workspaceId, $boardId, $taskId, $taskArray, $currentUserId = null)
+        $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
+        $task->likeOne($userId);
+        $this->doctrine->persist($task);
+        $this->flush($task);
+    }
+
+    public function updateTask($workspaceId, $boardId, $taskId, $taskArray, $currentUserId = null,$userToNotify = Array(),$participants = Array())
     {
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
-
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
-            return null;
-        }
-
-        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
-
-        if(!isset($taskArray["from"]) || !isset($taskArray["to"])){
-            return null;
-        }
-
 
         $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
 
         if(!$task){
             return null;
         }
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        if($workspace==null)
+            $workspace = $this->getWorkspaceFromTask($taskId);
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+            return null;
+        }
+
+        if($boardId!=null)
+            $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
+        else
+            $board = $task->getBoard();
+
 
         /* @var BoardTask $task */
 
-        $task->setBoard($board);
-        $task->setTask($taskArray);
-        $task->setFrom($taskArray["from"]);
-        $task->setTo($taskArray["to"]);
-        $task->setUserIdToNotify($taskArray["participant"]);
-        if (isset($taskArray["reminder"])) {
-            $task->setReminder(intval($taskArray["reminder"]));
-        } else {
-            $task->setReminder();
-        }
-        $this->doctrine->persist($task);
+        if($board!=null)
+            $task->setBoard($board);
+        if($participants!=null)
+            $task->setParticipants($participants);
+        if($userToNotify!=null)
+            $task->setUserIdToNotify($userToNotify);
+        if(isset($taskArray["from"]))
+            $task->setFrom($taskArray["from"]);
+        if(isset($taskArray["to"]))
+            $task->setTo($taskArray["to"]);
 
-        $usersLinked = $this->doctrine->getRepository("TwakeProjectBundle:LinkTaskUser")->findBy(Array("task"=>$task));
-        foreach ($usersLinked as $userLinked){
-            $userLinked->setFrom($task->getFrom());
-            $userLinked->setTo($task->getTo());
-            $this->doctrine->persist($userLinked);
-        }
+        $this->doctrine->persist($task);
 
         $this->doctrine->flush();
 
@@ -148,8 +152,8 @@ class BoardTasks implements BoardTasksInterface
         );
 
         $this->notifyParticipants($board->getParticipants(),$workspace, "Task ".$task->getName()." updated", "", "");
-        $this->notifyParticipants($task->getParticipants(),$workspace, "Task ".$task->getName()." updated", "", "");
-        $this->pusher->push($data, "board/".$boardId);
+        $this->notifyParticipants($task->getUserIdToNotify(),$workspace, "Task ".$task->getName()." updated", "", "");
+        
 
         return $task;
     }
@@ -182,7 +186,7 @@ class BoardTasks implements BoardTasksInterface
             "type" => "remove",
             "task_id" => $taskId
         );
-        $this->pusher->push($data, "board/".$boardId);
+        
         $this->notifyParticipants($board->getParticipants(),$workspace, "Task ".$task->getName()." deleted", "", "");
         $this->notifyParticipants($task->getParticipants(),$workspace, "Task ".$task->getName()." deleted", "", "");
 
@@ -260,7 +264,7 @@ class BoardTasks implements BoardTasksInterface
             "type" => "update",
             "task" => $task->getAsArray()
         );
-        $this->pusher->push($data, "board/".$boardId);
+        
         return true;
 
     }
@@ -308,10 +312,35 @@ class BoardTasks implements BoardTasksInterface
             "type" => "update",
             "task" => $task->getAsArray()
         );
-        $this->pusher->push($data, "board/".$boardId);
+        
 
         return true;
 
+    }
+
+    public function getParticipantsAsUser($task){
+        /* @var BoardTask $task */
+        $task = $this->convertToEntity($task,"TwakeProjectBundle:BoardTask");
+        $participants = $task->getParticipants();
+        $final = [];
+
+
+        foreach ($participants as $participant) {
+            $final[] = $this->convertToEntity($participant,"TwakeUsersBundle:User");
+        }
+
+        return $final;
+    }
+    public function getUserToNotifyAsUser($task){
+        $task = $this->convertToEntity($task,"TwakeProjectBundle:BoardTask");
+        $usersToNotify = $task->getUserIdToNotify();
+        $final = [];
+
+        foreach ($usersToNotify as $userToNotify) {
+            $final[] = $this->convertToEntity($userToNotify,"TwakeUsersBundle:User");
+        }
+
+        return $final;
     }
 
     public function getTasks($boardId, $currentUserId = null)
