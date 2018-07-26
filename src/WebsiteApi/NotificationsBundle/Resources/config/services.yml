@@ -21,3 +21,8 @@ services:
         class: WebsiteApi\NotificationsBundle\Topic\CalendarActivityTopic
         tags:
             - { name: gos_web_socket.topic }
+
+    project.activity.topic:
+        class: WebsiteApi\NotificationsBundle\Topic\ProjectActivityTopic
+        tags:
+            - { name: gos_web_socket.topic }
