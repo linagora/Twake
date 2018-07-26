@@ -26,6 +26,14 @@ class TaskController extends Controller
             $tasks_formated = Array();
             foreach ($tasks as $task){
                 $tasks_formated[] = $task->getAsArray();
+                $participants = $this->get("app.board_tasks")->getParticipantsAsUser($task);
+                $tasks_formated["participants"] = [];
+                foreach ($participants as $participant)
+                    $tasks_formated["participants"][] = $participant->getAsArray();
+                $usersToNotify = $this->get("app.board_tasks")->getUserToNotifyAsUser($task);
+                $tasks_formated["watch_members"] = [];
+                foreach ($usersToNotify as $userToNotify)
+                    $tasks_formated["watch_members"][] = $userToNotify->getAsArray();
             }
             $data["data"] = $tasks_formated;
         }
@@ -67,9 +75,10 @@ class TaskController extends Controller
         $endDate = $request->request->get("endDate",0);
         $dependingTaskId = $request->request->get("dependingTaskId",0);
         $userToNotify = $request->request->get("watch_members",Array());
+        $participants = $request->request->get("participants",Array());
 
-        //$listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $addMySelf = false, $userIdsToNotify=Array(), $weight=1
-        $task = $this->get("app.board_tasks")->createTask($listId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify, $weight);
+        //$listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $addMySelf = false, $userIdsToNotify=Array(),$participants, $weight=1
+        $task = $this->get("app.board_tasks")->createTask($listId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify,$participants, $weight);
 
         if($task == null){
             $data["errors"] = "error";
