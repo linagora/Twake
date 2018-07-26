@@ -35,6 +35,8 @@ class SubscriptionTest extends WebTestCaseExtended
         $this->getDoctrine()->persist($pricing_plan_2);
         $this->getDoctrine()->flush();
 
+        $events_default = Array();
+
         //Events : ajout d'un utilisateur le 10ème et 15ème jour, changement de pricing plan le 20
         $events = Array();
         $events[10] = Array("callback" => [], "data" => []);
@@ -47,18 +49,47 @@ class SubscriptionTest extends WebTestCaseExtended
         $events[15]["callback"][] = "addUser";
         $events[15]["data"][] = 3;
 
-        //Events :
+        //Events : permet de passer d'un prélèvement pas automatique à automatique
         $events2 = Array();
         $events2[15] = Array("callback" => [], "data" => []);
         $events2[15]["callback"][] = "changeWithdrawal";
-        $events2[15]["data"][] = false;
+        $events2[15]["data"][] = true;
 
-        $list_freq = [1, 3, 5, 7, 3, 2, 1, 1];
+        //Events : permet de passer d'un renouvellement non auto à un renouvellement automatique puis prélèvement automatique
+        $events3 = Array();
+        $events3[15] = Array("callback" => [], "data" => []);
+        $events3[15]["callback"][] = "changeRenew";
+        $events3[15]["data"][] = true;
+        $events3[16] = Array("callback" => [], "data" => []);
+        $events3[16]["callback"][] = "changeWithdrawal";
+        $events3[16]["data"][] = true;
+
+        //Events : modifier les fréquentations des utilisateurs
+        $events4 = Array();
+        for ($j = 0; $j<8; $j++){
+            $events5[$j+2] = Array("callback" => [], "data" => []);
+            $events5[$j+2]["callback"][] = "changeFrequence";
+            $events5[$j+2]["data"][] = [1,$j];
+        }
+
+        //Events : création overCost
+        $events5 = Array();
+        for ($j = 0; $j<8; $j++){
+            $events5[$j+2] = Array("callback" => [], "data" => []);
+            $events5[$j+2]["callback"][] = "changeFrequence";
+            $events5[$j+2]["data"][] = [1,$j];
+        }
+        for ($i = 10; $i<16; $i++){
+            $events5[$i]["callback"][] = "addUser";
+            $events5[$i]["data"][] = 1;
+        }
+
+        $list_freq = [7, 7, 7, 7, 7, 7, 7, 7];
         var_dump("before scenario");
-        $scenario = new ScenarioPayment($this,"benoit.frapiccini@telecomnancy.net", "Benoit",
+        $scenario = new ScenarioPayment($this,"benoit.tallandier@telecomnancy.net", "Benoit",
             "BN", "Group_Test", "Project",$pricing_plan,
-            8, $this->getDoctrine(), new \DateInterval("P35D"), $list_freq,
-            false,true, $events2);
+            8, $this->getDoctrine(), new \DateInterval("P30D"), $list_freq,
+            true,true, $events5);
         var_dump("after creation scenario");
         $scenario->exec();
         var_dump("after 1 exec scenario");

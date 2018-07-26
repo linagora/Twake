@@ -272,7 +272,7 @@ class SubscriptionSystem implements SubscriptionInterface
         if($delta===false)
             throw new GroupNotFoundExecption();
 
-        if($delta>=0)
+        if($delta>0)
             return false;
 
         $delta *= -1;

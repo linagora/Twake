@@ -101,7 +101,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     public function billGroup($group, $cost, $sub, $alreadyPaied)
     {
         $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
-        var_dump($this->subscriptionSystem->getAutoWithdrawal($group));
+        //var_dump($this->subscriptionSystem->getAutoWithdrawal($group));
         if ($this->subscriptionSystem->getAutoWithdrawal($group) || $alreadyPaied){
             $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
             $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
@@ -109,17 +109,17 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
             $this->doctrine->persist($identity);
             $this->doctrine->flush();
 
-            var_dump("send bill : ".$cost);
+            //var_dump("send bill : ".$cost);
             $period = $this->subscriptionSystem->getGroupPeriod($group);
             $startDateOfService = $sub->getStartDate();
             $pricingPlan = $sub->getPricingPlan();
             $endedAt = $sub->getEndDate();
             $billedType = $sub->getStartDate()->diff($endedAt)->m==1 ? "monthly" : "year";
             //var_dump(106);
-            var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
+            //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
             $bill = $this->billing->recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt);
             //var_dump(108);
-            var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
+            //var_dump($this->subscriptionSystem->getGroupPeriod($group)->getExpectedCost());
             //stats
             $apps = $this->groupApps->getApps($group);
 
@@ -185,7 +185,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
                 $this->subscriptionSystem->addBalance($this->subscriptionSystem->getOverCost($group),$group);
             return 7+$res;
         } else if ($this->subscriptionSystem->groupIsOverUsingALittle($group) && !$identity->getHaveAlreadySendIsOverUsingALittleMail()) {
-            //var_dump("over using a little : ".$this->subscriptionSystem->getOverCost($group));
+            var_dump("over using a little : ".$this->subscriptionSystem->getOverCost($group));
             $identity->setHaveAlreadySendIsOverUsingALittleMail(true);
             $this->mailSender->sendIsOverUsingALittle($group,$this->subscriptionSystem->getOverCost($group));
             return 10;
@@ -220,6 +220,8 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     public function checkEndPeriodByGroup($group)
     {
         $dateInterval = $this->subscriptionSystem->getEndPeriodTimeLeft($group);
+        //var_dump("date interval");
+        //var_dump($dateInterval);
         if ($dateInterval->m == 2 && $dateInterval->y == 0 && $dateInterval->d == 0){
             //var_dump("mail 2 month");
             $this->mailSender->sendEndPeriodsMail($group,"2 month");
@@ -245,7 +247,6 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         }
         else if ($dateInterval->m == 0 && $dateInterval->y == 0 && $dateInterval->d == 1)
         {
-            //var_dump("mail 1 days");
             $this->mailSender->sendEndPeriodsMail($group,"1 day");
             return 7;
         }

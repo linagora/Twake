@@ -31,6 +31,8 @@ class ScenarioPayment {
     var $new_pricing_plan;
     var $group;
     var $events;
+    var $last_payment = 0;
+    var $cost = 0;
 
     var $addUserCallback;
     var $changePricingPlanCallback;
@@ -55,7 +57,7 @@ class ScenarioPayment {
         $this->events = $events;
         $this->addUserCallback = function(ScenarioPayment $scenario, $data){
             static $i = 0;
-            var_dump("coucou je passe dans la fonction");
+            //var_dump("coucou je passe dans la fonction");
             $scenario->addUserToList("ben".$i."@gmail.com", "Ben".$i, "ben", $data);
             $i++;
         };
@@ -65,9 +67,13 @@ class ScenarioPayment {
 
         };
         $this->changeWithdrawalCallback = function (ScenarioPayment $scenario, $data){
-            var_dump($scenario->group);
             $this->services->myGet("app.subscription_system")->setAutoWithdrawal($scenario->group, $data);
-
+        };
+        $this->changeRenewCallback = function (ScenarioPayment $scenario, $data){
+            $this->services->myGet("app.subscription_system")->setAutoRenew($scenario->group, $data);
+        };
+        $this->changeFrequenceCallback = function (ScenarioPayment $scenario, $data){
+            $this->changeFreq($data[0],$data[1]);
         };
 
         //Création user
@@ -103,6 +109,8 @@ class ScenarioPayment {
         $this->callbackMap["addUser"] = $this->addUserCallback;
         $this->callbackMap["changePricingPlan"] = $this->changePricingPlanCallback;
         $this->callbackMap["changeWithdrawal"] = $this->changeWithdrawalCallback;
+        $this->callbackMap["changeRenew"] = $this->changeRenewCallback;
+        $this->callbackMap["changeFrequence"] = $this->changeFrequenceCallback;
     }
 
 
@@ -123,7 +131,7 @@ class ScenarioPayment {
 
         $this->fp = fopen('file.csv', $mode);
         fputcsv($this->fp,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not",
-            "overCost", "balance", "balance_consumed", "expected_cost", "is_blocked","lock_date"));
+            "overCost", "balance", "balance_consumed", "expected_cost", "is_blocked","lock_date", "id_facture","cost"));
         fclose($this->fp);
         $csv = array();
         $days = $this->date_interval->d;
@@ -202,10 +210,11 @@ class ScenarioPayment {
 
 
         if(isset($this->events[$day])){
-            var_dump("OuhOuh je suis ici");
+            //var_dump("OuhOuh je suis ici");
             foreach ($this->events[$day]["callback"] as $key => $callback){
                 ($this->callbackMap[$callback])($this,$this->events[$day]["data"][$key]);
             }
+            //var_dump("after callback");
         }
 
         $gp = $this->services->myGet("app.subscription_system")->getGroupPeriod($group_id);
@@ -278,9 +287,31 @@ class ScenarioPayment {
             $this->services->myGet("app.subscription_manager")->payOverCost($group_id, $this->subscription);
         }*/
 
-        //ajout au csv
-        $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup,
-            $overCost, $balance, $balance_consumed, $gp_expected_cost, $is_blocked, $lock_date);
+        //Affiche id et prix de la facture dans le csv
+        //var_dump("Avant test");
+        $id = $this->doctrine->getRepository("TwakePaymentsBundle:Receipt")->findOneBy(Array(),Array("id"=>"DESC"));
+        $cost = $id->getGroupPricingInstance()->getCost();
+        $id = $id->getId();
+        //var_dump($cost);
+        //var_dump($id);
+        if ($id > $this->last_payment){
+            $this->last_payment = $id;
+            $this->cost = $cost;
+
+            //ajout au csv
+            $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup,
+                $overCost, $balance, $balance_consumed, $gp_expected_cost, $is_blocked, $lock_date, $this->last_payment, $this->cost);
+
+        }else {
+            //ajout au csv
+            $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup,
+                $overCost, $balance, $balance_consumed, $gp_expected_cost, $is_blocked, $lock_date);
+
+        }
+        //var_dump($this->last_payment);
+        //var_dump("Après test");
+
+
 
         $this->fp = fopen('file.csv', 'a');
         fputcsv($this->fp, $line_csv);
