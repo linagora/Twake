@@ -110,9 +110,10 @@ class TaskController extends Controller
         $dependingTaskId = $request->request->get("dependingTaskId",0);
         $userToNotify = $this->convertObjectListToIdList($request->request->get("watch_members",Array()));
         $participants = $this->convertObjectListToIdList($request->request->get("participants",Array()));
+        $labels = $this->convertObjectListToIdList($request->request->get("labels",Array()));
 
         //$listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $addMySelf = false, $userIdsToNotify=Array(),$participants, $weight=1
-        $task = $this->get("app.board_tasks")->createTask($listId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify,$participants, $weight);
+        $task = $this->get("app.board_tasks")->createTask($listId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify,$participants, $weight, $labels);
 
         if($task == null){
             $data["errors"] = "error";
@@ -141,8 +142,9 @@ class TaskController extends Controller
         $dependingTaskId = $request->request->get("dependingTaskId",0);
         $userToNotify = $this->convertObjectListToIdList($request->request->get("watch_members",Array()));
         $participants = $this->convertObjectListToIdList($request->request->get("participants",Array()));
+        $labels = $this->convertObjectListToIdList($request->request->get("labels",Array()));
 
-        $data['data'] = $this->get("app.board_tasks")->updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify,$participants, $weight);
+        $data['data'] = $this->get("app.board_tasks")->updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify,$participants, $weight, $labels);
 
         if($data['data'])
             $data['data'] = $data['data']->getAsArray();

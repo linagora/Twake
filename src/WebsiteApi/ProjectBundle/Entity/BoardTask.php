@@ -77,6 +77,12 @@ class BoardTask implements ObjectLinksInterface {
      */
     private $userIdToNotify;
 
+
+    /**
+     * @ORM\Column( type="text")
+     */
+    private $labels;
+
     /**
      * @ORM\Column( type="text")
      */
@@ -241,6 +247,7 @@ class BoardTask implements ObjectLinksInterface {
             "to" => $this->getTo(),
             "weight" => $this->getWeight(),
             "like" => $this->getLike(),
+            "labels" => $this->getLabels(),
             "user" => $this->getUser() !=null ? $this->getUser()->getId() : 0,
         );
     }
@@ -460,5 +467,21 @@ class BoardTask implements ObjectLinksInterface {
     public function getPushRoute()
     {
         return "board/".$this->getId();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLabels()
+    {
+        return json_decode($this->labels, 1);
+    }
+
+    /**
+     * @param mixed $labels
+     */
+    public function setLabels($labels)
+    {
+        $this->labels = json_encode($labels);
     }
 }

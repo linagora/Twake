@@ -61,7 +61,7 @@ class BoardTasks implements BoardTasksInterface
 
     }
 
-    public function createTask($listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $userIdsToNotify=Array(), $participants=Array(), $weight=1)
+    public function createTask($listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $userIdsToNotify=Array(), $participants=Array(), $weight=1, $labels=Array())
     {
         /* @var ListOfTasks $list */
         $list = $this->convertToEntity($listId,"TwakeProjectBundle:ListOfTasks");
@@ -84,6 +84,7 @@ class BoardTasks implements BoardTasksInterface
 
         $task->setUserIdToNotify($userIdsToNotify);
         $task->setOrder($this->getMinOrder($board)-1);
+        $task->setLabels($labels);
 
         $task->setListOfTasks($list);
         $task->setBoard($board);
@@ -111,7 +112,7 @@ class BoardTasks implements BoardTasksInterface
         $this->flush($task);
     }
 
-    public function updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId, $userToNotify,$participants, $weight)
+    public function updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId, $userToNotify,$participants, $weight, $labels)
     {
         /* @var BoardTask $task */
         $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
@@ -133,8 +134,8 @@ class BoardTasks implements BoardTasksInterface
             $task->setDescription($description);
         if($weight!=null)
             $task->setWeight($weight);
-
-
+        if($labels!=null)
+            $task->setLabels($labels);
         if($board!=null)
             $task->setBoard($board);
         if($participants!=null)
