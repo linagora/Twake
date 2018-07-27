@@ -174,10 +174,16 @@ class UsersConnectionsController extends Controller
 			"data" => Array()
 		);
 
+
 		$ok = $this->get("app.user")->current();
 		if(!$ok){
 			$data["errors"][] = "disconnected";
 		}else{
+
+            $device = $request->request->get("device", false);
+            if ($device && isset($device["type"]) && isset($device["value"]) && $device["value"]) {
+                $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], $device["version"]);
+            }
 
 			$data["data"] = $this->getUser()->getAsArray();
 
