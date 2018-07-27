@@ -64,7 +64,6 @@ class ScenarioPayment {
         //tous les callback
         $this->addUserCallback = function(ScenarioPayment $scenario, $data){
             static $i = 0;
-            //var_dump("coucou je passe dans la fonction");
             $scenario->addUserToList("ben".$i."@gmail.com", "Ben".$i, "ben", $data);
             $i++;
         };
@@ -133,13 +132,10 @@ class ScenarioPayment {
 
     public function execMonthly($mode='w'){
         $now = date_format(new \DateTime('now'), 'Y-m-d');
-        //var_dump($now);
         $endDate = $this->subscription->getEndDate();
-        //var_dump($endDate);
         $startDate = $this->subscription->getStartDate();
         if (date_format($endDate, 'Y-m-d') == $now){
             $this->subscription = $this->services->myGet("app.subscription_system")->get($this->group);
-            //var_dump($this->subscription->getId());
             $this->subscription->setEndDate($endDate->sub($this->date_interval));
             $this->subscription->setStartDate($startDate->sub($this->date_interval));
             $this->doctrine->persist($this->subscription);
@@ -185,32 +181,24 @@ class ScenarioPayment {
         $startAt->sub(new \DateInterval("P1D"));
         $gp->setPeriodStartedAt($startAt);
         $this->doctrine->persist($gp);
-        //var_dump("start date");
-        //var_dump(date_format($startAt, 'Y-m-d H:i:s'));
 
         //Décale date de fin de group_period
         $periodExpectedToEndAt = $gp->getPeriodExpectedToEndAt();
         $periodExpectedToEndAt->sub(new \DateInterval("P1D"));
         $gp->setPeriodExpectedToEndAt($periodExpectedToEndAt);
         $this->doctrine->persist($gp);
-        //var_dump("expected to end at");
-        //var_dump(date_format($periodExpectedToEndAt, 'Y-m-d H:i:s'));
 
         //Décale date de début d'abonnement
         $startDate = $this->subscription->getStartDate();
         $startDate->add(new \DateInterval("P1D"));
         $this->subscription->setStartDate($startDate);
         $this->doctrine->persist($this->subscription);
-       // var_dump("start Date");
-       // var_dump(date_format($startDate, 'Y-m-d H:i:s'));
 
         //Décale date de fin d'abonnement
         $endDate = $this->subscription->getEndDate();
         $endDate->add(new \DateInterval("P1D"));
         $this->subscription->setEndDate($endDate);
         $this->doctrine->persist($this->subscription);
-        //var_dump("end Date");
-        //var_dump(date_format($endDate, 'Y-m-d H:i:s'));
 
         $this->doctrine->flush();
 
@@ -232,11 +220,9 @@ class ScenarioPayment {
 
 
         if(isset($this->events[$day])){
-            //var_dump("OuhOuh je suis ici");
             foreach ($this->events[$day]["callback"] as $key => $callback){
                 ($this->callbackMap[$callback])($this,$this->events[$day]["data"][$key]);
             }
-            //var_dump("after callback");
         }
 
         $gp = $this->services->myGet("app.subscription_system")->getGroupPeriod($group_id);
@@ -310,12 +296,9 @@ class ScenarioPayment {
         }*/
 
         //Affiche id et prix de la facture dans le csv
-        //var_dump("Avant test");
         $id = $this->doctrine->getRepository("TwakePaymentsBundle:Receipt")->findOneBy(Array(),Array("id"=>"DESC"));
         $cost = $id->getGroupPricingInstance()->getCost();
         $id = $id->getId();
-        //var_dump($cost);
-        //var_dump($id);
         if ($id > $this->last_payment){
             $this->last_payment = $id;
             $this->cost = $cost;
@@ -330,9 +313,6 @@ class ScenarioPayment {
                 $overCost, $balance, $balance_consumed, $gp_expected_cost, $is_blocked, $lock_date);
 
         }
-        //var_dump($this->last_payment);
-        //var_dump("Après test");
-
 
         $this->fp = fopen('file.csv', 'a');
         fputcsv($this->fp, $line_csv);
@@ -421,8 +401,6 @@ class ScenarioPayment {
         //on change les valeurs de fréquence dans la liste
         foreach ($changeFrequence as $i => $item){
             for ($l=0; $l<count($item);$l++){
-                //var_dump($item[$l][0]);
-                //var_dump($item[$l][1]);
                 $freq = $item[$l][0];
                 $id_user = $item[$l][1];
                 $list[$id_user] = $freq;
@@ -446,8 +424,6 @@ class ScenarioPayment {
         //on regarde si les utilisateurs ajoutés sont des utilisateurs total, partiels ou autres
         foreach ($addUsers as $i => $addUser){
             for ($k=0;$k<count($addUser);$k++) {
-                //var_dump("freq ");
-                //var_dump($addUser[$k]);
                 $freq = (30-$i)/$addUser[$k];
                 if ($freq>10){
                     $user_total++;
@@ -484,12 +460,7 @@ class ScenarioPayment {
         $balance_consummed_end_month = $user_total * $price_monthly + $user_partial * 0.5 * $price_monthly;
         $balance_consummed_end_year = $user_total * $price_yearly + $user_partial * 0.5 * $price_yearly;
 
-        //prix au moment de l'abonnement
-        //var_dump($price_monthly_for_all);
-        //var_dump($price_yearly_for_all);
-
         //renouvellement
-        //var_dump($renew);
         if ($renew_init){
             $renew_for_csv = "auto renew";
         }else{
@@ -497,21 +468,11 @@ class ScenarioPayment {
         }
 
         //prélèvement
-        //var_dump($withdraw);
         if ($withdraw_init){
             $withdraw_for_csv = "auto withdraw";
         }else{
             $withdraw_for_csv = "no auto withdraw";
         }
-
-        //nombre d'utilisateurs
-  /*      var_dump("total ".$user_total);
-        var_dump("partial ".$user_partial);
-        var_dump("other ".$other);
-*/
-        //prix
-        //var_dump($balance_consummed_end_month);
-        //var_dump($balance_consummed_end_year);
 
         $estimation_scenario = array("Group name",$group_name,"first price monthly", $price_monthly_for_all, "first price yearly", $price_yearly_for_all,
             $renew_for_csv,$withdraw_for_csv, "nb users total", $user_total, "nb users partial", $user_partial, "other users",

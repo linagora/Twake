@@ -91,9 +91,8 @@ class SubscriptionTest extends WebTestCaseExtended
             "BN", "Group_Test", "Project",$pricing_plan,
             8, $this->getDoctrine(), 2,$list_freq,
             false,false, $events3);
-        var_dump("after creation scenario");
+        var_dump("after creation scenario, and before exec()");
         $scenario->exec();
-
         var_dump("end scenario");
         //Fin scénario
 
