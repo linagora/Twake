@@ -3,6 +3,7 @@
 namespace WebsiteApi\ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
  * Task
@@ -11,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="WebsiteApi\ProjectBundle\Repository\BoardTaskRepository")
  */
 
-class BoardTask {
+class BoardTask implements ObjectLinksInterface {
 
     /**
      * @var int
@@ -57,11 +58,6 @@ class BoardTask {
     private $user;
 
     /**
-     * @ORM\Column(name="next_reminder", type="bigint")
-     */
-    private $nextReminder = 0;
-
-    /**
      * @ORM\Column(name="like_ts",type="bigint")
      */
     private $like;
@@ -80,6 +76,12 @@ class BoardTask {
      * @ORM\Column( type="text")
      */
     private $userIdToNotify;
+
+
+    /**
+     * @ORM\Column( type="text")
+     */
+    private $labels;
 
     /**
      * @ORM\Column( type="text")
@@ -118,6 +120,7 @@ class BoardTask {
         $this->setParticipants($participants);
         $this->setUser($user);
         $this->setLike(0);
+        $this->setUserWhoLiked(Array());
     }
 
     public function likeOne($userId){
@@ -211,14 +214,6 @@ class BoardTask {
     }
 
     /**
-     * @return mixed
-     */
-    public function getNextReminder()
-    {
-        return $this->nextReminder;
-    }
-
-    /**
      * @param mixed $nextReminder
      */
     public function setNextReminder($nextReminder)
@@ -252,6 +247,7 @@ class BoardTask {
             "to" => $this->getTo(),
             "weight" => $this->getWeight(),
             "like" => $this->getLike(),
+            "labels" => $this->getLabels(),
             "user" => $this->getUser() !=null ? $this->getUser()->getId() : 0,
         );
     }
@@ -433,4 +429,59 @@ class BoardTask {
     }
 
 
+    public function getRepository()
+    {
+        return "TwakeProjectBundle:BoardTask";
+    }
+
+    public function getAsArrayFormated(){
+        return Array(
+            "id" => $this->getId(),
+            "title" => "Task",
+            "object_name" => $this->getName(),
+            "key" => "tasks",
+            "type" => "task",
+            "code" => "",
+        );
+    }
+
+    public function synchroniseField($fieldName, $value)
+    {
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $setter = "set".ucfirst($fieldName);
+        $this->$setter($value);
+        return true;
+    }
+
+    public function get($fieldName){
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $getter = "get".ucfirst($fieldName);
+
+        return $this->$getter();
+    }
+
+    public function getPushRoute()
+    {
+        return "board/".$this->getId();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLabels()
+    {
+        return json_decode($this->labels, 1);
+    }
+
+    /**
+     * @param mixed $labels
+     */
+    public function setLabels($labels)
+    {
+        $this->labels = json_encode($labels);
+    }
 }

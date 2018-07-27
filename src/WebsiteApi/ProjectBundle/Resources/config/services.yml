@@ -2,7 +2,7 @@ services:
 
     app.board_tasks:
         class: WebsiteApi\ProjectBundle\Services\BoardTasks
-        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels', '@app.notifications','@app.boardActivity' ]
+        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels', '@app.notifications','@app.boardActivity', '@app.objectLinks' ]
 
     app.boards:
         class: WebsiteApi\ProjectBundle\Services\Boards
