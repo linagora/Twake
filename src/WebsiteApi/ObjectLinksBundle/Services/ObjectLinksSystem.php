@@ -15,12 +15,15 @@ use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 class ObjectLinksSystem
 {
     var $doctrine;
+    var $pusher;
 
     static $keyMap = Array();
 
-    public function __construct($doctrine)
+    public function __construct($doctrine, $pusher)
     {
         $this->doctrine = $doctrine;
+        $this->pusher = $pusher;
+
         if(count($this->keyMap)==0){
             self::$keyMap["file"] = "TwakeDriveBundle:DriveFile";
             self::$keyMap["event"] = "TwakeCalendarBundle:CalendarEvent";
@@ -52,6 +55,7 @@ class ObjectLinksSystem
         }
     }
 
+    /* @return ObjectLinksInterface*/
     public function getObjectFromRepositoryAndId($repository, $id){
         return $this->doctrine->getRepository($repository)->findOneBy(Array("id" => $id));
     }
@@ -129,5 +133,68 @@ class ObjectLinksSystem
 
     public function getRepositoryFromKey($key){
         return self::$keyMap[$key];
+    }
+
+    public function getPartners(ObjectLinksInterface $object){
+        $relations = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $object->getId(), "typeA" => $object->getRepository()));
+        array_merge($relations,$this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $object->getId(), "typeA" => $object->getRepository())));
+
+        $partners = [];
+        foreach ($relations as $relation){
+            /* @var ObjectLinks $relation*/
+            if($relation->getTypeA()==$object->getRepository() && $relation->getIdA()==$object->getId())
+                $object = $this->getObjectFromRepositoryAndId($relation->getTypeB(), $relation->getIdB());
+            else
+                $object = $this->getObjectFromRepositoryAndId($relation->getTypeA(), $relation->getIdA());
+
+            $partners[] = $object;
+        }
+
+        return $partners;
+    }
+
+    public function getPartnersAndFieldsToSynchronised(ObjectLinksInterface $object){
+        $relationsA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $object->getId(), "typeA" => $object->getRepository()));
+        $relationsB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $object->getId(), "typeB" => $object->getRepository()));
+
+        $partners = Array();
+        $i= 0;
+        $relations = array_merge($relationsA,$relationsB);
+
+        foreach ($relations as $relation){
+            /* @var ObjectLinks $relation*/
+            if(count($relation->getFieldsToSynchronised())==0)
+                continue;
+            if($relation->getTypeA()==$object->getRepository() && $relation->getIdA()==$object->getId())
+                $object = $this->getObjectFromRepositoryAndId($relation->getTypeB(), $relation->getIdB());
+            else
+                $object = $this->getObjectFromRepositoryAndId($relation->getTypeA(), $relation->getIdA());
+
+            $partners[] = Array("object" => Array(), "fields" => Array() );
+            $partners[$i]["object"] = $object;
+            $partners[$i]["fields"] = $relation->getFieldsToSynchronised();
+            $i++;
+        }
+
+        return $partners;
+    }
+
+    public function updateObject(ObjectLinksInterface $object)
+    {
+        $partnersAndFields = $this->getPartnersAndFieldsToSynchronised($object);
+
+        foreach ($partnersAndFields as $partnerAndFields) {
+            $partner = $partnerAndFields["object"];
+            $fields = $partnerAndFields["fields"];
+
+            /* @var ObjectLinksInterface $partner */
+            foreach ($fields as $field) {
+                $value = $object->get($field);
+                $partner->synchroniseField($field, $value);
+                $this->pusher->push($partner->getAsArray(), $partner->getPushRoute());
+                $this->doctrine->persist($partner);
+            }
+        }
+        $this->doctrine->flush();
     }
 }

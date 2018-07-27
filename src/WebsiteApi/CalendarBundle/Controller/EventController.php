@@ -157,7 +157,7 @@ class EventController extends Controller
             'data' => Array()
         );
 
-        $eventId = $request->request->get("eventId");
+        $eventId = $request->request->get("eventId",0);
 
         $data['data'] = $this->get("app.calendar_events")->getUsers( $eventId, $this->getUser()->getId());
 

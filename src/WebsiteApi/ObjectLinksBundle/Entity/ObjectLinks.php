@@ -46,6 +46,12 @@ class ObjectLinks
     private $idB;
 
     /**
+     * @ORM\Column(type="text")
+     */
+    private $fieldsToSynchronised;
+
+
+    /**
      * ObjectLinks constructor.
      * @param $id
      * @param $typeA
@@ -59,6 +65,7 @@ class ObjectLinks
         $this->idA = $idA;
         $this->typeB = $typeB;
         $this->idB = $idB;
+        $this->setFieldsToSynchronised(Array("from","to"));
     }
 
     /**
@@ -141,15 +148,30 @@ class ObjectLinks
         $this->idB = $idB;
     }
 
-
-
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
             "typeA" => $this->getTypeA(),
             "idA" => $this->getIdA(),
             "typeB" => $this->getTypeB(),
-            "idB" => $this->getIdB()
+            "idB" => $this->getIdB(),
+            "fieldsToSynchronised" => $this->getFieldsToSynchronised()
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFieldsToSynchronised()
+    {
+        return json_decode($this->fieldsToSynchronised,1);
+    }
+
+    /**
+     * @param mixed $fieldsToSynchronised
+     */
+    public function setFieldsToSynchronised($fieldsToSynchronised)
+    {
+        $this->fieldsToSynchronised = json_encode($fieldsToSynchronised);
     }
 }

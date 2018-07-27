@@ -131,14 +131,18 @@ class TaskController extends Controller
             'data' => Array()
         );
 
-        $workspaceId = $request->request->get("workspaceId");
-        $taskId = $request->request->get("id");
-        $task = $request->request->get("task");
-        $boardId = $request->request->get("boardId");
+        $taskArray = $request->request->get("task", Array());
+        $taskId = $request->request->get("id", 0);
+        $weight = $request->request->get("weight", 1);
+        $name = $request->request->get("name", "");
+        $description = $request->request->get("description","");
+        $startDate = $request->request->get("from", 0);
+        $endDate = $request->request->get("to", 0);
+        $dependingTaskId = $request->request->get("dependingTaskId",0);
         $userToNotify = $this->convertObjectListToIdList($request->request->get("watch_members",Array()));
         $participants = $this->convertObjectListToIdList($request->request->get("participants",Array()));
 
-        $data['data'] = $this->get("app.board_tasks")->updateTask($workspaceId, $boardId, $taskId, $task, $this->getUser()->getId(),$userToNotify,$participants);
+        $data['data'] = $this->get("app.board_tasks")->updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify,$participants, $weight);
 
         if($data['data'])
             $data['data'] = $data['data']->getAsArray();

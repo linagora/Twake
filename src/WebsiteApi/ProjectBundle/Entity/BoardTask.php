@@ -3,6 +3,7 @@
 namespace WebsiteApi\ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
  * Task
@@ -11,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="WebsiteApi\ProjectBundle\Repository\BoardTaskRepository")
  */
 
-class BoardTask {
+class BoardTask implements ObjectLinksInterface {
 
     /**
      * @var int
@@ -421,4 +422,43 @@ class BoardTask {
     }
 
 
+    public function getRepository()
+    {
+        return "TwakeProjectBundle:BoardTask";
+    }
+
+    public function getAsArrayFormated(){
+        return Array(
+            "id" => $this->getId(),
+            "title" => "Task",
+            "object_name" => $this->getName(),
+            "key" => "tasks",
+            "type" => "task",
+            "code" => "",
+        );
+    }
+
+    public function synchroniseField($fieldName, $value)
+    {
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $setter = "set".ucfirst($fieldName);
+        $this->$setter($value);
+        return true;
+    }
+
+    public function get($fieldName){
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $getter = "get".ucfirst($fieldName);
+
+        return $this->$getter();
+    }
+
+    public function getPushRoute()
+    {
+        return "board/".$this->getId();
+    }
 }

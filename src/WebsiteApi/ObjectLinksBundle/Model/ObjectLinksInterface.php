@@ -11,8 +11,17 @@ namespace WebsiteApi\ObjectLinksBundle\Model;
 
 interface ObjectLinksInterface
 {
+    public function getId();
 
     public function getRepository();
 
+    public function getAsArray();
+
     public function getAsArrayFormated();
+
+    public function synchroniseField($fieldName, $value);
+
+    public function get($fieldName);
+
+    public function getPushRoute();
 }

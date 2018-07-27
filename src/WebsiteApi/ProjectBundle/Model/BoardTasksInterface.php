@@ -9,7 +9,7 @@ interface BoardTasksInterface
 {
     public function createTask($boardId, $task, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $userIdsToNotify=Array(), $participants=Array(), $weight=1);
 
-    public function updateTask($workspaceId, $boardId, $taskId, $task, $currentUserId=null,$participants = Array());
+    public function updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $userId, $userToNotify,$participants, $weight);
 
     public function removeTask($workspaceId, $boardId, $taskId, $currentUserId=null);
 }
