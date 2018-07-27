@@ -185,7 +185,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
                 $this->subscriptionSystem->addBalance($this->subscriptionSystem->getOverCost($group),$group);
             return 7+$res;
         } else if ($this->subscriptionSystem->groupIsOverUsingALittle($group) && !$identity->getHaveAlreadySendIsOverUsingALittleMail()) {
-            var_dump("over using a little : ".$this->subscriptionSystem->getOverCost($group));
+            //var_dump("over using a little : ".$this->subscriptionSystem->getOverCost($group));
             $identity->setHaveAlreadySendIsOverUsingALittleMail(true);
             $this->mailSender->sendIsOverUsingALittle($group,$this->subscriptionSystem->getOverCost($group));
             return 10;
