@@ -127,6 +127,13 @@ class BoardTasks implements BoardTasksInterface
 
         $board = $task->getBoard();
 
+        if($name!=null)
+            $task->setName($name);
+        if($description!=null)
+            $task->setDescription($description);
+        if($weight!=null)
+            $task->setWeight($weight);
+
 
         if($board!=null)
             $task->setBoard($board);
