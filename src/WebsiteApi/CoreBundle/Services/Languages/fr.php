@@ -13,4 +13,7 @@ $fr = Array(
     "drive.has_been_moved" => "$1 a été déplacé dans $2",
     "drive.file_updated" => "Fichier mit à jour",
     "drive.has_been_update" => "$1 a été mit à jour",
+    "mail.request_new_password" => "Votre demande d'un nouveau mot de passe",
+    "mail.hello" => "Bonjour",
+    "mail.request_new_password_body" => "Vous avez demandé un nouveau mot de passe, voici le code d'activation dont vous avez besoin",
 );

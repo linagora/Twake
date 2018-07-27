@@ -55,10 +55,10 @@ class Translate
             if (isset(($$lang)[$key])){
                 return ($$lang)[$key];
             }
-
-            return $key;
         }
 
+        if($lang=='en')
+            return $key;
         return $this->translate($key,"en");
     }
 }

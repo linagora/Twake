@@ -6,6 +6,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Security\Http\Event\InteractiveLoginEvent;
+use WebsiteApi\CoreBundle\Services\Translate;
 use WebsiteApi\UsersBundle\Entity\Device;
 use WebsiteApi\UsersBundle\Entity\Mail;
 use WebsiteApi\UsersBundle\Entity\VerificationNumberMail;
@@ -33,8 +34,11 @@ class User implements UserInterface
 	private $workspace_service;
     private $pricing_plan;
     private $restClient;
+    /* @var Translate $translate*/
+    var $translate;
 
-	public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service,$group_service,$workspace_service,$pricing_plan,$restClient){
+
+    public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service,$group_service,$workspace_service,$pricing_plan,$restClient,$translate){
 		$this->em = $em;
 		$this->pusher = $pusher;
 		$this->encoder_factory = $encoder_factory;
@@ -51,6 +55,7 @@ class User implements UserInterface
         $this->workspace_service = $workspace_service;
         $this->pricing_plan = $pricing_plan;
         $this->restClient = $restClient;
+        $this->translate = $translate;
 	}
 
 	public function current()
@@ -177,6 +182,7 @@ class User implements UserInterface
 		$mail = $this->string_cleaner->simplifyMail($mail);
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+		/* @var \WebsiteApi\UsersBundle\Entity\User $user */
 		$user = $userRepository->findOneBy(Array("email"=>$mail));
 
 		if($user != null) {
@@ -184,7 +190,13 @@ class User implements UserInterface
 
 			$code = $verificationNumberMail->getCode();
 
-			$this->twake_mailer->send($mail, "requestPassword", Array("code"=>$code, "username"=>$user->getUsername()));
+			$this->twake_mailer->send($mail, "requestPassword", Array(
+			    "code"=>$code,
+                "username"=>$user->getUsername(),
+                "request_new_password" => $this->translate->translate("mail.request_new_password",$user->getLanguage()),
+                "request_new_password_body" => $this->translate->translate("mail.request_new_password_body",$user->getLanguage()),
+                "hello" => $this->translate->translate("mail.hello",$user->getLanguage()),
+                ));
 
 			$this->em->persist($verificationNumberMail);
 			$this->em->flush();
