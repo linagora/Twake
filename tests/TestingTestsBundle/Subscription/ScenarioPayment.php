@@ -20,7 +20,7 @@ class ScenarioPayment {
     var $fp;
     var $list_freq;
     var $group_id;
-    var $date_interval;
+    var $nb_months;
     var $services;
     var $subscription;
     var $day_over_cost;
@@ -33,6 +33,9 @@ class ScenarioPayment {
     var $events;
     var $last_payment = 0;
     var $cost = 0;
+    var $workspace_name;
+    var $group_name;
+    var $date_interval;
 
     var $addUserCallback;
     var $changePricingPlanCallback;
@@ -43,18 +46,22 @@ class ScenarioPayment {
      * ScenarioPayment constructor.
      */
     public function __construct($services, $user_mail, $pseudo, $password, $group_name, $workspace_name,$pricing_plan,
-                                $nb_total_users, $doctrine, $date_interval, $list_freq, $auto_withdrawal, $auto_renew,
+                                $nb_total_users, $doctrine, $nb_months,$list_freq, $auto_withdrawal, $auto_renew,
                                 $events){
         $this->list_freq = $list_freq;
-        $this->date_interval = $date_interval;
+        $this->nb_months = $nb_months;
         $this->services = $services;
         $this->doctrine = $doctrine;
         $this->workspace_name = $workspace_name;
+        $this->group_name = $group_name;
         $this->auto_renew = $auto_renew;
         $this->auto_withdrawal = $auto_withdrawal;
         $this->pricing_plan = $pricing_plan;
         $this->nb_total_users = $nb_total_users;
         $this->events = $events;
+        $this->date_interval = new \DateInterval("P30D");
+
+        //tous les callback
         $this->addUserCallback = function(ScenarioPayment $scenario, $data){
             static $i = 0;
             //var_dump("coucou je passe dans la fonction");
@@ -114,7 +121,17 @@ class ScenarioPayment {
     }
 
 
-    public function exec($mode='w'){
+    public function exec(){
+        for ($i=0; $i<$this->nb_months;$i++) {
+            if ($i == 0) {
+                $this->execMonthly();
+            }else{
+                $this->execMonthly('a');
+            }
+        }
+    }
+
+    public function execMonthly($mode='w'){
         $now = date_format(new \DateTime('now'), 'Y-m-d');
         //var_dump($now);
         $endDate = $this->subscription->getEndDate();
@@ -130,6 +147,11 @@ class ScenarioPayment {
         }
 
         $this->fp = fopen('file.csv', $mode);
+
+        $estimation_scenario = array();
+        $estimation_scenario = $this->estimation();
+        fputcsv($this->fp,$estimation_scenario);
+
         fputcsv($this->fp,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not",
             "overCost", "balance", "balance_consumed", "expected_cost", "is_blocked","lock_date", "id_facture","cost"));
         fclose($this->fp);
@@ -312,7 +334,6 @@ class ScenarioPayment {
         //var_dump("Après test");
 
 
-
         $this->fp = fopen('file.csv', 'a');
         fputcsv($this->fp, $line_csv);
         fclose($this->fp);
@@ -345,7 +366,158 @@ class ScenarioPayment {
         $this->addMember($user_mail, $pseudo, $password, $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("name" => $this->workspace_name)));
         array_push($this->list_freq,$freq);
         $this->nb_total_users = $this->nb_total_users + 1;
+    }
 
+
+
+
+    public function estimation(){
+        $list = $this->list_freq;
+        $nb_users = count($list);
+        $pricing_plan = $this->pricing_plan;
+        $price_monthly = $pricing_plan->getMonthPrice();
+        $price_yearly = $pricing_plan->getYearPrice();
+        $group_name = $this->group_name;
+
+        //renouvellement automatique ou non
+        $renew_init = $this->auto_renew;
+        $renew = $this->auto_renew;
+
+        //prélèvement automatique ou non
+        $withdraw_init = $this->auto_withdrawal;
+        $withdraw = $this->auto_withdrawal;
+
+        //estimation du prix mensuel et annuel au moment de l'inscription
+        $price_monthly_for_all = $price_monthly * $nb_users;
+        $price_yearly_for_all = $price_yearly * $nb_users;
+
+        //on récupère les events
+        $events = $this->events;
+        $addUsers = Array();
+        $changeFrequence = Array();
+        $changePricingPlan = Array();
+        $changeWithdraw = Array();
+        $changeRenew = Array();
+        foreach ($events as $i => $event){
+            for ($k=0;$k<count($events[$i]["callback"]);$k++){
+                if($events[$i]["callback"][$k] == "addUser"){
+                    $addUsers[$i] = $events[$i]["data"];
+                }
+                if($events[$i]["callback"][$k] == "changeFrequence"){
+                    $changeFrequence[$i] = $events[$i]["data"];
+                }
+                if($events[$i]["callback"][$k] == "changePricingPlan"){
+                    $changePricingPlan[$i] = $events[$i]["data"];
+                }
+                if($events[$i]["callback"][$k] == "changeRenew"){
+                    $changeRenew = $events[$i]["data"];
+                }
+                if($events[$i]["callback"][$k] == "changeWithdrawal") {
+                    $changeWithdraw = $events[$i]["data"];
+                }
+            }
+        }
+
+        //on change les valeurs de fréquence dans la liste
+        foreach ($changeFrequence as $i => $item){
+            for ($l=0; $l<count($item);$l++){
+                //var_dump($item[$l][0]);
+                //var_dump($item[$l][1]);
+                $freq = $item[$l][0];
+                $id_user = $item[$l][1];
+                $list[$id_user] = $freq;
+            }
+        }
+
+        //on compte le nombre d'utilisateurs total, partiel et autre
+        $user_total = 0;
+        $user_partial = 0;
+        $other = 0;
+        for ($j=0;$j<count($list);$j++){
+            if ($list[$j] == 1 || $list[$j] == 2){
+                $user_total ++;
+            }else if ($list[$j] == 0){
+                $other++;
+            }else{
+                $user_partial++;
+            }
+        }
+
+        //on regarde si les utilisateurs ajoutés sont des utilisateurs total, partiels ou autres
+        foreach ($addUsers as $i => $addUser){
+            for ($k=0;$k<count($addUser);$k++) {
+                //var_dump("freq ");
+                //var_dump($addUser[$k]);
+                $freq = (30-$i)/$addUser[$k];
+                if ($freq>10){
+                    $user_total++;
+                }else if ($freq == 0){
+                    $other++;
+                }else{
+                    $user_partial++;
+                }
+            }
+        }
+
+        //changement de pricing plan
+        foreach ($changePricingPlan as $i =>$item) {
+            for ($k=0;$k<count($item);$k++) {
+                $price_monthly = $item[$k]->getMonthPrice();
+                $price_yearly = $item[$k]->getYearPrice();
+            }
+        }
+
+        //changement sur le renouvellement
+        foreach ($changeRenew as $i => $item){
+            for ($l=0; $l<count($item);$l++) {
+                $renew = $item;
+            }
+        }
+
+        //changement sur le prélèvement
+        foreach ($changeWithdraw as $i => $item){
+            for ($l=0; $l<count($item);$l++) {
+                $withdraw = $item;
+            }
+        }
+
+        $balance_consummed_end_month = $user_total * $price_monthly + $user_partial * 0.5 * $price_monthly;
+        $balance_consummed_end_year = $user_total * $price_yearly + $user_partial * 0.5 * $price_yearly;
+
+        //prix au moment de l'abonnement
+        //var_dump($price_monthly_for_all);
+        //var_dump($price_yearly_for_all);
+
+        //renouvellement
+        //var_dump($renew);
+        if ($renew_init){
+            $renew_for_csv = "auto renew";
+        }else{
+            $renew_for_csv = "no auto renew";
+        }
+
+        //prélèvement
+        //var_dump($withdraw);
+        if ($withdraw_init){
+            $withdraw_for_csv = "auto withdraw";
+        }else{
+            $withdraw_for_csv = "no auto withdraw";
+        }
+
+        //nombre d'utilisateurs
+  /*      var_dump("total ".$user_total);
+        var_dump("partial ".$user_partial);
+        var_dump("other ".$other);
+*/
+        //prix
+        //var_dump($balance_consummed_end_month);
+        //var_dump($balance_consummed_end_year);
+
+        $estimation_scenario = array("Group name",$group_name,"first price monthly", $price_monthly_for_all, "first price yearly", $price_yearly_for_all,
+            $renew_for_csv,$withdraw_for_csv, "nb users total", $user_total, "nb users partial", $user_partial, "other users",
+            $other,"balance consummed end of month",$balance_consummed_end_month,"balance consummed end of year",$balance_consummed_end_year);
+
+        return $estimation_scenario;
     }
 
 }
