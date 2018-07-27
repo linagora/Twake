@@ -3,6 +3,8 @@
 
 namespace WebsiteApi\DriveBundle\Services;
 
+use WebsiteApi\CoreBundle\Services\Translate;
+use WebsiteApi\CoreBundle\Services\TranslationObject;
 use WebsiteApi\DriveBundle\Entity\DriveLabel;
 use WebsiteApi\DriveBundle\Services\MCryptAES256Implementation;
 use WebsiteApi\DriveBundle\Services\AESCryptFileLib;
@@ -24,8 +26,10 @@ class DriveFileSystem implements DriveFileSystemInterface
     var $pusher;
     /* @var UserToNotifyService $userToNotifyService */
     var $userToNotifyService;
+    /* @var Translate $translate*/
+    var $translate;
 
-    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService, $userToNotifyService)
+    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService, $userToNotifyService, $translate)
     {
         $this->doctrine = $doctrine;
         $this->root = $rootDirectory;
@@ -35,6 +39,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->pusher = $pusher;
         $this->applicationService = $applicationService;
         $this->userToNotifyService = $userToNotifyService;
+        $this->translate = $translate;
     }
 
     private function convertToEntity($var, $repository)
@@ -177,6 +182,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
         $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
 
+        $user = $this->convertToEntity($userId,"TwakeUsersBundle:User");
+
         if ($fileOrDirectory == null) {
             return false;
         }
@@ -217,7 +224,9 @@ class DriveFileSystem implements DriveFileSystemInterface
             $dirName = $directory->getName();
         }
 
-        $this->userToNotifyService->notifyUsers($dirid,$groupId,"Move file",$fileOrDirectory->getName()." has been moved into ". $dirName,$fileOrDirectory->getId(), $userId);
+        $this->userToNotifyService->notifyUsers($dirid,$groupId, "drive.move_file",
+            new TranslationObject($this->translate,"drive.has_been_moved", $fileOrDirectory->getName(), $dirName),
+            $fileOrDirectory->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
 
         return true;
@@ -572,7 +581,10 @@ class DriveFileSystem implements DriveFileSystemInterface
             $dirid = $directory->getId();
             $dirName = $directory->getName();
         }
-        $this->userToNotifyService->notifyUsers($dirid,$workspace,"New file",$newFile->getName()." has been added to ". $dirName,$newFile->getId(), $userId);
+        $this->userToNotifyService->notifyUsers($dirid,$workspace,"drive.new_file",
+            new TranslationObject($this->translate,"drive.has_been_added", $newFile->getName(), $dirName),
+            $newFile->getId(), $userId);
+
         $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
 
         return $newFile;
@@ -863,7 +875,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     }
 
     public function toTrash($fileOrDirectory){
-        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
 
         if(!$fileOrDirectory){
             return false;
@@ -1002,7 +1014,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function restoreTrash($workspace)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
         if ($workspace == null) {
             return false;
@@ -1068,7 +1080,9 @@ class DriveFileSystem implements DriveFileSystemInterface
         }else if(is_int($directory))
             $dirid = $directory;
 
-        $this->userToNotifyService->notifyUsers($dirid,$workspace,"Updated file",$file->getName()." has been update",$file->getId(), $userId);
+        $this->userToNotifyService->notifyUsers($dirid,$workspace,"drive.file_updated",
+            new TranslationObject($this->translate,"drive.has_been_update", $file->getName()),
+            $file->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $file->getGroup()->getId());
 
         return $file;

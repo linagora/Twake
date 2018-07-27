@@ -24,7 +24,7 @@ class ObjectLinksSystem
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
 
-        if(count($this->keyMap)==0){
+        if (count(self::$keyMap) == 0) {
             self::$keyMap["file"] = "TwakeDriveBundle:DriveFile";
             self::$keyMap["event"] = "TwakeCalendarBundle:CalendarEvent";
             self::$keyMap["task"] = "TwakeProjectBundle:BoardTask";
