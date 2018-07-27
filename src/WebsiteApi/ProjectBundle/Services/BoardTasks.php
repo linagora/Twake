@@ -157,8 +157,7 @@ class BoardTasks implements BoardTasksInterface
         );
 
         $this->objectLinksSystem->updateObject($task);
-
-        $this->notifyParticipants($board->getParticipants(),$workspace, "Task ".$task->getName()." updated", "", "");
+;
         $this->notifyParticipants($task->getUserIdToNotify(),$workspace, "Task ".$task->getName()." updated", "", "");
         
 
@@ -189,8 +188,7 @@ class BoardTasks implements BoardTasksInterface
             "type" => "remove",
             "task_id" => $taskId
         );
-        
-        $this->notifyParticipants($board->getParticipants(),$workspace, "Task ".$task->getName()." deleted", "", "");
+
         $this->notifyParticipants($task->getParticipants(),$workspace, "Task ".$task->getName()." deleted", "", "");
 
         return true;
