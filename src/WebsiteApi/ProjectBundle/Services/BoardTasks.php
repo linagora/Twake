@@ -75,13 +75,14 @@ class BoardTasks implements BoardTasksInterface
             $dependingTask = $this->convertToEntity($dependingTaskId,"TwakeProjectBundle:BoardTask");
         else
             $dependingTask = null;
+
         $task = new BoardTask($startDate, $endDate, $name, $description, $dependingTask,$participants,$user, $weight);
 
-
-        $task->setBoard($board);
         $task->setUserIdToNotify($userIdsToNotify);
         $task->setOrder($this->getMinOrder($board)-1);
+
         $task->setListOfTasks($list);
+        $task->setBoard($board);
 
         $this->doctrine->persist($task);
         $this->doctrine->flush();
@@ -90,8 +91,7 @@ class BoardTasks implements BoardTasksInterface
             "type" => "create",
             "task" => $task->getAsArray()
         );
-        
-        $this->doctrine->flush();
+
 
         $this->notifyParticipants($userIdsToNotify,$workspace,"","","");
 

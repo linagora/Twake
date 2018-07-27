@@ -57,11 +57,6 @@ class BoardTask {
     private $user;
 
     /**
-     * @ORM\Column(name="next_reminder", type="bigint")
-     */
-    private $nextReminder = 0;
-
-    /**
      * @ORM\Column(name="like_ts",type="bigint")
      */
     private $like;
@@ -118,6 +113,7 @@ class BoardTask {
         $this->setParticipants($participants);
         $this->setUser($user);
         $this->setLike(0);
+        $this->setUserWhoLiked(Array());
     }
 
     public function likeOne($userId){
@@ -208,14 +204,6 @@ class BoardTask {
     public function setUserIdToNotify($task)
     {
         $this->userIdToNotify = json_encode($task);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getNextReminder()
-    {
-        return $this->nextReminder;
     }
 
     /**
