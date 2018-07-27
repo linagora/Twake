@@ -165,21 +165,17 @@ class BoardTasks implements BoardTasksInterface
         return $task;
     }
 
-    public function removeTask($workspaceId, $boardId, $taskId, $currentUserId = null)
+    public function removeTask($taskId, $currentUserId = null)
     {
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $workspace = $this->getWorkspaceFromTask($taskId);
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
             return null;
         }
 
-        $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
 
         $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
-
-        if(!$task || $task->getBoard()->getId() != $boardId){
-            return null;
-        }
+        $board = $task->getBoard();
 
         $usersLinked = $this->doctrine->getRepository("TwakeProjectBundle:LinkTaskUser")->findBy(Array("task"=>$task));
         foreach ($usersLinked as $userLinked){

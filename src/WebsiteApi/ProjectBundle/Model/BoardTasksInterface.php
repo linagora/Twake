@@ -11,5 +11,5 @@ interface BoardTasksInterface
 
     public function updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $userId, $userToNotify,$participants, $weight, $labels);
 
-    public function removeTask($workspaceId, $boardId, $taskId, $currentUserId=null);
+    public function removeTask($taskId, $currentUserId=null);
 }

@@ -159,11 +159,9 @@ class TaskController extends Controller
             'data' => Array()
         );
 
-        $workspaceId = $request->request->get("workspaceId");
-        $taskId = $request->request->get("taskId");
-        $boardId = $request->request->get("boardId");
+        $taskId = $request->request->get("id");
 
-        $data['data'] = $this->get("app.board_tasks")->removeTask($workspaceId, $boardId, $taskId, $this->getUser()->getId());
+        $data['data'] = $this->get("app.board_tasks")->removeTask($taskId, $this->getUser()->getId());
 
         return new JsonResponse($data);
     }
