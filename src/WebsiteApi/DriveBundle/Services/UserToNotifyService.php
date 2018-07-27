@@ -5,6 +5,8 @@ namespace WebsiteApi\DriveBundle\Services;
 
 use AESCryptFileLib;
 use MCryptAES256Implementation;
+use WebsiteApi\CoreBundle\Services\Translate;
+use WebsiteApi\CoreBundle\Services\TranslationObject;
 use WebsiteApi\DriveBundle\Entity\DriveLabel;
 use WebsiteApi\DriveBundle\Entity\UserToNotify;
 use WebsiteApi\UsersBundle\Entity\User;
@@ -17,6 +19,8 @@ class UserToNotifyService
     var $externalDriveFileSystem;
     /* @var \WebsiteApi\DriveBundle\Services\DriveActivities $driveActivities */
     var $driveActivities;
+    /* @var Translate $translate*/
+    var $translate;
 
     private function convertToEntity($var, $repository)
     {
@@ -34,11 +38,12 @@ class UserToNotifyService
 
     }
 
-    public function __construct($doctrine, $externalDriveFileSystem, $driveActivities)
+    public function __construct($doctrine, $externalDriveFileSystem, $driveActivities, $translate)
     {
         $this->doctrine = $doctrine;
         $this->externalDriveFileSystem = $externalDriveFileSystem;
         $this->driveActivities = $driveActivities;
+        $this->translate = $translate;
     }
 
     public function get($driveFile)
@@ -97,7 +102,12 @@ class UserToNotifyService
         if(!$usersToNotify)
             return false;
         foreach ($usersToNotify as $userToNotify){
-            $this->driveActivities->pushActivity($userToNotify->getUser()->getId()!=$senderId,$workspace, $userToNotify->getUser(),null,$title,$text,Array(),Array("notifCode" => $userToNotify->getDriveType()."/".$driveFile.$fileId));
+            /* @var UserToNotify $userToNotify */
+
+            $this->driveActivities->pushActivity($userToNotify->getUser()->getId()!=$senderId,$workspace, $userToNotify->getUser(),null,
+                $this->translate->translate($title,$userToNotify->getUser()->getLanguage()),
+                $this->translate->translate($text,$userToNotify->getUser()->getLanguage())
+                ,Array(),Array("notifCode" => $userToNotify->getDriveType()."/".$driveFile.$fileId));
         }
         return true;
     }

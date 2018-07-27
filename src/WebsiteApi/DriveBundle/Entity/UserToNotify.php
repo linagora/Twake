@@ -4,6 +4,7 @@ namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\UsersBundle\Entity\User;
 
 /**
  * UserToNotify
@@ -63,7 +64,7 @@ class UserToNotify
     }
 
     /**
-     * @return mixed
+     * @return User
      */
     public function getUser()
     {

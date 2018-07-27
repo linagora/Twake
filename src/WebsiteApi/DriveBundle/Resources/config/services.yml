@@ -2,7 +2,7 @@ services:
 
     app.drive.FileSystem:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystem
-        arguments: ["@doctrine.orm.entity_manager", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@website_api_market.applications','@app.drive.UserToNotifyService']
+        arguments: ["@doctrine.orm.entity_manager", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@website_api_market.applications','@app.drive.UserToNotifyService', '@app.translate']
 
     app.drive.FileSystemExternalDrive:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystemGDrive
@@ -38,7 +38,7 @@ services:
 
     app.drive.UserToNotifyService:
       class: WebsiteApi\DriveBundle\Services\UserToNotifyService
-      arguments: ["@doctrine.orm.entity_manager","@app.drive.FileSystemExternalDrive", "@app.drive.DriveActivities"]
+      arguments: ["@doctrine.orm.entity_manager","@app.drive.FileSystemExternalDrive", "@app.drive.DriveActivities", '@app.translate']
 
     app.driveActivity:
         class: WebsiteApi\DriveBundle\Services\DriveActivities
