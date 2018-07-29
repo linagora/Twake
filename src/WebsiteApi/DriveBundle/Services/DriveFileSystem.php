@@ -517,6 +517,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $file->setDetachedFile(false);
         $this->updateSize($directory, $file->getSize());
         $this->improveName($file);
+        $file->setGroup($workspace);
 
         $this->doctrine->persist($file);
         $this->doctrine->flush();

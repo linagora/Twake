@@ -572,4 +572,12 @@ class DriveFile implements ObjectLinksInterface
     {
         return "drive/".$this->getId();
     }
+
+    /**
+     * @param mixed $group
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
+    }
 }
