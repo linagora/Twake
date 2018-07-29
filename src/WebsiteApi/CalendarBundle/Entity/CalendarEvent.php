@@ -206,6 +206,16 @@ class CalendarEvent implements ObjectLinksInterface {
             "participant" => $this->getParticipant(),
         );
     }
+    public function getAsArrayMinimal()
+    {
+        $completEvent = $this->getEvent();
+        $event = Array("from" => $completEvent["from"], "to" => $completEvent["to"], "start" => $completEvent["start"], "end" => $completEvent["end"]);
+        return Array(
+            "id" => $this->getId(),
+            "calendar" => $this->getCalendar()->getId(),
+            "event" => $event,
+        );
+    }
 
     public function getRepository(){
         return "TwakeCalendarBundle:CalendarEvent";
@@ -247,4 +257,5 @@ class CalendarEvent implements ObjectLinksInterface {
     {
         return "calendar/".$this->getId();
     }
+
 }

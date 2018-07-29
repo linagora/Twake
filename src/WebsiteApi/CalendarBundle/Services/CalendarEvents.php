@@ -4,11 +4,13 @@
 namespace WebsiteApi\CalendarBundle\Services;
 
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\CalendarBundle\Entity\Calendar;
 use WebsiteApi\CalendarBundle\Entity\CalendarEvent;
 use WebsiteApi\CalendarBundle\Entity\Event;
 use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
 use WebsiteApi\CalendarBundle\Entity\LinkEventUser;
 use WebsiteApi\CalendarBundle\Model\CalendarEventsInterface;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 /**
  * Manage calendar
@@ -381,6 +383,44 @@ class CalendarEvents implements CalendarEventsInterface
         $events = Array();
         foreach ($eventsLinks as $eventLink){
             $events[] = $eventLink->getEvent();
+        }
+
+        return $events;
+
+    }
+
+    public function getEventsForOtherUser($workspaceId, $from, $to, $currentUserId, $targetUserId)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
+            return null;
+        }
+
+        $eventsLinks = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->getForUser($from, $to, $targetUserId);
+
+        $events = Array();
+        foreach ($eventsLinks as $eventLink){
+            /* @var CalendarEvent $event*/
+            $event = $eventLink->getEvent();
+            /* @var Calendar $calendar */
+            $calendar = $event->getCalendar();
+
+            $auth = !$currentUserId;
+
+            if($currentUserId) {
+                $workspaces = $this->getWorkspacesByCalendar($calendar);
+
+                foreach ($workspaces as $workspace) {
+                    /* @var Workspace $workspace */
+                    if($this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")){
+                        $auth = true;
+                        break;
+                    }
+                }
+            }
+
+            $events[] = $auth ? $event->getAsArray() : $event->getAsArrayMinimal();
         }
 
         return $events;
