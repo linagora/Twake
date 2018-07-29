@@ -20,6 +20,21 @@ class MarketApplication implements MarketApplicationInterface
         $this->pricingPlan = $pricing;
     }
 
+    private function convertToEntity($var, $repository)
+    {
+        if (is_string($var)) {
+            $var = intval($var);
+        }
+
+        if (is_int($var)) {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
     public function getApps()
     {
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
@@ -37,15 +52,27 @@ class MarketApplication implements MarketApplicationInterface
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
 
         $applications = $applicationRepository->createQueryBuilder('p')
-            ->addSelect("MATCH_AGAINST (p.shortDescription, p.description, p.name, :searchterm 'IN NATURAL MODE') as score")
-            ->add('where', 'MATCH_AGAINST(p.shortDescription, p.description, p.name, :searchterm) > 0.8')
+            ->addSelect("MATCH_AGAINST (p.shortDescription, p.description, p.searchWords, :searchterm 'IN NATURAL MODE') as score")
+            ->add('where', 'MATCH_AGAINST(p.shortDescription, p.description, p.searchWords, :searchterm) > 0.8')
             ->setParameter('searchterm', $searchterm)
             ->andWhere('p.enabled = true')
+            ->andWhere('p.urlApp = true')
             ->orderBy('score', 'desc')
             ->getQuery()
             ->getResult();
 
         return $applications;
+    }
+
+    public function getDefaultUrlOpener(){
+        return $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "default_url_opener"));
+    }
+
+    public function addSearchWord($app, $searchWork){
+        $app = $this->convertToEntity($app,"TwakeMarketBundle:Application");
+        $app->addSearchWord($searchWork);
+        $this->doctrine->persist($app);
+        $this->doctrine->flush();
     }
 
     public function getAppsByName($name)

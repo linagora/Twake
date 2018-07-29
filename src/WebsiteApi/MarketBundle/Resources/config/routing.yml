@@ -14,6 +14,10 @@ website_api_app_get_app_by_keywords:
     path:     /app/getAppByKeywords
     defaults: { _controller: TwakeMarketBundle:Application:getAppsByKeywords }
 
+website_api_app_get_default_url_opener:
+    path:     /app/getDefaultUrlOpener
+    defaults: { _controller: TwakeMarketBundle:Application:getDefaultUrlOpener }
+
 website_api_app_create:
     path:     /app/create
     defaults: { _controller: TwakeMarketBundle:Application:create }

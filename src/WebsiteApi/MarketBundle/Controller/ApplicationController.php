@@ -120,6 +120,12 @@ class ApplicationController extends Controller
       return new JsonResponse($response);
   }
 
+  public function getDefaultUrlOpenerAction(){
+      $data["data"] = $this->get("website_api_market.applications")->getDefaultUrlOpener();
+
+      return new JsonResponse($data);
+  }
+
     public function getAppsByKeywordsAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
