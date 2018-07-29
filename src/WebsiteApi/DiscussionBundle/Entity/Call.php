@@ -80,7 +80,10 @@ class Call implements ObjectLinksInterface
     public function getAsArray()
     {
         return Array(
-            "id" => $this->getId()
+            "id" => $this->getId(),
+            "name" => $this->getName(),
+            "discussionKey" => $this->getDiscussionKey(),
+            "message" => $this->getMessage(),
         );
     }
 

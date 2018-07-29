@@ -379,6 +379,8 @@ class DiscussionController extends Controller
         $res = $messageSystem->makeCall($streamId,$subjectId,$workspaceId,$this->getUser(),$respondTo, $objectLink);
         if(!$res)
             $data["errors"][] = "Fail to make a call";
+        else if($objectLink)
+            $data["data"][] = $res->getAsArray();
         else
             $data["data"][] = "success";
 
