@@ -525,7 +525,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $file;
     }
 
-    public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false, $url =null, $userId = 0)
+    public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false, $url =null, $userId = 0, $userApp = null)
     {
 
         if ($directory == 0 || $detached_file) {
@@ -553,10 +553,15 @@ class DriveFileSystem implements DriveFileSystemInterface
             $url
         );
 
-        if ($url!=null){
+        if ($url!=null) {
             $app = $this->applicationService->getAppForUrl($url);
             if ($app) {
                 $newFile->setDefaultWebApp($app);
+            } elseif ($userApp) {
+                $userApp = $this->convertToEntity($userApp,"TwakeMarketBundle:Application");
+                if(!$userApp)
+                    return false;
+                $newFile->setDefaultWebApp($userApp);
             } else {
                 return false;
             }

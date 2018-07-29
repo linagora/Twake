@@ -29,6 +29,7 @@ class FilesController extends Controller
         $isDetached = $request->request->get("isDetached", false);
         $isDirectory = $request->request->get("isDirectory", true);
         $url = $request->request->get("url",null);
+        $appId = $request->request->get("appId",null);
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
@@ -46,7 +47,7 @@ class FilesController extends Controller
                 $data["errors"] = "notallowed";
             } else {
 
-                $file = $fileSystem->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached,$url, $this->getUser()->getId());
+                $file = $fileSystem->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached,$url, $this->getUser()->getId(),$appId);
 
                 if($model){
                     //IMPORTANT ! Disable local files !!!

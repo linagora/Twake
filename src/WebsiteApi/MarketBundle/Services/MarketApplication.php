@@ -28,8 +28,29 @@ class MarketApplication implements MarketApplicationInterface
         return $applications;
     }
 
+    public function getAppsByKeyword($keywords){
+        if(count($keywords)==0)
+            return false;
+        $searchterm = "";
+        foreach ($keywords as $keyword)
+            $searchterm .= $keyword." ";
+        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+
+        $applications = $applicationRepository->createQueryBuilder('p')
+            ->addSelect("MATCH_AGAINST (p.shortDescription, p.description, p.name, :searchterm 'IN NATURAL MODE') as score")
+            ->add('where', 'MATCH_AGAINST(p.shortDescription, p.description, p.name, :searchterm) > 0.8')
+            ->setParameter('searchterm', $searchterm)
+            ->andWhere('p.enabled = true')
+            ->orderBy('score', 'desc')
+            ->getQuery()
+            ->getResult();
+
+        return $applications;
+    }
+
     public function getAppsByName($name)
     {
+
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
         $applications = $applicationRepository->findApplicationByName($name);
 

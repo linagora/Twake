@@ -10,6 +10,10 @@ website_api_app_get_app_by_name:
     path:     /app/getAppByPublicKey
     defaults: { _controller: TwakeMarketBundle:Application:getAppByPublicKey }
 
+website_api_app_get_app_by_keywords:
+    path:     /app/getAppByKeywords
+    defaults: { _controller: TwakeMarketBundle:Application:getAppsByKeywords }
+
 website_api_app_create:
     path:     /app/create
     defaults: { _controller: TwakeMarketBundle:Application:create }
