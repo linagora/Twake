@@ -68,7 +68,7 @@ class BoardTasks implements BoardTasksInterface
         $workspace = $this->getWorkspaceFromBoard($list->getBoard());
         $user = $this->convertToEntity($currentUserId,"TwakeUsersBundle:User");
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:write")) {
             return null;
         }
 
@@ -122,7 +122,7 @@ class BoardTasks implements BoardTasksInterface
         }
         $workspace = $this->getWorkspaceFromTask($taskId);
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:write")) {
             return null;
         }
 
@@ -168,7 +168,7 @@ class BoardTasks implements BoardTasksInterface
     {
         $workspace = $this->getWorkspaceFromTask($taskId);
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:write")) {
             return null;
         }
 
@@ -230,7 +230,7 @@ class BoardTasks implements BoardTasksInterface
         error_log("ADD USERS");
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:write")) {
             return null;
         }
 
@@ -275,7 +275,7 @@ class BoardTasks implements BoardTasksInterface
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:write")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:write")) {
             return null;
         }
 
@@ -348,7 +348,7 @@ class BoardTasks implements BoardTasksInterface
     {
         $workspace = $this->getWorkspaceFromBoard($boardId);
 
-        if ($workspace==null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read"))) {
+        if ($workspace==null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:read"))) {
             return null;
         }
 
@@ -362,7 +362,7 @@ class BoardTasks implements BoardTasksInterface
     public function getTask($taskId, $currentUserId){
         $workspace = $this->getWorkspaceFromTask($taskId);
 
-        if ($workspace==null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read"))) {
+        if ($workspace==null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:read"))) {
             return null;
         }
 
@@ -386,7 +386,7 @@ class BoardTasks implements BoardTasksInterface
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
         var_dump($workspaceId);
         var_dump($boardsId);
-        if($workspace == null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read"))){
+        if($workspace == null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:read"))){
             return null;
         }
         $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->getAllBoardTasksByBoard($boardsId);
@@ -404,7 +404,7 @@ class BoardTasks implements BoardTasksInterface
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:read")) {
             return null;
         }
 
@@ -423,7 +423,7 @@ class BoardTasks implements BoardTasksInterface
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:read")) {
             return null;
         }
 

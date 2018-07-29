@@ -113,7 +113,7 @@ class Boards implements BoardsInterface
             return false;
         } else {
 
-            if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read")) {
+            if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:read")) {
                 return null;
             }
 
@@ -191,7 +191,7 @@ class Boards implements BoardsInterface
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:manage")) {
             return null;
         }
 
@@ -246,7 +246,7 @@ class Boards implements BoardsInterface
         }
         $workspace = $this->getWorkspaceFromBoard($boardId);
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:manage")) {
             return null;
         }
 
@@ -300,7 +300,7 @@ class Boards implements BoardsInterface
         else
             $workspace = $this->getWorkspaceFromBoard($boardId);
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:manage")) {
             return null;
         }
 
@@ -349,7 +349,7 @@ class Boards implements BoardsInterface
             $workspace = $this->getWorkspaceFromBoard($boardId);
 
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:manage")) {
             return null;
         }
 
@@ -393,7 +393,7 @@ class Boards implements BoardsInterface
         else
             $workspace = $this->getWorkspaceFromBoard($boardId);
 
-        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:manage")) {
+        if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:manage")) {
             return null;
         }
 
@@ -437,7 +437,7 @@ class Boards implements BoardsInterface
         else
             $workspace = $this->getWorkspaceFromBoard($boardId);
 
-        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "board:read")) {
+        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:read")) {
             return null;
         }
 
