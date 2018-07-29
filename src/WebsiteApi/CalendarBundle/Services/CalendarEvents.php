@@ -401,6 +401,7 @@ class CalendarEvents implements CalendarEventsInterface
 
         $events = Array();
         $calendars = Array();
+        $workspacesId = Array();
 
         foreach ($eventsLinks as $eventLink){
             /* @var CalendarEvent $event*/
@@ -415,14 +416,22 @@ class CalendarEvents implements CalendarEventsInterface
 
                 foreach ($workspaces as $workspace) {
                     /* @var Workspace $workspace */
-                    if($this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")){
-                        $auth = true;
-                        break;
+
+                    if(!isset($workspacesId[$workspace->getId()])) {
+                        if ($this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
+                            $auth = true;
+                            $workspacesId[$workspace->getId()] = true;
+                            break;
+                        } else
+                            $workspacesId[$workspace->getId()] = false;
+                    }else {
+                        $auth = $workspacesId[$workspace->getId()];
+                        if($auth)
+                            break;
                     }
                 }
 
                 $calendars[$calendar->getId()] = $auth;
-
             }
             else if($currentUserId)
                 $auth = $calendars[$calendar->getId()];
