@@ -108,8 +108,9 @@ class exportImport implements exportImportInterface{
     }
 
     public function importCalendarByLink($workspaceId, $icsLink, $color = null, $currentUserId=null){
-        if(strpos($icsLink,"http")!=0)
+        if(strpos($icsLink,"http://")!=0 && strpos($icsLink,"https://")!=0)
             return false;
+        ini_set('default_socket_timeout', 10);
         $ical = new ICal(file_get_contents($icsLink), array(
             'defaultSpan' => 2,     // Default value
             'defaultTimeZone' => 'UTC',

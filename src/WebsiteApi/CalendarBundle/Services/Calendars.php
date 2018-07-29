@@ -3,6 +3,7 @@
 
 namespace WebsiteApi\CalendarBundle\Services;
 
+use DateTime;
 use phpDocumentor\Reflection\Types\Array_;
 use PHPUnit\Util\Json;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -131,6 +132,7 @@ class Calendars implements CalendarsInterface
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
+        /* @var Calendar $calendar */
 
         $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
         $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
@@ -144,6 +146,8 @@ class Calendars implements CalendarsInterface
         $calendar->setColor($color);
 
         $calendar->setAutoParticipantList($autoParticipate);
+
+        $calendar->setLastUpdateDate(new DateTime('now'));
 
         $this->doctrine->persist($calendar);
         $this->doctrine->flush();

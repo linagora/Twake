@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\CalendarBundle\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -49,12 +50,19 @@ class Calendar {
     private $icsLink;
 
 
+    /**
+     * @ORM\Column(type="datetime" , options={"default" : "2018-07-27 14:00:58"})
+     */
+    private $lastUpdateDate;
+
+
     public  function __construct($title,$color, $icsLink=null)
     {
         $this->setTitle($title);
         $this->setColor($color);
         $this->setAutoParticipantList(Array());
         $this->setIcsLink($icsLink);
+        $this->setLastUpdateDate(new DateTime('now'));
     }
 
     /**
@@ -165,6 +173,22 @@ class Calendar {
     public function setIcsLink($icsLink)
     {
         $this->icsLink = $icsLink;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastUpdateDate()
+    {
+        return $this->lastUpdateDate;
+    }
+
+    /**
+     * @param mixed $lastUpdateDate
+     */
+    public function setLastUpdateDate($lastUpdateDate)
+    {
+        $this->lastUpdateDate = $lastUpdateDate;
     }
 
 

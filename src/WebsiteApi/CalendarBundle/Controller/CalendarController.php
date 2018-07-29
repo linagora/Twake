@@ -79,6 +79,9 @@ class CalendarController extends Controller
 
         $data['data'] = $this->get("app.calendars")->updateCalendar($workspaceId, $calendarId, $label, $color, $this->getUser(), $autoParticipant);
 
+        if($data['data'])
+            $data['data'] = $data['data']->getAsArray();
+
         return new JsonResponse($data);
     }
 
