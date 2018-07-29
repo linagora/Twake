@@ -10,3 +10,11 @@ notifications_delete:
     path:     /delete
     defaults: { _controller: TwakeNotificationsBundle:Default:delete}
 
+notifications_readAll:
+    path:     /readAll
+    defaults: { _controller: TwakeNotificationsBundle:Default:readAllExceptMessages}
+
+notifications_read:
+    path:     /read
+    defaults: { _controller: TwakeNotificationsBundle:Default:read}
+

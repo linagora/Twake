@@ -71,6 +71,10 @@ class Notification
      */
     private $last_mail = null;
 
+    /**
+     * @ORM\Column(type="boolean" , options={"default" : true})
+     */
+    private $isRead;
 
 	public function __construct($application, $workspace, $user)
 	{
@@ -78,6 +82,7 @@ class Notification
 		$this->application = $application;
 		$this->workspace = $workspace;
 		$this->user = $user;
+		$this->setIsRead(false);
 	}
 
 	/**
@@ -228,9 +233,26 @@ class Notification
 			"app_id" => ($this->getApplication()?$this->getApplication()->getId():null),
 			"title" => $this->getTitle(),
 			"text" => $this->getText(),
+            "is_read" => $this->getisRead(),
 			"data" => $this->getData()
 		);
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getisRead()
+    {
+        return $this->isRead;
+    }
+
+    /**
+     * @param mixed $isRead
+     */
+    public function setIsRead($isRead)
+    {
+        $this->isRead = $isRead;
+    }
 
 }
 

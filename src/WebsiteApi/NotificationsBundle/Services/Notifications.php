@@ -168,8 +168,7 @@ class Notifications implements NotificationsInterface
 
 
     }
-
-    public function readAll($application, $workspace, $user, $code = null, $force=false)
+    public function deleteAll($application, $workspace, $user, $code = null, $force=false)
     {
 
         $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
@@ -221,11 +220,67 @@ class Notifications implements NotificationsInterface
 
     }
 
+    public function readAll($application, $workspace, $user, $code = null, $force=false)
+    {
+
+        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+
+        $search = Array(
+            "user" => $user
+        );
+
+        if ($code) {
+            $search["code"] = $code;
+        }
+
+        if ($application) {
+            $search["application"] = $application;
+        }
+
+        if ($workspace) {
+            $search["workspace"] = $workspace;
+        }
+
+        $search["isRead"] = false;
+
+        $notif = $nRepo->findBy($search);
+
+        $count = count($notif);
+        for($i = 0; $i < $count; $i++) {
+            $notif[$i]->setIsRead(true);
+            $this->doctrine->persist($notif[$i]);
+        }
+
+        if ($count == 0){
+            return false;
+        }
+
+        if($count>0 || $force) {
+            $this->doctrine->flush();
+
+            $totalNotifications = $this->countAll($user);
+
+            $data = Array(
+                "action"=>"remove",
+                "workspace_id"=>($workspace)?$workspace->getId():null,
+                "app_id"=>($application)?$application->getId():null
+            );
+            $this->pusher->push($data, "notifications/".$user->getId());
+
+            $this->updateDeviceBadge($user, $totalNotifications);
+            return true;
+        }
+        return true;
+
+
+    }
+
     public function countAll($user)
     {
         $qb = $this->doctrine->createQueryBuilder();
         $qb = $qb->select('count(n.id)')
             ->where('n.user = :user')
+            ->andWhere('n.isRead = false')
             ->setParameter('user', $user)
             ->from('TwakeNotificationsBundle:Notification','n');
 
@@ -333,6 +388,41 @@ class Notifications implements NotificationsInterface
         }
         for($i = 0; $i < $count; $i++) {
             $this->doctrine->remove($notif[$i]);
+
+        }
+
+        if($count>0 || $force) {
+            $this->doctrine->flush();
+
+            $totalNotifications = $this->countAll($user);
+
+            $data = Array(
+                "action" => "remove_all_non_messages"
+            );
+            //convert
+            $this->pusher->push($data, "notifications/".$user->getId());
+
+            $this->updateDeviceBadge($user, $totalNotifications);
+            return true;
+        }
+
+        return true;
+    }
+    public function readAllExceptMessages($user,$force=false){
+
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(array("publicKey" => "messages"));
+
+        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+        $notif = $nRepo->getAppNoMessages($app);
+        $count = count($notif);
+
+
+        if ($count == 0){
+            return false;
+        }
+        for($i = 0; $i < $count; $i++) {
+            $notif[$i]->setIsRead(true);
+            $this->doctrine->persist($notif[$i]);
 
         }
 
