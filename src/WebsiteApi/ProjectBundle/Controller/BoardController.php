@@ -48,6 +48,11 @@ class BoardController extends Controller
                     $boardArray["participants"][] = $participant->getAsArray();
                 $data['data'][] = $boardArray;
             }
+        }elseif ($boards==null){
+            $data["errors"][] = "Access not allowed";
+        }
+        else{
+            $data["errors"][] = "Bad workspace";
         }
 
         return new JsonResponse($data);
