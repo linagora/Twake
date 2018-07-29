@@ -22,7 +22,7 @@ services:
 
     app.export_import:
         class: WebsiteApi\CalendarBundle\Services\exportImport
-        arguments: ["@app.calendar_events","@api.v1.api_status","@doctrine.orm.entity_manager"]
+        arguments: ["@app.calendar_events","@api.v1.api_status","@doctrine.orm.entity_manager","@app.calendars"]
 
     app.calendarActivity:
         class: WebsiteApi\CalendarBundle\Services\CalendarActivities

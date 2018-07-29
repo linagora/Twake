@@ -51,8 +51,15 @@ class CalendarController extends Controller
         $workspaceId = $request->request->get("workspaceId");
         $label = $request->request->get("name");
         $color = $request->request->get("color");
+        $icsLink = $request->request->get("icsLink", null);
 
-        $data['data'] = $this->get("app.calendars")->createCalendar($workspaceId, $label, $color, $this->getUser()->getId());
+        if($icsLink)
+            $data['data'] = $this->get("app.export_import")->importCalendarByLink($workspaceId, $icsLink, null, $this->getUser()->getId());
+        else
+            $data['data'] = $this->get("app.calendars")->createCalendar($workspaceId, $label, $color, $this->getUser()->getId(), $icsLink);
+
+        if($data['data'])
+            $data['data'] = $data['data']->getAsArray();
 
         return new JsonResponse($data);
     }

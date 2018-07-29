@@ -8,7 +8,7 @@ calendar_get_autoParticipate:
     defaults: { _controller: TwakeCalendarBundle:Calendar:getAutoParticipateByCalendar}
     methods: [POST]
 
-calendar_get_calendars:
+calendar_get_calendars_id:
     path:     /calendars/getById
     defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendarById }
     methods: [POST]

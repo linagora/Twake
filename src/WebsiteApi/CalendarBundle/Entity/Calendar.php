@@ -43,11 +43,18 @@ class Calendar {
     private $autoParticipantList;
 
 
-    public  function __construct($title,$color)
+    /**
+     * @ORM\Column(type="string", nullable=true)
+     */
+    private $icsLink;
+
+
+    public  function __construct($title,$color, $icsLink=null)
     {
         $this->setTitle($title);
         $this->setColor($color);
         $this->setAutoParticipantList(Array());
+        $this->setIcsLink($icsLink);
     }
 
     /**
@@ -142,6 +149,22 @@ class Calendar {
             "workspaces_number" => $this->getWorkspacesNumber(),
             "autoParticipate" => $this->getAutoParticipantList()
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIcsLink()
+    {
+        return $this->icsLink;
+    }
+
+    /**
+     * @param mixed $icsLink
+     */
+    public function setIcsLink($icsLink)
+    {
+        $this->icsLink = $icsLink;
     }
 
 

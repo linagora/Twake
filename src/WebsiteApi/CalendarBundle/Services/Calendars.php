@@ -85,12 +85,11 @@ class Calendars implements CalendarsInterface
 
             }
 
-
             return $cal;
         }
     }
 
-    public function createCalendar($workspaceId, $title, $color, $currentUserId=null){
+    public function createCalendar($workspaceId, $title, $color, $currentUserId=null, $icsLink=null){
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
@@ -105,7 +104,7 @@ class Calendars implements CalendarsInterface
                 $title = "New calendar";
             }
 
-            $cal = new Calendar($title, $color);
+            $cal = new Calendar($title, $color,$icsLink);
             $cal->setWorkspacesNumber(1);
             $this->doctrine->persist($cal);
 
