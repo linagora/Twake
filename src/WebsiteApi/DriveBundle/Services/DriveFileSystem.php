@@ -503,6 +503,27 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
+    public function moveDetachedFileToDrive($workspace, $detachedFileId, $directory, $userId = 0){
+        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        $user = $this->convertToEntity($userId, "TwakeUsersBundle:User");
+        /* @var DriveFile $file */
+        $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=>$detachedFileId));
+
+        if ($workspace == null || $this->getFreeSpace($workspace) <= 0) {
+            return false;
+        }
+
+        $file->setDetachedFile(false);
+        $this->updateSize($directory, $file->getSize());
+        $this->improveName($file);
+
+        $this->doctrine->persist($file);
+        $this->doctrine->flush();
+
+        return $file;
+    }
+
     public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false, $url =null, $userId = 0)
     {
 

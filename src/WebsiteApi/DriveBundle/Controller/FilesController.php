@@ -72,6 +72,38 @@ class FilesController extends Controller
 
     }
 
+    public function moveDetachedFileToDriveAction(Request $request){
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $groupId = $request->request->get("groupId", 0);
+        $detachedFileId = $request->request->get("detachedFileId", 0);
+        $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
+
+        $fileSystem = $this->get('app.drive.FileSystem');
+
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
+            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
+            $fileSystem->setRootDirectory($directory);
+        }
+
+        $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "drive:write");
+
+        if (count($data["errors"]) == 0) {
+            $file = $fileSystem->moveDetachedFileToDrive($groupId, $detachedFileId, $directory, $userId = 0);
+
+            if (!$file) {
+                $data["errors"][] = "unknown";
+            } else {
+                $data["data"] = $file->getAsArray();
+            }
+        }
+        return new JsonResponse($data);
+    }
+
     public function deleteAction(Request $request)
     {
         $data = Array(
