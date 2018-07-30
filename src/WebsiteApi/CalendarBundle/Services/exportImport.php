@@ -32,7 +32,7 @@ class exportImport implements exportImportInterface{
     public function __construct($calendarEventService, $errorService, $doctrine,$calendarService)
     {
         $this->calendarEventService = $calendarEventService;
-        $this->calendarService = $calendarService;
+        $this->calendarsService = $calendarService;
         $this->errorService = $errorService;
         $this->doctrine = $doctrine;
     }
@@ -110,7 +110,7 @@ class exportImport implements exportImportInterface{
     public function importCalendarByLink($workspaceId, $icsLink, $color = null, $currentUserId=null){
         if(strpos($icsLink,"http://")!=0 && strpos($icsLink,"https://")!=0)
             return false;
-        ini_set('default_socket_timeout', 10);
+        //ini_set('default_socket_timeout', 10);
         $ical = new ICal(file_get_contents($icsLink), array(
             'defaultSpan' => 2,     // Default value
             'defaultTimeZone' => 'UTC',
@@ -122,7 +122,7 @@ class exportImport implements exportImportInterface{
 
         $title = $ical->calendarName();
 
-        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy($icsLink);
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("icsLink" => $icsLink));
         $eventsArray = $this->buildEventArrayFromICal($ical);
 
         if(!$calendar) {
@@ -243,10 +243,15 @@ class exportImport implements exportImportInterface{
 
     }
 
-    public function generateCalendarExportToken($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id){
+    public function generateCalendarExportToken($workspaceId,$calendarId,$useMine,$from,$to, $user_id){
         if($user_id==null)
             $user_id = 0;
-        $calendarExportToken = new CalendarExportToken(intval($workspaceId),$calendarsIds,intval($useMine),$from,$to, $user_id);
+        /* @var Calendar $calendar*/
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id"=>$calendarId));
+        if($calendar->getIcsLink()!=null)
+            return $calendar->getIcsLink();
+
+        $calendarExportToken = new CalendarExportToken(intval($workspaceId),$calendarId,intval($useMine),$from,$to, $user_id);
         $token = $calendarExportToken->getToken();
         $this->doctrine->persist($calendarExportToken);
         $this->doctrine->flush();

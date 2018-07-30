@@ -182,7 +182,7 @@ class CalendarController extends Controller
         return $this->get("app.export_import")->generateIcsFileForCalendarFromToken($token);
     }
 
-    public function getCalendarExportTokenAction(Request $request, $workspaceId, $calendarsIds, $useMine, $from, $to){
+    public function getCalendarExportTokenAction(Request $request, $workspaceId, $calendarId, $useMine, $from, $to){
         $data = Array(
             'errors' => Array()
         );
@@ -196,7 +196,7 @@ class CalendarController extends Controller
         $from = ($from>=(strtotime('-1 year', (new \DateTime())->getTimestamp())) && $from <=strtotime('-1 year', (new \DateTime())->getTimestamp())) ? $from : (new \DateTime())->getTimestamp();
         $to = ($to<=(strtotime('-1 year', (new \DateTime())->getTimestamp())) && $to>=strtotime('+1 year', (new \DateTime())->getTimestamp())) ? $to : strtotime('+1 year', (new \DateTime())->getTimestamp()) ;
 
-        $token = $this->get("app.export_import")->generateCalendarExportToken($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id);
+        $token = $this->get("app.export_import")->generateCalendarExportToken($workspaceId,$calendarId,$useMine,$from,$to, $user_id);
 
         $data["data"] = $token;
 

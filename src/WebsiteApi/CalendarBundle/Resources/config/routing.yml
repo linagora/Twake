@@ -60,11 +60,11 @@ calendar_do_export:
     methods: [GET]
 
 calendar_get_export_token:
-    path:     /calendars/getExportToken/{workspaceId}/{calendarsIds}/{useMine}/{from}/{to}
+    path:     /calendars/getExportToken/{workspaceId}/{calendarId}/{useMine}/{from}/{to}
     defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendarExportToken }
     requirements:
               workspaceId: "[0-9]+"
-              calendarsIds: "[0-9]+(,[0-9]+)*"
+              calendarsIds: "[0-9]+"
               useMine: "[0-1]"
               from: "[0-9]+"
               to: "[0-9]+"
