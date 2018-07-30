@@ -14,6 +14,7 @@ use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
 use WebsiteApi\DriveBundle\Model\DriveFileSystemInterface;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Entity\User;
+use WebsiteApi\WorkspacesBundle\Services\WorkspacesApps;
 use ZipArchive;
 
 class DriveFileSystem implements DriveFileSystemInterface
@@ -29,8 +30,10 @@ class DriveFileSystem implements DriveFileSystemInterface
     var $userToNotifyService;
     /* @var Translate $translate*/
     var $translate;
+    /* @var WorkspacesApps $workspacesApps */
+    var $workspacesApps;
 
-    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService, $userToNotifyService, $translate)
+    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService, $userToNotifyService, $translate, $workspacesApps)
     {
         $this->doctrine = $doctrine;
         $this->root = $rootDirectory;
@@ -41,6 +44,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->applicationService = $applicationService;
         $this->userToNotifyService = $userToNotifyService;
         $this->translate = $translate;
+        $this->workspacesApps = $workspacesApps;
     }
 
     private function convertToEntity($var, $repository)
@@ -917,6 +921,15 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($fileOrDirectory);
         $this->doctrine->flush();
 
+        $app = $fileOrDirectory->getDefaultWebApp();
+
+        if($app){
+            $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("default_web_app" => $app, "group" => $fileOrDirectory->getGroup(), "isInTrash" => false));
+            if(count($files)==0){
+                $this->workspacesApps->disableApp($fileOrDirectory->getGroup(),$app->getId());
+            }
+        }
+
         return true;
     }
 
@@ -1011,6 +1024,13 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $this->doctrine->persist($fileOrDirectory);
         $this->doctrine->flush();
+
+
+        $app = $fileOrDirectory->getDefaultWebApp();
+
+        if($app){
+            $this->workspacesApps->enableApp($fileOrDirectory->getGroup(),$app->getId());
+        }
 
         return true;
     }
