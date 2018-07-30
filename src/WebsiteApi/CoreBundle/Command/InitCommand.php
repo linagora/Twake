@@ -9,6 +9,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
+use WebsiteApi\UsersBundle\Entity\User;
 use WebsiteApi\WorkspacesBundle\Entity\Level;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
@@ -104,6 +105,18 @@ class InitCommand extends ContainerAwareCommand
             $plan->setMonthPrice(0);
             $plan->setYearPrice(0);
             $manager->persist($plan);
+        }
+
+        //Création de l'user twake_bot
+        $twake_bot = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username"=>"twake_bot"));
+        if($twake_bot==null){
+            $twake_bot = new User();
+            $twake_bot->setIsNew(false);
+            $twake_bot->setIsRobot(true);
+            $twake_bot->setPassword(bin2hex(random_bytes(20)));
+            $twake_bot->setUsername("twake_bot");
+            $twake_bot->setEmail("");
+            $manager->persist($twake_bot);
         }
 
         // Création des applications de base

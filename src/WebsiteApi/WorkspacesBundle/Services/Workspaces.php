@@ -163,6 +163,10 @@ class Workspaces implements WorkspacesInterface
             $this->wms->addMember($workspace->getId(), $userId, false, $level->getId());
         }
 
+        //Add twake_bot
+        $twakebotId = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "twake_bot"))->getId();
+        $this->wms->addMember($workspace->getId(), $twakebotId, false, $level->getId());
+
         $this->ws->create($workspace); //Create workspace stat element
 
         //init default apps
