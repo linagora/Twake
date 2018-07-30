@@ -835,4 +835,26 @@ class FilesController extends Controller
         return new JsonResponse($data);
     }
 
+    public function changeDefaultWebAppAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $fileId = $request->request->get("fileId", 0);
+        $app = $request->request->get("app", 0);
+
+        $res = $this->get('app.drive.FileSystem')->changeDefaultWebApp($fileId, $app);
+
+        if($res){
+            $data["data"] = "success";
+        }elseif($res==null) {
+            $data["errors"][] = "error file or app not found";
+        }else{
+            $data["errors"][] = "error invalide file or app";
+        }
+
+        return new JsonResponse($data);
+    }
+
 }

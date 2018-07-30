@@ -12,6 +12,7 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 use WebsiteApi\DriveBundle\Entity\DriveFileLabel;
 use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
 use WebsiteApi\DriveBundle\Model\DriveFileSystemInterface;
+use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Entity\User;
 use ZipArchive;
 
@@ -1541,5 +1542,22 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $listFiles = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(array('default_web_app' => $app, 'group' => $workspace_id), array('opening_rate' => 'desc'), 20);
         return $listFiles;
+    }
+
+    public function changeDefaultWebApp($file, $newApp){
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
+        /* @var DriveFile $file */
+        $newApp = $this->convertToEntity($newApp, "TwakeMarketBundle:Application");
+        if(!$file || ! $newApp)
+            return null;
+        if(!$newApp->getUrlApp() || $file->getIsDirectory() || $file->getUrl()==null)
+            return false;
+
+        $file->setDefaultWebApp($newApp);
+
+        $this->doctrine->persist($file);
+        $this->doctrine->flush();
+
+        return true;
     }
 }
