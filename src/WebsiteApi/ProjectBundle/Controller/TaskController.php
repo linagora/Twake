@@ -17,11 +17,12 @@ class TaskController extends Controller
         );
 
         $taskId = $request->request->get("id", 0);
+        $like = $request->request->get("like", true);
 
-        $success = $this->get("app.board_tasks")->likeTask($taskId, $this->getUser()->getId());
+        $success = $this->get("app.board_tasks")->likeTask($taskId, $this->getUser()->getId(),$like);
 
         if($success)
-            $data["data"][] = "success";
+            $data["data"][] = $success;
         else
             $data["error"][] = "fail";
 

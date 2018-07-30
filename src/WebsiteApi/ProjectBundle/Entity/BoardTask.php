@@ -484,4 +484,15 @@ class BoardTask implements ObjectLinksInterface {
     {
         $this->labels = json_encode($labels);
     }
+
+    public function dislikeOne($userId)
+    {
+        $userWhoLike = $this->getUserWhoLiked();
+
+        if(in_array($userId,$userWhoLike)) {
+            $this->like--;
+            $userWhoLike = array_diff($userWhoLike, [$userId]);
+            $this->setUserWhoLiked($userWhoLike);
+        }
+    }
 }
