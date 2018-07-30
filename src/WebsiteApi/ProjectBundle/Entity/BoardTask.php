@@ -94,6 +94,11 @@ class BoardTask implements ObjectLinksInterface {
     private $userWhoLiked;
 
     /**
+     * @ORM\Column( type="text")
+     */
+    private $userWhoDisliked;
+
+    /**
      * @ORM\Column(type="string", length=264)
      */
     private $name;
@@ -125,11 +130,14 @@ class BoardTask implements ObjectLinksInterface {
 
     public function likeOne($userId){
         $userWhoLike = $this->getUserWhoLiked();
+        $userWhoDislike = $this->getUserWhoDisliked();
 
         if(!in_array($userId,$userWhoLike)) {
             $this->like++;
             $userWhoLike[] = $userId;
+            $userWhoDislike = array_diff($userWhoDislike, [$userId]);
             $this->setUserWhoLiked($userWhoLike);
+            $this->setUserWhoDisliked($userWhoDislike);
         }
     }
 
@@ -429,6 +437,21 @@ class BoardTask implements ObjectLinksInterface {
     }
 
 
+    /**
+     * @return mixed
+     */
+    public function getUserWhoDisliked()
+    {
+        return json_decode($this->userWhoDisliked,1);
+    }
+
+    /**
+     * @param mixed $userWhoDisliked
+     */
+    public function setUserWhoDisliked($userWhoDisliked)
+    {
+        $this->userWhoDisliked = json_encode($userWhoDisliked);
+    }
     public function getRepository()
     {
         return "TwakeProjectBundle:BoardTask";
@@ -488,11 +511,14 @@ class BoardTask implements ObjectLinksInterface {
     public function dislikeOne($userId)
     {
         $userWhoLike = $this->getUserWhoLiked();
+        $userWhoDislike = $this->getUserWhoDisliked();
 
         if(in_array($userId,$userWhoLike)) {
             $this->like--;
             $userWhoLike = array_diff($userWhoLike, [$userId]);
+            $userWhoDislike[] = $userId;
             $this->setUserWhoLiked($userWhoLike);
+            $this->setUserWhoDisliked($userWhoDislike);
         }
     }
 }
