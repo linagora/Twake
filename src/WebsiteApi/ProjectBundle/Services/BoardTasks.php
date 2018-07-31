@@ -111,8 +111,9 @@ class BoardTasks implements BoardTasksInterface
             $task->likeOne($userId);
         else
             $task->dislikeOne($userId);
+
         $this->doctrine->persist($task);
-        $this->flush($task);
+        $this->doctrine->flush($task);
 
         return $task->getLike();
     }

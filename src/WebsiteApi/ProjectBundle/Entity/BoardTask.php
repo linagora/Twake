@@ -140,8 +140,25 @@ class BoardTask implements ObjectLinksInterface {
 
         if(!in_array($userId,$userWhoLike)) {
             $this->like++;
-            $userWhoLike[] = $userId;
+            if(!in_array($userId,$userWhoDislike))
+                $userWhoLike[] = $userId;
+
             $userWhoDislike = array_diff($userWhoDislike, [$userId]);
+            $this->setUserWhoLiked($userWhoLike);
+            $this->setUserWhoDisliked($userWhoDislike);
+        }
+    }
+
+    public function dislikeOne($userId)
+    {
+        $userWhoLike = $this->getUserWhoLiked();
+        $userWhoDislike = $this->getUserWhoDisliked();
+
+        if(!in_array($userId,$userWhoDislike)) {
+            $this->like--;
+            if(!in_array($userId,$userWhoLike))
+                $userWhoDislike[] = $userId;
+            $userWhoLike = array_diff($userWhoLike, [$userId]);
             $this->setUserWhoLiked($userWhoLike);
             $this->setUserWhoDisliked($userWhoDislike);
         }
@@ -513,20 +530,6 @@ class BoardTask implements ObjectLinksInterface {
     public function setLabels($labels)
     {
         $this->labels = json_encode($labels);
-    }
-
-    public function dislikeOne($userId)
-    {
-        $userWhoLike = $this->getUserWhoLiked();
-        $userWhoDislike = $this->getUserWhoDisliked();
-
-        if(in_array($userId,$userWhoLike)) {
-            $this->like--;
-            $userWhoLike = array_diff($userWhoLike, [$userId]);
-            $userWhoDislike[] = $userId;
-            $this->setUserWhoLiked($userWhoLike);
-            $this->setUserWhoDisliked($userWhoDislike);
-        }
     }
 
     /**
