@@ -14,6 +14,7 @@ use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
 use WebsiteApi\DriveBundle\Model\DriveFileSystemInterface;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Entity\User;
+use WebsiteApi\WorkspacesBundle\Services\WorkspacesActivities;
 use WebsiteApi\WorkspacesBundle\Services\WorkspacesApps;
 use ZipArchive;
 
@@ -32,8 +33,10 @@ class DriveFileSystem implements DriveFileSystemInterface
     var $translate;
     /* @var WorkspacesApps $workspacesApps */
     var $workspacesApps;
+    /* @var WorkspacesActivities $workspacesActivities*/
+    var $workspacesActivities;
 
-    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService, $userToNotifyService, $translate, $workspacesApps)
+    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService, $userToNotifyService, $translate, $workspacesApps,$workspacesActivities)
     {
         $this->doctrine = $doctrine;
         $this->root = $rootDirectory;
@@ -45,6 +48,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->userToNotifyService = $userToNotifyService;
         $this->translate = $translate;
         $this->workspacesApps = $workspacesApps;
+        $this->workspacesActivities = $workspacesActivities;
     }
 
     private function convertToEntity($var, $repository)
@@ -233,6 +237,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             new TranslationObject($this->translate,"drive.has_been_moved", $fileOrDirectory->getName(), $dirName),
             $fileOrDirectory->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
+        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$userId,"drive","Move file","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
 
         return true;
     }
@@ -446,7 +451,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    public function rename($fileOrDirectory, $filename, $description = null, $labels = Array())
+    public function rename($fileOrDirectory, $filename, $description = null, $labels = Array(), $userId = 0)
     {
 
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
@@ -503,6 +508,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->updateLabelsCount($fileOrDirectory->getGroup());
 
         $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
+        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$userId,"drive","Rename file","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
 
         return true;
 
@@ -526,6 +532,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $this->doctrine->persist($file);
         $this->doctrine->flush();
+        $this->workspacesActivities->recordActivity($workspace,$userId,"drive","Move detached file to drive","TwakeDriveBundle:DriveFile", $file->getId());
 
         return $file;
     }
@@ -617,6 +624,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             new TranslationObject($this->translate,"drive.has_been_added", $newFile->getName(), $dirName),
             $newFile->getId(), $userId);
 
+        $this->workspacesActivities->recordActivity($workspace,$userId,"drive","Create file","TwakeDriveBundle:DriveFile", $newFile->getId());
         $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
 
         return $newFile;
@@ -881,7 +889,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $list;
     }
 
-    public function autoDelete($workspace, $fileOrDirectory)
+    public function autoDelete($workspace, $fileOrDirectory, $user = null)
     {
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
 
@@ -900,13 +908,13 @@ class DriveFileSystem implements DriveFileSystemInterface
         if ($fileOrDirectory->getIsInTrash()) {
             return $this->delete($fileOrDirectory);
         }else {
-            return $this->toTrash($fileOrDirectory);
+            return $this->toTrash($fileOrDirectory, $user);
         }
 
         return true;
     }
 
-    public function toTrash($fileOrDirectory){
+    public function toTrash($fileOrDirectory, $user){
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
 
         if(!$fileOrDirectory){
@@ -930,6 +938,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             }
         }
 
+        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","File trashed","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
         return true;
     }
 
@@ -1009,7 +1018,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    public function restore($fileOrDirectory)
+    public function restore($fileOrDirectory, $user=null)
     {
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
 
@@ -1032,6 +1041,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             $this->workspacesApps->enableApp($fileOrDirectory->getGroup(),$app->getId());
         }
 
+        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","Restore file","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
         return true;
     }
 
@@ -1132,6 +1142,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             new TranslationObject($this->translate,"drive.has_been_update", $file->getName()),
             $file->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $file->getGroup()->getId());
+        $this->workspacesActivities->recordActivity($workspace,$userId,"drive","Upload new file version","TwakeDriveBundle:DriveFile", $file->getId());
 
         return $file;
 

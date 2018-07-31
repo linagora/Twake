@@ -108,8 +108,9 @@ class exportImport implements exportImportInterface{
 
         for ($i=0;$i<count($calendars);$i++){
             $calendar = $calendars[$i];
+            $workspace = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("calendar"=>$calendar,"owner"=>true))[0];
             /* @var Calendar $calendar */
-            $this->importCalendarByLink(0,$calendar->getIcsLink());
+            $this->importCalendarByLink($workspace->getId(),$calendar->getIcsLink());
         }
     }
 

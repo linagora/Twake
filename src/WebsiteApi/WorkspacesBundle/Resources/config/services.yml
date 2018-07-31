@@ -32,6 +32,10 @@ services:
         class: WebsiteApi\WorkspacesBundle\Services\Workspaces
         arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.workspace_stats", "@app.groups", "@app.pricing_plan","@app.string_cleaner","@app.pusher"]
 
+    app.workspaces_activities:
+        class: WebsiteApi\WorkspacesBundle\Services\WorkspacesActivities
+        arguments: ["@doctrine.orm.entity_manager", '@website_api_market.applications']
+
     app.workspaces_apps:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesApps
         arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.group_apps","@app.group_managers","@app.pusher"]
