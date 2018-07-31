@@ -13,7 +13,7 @@ services:
 
     app.subjectSystem:
             class: WebsiteApi\DiscussionBundle\Services\SubjectSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@app.pusher','@app.workspace_levels','@app.messages']
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@app.pusher','@app.workspace_levels','@app.messages', '@app.objectLinks', '@website_api_market.applications']
 
     app.messagesNotificationsCenter:
             class: WebsiteApi\DiscussionBundle\Services\MessagesNotificationsCenter
