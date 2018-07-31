@@ -26,11 +26,11 @@ services:
 
     app.workspace_members:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceMembers
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner","@app.pusher","@app.pricing_plan", "@app.messages_master", "@app.calendars"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner","@app.pusher","@app.pricing_plan", "@app.messages_master", "@app.calendars",'@app.workspaces_activities']
 
     app.workspaces:
         class: WebsiteApi\WorkspacesBundle\Services\Workspaces
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.workspace_stats", "@app.groups", "@app.pricing_plan","@app.string_cleaner","@app.pusher"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.workspace_stats", "@app.groups", "@app.pricing_plan","@app.string_cleaner","@app.pusher",'@app.workspaces_activities']
 
     app.workspaces_activities:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesActivities
