@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\CalendarBundle\Entity\Calendar;
 use WebsiteApi\CalendarBundle\Entity\CalendarEvent;
 use WebsiteApi\CalendarBundle\Entity\CalendarExportToken;
+use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
 use WebsiteApi\CalendarBundle\Model\exportImportInterface;
 
 
@@ -108,9 +109,10 @@ class exportImport implements exportImportInterface{
 
         for ($i=0;$i<count($calendars);$i++){
             $calendar = $calendars[$i];
-            $workspace = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("calendar"=>$calendar,"owner"=>true))[0];
+            /* @var LinkCalendarWorkspace $linkCalendarWorkspace*/
+            $linkCalendarWorkspace = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("calendar"=>$calendar,"owner"=>true))[0];
             /* @var Calendar $calendar */
-            $this->importCalendarByLink($workspace->getId(),$calendar->getIcsLink());
+            $this->importCalendarByLink($linkCalendarWorkspace->getWorkspace()->getId(),$calendar->getIcsLink());
         }
     }
 
@@ -236,7 +238,6 @@ class exportImport implements exportImportInterface{
         foreach ($events as $evt){
             $result = $this->calendarEventService->createEvent($workspace_id, $calendar_id, $evt, null, false, $evt["participants"]);
 
-            //   var_dump($eventCreate);
             if ($result == false || $result == null) {
                 $data = $this->errorService->getError(4001);
                 $data["data"] = "";
