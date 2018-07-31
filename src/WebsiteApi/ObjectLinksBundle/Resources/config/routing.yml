@@ -15,3 +15,8 @@ objectLinks_delete:
     path: /delete
     defaults: {_controller: TwakeObjectLinksBundle:ObjectLinks:deleteLinks }
     methods: [POST]
+
+objectLinks_delete_linked_objects:
+    path: /deleteLinkedObjects
+    defaults: {_controller: TwakeObjectLinksBundle:ObjectLinks:deleteLinkedObjects }
+    methods: [POST]

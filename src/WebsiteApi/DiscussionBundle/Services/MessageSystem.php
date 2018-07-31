@@ -639,6 +639,7 @@ class MessageSystem implements MessagesSystemInterface
             $call = new Call($discussionKey,$message, $objectLinkName);
             $this->doctrine->persist($call);
             $this->flush();
+            return $call;
         }
 
         return true;
