@@ -37,7 +37,7 @@ class CalendarEvents implements CalendarEventsInterface
         $this->workspacesActivities = $workspacesActivities;
     }
 
-    public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false, $participants=Array())
+    public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false, $participants=Array(), $disableLog=false)
     {
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
@@ -101,13 +101,14 @@ class CalendarEvents implements CalendarEventsInterface
         );
         $this->pusher->push($data, "calendar/".$calendarId);
         $this->doctrine->flush();
-        $this->workspacesActivities->recordActivity($workspace,$currentUserId,"calendar","Create event","TwakeCalendarsBundle:CalendarEvent", $event->getId());
+        if(!$disableLog)
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"calendar","Create event","TwakeCalendarsBundle:CalendarEvent", $event->getId());
 
         return $event;
 
     }
 
-    public function updateEvent($workspaceId, $calendarId, $eventId, $eventArray, $currentUserId = null)
+    public function updateEvent($workspaceId, $calendarId, $eventId, $eventArray, $currentUserId = null, $disableLog=false)
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
@@ -170,7 +171,8 @@ class CalendarEvents implements CalendarEventsInterface
         );
         $this->pusher->push($data, "calendar/".$calendarId);
 
-        $this->workspacesActivities->recordActivity($workspace,$currentUserId,"calendar","Update event","TwakeCalendarsBundle:CalendarEvent", $event->getId());
+        if(!$disableLog)
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"calendar","Update event","TwakeCalendarsBundle:CalendarEvent", $event->getId());
 
         return $event;
     }

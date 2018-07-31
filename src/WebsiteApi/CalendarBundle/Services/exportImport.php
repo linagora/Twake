@@ -165,10 +165,10 @@ class exportImport implements exportImportInterface{
             foreach ($eventsArray as $eventArray) {
                 if(isset($indexedSavedEvent[$eventArray["uid"]])) {
                     $eventId = $indexedSavedEvent[$eventArray["uid"]]->getId();
-                    $this->calendarEventService->updateEvent($workspaceId, $calendar->getId(), $eventId, $eventArray, $currentUserId);
+                    $this->calendarEventService->updateEvent($workspaceId, $calendar->getId(), $eventId, $eventArray, $currentUserId,true);
                 }
                 else{
-                    $this->calendarEventService->createEvent($workspaceId,$calendar->getID(),$eventArray,$currentUserId,false,$eventArray["participants"]);
+                    $this->calendarEventService->createEvent($workspaceId,$calendar->getID(),$eventArray,$currentUserId,false,$eventArray["participants"],true);
                 }
             }
         }
