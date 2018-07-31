@@ -138,6 +138,11 @@ twake_user_account_setnotification:
     methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:setNotificationPreferences }
 
+twake_user_account_update_notification:
+    path:     /account/update_notifications
+    methods: [POST]
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:updateNotificationPreferenceByWorkspace }
+
 
 # Subscribe
 

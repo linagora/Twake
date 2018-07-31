@@ -315,6 +315,7 @@ class User extends BaseUser
 		$preferences["dont_use_keywords"] = (isset($preferences["dont_use_keywords"]))?$preferences["dont_use_keywords"]:1;
 		$preferences["keywords"] = (isset($preferences["keywords"]))?$preferences["keywords"]:"";
         $preferences["disabled_workspaces"] = (isset($preferences["disabled_workspaces"]))?$preferences["disabled_workspaces"]:[];
+        $preferences["workspace"] = (isset($preferences["workspace"]))?$preferences["workspace"]:[];
 
 		return $preferences;
 	}

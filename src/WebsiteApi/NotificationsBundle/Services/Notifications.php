@@ -65,6 +65,8 @@ class Notifications implements NotificationsInterface
             "type" => $type
         );
 
+        $toPush = true;
+
         $count = count($users);
         for($i = 0; $i < $count; $i++) {
 
@@ -79,6 +81,13 @@ class Notifications implements NotificationsInterface
                 $disabled_workspaces = $notificationPreference["disabled_workspaces"];
                 if (in_array($workspace_id,$disabled_workspaces)){
                     return false;
+                }
+                if($application!=null){
+                    if(isset($notificationPreference["workspace"][$workspace_id])){
+                        if(isset($notificationPreference["workspace"][$workspace_id][$application->getId()])){
+                            $toPush = false;
+                        }
+                    }
                 }
             }
             if($notificationPreference["devices"]==0){
@@ -143,7 +152,7 @@ class Notifications implements NotificationsInterface
                 $this->doctrine->persist($n);
             }
 
-            if(in_array("push", $type)){
+            if(in_array("push", $type) && $toPush){
                 $totalNotifications = $this->countAll($user) + 1;
                 if($useDevices) {
                     @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $_data);
@@ -157,7 +166,8 @@ class Notifications implements NotificationsInterface
 
             $data = $n->getAsArray();
             $data["action"] = "add";
-            $this->pusher->push($data, "notifications/".$user->getId());
+            if($toPush)
+                $this->pusher->push($data, "notifications/".$user->getId());
 
 
 

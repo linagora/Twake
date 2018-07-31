@@ -798,4 +798,18 @@ class User implements UserInterface
 
         }
     }
+
+    public function updateNotificationPreferenceByWorkspace($workspaceId, $appNotif, $user){
+	    /* @var \WebsiteApi\UsersBundle\Entity\User $user */
+	    $pref = $user->getNotificationPreference();
+
+	    $pref["workspace"][$workspaceId] = $appNotif;
+
+	    $user->setNotificationPreference($pref);
+
+        $this->em->persist($user);
+        $this->em->flush();
+
+        return true;
+    }
 }
