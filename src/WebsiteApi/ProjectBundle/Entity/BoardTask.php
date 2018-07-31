@@ -113,6 +113,11 @@ class BoardTask implements ObjectLinksInterface {
      */
     private $doneList;
 
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $doneDate;
+
     public  function __construct($from, $to, $name, $description, $dependingTask, $participants, $user, $weight=1)
     {
         $this->setFrom($from);
@@ -257,6 +262,7 @@ class BoardTask implements ObjectLinksInterface {
             "like" => $this->getLike(),
             "labels" => $this->getLabels(),
             "user" => $this->getUser() !=null ? $this->getUser()->getId() : 0,
+            "doneDate" => $this->getDoneDate(),
         );
     }
 
@@ -520,5 +526,21 @@ class BoardTask implements ObjectLinksInterface {
             $this->setUserWhoLiked($userWhoLike);
             $this->setUserWhoDisliked($userWhoDislike);
         }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDoneDate()
+    {
+        return $this->doneDate;
+    }
+
+    /**
+     * @param mixed $doneDate
+     */
+    public function setDoneDate($doneDate)
+    {
+        $this->doneDate = $doneDate;
     }
 }

@@ -202,6 +202,7 @@ class BoardTasks implements BoardTasksInterface
     public function moveTask($idsOrderMap,$listId, $boardId)
     {
         $board = $this->convertToEntity($boardId,"TwakeProjectBundle:Board");
+        /* @var ListOfTasks $list */
         $list = $this->convertToEntity($listId,"TwakeProjectBundle:ListOfTasks");
         foreach ($idsOrderMap as $id => $order){
             /* @var BoardTask $task */
@@ -210,6 +211,8 @@ class BoardTasks implements BoardTasksInterface
                 continue;
             $task->setListOfTasks($list);
             $task->setOrder($order);
+            if($task->getDoneDate()==null)
+                $task->setDoneDate($list->getisDoneList() ? new \DateTime() : null);
             $this->doctrine->persist($task);
         }
 
