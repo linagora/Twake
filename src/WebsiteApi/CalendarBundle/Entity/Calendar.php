@@ -149,16 +149,6 @@ class Calendar {
         $this->workspacesNumber = $workspacesNumber;
     }
 
-    public function getAsArray(){
-        return Array(
-            "id" => $this->getId(),
-            "name" => $this->getTitle(),
-            "color" => $this->getColor(),
-            "workspaces_number" => $this->getWorkspacesNumber(),
-            "autoParticipate" => $this->getAutoParticipantList()
-        );
-    }
-
     /**
      * @return mixed
      */
@@ -189,6 +179,18 @@ class Calendar {
     public function setLastUpdateDate($lastUpdateDate)
     {
         $this->lastUpdateDate = $lastUpdateDate;
+    }
+
+    public function getAsArray()
+    {
+        return Array(
+            "id" => $this->getId(),
+            "name" => $this->getTitle(),
+            "color" => $this->getColor(),
+            "workspaces_number" => $this->getWorkspacesNumber(),
+            "autoParticipate" => $this->getAutoParticipantList(),
+            "icsLink" => $this->getIcsLink()
+        );
     }
 
 
