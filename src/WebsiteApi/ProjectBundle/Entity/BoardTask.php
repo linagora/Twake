@@ -131,6 +131,7 @@ class BoardTask implements ObjectLinksInterface {
         $this->setUser($user);
         $this->setLike(0);
         $this->setUserWhoLiked(Array());
+        $this->setUserWhoDisliked(Array());
     }
 
     public function likeOne($userId){
