@@ -141,11 +141,11 @@ class Workspaces implements WorkspacesInterface
         // Create stream
         $streamGeneral = new Stream($workspace, "General", false, "This is the general stream");
         $streamGeneral->setType("stream");
-        $streamRandom = new Stream($workspace, "Random", false, "This is the random stream");
-        $streamRandom->setType("stream");
+        //$streamRandom = new Stream($workspace, "Random", false, "This is the random stream");
+        //$streamRandom->setType("stream");
 
         $this->doctrine->persist($streamGeneral);
-        $this->doctrine->persist($streamRandom);
+        //$this->doctrine->persist($streamRandom);
 
         //Create admin level
         $level = new WorkspaceLevel();

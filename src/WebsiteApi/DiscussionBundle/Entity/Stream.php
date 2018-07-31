@@ -74,6 +74,7 @@ class Stream
         $this->setIsPrivate($isPrivate);
         $this->setDescription($description);
         $this->setMembersLinks(Array());
+        $this->setIsHide(false);
 	}
 
     public function getId() {
