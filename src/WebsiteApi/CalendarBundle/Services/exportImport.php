@@ -99,9 +99,15 @@ class exportImport implements exportImportInterface{
     }
 
     public function updateCalendarsByLink(){
-        $calendars = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findBy(Array( ),Array("icsLink" => "NOT NULL"));
+        //$calendars = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findBy(Array( ),Array("icsLink" => "NOT NULL"));
+        $qb = $this->doctrine->createQueryBuilder(); // $em is your entity manager
+        $calendars = $qb->select("t")
+            ->from("TwakeCalendarBundle:Calendar","t")
+            ->where($qb->expr()->isNotNull("t.icsLink"))
+            ->getQuery()->getResult();
 
-        foreach ($calendars as $calendar){
+        for ($i=0;$i<count($calendars);$i++){
+            $calendar = $calendars[$i];
             /* @var Calendar $calendar */
             $this->importCalendarByLink(0,$calendar->getIcsLink());
         }
@@ -143,12 +149,14 @@ class exportImport implements exportImportInterface{
 
             $indexedSavedEvent = Array();
 
-            foreach ($savedEvents as $savedEvent){
-                /* @var CalendarEvent $savedEvent */
-                $eventArray = $savedEvent->getEvent();
+            if($savedEvents!=null) {
+                foreach ($savedEvents as $savedEvent) {
+                    /* @var CalendarEvent $savedEvent */
+                    $eventArray = $savedEvent->getEvent();
 
-                if(isset($eventArray['uid']))
-                    $indexedSavedEvent[$eventArray['uid']] = $savedEvent;
+                    if (isset($eventArray['uid']))
+                        $indexedSavedEvent[$eventArray['uid']] = $savedEvent;
+                }
             }
 
             foreach ($eventsArray as $eventArray) {
@@ -189,7 +197,7 @@ class exportImport implements exportImportInterface{
 
             $eventCreate["title"] = isset($evt->summary)? $evt->summary : "Event ".$count++;
 
-            $eventCreate["ui"] = $evt->uid;
+            $eventCreate["uid"] = $evt->uid;
 
             isset($evt->location)? $eventCreate["location"] = $evt->location : null ;
             isset($evt->description)? $eventCreate["description"] = $evt->description : null;
