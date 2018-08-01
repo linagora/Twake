@@ -45,7 +45,7 @@ class BoardTasks implements BoardTasksInterface
     private function notifyParticipants($participants, $workspace, $title, $description, $notifCode){
         foreach ($participants as $participant){
             $user = $this->convertToEntity($participant,"TwakeUsersBundle:User");
-            $this->boardActivities->pushActivity(true,$workspace,$user,null,$title,$description,Array(),Array("notifCode" => $notifCode));
+            $this->boardActivities->pushActivity(true, $workspace, $user, null, $title, $description, Array(), Array("notifCode" => $notifCode));
         }
     }
 
@@ -87,6 +87,7 @@ class BoardTasks implements BoardTasksInterface
         $task = new BoardTask($startDate, $endDate, $name, $description, $dependingTask,$participants,$user, $weight);
 
         $task->setUserIdToNotify($userIdsToNotify);
+        $task->setParticipants($participants);
         $task->setOrder($this->getMinOrder($board)-1);
         $task->setLabels($labels);
 
@@ -96,13 +97,8 @@ class BoardTasks implements BoardTasksInterface
         $this->doctrine->persist($task);
         $this->doctrine->flush();
 
-        $data = Array(
-            "type" => "create",
-            "task" => $task->getAsArray()
-        );
-
         $this->workspacesActivities->recordActivity($workspace,$user,"tasks","Create task","TwakeProjectBundle:BoardTask", $task->getId());
-        $this->notifyParticipants($userIdsToNotify,$workspace,"","","");
+        $this->notifyParticipants($userIdsToNotify, $workspace, "Task " . $task->getName() . " updated", "", $board->getId() . "/" . $task->getId());
 
         return $task;
 
@@ -169,7 +165,7 @@ class BoardTasks implements BoardTasksInterface
         $this->objectLinksSystem->updateObject($task);
         $this->workspacesActivities->recordActivity($workspace,$currentUserId,"tasks","Update task","TwakeProjectBundle:BoardTask", $task->getId());
 
-        $this->notifyParticipants($task->getUserIdToNotify(),$workspace, "Task ".$task->getName()." updated", "", "");
+        $this->notifyParticipants($task->getParticipants(), $workspace, "Task " . $task->getName() . " updated", "", $board->getId() . "/" . $taskId);
         
 
         return $task;
@@ -202,7 +198,7 @@ class BoardTasks implements BoardTasksInterface
 
 
         $this->workspacesActivities->recordActivity($workspace,$currentUserId,"tasks","Remove task","TwakeProjectBundle:BoardTask", $task->getId());
-        $this->notifyParticipants($task->getParticipants(),$workspace, "Task ".$task->getName()." deleted", "", "");
+        $this->notifyParticipants($task->getParticipants(), $workspace, "Task " . $task->getName() . " deleted", "", $board->getId() . "/" . $taskId);
 
         return true;
     }
@@ -537,11 +533,12 @@ class BoardTasks implements BoardTasksInterface
         /* @var \WebsiteApi\ProjectBundle\Entity\ListOfTasks $listofTasks */
         $listOfTasks = $listOfTasksRepository->findOneBy(Array("id" => $listOfTasksId));
 
+        $board = $task->getBoard();
         $task->setListOfTasks($listOfTasks);
 
         $this->doctrine->persist($task);
         $this->doctrine->flush();
-        $this->notifyParticipants($task->getParticipants(),$workspaceId, "Task ".$task->getName()." moved", "", "");
+        $this->notifyParticipants($task->getParticipants(), $workspaceId, "Task " . $task->getName() . " moved", "", $board->getId() . "/" . $taskId);
     }
 
     public function moveTaskToBoard($taskId, $boardId, $workspaceId = 0){
@@ -559,7 +556,7 @@ class BoardTasks implements BoardTasksInterface
 
             $this->doctrine->persist($task);
             $this->doctrine->flush();
-            $this->notifyParticipants($task->getParticipants(),$workspaceId, "Task ".$task->getName()." moved", "", "");
+            $this->notifyParticipants($task->getParticipants(), $workspaceId, "Task " . $task->getName() . " moved", "", $board->getId() . "/" . $taskId);
         }
     }
 

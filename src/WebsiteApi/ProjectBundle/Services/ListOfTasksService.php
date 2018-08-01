@@ -24,13 +24,6 @@ class ListOfTasksService
         $this->workspaceLevels = $workspaceLevels;
     }
 
-    private function notifyParticipants($participants, $workspace, $title, $description, $notifCode){
-        foreach ($participants as $participant){
-            $user = $this->convertToEntity($participant,"TwakeUsersBundle:User");
-            $this->boardActivities->pushActivity(true,$workspace,$user,null,$title,$description,Array(),Array("notifCode" => $notifCode));
-        }
-    }
-
     private function getWorkspaceFromBoard($boardId){
         /* @var Board $board*/
         $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->find($boardId);
@@ -70,7 +63,6 @@ class ListOfTasksService
 
         $this->doctrine->remove($listOfTasks);
         $this->doctrine->flush();
-        $this->notifyParticipants($listOfTasks->getUserIdToNotify(),$workspaceId, "List ".$listOfTasks->getTitle()." removed", "", "");
 
         return true;
     }
@@ -106,8 +98,6 @@ class ListOfTasksService
         $this->doctrine->persist($listOfTasks);
         $this->doctrine->flush();
 
-        $this->notifyParticipants($listOfTasks->getUserIdToNotify(),$workspace->getId(), "List ".$listOfTasks->getTitle()." created", "", "");
-
         return $listOfTasks;
     }
 
@@ -129,8 +119,6 @@ class ListOfTasksService
 
         $this->doctrine->persist($listOfTasks);
         $this->doctrine->flush();
-
-        $this->notifyParticipants($listOfTasks->getUserIdToNotify(),$workspace->getId(), "List ".$listOfTasks->getTitle()." updated", "", "");
 
         return true;
     }
