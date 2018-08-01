@@ -109,7 +109,7 @@ class exportImport implements exportImportInterface{
         for ($i=0;$i<count($calendars);$i++){
             $calendar = $calendars[$i];
             /* @var Calendar $calendar */
-            $this->importCalendarByLink(0,$calendar->getIcsLink());
+            $this->importCalendarByLink(0, $calendar->getIcsLink());
         }
     }
 
@@ -152,7 +152,7 @@ class exportImport implements exportImportInterface{
             if($savedEvents!=null) {
                 foreach ($savedEvents as $savedEvent) {
                     /* @var CalendarEvent $savedEvent */
-                    $eventArray = $savedEvent->getEvent();
+                    $eventArray = $savedEvent["event"];
 
                     if (isset($eventArray['uid']))
                         $indexedSavedEvent[$eventArray['uid']] = $savedEvent;
@@ -165,7 +165,7 @@ class exportImport implements exportImportInterface{
                     $this->calendarEventService->updateEvent($workspaceId, $calendar->getId(), $eventId, $eventArray, $currentUserId);
                 }
                 else{
-                    $this->calendarEventService->createEvent($workspaceId,$calendar->getID(),$eventArray,$currentUserId,false,$eventArray["participants"]);
+                    $this->calendarEventService->createEvent($workspaceId, $calendar->getId(), $eventArray, $currentUserId, false, $eventArray["participants"]);
                 }
             }
         }
@@ -198,6 +198,8 @@ class exportImport implements exportImportInterface{
             $eventCreate["title"] = isset($evt->summary)? $evt->summary : "Event ".$count++;
 
             $eventCreate["uid"] = $evt->uid;
+
+            $eventCreate["allDay"] = (strpos(strtoupper($evt->dtstart), "Z") === false); //If no Z its a date with no time
 
             isset($evt->location)? $eventCreate["location"] = $evt->location : null ;
             isset($evt->description)? $eventCreate["description"] = $evt->description : null;

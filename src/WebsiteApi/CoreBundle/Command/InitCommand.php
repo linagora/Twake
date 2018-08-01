@@ -111,13 +111,15 @@ class InitCommand extends ContainerAwareCommand
         $twake_bot = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username"=>"twake_bot"));
         if($twake_bot==null){
             $twake_bot = new User();
-            $twake_bot->setIsNew(false);
-            $twake_bot->setIsRobot(true);
-            $twake_bot->setPassword(bin2hex(random_bytes(20)));
-            $twake_bot->setUsername("twake_bot");
-            $twake_bot->setEmail("");
-            $manager->persist($twake_bot);
         }
+        $twake_bot->setIsNew(false);
+        $twake_bot->setIsRobot(true);
+        $twake_bot->setPassword(bin2hex(random_bytes(20)));
+        $twake_bot->setUsername("twake_bot");
+        $twake_bot->setFirstName("Twake");
+        $twake_bot->setLastName("Bot");
+        $twake_bot->setEmail("");
+        $manager->persist($twake_bot);
 
         // Création des applications de base
         $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "messages"));
@@ -207,11 +209,11 @@ class InitCommand extends ContainerAwareCommand
         $app->setUrl("tasks");
         $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "edit":true}}', true));
         $app->setApplicationRights(json_decode('{"tasks":"manage"}', true));
-        $app->setEnabled(0);
+        $app->setEnabled(1);
         $app->setColor("51B75B");
         $app->setCanCreateFile(0);
         $app->setIsCapable(1);
-        $app->setDefault(0);
+        $app->setDefault(1);
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
         $app->setOrder(0);
