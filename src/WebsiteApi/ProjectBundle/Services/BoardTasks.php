@@ -12,6 +12,7 @@ use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
 use WebsiteApi\ProjectBundle\Entity\LinkTaskUser;
 use WebsiteApi\ProjectBundle\Entity\ListOfTasks;
 use WebsiteApi\ProjectBundle\Model\BoardTasksInterface;
+use WebsiteApi\WorkspacesBundle\Services\WorkspacesActivities;
 
 /**
  * Manage board
@@ -27,8 +28,10 @@ class BoardTasks implements BoardTasksInterface
     var $boardActivities;
     /* @var ObjectLinksSystem $objectLinksSystem*/
     var $objectLinksSystem;
+    /* @var WorkspacesActivities $workspacesActivities*/
+    var $workspacesActivities;
 
-    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceBoardActivity, $objectLinksSystem)
+    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceBoardActivity, $objectLinksSystem,$workspacesActivities)
     {
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
@@ -36,6 +39,7 @@ class BoardTasks implements BoardTasksInterface
         $this->notifications = $notifications;
         $this->boardActivities = $serviceBoardActivity;
         $this->objectLinksSystem = $objectLinksSystem;
+        $this->workspacesActivities = $workspacesActivities;
     }
 
     private function notifyParticipants($participants, $workspace, $title, $description, $notifCode){
@@ -97,7 +101,7 @@ class BoardTasks implements BoardTasksInterface
             "task" => $task->getAsArray()
         );
 
-
+        $this->workspacesActivities->recordActivity($workspace,$user,"tasks","Create task","TwakeProjectBundle:BoardTask", $task->getId());
         $this->notifyParticipants($userIdsToNotify,$workspace,"","","");
 
         return $task;
@@ -111,6 +115,7 @@ class BoardTasks implements BoardTasksInterface
             $task->likeOne($userId);
         else
             $task->dislikeOne($userId);
+
         $this->doctrine->persist($task);
         $this->doctrine->flush($task);
 
@@ -162,7 +167,8 @@ class BoardTasks implements BoardTasksInterface
         );
 
         $this->objectLinksSystem->updateObject($task);
-;
+        $this->workspacesActivities->recordActivity($workspace,$currentUserId,"tasks","Update task","TwakeProjectBundle:BoardTask", $task->getId());
+
         $this->notifyParticipants($task->getUserIdToNotify(),$workspace, "Task ".$task->getName()." updated", "", "");
         
 
@@ -194,6 +200,8 @@ class BoardTasks implements BoardTasksInterface
             "task_id" => $taskId
         );
 
+
+        $this->workspacesActivities->recordActivity($workspace,$currentUserId,"tasks","Remove task","TwakeProjectBundle:BoardTask", $task->getId());
         $this->notifyParticipants($task->getParticipants(),$workspace, "Task ".$task->getName()." deleted", "", "");
 
         return true;

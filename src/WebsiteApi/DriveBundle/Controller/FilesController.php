@@ -126,7 +126,7 @@ class FilesController extends Controller
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
         if ($can) {
             foreach ($fileIds as $fileId){
-                $fileSystem->autoDelete($groupId,$fileId);
+                $fileSystem->autoDelete($groupId,$fileId, $this->getUser());
             }
         }else{
             $data["errors"][] = "notallowed";
@@ -628,7 +628,7 @@ class FilesController extends Controller
                 $data["errors"][] = "emptyname";
             } else if (!$fileSystem->canAccessTo($fileId, $groupId, $this->getUser())){
                 $data["errors"][] = "notallowed";
-            } else if (!$fileSystem->rename($fileId, $filename, $description, $labels)) {
+            } else if (!$fileSystem->rename($fileId, $filename, $description, $labels,$this->getUser()->getId())) {
                 $data["errors"][] = "unknown";
             }
         }

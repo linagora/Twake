@@ -24,17 +24,20 @@ class CalendarEvents implements CalendarEventsInterface
     var $notifications;
     /* @var CalendarActivities $calendarActivity */
     var $calendarActivity;
+    /* @var WorkspacesActivities $workspacesActivities*/
+    var $workspacesActivities;
 
-    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceCalendarActivity)
+    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceCalendarActivity,$workspacesActivities)
     {
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
         $this->workspaceLevels = $workspaceLevels;
         $this->notifications = $notifications;
         $this->calendarActivity = $serviceCalendarActivity;
+        $this->workspacesActivities = $workspacesActivities;
     }
 
-    public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false, $participants=Array())
+    public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false, $participants=Array(), $disableLog=false)
     {
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
@@ -98,12 +101,14 @@ class CalendarEvents implements CalendarEventsInterface
         );
         $this->pusher->push($data, "calendar/".$calendarId);
         $this->doctrine->flush();
+        if(!$disableLog)
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"calendar","Create event","TwakeCalendarsBundle:CalendarEvent", $event->getId());
 
         return $event;
 
     }
 
-    public function updateEvent($workspaceId, $calendarId, $eventId, $eventArray, $currentUserId = null)
+    public function updateEvent($workspaceId, $calendarId, $eventId, $eventArray, $currentUserId = null, $disableLog=false)
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
@@ -166,6 +171,9 @@ class CalendarEvents implements CalendarEventsInterface
         );
         $this->pusher->push($data, "calendar/".$calendarId);
 
+        if(!$disableLog)
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"calendar","Update event","TwakeCalendarsBundle:CalendarEvent", $event->getId());
+
         return $event;
     }
 
@@ -203,6 +211,8 @@ class CalendarEvents implements CalendarEventsInterface
             "event_id" => $eventId
         );
         $this->pusher->push($data, "calendar/".$calendarId);
+
+        $this->workspacesActivities->recordActivity($workspace,$currentUserId,"calendar","Remove event","TwakeCalendarsBundle:CalendarEvent", $event->getId());
 
         return true;
     }
@@ -360,6 +370,7 @@ class CalendarEvents implements CalendarEventsInterface
             return null;
         }
         $events = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->getAllCalendarEventsByCalendar($calendarsId);
+        $result = Array();
 
         foreach ($events as $link) {
             $evt = $link->getAsArray();

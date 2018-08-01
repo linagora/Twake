@@ -109,7 +109,7 @@ class exportImport implements exportImportInterface{
         for ($i=0;$i<count($calendars);$i++){
             $calendar = $calendars[$i];
             /* @var Calendar $calendar */
-            $this->importCalendarByLink(0, $calendar->getIcsLink());
+            $this->importCalendarByLink(0,$calendar->getIcsLink());
         }
     }
 
@@ -162,10 +162,10 @@ class exportImport implements exportImportInterface{
             foreach ($eventsArray as $eventArray) {
                 if(isset($indexedSavedEvent[$eventArray["uid"]])) {
                     $eventId = $indexedSavedEvent[$eventArray["uid"]]->getId();
-                    $this->calendarEventService->updateEvent($workspaceId, $calendar->getId(), $eventId, $eventArray, $currentUserId);
+                    $this->calendarEventService->updateEvent($workspaceId, $calendar->getId(), $eventId, $eventArray, $currentUserId,true);
                 }
                 else{
-                    $this->calendarEventService->createEvent($workspaceId, $calendar->getId(), $eventArray, $currentUserId, false, $eventArray["participants"]);
+                    $this->calendarEventService->createEvent($workspaceId,$calendar->getID(),$eventArray,$currentUserId,false,$eventArray["participants"]);
                 }
             }
         }
@@ -237,7 +237,6 @@ class exportImport implements exportImportInterface{
         foreach ($events as $evt){
             $result = $this->calendarEventService->createEvent($workspace_id, $calendar_id, $evt, null, false, $evt["participants"]);
 
-            //   var_dump($eventCreate);
             if ($result == false || $result == null) {
                 $data = $this->errorService->getError(4001);
                 $data["data"] = "";

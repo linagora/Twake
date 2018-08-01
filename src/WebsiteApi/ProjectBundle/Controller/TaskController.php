@@ -21,10 +21,10 @@ class TaskController extends Controller
 
         $success = $this->get("app.board_tasks")->likeTask($taskId, $this->getUser()->getId(),$like);
 
-        if($success)
-            $data["data"]["like"] = $success;
-        else
+        if($success===false)
             $data["error"][] = "fail";
+        else
+            $data["data"]["like"] = $success;
 
 
         return new JsonResponse($data);
