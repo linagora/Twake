@@ -1148,9 +1148,9 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    public function upload($workspace, $directory, $file, $uploader, $detached = false, $userId = 0)
+    public function upload($workspace, $directory, $file, $uploader, $detached = false, $userId = 0, $userApp=0)
     {
-        $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached, null,$userId);
+        $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached, null,$userId,$userApp);
         $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $userId));
         if($userId==0)
             $user = null;

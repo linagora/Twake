@@ -447,6 +447,7 @@ class FilesController extends Controller
         $isDetached = $request->request->getBoolean("isDetached", false);
         $directory = $request->request->get("directory", false);
         $newVersion = $request->request->get("newVersion", 0);
+        $appId = $request->request->get("appId",null);
         if($newVersion=="false")
             $newVersion = false;
         $externalDrive = $directory;
@@ -465,7 +466,7 @@ class FilesController extends Controller
             if($newVersion)
                 $file = $fileSystem->uploadNewVersion($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId(), $newVersion);
             else
-                $file = $fileSystem->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId());
+                $file = $fileSystem->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId(),$appId);
 
             if ($file) {
                 $data["data"] = $file->getAsArray();
