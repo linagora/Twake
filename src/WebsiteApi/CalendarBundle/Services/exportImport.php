@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\CalendarBundle\Entity\Calendar;
 use WebsiteApi\CalendarBundle\Entity\CalendarEvent;
 use WebsiteApi\CalendarBundle\Entity\CalendarExportToken;
+use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
 use WebsiteApi\CalendarBundle\Model\exportImportInterface;
 
 
@@ -108,8 +109,10 @@ class exportImport implements exportImportInterface{
 
         for ($i=0;$i<count($calendars);$i++){
             $calendar = $calendars[$i];
+            /* @var LinkCalendarWorkspace $linkCalendarWorkspace*/
+            $linkCalendarWorkspace = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("calendar"=>$calendar,"owner"=>true))[0];
             /* @var Calendar $calendar */
-            $this->importCalendarByLink(0,$calendar->getIcsLink());
+            $this->importCalendarByLink($linkCalendarWorkspace->getWorkspace()->getId(),$calendar->getIcsLink());
         }
     }
 
@@ -161,11 +164,12 @@ class exportImport implements exportImportInterface{
 
             foreach ($eventsArray as $eventArray) {
                 if(isset($indexedSavedEvent[$eventArray["uid"]])) {
-                    $eventId = $indexedSavedEvent[$eventArray["uid"]]->getId();
+
+                    $eventId = $indexedSavedEvent[$eventArray["uid"]]["id"];
                     $this->calendarEventService->updateEvent($workspaceId, $calendar->getId(), $eventId, $eventArray, $currentUserId,true);
                 }
                 else{
-                    $this->calendarEventService->createEvent($workspaceId,$calendar->getID(),$eventArray,$currentUserId,false,$eventArray["participants"]);
+                    $this->calendarEventService->createEvent($workspaceId,$calendar->getId(),$eventArray,$currentUserId,false,$eventArray["participants"]);
                 }
             }
         }

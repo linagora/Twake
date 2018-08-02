@@ -547,4 +547,9 @@ class BoardTask implements ObjectLinksInterface {
     {
         $this->doneDate = $doneDate;
     }
+
+    public function getAllUsersToNotify()
+    {
+        return array_merge($this->getParticipants(),$this->getUserIdToNotify());
+    }
 }

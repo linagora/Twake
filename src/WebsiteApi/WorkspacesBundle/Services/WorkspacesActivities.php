@@ -53,6 +53,41 @@ class WorkspacesActivities
 
     public function getRecordByWorkspace($workspace){
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
-        return $this->doctrineè>getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace));
+        return $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace));
+    }
+
+    public function getWorkspaceActivityResumed($workspace, $userIdsList){
+        $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
+        $users = [];
+
+        foreach ($userIdsList as $user){
+            $users[] = $this->convertToEntity($user["user"],"TwakeUsersBundle:User");
+        }
+
+        $resumed = Array();
+
+        foreach ($users as $user){
+            $userActivity = Array("user" => $user, "app" => []);
+            $activities = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace, "user" => $user));
+
+            foreach ($activities as $activity){
+                /* @var WorkspaceActivity $activity*/
+                $activityDate = date_format($activity->getDateAdded(),"Y/m/d H");
+                if(!isset($userActivity["app"][$activityDate])){
+                    $userActivity["app"][$activityDate] = Array();
+                }
+                if(!isset($userActivity["app"][$activityDate][$activity->getApp()->getId()])){
+                    $userActivity["app"][$activityDate][$activity->getApp()->getId()] = Array();
+                }
+                if(!isset($userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()])){
+                    $userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()] = Array();
+                }
+                $userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()][] = $this->convertToEntity($activity->getObjectId(),$activity->getObjectRepository());
+            }
+
+            $resumed[] = $userActivity;
+        }
+
+        return $resumed;
     }
 }
