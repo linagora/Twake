@@ -488,7 +488,7 @@ class BoardTask implements ObjectLinksInterface {
             "object_name" => $this->getName(),
             "key" => "tasks",
             "type" => "task",
-            "code" => "",
+            "code" => $this->getBoard()->getId() . "/" . $this->getId(),
         );
     }
 
