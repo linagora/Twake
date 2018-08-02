@@ -17,11 +17,14 @@ class WorkspacesActivities
     private $doctrine;
     /* @var MarketApplication $applicationManager */
     var $applicationManager;
+    /* @var WorkspaceMembers $workspaceMembers*/
+    var $workspaceMembers;
 
-    public function __construct($doctrine, $applicationManager)
+    public function __construct($doctrine, $applicationManager, $workspaceMembers)
     {
         $this->doctrine = $doctrine;
         $this->applicationManager = $applicationManager;
+        $this->workspaceMembers = $workspaceMembers;
     }
 
     private function convertToEntity($var, $repository)
@@ -53,6 +56,33 @@ class WorkspacesActivities
 
     public function getRecordByWorkspace($workspace){
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
-        return $this->doctrineè>getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace));
+        return $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace));
+    }
+
+    public function getWorkspaceActivityResumed($workspace){
+        $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
+        $users = $this->workspaceMembers->getMembers($workspace);
+        $resumed = Array();
+
+        foreach ($users as $user){
+            $userActivity = Array("user" => $user, "app" => []);
+            $activities = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace, "user" => $user));
+
+            foreach ($activities as $activity){
+                /* @var WorkspaceActivity $activity*/
+                if(!isset($userActivity[$activity->getApp()->getId()])){
+                    $userActivity["app"][$activity->getApp()->getId()] = Array();
+                }
+                if(!isset($userActivity[$activity->getApp()->getId()][$activity->getTitle()])){
+                    $userActivity["app"][$activity->getApp()->getId()][$activity->getTitle()] = Array();
+
+                }
+                $userActivity["app"][$activity->getApp()->getId()][$activity->getTitle()][] = $activity->getObjectId();
+            }
+
+            $resumed[] = $userActivity;
+        }
+
+        return $resumed;
     }
 }
