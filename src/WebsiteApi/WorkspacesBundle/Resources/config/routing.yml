@@ -2,6 +2,13 @@ twake_workspaces_get:
     path:     /get
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:get }
 
+twake_workspaces_get_activities:
+    path:     /getActivities
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:getActivities }
+twake_workspaces_get_activities_preview:
+    path:     /getActivitiesPreview
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:getActivitiesPreview }
+
 twake_workspaces_create:
     path:     /create
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:create }

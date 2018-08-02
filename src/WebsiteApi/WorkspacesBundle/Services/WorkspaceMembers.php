@@ -287,7 +287,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             }
 
 
-            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","Add member","TwakeUsersBundle:User", $user->getId());
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.add_member","TwakeUsersBundle:User", $user->getId());
             $this->messages->addWorkspaceMember($workspace, $user);
             $this->calendar->addWorkspaceMember($workspace, $user);
 

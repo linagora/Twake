@@ -244,7 +244,7 @@ class Workspaces implements WorkspacesInterface
                 )
             );
             $this->pusher->push($datatopush, "group/" . $workspace->getId());
-            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","Change workspace name","TwakeWorkspacesBundle:Workspace", $workspaceId);
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.rename","TwakeWorkspacesBundle:Workspace", $workspaceId);
 
             return true;
         }
@@ -277,7 +277,7 @@ class Workspaces implements WorkspacesInterface
                 )
             );
             $this->pusher->push($datatopush, "group/" . $workspace->getId());
-            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","Chnage workspace logo","TwakeWorkspacesBundle:Workspace", $workspaceId);
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.change_logo","TwakeWorkspacesBundle:Workspace", $workspaceId);
 
             return true;
         }
@@ -315,7 +315,7 @@ class Workspaces implements WorkspacesInterface
                     "workspaceId" => $workspace->getId(),
                 )
             );
-            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","Change workspace wallpaper","TwakeWorkspacesBundle:Workspace", $workspaceId);
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.change_wallpaper","TwakeWorkspacesBundle:Workspace", $workspaceId);
             $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
             return true;
@@ -422,7 +422,7 @@ class Workspaces implements WorkspacesInterface
 
             if ($isDeleted == false && $isArchived == false){
                 $workspace->setIsArchived(true);
-                $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","Archive workspace","TwakeWorkspacesBundle:Workspace", $workspaceId);
+                $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.archive","TwakeWorkspacesBundle:Workspace", $workspaceId);
             }
 
             $this->doctrine->persist($workspace);
@@ -458,7 +458,7 @@ class Workspaces implements WorkspacesInterface
 
             if ($isDeleted == false && $isArchived == true){
                 $workspace->setIsArchived(false);
-                $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","Unarchive workspace","TwakeWorkspacesBundle:Workspace", $workspaceId);
+                $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.unarchive","TwakeWorkspacesBundle:Workspace", $workspaceId);
             }
 
             $this->doctrine->persist($workspace);
