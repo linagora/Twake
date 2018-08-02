@@ -17,14 +17,11 @@ class WorkspacesActivities
     private $doctrine;
     /* @var MarketApplication $applicationManager */
     var $applicationManager;
-    /* @var WorkspaceMembers $workspaceMembers*/
-    var $workspaceMembers;
 
-    public function __construct($doctrine, $applicationManager, $workspaceMembers)
+    public function __construct($doctrine, $applicationManager)
     {
         $this->doctrine = $doctrine;
         $this->applicationManager = $applicationManager;
-        $this->workspaceMembers = $workspaceMembers;
     }
 
     private function convertToEntity($var, $repository)
@@ -59,9 +56,14 @@ class WorkspacesActivities
         return $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace));
     }
 
-    public function getWorkspaceActivityResumed($workspace){
+    public function getWorkspaceActivityResumed($workspace, $userIdsList){
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
-        $users = $this->workspaceMembers->getMembers($workspace);
+        $users = [];
+
+        foreach ($userIdsList as $userId){
+            $users[] = $this->convertToEntity($userId,"TwakeUsersBundle:User");
+        }
+
         $resumed = Array();
 
         foreach ($users as $user){
