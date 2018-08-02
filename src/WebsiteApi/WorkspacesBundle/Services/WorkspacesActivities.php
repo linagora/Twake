@@ -60,8 +60,8 @@ class WorkspacesActivities
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
         $users = [];
 
-        foreach ($userIdsList as $userId){
-            $users[] = $this->convertToEntity($userId,"TwakeUsersBundle:User");
+        foreach ($userIdsList as $user){
+            $users[] = $this->convertToEntity($user["user"],"TwakeUsersBundle:User");
         }
 
         $resumed = Array();
@@ -82,7 +82,7 @@ class WorkspacesActivities
                 if(!isset($userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()])){
                     $userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()] = Array();
                 }
-                $userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()][] = $activity->getObjectId();
+                $userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()][] = $this->convertToEntity($activity->getObjectId(),$activity->getObjectRepository());
             }
 
             $resumed[] = $userActivity;

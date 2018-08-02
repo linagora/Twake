@@ -142,4 +142,12 @@ class WorkspaceActivity
         $this->objectId = $objectId;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getObjectRepository()
+    {
+        return $this->objectRepository;
+    }
+
 }
