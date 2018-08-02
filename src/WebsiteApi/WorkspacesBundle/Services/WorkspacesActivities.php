@@ -72,14 +72,17 @@ class WorkspacesActivities
 
             foreach ($activities as $activity){
                 /* @var WorkspaceActivity $activity*/
-                if(!isset($userActivity[$activity->getApp()->getId()])){
-                    $userActivity["app"][$activity->getApp()->getId()] = Array();
+                $activityDate = date_format($activity->getDateAdded(),"Y/m/d H");
+                if(!isset($userActivity["app"][$activityDate])){
+                    $userActivity["app"][$activityDate] = Array();
                 }
-                if(!isset($userActivity[$activity->getApp()->getId()][$activity->getTitle()])){
-                    $userActivity["app"][$activity->getApp()->getId()][$activity->getTitle()] = Array();
-
+                if(!isset($userActivity["app"][$activityDate][$activity->getApp()->getId()])){
+                    $userActivity["app"][$activityDate][$activity->getApp()->getId()] = Array();
                 }
-                $userActivity["app"][$activity->getApp()->getId()][$activity->getTitle()][] = $activity->getObjectId();
+                if(!isset($userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()])){
+                    $userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()] = Array();
+                }
+                $userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()][] = $activity->getObjectId();
             }
 
             $resumed[] = $userActivity;
