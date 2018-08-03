@@ -30,56 +30,20 @@ class WorkspaceActivitiesController extends Controller
         $workspace = $request->request->get("id",0);
         $users = $this->get("app.workspace_members")->getMembers($workspace);
 
-        $activities = $this->get("app.workspaces_activities")->getWorkspaceActivityResumed($workspace,$users);
+        $activities = $this->get("app.workspaces_activities")->getWorkspaceActivityResumed($workspace, $users);
 
-        foreach ($activities as $akey => $activity){
-            $activities[$akey]["user"] = $activity["user"]->getAsArray();
-
-            foreach ($activity["app"] as $date => $dateData) {
-                foreach ($dateData as $appId => $appData) {
-                    foreach ($appData as $action => $objects) {
-                        foreach ($objects as $key => $object)
-                        {
-                            $activities[$akey]["app"][$date][$appId][$action][$key] = $object->getAsArray();
-                        }
-                    }
-                }
-            }
+        $translator = $this->get("app.translate");
+        foreach($activities as $key=>$activity) {
+            $activities[$key]["title"] = $translator->translate(
+                new TranslationObject($translator,
+                    $activities[$key]["title"],
+                    $activities[$key]["user"]?("@".$activities[$key]["user"]["username"]):"@twake_bot",
+                    count($activities[$key]["objects"])),
+                $this->getUser()->getLanguage()
+            );
         }
 
         $response["data"] = $activities;
-
-        return new JsonResponse($response);
-    }
-    public function getActivitiesPreviewAction(Request $request)
-    {
-        $response = Array(
-            "errors" => Array(),
-            "data" => Array()
-        );
-
-        $workspace = $request->request->get("id",0);
-        $users = $this->get("app.workspace_members")->getMembers($workspace);
-
-        $activities = $this->get("app.workspaces_activities")->getWorkspaceActivityResumed($workspace,$users);
-        /* @var Translate $translator*/
-        $translator = $this->get("app.translate");
-
-        $res = [];
-
-        foreach ($activities as $activity){
-            $username =  $activity["user"]->getUsername();
-
-            foreach ($activity["app"] as $date => $dateData) {
-                foreach ($dateData as $appId => $appData) {
-                    foreach ($appData as $action => $objects) {
-                        $res[] = Array("text" => $translator->translate(new TranslationObject($translator, $action, $username, count($objects)), $this->getUser()->getLanguage()), "date" => $date);
-                    }
-                }
-            }
-        }
-
-        $response["data"] = $res;
 
         return new JsonResponse($response);
     }

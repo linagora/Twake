@@ -56,7 +56,7 @@ class WorkspacesActivities
         return $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace));
     }
 
-    public function getWorkspaceActivityResumed($workspace, $userIdsList){
+    public function getWorkspaceActivityResumed($workspace, $userIdsList, $limit=100, $offset=0){
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
         $users = [];
 
@@ -64,30 +64,55 @@ class WorkspacesActivities
             $users[] = $this->convertToEntity($user["user"],"TwakeUsersBundle:User");
         }
 
-        $resumed = Array();
+        /* @var WorkspaceActivity[] $activities */
+        $activities = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace), Array("id"=>"desc"), $limit, $offset);
 
-        foreach ($users as $user){
-            $userActivity = Array("user" => $user, "app" => []);
-            $activities = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace, "user" => $user));
+        // Get activity by unique user/app id
+        $activities_by_user_app = Array();
+        $last_date_by_user_app = Array();
+        foreach ($activities as $activity){
 
-            foreach ($activities as $activity){
-                /* @var WorkspaceActivity $activity*/
-                $activityDate = date_format($activity->getDateAdded(),"Y/m/d H");
-                if(!isset($userActivity["app"][$activityDate])){
-                    $userActivity["app"][$activityDate] = Array();
-                }
-                if(!isset($userActivity["app"][$activityDate][$activity->getApp()->getId()])){
-                    $userActivity["app"][$activityDate][$activity->getApp()->getId()] = Array();
-                }
-                if(!isset($userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()])){
-                    $userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()] = Array();
-                }
-                $userActivity["app"][$activityDate][$activity->getApp()->getId()][$activity->getTitle()][] = $this->convertToEntity($activity->getObjectId(),$activity->getObjectRepository());
+            $key = ($activity->getApp()?$activity->getApp()->getId():"")."_".($activity->getUser()?$activity->getUser()->getId():"");
+
+            if(!isset($activities_by_user_app[$key])){
+                $activities_by_user_app[$key] = Array();
+            }
+            $addToPrevious = false;
+            if(isset($last_date_by_user_app[$key]) && abs($activity->getDateAdded()->getTimestamp()-$last_date_by_user_app[$key])<20){
+                $addToPrevious = true;
+            }
+            if($addToPrevious) {
+                end($activities_by_user_app[$key]);
+                $end_pos = key($activities_by_user_app[$key]);
+                $activities_by_user_app[$key][$end_pos]["objects"][] = $this->convertToEntity($activity->getObjectId(),$activity->getObjectRepository())->getAsArrayFormated();
+            }else{
+                $activities_by_user_app[$key][] = Array(
+                    "user"=>($activity->getUser()?$activity->getUser()->getAsArray():null),
+                    "app"=>($activity->getApp()?$activity->getApp()->getAsSimpleArray():null),
+                    "date"=>$activity->getDateAdded()->getTimestamp(),
+                    "title"=>$activity->getTitle(),
+                    "objects"=>Array(
+                        $this->convertToEntity($activity->getObjectId(),$activity->getObjectRepository())->getAsArrayFormated()
+                    )
+                );
             }
 
-            $resumed[] = $userActivity;
+            $last_date_by_user_app[$key] = $activity->getDateAdded()->getTimestamp();
+
         }
 
+
+        $resumed = Array();
+        foreach ($activities_by_user_app as $grouped_activity){
+            $resumed = array_merge($resumed, $grouped_activity);
+        }
+
+        usort($resumed, "self::cmpResumed");
+
         return $resumed;
+    }
+
+    public static function cmpResumed($a, $b){
+        return $b["date"]-$a["date"];
     }
 }
