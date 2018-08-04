@@ -89,6 +89,11 @@ board_tasks_remove:
     defaults: { _controller: TwakeProjectBundle:Task:remove }
     methods: [POST]
 
+board_tasks_move:
+    path:     /tasks/move
+    defaults: { _controller: TwakeProjectBundle:Task:move }
+    methods: [POST]
+
 board_tasks_share:
     path:     /tasks/addUsers
     defaults: { _controller: TwakeProjectBundle:Task:addUsers }
@@ -98,43 +103,62 @@ board_tasks_unshare:
     path:     /tasks/removeUsers
     defaults: { _controller: TwakeProjectBundle:Task:removeUsers }
     methods: [POST]
+board_tasks_like:
+    path:     /tasks/like
+    defaults: { _controller: TwakeProjectBundle:Task:like }
+    methods: [POST]
 
 board_activitys_create:
-    path: /boardActivitys/create
+    path: /activities/create
     defaults: { _controller: TwakeProjectBundle:BoardActivity:create }
     methods: [POST]
 
 board_activitys_get:
-    path: /boardActivitys/get
+    path: /activities/get
     defaults: { _controller: TwakeProjectBundle:BoardActivity:get }
     methods: [POST]
 
 board_activitys_readAll:
-    path: /boardActivitys/readAll
+    path: /activities/readAll
     defaults: { _controller: TwakeProjectBundle:BoardActivity:readAll }
     methods: [POST]
 
 board_activitys_readOne:
-    path: /boardActivitys/readOne
+    path: /activities/readOne
     defaults: { _controller: TwakeProjectBundle:BoardActivity:readOne}
     methods: [POST]
 
 board_activitys_delete:
-    path: /boardActivitys/delete
+    path: /activities/delete
     defaults: { _controller: TwakeProjectBundle:BoardActivity:delete}
     methods: [POST]
 
 board_activitys_getActivityToDisplay:
-    path: /boardActivitys/getActivityToDisplay
+    path: /activities/getActivityToDisplay
     defaults: { _controller: TwakeProjectBundle:BoardActivity:getActivityToDisplay}
     methods: [POST]
 
 board_list_of_tasks_update:
-    path: /ListOfTasks/update
+    path: /lists/update
     defaults: { _controller: TwakeProjectBundle:ListOfTasks:update }
     methods: [POST]
 
 board_list_of_tasks_get:
-    path: /ListOfTasks/get
+    path: /lists/get
     defaults: { _controller: TwakeProjectBundle:ListOfTasks:get }
+    methods: [POST]
+
+board_list_of_tasks_remove:
+    path: /lists/remove
+    defaults: { _controller: TwakeProjectBundle:ListOfTasks:remove }
+    methods: [POST]
+
+board_list_of_tasks_move:
+    path: /lists/move
+    defaults: { _controller: TwakeProjectBundle:ListOfTasks:move }
+    methods: [POST]
+
+board_list_of_tasks_create:
+    path: /lists/create
+    defaults: { _controller: TwakeProjectBundle:ListOfTasks:create }
     methods: [POST]

@@ -32,6 +32,11 @@ class User extends BaseUser
 	 */
 	protected $banned = false;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default" : false } )
+     */
+    protected $isRobot;
+
 	/**
 	 * @ORM\Column(name="first_name", type="string", length=64)
 	 */
@@ -103,6 +108,7 @@ class User extends BaseUser
 		$this->enabled = true;
 		$this->connections = 0;
 		$this->connected = 1;
+		$this->isRobot = false;
 	}
 
 	/**
@@ -309,6 +315,7 @@ class User extends BaseUser
 		$preferences["dont_use_keywords"] = (isset($preferences["dont_use_keywords"]))?$preferences["dont_use_keywords"]:1;
 		$preferences["keywords"] = (isset($preferences["keywords"]))?$preferences["keywords"]:"";
         $preferences["disabled_workspaces"] = (isset($preferences["disabled_workspaces"]))?$preferences["disabled_workspaces"]:[];
+        $preferences["workspace"] = (isset($preferences["workspace"]))?$preferences["workspace"]:[];
 
 		return $preferences;
 	}
@@ -348,9 +355,26 @@ class User extends BaseUser
 			"thumbnail" => ($this->getThumbnail()==null)?null:$this->getThumbnail()->getPublicURL(2),
             "connected" => $this->isConnected(),
 			"language" => $this->getLanguage(),
-            "isNew" => $this->getisNew()
+            "isNew" => $this->getisNew(),
+            "isRobot" => $this->getisRobot()
 		);
 		return $return;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getisRobot()
+    {
+        return $this->isRobot;
+    }
+
+    /**
+     * @param mixed $isRobot
+     */
+    public function setIsRobot($isRobot)
+    {
+        $this->isRobot = $isRobot;
+    }
 
 }

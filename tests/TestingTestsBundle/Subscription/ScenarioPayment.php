@@ -13,13 +13,14 @@ use WebsiteApi\PaymentsBundle\Entity\GroupIdentity;
 use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
 use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;
 
+
 class ScenarioPayment {
 
     var $doctrine;
     var $fp;
     var $list_freq;
     var $group_id;
-    var $date_interval;
+    var $nb_months;
     var $services;
     var $subscription;
     var $day_over_cost;
@@ -27,21 +28,59 @@ class ScenarioPayment {
     var $auto_renew;
     var $pricing_plan;
     var $nb_total_users;
+    var $new_pricing_plan;
+    var $group;
+    var $events;
+    var $last_payment = 0;
+    var $cost = 0;
+    var $workspace_name;
+    var $group_name;
+    var $date_interval;
 
+    var $addUserCallback;
+    var $changePricingPlanCallback;
+    var $changeWithdrawalCallback;
+    var $callbackMap;
 
     /**
      * ScenarioPayment constructor.
      */
-    public function __construct($services, $user_mail, $pseudo, $password, $group_name, $workspace_name,$pricing_plan, $nb_total_users, $doctrine, $date_interval, $list_freq, $auto_withdrawal, $auto_renew){
+    public function __construct($services, $user_mail, $pseudo, $password, $group_name, $workspace_name,$pricing_plan,
+                                $nb_total_users, $doctrine, $nb_months,$list_freq, $auto_withdrawal, $auto_renew,
+                                $events){
         $this->list_freq = $list_freq;
-        $this->date_interval = $date_interval;
+        $this->nb_months = $nb_months;
         $this->services = $services;
         $this->doctrine = $doctrine;
         $this->workspace_name = $workspace_name;
+        $this->group_name = $group_name;
         $this->auto_renew = $auto_renew;
         $this->auto_withdrawal = $auto_withdrawal;
         $this->pricing_plan = $pricing_plan;
         $this->nb_total_users = $nb_total_users;
+        $this->events = $events;
+        $this->date_interval = new \DateInterval("P30D");
+
+        //tous les callback
+        $this->addUserCallback = function(ScenarioPayment $scenario, $data){
+            static $i = 0;
+            $scenario->addUserToList("ben".$i."@gmail.com", "Ben".$i, "ben", $data);
+            $i++;
+        };
+        $this->changePricingPlanCallback = function (ScenarioPayment $scenario, $data){
+            $balance = $data->getMonthPrice()*$this->nb_total_users;
+            $this->services->myGet("app.subscription_manager")->renew($this->group, $data, $balance, new \DateTime('now'), $scenario->subscription->getEndDate(), $this->auto_withdrawal, $this->auto_renew, $balance, true);
+
+        };
+        $this->changeWithdrawalCallback = function (ScenarioPayment $scenario, $data){
+            $this->services->myGet("app.subscription_system")->setAutoWithdrawal($scenario->group, $data);
+        };
+        $this->changeRenewCallback = function (ScenarioPayment $scenario, $data){
+            $this->services->myGet("app.subscription_system")->setAutoRenew($scenario->group, $data);
+        };
+        $this->changeFrequenceCallback = function (ScenarioPayment $scenario, $data){
+            $this->changeFreq($data[0],$data[1]);
+        };
 
         //Création user
         $pricing_plan_id = $pricing_plan->getId();
@@ -50,48 +89,79 @@ class ScenarioPayment {
 
         //Création group
         $uniquename = $this->services->myGet("app.string_cleaner")->simplify($group_name);
-        $group = $this->services->myGet("app.groups")->create($user->getId(), $group_name, $uniquename, $pricing_plan_id);
-        $group_identity = new GroupIdentity($group, "twakeapp", "twakeapp", "damien.vantourout@telecomnancy.net", "06 06 49 36 81");
+        $this->group = $this->services->myGet("app.groups")->create($user->getId(), $group_name, $uniquename, $pricing_plan_id);
+        $group_identity = new GroupIdentity($this->group, "twakeapp", "twakeapp", "damien.vantourout@telecomnancy.net", "06 06 49 36 81");
         $this->doctrine->persist($group_identity);
         $this->doctrine->flush();
 
         //Création workspace
-        $this->group_id = $group->getId();
+        $this->group_id = $this->group->getId();
         $this->services->myGet("app.workspaces")->create($workspace_name, $this->group_id, $user->getId());
         $balance = $pricing_plan->getMonthPrice()*$nb_total_users;
-
-        //Création abonnement
-        $end_date =  (new \DateTime('now'))->sub(($this->date_interval));
-        $start_date = (new \DateTime('now'))->sub(($this->date_interval));
-        $this->subscription = $this->services->myGet("app.subscription_manager")->newSubscription($group,$pricing_plan,
-            $balance,$start_date->sub(($this->date_interval)), $end_date, $auto_withdrawal, $auto_renew, $balance);
 
         //Ajout autres utilisateurs au groupe
         for($i=1;$i<$nb_total_users;$i++){
             $this->addMember($i."benoit.tallandier@telecomnancy.net", $i."Benoit", "lulu", $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("name" => $this->workspace_name)));
         }
+
+        //Création abonnement
+        $end_date =  (new \DateTime('now'))->sub(($this->date_interval));
+        $start_date = (new \DateTime('now'))->sub(($this->date_interval));
+        $this->subscription = $this->services->myGet("app.subscription_manager")->newSubscription($this->group,$pricing_plan,
+            $balance,$start_date->sub(($this->date_interval)), $end_date, $auto_withdrawal, $auto_renew, $balance);
+
+        //
+        $this->callbackMap=[];
+        $this->callbackMap["addUser"] = $this->addUserCallback;
+        $this->callbackMap["changePricingPlan"] = $this->changePricingPlanCallback;
+        $this->callbackMap["changeWithdrawal"] = $this->changeWithdrawalCallback;
+        $this->callbackMap["changeRenew"] = $this->changeRenewCallback;
+        $this->callbackMap["changeFrequence"] = $this->changeFrequenceCallback;
     }
 
 
     public function exec(){
-        $this->fp = fopen('file.csv', 'w');
+        for ($i=0; $i<$this->nb_months;$i++) {
+            if ($i == 0) {
+                $this->execMonthly();
+            }else{
+                $this->execMonthly('a');
+            }
+        }
+    }
+
+    public function execMonthly($mode='w'){
+        $now = date_format(new \DateTime('now'), 'Y-m-d');
+        $endDate = $this->subscription->getEndDate();
+        $startDate = $this->subscription->getStartDate();
+        if (date_format($endDate, 'Y-m-d') == $now){
+            $this->subscription = $this->services->myGet("app.subscription_system")->get($this->group);
+            $this->subscription->setEndDate($endDate->sub($this->date_interval));
+            $this->subscription->setStartDate($startDate->sub($this->date_interval));
+            $this->doctrine->persist($this->subscription);
+            $this->doctrine->flush();
+        }
+
+        $this->fp = fopen('file.csv', $mode);
+
+        $estimation_scenario = array();
+        $estimation_scenario = $this->estimation();
+        fputcsv($this->fp,$estimation_scenario);
+
+        fputcsv($this->fp,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not",
+            "overCost", "balance", "balance_consumed", "expected_cost", "is_blocked","lock_date", "id_facture","cost"));
+        fclose($this->fp);
         $csv = array();
-        array_push($csv,array("day","current_cost","estimated_cost","check_end_period","overusing_or_not",
-            "overCost", "balance", "balance_consumed", "expected_cost", "is_blocked","lock_date"));
-
         $days = $this->date_interval->d;
-
-        for ($i = 1; $i <= $days; $i++)
+        for ($i = 1; $i <= $days; $i++) {
             $csv = $this->DayByDayScenario($this->list_freq, $i, $this->group_id, $csv);
+        }
 
         $this->EndScenario($this->fp,$csv);
 
-        fclose($this->fp);
     }
 
-
-
-    public function DayByDayScenario($list, $day, $group_id, $csv){
+    private function increaseConnectionsPeriodForAllUsers($list,$day){
         for ($i = 0; $i < count($list); $i++) {
             $group = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser")->findOneBy(Array("user" => $i + 1));
             if ($group == null)
@@ -101,12 +171,10 @@ class ScenarioPayment {
                 $this->doctrine->persist($group);
             }
         }
+    }
 
-        //Ajout d'un utilisateur tous les jours
-        //$this->addUserToList($day."romaric.t"."@twakeapp.com",$day."romaric",$day."blabla",1);
-
+    public function forwardOneDay($gp){
         //Group_period
-        $gp = $this->services->myGet("app.subscription_system")->getGroupPeriod($group_id);
 
         //Décale date de début de group_period
         $startAt = $gp->getPeriodStartedAt();
@@ -134,20 +202,47 @@ class ScenarioPayment {
 
         $this->doctrine->flush();
 
-        $gp_saved = null;
-        if($periodExpectedToEndAt->format('d') === (new \DateTime('now'))->format('d')){
-            $gp_saved = clone $gp;
-        }
+        return [$endDate,$periodExpectedToEndAt];
+    }
 
+    public function cronExec($group_id){
         //Récupère end_period et code de overusing
         $this->services->myGet("app.pricing_plan")->dailyDataGroupUser();
         $this->services->myGet("app.pricing_plan")->groupPeriodUsage();
         $checkEndPeriodByGroup = $this->services->myGet("app.subscription_manager")->checkEndPeriodByGroup($group_id);
         $checkOverusingByGroup = $this->services->myGet("app.subscription_manager")->checkOverusingByGroup($group_id);
         $this->services->myGet("app.subscription_manager")->checkLocked();
+        return [$checkEndPeriodByGroup, $checkOverusingByGroup];
+    }
 
-        $closed_gp = $this->doctrine->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod")->findOneBy(Array("group" => $group_id));
-        /*if ($gp_saved != null){
+    public function DayByDayScenario($list, $day, $group_id, $csv){
+        $this->increaseConnectionsPeriodForAllUsers($list,$day);
+
+
+        if(isset($this->events[$day])){
+            foreach ($this->events[$day]["callback"] as $key => $callback){
+                ($this->callbackMap[$callback])($this,$this->events[$day]["data"][$key]);
+            }
+        }
+
+        $gp = $this->services->myGet("app.subscription_system")->getGroupPeriod($group_id);
+
+        $a = $this->forwardOneDay($gp);
+        $endDate = $a[0];
+        $periodExpectedToEndAt = $a[1];
+
+        $gp_saved = null;
+        if($periodExpectedToEndAt->format('d') === (new \DateTime('now'))->format('d')){
+            $gp_saved = clone $gp;
+        }
+
+        $a = $this->cronExec($group_id);
+
+        $checkEndPeriodByGroup = $a[0];
+        $checkOverusingByGroup = $a[1];
+
+        /*$closed_gp = $this->doctrine->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod")->findOneBy(Array("group" => $group_id));
+        if ($gp_saved != null){
             //var_dump($gp_saved);
             //var_dump("Attention le suivant arrive");
             //var_dump($closed_gp);
@@ -192,19 +287,36 @@ class ScenarioPayment {
         $balance = $subcription2->getBalance();
         $balance_consumed = $this->services->myGet("app.subscription_system")->getCorrectBalanceConsumed($group_id);
 
-        //en cas de prélèvement non automatisé et de gros dépassement : paiement 5 jours après
-        if($checkOverusingByGroup == 9){
+        //en cas de prélèvement automatisé et de gros dépassement : paiement 5 jours après
+        /*if($checkOverusingByGroup == 9){
             $this->day_over_cost = $day;
         }
         if (($this->day_over_cost +5) == $day){
             $this->services->myGet("app.subscription_manager")->payOverCost($group_id, $this->subscription);
+        }*/
+
+        //Affiche id et prix de la facture dans le csv
+        $id = $this->doctrine->getRepository("TwakePaymentsBundle:Receipt")->findOneBy(Array(),Array("id"=>"DESC"));
+        $cost = $id->getGroupPricingInstance()->getCost();
+        $id = $id->getId();
+        if ($id > $this->last_payment){
+            $this->last_payment = $id;
+            $this->cost = $cost;
+
+            //ajout au csv
+            $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup,
+                $overCost, $balance, $balance_consumed, $gp_expected_cost, $is_blocked, $lock_date, $this->last_payment, $this->cost);
+
+        }else {
+            //ajout au csv
+            $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup,
+                $overCost, $balance, $balance_consumed, $gp_expected_cost, $is_blocked, $lock_date);
+
         }
 
-
-        //ajout au csv
-        $line_csv = array($day, $gp_current_cost, $gp_estimated_cost,$checkEndPeriodByGroup,$checkOverusingByGroup,
-            $overCost, $balance, $balance_consumed, $gp_expected_cost, $is_blocked, $lock_date);
-        array_push($csv,$line_csv);
+        $this->fp = fopen('file.csv', 'a');
+        fputcsv($this->fp, $line_csv);
+        fclose($this->fp);
 
 
         $this->doctrine->flush();
@@ -212,14 +324,9 @@ class ScenarioPayment {
     }
 
 
-    public function EndScenario($fp, $csv){
+    public function EndScenario($csv){
         $this->services->myGet("app.pricing_plan")->dailyDataGroupUser();
         $this->services->myGet("app.pricing_plan")->groupPeriodUsage();
-
-        foreach ($csv as $item) {
-            fputcsv($fp, $item);
-        }
-
     }
 
     public function addMember($user_mail, $pseudo, $password, $workspace_id){
@@ -239,7 +346,139 @@ class ScenarioPayment {
         $this->addMember($user_mail, $pseudo, $password, $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("name" => $this->workspace_name)));
         array_push($this->list_freq,$freq);
         $this->nb_total_users = $this->nb_total_users + 1;
+    }
 
+
+
+
+    public function estimation(){
+        $list = $this->list_freq;
+        $nb_users = count($list);
+        $pricing_plan = $this->pricing_plan;
+        $price_monthly = $pricing_plan->getMonthPrice();
+        $price_yearly = $pricing_plan->getYearPrice();
+        $group_name = $this->group_name;
+
+        //renouvellement automatique ou non
+        $renew_init = $this->auto_renew;
+        $renew = $this->auto_renew;
+
+        //prélèvement automatique ou non
+        $withdraw_init = $this->auto_withdrawal;
+        $withdraw = $this->auto_withdrawal;
+
+        //estimation du prix mensuel et annuel au moment de l'inscription
+        $price_monthly_for_all = $price_monthly * $nb_users;
+        $price_yearly_for_all = $price_yearly * $nb_users;
+
+        //on récupère les events
+        $events = $this->events;
+        $addUsers = Array();
+        $changeFrequence = Array();
+        $changePricingPlan = Array();
+        $changeWithdraw = Array();
+        $changeRenew = Array();
+        foreach ($events as $i => $event){
+            for ($k=0;$k<count($events[$i]["callback"]);$k++){
+                if($events[$i]["callback"][$k] == "addUser"){
+                    $addUsers[$i] = $events[$i]["data"];
+                }
+                if($events[$i]["callback"][$k] == "changeFrequence"){
+                    $changeFrequence[$i] = $events[$i]["data"];
+                }
+                if($events[$i]["callback"][$k] == "changePricingPlan"){
+                    $changePricingPlan[$i] = $events[$i]["data"];
+                }
+                if($events[$i]["callback"][$k] == "changeRenew"){
+                    $changeRenew = $events[$i]["data"];
+                }
+                if($events[$i]["callback"][$k] == "changeWithdrawal") {
+                    $changeWithdraw = $events[$i]["data"];
+                }
+            }
+        }
+
+        //on change les valeurs de fréquence dans la liste
+        foreach ($changeFrequence as $i => $item){
+            for ($l=0; $l<count($item);$l++){
+                $freq = $item[$l][0];
+                $id_user = $item[$l][1];
+                $list[$id_user] = $freq;
+            }
+        }
+
+        //on compte le nombre d'utilisateurs total, partiel et autre
+        $user_total = 0;
+        $user_partial = 0;
+        $other = 0;
+        for ($j=0;$j<count($list);$j++){
+            if ($list[$j] == 1 || $list[$j] == 2){
+                $user_total ++;
+            }else if ($list[$j] == 0){
+                $other++;
+            }else{
+                $user_partial++;
+            }
+        }
+
+        //on regarde si les utilisateurs ajoutés sont des utilisateurs total, partiels ou autres
+        foreach ($addUsers as $i => $addUser){
+            for ($k=0;$k<count($addUser);$k++) {
+                $freq = (30-$i)/$addUser[$k];
+                if ($freq>10){
+                    $user_total++;
+                }else if ($freq == 0){
+                    $other++;
+                }else{
+                    $user_partial++;
+                }
+            }
+        }
+
+        //changement de pricing plan
+        foreach ($changePricingPlan as $i =>$item) {
+            for ($k=0;$k<count($item);$k++) {
+                $price_monthly = $item[$k]->getMonthPrice();
+                $price_yearly = $item[$k]->getYearPrice();
+            }
+        }
+
+        //changement sur le renouvellement
+        foreach ($changeRenew as $i => $item){
+            for ($l=0; $l<count($item);$l++) {
+                $renew = $item;
+            }
+        }
+
+        //changement sur le prélèvement
+        foreach ($changeWithdraw as $i => $item){
+            for ($l=0; $l<count($item);$l++) {
+                $withdraw = $item;
+            }
+        }
+
+        $balance_consummed_end_month = $user_total * $price_monthly + $user_partial * 0.5 * $price_monthly;
+        $balance_consummed_end_year = $user_total * $price_yearly + $user_partial * 0.5 * $price_yearly;
+
+        //renouvellement
+        if ($renew_init){
+            $renew_for_csv = "auto renew";
+        }else{
+            $renew_for_csv = "no auto renew";
+        }
+
+        //prélèvement
+        if ($withdraw_init){
+            $withdraw_for_csv = "auto withdraw";
+        }else{
+            $withdraw_for_csv = "no auto withdraw";
+        }
+
+        $estimation_scenario = array("Group name",$group_name,"first price monthly", $price_monthly_for_all, "first price yearly", $price_yearly_for_all,
+            $renew_for_csv,$withdraw_for_csv, "nb users total", $user_total, "nb users partial", $user_partial, "other users",
+            $other,"balance consummed end of month",$balance_consummed_end_month,"balance consummed end of year",$balance_consummed_end_year);
+
+        return $estimation_scenario;
     }
 
 }

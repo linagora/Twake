@@ -93,4 +93,20 @@ class ObjectLinksController extends Controller
 
     }
 
+    public function deleteLinkedObjectsAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $id = $request->request->get("id");
+        $type = $request->request->get("type");
+        $linkedIdsToDelete = $request->request->get("linkedIdsToDelete");
+        $linkedIdsType = $request->request->get("linkedIdsType");
+
+        $data["data"] = $this->get("app.objectLinks")->deleteLinkedObjects($id,$type,$linkedIdsToDelete, $linkedIdsType);
+
+        return new JsonResponse($data);
+    }
+
 }

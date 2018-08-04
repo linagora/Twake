@@ -220,6 +220,8 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     public function checkEndPeriodByGroup($group)
     {
         $dateInterval = $this->subscriptionSystem->getEndPeriodTimeLeft($group);
+        //var_dump("date interval");
+        //var_dump($dateInterval);
         if ($dateInterval->m == 2 && $dateInterval->y == 0 && $dateInterval->d == 0){
             //var_dump("mail 2 month");
             $this->mailSender->sendEndPeriodsMail($group,"2 month");
@@ -245,7 +247,6 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         }
         else if ($dateInterval->m == 0 && $dateInterval->y == 0 && $dateInterval->d == 1)
         {
-            //var_dump("mail 1 days");
             $this->mailSender->sendEndPeriodsMail($group,"1 day");
             return 7;
         }
@@ -255,7 +256,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
                 $endDate = new \DateTime();
                 $dateInterval = $this->subscriptionSystem->getEndDate($group)->diff($this->subscriptionSystem->getStartDate($group));
                 $endDate->add($dateInterval);
-                $cost = $sub->getSubscribedBalance()+$this->subscriptionSystem->getRemainingBalance($group);
+                $cost = $sub->getSubscribedBalance()+$this->subscriptionSystem->getOverCost($group);
                 //var_dump("auto renew");
                 return 13 + $this->renew($group, $sub->getPricingPlan(), $sub->getSubscribedBalance(), new \DateTime(), $endDate, $sub->getAutoWithdrawal(), $sub->getAutoRenew(), $cost, false);
             } else {

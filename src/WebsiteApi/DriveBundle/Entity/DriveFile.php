@@ -544,6 +544,40 @@ class DriveFile implements ObjectLinksInterface
             "title" => "File",
             "object_name" => $this->getName(),
             "key" => "drive",
+            "type" => "file",
+            "code" => "twake/".$this->getParent()."/".$this->getId(),
         );
+    }
+
+    public function synchroniseField($fieldName, $value)
+    {
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $setter = "set".ucfirst($fieldName);
+        $this->$setter($value);
+        return true;
+    }
+
+    public function get($fieldName){
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $getter = "get".ucfirst($fieldName);
+
+        return $this->$getter();
+    }
+
+    public function getPushRoute()
+    {
+        return "drive/".$this->getId();
+    }
+
+    /**
+     * @param mixed $group
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
     }
 }

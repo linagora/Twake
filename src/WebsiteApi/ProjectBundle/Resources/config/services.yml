@@ -2,11 +2,11 @@ services:
 
     app.board_tasks:
         class: WebsiteApi\ProjectBundle\Services\BoardTasks
-        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels', '@app.notifications','@app.boardActivity' ]
+        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels', '@app.notifications','@app.boardActivity', '@app.objectLinks','@app.workspaces_activities' ]
 
     app.boards:
         class: WebsiteApi\ProjectBundle\Services\Boards
-        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels']
+        arguments: ["@doctrine.orm.entity_manager", '@app.pusher', '@app.workspace_levels','@app.boardActivity', '@app.list_of_tasks_service']
 
     board.topic:
         class: WebsiteApi\ProjectBundle\Topic\BoardTopic

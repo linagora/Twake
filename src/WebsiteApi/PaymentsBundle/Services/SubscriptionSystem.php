@@ -45,6 +45,12 @@ class SubscriptionSystem implements SubscriptionInterface
         return $subscription;
     }
 
+    public function getAll(){
+        $subscriptionRepo = $this->doctrine->getRepository("TwakePaymentsBundle:Subscription");
+
+        return $subscriptionRepo->findBy(array(), array('startDate' => 'DESC'));
+    }
+
     public function getStartDate($group){
         $sub = $this->get($group);
 
@@ -70,6 +76,34 @@ class SubscriptionSystem implements SubscriptionInterface
 
         if($sub)
             return $sub->getAutoWithdrawal();
+
+        throw new SubscriptionNotFound();
+    }
+
+    public function setAutoWithdrawal($group, $autoWithdrawal)
+    {
+        $sub = $this->get($group);
+
+        if($sub) {
+            $sub->setAutoWithdrawal($autoWithdrawal);
+            $this->doctrine->persist($sub);
+            $this->doctrine->flush();
+            return ;
+        }
+
+        throw new SubscriptionNotFound();
+    }
+
+    public function setAutoRenew($group, $autoRenew)
+    {
+        $sub = $this->get($group);
+
+        if($sub) {
+            $sub->setAutoRenew($autoRenew);
+            $this->doctrine->persist($sub);
+            $this->doctrine->flush();
+            return ;
+        }
 
         throw new SubscriptionNotFound();
     }
@@ -238,7 +272,7 @@ class SubscriptionSystem implements SubscriptionInterface
         if($delta===false)
             throw new GroupNotFoundExecption();
 
-        if($delta>=0)
+        if($delta>0)
             return false;
 
         $delta *= -1;
@@ -271,7 +305,8 @@ class SubscriptionSystem implements SubscriptionInterface
     public function getEndPeriodTimeLeft($group)
     {
         $sub = $this->get($group);
-
+        //var_dump("getEndPeriod");
+        //var_dump($sub->getEndDate());
         return $sub->getEndDate()->diff(new \DateTime());
     }
 }

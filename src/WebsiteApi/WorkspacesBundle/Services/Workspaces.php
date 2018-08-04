@@ -22,8 +22,10 @@ class Workspaces implements WorkspacesInterface
     private $pricing;
     private $string_cleaner;
     private $pusher;
+    /* @var WorkspacesActivities $workspacesActivities*/
+    var $workspacesActivities;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $groups_service, $priceService, $cleaner, $pusher)
+    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $groups_service, $priceService, $cleaner, $pusher,$workspacesActivities)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -35,6 +37,7 @@ class Workspaces implements WorkspacesInterface
         $this->pricing = $priceService;
         $this->string_cleaner = $cleaner;
         $this->pusher = $pusher;
+        $this->workspacesActivities = $workspacesActivities;
     }
 
     public function getPrivate($userId = null)
@@ -141,11 +144,11 @@ class Workspaces implements WorkspacesInterface
         // Create stream
         $streamGeneral = new Stream($workspace, "General", false, "This is the general stream");
         $streamGeneral->setType("stream");
-        $streamRandom = new Stream($workspace, "Random", false, "This is the random stream");
-        $streamRandom->setType("stream");
+        //$streamRandom = new Stream($workspace, "Random", false, "This is the random stream");
+        //$streamRandom->setType("stream");
 
         $this->doctrine->persist($streamGeneral);
-        $this->doctrine->persist($streamRandom);
+        //$this->doctrine->persist($streamRandom);
 
         //Create admin level
         $level = new WorkspaceLevel();
@@ -162,6 +165,10 @@ class Workspaces implements WorkspacesInterface
         if ($userId != null) {
             $this->wms->addMember($workspace->getId(), $userId, false, $level->getId());
         }
+
+        //Add twake_bot
+        $twakebotId = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "twake_bot"))->getId();
+        $this->wms->addMember($workspace->getId(), $twakebotId, false, $level->getId());
 
         $this->ws->create($workspace); //Create workspace stat element
 
@@ -237,6 +244,7 @@ class Workspaces implements WorkspacesInterface
                 )
             );
             $this->pusher->push($datatopush, "group/" . $workspace->getId());
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.rename","TwakeWorkspacesBundle:Workspace", $workspaceId);
 
             return true;
         }
@@ -269,6 +277,7 @@ class Workspaces implements WorkspacesInterface
                 )
             );
             $this->pusher->push($datatopush, "group/" . $workspace->getId());
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.change_logo","TwakeWorkspacesBundle:Workspace", $workspaceId);
 
             return true;
         }
@@ -306,6 +315,7 @@ class Workspaces implements WorkspacesInterface
                     "workspaceId" => $workspace->getId(),
                 )
             );
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.change_wallpaper","TwakeWorkspacesBundle:Workspace", $workspaceId);
             $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
             return true;
@@ -412,6 +422,7 @@ class Workspaces implements WorkspacesInterface
 
             if ($isDeleted == false && $isArchived == false){
                 $workspace->setIsArchived(true);
+                $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.archive","TwakeWorkspacesBundle:Workspace", $workspaceId);
             }
 
             $this->doctrine->persist($workspace);
@@ -447,6 +458,7 @@ class Workspaces implements WorkspacesInterface
 
             if ($isDeleted == false && $isArchived == true){
                 $workspace->setIsArchived(false);
+                $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.unarchive","TwakeWorkspacesBundle:Workspace", $workspaceId);
             }
 
             $this->doctrine->persist($workspace);

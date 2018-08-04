@@ -371,13 +371,16 @@ class DiscussionController extends Controller
         $subjectId = $request->request->get("subjectId",null);
         $respondTo = $request->request->get("respondTo",null);
         $workspaceId = $request->request->get("workspaceId",null);
+        $objectLink = $request->request->get("objectLinkName",false);
 
         /* @var MessageSystem $messageSystem */
 
         $messageSystem = $this->get("app.messages");
-        $res = $messageSystem->makeCall($streamId,$subjectId,$workspaceId,$this->getUser(),$respondTo);
+        $res = $messageSystem->makeCall($streamId,$subjectId,$workspaceId,$this->getUser(),$respondTo, $objectLink);
         if(!$res)
             $data["errors"][] = "Fail to make a call";
+        else if($objectLink)
+            $data["data"][] = $res->getAsArray();
         else
             $data["data"][] = "success";
 

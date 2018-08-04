@@ -73,6 +73,26 @@ class UsersAccountController extends Controller
 
 	}
 
+	public function updateNotificationPreferenceByWorkspaceAction(Request $request){
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $workspaceId = $request->request->get("workspaceId", 0);
+        $appNotif = $request->request->get("appNotification", Array());
+
+        $res = $this->get("app.user")->updateNotificationPreferenceByWorkspace($workspaceId,$appNotif,$this->getUser());
+
+        if($res){
+            $data["data"] = "success";
+        }else{
+            $data["error"][]  = "error";
+        }
+
+        return new JsonResponse($data);
+    }
+
 	public function setIdentityAction(Request $request)
 	{
 

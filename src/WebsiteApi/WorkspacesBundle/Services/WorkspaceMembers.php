@@ -18,8 +18,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
     private $pricing;
     private $messages;
     private $calendar;
+    /* @var WorkspacesActivities $workspacesActivities*/
+    var $workspacesActivities;
 
-    public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner, $pusher, $priceService, $messages, $calendar)
+    public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner, $pusher, $priceService, $messages, $calendar,$workspacesActivities)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -29,6 +31,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         $this->pricing = $priceService;
         $this->messages = $messages;
         $this->calendar = $calendar;
+        $this->workspacesActivities = $workspacesActivities;
     }
 
     public function changeLevel($workspaceId, $userId, $levelId, $currentUserId = null)
@@ -284,6 +287,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             }
 
 
+            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.add_member","TwakeUsersBundle:User", $user->getId());
             $this->messages->addWorkspaceMember($workspace, $user);
             $this->calendar->addWorkspaceMember($workspace, $user);
 

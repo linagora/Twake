@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\CalendarBundle\Entity;
 
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
@@ -108,6 +109,12 @@ class CalendarEvent implements ObjectLinksInterface {
     public function setFrom($from)
     {
         $this->from = $from;
+        $event = $this->getEvent();
+        $date = new DateTime();
+        $date->setTimestamp($from);
+        $event["from"] = $from;
+        $event["start"] = $date;
+        $this->setEvent($event);
     }
 
     /**
@@ -124,6 +131,12 @@ class CalendarEvent implements ObjectLinksInterface {
     public function setTo($to)
     {
         $this->to = $to;
+        $event = $this->getEvent();
+        $date = new DateTime();
+        $date->setTimestamp($to);
+        $event["to"] = $to;
+        $event["end"] = $date;
+        $this->setEvent($event);
     }
 
     /**
@@ -193,6 +206,16 @@ class CalendarEvent implements ObjectLinksInterface {
             "participant" => $this->getParticipant(),
         );
     }
+    public function getAsArrayMinimal()
+    {
+        $completEvent = $this->getEvent();
+        $event = Array("from" => $completEvent["from"], "to" => $completEvent["to"], "start" => $completEvent["start"], "end" => $completEvent["end"]);
+        return Array(
+            "id" => $this->getId(),
+            "calendar" => $this->getCalendar()->getId(),
+            "event" => $event,
+        );
+    }
 
     public function getRepository(){
         return "TwakeCalendarBundle:CalendarEvent";
@@ -204,6 +227,35 @@ class CalendarEvent implements ObjectLinksInterface {
             "title" => "Event",
             "object_name" => $this->getEvent()["title"],
             "key" => "calendar",
+            "type" => "event",
+            "code" => $this->getFrom()."/".$this->getId(),
         );
     }
+
+
+    public function synchroniseField($fieldName, $value)
+    {
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $setter = "set".ucfirst($fieldName);
+        $this->$setter($value);
+
+        return true;
+    }
+
+    public function get($fieldName){
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $getter = "get".ucfirst($fieldName);
+
+        return $this->$getter();
+    }
+
+    public function getPushRoute()
+    {
+        return "calendar/".$this->getId();
+    }
+
 }

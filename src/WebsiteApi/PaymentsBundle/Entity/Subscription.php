@@ -287,7 +287,8 @@ class Subscription
             "balance" => $this->getBalance(),
             "balanceConsumed" => $this->getBalanceConsumed(),
             "autoRenew" => $this->getAutoRenew(),
-            "autoWithdrawable" => $this->getAutoWithdrawal()
+            "autoWithdrawable" => $this->getAutoWithdrawal(),
+            "archived" => $this->getArchived()
         );
     }
 

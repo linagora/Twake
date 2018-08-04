@@ -51,8 +51,15 @@ class CalendarController extends Controller
         $workspaceId = $request->request->get("workspaceId");
         $label = $request->request->get("name");
         $color = $request->request->get("color");
+        $icsLink = $request->request->get("icsLink", null);
 
-        $data['data'] = $this->get("app.calendars")->createCalendar($workspaceId, $label, $color, $this->getUser()->getId());
+        if($icsLink)
+            $data['data'] = $this->get("app.export_import")->importCalendarByLink($workspaceId, $icsLink, null, $this->getUser()->getId());
+        else
+            $data['data'] = $this->get("app.calendars")->createCalendar($workspaceId, $label, $color, $this->getUser()->getId(), $icsLink);
+
+        if($data['data'])
+            $data['data'] = $data['data']->getAsArray();
 
         return new JsonResponse($data);
     }
@@ -71,6 +78,9 @@ class CalendarController extends Controller
         $autoParticipant = $request->get("autoParticipate");
 
         $data['data'] = $this->get("app.calendars")->updateCalendar($workspaceId, $calendarId, $label, $color, $this->getUser(), $autoParticipant);
+
+        if($data['data'])
+            $data['data'] = $data['data']->getAsArray();
 
         return new JsonResponse($data);
     }
@@ -172,7 +182,7 @@ class CalendarController extends Controller
         return $this->get("app.export_import")->generateIcsFileForCalendarFromToken($token);
     }
 
-    public function getCalendarExportTokenAction(Request $request, $workspaceId, $calendarsIds, $useMine, $from, $to){
+    public function getCalendarExportTokenAction(Request $request, $workspaceId, $calendarId, $useMine, $from, $to){
         $data = Array(
             'errors' => Array()
         );
@@ -186,7 +196,7 @@ class CalendarController extends Controller
         $from = ($from>=(strtotime('-1 year', (new \DateTime())->getTimestamp())) && $from <=strtotime('-1 year', (new \DateTime())->getTimestamp())) ? $from : (new \DateTime())->getTimestamp();
         $to = ($to<=(strtotime('-1 year', (new \DateTime())->getTimestamp())) && $to>=strtotime('+1 year', (new \DateTime())->getTimestamp())) ? $to : strtotime('+1 year', (new \DateTime())->getTimestamp()) ;
 
-        $token = $this->get("app.export_import")->generateCalendarExportToken($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id);
+        $token = $this->get("app.export_import")->generateCalendarExportToken($workspaceId,$calendarId,$useMine,$from,$to, $user_id);
 
         $data["data"] = $token;
 

@@ -45,26 +45,26 @@ twake_drive_search:
 twake_drive_upload:
     path:     /upload
     defaults: { _controller: TwakeDriveBundle:Files:upload }
-    methods: [POST]
-
-twake_drive_upload:
-    path:     /download
-    defaults: { _controller: TwakeDriveBundle:Files:download }
-    methods: [GET]
+    methods: [POST, GET]
 
 twake_drive_move:
     path:     /move
     defaults: { _controller: TwakeDriveBundle:Files:move }
     methods: [POST]
 
-twake_drive_copy:
-    path:     /copy
-    defaults: { _controller: TwakeDriveBundle:Files:copy }
+twake_drive_move_detached_file:
+    path:     /movemoveDetachedFileToDrive
+    defaults: { _controller: TwakeDriveBundle:Files:moveDetachedFileToDrive }
     methods: [POST]
 
 twake_drive_rename:
     path:     /rename
     defaults: { _controller: TwakeDriveBundle:Files:rename }
+    methods: [POST]
+
+twake_drive_change_default_web_app:
+    path:     /changeDefaultWebApp
+    defaults: { _controller: TwakeDriveBundle:Files:changeDefaultWebApp }
     methods: [POST]
 
 twake_drive_getshared:

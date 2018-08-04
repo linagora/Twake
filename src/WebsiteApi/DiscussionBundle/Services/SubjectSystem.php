@@ -8,6 +8,10 @@ use WebsiteApi\DiscussionBundle\Entity\Stream;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use WebsiteApi\DiscussionBundle\Entity\Subject;
+use WebsiteApi\MarketBundle\Services\MarketApplication;
+use WebsiteApi\ObjectLinksBundle\Entity\ObjectLinks;
+use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
+use WebsiteApi\ObjectLinksBundle\Services\ObjectLinksSystem;
 
 /**
  * Manage subject
@@ -19,9 +23,14 @@ class SubjectSystem
     var $security;
     var $pusher;
     var $levelManager;
+    /* @var MessageSystem $messageSystem */
     var $messageSystem;
+    /* @var ObjectLinksSystem $objectLinkSystem*/
+    var $objectLinkSystem;
+    /* @var MarketApplication $applicationManager */
+    var $applicationManager;
 
-    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $levelManager,$messageSystem)
+    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $levelManager,$messageSystem, $objectLinkSystem, $applicationManager)
     {
         $this->string_cleaner = $string_cleaner;
         $this->doctrine = $doctrine;
@@ -29,6 +38,8 @@ class SubjectSystem
         $this->pusher = $pusher;
         $this->levelManager = $levelManager;
         $this->messageSystem = $messageSystem;
+        $this->objectLinkSystem = $objectLinkSystem;
+        $this->applicationManager = $applicationManager;
     }
 
 
@@ -43,6 +54,45 @@ class SubjectSystem
                 return $subject;
             }
         }
+        return false;
+    }
+
+    public function createSubjectWithObjectLink($name,$streamKey,$user, $objectLinkId, $objectLinkType, $workspace)
+    {
+        /* @var Stream $stream*/
+        $stream = $this->messageSystem->getStream($streamKey, $user->getId());
+        /* @var ObjectLinksInterface $objectLink */
+        $objectLink = $this->doctrine->getRepository(ObjectLinkSystem::$keyMap[$objectLinkType])->findOneBy(Array("id" => $objectLinkId));
+
+        $workspace = $this->doctrine->getRepository("TwakeWorkspaceBundle:Workspace")->findOneBy(Array("id" => $workspace));
+
+        if ($stream == null) {
+            $streamObj = new Stream($workspace, $objectLink->getAsArrayFormated()["object_name"], false, "");
+            $streamObj->setIsHide(true);
+            $stream = Array("object" => $streamObj);
+            $streamKey = $stream->getKey();
+        }
+
+        $stream = $stream["object"];
+        if ($stream != null) {
+            $subject = new Subject($name, $stream, new \DateTime(), new \DateTime(), "", $user);
+
+            $this->doctrine->persist($stream);
+            $this->doctrine->persist($subject);
+            $this->doctrine->flush();
+
+            $link = new ObjectLinks($objectLinkType, $objectLinkId, "TwakeDiscussionBundle:Subject", $subject->getId());
+
+            $this->doctrine->persist($link);
+            $this->doctrine->flush();
+
+            $app = $this->applicationManager->getAppByPublicKey($objectLink->getAsArrayFormated()["key"]);
+
+            $this->messageSystem->sendMessage($user->getId(),$streamKey,true,$app->getId(),false,"",$workspace,$subject->getId(),null,false);
+
+            return $subject;
+        }
+
         return false;
     }
 

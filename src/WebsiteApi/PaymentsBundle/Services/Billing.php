@@ -29,9 +29,6 @@ class Billing implements BillingInterface{
         $groupPricingInstance->setStartedAt($startDateOfService);
         $groupPricingInstance->setEndAt($endedAt);
 
-        $this->doctrine->persist($groupPricingInstance);
-        $this->doctrine->flush();
-
         $issueDate = new \DateTime();
 
         $groupIdentity = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity")->findOneBy(Array("group" => $group));
@@ -52,6 +49,12 @@ class Billing implements BillingInterface{
         $this->doctrine->flush();
 
         return $transaction->getAsArray();
+    }
+
+    public function getAllReceipt(){
+        $subscriptionRepo = $this->doctrine->getRepository("TwakePaymentsBundle:Receipt");
+
+        return $subscriptionRepo->findBy(array(), array('startDateOfService' => 'DESC'));
     }
 
 }

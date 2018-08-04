@@ -352,6 +352,8 @@ class StreamSystem implements StreamSystemInterface
 	        $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace"=>$workspace));
 	        $retour = Array("stream"=>Array(), "user"=>Array());
 	        foreach($streams as $stream){
+	            if($stream->getIsHide())
+	                continue;
 		        $linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream));
 	        	if($linkStream == null && !$stream->getIsPrivate()){
 			        $linkStream = $stream->addMember($user);

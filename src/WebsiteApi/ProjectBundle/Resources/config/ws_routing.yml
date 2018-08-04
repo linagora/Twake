@@ -13,12 +13,3 @@ board_workspace_topic:
     requirements:
         id:
             pattern: "[0-9]+"
-
-
-board_activity_topic:
-    channel: boardActivity/workspace/{id}
-    handler:
-        callback: 'board_activity.topic'
-    requirements:
-             id:
-                pattern: "[0-9]+"

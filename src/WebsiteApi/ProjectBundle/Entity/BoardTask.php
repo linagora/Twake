@@ -3,6 +3,7 @@
 namespace WebsiteApi\ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
  * Task
@@ -11,7 +12,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity(repositoryClass="WebsiteApi\ProjectBundle\Repository\BoardTaskRepository")
  */
 
-class BoardTask {
+class BoardTask implements ObjectLinksInterface {
 
     /**
      * @var int
@@ -21,6 +22,16 @@ class BoardTask {
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+
+    /**
+     * @ORM\Column(name="order_ts",type="integer")
+     */
+    private $order;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $weight;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\Board")
@@ -41,9 +52,15 @@ class BoardTask {
     private $dependingTask;
 
     /**
-     * @ORM\Column(name="next_reminder", type="bigint")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\JoinColumn(nullable=true)
      */
-    private $nextReminder = 0;
+    private $user;
+
+    /**
+     * @ORM\Column(name="like_ts",type="bigint")
+     */
+    private $like;
 
     /**
      * @ORM\Column(name="from_ts", type="bigint")
@@ -56,14 +73,30 @@ class BoardTask {
     private $to;
 
     /**
-     * @ORM\Column(name="participant", type="text")
+     * @ORM\Column( type="text")
      */
-    private $participant;
+    private $userIdToNotify;
+
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column( type="text")
      */
-    private $subscribers;
+    private $labels;
+
+    /**
+     * @ORM\Column( type="text")
+     */
+    private $participants;
+
+    /**
+     * @ORM\Column( type="text")
+     */
+    private $userWhoLiked;
+
+    /**
+     * @ORM\Column( type="text")
+     */
+    private $userWhoDisliked;
 
     /**
      * @ORM\Column(type="string", length=264)
@@ -80,7 +113,12 @@ class BoardTask {
      */
     private $doneList;
 
-    public  function __construct($from, $to, $name, $description, $dependingTask)
+    /**
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $doneDate;
+
+    public  function __construct($from, $to, $name, $description, $dependingTask, $participants, $user, $weight=1)
     {
         $this->setFrom($from);
         $this->setTo($to);
@@ -88,6 +126,42 @@ class BoardTask {
         $this->setName($name);
         $this->setDescription($description);
         $this->setDependingTask($dependingTask);
+        $this->setWeight($weight);
+        $this->setParticipants($participants);
+        $this->setUser($user);
+        $this->setLike(0);
+        $this->setUserWhoLiked(Array());
+        $this->setUserWhoDisliked(Array());
+    }
+
+    public function likeOne($userId){
+        $userWhoLike = $this->getUserWhoLiked();
+        $userWhoDislike = $this->getUserWhoDisliked();
+
+        if(!in_array($userId,$userWhoLike)) {
+            $this->like++;
+            if(!in_array($userId,$userWhoDislike))
+                $userWhoLike[] = $userId;
+
+            $userWhoDislike = array_diff($userWhoDislike, [$userId]);
+            $this->setUserWhoLiked($userWhoLike);
+            $this->setUserWhoDisliked($userWhoDislike);
+        }
+    }
+
+    public function dislikeOne($userId)
+    {
+        $userWhoLike = $this->getUserWhoLiked();
+        $userWhoDislike = $this->getUserWhoDisliked();
+
+        if(!in_array($userId,$userWhoDislike)) {
+            $this->like--;
+            if(!in_array($userId,$userWhoLike))
+                $userWhoDislike[] = $userId;
+            $userWhoLike = array_diff($userWhoLike, [$userId]);
+            $this->setUserWhoLiked($userWhoLike);
+            $this->setUserWhoDisliked($userWhoDislike);
+        }
     }
 
     /**
@@ -157,25 +231,17 @@ class BoardTask {
     /**
      * @return mixed
      */
-    public function getParticipant()
+    public function getUserIdToNotify()
     {
-        return json_decode($this->participant, 1);
+        return json_decode($this->userIdToNotify, 1);
     }
 
     /**
      * @param mixed $task
      */
-    public function setParticipant($task)
+    public function setUserIdToNotify($task)
     {
-        $this->participant = json_encode($task);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getNextReminder()
-    {
-        return $this->nextReminder;
+        $this->userIdToNotify = json_encode($task);
     }
 
     /**
@@ -201,7 +267,20 @@ class BoardTask {
         return Array(
             "id" => $this->getId(),
             "board" => $this->getBoard()->getId(),
-            "participant" => $this->getParticipant(),
+            "list" => $this->getListOfTasks()->getId(),
+            "dependingTask" => $this->getDependingTask()!=null ? $this->dependingTask->getId() : null,
+            "name" => $this->getName(),
+            "description" => $this->getDescription(),
+            "watch_members" => $this->getUserIdToNotify(),
+            "participants" => $this->getParticipants(),
+            "order" => $this->getOrder(),
+            "from" => $this->getFrom(),
+            "to" => $this->getTo(),
+            "weight" => $this->getWeight(),
+            "like" => $this->getLike(),
+            "labels" => $this->getLabels(),
+            "user" => $this->getUser() !=null ? $this->getUser()->getId() : 0,
+            "doneDate" => $this->getDoneDate(),
         );
     }
 
@@ -254,7 +333,7 @@ class BoardTask {
     }
 
     /**
-     * @return mixed
+     * @return ListOfTasks
      */
     public function getListOfTasks()
     {
@@ -285,5 +364,192 @@ class BoardTask {
         $this->doneList = $doneList;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
 
+    /**
+     * @param mixed $order
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWeight()
+    {
+        return $this->weight;
+    }
+
+    /**
+     * @param mixed $weight
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = $weight;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
+
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParticipants()
+    {
+        return json_decode($this->participants,1);
+    }
+
+    /**
+     * @param mixed $participants
+     */
+    public function setParticipants($participants)
+    {
+        $this->participants = json_encode($participants);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLike()
+    {
+        return $this->like;
+    }
+
+    /**
+     * @param mixed $like
+     */
+    public function setLike($like)
+    {
+        $this->like = $like;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUserWhoLiked()
+    {
+        return json_decode($this->userWhoLiked,1);
+    }
+
+    /**
+     * @param mixed $userWhoLiked
+     */
+    public function setUserWhoLiked($userWhoLiked)
+    {
+        $this->userWhoLiked = json_encode($userWhoLiked);
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getUserWhoDisliked()
+    {
+        return json_decode($this->userWhoDisliked,1);
+    }
+
+    /**
+     * @param mixed $userWhoDisliked
+     */
+    public function setUserWhoDisliked($userWhoDisliked)
+    {
+        $this->userWhoDisliked = json_encode($userWhoDisliked);
+    }
+    public function getRepository()
+    {
+        return "TwakeProjectBundle:BoardTask";
+    }
+
+    public function getAsArrayFormated(){
+        return Array(
+            "id" => $this->getId(),
+            "title" => "Task",
+            "object_name" => $this->getName(),
+            "key" => "tasks",
+            "type" => "task",
+            "code" => $this->getBoard()->getId() . "/" . $this->getId(),
+        );
+    }
+
+    public function synchroniseField($fieldName, $value)
+    {
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $setter = "set".ucfirst($fieldName);
+        $this->$setter($value);
+        return true;
+    }
+
+    public function get($fieldName){
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $getter = "get".ucfirst($fieldName);
+
+        return $this->$getter();
+    }
+
+    public function getPushRoute()
+    {
+        return "board/".$this->getId();
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLabels()
+    {
+        return json_decode($this->labels, 1);
+    }
+
+    /**
+     * @param mixed $labels
+     */
+    public function setLabels($labels)
+    {
+        $this->labels = json_encode($labels);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDoneDate()
+    {
+        return $this->doneDate;
+    }
+
+    /**
+     * @param mixed $doneDate
+     */
+    public function setDoneDate($doneDate)
+    {
+        $this->doneDate = $doneDate;
+    }
+
+    public function getAllUsersToNotify()
+    {
+        return array_merge($this->getParticipants(),$this->getUserIdToNotify());
+    }
 }

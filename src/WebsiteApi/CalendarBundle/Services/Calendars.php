@@ -3,6 +3,7 @@
 
 namespace WebsiteApi\CalendarBundle\Services;
 
+use DateTime;
 use phpDocumentor\Reflection\Types\Array_;
 use PHPUnit\Util\Json;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -85,12 +86,11 @@ class Calendars implements CalendarsInterface
 
             }
 
-
             return $cal;
         }
     }
 
-    public function createCalendar($workspaceId, $title, $color, $currentUserId=null){
+    public function createCalendar($workspaceId, $title, $color, $currentUserId=null, $icsLink=null){
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
@@ -105,7 +105,7 @@ class Calendars implements CalendarsInterface
                 $title = "New calendar";
             }
 
-            $cal = new Calendar($title, $color);
+            $cal = new Calendar($title, $color,$icsLink);
             $cal->setWorkspacesNumber(1);
             $this->doctrine->persist($cal);
 
@@ -132,6 +132,7 @@ class Calendars implements CalendarsInterface
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
             return null;
         }
+        /* @var Calendar $calendar */
 
         $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($calendarId);
         $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("calendar"=>$calendar, "workspace"=>$workspace));
@@ -145,6 +146,8 @@ class Calendars implements CalendarsInterface
         $calendar->setColor($color);
 
         $calendar->setAutoParticipantList($autoParticipate);
+
+        $calendar->setLastUpdateDate(new DateTime('now'));
 
         $this->doctrine->persist($calendar);
         $this->doctrine->flush();

@@ -4,6 +4,7 @@
 namespace WebsiteApi\DiscussionBundle\Services;
 
 use Symfony\Component\HttpFoundation\JsonResponse;
+use WebsiteApi\DiscussionBundle\Entity\Call;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\DiscussionBundle\Entity\MessageLike;
@@ -621,7 +622,7 @@ class MessageSystem implements MessagesSystemInterface
         $this->pusher->push($data, "discussion/" . $streamId);
     }
 
-    public function makeCall($streamId, $subjectId, $workspaceId, User $user, $respondTo)
+    public function makeCall($streamId, $subjectId, $workspaceId, User $user, $respondTo, $objectLinkName = false)
     {
         $discussionKey = "twake-".bin2hex(random_bytes(20));
         $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calls"));
@@ -633,6 +634,13 @@ class MessageSystem implements MessagesSystemInterface
         $message = $this->sendMessage($user->getId(), "s-".$streamId, true, $app->getId(), false, "", $workspaceId, $subjectId, $url,true,"",$respondTo);
         $messageArray = $message->getAsArray();
         $this->notify("s-".$streamId,"C",$messageArray);
+
+        if($objectLinkName){
+            $call = new Call($discussionKey,$message, $objectLinkName);
+            $this->doctrine->persist($call);
+            $this->flush();
+            return $call;
+        }
 
         return true;
     }

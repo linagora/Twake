@@ -38,6 +38,9 @@ class ZMQPusher
         );
         $data = json_encode($data);
 
+        $this->pushForReal($data, $route);
+        return;
+
         $job = new ZMQQueue($route, $data);
         $this->doctrine->persist($job);
         $this->doctrine->flush();

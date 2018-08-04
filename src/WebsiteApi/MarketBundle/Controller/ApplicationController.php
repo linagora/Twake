@@ -120,6 +120,38 @@ class ApplicationController extends Controller
       return new JsonResponse($response);
   }
 
+  public function getDefaultUrlOpenerAction(){
+      $data["data"] = $this->get("website_api_market.applications")->getDefaultUrlOpener();
+
+      return new JsonResponse($data);
+  }
+
+    public function getAppsByKeywordsAction(Request $request){
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $keywords = $request->request->get("keywords", Array());
+
+        if(count($keywords)!=0){
+            $apps_obj = $this->get("website_api_market.applications")->getAppsByKeyword($keywords);
+        }else{
+            $apps_obj = $this->get("website_api_market.applications")->getApps();
+        }
+
+        $apps = array();
+
+        foreach ($apps_obj as $app) {
+            $apps[] = $app->getAsArray();
+        }
+
+        if(!$apps_obj){
+            $response["errors"][] = "notallowed";
+        }else{
+            $response["data"]["apps"] = $apps;
+        }
+
+        return new JsonResponse($response);
+    }
+
     public function getAppByPublicKeyAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 

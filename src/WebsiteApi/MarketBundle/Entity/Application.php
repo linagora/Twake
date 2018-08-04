@@ -187,6 +187,11 @@ class Application
      */
     private $domain_name;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $searchWords;
+
 
     public function __construct()
 	{
@@ -385,6 +390,8 @@ class Application
 	public function setName($name)
 	{
 		$this->name = $name;
+		if($this->searchWords=="")
+		    $this->setSearchWords(strtolower($name));
 	}
 
 	public function getDescription()
@@ -781,6 +788,25 @@ class Application
 		);
 	}
 
+    /**
+     * @return mixed
+     */
+    public function getSearchWords()
+    {
+        return $this->searchWords;
+    }
 
+    /**
+     * @param mixed $searchWords
+     */
+    public function setSearchWords($searchWords)
+    {
+        $this->searchWords = $searchWords;
+    }
+
+    public function addSearchWord($searchWord)
+    {
+        $this->searchWords .= " ".$searchWord;
+    }
 
 }

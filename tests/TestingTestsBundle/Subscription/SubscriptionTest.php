@@ -23,19 +23,77 @@ class SubscriptionTest extends WebTestCaseExtended
         //détruire init les données avant de refaire les tests
 
         //Début scénario
+        //définition d'un pricing plan
         $pricing_plan = new PricingPlan("testPHP");
         $pricing_plan->setMonthPrice(100);
         $pricing_plan->setYearPrice(1200);
         $this->getDoctrine()->persist($pricing_plan);
         $this->getDoctrine()->flush();
 
+        $pricing_plan_2 = new PricingPlan("testChangementPlan");
+        $pricing_plan_2->setMonthPrice(200);
+        $pricing_plan_2->setYearPrice(1400);
+        $this->getDoctrine()->persist($pricing_plan_2);
+        $this->getDoctrine()->flush();
 
-        $list_freq = [1, 3, 5, 7, 3, 2, 1, 1];
-        $scenario = new ScenarioPayment($this,"lucie.martin@telecomnancy.net", "Lulu", "lulu", "Group_Test", "Project",$pricing_plan,
-            8, $this->getDoctrine(), new \DateInterval("P90D"), $list_freq, false,true);
+        $events_default = Array();
+
+        //Events : ajout d'un utilisateur le 10ème et 15ème jour, changement de pricing plan le 20
+        $events = Array();
+        $events[10] = Array("callback" => [], "data" => []);
+        $events[10]["callback"][] = "addUser";
+        $events[10]["data"][] = 1;// freq d'utilisation du nouvel utilisateur
+        $events[20] = Array("callback" => [], "data" => []);
+        $events[20]["callback"][] = "changePricingPlan";
+        $events[20]["data"][] = $pricing_plan_2;
+        $events[15] = Array("callback" => [], "data" => []);
+        $events[15]["callback"][] = "addUser";
+        $events[15]["data"][] = 3; // freq d'utilisation du nouvel utilisateur
+
+        //Events : permet de passer d'un prélèvement pas automatique à automatique
+        $events2 = Array();
+        $events2[15] = Array("callback" => [], "data" => []);
+        $events2[15]["callback"][] = "changeWithdrawal";
+        $events2[15]["data"][] = true;
+
+        //Events : permet de passer d'un renouvellement non auto à un renouvellement automatique puis prélèvement automatique
+        $events3 = Array();
+        $events3[15] = Array("callback" => [], "data" => []);
+        $events3[15]["callback"][] = "changeRenew";
+        $events3[15]["data"][] = true;
+        $events3[16] = Array("callback" => [], "data" => []);
+        $events3[16]["callback"][] = "changeWithdrawal";
+        $events3[16]["data"][] = true;
+
+        //Events : modifier les fréquentations des utilisateurs
+        $events4 = Array();
+        for ($j = 0; $j<8; $j++){
+            $events4[$j+2] = Array("callback" => [], "data" => []);
+            $events4[$j+2]["callback"][] = "changeFrequence";
+            $events4[$j+2]["data"][] = [1,$j]; //[freq, id_user]
+        }
+
+        //Events : création overCost
+        $events5 = Array();
+        for ($j = 0; $j<8; $j++){
+            $events5[$j+2] = Array("callback" => [], "data" => []);
+            $events5[$j+2]["callback"][] = "changeFrequence";
+            $events5[$j+2]["data"][] = [1,$j]; //[freq, id_user]
+        }
+        for ($i = 10; $i<16; $i++){
+            $events5[$i]["callback"][] = "addUser";
+            $events5[$i]["data"][] = 1; // freq d'utilisation du nouvel utilisateur
+        }
+
+        $list_freq = [7, 7, 7, 7, 7, 7, 7, 7];
+        var_dump("before scenario");
+        $scenario = new ScenarioPayment($this,"benoit.tallandier@telecomnancy.net", "Benoit",
+            "BN", "Group_Test", "Project",$pricing_plan,
+            8, $this->getDoctrine(), 2,$list_freq,
+            false,false, $events3);
+        var_dump("after creation scenario, and before exec()");
         $scenario->exec();
-        //$scenario->exec();
-
+        var_dump("end scenario");
         //Fin scénario
 
 
@@ -77,7 +135,7 @@ class SubscriptionTest extends WebTestCaseExtended
     }
 
     public function isEquivalentTo($isEquivalentTo){
-        $this->assertTrue($isEquivalentTo==true,"archivage correct du group_period");
+        $this->assertTrue($isEquivalentTo==true,"archivage incorrect du group_period");
     }
 
     public function myGet($s){

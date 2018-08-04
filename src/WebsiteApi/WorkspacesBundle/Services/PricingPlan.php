@@ -94,7 +94,7 @@ class PricingPlan implements PricingPlanInterface
 
         $pricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
 
-        if ($group == null) {
+        if ($group == null || $group->getIsPrivate()) {
             $pricing = $pricingRepository->findOneBy(Array("label" => "private"))->getAsArray();
         } else {
             $pricing = $pricingRepository->findOneBy(Array("id" => ($group->getPricingPlan())))->getAsArray();

@@ -11,6 +11,21 @@ use Symfony\Component\HttpFoundation\Request;
 class BoardController extends Controller
 {
 
+    private function convertObjectListToIdList($list){
+        if(count($list)==0)
+            return Array();
+
+        $final = Array();
+
+        foreach($list as $item) {
+            if(is_int($item))
+                return $list;
+            $final[] = $item["id"];
+        }
+
+        return $final;
+    }
+
     public function getBoardsAction(Request $request)
     {
         $data = Array(
@@ -18,12 +33,26 @@ class BoardController extends Controller
             'data' => Array()
         );
 
-        $workspaceId = $request->request->get("workspaceId");
-
+        $workspaceId = $request->request->get("workspaceId",0);
         $boards = $this->get("app.boards")->getBoards($workspaceId, $this->getUser()->getId());
 
         if ($boards){
-            $data['data'] = $boards;
+            foreach ($boards as $board) {
+                $boardArray = $board->getAsArray();
+                $boardArray["owner"] = $this->getUser()->getAsArray();
+                $boardArray["percent"] = $this->get("app.boards")->getBoardPercent($board);
+                $participants = $this->get("app.boards")->getParticipantsAsUser($board);
+                $boardArray["participants"] = [];
+                $boardArray["lists"] = $this->get("app.boards")->getBoard($board);
+                foreach ($participants as $participant)
+                    $boardArray["participants"][] = $participant->getAsArray();
+                $data['data'][] = $boardArray;
+            }
+        }elseif ($boards==null){
+            $data["errors"][] = "Access not allowed";
+        }
+        else{
+            $data["errors"][] = "Bad workspace";
         }
 
         return new JsonResponse($data);
@@ -41,6 +70,7 @@ class BoardController extends Controller
         $data['data'] = $board["autoParticpate"] ;
         return new JsonResponse($data);
     }
+
     public function createBoardAction(Request $request)
     {
         $data = Array(
@@ -49,10 +79,15 @@ class BoardController extends Controller
         );
 
         $workspaceId = $request->request->get("workspaceId");
-        $label = $request->request->get("name");
-        $color = $request->request->get("color");
+        $title = $request->request->get("name", "");
+        $description = $request->request->get("description", "");
+        $members = $this->convertObjectListToIdList($request->request->get("members", Array()));
+        $isPrivate = $request->request->get("isPrivate",false);
 
-        $data['data'] = $this->get("app.boards")->createBoard($workspaceId, $label, $color, $this->getUser()->getId());
+        $data['data'] = $this->get("app.boards")->createBoard($workspaceId, $title,$description,$isPrivate, $this->getUser()->getId(), $members);
+
+        if($data['data'])
+            $data['data'] = $data['data']->getAsArray();
 
         return new JsonResponse($data);
     }
@@ -64,13 +99,16 @@ class BoardController extends Controller
             'data' => Array()
         );
 
-        $workspaceId = $request->request->get("workspaceId");
-        $boardId = $request->request->get("boardId");
-        $label = $request->request->get("name");
-        $color = $request->request->get("color");
-        $autoParticipant = $request->get("autoParticipate");
+        $boardId = $request->request->get("id");
+        $title = $request->request->get("name", "");
+        $description = $request->request->get("description", "");
+        $isPrivate = $request->request->get("isPrivate",false);
+        $participants = $this->convertObjectListToIdList($request->request->get("members",Array()));
 
-        $data['data'] = $this->get("app.boards")->updateBoard($workspaceId, $boardId, $label, $color, $this->getUser(), $autoParticipant);
+        $data['data'] = $this->get("app.boards")->updateBoard($boardId, $title, $description, $isPrivate, $this->getUser()->getId(), Array(),$participants);
+
+        if($data['data'])
+            $data['data'] = $data['data']->getAsArray();
 
         return new JsonResponse($data);
     }
@@ -82,8 +120,8 @@ class BoardController extends Controller
             'data' => Array()
         );
 
-        $workspaceId = $request->request->get("workspaceId");
-        $boardId = $request->request->get("boardId");
+        $workspaceId = $request->request->get("workspaceId",  0);
+        $boardId = $request->request->get("id",0);
 
         $data['data'] = $this->get("app.boards")->removeBoard($workspaceId, $boardId, $this->getUser()->getId());
 

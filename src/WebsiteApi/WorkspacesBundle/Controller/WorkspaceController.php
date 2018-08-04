@@ -71,10 +71,12 @@ class WorkspaceController extends Controller
 
                 $nbuserGroup = $groupUserRepository->findBy(Array("group"=>$wp->getGroup()));
                 $limitUser = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(), "maxUser", PHP_INT_MAX);
+                $limitApps = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(), "apps", PHP_INT_MAX);
 
                 $response["data"]["maxWorkspace"] = $limit;
                 $response["data"]["currentNbWorkspace"] = count($nbWorkspace);
                 $response["data"]["maxUser"] = $limitUser;
+                $response["data"]["maxApps"] = $limitApps;
                 $response["data"]["currentNbUser"] = count($nbuserGroup);
             }
 

@@ -3,6 +3,8 @@
 
 namespace WebsiteApi\DriveBundle\Services;
 
+use WebsiteApi\CoreBundle\Services\Translate;
+use WebsiteApi\CoreBundle\Services\TranslationObject;
 use WebsiteApi\DriveBundle\Entity\DriveLabel;
 use WebsiteApi\DriveBundle\Services\MCryptAES256Implementation;
 use WebsiteApi\DriveBundle\Services\AESCryptFileLib;
@@ -10,7 +12,10 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 use WebsiteApi\DriveBundle\Entity\DriveFileLabel;
 use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
 use WebsiteApi\DriveBundle\Model\DriveFileSystemInterface;
+use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Entity\User;
+use WebsiteApi\WorkspacesBundle\Services\WorkspacesActivities;
+use WebsiteApi\WorkspacesBundle\Services\WorkspacesApps;
 use ZipArchive;
 
 class DriveFileSystem implements DriveFileSystemInterface
@@ -24,8 +29,14 @@ class DriveFileSystem implements DriveFileSystemInterface
     var $pusher;
     /* @var UserToNotifyService $userToNotifyService */
     var $userToNotifyService;
+    /* @var Translate $translate*/
+    var $translate;
+    /* @var WorkspacesApps $workspacesApps */
+    var $workspacesApps;
+    /* @var WorkspacesActivities $workspacesActivities*/
+    var $workspacesActivities;
 
-    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService, $userToNotifyService)
+    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService, $userToNotifyService, $translate, $workspacesApps,$workspacesActivities)
     {
         $this->doctrine = $doctrine;
         $this->root = $rootDirectory;
@@ -35,6 +46,9 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->pusher = $pusher;
         $this->applicationService = $applicationService;
         $this->userToNotifyService = $userToNotifyService;
+        $this->translate = $translate;
+        $this->workspacesApps = $workspacesApps;
+        $this->workspacesActivities = $workspacesActivities;
     }
 
     private function convertToEntity($var, $repository)
@@ -177,6 +191,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
         $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
 
+        $user = $this->convertToEntity($userId,"TwakeUsersBundle:User");
+
         if ($fileOrDirectory == null) {
             return false;
         }
@@ -217,8 +233,11 @@ class DriveFileSystem implements DriveFileSystemInterface
             $dirName = $directory->getName();
         }
 
-        $this->userToNotifyService->notifyUsers($dirid,$groupId,"Move file",$fileOrDirectory->getName()." has been moved into ". $dirName,$fileOrDirectory->getId(), $userId);
+        $this->userToNotifyService->notifyUsers($dirid,$groupId, "drive.move_file",
+            new TranslationObject($this->translate,"drive.has_been_moved", $fileOrDirectory->getName(), $dirName),
+            $fileOrDirectory->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
+        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$userId,"drive","workspace.activity.file.move","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
 
         return true;
     }
@@ -432,7 +451,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    public function rename($fileOrDirectory, $filename, $description = null, $labels = Array())
+    public function rename($fileOrDirectory, $filename, $description = null, $labels = Array(), $userId = 0)
     {
 
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
@@ -489,12 +508,36 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->updateLabelsCount($fileOrDirectory->getGroup());
 
         $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
+        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$userId,"drive","workspace.activity.file.rename","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
 
         return true;
 
     }
 
-    public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false, $url =null, $userId = 0)
+    public function moveDetachedFileToDrive($workspace, $detachedFileId, $directory, $userId = 0){
+        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        $user = $this->convertToEntity($userId, "TwakeUsersBundle:User");
+        /* @var DriveFile $file */
+        $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=>$detachedFileId));
+
+        if ($workspace == null || $this->getFreeSpace($workspace) <= 0) {
+            return false;
+        }
+
+        $file->setDetachedFile(false);
+        $this->updateSize($directory, $file->getSize());
+        $this->improveName($file);
+        $file->setGroup($workspace);
+
+        $this->doctrine->persist($file);
+        $this->doctrine->flush();
+        $this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.move_detached_file_to_drive","TwakeDriveBundle:DriveFile", $file->getId());
+
+        return $file;
+    }
+
+    public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false, $url =null, $userId = 0, $userApp = null)
     {
 
         if ($directory == 0 || $detached_file) {
@@ -522,10 +565,15 @@ class DriveFileSystem implements DriveFileSystemInterface
             $url
         );
 
-        if ($url!=null){
+        if ($url!=null) {
             $app = $this->applicationService->getAppForUrl($url);
             if ($app) {
                 $newFile->setDefaultWebApp($app);
+            } elseif ($userApp) {
+                $userApp = $this->convertToEntity($userApp,"TwakeMarketBundle:Application");
+                if(!$userApp)
+                    return false;
+                $newFile->setDefaultWebApp($userApp);
             } else {
                 return false;
             }
@@ -572,7 +620,11 @@ class DriveFileSystem implements DriveFileSystemInterface
             $dirid = $directory->getId();
             $dirName = $directory->getName();
         }
-        $this->userToNotifyService->notifyUsers($dirid,$workspace,"New file",$newFile->getName()." has been added to ". $dirName,$newFile->getId(), $userId);
+        $this->userToNotifyService->notifyUsers($dirid,$workspace,"drive.new_file",
+            new TranslationObject($this->translate,"drive.has_been_added", $newFile->getName(), $dirName),
+            $newFile->getId(), $userId);
+
+        $this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.create","TwakeDriveBundle:DriveFile", $newFile->getId());
         $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
 
         return $newFile;
@@ -837,7 +889,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $list;
     }
 
-    public function autoDelete($workspace, $fileOrDirectory)
+    public function autoDelete($workspace, $fileOrDirectory, $user = null)
     {
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
 
@@ -856,14 +908,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         if ($fileOrDirectory->getIsInTrash()) {
             return $this->delete($fileOrDirectory);
         }else {
-            return $this->toTrash($fileOrDirectory);
+            return $this->toTrash($fileOrDirectory, $user);
         }
 
         return true;
     }
 
-    public function toTrash($fileOrDirectory){
-        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+    public function toTrash($fileOrDirectory, $user){
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
 
         if(!$fileOrDirectory){
             return false;
@@ -877,6 +929,16 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($fileOrDirectory);
         $this->doctrine->flush();
 
+        $app = $fileOrDirectory->getDefaultWebApp();
+
+        if($app){
+            $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("default_web_app" => $app, "group" => $fileOrDirectory->getGroup(), "isInTrash" => false));
+            if(count($files)==0){
+                $this->workspacesApps->disableApp($fileOrDirectory->getGroup(),$app->getId());
+            }
+        }
+
+        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","workspace.activity.file.trash","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
         return true;
     }
 
@@ -956,7 +1018,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    public function restore($fileOrDirectory)
+    public function restore($fileOrDirectory, $user=null)
     {
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
 
@@ -972,6 +1034,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($fileOrDirectory);
         $this->doctrine->flush();
 
+
+        $app = $fileOrDirectory->getDefaultWebApp();
+
+        if($app){
+            $this->workspacesApps->enableApp($fileOrDirectory->getGroup(),$app->getId());
+        }
+
+        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","workspace.activity.file.restore","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
         return true;
     }
 
@@ -1002,7 +1072,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function restoreTrash($workspace)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
         if ($workspace == null) {
             return false;
@@ -1068,16 +1138,19 @@ class DriveFileSystem implements DriveFileSystemInterface
         }else if(is_int($directory))
             $dirid = $directory;
 
-        $this->userToNotifyService->notifyUsers($dirid,$workspace,"Updated file",$file->getName()." has been update",$file->getId(), $userId);
+        $this->userToNotifyService->notifyUsers($dirid,$workspace,"drive.file_updated",
+            new TranslationObject($this->translate,"drive.has_been_update", $file->getName()),
+            $file->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $file->getGroup()->getId());
+        $this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.upload_new_version","TwakeDriveBundle:DriveFile", $file->getId());
 
         return $file;
 
     }
 
-    public function upload($workspace, $directory, $file, $uploader, $detached = false, $userId = 0)
+    public function upload($workspace, $directory, $file, $uploader, $detached = false, $userId = 0, $userApp=0)
     {
-        $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached, null,$userId);
+        $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached, null,$userId,$userApp);
         $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $userId));
         if($userId==0)
             $user = null;
@@ -1500,5 +1573,22 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $listFiles = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(array('default_web_app' => $app, 'group' => $workspace_id), array('opening_rate' => 'desc'), 20);
         return $listFiles;
+    }
+
+    public function changeDefaultWebApp($file, $newApp){
+        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
+        /* @var DriveFile $file */
+        $newApp = $this->convertToEntity($newApp, "TwakeMarketBundle:Application");
+        if(!$file || ! $newApp)
+            return null;
+        if(!$newApp->getUrlApp() || $file->getIsDirectory() || $file->getUrl()==null)
+            return false;
+
+        $file->setDefaultWebApp($newApp);
+
+        $this->doctrine->persist($file);
+        $this->doctrine->flush();
+
+        return true;
     }
 }

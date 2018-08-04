@@ -29,6 +29,7 @@ class FilesController extends Controller
         $isDetached = $request->request->get("isDetached", false);
         $isDirectory = $request->request->get("isDirectory", true);
         $url = $request->request->get("url",null);
+        $appId = $request->request->get("appId",null);
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
@@ -46,7 +47,7 @@ class FilesController extends Controller
                 $data["errors"] = "notallowed";
             } else {
 
-                $file = $fileSystem->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached,$url, $this->getUser()->getId());
+                $file = $fileSystem->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached,$url, $this->getUser()->getId(),$appId);
 
                 if($model){
                     //IMPORTANT ! Disable local files !!!
@@ -72,6 +73,38 @@ class FilesController extends Controller
 
     }
 
+    public function moveDetachedFileToDriveAction(Request $request){
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $groupId = $request->request->get("groupId", 0);
+        $detachedFileId = $request->request->get("detachedFileId", 0);
+        $directory = $request->request->get("directory", false);
+        $externalDrive = $directory;
+
+        $fileSystem = $this->get('app.drive.FileSystem');
+
+        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
+            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
+            $fileSystem->setRootDirectory($directory);
+        }
+
+        $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "drive:write");
+
+        if (count($data["errors"]) == 0) {
+            $file = $fileSystem->moveDetachedFileToDrive($groupId, $detachedFileId, $directory, $userId = 0);
+
+            if (!$file) {
+                $data["errors"][] = "unknown";
+            } else {
+                $data["data"] = $file->getAsArray();
+            }
+        }
+        return new JsonResponse($data);
+    }
+
     public function deleteAction(Request $request)
     {
         $data = Array(
@@ -93,7 +126,7 @@ class FilesController extends Controller
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
         if ($can) {
             foreach ($fileIds as $fileId){
-                $fileSystem->autoDelete($groupId,$fileId);
+                $fileSystem->autoDelete($groupId,$fileId, $this->getUser());
             }
         }else{
             $data["errors"][] = "notallowed";
@@ -414,6 +447,7 @@ class FilesController extends Controller
         $isDetached = $request->request->getBoolean("isDetached", false);
         $directory = $request->request->get("directory", false);
         $newVersion = $request->request->get("newVersion", 0);
+        $appId = $request->request->get("appId",null);
         if($newVersion=="false")
             $newVersion = false;
         $externalDrive = $directory;
@@ -432,7 +466,7 @@ class FilesController extends Controller
             if($newVersion)
                 $file = $fileSystem->uploadNewVersion($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId(), $newVersion);
             else
-                $file = $fileSystem->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId());
+                $file = $fileSystem->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId(),$appId);
 
             if ($file) {
                 $data["data"] = $file->getAsArray();
@@ -595,7 +629,7 @@ class FilesController extends Controller
                 $data["errors"][] = "emptyname";
             } else if (!$fileSystem->canAccessTo($fileId, $groupId, $this->getUser())){
                 $data["errors"][] = "notallowed";
-            } else if (!$fileSystem->rename($fileId, $filename, $description, $labels)) {
+            } else if (!$fileSystem->rename($fileId, $filename, $description, $labels,$this->getUser()->getId())) {
                 $data["errors"][] = "unknown";
             }
         }
@@ -797,6 +831,28 @@ class FilesController extends Controller
 
             }
 
+        }
+
+        return new JsonResponse($data);
+    }
+
+    public function changeDefaultWebAppAction(Request $request){
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $fileId = $request->request->get("fileId", 0);
+        $app = $request->request->get("app", 0);
+
+        $res = $this->get('app.drive.FileSystem')->changeDefaultWebApp($fileId, $app);
+
+        if($res){
+            $data["data"] = "success";
+        }elseif($res==null) {
+            $data["errors"][] = "error file or app not found";
+        }else{
+            $data["errors"][] = "error invalide file or app";
         }
 
         return new JsonResponse($data);

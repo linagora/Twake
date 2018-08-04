@@ -50,6 +50,11 @@ class Stream
 	 */
 	private $isPrivate;
 
+    /**
+     * @ORM\Column(type="boolean", options={"default" : false })
+     */
+    private $isHide;
+
 	/**
 	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\StreamMember", mappedBy="stream")
 	 */
@@ -69,6 +74,7 @@ class Stream
         $this->setIsPrivate($isPrivate);
         $this->setDescription($description);
         $this->setMembersLinks(Array());
+        $this->setIsHide(false);
 	}
 
     public function getId() {
@@ -215,6 +221,22 @@ class Stream
     private function setMembersLinks($Array)
     {
         $this->membersLinks = $Array;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getisHide()
+    {
+        return $this->isHide;
+    }
+
+    /**
+     * @param mixed $isHide
+     */
+    public function setIsHide($isHide)
+    {
+        $this->isHide = $isHide;
     }
 
 }

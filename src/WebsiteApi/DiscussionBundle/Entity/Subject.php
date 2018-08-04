@@ -4,6 +4,7 @@ namespace WebsiteApi\DiscussionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
  * Subject
@@ -11,7 +12,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
  * @ORM\Table(name="subject",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\DiscussionBundle\Repository\SubjectRepository")
  */
-class Subject
+class Subject implements ObjectLinksInterface
 {
     /**
      * @ORM\Column(name="id", type="integer")
@@ -233,5 +234,44 @@ class Subject
             "description" => $this->getDescription(),
         );
     }
+    public function getRepository(){
+        return "TwakeDiscussionBundle:Subject";
+    }
 
+    public function getAsArrayFormated(){
+        return Array(
+            "id" => $this->getId(),
+            "title" => "Subject",
+            "object_name" => $this->getName(),
+            "key" => "messages",
+            "type" => "subject",
+            "code" => "",//TODO
+        );
+    }
+
+
+    public function synchroniseField($fieldName, $value)
+    {
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $setter = "set".ucfirst($fieldName);
+        $this->$setter($value);
+
+        return true;
+    }
+
+    public function get($fieldName){
+        if(!property_exists($this, $fieldName))
+            return false;
+
+        $getter = "get".ucfirst($fieldName);
+
+        return $this->$getter();
+    }
+
+    public function getPushRoute()
+    {
+        return "discussion/".$this->getId();
+    }
 }
