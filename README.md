@@ -1,3 +1,20 @@
+# Twake v1.1.100
+
+## Changelogs
+
+### Messages
+- Highlight new messages
+
+### Tasks
+- Add Tasks app to manage tasks and projects
+
+### Calendar
+- Ability to auto import ics each 15 minutes
+- Team members calendars
+
+### General
+- Team activity
+
 # Twake v1.1.001
 
 ## Changelogs
