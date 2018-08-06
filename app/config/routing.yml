@@ -105,11 +105,14 @@ twake_notifications:
     prefix:   /ajax/notifications/
     methods: [POST, GET]
 
-
 twake_objectLinks:
     resource: "@TwakeObjectLinksBundle/Resources/config/routing.yml"
     prefix:   /ajax/objectLinks/
     methods: [POST]
+
+twake_onlyoffice:
+    resource: "@TwakeOnlyOfficeBundle/Resources/config/routing.yml"
+    prefix:   /ajax/onlyoffice/
 
 twake_api_error:
     path:     /ajax/{req}

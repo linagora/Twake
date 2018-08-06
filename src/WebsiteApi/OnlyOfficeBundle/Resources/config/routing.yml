@@ -1,0 +1,24 @@
+onlyoffice_main_save:
+    path:     /{mode}/save
+    defaults: { _controller: TwakeOnlyOfficeBundle:Default:save }
+    requirements: { mode: ".+"}
+
+onlyoffice_main_new:
+    path:     /{mode}/new
+    defaults: { _controller: TwakeOnlyOfficeBundle:Default:new }
+    requirements: { mode: ".+"}
+
+onlyoffice_main_open:
+    path:     /{mode}/open
+    defaults: { _controller: TwakeOnlyOfficeBundle:Default:open }
+    requirements: { mode: ".+"}
+
+onlyoffice_main_read:
+    path:     /{mode}/read
+    defaults: { _controller: TwakeOnlyOfficeBundle:Default:read }
+    requirements: { mode: ".+"}
+
+onlyoffice_main_editor:
+    path:     /{mode}
+    defaults: { _controller: TwakeOnlyOfficeBundle:Default:editor }
+    requirements: { mode: ".+"}

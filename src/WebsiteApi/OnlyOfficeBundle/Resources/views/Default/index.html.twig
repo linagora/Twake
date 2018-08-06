@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script type="text/javascript" src="/apps/params.js"></script>
+
+    <script type="text/javascript" src="/apps/libs/require.js"></script>
+    <script type="text/javascript" src="/apps/libs/jquery.min.js"></script>
+    <script type="text/javascript" src="/apps/libs/jquery-ui.js"></script>
+
+    <script type="text/javascript" src="/apps/libs/twake.js"></script>
+
+    <link rel="stylesheet" href="/public/apps_base.css">
+
+    <script type="text/javascript" src="https://{{ onlyoffice_server }}/web-apps/apps/api/documents/api.js"></script>
+
+    <style>
+        a:hover {
+            color: #463e7a;
+        }
+
+        a {
+            cursor: pointer;
+            color: #6c6c6c;
+        }
+    </style>
+
+</head>
+<body style="height:100%">
+
+<div id="onlyoffice_container" style="width:100%;height:100%;background-color: #{{ color }}">
+
+    <div style="position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;width:170px;height:64px;text-align: center;padding: 20px;background: #fff;box-shadow: 0px 5px 20px -6px;">
+        <a onclick="newFile()">Nouveau <i>{{ modeName }}</i></a>
+        <br><br>
+        <a onclick="openFinder()">Ouvrir un fichier</a>
+    </div>
+
+</div>
+
+<script type="text/javascript">
+    window.user = {
+        id: {{ userid }},
+        username: "{{ username }}",
+        language: "{{ language }}",
+        userimage: "{{ userimage }}"
+    };
+
+    window.mode = "{{ mode }}";
+    defaultExtension = "{{ defaultExtension }}";
+
+    var allowedextensions = [];
+
+    if (window.mode == "text") {
+        allowedextensions = ["docx", "doc", "docm", "dot", "dotm", "dotx", "epub", "fodt", "mht", "odt", "pdf", "rtf", "txt", "djvu", "xps"];
+    }
+    if (window.mode == "presentation") {
+        allowedextensions = ["pptx", "fodp", "odp", "pot", "potm", "potx", "pps", "ppsm", "ppsx", "ppt", "pptm"];
+    }
+    if (window.mode == "spreadsheet") {
+        allowedextensions = ["xlsx", "csv", "fods", "ods", "xls", "xlsm", "xlt", "xltm", "xltx"];
+    }
+
+    window.baseURL = "https://apps.twakeapp.com/onlyoffice/" + window.mode + "/";
+
+
+    openFile = function (doc) {
+
+        var scrollSensitivity = 100;
+        if (mode != "text") {
+            scrollSensitivity = 40;
+        }
+
+        $("#onlyoffice_container").html("<div id='onlyoffice_container_instance'></div>");
+
+        window.docEditor = new DocsAPI.DocEditor("onlyoffice_container_instance",
+            {
+                scrollSensitivity: scrollSensitivity,
+                width: "100%",
+                height: "100%",
+                documentType: mode,
+                document: doc,
+                token: doc.token,
+                editorConfig: {
+                    callbackUrl: window.baseURL + "save?token=" + doc.token,
+                    "lang": window.user.language,
+                    "user": {
+                        "id": window.user.id,
+                        "name": window.user.username
+                    },
+                    mode: (screen.width < 600) ? 'view' : 'edit',
+                    customization: {
+                        chat: false,
+                        compactToolbar: true,
+                        about: false,
+                        feedback: false,
+                        goback: {
+                            text: "Choose document",
+                            url: window.baseURL
+                        }
+                    }
+                },
+                events: {
+                    'onReady': function () {
+                    },
+                    'onDocumentStateChange': function () {
+                    },
+                    'onRequestEditRights': function () {
+                    },
+                    'onError': function () {
+                    },
+                    'onOutdatedVersion': function () {
+                    }
+                }
+            });
+    };
+
+    function prepareFile(file) {
+
+        if (!file) {
+            return;
+        }
+
+        Twake.call(
+            "/self/title",
+            {title: file.name},
+            function () {
+            }
+        );
+
+        $("#onlyoffice_container").html("<div id='onlyoffice_container_instance'></div>");
+
+        $.post(window.baseURL + "open", {
+            "fileId": file.id,
+            "filename": file.name
+        }, function (data) {
+
+            var doc = {
+                title: file.name,
+                url: window.baseURL + "read?fileToken=" + data.token + "&fileId=" + file.id,
+                fileType: getExtension(file.name),
+                key: data.key,
+                token: data.token,
+                permissions: {
+                    download: true,
+                    edit: true,
+                    review: true
+                }
+            };
+
+            openFile(doc);
+
+        });
+
+    }
+
+    function getExtension(name) {
+        return name.split(".").pop();
+    }
+
+    function openFinder() {
+        Twake.call("/drive/explorer", {mode: "open", directoryId: 0, extensions: allowedextensions}, function (res) {
+            prepareFile(res);
+        });
+    }
+
+    function newFile() {
+        Twake.call("/drive/explorer", {
+            mode: "new",
+            filename: "Untitled",
+            directoryId: 0,
+            extensions: allowedextensions
+        }, function (res) {
+            $.post(window.baseURL + "new", {
+                filename: res.name,
+                directoryId: res.directoryId
+            }, function (data) {
+                if (data.errors.length == 0) {
+                    prepareFile({
+                        name: data.data.filename,
+                        id: data.data.fileId
+                    });
+                }
+            });
+        });
+    }
+
+    $(window).on('hashchange', function () {
+        if (window.location.hash == "#openDocument") {
+            window.location.hash = "";
+            openFinder();
+        }
+    });
+
+    Twake.call(
+        "/drive/autoopen",
+        undefined,
+        function (res) {
+            var doc = prepareFile(res);
+        }
+    );
+
+</script>
+
+</body>
+</html>
+
