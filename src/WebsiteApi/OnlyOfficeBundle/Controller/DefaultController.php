@@ -58,6 +58,7 @@ class DefaultController extends Controller
         $parameters = $this->getParametersForMode($mode);
 
         $user = $this->getUser();
+        $workspaceId = $request->query->getInt("workspaceId", 0);
 
         if ($user != null) {
 
@@ -71,6 +72,8 @@ class DefaultController extends Controller
             $data["defaultExtension"] = $parameters["defaultExtension"];
             $data["color"] = $parameters["color"];
             $data["modeName"] = $parameters["name"];
+            $data["workspaceId"] = $workspaceId;
+            $data["server"] = $this->getParameter('SERVER_NAME');
 
             return $this->render('TwakeOnlyOfficeBundle:Default:index.html.twig', $data);
 
@@ -83,11 +86,8 @@ class DefaultController extends Controller
     /**
      * Save / open files
      */
-
     public function saveAction(Request $request, $mode)
     {
-
-        $this->getParametersForMode($mode);
 
         $fToken = $request->query->get("token");
         $request = json_decode($request->getContent(), true);
@@ -106,6 +106,7 @@ class DefaultController extends Controller
 
             if ($fileKey != null) {
 
+                /** @var OnlyofficeFile $file */
                 $file = $repo->findOneBy(Array("fileId" => $fileKey->getFileId(), "token" => $fToken));
 
                 if ($file != null) {
@@ -122,20 +123,26 @@ class DefaultController extends Controller
                     $em->persist($fileKey);
                     $em->flush();
 
-                    $apiData = Array(
-                        "fileId" => $fileKey->getFileId(),
-                        "fileUrl" => $document,
-                    );
-                    $this->api('drive/upload', $apiData, false, $file->getGroupId());
+                    $url = $document;
+                    //IMPORTANT ! Disable local files !!!
+                    if (strpos($url, "http://") !== false) {
+                        $url = "http://" . str_replace("http://", "", $url);
+                    } else {
+                        $url = "https://" . str_replace("https://", "", $url);
+                    }
 
+                    if (!$url || !$this->get("app.drive.FileSystem")->canAccessTo($fileKey->getFileId(), $file->getWorkspaceId(), null)) {
 
-                    if ($newName != $oldFilename) {
+                        return new JsonResponse(Array("error" => 1));
 
-                        $apiData = Array(
-                            "fileId" => $fileKey->getFileId(),
-                            "filename" => $newName
-                        );
-                        $this->api('drive/move', $apiData, false, $file->getGroupId());
+                    } else {
+
+                        $content = file_get_contents($url);
+                        $this->get("app.drive.FileSystem")->setRawContent($fileKey->getFileId(), $content);
+
+                        if ($newName != $oldFilename) {
+                            $this->get("app.drive.FileSystem")->rename($fileKey->getFileId(), $newName);
+                        }
 
                     }
 
@@ -146,65 +153,28 @@ class DefaultController extends Controller
         }
 
         return new JsonResponse(Array("error" => 0));
-
-    }
-
-    public function newAction(Request $request, $mode)
-    {
-
-        $parameters = $this->getParametersForMode($mode);
-
-        $emptyFile = $this->getParameter("servername") . "/apps/OnlyOffice/empty" . $parameters["defaultExtension"];
-
-        $user = $this->getCurrentUser("onlyoffice." . $parameters["mode"], $parameters["key"], $this->APIPRIVATEKEY, $request);
-        if ($user != null) {
-
-            $apiData = Array(
-                "directoryId" => $request->request->get("directoryId", null),
-                "filename" => $request->request->get("filename", null),
-                "directory" => false,
-                "content" => ""
-            );
-            $response = $this->api('drive/create', $apiData);
-
-            if (isset($response["data"]["fileId"])) {
-
-                $fileId = $response["data"]["fileId"];
-
-                $apiData = Array(
-                    "fileId" => $fileId,
-                    "fileUrl" => $emptyFile
-                );
-
-                $this->api('drive/upload', $apiData);
-
-                return new JsonResponse($response);
-
-            }
-        }
-
-        return new JsonResponse(Array("errors" => Array(1)));
     }
 
     public function openAction(Request $request, $mode)
     {
-        $parameters = $this->getParametersForMode($mode);
 
-        $user = $this->getCurrentUser("onlyoffice." . $parameters["mode"], $parameters["key"], $this->APIPRIVATEKEY, $request);
+        $user = $this->getUser();
+        $workspaceId = $request->query->getInt("workspaceId", 0);
+
         if ($user != null) {
 
             $fId = $request->request->getInt("fileId", 0);
             $filename = $request->request->get("filename", 0);
             $em = $this->getDoctrine()->getManager();
 
-            $file = new OnlyofficeFile($user->getApiGroupId(), $fId);
+            $file = new OnlyofficeFile($workspaceId, $fId);
             $em->persist($file);
 
             $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFileKeys");
             $fileKey = $repo->findOneBy(Array("fileId" => $fId));
 
             if (!$fileKey) {
-                $fileKey = new OnlyofficeFileKeys($user->getApiGroupId(), $fId);
+                $fileKey = new OnlyofficeFileKeys($workspaceId, $fId);
             }
 
             $fileKey->setName($filename);
@@ -221,11 +191,6 @@ class DefaultController extends Controller
         return new JsonResponse();
     }
 
-    /**
-     * @param Request $request
-     * @param $mode
-     * @return mixed|Response
-     */
     public function readAction(Request $request, $mode)
     {
 
@@ -237,6 +202,7 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFile");
 
+        /** @var OnlyofficeFile $file */
         $file = $repo->findOneBy(Array("fileId" => $fId, "token" => $fToken));
 
         if ($file != null) {
@@ -247,19 +213,9 @@ class DefaultController extends Controller
                 $em->persist($file);
                 $em->flush();
 
-                $apiData = Array(
-                    "fileId" => $file->getFileId()
-                );
+                $this->get('app.drive.FileSystem')->download($file->getWorkspaceId(), $file->getFileId(), false);
 
-                $data = $this->api('drive/download', $apiData, true, $file->getGroupId());
-
-
-                $response = new Response();
-                $disposition = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, "file");
-                $response->headers->set('Content-Disposition', $disposition);
-                $response->setContent($data);
-
-                return $response;
+                return new Response();
 
 
             }

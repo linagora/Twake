@@ -21,7 +21,7 @@ class OnlyofficeFileKeys
     private $id;
 
     /**
-     * @ORM\Column(name="group_id", type="integer")
+     * @ORM\Column(name="workspace_id", type="integer")
      */
     private $workspaceId;
 
@@ -59,7 +59,7 @@ class OnlyofficeFileKeys
     /**
      * @return mixed
      */
-    public function getGroupId()
+    public function getWorkspaceId()
     {
         return $this->workspaceId;
     }

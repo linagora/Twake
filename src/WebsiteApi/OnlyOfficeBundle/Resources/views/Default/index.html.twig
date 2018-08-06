@@ -1,43 +1,22 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <script type="text/javascript" src="/apps/params.js"></script>
+    <script type="text/javascript" src="/public/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/public/js/Twake.js"></script>
 
-    <script type="text/javascript" src="/apps/libs/require.js"></script>
-    <script type="text/javascript" src="/apps/libs/jquery.min.js"></script>
-    <script type="text/javascript" src="/apps/libs/jquery-ui.js"></script>
-
-    <script type="text/javascript" src="/apps/libs/twake.js"></script>
-
-    <link rel="stylesheet" href="/public/apps_base.css">
-
-    <script type="text/javascript" src="https://{{ onlyoffice_server }}/web-apps/apps/api/documents/api.js"></script>
-
-    <style>
-        a:hover {
-            color: #463e7a;
-        }
-
-        a {
-            cursor: pointer;
-            color: #6c6c6c;
-        }
-    </style>
+    <script type="text/javascript" src="{{ onlyoffice_server }}/web-apps/apps/api/documents/api.js"></script>
 
 </head>
 <body style="height:100%">
 
-<div id="onlyoffice_container" style="width:100%;height:100%;background-color: #{{ color }}">
+<div id="onlyoffice_container"
+     style="top:0; left: 0;width: 100%;height: 100%;position: absolute;color: #FFF;text-align: center;background-color: #{{ color }}">
 
-    <div style="position:absolute;top:0;bottom:0;left:0;right:0;margin:auto;width:170px;height:64px;text-align: center;padding: 20px;background: #fff;box-shadow: 0px 5px 20px -6px;">
-        <a onclick="newFile()">Nouveau <i>{{ modeName }}</i></a>
-        <br><br>
-        <a onclick="openFinder()">Ouvrir un fichier</a>
-    </div>
 
 </div>
 
 <script type="text/javascript">
+    window.workspaceId = {{ workspaceId }};
     window.user = {
         id: {{ userid }},
         username: "{{ username }}",
@@ -60,8 +39,7 @@
         allowedextensions = ["xlsx", "csv", "fods", "ods", "xls", "xlsm", "xlt", "xltm", "xltx"];
     }
 
-    window.baseURL = "https://apps.twakeapp.com/onlyoffice/" + window.mode + "/";
-
+    window.baseURL = "{{ server }}ajax/onlyoffice/" + window.mode + "/";
 
     openFile = function (doc) {
 
@@ -131,7 +109,8 @@
 
         $.post(window.baseURL + "open", {
             "fileId": file.id,
-            "filename": file.name
+            "filename": file.name,
+            "workspaceId": workspaceId
         }, function (data) {
 
             var doc = {

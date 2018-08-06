@@ -21,7 +21,7 @@ class OnlyofficeFile
     private $id;
 
     /**
-     * @ORM\Column(name="group_id", type="integer")
+     * @ORM\Column(name="workspace_id", type="integer")
      */
     private $workspaceId;
 
@@ -29,6 +29,7 @@ class OnlyofficeFile
      * @ORM\Column(name="file_id", type="integer")
      */
     private $fileId;
+
     /**
      * @ORM\Column(name="date", type="datetime")
      */
@@ -59,7 +60,7 @@ class OnlyofficeFile
     /**
      * @return mixed
      */
-    public function getGroupId()
+    public function getWorkspaceId()
     {
         return $this->workspaceId;
     }
@@ -67,7 +68,7 @@ class OnlyofficeFile
     /**
      * @param mixed $workspaceId
      */
-    public function setGroupId($workspaceId)
+    public function setWorkspaceId($workspaceId)
     {
         $this->workspaceId = $workspaceId;
     }
