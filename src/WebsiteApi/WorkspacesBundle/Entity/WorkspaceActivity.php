@@ -51,14 +51,14 @@ class WorkspaceActivity
     private $title;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="string", nullable=true)
      */
     private $objectRepository;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $objectId;
+    private $objectId = 0;
 
 	public function __construct($workspace, $user, $app, $title, $objectRepository, $objectId) {
 		$this->workspace = $workspace;

@@ -624,7 +624,9 @@ class DriveFileSystem implements DriveFileSystemInterface
             new TranslationObject($this->translate,"drive.has_been_added", $newFile->getName(), $dirName),
             $newFile->getId(), $userId);
 
-        $this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.create","TwakeDriveBundle:DriveFile", $newFile->getId());
+        if (!$detached_file) {
+            $this->workspacesActivities->recordActivity($workspace, $userId, "drive", "workspace.activity.file.create", "TwakeDriveBundle:DriveFile", $newFile->getId());
+        }
         $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
 
         return $newFile;
@@ -938,7 +940,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             }
         }
 
-        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","workspace.activity.file.trash","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
+        //$this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","workspace.activity.file.trash","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
         return true;
     }
 
@@ -1041,7 +1043,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             $this->workspacesApps->enableApp($fileOrDirectory->getGroup(),$app->getId());
         }
 
-        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","workspace.activity.file.restore","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
+        //$this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","workspace.activity.file.restore","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
         return true;
     }
 

@@ -118,7 +118,7 @@ class InitCommand extends ContainerAwareCommand
         $twake_bot->setUsername("twake_bot");
         $twake_bot->setFirstName("Twake");
         $twake_bot->setLastName("Bot");
-        $twake_bot->setEmail("");
+        $twake_bot->setEmail("twake_bot@twakeapp.com");
         $manager->persist($twake_bot);
 
         // Création des applications de base

@@ -233,6 +233,9 @@ class Notifications implements NotificationsInterface
     public function readAll($application, $workspace, $user, $code = null, $force=false)
     {
 
+        $this->deleteAll($application, $workspace, $user, $code, $force);
+        return;
+
         $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
 
         $search = Array(
