@@ -1,5 +1,5 @@
 
-
+#[REMOVE_DOCKER]
 administration_authentication:
     resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
     prefix:   /administration/ajax/authentication
@@ -16,6 +16,7 @@ easy_admin_bundle_dashboard:
 #website_group:
 #    resource: "@WebsiteGroupBundle/Resources/config/routing.yml"
 #    prefix:   /group/
+#[/REMOVE_DOCKER]
 
 
 fos_user_resetting:
@@ -27,11 +28,12 @@ NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
 
+#[REMOVE_DOCKER]
 #Administration
-
 administration_general:
     resource: "@AdministrationGeneralBundle/Resources/config/routing.yml"
     prefix:   /administration/
+#[/REMOVE_DOCKER]
 
 
 #API pour les developpeurs
@@ -44,7 +46,7 @@ check:
 calendar:
     resource: "@TwakeCalendarBundle/Resources/config/routing.yml"
     prefix:   /ajax/calendar/
-    
+
 project:
     resource: "@TwakeProjectBundle/Resources/config/routing.yml"
     prefix:   /ajax/project/
@@ -105,14 +107,11 @@ twake_notifications:
     prefix:   /ajax/notifications/
     methods: [POST, GET]
 
+
 twake_objectLinks:
     resource: "@TwakeObjectLinksBundle/Resources/config/routing.yml"
     prefix:   /ajax/objectLinks/
     methods: [POST]
-
-twake_onlyoffice:
-    resource: "@TwakeOnlyOfficeBundle/Resources/config/routing.yml"
-    prefix:   /ajax/onlyoffice/
 
 twake_api_error:
     path:     /ajax/{req}
@@ -122,6 +121,7 @@ twake_api_error:
 
 
 #API pour les developpeurs
+#[REMOVE_DOCKER]
 developers_api_users:
     resource: "@DevelopersApiUsersBundle/Resources/config/routing.yml"
     prefix:   /api/users/
@@ -141,6 +141,7 @@ developers_api_messages:
     resource: "@DevelopersApiMessagesBundle/Resources/config/routing.yml"
     prefix:   /api/messages/
     methods: [POST]
+#[/REMOVE_DOCKER]
 
 #API V1 pour les developpeurs
 developers_api_v1_messages:
