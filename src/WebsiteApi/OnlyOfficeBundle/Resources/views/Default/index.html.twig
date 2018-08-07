@@ -50,6 +50,8 @@
 
         $("#onlyoffice_container").html("<div id='onlyoffice_container_instance'></div>");
 
+        console.log(window.baseURL + "save?token=" + doc.token);
+
         window.docEditor = new DocsAPI.DocEditor("onlyoffice_container_instance",
             {
                 scrollSensitivity: scrollSensitivity,

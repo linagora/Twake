@@ -111,6 +111,7 @@ class DefaultController extends Controller
 
                 if ($file != null) {
 
+
                     $oldFilename = $fileKey->getName();
                     $oldFileParts = explode(".", $oldFilename);
                     array_pop($oldFileParts);
@@ -159,7 +160,7 @@ class DefaultController extends Controller
     {
 
         $user = $this->getUser();
-        $workspaceId = $request->query->getInt("workspaceId", 0);
+        $workspaceId = $request->request->getInt("workspaceId", 0);
 
         if ($user != null) {
 
@@ -169,6 +170,7 @@ class DefaultController extends Controller
 
             $file = new OnlyofficeFile($workspaceId, $fId);
             $em->persist($file);
+
 
             $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFileKeys");
             $fileKey = $repo->findOneBy(Array("fileId" => $fId));
@@ -213,9 +215,13 @@ class DefaultController extends Controller
                 $em->persist($file);
                 $em->flush();
 
-                $this->get('app.drive.FileSystem')->download($file->getWorkspaceId(), $file->getFileId(), false);
+                $response = new Response();
+                $disposition = $response->headers->makeDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT, "file");
+                $response->headers->set('Content-Disposition', $disposition);
+                $response->sendHeaders();
 
-                return new Response();
+                $this->get('app.drive.FileSystem')->download($file->getWorkspaceId(), $file->getFileId(), false);
+                die();
 
 
             }
