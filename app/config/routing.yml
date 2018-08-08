@@ -36,12 +36,6 @@ administration_general:
 #[/REMOVE_DOCKER]
 
 
-#API pour les developpeurs
-check:
-    resource: "@TwakeCheckBundle/Controller/"
-    prefix:   /api/
-
-
 #API pour le site (et pas les developpeurs)
 calendar:
     resource: "@TwakeCalendarBundle/Resources/config/routing.yml"
@@ -170,6 +164,6 @@ developers_api_v1_core:
 
 developers_api_error:
     path:     /api/{req}
-    defaults: { _controller: TwakeCheckBundle:Error:BadRequest }
+    defaults: { _controller: DevelopersApiV1CoreBundle:Default:BadRequest }
     requirements:
       req: ".*"

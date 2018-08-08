@@ -86,12 +86,14 @@ function getDirContents($dir){
                                 $line = str_replace(" : ", ":", $line);
 
                                 //Remove one line comments
-                                $line = preg_replace("/([a-z0-9A-Z])'([a-z0-9A-Z])/", "$1$2", $line);
-                                $splited = explode("//", $line);
-                                if (count($splited) > 1 && (trim($splited[0]) == "" || !(strpos(end($splited), '"') !== false || strpos(end($splited), "'") !== false))) {
-                                    array_pop($splited);
-                                    $line = implode("//", $splited);
-                                }
+                                $line = preg_replace_callback('/\/\/.*|\/\*[\s\S]*?\*\/|("(\\.|[^"])*")/m',
+                                    function ($matches) {
+                                        if (\is_array($matches) && (\count($matches) > 1)) {
+                                            return $matches[1];
+                                        } else {
+                                            return '';
+                                        }
+                                    }, $line);
 
                                 if (trim($line) != '') {
                                     $exclude[] = trim($line);
@@ -122,7 +124,7 @@ function getDirContents($dir){
                         if (strpos($path . "/", "/Entity/") !== false) {
                             $content = implode("\n", $exclude);
                         } else {
-                            $content = implode("", $exclude);
+                            $content = implode("\n", $exclude);
                         }
                         $content = str_replace("<?php ", "<?php", $content);
                         $content = str_replace("<?php", "<?php ", $content);
@@ -133,9 +135,15 @@ function getDirContents($dir){
                             $replaceA = [];
                             $replaceB = [];
                             foreach ($variables as $variable) {
-                                if ($variable != '$this') {
-                                    $replaceA[] = $variable;
+                                $variable = explode("$", $variable);
+                                $variable = $variable[1];
+                                if ($variable != 'this') {
+                                    $replaceA[] = '$' . $variable;
                                     $replaceB[] = '$v' . md5($variable);
+                                    if (!preg_match('/function +' . $variable . '\\(/', $content)) {
+                                        $replaceA[] = '$this->' . $variable;
+                                        $replaceB[] = '$this->v' . md5($variable);
+                                    }
                                 }
                             }
                             $content = str_replace($replaceA, $replaceB, $content);

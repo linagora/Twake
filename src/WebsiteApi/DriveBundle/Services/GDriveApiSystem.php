@@ -93,7 +93,7 @@ class GDriveApiSystem
         $client->setScopes(Google_Service_Drive::DRIVE);
         $client->setAuthConfig('../app/Ressources/Apis/client_secret.json');
         $client->setAccessType('offline');
-        $data = $this->restClient->get('https://www.googleapis.com/drive/v3/files/root' , array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'",
+        $data = $this->restClient->get("https://www.googleapis.com/drive/v3/files/root", array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'",
             "Authorization: Bearer " . $accessToken)));
 
         $content = @json_decode($data->getContent(), true);
@@ -102,7 +102,7 @@ class GDriveApiSystem
     }
 
     public function getGDriveBasicInfo($gdriveId,Token $userToken){
-        $data = $this->restClient->get('https://www.googleapis.com/drive/v3/files/' . $gdriveId, array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'",
+        $data = $this->restClient->get("https://www.googleapis.com/drive/v3/files/" . $gdriveId, array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'",
             "Authorization: Bearer " . $this->getGDriveToken($userToken))));
 
         $content = @json_decode($data->getContent(), true);
@@ -347,7 +347,7 @@ class GDriveApiSystem
         }
         if ($hasThumbnail) {
             if (strpos($url, "https://") == 0) {
-                $opts = array('http' =>
+                $opts = array("http" =>
                     array(
                         'method'  => 'GET',
                         'header'  =>
@@ -376,7 +376,7 @@ class GDriveApiSystem
     }
 
     public function rename($gdriveId,$filename,$description, Token $userToken){
-        $data = $this->restClient->patch('https://www.googleapis.com/drive/v3/files/' . $gdriveId, '{ "name": "'.$filename.'", "description": "'.$description.'"}',
+        $data = $this->restClient->patch("https://www.googleapis.com/drive/v3/files/" . $gdriveId, '{ "name": "' . $filename . '", "description": "' . $description . '"}',
             array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken($userToken), "Content-Type: application/json")));
 
         $content = @json_decode($data->getContent(), true);
@@ -452,7 +452,7 @@ class GDriveApiSystem
     }
 
     public function delete($gdriveId, Token $userToken){
-        $data = $this->restClient->delete('https://www.googleapis.com/drive/v3/files/' . $gdriveId,
+        $data = $this->restClient->delete("https://www.googleapis.com/drive/v3/files/" . $gdriveId,
             array(CURLOPT_HTTPHEADER => Array("'Content-Type: application/json'", "Authorization: Bearer " . $this->getGDriveToken($userToken))));
 
         return $data;
@@ -460,7 +460,7 @@ class GDriveApiSystem
 
     public function setTrashed($gdriveId, $trashed, Token $userToken){
         $trashed = $trashed ? "true" : "false";
-        $data = $this->restClient->patch('https://www.googleapis.com/drive/v3/files/' . $gdriveId, '{ "trashed": '.$trashed.'}',
+        $data = $this->restClient->patch("https://www.googleapis.com/drive/v3/files/" . $gdriveId, '{ "trashed": ' . $trashed . '}',
             array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken($userToken), "Content-Type: application/json")));
 
         $content = @json_decode($data->getContent(), true);
@@ -477,7 +477,7 @@ class GDriveApiSystem
                   \"address\": \"https://".$webSiteAddress."/ajax/drive/users_to_notify/post_gdrive_notification\"
                 }";
 
-        $data = $this->restClient->post('https://www.googleapis.com/drive/v3/files/'.$gdriveID.'/watch', $json,
+        $data = $this->restClient->post("https://www.googleapis.com/drive/v3/files/" . $gdriveID . '/watch', $json,
             array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken($userToken), "Content-Type: application/json")));
 
         return json_decode($data->getContent(),true);
@@ -490,7 +490,7 @@ class GDriveApiSystem
                   \"type\": \"web_hook\"
                 }";
 
-        $data = $this->restClient->post('https://www.googleapis.com/drive/v3/channels/stop', $json,
+        $data = $this->restClient->post("https://www.googleapis.com/drive/v3/channels/stop", $json,
             array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->getGDriveToken($userToken), "Content-Type: application/json")));
 
         return $data;

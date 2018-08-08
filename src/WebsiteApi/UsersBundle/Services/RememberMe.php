@@ -32,7 +32,7 @@ class RememberMe
 				'name' => 'REMEMBERME',
 				'domain' => null,
 				'secure' => false,
-				'httponly' => true,
+                "httponly" => true,
 				'lifetime' => 60*60*24*360,
 				'always_remember_me' => true,
 				'remember_me_parameter' => '_remember_me')

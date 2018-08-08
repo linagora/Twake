@@ -158,7 +158,7 @@ class MarketApplication implements MarketApplicationInterface
     public function getAppForUrl($url){
         if ($url != null){
 
-            $pattern = '/\/\/([^\/]+)\//';
+            $pattern = "/\/\/([^\/]+)\//";
             $subject = $url;
             preg_match($pattern, $subject, $matches, PREG_OFFSET_CAPTURE);
 

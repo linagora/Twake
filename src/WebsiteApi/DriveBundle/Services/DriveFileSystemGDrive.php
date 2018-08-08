@@ -285,7 +285,7 @@ class DriveFileSystemGDrive
 
         $json .= "}";
 
-        $data = $this->restClient->post('https://www.googleapis.com/drive/v3/files', $json,
+        $data = $this->restClient->post("https://www.googleapis.com/drive/v3/files", $json,
             array(CURLOPT_HTTPHEADER => Array("Authorization: Bearer " . $this->gdriveApi->getGDriveToken($this->userToken), "Content-Type: application/json")));
         return $newFile;
     }

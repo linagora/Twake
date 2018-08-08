@@ -15,7 +15,8 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 
 class DataTokenController extends Controller
 {
-    public function makeTokenAction(Request $request){
+    public function makeTokenAction(Request $request)
+    {
         $user = $this->getUser();
 
         $data = Array(
@@ -23,19 +24,21 @@ class DataTokenController extends Controller
             "data" => null
         );
 
-        if($user!=null)
+        if ($user != null) {
             $userId = $user->getId();
-        else
+        } else {
             return new JsonResponse($data);
+        }
 
         $workspaceId = $request->request->get("workspaceId", 0);
 
-        $success = $this->get("website_api_market.data_token")->checkWorkspaceUser($workspaceId,$userId);
+        $success = $this->get("website_api_market.data_token")->checkWorkspaceUser($workspaceId, $userId);
 
-        if(!$success)
+        if (!$success) {
             return new JsonResponse($data);
+        }
 
-        $dataToken = $this->get("website_api_market.data_token")->makeToken($workspaceId,$userId);
+        $dataToken = $this->get("website_api_market.data_token")->makeToken($workspaceId, $userId);
 
         $data["data"] = $dataToken->getToken();
 
