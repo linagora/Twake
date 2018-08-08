@@ -42,7 +42,7 @@ class Connections
 
 		$file = "gos:websockets";
 
-        //[REMOVE_DOCKER]
+        //[REMOVE_ONPREMISE]
         $repo = $this->doctrine->getRepository("AdministrationAuthenticationBundle:Errors");
 		$record = $repo->findOneBy(Array("file"=>$file));
 
@@ -54,7 +54,7 @@ class Connections
 
 		$this->doctrine->persist($record);
 		$this->doctrine->flush();
-        //[/REMOVE_DOCKER]
+        //[/REMOVE_ONPREMISE]
 
 	}
 
@@ -97,9 +97,9 @@ class Connections
 		$this->doctrine->flush();
 
 		if($justArrived){
-            //[REMOVE_DOCKER]
+            //[REMOVE_ONPREMISE]
 			$this->userConnectionService->newConnection($user->getId());
-            //[/REMOVE_DOCKER]
+            //[/REMOVE_ONPREMISE]
 		}
 
 		//Send notifications any way
@@ -154,9 +154,9 @@ class Connections
 		if($disconnected){
 			//echo $user->getUsername() . " is Disconnected" . PHP_EOL;
 			//Send notification to other users
-            //[REMOVE_DOCKER]
+            //[REMOVE_ONPREMISE]
             $this->userConnectionService->closeConnection($user->getId());
-            //[/REMOVE_DOCKER]
+            //[/REMOVE_ONPREMISE]
 			$this->calls->exitCalls($user);
 			$this->pusher->push(false, 'connections/'.$user->getId());
 		}

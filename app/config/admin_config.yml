@@ -1,7 +1,7 @@
 
 
 easy_admin:
-    #[REMOVE_DOCKER]
+    #[REMOVE_ONPREMISE]
     list:
         actions: ['show']
     design:
@@ -92,4 +92,4 @@ easy_admin:
             label: 'Pricing plans'
             list:
                 title: "Pricing plans"
-#[/REMOVE_DOCKER]
+#[/REMOVE_ONPREMISE]

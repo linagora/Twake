@@ -1,5 +1,5 @@
 
-#[REMOVE_DOCKER]
+#[REMOVE_ONPREMISE]
 administration_authentication:
     resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
     prefix:   /administration/ajax/authentication
@@ -16,7 +16,7 @@ easy_admin_bundle_dashboard:
 #website_group:
 #    resource: "@WebsiteGroupBundle/Resources/config/routing.yml"
 #    prefix:   /group/
-#[/REMOVE_DOCKER]
+#[/REMOVE_ONPREMISE]
 
 
 fos_user_resetting:
@@ -28,12 +28,12 @@ NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
 
-#[REMOVE_DOCKER]
+#[REMOVE_ONPREMISE]
 #Administration
 administration_general:
     resource: "@AdministrationGeneralBundle/Resources/config/routing.yml"
     prefix:   /administration/
-#[/REMOVE_DOCKER]
+#[/REMOVE_ONPREMISE]
 
 
 #API pour le site (et pas les developpeurs)
@@ -115,7 +115,7 @@ twake_api_error:
 
 
 #API pour les developpeurs
-#[REMOVE_DOCKER]
+#[REMOVE_ONPREMISE]
 developers_api_users:
     resource: "@DevelopersApiUsersBundle/Resources/config/routing.yml"
     prefix:   /api/users/
@@ -135,7 +135,7 @@ developers_api_messages:
     resource: "@DevelopersApiMessagesBundle/Resources/config/routing.yml"
     prefix:   /api/messages/
     methods: [POST]
-#[/REMOVE_DOCKER]
+#[/REMOVE_ONPREMISE]
 
 #API V1 pour les developpeurs
 developers_api_v1_messages:

@@ -70,7 +70,7 @@ function getDirContents($dir){
                                 $found = true;
                             }
                         }
-                        if (strpos($line, "[REMOVE_DOCKER]") !== false) {
+                        if (strpos($line, "[REMOVE_ONPREMISE]") !== false) {
                             $removing = true;
                         }
 
@@ -95,6 +95,10 @@ function getDirContents($dir){
                                         }
                                     }, $line);
 
+                                if (strpos($line, "if") !== false || strpos($line, "else") !== false) {
+                                    $line .= "[ONPREMISE_LINE_BREAK]";
+                                }
+
                                 if (trim($line) != '') {
                                     $exclude[] = trim($line);
                                 }
@@ -116,7 +120,7 @@ function getDirContents($dir){
                             }
                         }
 
-                        if (strpos($line, "[/REMOVE_DOCKER]") !== false) {
+                        if (strpos($line, "[/REMOVE_ONPREMISE]") !== false) {
                             $removing = false;
                         }
                     }
@@ -124,7 +128,7 @@ function getDirContents($dir){
                         if (strpos($path . "/", "/Entity/") !== false) {
                             $content = implode("\n", $exclude);
                         } else {
-                            $content = implode("\n", $exclude);
+                            $content = implode("", $exclude);
                         }
                         $content = str_replace("<?php ", "<?php", $content);
                         $content = str_replace("<?php", "<?php ", $content);
@@ -171,6 +175,8 @@ function getDirContents($dir){
                     } else {
                         $content = implode("\n", $exclude);
                     }
+
+                    $content = str_replace("[ONPREMISE_LINE_BREAK]", "\n", $content);
 
                     file_put_contents($path, $content);
 
