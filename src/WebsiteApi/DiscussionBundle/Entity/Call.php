@@ -22,49 +22,22 @@ class Call implements ObjectLinksInterface
 	 */
 	private $id;
 
-	/**
-	 * @ORM\Column(type="string")
-	 */
-	private $discussionKey;
-
     /**
      * @ORM\Column(type="string")
      */
     private $name;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message")
+     * @ORM\Column(type="string")
      */
+    private $token;
 
-    private $message;
 
-
-    public function __construct($key,$message, $name){
-		$this->discussionKey = $key;
-		$this->setMessage($message);
+    public function __construct($token, $name)
+    {
+        $this->token = $token;
 		$this->setName($name);
 	}
-
-
-	public function getDiscussionKey(){
-		return $this->discussionKey;
-	}
-
-    /**
-     * @return mixed
-     */
-    public function getMessage()
-    {
-        return $this->message;
-    }
-
-    /**
-     * @param mixed $message
-     */
-    public function setMessage($message)
-    {
-        $this->message = $message;
-    }
 
 
     public function getId()
@@ -74,7 +47,7 @@ class Call implements ObjectLinksInterface
 
     public function getRepository()
     {
-        return "TwakeCallsBundle:Call";
+        return "TwakeDiscussionBundle:Call";
     }
 
     public function getAsArray()
@@ -82,8 +55,7 @@ class Call implements ObjectLinksInterface
         return Array(
             "id" => $this->getId(),
             "name" => $this->getName(),
-            "discussionKey" => $this->getDiscussionKey(),
-            "message" => $this->getMessage(),
+            "token" => $this->getToken()
         );
     }
 
@@ -94,7 +66,7 @@ class Call implements ObjectLinksInterface
             "object_name" => $this->getName(),
             "key" => "calls",
             "type" => "call",
-            "code" => $this->getDiscussionKey(),
+            "code" => $this->getToken(),
         );
     }
 
@@ -138,5 +110,23 @@ class Call implements ObjectLinksInterface
     {
         $this->name = $name;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getToken()
+    {
+        return $this->token;
+    }
+
+    /**
+     * @param mixed $token
+     */
+    public function setToken($token)
+    {
+        $this->token = $token;
+    }
+
+
 }
 

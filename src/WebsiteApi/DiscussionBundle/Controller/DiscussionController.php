@@ -380,9 +380,9 @@ class DiscussionController extends Controller
         if(!$res)
             $data["errors"][] = "Fail to make a call";
         else if($objectLink)
-            $data["data"][] = $res->getAsArray();
+            $data["data"] = $res->getAsArray();
         else
-            $data["data"][] = "success";
+            $data["data"] = "success";
 
         return new JsonResponse($data);
     }

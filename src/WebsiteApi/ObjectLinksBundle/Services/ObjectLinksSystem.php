@@ -28,6 +28,7 @@ class ObjectLinksSystem
             self::$keyMap["file"] = "TwakeDriveBundle:DriveFile";
             self::$keyMap["event"] = "TwakeCalendarBundle:CalendarEvent";
             self::$keyMap["task"] = "TwakeProjectBundle:BoardTask";
+            self::$keyMap["call"] = "TwakeDiscussionBundle:Call";
         }
     }
 
@@ -51,7 +52,7 @@ class ObjectLinksSystem
             }
             return $returnVal;
         }else{
-            return null;
+            return [];
         }
     }
 
@@ -86,7 +87,6 @@ class ObjectLinksSystem
         } else {
             $link = "alreadyThere";
         }
-
         return $link;
     }
 
