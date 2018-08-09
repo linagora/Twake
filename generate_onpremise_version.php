@@ -133,6 +133,7 @@ function getDirContents($dir){
                         $content = str_replace("<?php ", "<?php", $content);
                         $content = str_replace("<?php", "<?php ", $content);
 
+
                         if (strpos($path . "/", "/Entity/") === false && strpos($path . "/", "/Controller/") === false) {
                             preg_match_all("/\\$[a-zA-Z_][a-zA-Z_0-9]+/", $content, $variables);
                             $variables = array_unique($variables[0]);
