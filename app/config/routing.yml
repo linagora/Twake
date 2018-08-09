@@ -16,7 +16,7 @@ easy_admin_bundle_dashboard:
 #website_group:
 #    resource: "@WebsiteGroupBundle/Resources/config/routing.yml"
 #    prefix:   /group/
-#[/REMOVE_ONPREMISE]
+#[/REMOVE_ONPREMISTwakeCheckBundleE]
 
 
 fos_user_resetting:
@@ -109,7 +109,7 @@ twake_objectLinks:
 
 twake_api_error:
     path:     /ajax/{req}
-    defaults: { _controller: TwakeCheckBundle:Error:BadRequest }
+    defaults: { _controller: DevelopersApiV1CoreBundle:Default:BadRequest }
     requirements:
       req: ".*"
 

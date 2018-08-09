@@ -624,7 +624,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             new TranslationObject($this->translate,"drive.has_been_added", $newFile->getName(), $dirName),
             $newFile->getId(), $userId);
 
-        if (!$detached_file) {
+        if (!$detached_file && !$isDirectory) {
             $this->workspacesActivities->recordActivity($workspace, $userId, "drive", "workspace.activity.file.create", "TwakeDriveBundle:DriveFile", $newFile->getId());
         }
         $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());

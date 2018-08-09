@@ -41,7 +41,8 @@ class WorkspacesActivities
 
     }
 
-    public function recordActivity($workspace, $user, $appPublicKey,$title,$objectRepository,$objectId){
+    public function recordActivity($workspace, $user, $appPublicKey, $title, $objectRepository = null, $objectId = null)
+    {
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
         $user = $this->convertToEntity($user,"TwakeUsersBundle:User");
         $app = $this->applicationManager->getAppByPublicKey($appPublicKey);

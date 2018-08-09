@@ -142,15 +142,15 @@ function getDirContents($dir){
                                 $variable = explode("$", $variable);
                                 $variable = $variable[1];
                                 if ($variable != 'this') {
-                                    $replaceA[] = '$' . $variable;
-                                    $replaceB[] = '$v' . md5($variable);
+                                    $replaceA[] = '/\\$' . $variable . "([^a-zA-Z0-9_])/";
+                                    $replaceB[] = '$v' . md5($variable) . "$1";
                                     if (!preg_match('/function +' . $variable . '\\(/', $content)) {
-                                        $replaceA[] = '$this->' . $variable;
-                                        $replaceB[] = '$this->v' . md5($variable);
+                                        $replaceA[] = '/\\$this->' . $variable . "([^a-zA-Z0-9_])/";
+                                        $replaceB[] = '$this->v' . md5($variable) . "$1";
                                     }
                                 }
                             }
-                            $content = str_replace($replaceA, $replaceB, $content);
+                            $content = preg_replace($replaceA, $replaceB, $content);
 
                             //Re replace class vars
                             preg_match_all("/var +\\$[a-zA-Z_][a-zA-Z_0-9]+/", $content, $variables);
@@ -161,10 +161,10 @@ function getDirContents($dir){
                             foreach ($variables as $variable) {
                                 $variable = explode(" ", $variable);
                                 $variable = $variable[1];
-                                $replaceA[] = '$v' . md5($variable);
-                                $replaceB[] = $variable;
+                                $replaceA[] = '/\\$v' . md5($variable) . "([^a-zA-Z0-9_])/";
+                                $replaceB[] = $variable . "$1";
                             }
-                            $content = str_replace($replaceA, $replaceB, $content);
+                            $content = preg_replace($replaceA, $replaceB, $content);
 
                         }
 
