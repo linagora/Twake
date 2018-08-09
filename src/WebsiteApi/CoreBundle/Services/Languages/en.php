@@ -6,7 +6,7 @@
  * Time: 14:20
  */
 
-$en = Array(
+$translation = Array(
     "drive.move_file" => "Move file",
     "drive.new_file" => "New file",
     "drive.has_been_added" => "$1 has been added to $2",
@@ -40,5 +40,5 @@ $en = Array(
     "workspace.activity.workspace.change_wallpaper" => "$1 has changed the workspace wallpaper",
     "workspace.activity.workspace.archive" => "$1 has archived the workspace",
     "workspace.activity.workspace.unarchive" => "$1 has unarchived the workspace",
-    "workspace.activity.workspace.add_member" => "$1 has added $2 member(s)",
+    "workspace.activity.workspace.add_member" => "$1 was added to this workspace",
 );
