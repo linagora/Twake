@@ -170,7 +170,7 @@ class BoardTasks implements BoardTasksInterface
             $this->workspacesActivities->recordActivity($workspace, $currentUserId, "tasks", "workspace.activity.task.update", "TwakeProjectBundle:BoardTask", $task->getId());
         }
 
-        $this->notifyParticipants($task->getAllUsersToNotify(), $workspace, "Task " . $task->getName() . " updated", "", $board->getId() . "/" . $taskId);
+        $this->notifyParticipants($task->getAllUsersToNotify(), $workspace, "Task " . $task->getName() . " updated", "Task " . $task->getName() . " updated", $board->getId() . "/" . $taskId);
         
 
         return $task;
@@ -275,15 +275,11 @@ class BoardTasks implements BoardTasksInterface
                     $participantArray = $task->getUserIdToNotify();
                     $participantArray[] = $user->getId();
                 }
-                $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$task->getName(),"", Array(), Array("notifCode" => ""));
+                $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Added  to " . $task->getName(), "Added  to " . $task->getName(), Array(), Array("notifCode" => $boardId . "/" . $task->getId()));
             }
         }
         $task->setUserIdToNotify($participantArray);
         $this->doctrine->flush();
-        $data = Array(
-            "type" => "update",
-            "task" => $task->getAsArray()
-        );
         
         return true;
 
@@ -319,7 +315,7 @@ class BoardTasks implements BoardTasksInterface
                     unset($participantArray[$i]);
                     $participantArray = array_values($participantArray);
                     error_log("array after remove : ".json_encode($participantArray));
-                    $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Removed  from ".$task->getName(),"", Array(), Array("notifCode" => ""));
+                    $this->boardActivity->pushActivity(true, $workspaceId, $user, null, "Removed  from " . $task->getName(), "Removed  from " . $task->getName(), Array(), Array("notifCode" => $boardId . "/" . $taskId));
                     break;
                 }
             }

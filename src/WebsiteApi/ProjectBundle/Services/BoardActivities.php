@@ -35,6 +35,8 @@ class BoardActivities implements BoardActivityInterface
 
     public function pushActivity($pushNotif = true, $workspace, $user = null, $levels = null, $title="", $text = null, $type = Array(), $additionalData = Array())
     {
+        error_log("HEY PUSH NOTIFICATION" . $title);
+
         //ajotuer dans la table BoardActivity
         if ($workspace != null) {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
