@@ -9,6 +9,7 @@
 namespace WebsiteApi\WorkspacesBundle\Services;
 
 
+use Doctrine\ORM\ORMException;
 use Dompdf\Exception;
 use WebsiteApi\MarketBundle\Services\MarketApplication;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceActivity;
@@ -32,12 +33,17 @@ class WorkspacesActivities
         }
 
         if (is_int($var)) {
-            return $this->doctrine->getRepository($repository)->find($var);
+            try {
+                $r = $this->doctrine->getRepository($repository)->find($var);
+            } catch (ORMException $e) {
+                $r = null;
+            }
         } else if (is_object($var)) {
-            return $var;
+            $r = $var;
         } else {
-            return null;
+            $r = null;
         }
+        return $r;
 
     }
 
@@ -88,7 +94,10 @@ class WorkspacesActivities
                 $end_pos = key($activities_by_user_app[$key]);
                 if ($activity->getObjectRepository()) {
                     try {
-                        $activities_by_user_app[$key][$end_pos]["objects"][] = $this->convertToEntity($activity->getObjectId(), $activity->getObjectRepository())->getAsArrayFormated();
+                        $obj = $this->convertToEntity($activity->getObjectId(), $activity->getObjectRepository());
+                        if ($obj) {
+                            $activities_by_user_app[$key][$end_pos]["objects"][] = $obj->getAsArrayFormated();
+                        }
                     } catch (Exception $e) {
                         error_log($e);
                     }
@@ -97,7 +106,10 @@ class WorkspacesActivities
                 $objects = Array();
                 if ($activity->getObjectRepository()) {
                     try {
-                        $objects[] = $this->convertToEntity($activity->getObjectId(), $activity->getObjectRepository())->getAsArrayFormated();
+                        $obj = $this->convertToEntity($activity->getObjectId(), $activity->getObjectRepository());
+                        if ($obj) {
+                            $objects[] = $obj->getAsArrayFormated();
+                        }
                     } catch (Exception $e) {
                         error_log($e);
                     }
