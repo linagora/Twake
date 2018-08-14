@@ -81,7 +81,7 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
         return $result;
     }
 
-    public function findWithOffsetId($streamId, $maxId, $subjectId)
+    public function findWithOffsetId($streamId, $maxId, $subjectId, $maxResult = 50)
     {
 
         $qb = $this->createQueryBuilder("m");
@@ -101,7 +101,7 @@ class MessageRepository extends \Doctrine\ORM\EntityRepository
         }
 
         $qb->orderBy('m.date', 'DESC');
-        $qb->setMaxResults(50);
+        $qb->setMaxResults($maxResult);
         $result = $qb->getQuery()->getResult();
 
         array_reverse($result);

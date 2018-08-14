@@ -336,6 +336,12 @@ class StreamSystem implements StreamSystemInterface
         }
     }
 
+    public function getStreamForUser($user_id, $current_user){
+        $key = "u-" . min($current_user->getId(), $user_id) . "_" . max($current_user->getId(), $user_id);
+        $stream = $this->messageSystem->getStream($key, $current_user);
+        return $stream?$stream["object"]:false;
+    }
+
     public function getStreamList($workspaceId, $user){
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")
 	        ->findOneBy(Array("id"=>$workspaceId,"isDeleted"=>false));
