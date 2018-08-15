@@ -96,7 +96,16 @@ class WorkspacesActivities
                     try {
                         $obj = $this->convertToEntity($activity->getObjectId(), $activity->getObjectRepository());
                         if ($obj) {
-                            $activities_by_user_app[$key][$end_pos]["objects"][] = $obj->getAsArrayFormated();
+                            $found = false;
+                            foreach ($activities_by_user_app[$key][$end_pos]["objects"] as $o) {
+                                if ($o["id"] == $obj->getId()) {
+                                    $found = true;
+                                    break;
+                                }
+                            }
+                            if (!$found) {
+                                $activities_by_user_app[$key][$end_pos]["objects"][] = $obj->getAsArrayFormated();
+                            }
                         }
                     } catch (Exception $e) {
                         error_log($e);
@@ -114,13 +123,15 @@ class WorkspacesActivities
                         error_log($e);
                     }
                 }
-                $activities_by_user_app[$key][] = Array(
-                    "user"=>($activity->getUser()?$activity->getUser()->getAsArray():null),
-                    "app"=>($activity->getApp()?$activity->getApp()->getAsSimpleArray():null),
-                    "date"=>$activity->getDateAdded()->getTimestamp(),
-                    "title"=>$activity->getTitle(),
-                    "objects" => $objects
-                );
+                if (count($objects) > 0) {
+                    $activities_by_user_app[$key][] = Array(
+                        "user" => ($activity->getUser() ? $activity->getUser()->getAsArray() : null),
+                        "app" => ($activity->getApp() ? $activity->getApp()->getAsSimpleArray() : null),
+                        "date" => $activity->getDateAdded()->getTimestamp(),
+                        "title" => $activity->getTitle(),
+                        "objects" => $objects
+                    );
+                }
             }
 
             $last_date_by_user_app[$key] = $activity->getDateAdded()->getTimestamp();

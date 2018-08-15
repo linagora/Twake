@@ -27,7 +27,7 @@ class CalendarEvents implements CalendarEventsInterface
     /* @var WorkspacesActivities $workspacesActivities*/
     var $workspacesActivities;
 
-    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceCalendarActivity,$workspacesActivities)
+    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceCalendarActivity, $workspacesActivities, $objectLinksSystem)
     {
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
@@ -35,6 +35,7 @@ class CalendarEvents implements CalendarEventsInterface
         $this->notifications = $notifications;
         $this->calendarActivity = $serviceCalendarActivity;
         $this->workspacesActivities = $workspacesActivities;
+        $this->objectLinksSystem = $objectLinksSystem;
     }
 
     public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false, $participants=Array(), $disableLog=false)
@@ -164,6 +165,8 @@ class CalendarEvents implements CalendarEventsInterface
         }
 
         $this->doctrine->flush();
+
+        $this->objectLinksSystem->updateObject($event);
 
         $data = Array(
             "type" => "update",

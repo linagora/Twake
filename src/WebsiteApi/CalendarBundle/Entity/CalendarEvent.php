@@ -255,7 +255,10 @@ class CalendarEvent implements ObjectLinksInterface {
 
     public function getPushRoute()
     {
-        return "calendar/".$this->getId();
+        if (!$this->getCalendar()) {
+            return false;
+        }
+        return "calendar/" . $this->getCalendar()->getId();
     }
 
 }

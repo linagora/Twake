@@ -383,7 +383,7 @@ class StreamSystem implements StreamSystemInterface
 	        //Member streams
 	        $members = Array();
             if($workspace->getUser()!=null){ // this is private ws
-	            $retour["stream"] = array_merge($retour["stream"], $this->getAllPrivateStreamList($user));
+                //$retour["stream"] = array_merge($retour["stream"], $this->getAllPrivateStreamList($user));
             }
             else {
 	            $members_array = $this->app_workspace_members->getMembers($workspaceId);

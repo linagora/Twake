@@ -24,7 +24,9 @@ class ObjectLinksController extends Controller
         if (is_array($message)) {
             $tab = Array();
             foreach ($message as $link) {
-                array_push($tab, $link->getAsArrayFormated());
+                if ($link) {
+                    array_push($tab, $link->getAsArrayFormated());
+                }
             }
             $data["data"] = $tab;
         } else {

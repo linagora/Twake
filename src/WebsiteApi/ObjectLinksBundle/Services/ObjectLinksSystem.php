@@ -47,7 +47,11 @@ class ObjectLinksSystem
                 $repo = ($entry->getIdA() != $id) ? $entry->getTypeA() : $entry->getTypeB();
                 $entryId = ($entry->getIdA() != $id) ? $entry->getIdA() : $entry->getIdB();
                 $obj = $this->doctrine->getRepository($repo)->findOneBy(Array("id" => $entryId));
-                array_push($returnVal, $obj);
+                if ($obj) {
+                    array_push($returnVal, $obj);
+                } else {
+                    $this->deleteObjectLink($entry->getTypeA(), $entry->getTypeB(), $entry->getIdA(), $entry->getIdB());
+                }
 
             }
             return $returnVal;
@@ -77,9 +81,12 @@ class ObjectLinksSystem
         ));
 
         if (!$exists) {
-            if($this->getObjectFromRepositoryAndId($link->getTypeA(), $idA) && $this->getObjectFromRepositoryAndId($link->getTypeB(), $idB)) {
+            $objA = $this->getObjectFromRepositoryAndId($link->getTypeA(), $idA);
+            $objB = $this->getObjectFromRepositoryAndId($link->getTypeB(), $idB);
+            if ($objA && $objB) {
                 $this->doctrine->persist($link);
                 $this->doctrine->flush();
+
                 $link = "success";
             }else{
                 $link = "idNotFound";
@@ -199,12 +206,12 @@ class ObjectLinksSystem
             if(count($relation->getFieldsToSynchronised())==0)
                 continue;
             if($relation->getTypeA()==$object->getRepository() && $relation->getIdA()==$object->getId())
-                $object = $this->getObjectFromRepositoryAndId($relation->getTypeB(), $relation->getIdB());
+                $object_ = $this->getObjectFromRepositoryAndId($relation->getTypeB(), $relation->getIdB());
             else
-                $object = $this->getObjectFromRepositoryAndId($relation->getTypeA(), $relation->getIdA());
+                $object_ = $this->getObjectFromRepositoryAndId($relation->getTypeA(), $relation->getIdA());
 
             $partners[] = Array("object" => Array(), "fields" => Array() );
-            $partners[$i]["object"] = $object;
+            $partners[$i]["object"] = $object_;
             $partners[$i]["fields"] = $relation->getFieldsToSynchronised();
             $i++;
         }
@@ -220,12 +227,23 @@ class ObjectLinksSystem
             $partner = $partnerAndFields["object"];
             $fields = $partnerAndFields["fields"];
 
-            /* @var ObjectLinksInterface $partner */
-            foreach ($fields as $field) {
-                $value = $object->get($field);
-                $partner->synchroniseField($field, $value);
-                $this->pusher->push($partner->getAsArray(), $partner->getPushRoute());
-                $this->doctrine->persist($partner);
+            if ($partner) {
+                /* @var ObjectLinksInterface $partner */
+                foreach ($fields as $field) {
+                    $value = $object->get($field);
+                    if ($value) {
+                        $partner->synchroniseField($field, $value);
+
+                        $route = $partner->getPushRoute();
+                        if ($route) {
+                            $this->pusher->push(Array(
+                                "type" => "link_update",
+                                "data" => $partner->getAsArray()
+                            ), $route);
+                        }
+                        $this->doctrine->persist($partner);
+                    }
+                }
             }
         }
         $this->doctrine->flush();
