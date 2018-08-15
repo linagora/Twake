@@ -516,7 +516,7 @@ class BoardTask implements ObjectLinksInterface {
         if (!$this->getBoard()) {
             return false;
         }
-        return "board/" . $this->getBoard()->Id();
+        return "board/" . $this->getBoard()->getId();
     }
 
     /**

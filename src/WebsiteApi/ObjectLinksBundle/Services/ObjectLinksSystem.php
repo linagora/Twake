@@ -228,22 +228,26 @@ class ObjectLinksSystem
             $fields = $partnerAndFields["fields"];
 
             if ($partner) {
+                $didSync = false;
                 /* @var ObjectLinksInterface $partner */
                 foreach ($fields as $field) {
                     $value = $object->get($field);
                     if ($value) {
+                        $didSync = true;
                         $partner->synchroniseField($field, $value);
-
-                        $route = $partner->getPushRoute();
-                        if ($route) {
-                            $this->pusher->push(Array(
-                                "type" => "link_update",
-                                "data" => $partner->getAsArray()
-                            ), $route);
-                        }
-                        $this->doctrine->persist($partner);
                     }
                 }
+
+                if ($didSync) {
+                    $route = $partner->getPushRoute();
+                    if ($route) {
+                        $this->pusher->push(Array(
+                            "type" => "link_update",
+                            "data" => $partner->getAsArray()
+                        ), $route);
+                    }
+                }
+                $this->doctrine->persist($partner);
             }
         }
         $this->doctrine->flush();
