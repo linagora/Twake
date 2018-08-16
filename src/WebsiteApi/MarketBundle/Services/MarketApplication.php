@@ -75,11 +75,11 @@ class MarketApplication implements MarketApplicationInterface
         $this->doctrine->flush();
     }
 
-    public function getAppsByName($name)
+    public function getAppsByName($name, $limit = 30)
     {
 
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $applications = $applicationRepository->findApplicationByName($name);
+        $applications = $applicationRepository->findApplicationByName($name, $limit);
 
         return $applications;
     }

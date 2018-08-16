@@ -567,16 +567,18 @@ class DriveFileSystem implements DriveFileSystemInterface
         );
 
         if ($url!=null) {
-            $app = $this->applicationService->getAppForUrl($url);
-            if ($app) {
-                $newFile->setDefaultWebApp($app);
-            } elseif ($userApp) {
+            if ($userApp) {
                 $userApp = $this->convertToEntity($userApp,"TwakeMarketBundle:Application");
-                if(!$userApp)
-                    return false;
+            }
+            if ($userApp) {
                 $newFile->setDefaultWebApp($userApp);
             } else {
-                return false;
+                $app = $this->applicationService->getAppForUrl($url);
+                if ($app) {
+                    $newFile->setDefaultWebApp($app);
+                } else {
+                    return false;
+                }
             }
 
             $datatopush = Array(
