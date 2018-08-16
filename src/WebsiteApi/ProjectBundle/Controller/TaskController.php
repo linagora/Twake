@@ -79,15 +79,18 @@ class TaskController extends Controller
     }
 
     private function convertObjectListToIdList($list){
-        if(count($list)==0)
+        if (count($list) == 0) {
             return Array();
+        }
 
         $final = Array();
 
         foreach($list as $item) {
-            if(is_int($item))
-                return $list;
-            $final[] = $item["id"];
+            if (is_int($item)) {
+                $final[] = $item;
+            } else {
+                $final[] = $item["id"];
+            }
         }
 
         return $final;

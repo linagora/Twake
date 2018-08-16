@@ -137,21 +137,23 @@ class BoardTasks implements BoardTasksInterface
             return null;
         }
 
+        error_log(json_encode($participants));
+
         $board = $task->getBoard();
 
         if($name!=null)
             $task->setName($name);
-        if($description!=null)
+        if ($description !== null)
             $task->setDescription($description);
         if($weight!=null)
             $task->setWeight($weight);
-        if($labels!=null)
+        if ($labels !== null)
             $task->setLabels($labels);
         if($board!=null)
             $task->setBoard($board);
-        if($participants!=null)
+        if ($participants !== null)
             $task->setParticipants($participants);
-        if($userToNotify!=null)
+        if ($userToNotify !== null)
             $task->setUserIdToNotify($userToNotify);
         if($startDate!=null)
             $task->setFrom($startDate);
