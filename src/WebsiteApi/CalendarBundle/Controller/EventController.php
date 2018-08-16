@@ -24,7 +24,7 @@ class EventController extends Controller
         $from = $request->request->get("from", 0);
         $calendarsIds = $request->request->get("calendarsIds");
 
-        if($useMine) {
+        if ($useMine && !$forUser) {
             $events = $this->get("app.calendar_events")->getEventsForUser($workspaceId, $from, $to, $this->getUser()->getId());
         }else if($forUser){
             $events = $this->get("app.calendar_events")->getEventsForOtherUser($workspaceId, $from, $to, $this->getUser()->getId(),$forUser);
@@ -36,7 +36,11 @@ class EventController extends Controller
         if($events){
             $events_formated = Array();
             foreach ($events as $event){
-                $events_formated[] = $event->getAsArray();
+                if (!is_array($event)) {
+                    $events_formated[] = $event->getAsArray();
+                } else {
+                    $events_formated[] = $event;
+                }
             }
             $data["data"] = $events_formated;
         }

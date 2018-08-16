@@ -526,6 +526,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $file->setDetachedFile(false);
+        $file->setParent($directory);
         $this->updateSize($directory, $file->getSize());
         $this->improveName($file);
         $file->setGroup($workspace);
@@ -577,6 +578,15 @@ class DriveFileSystem implements DriveFileSystemInterface
             } else {
                 return false;
             }
+
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE_EXTERNAL_FILES",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
         }
 
         $newFile->setDetachedFile($detached_file);
@@ -893,7 +903,19 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function autoDelete($workspace, $fileOrDirectory, $user = null)
     {
+        /** @var DriveFile $fileOrDirectory */
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+
+        if ($fileOrDirectory->getDefaultWebApp()) {
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE_EXTERNAL_FILES",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+        }
 
         if ($fileOrDirectory == null) {
             return false;
@@ -1573,7 +1595,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     public function getFilesFromApp($app,$workspace_id){
         $app = $this->convertToEntity($app, "TwakeMarketBundle:Application");
 
-        $listFiles = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(array('default_web_app' => $app, 'group' => $workspace_id), array('opening_rate' => 'desc'), 20);
+        $listFiles = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(array('default_web_app' => $app, 'group' => $workspace_id, 'isInTrash' => false), array('opening_rate' => 'desc'), 20);
         return $listFiles;
     }
 

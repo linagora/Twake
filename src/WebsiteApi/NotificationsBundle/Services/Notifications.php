@@ -45,7 +45,7 @@ class Notifications implements NotificationsInterface
         }
 
         $title = "";
-        if ($workspace && $workspace->getGroup()) {
+        if ($workspace && $workspace->getGroup() && !$workspace->getUser()) {
             $title .= $workspace->getGroup()->getDisplayName() . " - ";
             $title .= $workspace->getName() . " : ";
         } else {

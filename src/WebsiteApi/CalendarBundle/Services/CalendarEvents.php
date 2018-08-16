@@ -426,10 +426,11 @@ class CalendarEvents implements CalendarEventsInterface
             $auth = !$currentUserId;
 
             if($currentUserId && !isset($calendars[$calendar->getId()])) {
-                $workspaces = $this->getWorkspacesByCalendar($calendar);
+                $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("calendar" => $calendar->getId()));
 
-                foreach ($workspaces as $workspace) {
+                foreach ($links as $workspace_link) {
                     /* @var Workspace $workspace */
+                    $workspace = $workspace_link->getWorkspace();
 
                     if(!isset($workspacesId[$workspace->getId()])) {
                         if ($this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
@@ -446,9 +447,9 @@ class CalendarEvents implements CalendarEventsInterface
                 }
 
                 $calendars[$calendar->getId()] = $auth;
-            }
-            else if($currentUserId)
+            } else if ($currentUserId) {
                 $auth = $calendars[$calendar->getId()];
+            }
 
             $events[] = $auth ? $event->getAsArray() : $event->getAsArrayMinimal();
         }
