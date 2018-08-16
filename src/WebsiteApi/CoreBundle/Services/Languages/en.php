@@ -25,6 +25,7 @@ $translation = Array(
     "workspace.activity.task.update" => "$1 has updated $2 task(s)",
     "workspace.activity.task.remove" => "$1 has removed $2 task(s)",
     "workspace.activity.task.create" => "$1 has created $2 task(s)",
+    "workspace.activity.task.done" => "$1 achieved $2 task(s)",
     "workspace.activity.event.update" => "$1 has updated $2 event(s)",
     "workspace.activity.event.remove" => "$1 has removed $2 event(s)",
     "workspace.activity.event.create" => "$1 has created $2 event(s)",

@@ -176,7 +176,7 @@ class TaskController extends Controller
         $idsOrderMap = $request->request->get("orders");
         $listId = $request->request->get("listId");
         $boardId = $request->request->get("boardId");
-        $data['data'] = $this->get("app.board_tasks")->moveTask($idsOrderMap,$listId, $boardId);
+        $data['data'] = $this->get("app.board_tasks")->moveTask($idsOrderMap, $listId, $boardId, $this->getUser()->getId());
 
         return new JsonResponse($data);
     }

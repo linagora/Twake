@@ -210,9 +210,11 @@ class BoardTasks implements BoardTasksInterface
         return true;
     }
 
-    public function moveTask($idsOrderMap,$listId, $boardId)
+    public function moveTask($idsOrderMap, $listId, $boardId, $currentUserId)
     {
+        /* @var Board $board */
         $board = $this->convertToEntity($boardId,"TwakeProjectBundle:Board");
+        $workspace = $this->getWorkspaceFromBoard($board);
         /* @var ListOfTasks $list */
         $list = $this->convertToEntity($listId,"TwakeProjectBundle:ListOfTasks");
         foreach ($idsOrderMap as $id => $order){
@@ -220,10 +222,19 @@ class BoardTasks implements BoardTasksInterface
             $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findOneBy(Array("id" => $id, "board" => $board));
             if($task==null)
                 continue;
+
+            $wasInDone = $task->getListOfTasks()->getisDoneList();
+
             $task->setListOfTasks($list);
             $task->setOrder($order);
-            if($task->getDoneDate()==null)
+            if ($task->getDoneDate() == null) {
                 $task->setDoneDate($list->getisDoneList() ? new \DateTime() : null);
+            }
+
+            if ($list->getisDoneList() && !$wasInDone && !$board->getisPrivate()) {
+                $this->workspacesActivities->recordActivity($workspace, $currentUserId, "tasks", "workspace.activity.task.done", "TwakeProjectBundle:BoardTask", $task->getId());
+            }
+
             $this->doctrine->persist($task);
         }
 
