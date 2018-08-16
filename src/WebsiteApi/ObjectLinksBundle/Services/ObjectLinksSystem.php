@@ -88,6 +88,8 @@ class ObjectLinksSystem
                 $this->doctrine->persist($link);
                 $this->doctrine->flush();
 
+                $this->updateObject($objA);
+
                 $link = "success";
             }else{
                 $link = "idNotFound";
