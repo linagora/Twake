@@ -32,9 +32,10 @@ class ObjectLinksSystem
         }
     }
 
-    public function getObjectLinksById($id){
-        $resA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $id));
-        $resB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $id));
+    public function getObjectLinks($id, $type)
+    {
+        $resA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $id, "typeA" => self::$keyMap[$type]));
+        $resB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $id, "typeB" => self::$keyMap[$type]));
 
         $returnVal = Array();
         if($resA || $resB) {

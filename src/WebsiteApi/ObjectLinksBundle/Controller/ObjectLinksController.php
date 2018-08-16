@@ -17,9 +17,10 @@ class ObjectLinksController extends Controller
             'data' => Array()
         );
 
-        $id = $request->request->get("id");
+        $id = $request->request->get("id", 0);
+        $type = $request->request->get("type", "");
 
-        $message = $this->get('app.objectLinks')->getObjectLinksById($id);
+        $message = $this->get('app.objectLinks')->getObjectLinks($id, $type);
 
         if (is_array($message)) {
             $tab = Array();
