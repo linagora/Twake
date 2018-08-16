@@ -1615,6 +1615,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->doctrine->persist($file);
         $this->doctrine->flush();
 
+        $datatopush = Array(
+            "type" => "CHANGE_WORKSPACE_EXTERNAL_FILES",
+            "data" => Array(
+                "workspaceId" => $file->getGroup()->getId(),
+            )
+        );
+        $this->pusher->push($datatopush, "group/" . $file->getGroup()->getId());
+
         return true;
     }
 }
