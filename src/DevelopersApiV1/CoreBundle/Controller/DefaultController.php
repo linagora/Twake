@@ -27,4 +27,9 @@ class DefaultController extends Controller{
             return new JsonResponse($this->get("api.v1.api_status")->getError(3));
         return new JsonResponse(array_merge($this->get("api.v1.api_status")->getSuccess(),$data));
     }
+
+    public function BadRequestAction()
+    {
+        return new JsonResponse(Array("errors" => "0000", "description" => "Bad request"));
+    }
 }

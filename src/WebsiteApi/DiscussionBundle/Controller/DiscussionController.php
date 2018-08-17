@@ -26,9 +26,14 @@ class DiscussionController extends Controller
                 $data["errors"][] = "missingargument";
             }
             else{
-                $messages = [];
-                $offsetId= intval($request->request->get("offsetId"));
-                $messages = $this->get("app.messages")->getMessages("s-" . $request->request->get("streamId"), $offsetId, $request->request->get("subject"), $this->getUser());
+                $offsetId = intval($request->request->get("offsetId"));
+                $messages = $this->get("app.messages")->getMessages(
+                    "s-" . $request->request->get("streamId"),
+                    $offsetId,
+                    $request->request->get("subject"),
+                    $this->getUser(),
+                    $request->request->getInt("max", 50)
+                );
 
                 error_log(count($messages));
                 $data["data"] = $messages;
@@ -157,15 +162,17 @@ class DiscussionController extends Controller
 
 		$securityContext = $this->get('security.authorization_checker');
 
+		$key = "s-".$request->request->get("id", 0);
+
 		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
 			$data['errors'][] = "notconnected";
 		}
 		else {
-			if($request->request->get("key")==null ){
+			if($key==null ){
 				$data["errors"] = "missingarguments";
 			}
 			else{
-				$stream = $this->get("app.messages")->getStream($request->request->get("key"),$this->getUser());
+				$stream = $this->get("app.messages")->getStream($key,$this->getUser());
 				if($this->get("app.messages")->isAllowed($stream, $this->getUser())){
 					$stream = $stream["object"]->getAsArray();
 					$data["data"] = $stream;
@@ -380,9 +387,28 @@ class DiscussionController extends Controller
         if(!$res)
             $data["errors"][] = "Fail to make a call";
         else if($objectLink)
-            $data["data"][] = $res->getAsArray();
+            $data["data"] = $res->getAsArray();
         else
-            $data["data"][] = "success";
+            $data["data"] = "success";
+
+        return new JsonResponse($data);
+    }
+
+    public function getStreamForUserAction(Request $request){
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $id = $request->request->get("id",0);
+
+        //Warning, auth done in service
+        $res = $this->get("app.streamSystem")->getStreamForUser($id, $this->getUser());
+
+        if(!$res)
+            $data["errors"][] = "Fail to find user";
+        else
+            $data["data"] = $res->getAsArray();
 
         return new JsonResponse($data);
     }

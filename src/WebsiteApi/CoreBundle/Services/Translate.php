@@ -49,11 +49,12 @@ class Translate
 
         $availableLanguages = Array("fr","en");
 
-        if(in_array($lang,$availableLanguages)) {
+        if (in_array($lang, $availableLanguages)) {
+            $translation = Array();
             include dirname(__FILE__)."/Languages/$lang.php";
 
-            if (isset(($$lang)[$key])){
-                return ($$lang)[$key];
+            if (isset(($translation)[$key])) {
+                return ($translation)[$key];
             }
         }
 

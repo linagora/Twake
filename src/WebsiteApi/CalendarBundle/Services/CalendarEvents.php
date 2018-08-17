@@ -27,7 +27,7 @@ class CalendarEvents implements CalendarEventsInterface
     /* @var WorkspacesActivities $workspacesActivities*/
     var $workspacesActivities;
 
-    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceCalendarActivity,$workspacesActivities)
+    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceCalendarActivity, $workspacesActivities, $objectLinksSystem)
     {
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
@@ -35,6 +35,7 @@ class CalendarEvents implements CalendarEventsInterface
         $this->notifications = $notifications;
         $this->calendarActivity = $serviceCalendarActivity;
         $this->workspacesActivities = $workspacesActivities;
+        $this->objectLinksSystem = $objectLinksSystem;
     }
 
     public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false, $participants=Array(), $disableLog=false)
@@ -102,7 +103,7 @@ class CalendarEvents implements CalendarEventsInterface
         $this->pusher->push($data, "calendar/".$calendarId);
         $this->doctrine->flush();
         if(!$disableLog)
-            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"calendar","workspace.activity.event.create","TwakeCalendarsBundle:CalendarEvent", $event->getId());
+            $this->workspacesActivities->recordActivity($workspace, $currentUserId, "calendar", "workspace.activity.event.create", "TwakeCalendarBundle:CalendarEvent", $event->getId());
 
         return $event;
 
@@ -165,6 +166,8 @@ class CalendarEvents implements CalendarEventsInterface
 
         $this->doctrine->flush();
 
+        $this->objectLinksSystem->updateObject($event);
+
         $data = Array(
             "type" => "update",
             "event" => $event->getAsArray()
@@ -172,7 +175,7 @@ class CalendarEvents implements CalendarEventsInterface
         $this->pusher->push($data, "calendar/".$calendarId);
 
         if(!$disableLog)
-            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"calendar","workspace.activity.event.update","TwakeCalendarsBundle:CalendarEvent", $event->getId());
+            $this->workspacesActivities->recordActivity($workspace, $currentUserId, "calendar", "workspace.activity.event.update", "TwakeCalendarBundle:CalendarEvent", $event->getId());
 
         return $event;
     }
@@ -212,7 +215,7 @@ class CalendarEvents implements CalendarEventsInterface
         );
         $this->pusher->push($data, "calendar/".$calendarId);
 
-        $this->workspacesActivities->recordActivity($workspace,$currentUserId,"calendar","workspace.activity.event.remove","TwakeCalendarsBundle:CalendarEvent", $event->getId());
+        $this->workspacesActivities->recordActivity($workspace, $currentUserId, "calendar", "workspace.activity.event.remove", "TwakeCalendarBundle:CalendarEvent", $event->getId());
 
         return true;
     }
@@ -423,10 +426,11 @@ class CalendarEvents implements CalendarEventsInterface
             $auth = !$currentUserId;
 
             if($currentUserId && !isset($calendars[$calendar->getId()])) {
-                $workspaces = $this->getWorkspacesByCalendar($calendar);
+                $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("calendar" => $calendar->getId()));
 
-                foreach ($workspaces as $workspace) {
+                foreach ($links as $workspace_link) {
                     /* @var Workspace $workspace */
+                    $workspace = $workspace_link->getWorkspace();
 
                     if(!isset($workspacesId[$workspace->getId()])) {
                         if ($this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
@@ -443,9 +447,9 @@ class CalendarEvents implements CalendarEventsInterface
                 }
 
                 $calendars[$calendar->getId()] = $auth;
-            }
-            else if($currentUserId)
+            } else if ($currentUserId) {
                 $auth = $calendars[$calendar->getId()];
+            }
 
             $events[] = $auth ? $event->getAsArray() : $event->getAsArrayMinimal();
         }

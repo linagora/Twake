@@ -30,7 +30,7 @@ class WorkspaceActivitiesController extends Controller
         $workspace = $request->request->get("id",0);
         $users = $this->get("app.workspace_members")->getMembers($workspace);
 
-        $activities = $this->get("app.workspaces_activities")->getWorkspaceActivityResumed($workspace, $users);
+        $activities = $this->get("app.workspaces_activities")->getWorkspaceActivityResumed($workspace, $users, 20);
 
         $translator = $this->get("app.translate");
         foreach($activities as $key=>$activity) {

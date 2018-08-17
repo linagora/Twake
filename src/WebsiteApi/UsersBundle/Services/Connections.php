@@ -17,7 +17,7 @@ class Connections
 	var $calls;
 	var $userConnectionService;
 
-	public function __construct(ClientManipulatorInterface $clientManipulator, $doctrine, $pusher, $calls, $userConnectionService){
+	public function __construct(ClientManipulatorInterface $clientManipulator, $doctrine, $pusher, $calls, $userConnectionService = null){
 		$this->clientManipulator = $clientManipulator;
 		$this->doctrine = $doctrine;
 		$this->pusher = $pusher;
@@ -42,7 +42,8 @@ class Connections
 
 		$file = "gos:websockets";
 
-		$repo = $this->doctrine->getRepository("AdministrationAuthenticationBundle:Errors");
+        //[REMOVE_ONPREMISE]
+        $repo = $this->doctrine->getRepository("AdministrationAuthenticationBundle:Errors");
 		$record = $repo->findOneBy(Array("file"=>$file));
 
 		if(!$record) {
@@ -53,6 +54,7 @@ class Connections
 
 		$this->doctrine->persist($record);
 		$this->doctrine->flush();
+        //[/REMOVE_ONPREMISE]
 
 	}
 
@@ -95,7 +97,9 @@ class Connections
 		$this->doctrine->flush();
 
 		if($justArrived){
+            //[REMOVE_ONPREMISE]
 			$this->userConnectionService->newConnection($user->getId());
+            //[/REMOVE_ONPREMISE]
 		}
 
 		//Send notifications any way
@@ -150,7 +154,9 @@ class Connections
 		if($disconnected){
 			//echo $user->getUsername() . " is Disconnected" . PHP_EOL;
 			//Send notification to other users
+            //[REMOVE_ONPREMISE]
             $this->userConnectionService->closeConnection($user->getId());
+            //[/REMOVE_ONPREMISE]
 			$this->calls->exitCalls($user);
 			$this->pusher->push(false, 'connections/'.$user->getId());
 		}

@@ -35,12 +35,13 @@ class BoardActivities implements BoardActivityInterface
 
     public function pushActivity($pushNotif = true, $workspace, $user = null, $levels = null, $title="", $text = null, $type = Array(), $additionalData = Array())
     {
+        error_log("HEY PUSH NOTIFICATION" . $title);
+
         //ajotuer dans la table BoardActivity
         if ($workspace != null) {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }
-        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'board'));
-        // $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'board'));
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'tasks'));
 
         $boardActivity = new BoardActivity($application, $workspace, $user);
 
@@ -66,8 +67,6 @@ class BoardActivities implements BoardActivityInterface
         $this->doctrine->persist($boardActivity);
 
         $data = Array("action" => "addActivity");
-
-        //$data = Array("action" => "add");
 
         //appel pour faire une notification
         if ($pushNotif) {

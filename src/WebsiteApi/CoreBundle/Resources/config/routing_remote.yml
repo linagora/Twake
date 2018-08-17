@@ -6,3 +6,8 @@ from_remote_mail:
 from_remote_push:
     path:     /push
     defaults: { _controller: TwakeCoreBundle:Remote:push }
+
+
+from_remote_recaptcha:
+    path:     /recaptcha
+    defaults: { _controller: TwakeCoreBundle:Remote:verifyReCaptcha }

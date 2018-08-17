@@ -69,6 +69,7 @@ class TwakeMailer
 
     public function sendHtml($mail, $html, $pdfPathFiles)
     {
+        //[REMOVE_ONPREMISE]
 
         $privateKey = "-----BEGIN RSA PRIVATE KEY-----
 MIICXAIBAAKBgQCst5XO6IcnC/KTyRLgL83HqTLew6/ozMw6IRpS9KvLytg0E8fz
@@ -112,6 +113,8 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
         $message->attachSigner($signer);
 
         $this->mailer->send($message);
+
+        //[/REMOVE_ONPREMISE]
 
     }
 

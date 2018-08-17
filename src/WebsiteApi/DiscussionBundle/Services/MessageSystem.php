@@ -394,7 +394,7 @@ class MessageSystem implements MessagesSystemInterface
         return $messages;
     }
 
-    public function getMessages($key, $maxId, $subjectId, $user)
+    public function getMessages($key, $maxId, $subjectId, $user, $maxResult=50)
     {
 
         $stream = $this->getStream($key, $user->getId());
@@ -408,7 +408,7 @@ class MessageSystem implements MessagesSystemInterface
         $recieverId = $vals["id"];
         $recieverType = $vals["type"];
 
-        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverId, intval($maxId), $subjectId);
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverId, intval($maxId), $subjectId, $maxResult);
 
         $headIds = [];
         foreach ($messages as $message) {
@@ -624,22 +624,23 @@ class MessageSystem implements MessagesSystemInterface
 
     public function makeCall($streamId, $subjectId, $workspaceId, User $user, $respondTo, $objectLinkName = false)
     {
-        $discussionKey = "twake-".bin2hex(random_bytes(20));
+
+        $token = "twake-" . bin2hex(random_bytes(20));
         $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calls"));
 
-        $url = Array("iframe" => "./calls.html?token=$discussionKey");
+        $url = Array("iframe" => "./calls.html?token=$token");
 
-
-        //sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify = true, $front_id = "")
-        $message = $this->sendMessage($user->getId(), "s-".$streamId, true, $app->getId(), false, "", $workspaceId, $subjectId, $url,true,"",$respondTo);
-        $messageArray = $message->getAsArray();
-        $this->notify("s-".$streamId,"C",$messageArray);
 
         if($objectLinkName){
-            $call = new Call($discussionKey,$message, $objectLinkName);
+            $call = new Call($token, $objectLinkName);
             $this->doctrine->persist($call);
-            $this->flush();
+            $this->doctrine->flush();
             return $call;
+        } else {
+            //sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify = true, $front_id = "")
+            $message = $this->sendMessage($user->getId(), "s-" . $streamId, true, $app->getId(), false, "", $workspaceId, $subjectId, $url, true, "", $respondTo);
+            $messageArray = $message->getAsArray();
+            $this->notify("s-" . $streamId, "C", $messageArray);
         }
 
         return true;

@@ -12,7 +12,9 @@ imports:
     - { resource: "@TwakeObjectLinksBundle/Resources/config/services.yml" }
     - { resource: "@TwakeMarketBundle/Resources/config/services.yml" }
     - { resource: "@TwakePaymentsBundle/Resources/config/services.yml" }
+#[REMOVE_ONPREMISE]
     - { resource: "@AdministrationAuthenticationBundle/Resources/config/services.yml" }
+#[/REMOVE_ONPREMISE]
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration

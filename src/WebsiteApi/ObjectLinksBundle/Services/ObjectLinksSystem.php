@@ -28,12 +28,14 @@ class ObjectLinksSystem
             self::$keyMap["file"] = "TwakeDriveBundle:DriveFile";
             self::$keyMap["event"] = "TwakeCalendarBundle:CalendarEvent";
             self::$keyMap["task"] = "TwakeProjectBundle:BoardTask";
+            self::$keyMap["call"] = "TwakeDiscussionBundle:Call";
         }
     }
 
-    public function getObjectLinksById($id){
-        $resA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $id));
-        $resB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $id));
+    public function getObjectLinks($id, $type)
+    {
+        $resA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $id, "typeA" => self::$keyMap[$type]));
+        $resB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $id, "typeB" => self::$keyMap[$type]));
 
         $returnVal = Array();
         if($resA || $resB) {
@@ -46,12 +48,16 @@ class ObjectLinksSystem
                 $repo = ($entry->getIdA() != $id) ? $entry->getTypeA() : $entry->getTypeB();
                 $entryId = ($entry->getIdA() != $id) ? $entry->getIdA() : $entry->getIdB();
                 $obj = $this->doctrine->getRepository($repo)->findOneBy(Array("id" => $entryId));
-                array_push($returnVal, $obj);
+                if ($obj) {
+                    array_push($returnVal, $obj);
+                } else {
+                    $this->deleteObjectLink($entry->getTypeA(), $entry->getTypeB(), $entry->getIdA(), $entry->getIdB());
+                }
 
             }
             return $returnVal;
         }else{
-            return null;
+            return [];
         }
     }
 
@@ -76,9 +82,14 @@ class ObjectLinksSystem
         ));
 
         if (!$exists) {
-            if($this->getObjectFromRepositoryAndId($link->getTypeA(), $idA) && $this->getObjectFromRepositoryAndId($link->getTypeB(), $idB)) {
+            $objA = $this->getObjectFromRepositoryAndId($link->getTypeA(), $idA);
+            $objB = $this->getObjectFromRepositoryAndId($link->getTypeB(), $idB);
+            if ($objA && $objB) {
                 $this->doctrine->persist($link);
                 $this->doctrine->flush();
+
+                $this->updateObject($objA);
+
                 $link = "success";
             }else{
                 $link = "idNotFound";
@@ -86,7 +97,6 @@ class ObjectLinksSystem
         } else {
             $link = "alreadyThere";
         }
-
         return $link;
     }
 
@@ -199,12 +209,12 @@ class ObjectLinksSystem
             if(count($relation->getFieldsToSynchronised())==0)
                 continue;
             if($relation->getTypeA()==$object->getRepository() && $relation->getIdA()==$object->getId())
-                $object = $this->getObjectFromRepositoryAndId($relation->getTypeB(), $relation->getIdB());
+                $object_ = $this->getObjectFromRepositoryAndId($relation->getTypeB(), $relation->getIdB());
             else
-                $object = $this->getObjectFromRepositoryAndId($relation->getTypeA(), $relation->getIdA());
+                $object_ = $this->getObjectFromRepositoryAndId($relation->getTypeA(), $relation->getIdA());
 
             $partners[] = Array("object" => Array(), "fields" => Array() );
-            $partners[$i]["object"] = $object;
+            $partners[$i]["object"] = $object_;
             $partners[$i]["fields"] = $relation->getFieldsToSynchronised();
             $i++;
         }
@@ -220,11 +230,26 @@ class ObjectLinksSystem
             $partner = $partnerAndFields["object"];
             $fields = $partnerAndFields["fields"];
 
-            /* @var ObjectLinksInterface $partner */
-            foreach ($fields as $field) {
-                $value = $object->get($field);
-                $partner->synchroniseField($field, $value);
-                $this->pusher->push($partner->getAsArray(), $partner->getPushRoute());
+            if ($partner) {
+                $didSync = false;
+                /* @var ObjectLinksInterface $partner */
+                foreach ($fields as $field) {
+                    $value = $object->get($field);
+                    if ($value) {
+                        $didSync = true;
+                        $partner->synchroniseField($field, $value);
+                    }
+                }
+
+                if ($didSync) {
+                    $route = $partner->getPushRoute();
+                    if ($route) {
+                        $this->pusher->push(Array(
+                            "type" => "link_update",
+                            "data" => $partner->getAsArray()
+                        ), $route);
+                    }
+                }
                 $this->doctrine->persist($partner);
             }
         }

@@ -545,7 +545,7 @@ class DriveFile implements ObjectLinksInterface
             "object_name" => $this->getName(),
             "key" => "drive",
             "type" => "file",
-            "code" => "twake/".$this->getParent()."/".$this->getId(),
+            "code" => "twake/" . ($this->getParent() ? $this->getParent()->getId() : 0) . "/" . $this->getId(),
         );
     }
 

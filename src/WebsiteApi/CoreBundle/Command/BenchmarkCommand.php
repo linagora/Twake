@@ -20,9 +20,9 @@ class BenchmarkCommand extends ContainerAwareCommand
             ->setDescription("Test server performances");
     }
 
+    //[REMOVE_ONPREMISE]
     public function initScenarios($nb = 1)
     {
-
         $this->scenario = [
             Array(
                 "name" => "get current user",
@@ -140,9 +140,12 @@ class BenchmarkCommand extends ContainerAwareCommand
         return true;
     }
 
+    //[/REMOVE_ONPREMISE]
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+
+        //[REMOVE_ONPREMISE]
 
         $services = $this->getApplication()->getKernel()->getContainer();
 
@@ -179,6 +182,7 @@ class BenchmarkCommand extends ContainerAwareCommand
         error_log("Users per s : " . ($users / $totalTime));
         error_log("Op per s : " . (count($this->scenario) * $users / $totalTime));
 
+        //[/REMOVE_ONPREMISE]
     }
 
 }

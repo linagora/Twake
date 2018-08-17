@@ -1,3 +1,18 @@
+# Twake v1.1.110
+
+## Changelogs
+
+### General
+- Ability to link objects of type event, task, call or file
+- Apps open faster
+- Ability to app any link by choosing an application manual mode
+- New message modal for private messages
+- Objects fields synchronisation
+
+### On-premise
+- Obfuscator code
+- Integrate Onlyoffice in Twake core code
+
 # Twake v1.1.100
 
 ## Changelogs

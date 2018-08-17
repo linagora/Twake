@@ -61,10 +61,11 @@ services:
             tags: [{ name: kernel.event_listener, event: kernel.response, method: beforeRender }]
             arguments: ["@doctrine.orm.entity_manager", '@security.authorization_checker']
 
+    #[REMOVE_ONPREMISE]
     api.CheckRightApplication:
             class: DevelopersApi\CheckBundle\Services\CheckRight
             arguments: ["@doctrine.orm.entity_manager"]
-
+    #[/REMOVE_ONPREMISE]
 
 
     #################################################################################
@@ -95,7 +96,14 @@ services:
 
     gos_web_socket_server.client_event.listener:
       class: WebsiteApi\UsersBundle\Services\Connections
-      arguments: ["@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager","@app.pusher", "@app.callSystem", "@admin.TwakeDailyConnection"]
+      arguments:
+          - "@gos_web_socket.websocket.client_manipulator"
+          - "@doctrine.orm.entity_manager"
+          - "@app.pusher"
+          - "@app.callSystem"
+          #[REMOVE_ONPREMISE]
+          - "@admin.TwakeDailyConnection"
+          #[/REMOVE_ONPREMISE]
       tags:
           - { name: kernel.event_listener, event: 'gos_web_socket.client_connected', method: onClientConnect }
           - { name: kernel.event_listener, event: 'gos_web_socket.client_disconnected', method: onClientDisconnect }

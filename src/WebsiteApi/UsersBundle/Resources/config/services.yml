@@ -6,7 +6,7 @@ services:
 
     app.user:
         class: WebsiteApi\UsersBundle\Services\User
-        arguments: ["@doctrine.orm.entity_manager", "@app.pusher", "@security.encoder_factory", "@security.authorization_checker", "@security.token_storage", "@app.core_remember_me_manager", "@event_dispatcher", "@request_stack", "@app.user_stats", "@app.twake_mailer", "@app.string_cleaner", "@app.workspace_members","@app.groups","@app.workspaces","@app.pricing_plan","@circle.restclient","@app.translate"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.pusher", "@security.encoder_factory", "@security.authorization_checker", "@security.token_storage", "@app.core_remember_me_manager", "@event_dispatcher", "@request_stack", "@app.user_stats", "@app.twake_mailer", "@app.string_cleaner", "@app.workspace_members","@app.groups","@app.workspaces","@app.pricing_plan","@circle.restclient","@app.translate", "%STANDALONE%", "%LICENCE_KEY%"]
 
     app.user_stats:
         class: WebsiteApi\UsersBundle\Services\UserStats

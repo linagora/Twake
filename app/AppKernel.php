@@ -44,6 +44,7 @@ class AppKernel extends Kernel
             new WebsiteApi\CalendarBundle\TwakeCalendarBundle(),
             new WebsiteApi\ProjectBundle\TwakeProjectBundle(),
             new WebsiteApi\NotificationsBundle\TwakeNotificationsBundle(),
+            new WebsiteApi\OnlyOfficeBundle\TwakeOnlyOfficeBundle(),
             new DevelopersApi\MessagesBundle\DevelopersApiMessagesBundle(),
             new Circle\RestClientBundle\CircleRestClientBundle(),
             new DevelopersApiV1\MessagesBundle\DevelopersApiV1MessagesBundle(),

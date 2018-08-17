@@ -123,10 +123,19 @@ class FilesController extends Controller
             $fileSystem->setRootDirectory($directory);
         }
 
+        error_log("DELETE 1");
+
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
         if ($can) {
+
+            error_log("DELETE 2");
             foreach ($fileIds as $fileId){
-                $fileSystem->autoDelete($groupId,$fileId, $this->getUser());
+
+                error_log("DELETE 3");
+                $res = $fileSystem->autoDelete($groupId, $fileId, $this->getUser());
+
+
+                error_log("DELETE 4" . json_encode($res));
             }
         }else{
             $data["errors"][] = "notallowed";

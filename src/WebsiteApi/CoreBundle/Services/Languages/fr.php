@@ -6,7 +6,7 @@
  * Time: 14:19
  */
 
-$fr = Array(
+$translation = Array(
     "drive.move_file" => "Fichier déplacé",
     "drive.new_file" => "Nouveau fichier",
     "drive.has_been_added" => "$1 a été ajouté dans $2",

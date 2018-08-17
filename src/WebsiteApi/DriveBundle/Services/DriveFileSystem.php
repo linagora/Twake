@@ -136,8 +136,8 @@ class DriveFileSystem implements DriveFileSystemInterface
     private function improveName($fileOrDirectory)
     {
         $originalCompleteName = explode(".", $fileOrDirectory->getName());
-        $originalName = array_shift($originalCompleteName);
-        $originalExt = join(".", $originalCompleteName);
+        $originalExt = array_pop($originalCompleteName);
+        $originalName = join(".", $originalCompleteName);
 
         $currentNames = [];
         if ($fileOrDirectory->getParent() != null) {
@@ -526,6 +526,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $file->setDetachedFile(false);
+        $file->setParent($directory);
         $this->updateSize($directory, $file->getSize());
         $this->improveName($file);
         $file->setGroup($workspace);
@@ -566,17 +567,28 @@ class DriveFileSystem implements DriveFileSystemInterface
         );
 
         if ($url!=null) {
-            $app = $this->applicationService->getAppForUrl($url);
-            if ($app) {
-                $newFile->setDefaultWebApp($app);
-            } elseif ($userApp) {
+            if ($userApp) {
                 $userApp = $this->convertToEntity($userApp,"TwakeMarketBundle:Application");
-                if(!$userApp)
-                    return false;
+            }
+            if ($userApp) {
                 $newFile->setDefaultWebApp($userApp);
             } else {
-                return false;
+                $app = $this->applicationService->getAppForUrl($url);
+                if ($app) {
+                    $newFile->setDefaultWebApp($app);
+                } else {
+                    return false;
+                }
             }
+
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE_EXTERNAL_FILES",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
         }
 
         $newFile->setDetachedFile($detached_file);
@@ -624,7 +636,9 @@ class DriveFileSystem implements DriveFileSystemInterface
             new TranslationObject($this->translate,"drive.has_been_added", $newFile->getName(), $dirName),
             $newFile->getId(), $userId);
 
-        $this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.create","TwakeDriveBundle:DriveFile", $newFile->getId());
+        if (!$detached_file && !$isDirectory) {
+            $this->workspacesActivities->recordActivity($workspace, $userId, "drive", "workspace.activity.file.create", "TwakeDriveBundle:DriveFile", $newFile->getId());
+        }
         $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
 
         return $newFile;
@@ -891,7 +905,19 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function autoDelete($workspace, $fileOrDirectory, $user = null)
     {
+        /** @var DriveFile $fileOrDirectory */
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+
+        if ($fileOrDirectory->getDefaultWebApp()) {
+            $datatopush = Array(
+                "type" => "CHANGE_WORKSPACE_EXTERNAL_FILES",
+                "data" => Array(
+                    "workspaceId" => $workspace->getId(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+        }
 
         if ($fileOrDirectory == null) {
             return false;
@@ -938,7 +964,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             }
         }
 
-        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","workspace.activity.file.trash","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
+        //$this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","workspace.activity.file.trash","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
         return true;
     }
 
@@ -1041,7 +1067,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             $this->workspacesApps->enableApp($fileOrDirectory->getGroup(),$app->getId());
         }
 
-        $this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","workspace.activity.file.restore","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
+        //$this->workspacesActivities->recordActivity($fileOrDirectory->getGroup(),$user,"drive","workspace.activity.file.restore","TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
         return true;
     }
 
@@ -1571,7 +1597,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     public function getFilesFromApp($app,$workspace_id){
         $app = $this->convertToEntity($app, "TwakeMarketBundle:Application");
 
-        $listFiles = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(array('default_web_app' => $app, 'group' => $workspace_id), array('opening_rate' => 'desc'), 20);
+        $listFiles = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(array('default_web_app' => $app, 'group' => $workspace_id, 'isInTrash' => false), array('opening_rate' => 'desc'), 20);
         return $listFiles;
     }
 
@@ -1588,6 +1614,14 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $this->doctrine->persist($file);
         $this->doctrine->flush();
+
+        $datatopush = Array(
+            "type" => "CHANGE_WORKSPACE_EXTERNAL_FILES",
+            "data" => Array(
+                "workspaceId" => $file->getGroup()->getId(),
+            )
+        );
+        $this->pusher->push($datatopush, "group/" . $file->getGroup()->getId());
 
         return true;
     }

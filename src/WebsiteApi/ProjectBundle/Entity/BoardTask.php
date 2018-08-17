@@ -513,7 +513,10 @@ class BoardTask implements ObjectLinksInterface {
 
     public function getPushRoute()
     {
-        return "board/".$this->getId();
+        if (!$this->getBoard()) {
+            return false;
+        }
+        return "board/" . $this->getBoard()->getId();
     }
 
     /**

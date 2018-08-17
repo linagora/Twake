@@ -1,5 +1,5 @@
 
-
+#[REMOVE_ONPREMISE]
 administration_authentication:
     resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
     prefix:   /administration/ajax/authentication
@@ -16,6 +16,7 @@ easy_admin_bundle_dashboard:
 #website_group:
 #    resource: "@WebsiteGroupBundle/Resources/config/routing.yml"
 #    prefix:   /group/
+#[/REMOVE_ONPREMISTwakeCheckBundleE]
 
 
 fos_user_resetting:
@@ -27,24 +28,19 @@ NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
 
+#[REMOVE_ONPREMISE]
 #Administration
-
 administration_general:
     resource: "@AdministrationGeneralBundle/Resources/config/routing.yml"
     prefix:   /administration/
-
-
-#API pour les developpeurs
-check:
-    resource: "@TwakeCheckBundle/Controller/"
-    prefix:   /api/
+#[/REMOVE_ONPREMISE]
 
 
 #API pour le site (et pas les developpeurs)
 calendar:
     resource: "@TwakeCalendarBundle/Resources/config/routing.yml"
     prefix:   /ajax/calendar/
-    
+
 project:
     resource: "@TwakeProjectBundle/Resources/config/routing.yml"
     prefix:   /ajax/project/
@@ -113,12 +109,13 @@ twake_objectLinks:
 
 twake_api_error:
     path:     /ajax/{req}
-    defaults: { _controller: TwakeCheckBundle:Error:BadRequest }
+    defaults: { _controller: DevelopersApiV1CoreBundle:Default:BadRequest }
     requirements:
       req: ".*"
 
 
 #API pour les developpeurs
+#[REMOVE_ONPREMISE]
 developers_api_users:
     resource: "@DevelopersApiUsersBundle/Resources/config/routing.yml"
     prefix:   /api/users/
@@ -138,6 +135,7 @@ developers_api_messages:
     resource: "@DevelopersApiMessagesBundle/Resources/config/routing.yml"
     prefix:   /api/messages/
     methods: [POST]
+#[/REMOVE_ONPREMISE]
 
 #API V1 pour les developpeurs
 developers_api_v1_messages:
@@ -166,6 +164,6 @@ developers_api_v1_core:
 
 developers_api_error:
     path:     /api/{req}
-    defaults: { _controller: TwakeCheckBundle:Error:BadRequest }
+    defaults: { _controller: DevelopersApiV1CoreBundle:Default:BadRequest }
     requirements:
       req: ".*"

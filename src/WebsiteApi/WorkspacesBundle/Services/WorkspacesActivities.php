@@ -9,6 +9,8 @@
 namespace WebsiteApi\WorkspacesBundle\Services;
 
 
+use Doctrine\ORM\ORMException;
+use Dompdf\Exception;
 use WebsiteApi\MarketBundle\Services\MarketApplication;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceActivity;
 
@@ -31,16 +33,22 @@ class WorkspacesActivities
         }
 
         if (is_int($var)) {
-            return $this->doctrine->getRepository($repository)->find($var);
+            try {
+                $r = $this->doctrine->getRepository($repository)->find($var);
+            } catch (ORMException $e) {
+                $r = null;
+            }
         } else if (is_object($var)) {
-            return $var;
+            $r = $var;
         } else {
-            return null;
+            $r = null;
         }
+        return $r;
 
     }
 
-    public function recordActivity($workspace, $user, $appPublicKey,$title,$objectRepository,$objectId){
+    public function recordActivity($workspace, $user, $appPublicKey, $title, $objectRepository = null, $objectId = null)
+    {
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
         $user = $this->convertToEntity($user,"TwakeUsersBundle:User");
         $app = $this->applicationManager->getAppByPublicKey($appPublicKey);
@@ -78,23 +86,52 @@ class WorkspacesActivities
                 $activities_by_user_app[$key] = Array();
             }
             $addToPrevious = false;
-            if(isset($last_date_by_user_app[$key]) && abs($activity->getDateAdded()->getTimestamp()-$last_date_by_user_app[$key])<20){
+            if (isset($last_date_by_user_app[$key]) && abs($activity->getDateAdded()->getTimestamp() - $last_date_by_user_app[$key]) < 60) {
                 $addToPrevious = true;
             }
             if($addToPrevious) {
                 end($activities_by_user_app[$key]);
                 $end_pos = key($activities_by_user_app[$key]);
-                $activities_by_user_app[$key][$end_pos]["objects"][] = $this->convertToEntity($activity->getObjectId(),$activity->getObjectRepository())->getAsArrayFormated();
+                if ($activity->getObjectRepository()) {
+                    try {
+                        $obj = $this->convertToEntity($activity->getObjectId(), $activity->getObjectRepository());
+                        if ($obj) {
+                            $found = false;
+                            foreach ($activities_by_user_app[$key][$end_pos]["objects"] as $o) {
+                                if ($o["id"] == $obj->getId()) {
+                                    $found = true;
+                                    break;
+                                }
+                            }
+                            if (!$found) {
+                                $activities_by_user_app[$key][$end_pos]["objects"][] = $obj->getAsArrayFormated();
+                            }
+                        }
+                    } catch (Exception $e) {
+                        error_log($e);
+                    }
+                }
             }else{
-                $activities_by_user_app[$key][] = Array(
-                    "user"=>($activity->getUser()?$activity->getUser()->getAsArray():null),
-                    "app"=>($activity->getApp()?$activity->getApp()->getAsSimpleArray():null),
-                    "date"=>$activity->getDateAdded()->getTimestamp(),
-                    "title"=>$activity->getTitle(),
-                    "objects"=>Array(
-                        $this->convertToEntity($activity->getObjectId(),$activity->getObjectRepository())->getAsArrayFormated()
-                    )
-                );
+                $objects = Array();
+                if ($activity->getObjectRepository()) {
+                    try {
+                        $obj = $this->convertToEntity($activity->getObjectId(), $activity->getObjectRepository());
+                        if ($obj) {
+                            $objects[] = $obj->getAsArrayFormated();
+                        }
+                    } catch (Exception $e) {
+                        error_log($e);
+                    }
+                }
+                if (count($objects) > 0) {
+                    $activities_by_user_app[$key][] = Array(
+                        "user" => ($activity->getUser() ? $activity->getUser()->getAsArray() : null),
+                        "app" => ($activity->getApp() ? $activity->getApp()->getAsSimpleArray() : null),
+                        "date" => $activity->getDateAdded()->getTimestamp(),
+                        "title" => $activity->getTitle(),
+                        "objects" => $objects
+                    );
+                }
             }
 
             $last_date_by_user_app[$key] = $activity->getDateAdded()->getTimestamp();

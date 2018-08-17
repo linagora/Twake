@@ -23,6 +23,10 @@ message_call:
     path:     /newCall
     defaults: { _controller: TwakeDiscussionBundle:Discussion:newCall}
 
+streams_get_for_user:
+    path:     /streams/getForUser
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:getStreamForUser }
+
 streams_get:
     path:     /streams/get
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getStreams }

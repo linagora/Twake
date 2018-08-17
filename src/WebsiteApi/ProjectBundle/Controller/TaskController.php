@@ -79,15 +79,18 @@ class TaskController extends Controller
     }
 
     private function convertObjectListToIdList($list){
-        if(count($list)==0)
+        if (count($list) == 0) {
             return Array();
+        }
 
         $final = Array();
 
         foreach($list as $item) {
-            if(is_int($item))
-                return $list;
-            $final[] = $item["id"];
+            if (is_int($item)) {
+                $final[] = $item;
+            } else {
+                $final[] = $item["id"];
+            }
         }
 
         return $final;
@@ -176,7 +179,7 @@ class TaskController extends Controller
         $idsOrderMap = $request->request->get("orders");
         $listId = $request->request->get("listId");
         $boardId = $request->request->get("boardId");
-        $data['data'] = $this->get("app.board_tasks")->moveTask($idsOrderMap,$listId, $boardId);
+        $data['data'] = $this->get("app.board_tasks")->moveTask($idsOrderMap, $listId, $boardId, $this->getUser()->getId());
 
         return new JsonResponse($data);
     }

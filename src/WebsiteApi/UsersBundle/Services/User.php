@@ -36,9 +36,12 @@ class User implements UserInterface
     private $restClient;
     /* @var Translate $translate*/
     var $translate;
+    private $standalone;
+    private $licenceKey;
 
 
-    public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service,$group_service,$workspace_service,$pricing_plan,$restClient,$translate){
+    public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service, $group_service, $workspace_service, $pricing_plan, $restClient, $translate, $standalone, $licenceKey)
+    {
 		$this->em = $em;
 		$this->pusher = $pusher;
 		$this->encoder_factory = $encoder_factory;
@@ -56,6 +59,8 @@ class User implements UserInterface
         $this->pricing_plan = $pricing_plan;
         $this->restClient = $restClient;
         $this->translate = $translate;
+        $this->standalone = $standalone;
+        $this->licenceKey = $licenceKey;
 	}
 
 	public function current()
@@ -282,21 +287,39 @@ class User implements UserInterface
     }
 
     public function testRecaptcha($recaptcha){
-        $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
-        $remoteip = $_SERVER['REMOTE_ADDR'];
+        if ($this->standalone) {
 
-        $dataToSend = Array(
-            "secret" => $secret,
-            "response" => $recaptcha,
-            "remoteip" => $remoteip,
-        );
-        $api_url = "https://www.google.com/recaptcha/api/siteverify?secret="
-            . $secret
-            . "&response=" . $recaptcha
-            . "&remoteip=" . $remoteip ;
+            //[REMOVE_ONPREMISE]
+            $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
+            $remoteip = $_SERVER['REMOTE_ADDR'];
 
-        $decode = json_decode(file_get_contents($api_url), true);
-        return $decode["success"];
+            $api_url = "https://www.google.com/recaptcha/api/siteverify?secret="
+                . $secret
+                . "&response=" . $recaptcha
+                . "&remoteip=" . $remoteip;
+
+            $decode = json_decode(file_get_contents($api_url), true);
+            return $decode["success"];
+            //[/REMOVE_ONPREMISE]
+
+        } else {
+
+            $masterServer = "https://app.twakeapp.com/api/remote";
+            $data = Array(
+                "licenceKey" => $this->licenceKey,
+                "client_ip" => $_SERVER['REMOTE_ADDR'],
+                "recaptcha" => $recaptcha
+            );
+            $result = $this->circle->post($masterServer . "/recaptcha", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            $result = json_decode($result->getContent(), true);
+
+            if (isset($result["status"])) {
+                return $result["status"];
+            }
+            return false;
+
+        }
+
     }
 
 	public function subscribeInfo($mail,$password,$pseudo,$firstName,$lastName,$phone,$workspace,$company,$friends,$recaptcha){

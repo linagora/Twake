@@ -45,7 +45,7 @@ class Notifications implements NotificationsInterface
         }
 
         $title = "";
-        if ($workspace && $workspace->getGroup()) {
+        if ($workspace && $workspace->getGroup() && !$workspace->getUser()) {
             $title .= $workspace->getGroup()->getDisplayName() . " - ";
             $title .= $workspace->getName() . " : ";
         } else {
@@ -232,6 +232,9 @@ class Notifications implements NotificationsInterface
 
     public function readAll($application, $workspace, $user, $code = null, $force=false)
     {
+
+        $this->deleteAll($application, $workspace, $user, $code, $force);
+        return;
 
         $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
 
