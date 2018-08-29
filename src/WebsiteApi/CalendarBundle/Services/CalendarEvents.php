@@ -257,7 +257,9 @@ class CalendarEvents implements CalendarEventsInterface
                     $userLinked->setFrom($event->getFrom());
                     $userLinked->setTo($event->getTo());
                     $this->doctrine->persist($userLinked);
-                    $participantArray[] = $user->getId();
+                    if (!in_array($user->getId(), $participantArray)) {
+                        $participantArray[] = $user->getId();
+                    }
                 }
                 $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$event->getEvent()["title"],"You have a new event the ".date('d/m/Y', $event->getFrom()), Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
             }
@@ -348,14 +350,11 @@ class CalendarEvents implements CalendarEventsInterface
 
         $participantArray = $event->getParticipants();
 
-        error_log(json_encode($participantArray));
-        error_log(json_encode($inBaseParticipants));
-
         foreach ($participantArray as $participant) {
             $p_id = (isset($participant["id"]) ? $participant["id"] : $participant);
             $present = false;
             foreach ($inBaseParticipants as $inBase) {
-                if ($p_id == $inBase->getId()) {
+                if ($p_id == $inBase->getUser()->getId()) {
                     $present = true;
                 }
             }
@@ -376,9 +375,10 @@ class CalendarEvents implements CalendarEventsInterface
                 }
             }
             if (!$present) {
-                $usersIdRemove[] = $inBase->getId();
+                $usersIdRemove[] = $inBase->getUser()->getId();
             }
         }
+        error_log(json_encode($usersIdRemove));
         if (count($usersIdRemove) > 0) {
             $this->removeUsers($workspaceId, $calendarId, $eventId, $usersIdRemove, $currentUserId);
         }
