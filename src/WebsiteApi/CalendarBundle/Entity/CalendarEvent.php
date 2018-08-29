@@ -206,9 +206,11 @@ class CalendarEvent implements ObjectLinksInterface {
             "participant" => Array(),
             "participant_full" => Array(),
         );
-        foreach ($this->getParticipants() as $participant) {
-            $res["participant"][] = (isset($participant["id"]) ? $participant["id"] : $participant);
-            $res["participant_full"][] = $participant;
+        if ($this->getParticipants()) {
+            foreach ($this->getParticipants() as $participant) {
+                $res["participant"][] = (isset($participant["id"]) ? $participant["id"] : $participant);
+                $res["participant_full"][] = $participant;
+            }
         }
         return $res;
     }

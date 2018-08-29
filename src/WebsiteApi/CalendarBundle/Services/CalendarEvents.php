@@ -370,7 +370,7 @@ class CalendarEvents implements CalendarEventsInterface
             $present = false;
             foreach ($participantArray as $participant) {
                 $p_id = (isset($participant["id"]) ? $participant["id"] : $participant);
-                if ($p_id == $inBase->getId()) {
+                if ($p_id == $inBase->getUser()->getId()) {
                     $present = true;
                 }
             }
