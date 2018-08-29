@@ -65,7 +65,7 @@ class ObjectLinks
         $this->idA = $idA;
         $this->typeB = $typeB;
         $this->idB = $idB;
-        $this->setFieldsToSynchronised(Array("from","to"));
+        $this->setFieldsToSynchronised(Array("from", "to", "participants"));
     }
 
     /**

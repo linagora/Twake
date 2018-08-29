@@ -208,12 +208,16 @@ class ObjectLinksSystem
             /* @var ObjectLinks $relation*/
             if(count($relation->getFieldsToSynchronised())==0)
                 continue;
-            if($relation->getTypeA()==$object->getRepository() && $relation->getIdA()==$object->getId())
+            if ($relation->getTypeA() == $object->getRepository() && $relation->getIdA() == $object->getId()) {
                 $object_ = $this->getObjectFromRepositoryAndId($relation->getTypeB(), $relation->getIdB());
-            else
+                $type_ = $relation->getTypeB();
+            } else {
                 $object_ = $this->getObjectFromRepositoryAndId($relation->getTypeA(), $relation->getIdA());
+                $type_ = $relation->getTypeA();
+            }
 
             $partners[] = Array("object" => Array(), "fields" => Array() );
+            $partners[$i]["type"] = $type_;
             $partners[$i]["object"] = $object_;
             $partners[$i]["fields"] = $relation->getFieldsToSynchronised();
             $i++;
@@ -235,7 +239,7 @@ class ObjectLinksSystem
                 /* @var ObjectLinksInterface $partner */
                 foreach ($fields as $field) {
                     $value = $object->get($field);
-                    if ($value) {
+                    if ($value || is_array($value)) {
                         $didSync = true;
                         $partner->synchroniseField($field, $value);
                     }
@@ -254,5 +258,7 @@ class ObjectLinksSystem
             }
         }
         $this->doctrine->flush();
+
+        return $partnersAndFields;
     }
 }

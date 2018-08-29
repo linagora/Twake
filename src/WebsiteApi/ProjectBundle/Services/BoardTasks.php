@@ -31,7 +31,7 @@ class BoardTasks implements BoardTasksInterface
     /* @var WorkspacesActivities $workspacesActivities*/
     var $workspacesActivities;
 
-    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceBoardActivity, $objectLinksSystem,$workspacesActivities)
+    public function __construct($doctrine, $pusher, $workspaceLevels, $notifications, $serviceBoardActivity, $objectLinksSystem, $workspacesActivities, $calendarEventsService)
     {
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
@@ -40,6 +40,7 @@ class BoardTasks implements BoardTasksInterface
         $this->boardActivities = $serviceBoardActivity;
         $this->objectLinksSystem = $objectLinksSystem;
         $this->workspacesActivities = $workspacesActivities;
+        $this->calendarEventsService = $calendarEventsService;
     }
 
     private function notifyParticipants($participants, $workspace, $title, $description, $notifCode, $currentUserId = null)
@@ -169,7 +170,12 @@ class BoardTasks implements BoardTasksInterface
             "task" => $task->getAsArray()
         );
 
-        $this->objectLinksSystem->updateObject($task);
+        $links = $this->objectLinksSystem->updateObject($task);
+        foreach ($links as $link) {
+            if ($link && $link["object"] && $link["type"] == "TwakeCalendarBundle:CalendarEvent") {
+                $this->calendarEventsService->updateUsersFromArray($workspace->getId(), $link["object"]->getId(), $currentUserId);
+            }
+        }
 
         if (!$board->getisPrivate()) {
             $this->workspacesActivities->recordActivity($workspace, $currentUserId, "tasks", "workspace.activity.task.update", "TwakeProjectBundle:BoardTask", $task->getId());
@@ -319,7 +325,7 @@ class BoardTasks implements BoardTasksInterface
         }
 
 
-        $participantArray = $task->getParticipant();
+        $participantArray = $task->getParticipants();
         foreach ($usersId as $userId){
             error_log("remove ".$userId);
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
@@ -337,7 +343,7 @@ class BoardTasks implements BoardTasksInterface
             }
         }
 
-        $task->setParticipant($participantArray);
+        $task->setParticipants($participantArray);
         $this->doctrine->persist($task);
         $this->doctrine->flush();
         $data = Array(
