@@ -310,7 +310,7 @@ class User implements UserInterface
                 "client_ip" => $_SERVER['REMOTE_ADDR'],
                 "recaptcha" => $recaptcha
             );
-            $result = $this->circle->post($masterServer . "/recaptcha", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            $result = $this->restClient->post($masterServer . "/recaptcha", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
             $result = json_decode($result->getContent(), true);
 
             if (isset($result["status"])) {
