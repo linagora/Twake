@@ -63,7 +63,7 @@ class StreamSystem implements StreamSystemInterface
         return$this->convertToEntity($streamId,"TwakeDiscussionBundle:Stream");
     }
 
-    public function createStreamFromApp($workspaceId,$streamName,$streamDescription,$streamIsPrivate,$type){
+    public function createStreamFromApp($workspaceId,$streamName,$streamDescription,$streamIsPrivate,$type,$members=Array()){
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         $stream = new Stream($workspace, $streamName, $streamIsPrivate,$streamDescription);
@@ -84,12 +84,25 @@ class StreamSystem implements StreamSystemInterface
                 }
             }
         }
+        else{
+            foreach($members as $memberid){
+                $member = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($memberid);
+                if ($user != null) {
+                    $link = $stream->addMember($member);
+                    $this->doctrine->persist($link);
+                }
+            }
+            if(count($stream->getMembers())<=0){
+                $link = $stream->addMember($user);
+                $this->doctrine->persist($link);
+            }
+        }
         $this->doctrine->flush();
 
         return $stream->getAsArray();
     }
 
-    public function createStream($user,$workspaceId,$streamName,$streamDescription,$streamIsPrivate,$type="stream")
+    public function createStream($user,$workspaceId,$streamName,$streamDescription,$streamIsPrivate,$type="stream",$members=Array())
     {
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
@@ -121,8 +134,21 @@ class StreamSystem implements StreamSystemInterface
                     }
                 }
             } else {
-                $link = $stream->addMember($user);
-                $this->doctrine->persist($link);
+                error_log("stream is private");
+                error_log("stream has members : ".count($members));
+                foreach($members as $memberid){
+                    $member = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($memberid);
+                    if ($user != null) {
+                        error_log("members ".$memberid." added to stream");
+                        $link = $stream->addMember($member);
+                        $this->doctrine->persist($link);
+                    }
+                }
+                if(count($stream->getMembers())<=0){
+                    error_log("no user added...");
+                    $link = $stream->addMember($user);
+                    $this->doctrine->persist($link);
+                }
             }
             $this->doctrine->flush();
 
