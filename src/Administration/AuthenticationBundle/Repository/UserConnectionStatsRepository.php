@@ -23,4 +23,15 @@ class UserConnectionStatsRepository extends \Doctrine\ORM\EntityRepository
             ->orderBy('U.dateConnection', 'ASC');
         return $req1->getQuery()->getResult();
     }
+
+    public function getConnectionBetweenDate($startDate,$endDate){
+        $req = $this->createQueryBuilder('U')
+            ->select("IDENTITY(U.user) as userId, SUM(U.dureeConnection) as duree")
+            ->Where('U.dateConnection >= :start')
+            ->andWhere('U.dateConnection <= :end')
+            ->setParameter("start",$startDate)
+            ->setParameter("end", $endDate)
+            ->groupBy('U.user');
+        return $req->getQuery()->getResult();
+    }
 }
