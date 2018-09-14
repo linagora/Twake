@@ -289,19 +289,6 @@ class User implements UserInterface
     public function testRecaptcha($recaptcha){
         if ($this->standalone) {
 
-            //[REMOVE_ONPREMISE]
-            $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
-            $remoteip = $_SERVER['REMOTE_ADDR'];
-
-            $api_url = "https://www.google.com/recaptcha/api/siteverify?secret="
-                . $secret
-                . "&response=" . $recaptcha
-                . "&remoteip=" . $remoteip;
-
-            $decode = json_decode(file_get_contents($api_url), true);
-            return $decode["success"];
-            //[/REMOVE_ONPREMISE]
-
         } else {
 
             $masterServer = "https://app.twakeapp.com/api/remote";

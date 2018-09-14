@@ -95,7 +95,7 @@ class WorkspacesActivities
                 if ($activity->getObjectRepository()) {
                     try {
                         $obj = $this->convertToEntity($activity->getObjectId(), $activity->getObjectRepository());
-                        if ($obj) {
+                        if ($obj && isset($activities_by_user_app[$key][$end_pos]["objects"])) {
                             $found = false;
                             foreach ($activities_by_user_app[$key][$end_pos]["objects"] as $o) {
                                 if ($o["id"] == $obj->getId()) {
@@ -103,7 +103,7 @@ class WorkspacesActivities
                                     break;
                                 }
                             }
-                            if (!$found) {
+                            if (!$found && method_exists($obj, "getAsArrayFormated")) {
                                 $activities_by_user_app[$key][$end_pos]["objects"][] = $obj->getAsArrayFormated();
                             }
                         }
@@ -116,7 +116,7 @@ class WorkspacesActivities
                 if ($activity->getObjectRepository()) {
                     try {
                         $obj = $this->convertToEntity($activity->getObjectId(), $activity->getObjectRepository());
-                        if ($obj) {
+                        if ($obj && method_exists($obj, "getAsArrayFormated")) {
                             $objects[] = $obj->getAsArrayFormated();
                         }
                     } catch (Exception $e) {

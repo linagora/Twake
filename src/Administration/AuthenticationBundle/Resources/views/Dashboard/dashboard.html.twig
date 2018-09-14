@@ -110,7 +110,8 @@
                 </div>
                 <div>
                     {% for user in usersConnectedYesterday %}
-                        {{user.user.username}} : {{user.duree|date('H:i:s')}}
+                        <b>{{ user.user.username }}</b> {{ user.duree|date('H:i:s') }}
+                        <br>
                     {% endfor %}
                 </div>
             </div>
