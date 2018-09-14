@@ -91,6 +91,31 @@ class User implements UserInterface
 		}
 	}
 
+    public function loginWithUsername($usernameOrMail)
+    {
+
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("username" => $this->string_cleaner->simplifyUsername($usernameOrMail)));
+        if ($user == null) {
+            $user = $userRepository->findOneBy(Array("email" => $this->string_cleaner->simplifyMail($usernameOrMail)));
+        }
+
+        if ($user == null) {
+            return false;
+        }
+
+        // User log in
+        $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
+        $this->token_storage->setToken($token);
+
+        $request = $this->request_stack->getCurrentRequest();
+        $event = new InteractiveLoginEvent($request, $token);
+        $this->event_dispatcher->dispatch("security.interactive_login", $event);
+
+        return $user;
+
+    }
+
 	public function login($usernameOrMail, $password, $rememberMe = false, $request = null, $response = null)
 	{
 
@@ -309,10 +334,10 @@ class User implements UserInterface
 
     }
 
-	public function subscribeInfo($mail,$password,$pseudo,$firstName,$lastName,$phone,$workspace,$company,$friends,$recaptcha){
+    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $workspace, $company, $friends, $recaptcha, $force = false)
+    {
         $mail = $this->string_cleaner->simplifyMail($mail);
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
-
 
         $avaible = $this->getAvaibleMailPseudo($mail,$pseudo);
         if(is_bool($avaible) && !$avaible){
@@ -321,7 +346,7 @@ class User implements UserInterface
         if($mail==null || $password==null || $pseudo==null){
             return false;
         }
-        if(!$this->testRecaptcha($recaptcha)){
+        if (!($force || $this->testRecaptcha($recaptcha))) {
             error_log("-#-#-#-#-#-#-#-no captcha-#-#-#-#-#-#-#-");
             return false;
         }
