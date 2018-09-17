@@ -78,11 +78,13 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 	public function readAll($user){
         $listStreamMember = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findUnreadMessage($user);
 
+
         $ok = true;
         foreach ($listStreamMember as $streamMember){
             try {
                 $stream = $streamMember->getStream();
-                $ok = $ok && $this->read($stream, $user, false, true);
+                $read = $this->read($stream, $user, false, true);
+                $ok = $ok && $read;
             } catch (\Exception $e) {
                 error_log("missing entity");
             }
