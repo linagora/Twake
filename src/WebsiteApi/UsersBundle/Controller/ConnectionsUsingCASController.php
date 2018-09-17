@@ -17,24 +17,46 @@ class ConnectionsUsingCASController extends Controller
         $cas_login_page_url = $this->getParameter("cas_base_url");
         $cas_login_page_url .= "/login?";
         $cas_login_page_url .= "service=";
-        $cas_login_page_url .= urlencode($this->getParameter("SERVER_NAME") . "ajax/user/cas/verify");
+        $cas_login_page_url .= urlencode($this->getParameter("SERVER_NAME") . "ajax/users/cas/verify");
         return $this->redirect($cas_login_page_url);
     }
 
     // Verify CAS token and search for user in database (or create it)
     public function verifyAction(Request $request)
     {
-        $ticket = $request->request->get("ticket");
+        $ticket = $request->query->get("ticket");
         $cas_ticket_verification_url = $this->getParameter("cas_base_url");
 
         $cas_ticket_verification_url .= "/serviceValidate?";
         $cas_ticket_verification_url .= "service=";
-        $cas_ticket_verification_url .= urlencode($this->getParameter("SERVER_NAME"));
+        $cas_ticket_verification_url .= urlencode($this->getParameter("SERVER_NAME") . "ajax/users/cas/verify");
         $cas_ticket_verification_url .= "&ticket=" . $ticket;
         $cas_ticket_verification_url .= "&format=JSON";
 
+        //var_dump($cas_ticket_verification_url);
+        //die();
+
         $response = $this->get("circle.restclient")->get($cas_ticket_verification_url);
-        $result = json_decode($response->getContent(), true);
+        $response = $response->getContent();
+        if (strpos($response, "<cas:") !== false) {
+            $result = Array();
+            if (strpos($response, "cas:authenticationSuccess") !== false) {
+                $username = explode("<cas:user>", $response);
+                $username = explode("</cas:user>", $username[1]);
+                $username = $username[0];
+                if ($username) {
+                    $result = Array(
+                        "serviceResponse" => Array(
+                            "authenticationSuccess" => Array(
+                                "user" => $username
+                            )
+                        )
+                    );
+                }
+            }
+        } else {
+            $result = json_decode($response, true);
+        }
 
         if (isset($result["serviceResponse"]) && isset($result["serviceResponse"]["authenticationSuccess"])) {
             $details = $result["serviceResponse"]["authenticationSuccess"];

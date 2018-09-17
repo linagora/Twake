@@ -198,16 +198,15 @@ twake_user_recover_password:
 
 twake_user_connect_cas_login:
     path:     /cas/login
-    methods: [POST]
+    methods: [GET]
     defaults: { _controller: TwakeUsersBundle:ConnectionsUsingCAS:login }
 
 twake_user_connect_cas_verify:
     path:     /cas/verify
-    methods: [POST]
+    methods: [GET]
     defaults: { _controller: TwakeUsersBundle:ConnectionsUsingCAS:verify }
 
 twake_user_connect_cas_logout:
     path:     /cas/logout
-    methods: [POST]
+    methods: [GET]
     defaults: { _controller: TwakeUsersBundle:ConnectionsUsingCAS:logout }
-
