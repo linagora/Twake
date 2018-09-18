@@ -125,7 +125,7 @@ class FilesController extends Controller
 
         error_log("DELETE 1");
 
-        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
+        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
         if ($can) {
 
             error_log("DELETE 2");
@@ -162,7 +162,7 @@ class FilesController extends Controller
         }
 
 
-        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
+        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
 
         if ($can) {
             if (!$fileSystem->emptyTrash($groupId)) {
@@ -192,7 +192,7 @@ class FilesController extends Controller
         }
 
 
-        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write");
+        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
 
         if ($can) {
 
@@ -219,6 +219,7 @@ class FilesController extends Controller
         $groupId = $request->request->get("groupId", 0);
         $objectId = $request->request->get("id", 0);
         $directory = $request->request->get("directory", false);
+        $public_access_key = $request->request->get("public_access_key", false);
         $externalDrive = $directory;
 
         if($objectId>0) {
@@ -230,7 +231,8 @@ class FilesController extends Controller
                 $fileSystem->setRootDirectory($directory);
             }
 
-            $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read");
+            $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($objectId, $public_access_key);
+
 
             if ($can) {
                 $data["data"] = $fileSystem->getInfos($groupId, $objectId, true);
@@ -239,7 +241,8 @@ class FilesController extends Controller
             if (!$externalDrive)
                 $haveReadAccess = $this->get('app.workspace_levels')->can(
                     $fileSystem->getWorkspace($objectId),
-                    $this->getUser()->getId(), "drive:read");
+                        $this->getUser(), "drive:read")
+                    || $fileSystem->verifyPublicAccess($objectId, $public_access_key);
             else
                 $haveReadAccess = true;
 
@@ -271,6 +274,8 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
+        $public_access_key = $request->request->get("public_access_key", false);
+
         $fileSystem = $this->get('app.drive.FileSystem');
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
@@ -284,7 +289,46 @@ class FilesController extends Controller
             $isInTrash = true;
         }
 
-        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
+        if (strlen($public_access_key) > 20) {
+
+            $access_allowed = false;
+            $arbo = [];
+            $parent = $fileSystem->getObject($parentId);
+            while ($parent != null) {
+                $arbo[] = Array("id" => $parent->getId(), "name" => $parent->getName(), "shared" => $parent->getShared());
+
+                if ($parent->getPublicAccessKey() == $public_access_key) {
+                    $access_allowed = true;
+                    $parent = null;
+                } else {
+                    $parent = $parent->getParent();
+                }
+            }
+            $data["data"]["tree"] = array_reverse($arbo);
+
+            if ($access_allowed) {
+
+                $files = $fileSystem->listDirectory($groupId, $parentId);
+
+                if (count($files) != 0 && $files == false) {
+                    $data["data"]["error"] = "notauthorized";
+                } else {
+                    foreach ($files as $index => $file) {
+                        if ($file->getCopyOf() == null) {//if it's a copy shortcut to another folder, link directly the folder
+                            $data["data"]["files"][] = $fileSystem->getInfos($groupId, $file, true);
+                            $data["data"]["files"][$index]["shortcut"] = false;
+                        }
+                    }
+                }
+
+                $data["data"]["maxspace"] = $fileSystem->getTotalSpace($groupId);
+                $data["data"]["totalsize"] = $fileSystem->getUsedSpace($groupId);
+
+            } else {
+                $data["data"]["error"] = "notauthorized";
+            }
+
+        } else if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read")) {
 
             if($state == "new") {
 
@@ -383,7 +427,7 @@ class FilesController extends Controller
         }
 
 
-       if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read")) {
 
 
             $files = $fileSystem->listLastUsed($groupId, $offset, $max);
@@ -470,7 +514,7 @@ class FilesController extends Controller
 
         $file = $_FILES["file"];
 
-        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write")) {
 
             if($newVersion)
                 $file = $fileSystem->uploadNewVersion($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId(), $newVersion);
@@ -501,6 +545,7 @@ class FilesController extends Controller
             $download = $request->query->get("download", 1);
             $directory = $request->query->get("directory", false);
             $versionId = $request->query->get("versionId", 0);
+            $public_access_key = $request->query->get("public_access_key", false);
         }
         else {
             $groupId = $request->request->get("groupId", 0);
@@ -508,6 +553,7 @@ class FilesController extends Controller
             $download = $request->request->get("download", 1);
             $directory = $request->request->get("directory", false);
             $versionId = $request->request->get("versionId", 0);
+            $public_access_key = $request->query->get("public_access_key", false);
         }
         $externalDrive = $directory;
 
@@ -518,7 +564,7 @@ class FilesController extends Controller
             $fileSystem->setRootDirectory($directory);
         }
 
-        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read");
+        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($fileId, $public_access_key);
 
         if ($can) {
 
@@ -600,7 +646,7 @@ class FilesController extends Controller
         }
 
 
-        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read")) {
             if (!$fileSystem->canAccessTo($fileId, $groupId, $this->getUser())) {
                 $data["errors"][] = "notallowed";
             } else if (!$fileSystem->copy($fileId, $newParentId)) {
@@ -633,7 +679,7 @@ class FilesController extends Controller
         }
 
 
-        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write")) {
             if ($filename == "") {
                 $data["errors"][] = "emptyname";
             } else if (!$fileSystem->canAccessTo($fileId, $groupId, $this->getUser())){
@@ -652,6 +698,7 @@ class FilesController extends Controller
         $fileId = $request->query->get("fileId", 0);
         $original = $request->query->get("original", 0);
         $directory = $request->query->get("directory", false);
+        $public_access_key = $request->query->get("public_access_key", false);
         $externalDrive = $directory;
 
         $fileSystem = $this->get('app.drive.FileSystem');
@@ -662,7 +709,7 @@ class FilesController extends Controller
         }
 
 
-        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:read")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($fileId, $public_access_key)) {
 
             if ($original && !$externalDrive) {
                 $data = $fileSystem->getRawContent($groupId,$fileId);
@@ -697,7 +744,7 @@ class FilesController extends Controller
         }
 
 
-        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write")) {
             $files = $fileSystem->getSharedWorkspace($groupId,$fileId);
             if (count($files) != 0 && !$files ) {
                 $data["errors"][] = "unknown";
@@ -735,7 +782,7 @@ class FilesController extends Controller
         }
 
 
-        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write")) {
             if (!$fileSystem->canAccessTo($fileId, $groupId, $this->getUser())) {
                 $data["errors"][] = "notallowed";
             } else if (!$fileSystem->share($groupId,$fileId,$workspaceId)) {
@@ -769,7 +816,7 @@ class FilesController extends Controller
         }
 
 
-        if (!$this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "drive:write")) {
+        if (!$this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write")) {
             $data["errors"][] = "notallowed";
         } else if (!$fileSystem->unshare($groupId,$fileId,$workspaceId,$removeAll)) {
             $data["errors"][] = "unknown";

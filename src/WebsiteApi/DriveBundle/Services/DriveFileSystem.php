@@ -109,6 +109,28 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $workspace->setDriveSize($space);
     }
 
+    public function verifyPublicAccess($object, $publicAccessKey)
+    {
+        if (strlen($publicAccessKey) < 20) {
+            return false;
+        }
+        if (!$object) {
+            return false;
+        }
+
+        $access_allowed = false;
+        $parent = $this->convertToEntity($object, "TwakeDriveBundle:DriveFile");
+        while ($parent != null) {
+            if ($parent->getPublicAccessKey() == $publicAccessKey) {
+                $access_allowed = true;
+                $parent = null;
+            } else {
+                $parent = $parent->getParent();
+            }
+        }
+        return $access_allowed;
+    }
+
     public function canAccessTo($file, $workspaceId, $user = null)
     {
         $workspace = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
