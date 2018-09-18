@@ -792,6 +792,18 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $data;
     }
 
+    public function updatePublicAccessKey($fileOrDirectory, $publicAccessKey)
+    {
+        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
+
+        $fileOrDirectory->setPublicAccessKey($publicAccessKey);
+
+        $this->doctrine->persist($fileOrDirectory);
+        $this->doctrine->flush();
+
+        return true;
+    }
+
     public function getWorkspace($fileOrDirectory)
     {
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");

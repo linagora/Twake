@@ -293,7 +293,8 @@ class FilesController extends Controller
 
             $access_allowed = false;
             $arbo = [];
-            $parent = $fileSystem->getObject($parentId);
+            $initialParentObject = $fileSystem->getObject($parentId);
+            $parent = $initialParentObject;
             while ($parent != null) {
                 $arbo[] = Array("id" => $parent->getId(), "name" => $parent->getName(), "shared" => $parent->getShared());
 
@@ -304,11 +305,15 @@ class FilesController extends Controller
                     $parent = $parent->getParent();
                 }
             }
-            $data["data"]["tree"] = array_reverse($arbo);
 
             if ($access_allowed) {
+                $data["data"]["tree"] = array_reverse($arbo);
 
-                $files = $fileSystem->listDirectory($groupId, $parentId);
+                if ($initialParentObject->getIsDirectory()) {
+                    $files = $fileSystem->listDirectory($groupId, $parentId);
+                } else {
+                    $files = [$initialParentObject];
+                }
 
                 if (count($files) != 0 && $files == false) {
                     $data["data"]["error"] = "notauthorized";
@@ -657,6 +662,38 @@ class FilesController extends Controller
         return new JsonResponse($data);
     }
 
+    public function updatePublicAccessKeyAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array()
+        );
+
+        $groupId = $request->request->get("workspace_id", 0);
+        $fileId = $request->request->get("fileId", 0);
+        $public_access_key = $request->request->get("public_access_key", "");
+
+        $fileSystem = $this->get('app.drive.FileSystem');
+
+        if ($public_access_key == "generate") {
+            $public_access_key = bin2hex(random_bytes(128));
+        } else if ($public_access_key != "") {
+            $data["errors"][] = "badparameters";
+            return new JsonResponse($data);
+        }
+
+        $data["data"] = $public_access_key;
+
+        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:manage")) {
+            if (!$fileSystem->canAccessTo($fileId, $groupId, $this->getUser())) {
+                $data["errors"][] = "notallowed";
+            } else if (!$fileSystem->updatePublicAccessKey($fileId, $public_access_key)) {
+                $data["errors"][] = "unknown";
+            }
+        }
+
+        return new JsonResponse($data);
+    }
+
     public function renameAction(Request $request)
     {
         $data = Array(
@@ -673,7 +710,7 @@ class FilesController extends Controller
 
         $fileSystem = $this->get('app.drive.FileSystem');
 
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
+        if ($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
@@ -682,9 +719,9 @@ class FilesController extends Controller
         if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write")) {
             if ($filename == "") {
                 $data["errors"][] = "emptyname";
-            } else if (!$fileSystem->canAccessTo($fileId, $groupId, $this->getUser())){
+            } else if (!$fileSystem->canAccessTo($fileId, $groupId, $this->getUser())) {
                 $data["errors"][] = "notallowed";
-            } else if (!$fileSystem->rename($fileId, $filename, $description, $labels,$this->getUser()->getId())) {
+            } else if (!$fileSystem->rename($fileId, $filename, $description, $labels, $this->getUser()->getId())) {
                 $data["errors"][] = "unknown";
             }
         }
