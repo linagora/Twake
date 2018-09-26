@@ -85,9 +85,16 @@ class CheckService
         if($workspace->getUser()!=null)//If is private
             return $application->getDefault();
 
-        //Group apps
-        $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
-        $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace" => $workspace, "groupapp" => $application->getId()));
+        $workspaceapp = null;
+
+        $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
+        $groupApp = $workspaceappsRepository->findOneBy(Array("group" => $workspace->getGroup(), "app" => $application->getId()));
+
+        if ($groupApp) {
+            //Group apps
+            $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+            $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace" => $workspace, "groupapp" => $groupApp));
+        }
 
         return $workspaceapp!=null;
     }

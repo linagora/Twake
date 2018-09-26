@@ -33,6 +33,11 @@ class DriveFile implements ObjectLinksInterface
     private $parent;
 
     /**
+     * @ORM\Column(type="string", length=512)
+     */
+    private $public_access_key = "";
+
+    /**
      * @ORM\Column(type="string", length=255)
      */
     private $name;
@@ -204,6 +209,22 @@ class DriveFile implements ObjectLinksInterface
         $array = explode(".", $name);
         $ext = array_pop($array);
         $this->setExtension($ext);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPublicAccessKey()
+    {
+        return $this->public_access_key;
+    }
+
+    /**
+     * @param mixed $public_access_key
+     */
+    public function setPublicAccessKey($public_access_key)
+    {
+        $this->public_access_key = $public_access_key;
     }
 
     /**
@@ -512,6 +533,7 @@ class DriveFile implements ObjectLinksInterface
             "shared" => $this->getShared(),
             "url" => $this->getUrl(),
             "opening_rate" => $this->getOpeningRate(),
+            "public_access_key" => $this->getPublicAccessKey(),
             "previewHasBeenGenerated" => $this->getPreviewHasBeenGenerated(),
             "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null
         );

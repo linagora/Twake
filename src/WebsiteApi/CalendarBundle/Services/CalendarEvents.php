@@ -67,7 +67,7 @@ class CalendarEvents implements CalendarEventsInterface
         $event->setReminder();
         $event->setCalendar($calendar);
         $participantsArray = Array();
-        $event->setParticipant($participantsArray);
+        $event->setParticipants($participantsArray);
         $this->doctrine->persist($event);
         $this->doctrine->flush();
 
@@ -81,7 +81,7 @@ class CalendarEvents implements CalendarEventsInterface
         }
         $calArray = $calendar->getAsArray();
 
-        $event->setParticipant($participantsArray);
+        $event->setParticipants($participantsArray);
 
         $this->doctrine->persist($event);
 
@@ -149,7 +149,6 @@ class CalendarEvents implements CalendarEventsInterface
         $event->setEvent($eventArray);
         $event->setFrom($eventArray["from"]);
         $event->setTo($eventArray["to"]);
-        $event->setParticipant($eventArray["participants"]);
         if (isset($eventArray["reminder"])) {
             $event->setReminder(intval($eventArray["reminder"]));
         } else {
@@ -247,7 +246,7 @@ class CalendarEvents implements CalendarEventsInterface
         }
 
         /* @var CalendarEvent $event */
-
+        $participantArray = $event->getParticipants();
         foreach ($usersId as $userId) {
             if($userId != null){ //pour eviter un bug du front
                 $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
@@ -258,13 +257,14 @@ class CalendarEvents implements CalendarEventsInterface
                     $userLinked->setFrom($event->getFrom());
                     $userLinked->setTo($event->getTo());
                     $this->doctrine->persist($userLinked);
-                    $participantArray = $event->getParticipant();
-                    $participantArray[] = $user->getId();
+                    if (!in_array($user->getId(), $participantArray)) {
+                        $participantArray[] = $user->getId();
+                    }
                 }
                 $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Added  to ".$event->getEvent()["title"],"You have a new event the ".date('d/m/Y', $event->getFrom()), Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
             }
         }
-        $event->setParticipant($participantArray);
+        $event->setParticipants($participantArray);
         $this->doctrine->flush();
         $data = Array(
             "type" => "update",
@@ -279,6 +279,7 @@ class CalendarEvents implements CalendarEventsInterface
     {
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        error_log("REMOVE USERS");
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
             return null;
@@ -298,25 +299,22 @@ class CalendarEvents implements CalendarEventsInterface
         }
 
 
-        $participantArray = $event->getParticipant();
+        $participantArray = $event->getParticipants();
         foreach ($usersId as $userId){
-            error_log("remove ".$userId);
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($userId);
             $userLinked = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findOneBy(Array("user"=>$user, "event"=>$event));
             $this->doctrine->remove($userLinked);
             for($i=0;$i<count($participantArray);$i++){
-                if($participantArray[$i] == $user->getId()){
-                    error_log("remove from array ".$i.", ".json_encode($participantArray));
+                if ($participantArray[$i] == $user->getId() || (isset($participantArray[$i]["id"]) && $participantArray[$i]["id"] == $user->getId())) {
                     unset($participantArray[$i]);
                     $participantArray = array_values($participantArray);
-                    error_log("array after remove : ".json_encode($participantArray));
                     $this->calendarActivity->pushActivity(true, $workspaceId, $user, null, "Removed  to ".$event->getEvent()["name"],"You have been removed from ".$event->getEvent()["name"], Array(), Array("notifCode" => $event->getFrom()."/".$event->getId()));
                     break;
                 }
             }
         }
 
-        $event->setParticipant($participantArray);
+        $event->setParticipants($participantArray);
         $this->doctrine->persist($event);
         $this->doctrine->flush();
         $data = Array(
@@ -324,6 +322,66 @@ class CalendarEvents implements CalendarEventsInterface
             "event" => $event->getAsArray()
         );
         $this->pusher->push($data, "calendar/".$calendarId);
+
+        return true;
+
+    }
+
+    public function updateUsersFromArray($workspaceId, $eventId, $currentUserId)
+    {
+
+        $event = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->find($eventId);
+
+        if (!$event) {
+            return null;
+        }
+
+        $calendar = $event->getCalendar();
+        if (!$calendar) {
+            return null;
+        }
+
+        $calendarId = $calendar->getId();
+
+        $inBaseParticipants = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser")->findBy(Array("event" => $event));
+
+        $usersIdAdd = [];
+        $usersIdRemove = [];
+
+        $participantArray = $event->getParticipants();
+
+        foreach ($participantArray as $participant) {
+            $p_id = (isset($participant["id"]) ? $participant["id"] : $participant);
+            $present = false;
+            foreach ($inBaseParticipants as $inBase) {
+                if ($p_id == $inBase->getUser()->getId()) {
+                    $present = true;
+                }
+            }
+            if (!$present) {
+                $usersIdAdd[] = $p_id;
+            }
+        }
+        if (count($usersIdAdd) > 0) {
+            $this->addUsers($workspaceId, $calendarId, $eventId, $usersIdAdd, $currentUserId);
+        }
+
+        foreach ($inBaseParticipants as $inBase) {
+            $present = false;
+            foreach ($participantArray as $participant) {
+                $p_id = (isset($participant["id"]) ? $participant["id"] : $participant);
+                if ($p_id == $inBase->getUser()->getId()) {
+                    $present = true;
+                }
+            }
+            if (!$present) {
+                $usersIdRemove[] = $inBase->getUser()->getId();
+            }
+        }
+        error_log(json_encode($usersIdRemove));
+        if (count($usersIdRemove) > 0) {
+            $this->removeUsers($workspaceId, $calendarId, $eventId, $usersIdRemove, $currentUserId);
+        }
 
         return true;
 

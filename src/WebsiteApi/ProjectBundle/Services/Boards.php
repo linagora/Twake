@@ -277,10 +277,6 @@ class Boards implements BoardsInterface
             );
         }
 
-        $participants = $board->getParticipants();
-
-        $this->notifyParticipants($participants,$workspace, "", "", "");
-
         return $board;
 
     }
@@ -323,10 +319,6 @@ class Boards implements BoardsInterface
             $this->doctrine->remove($link);
         }
 
-
-        $participants = $board->getParticipants();
-
-        $this->notifyParticipants($participants,$workspace, "", "", "");
 
         $this->doctrine->remove($board);
         $this->doctrine->flush();
@@ -381,8 +373,6 @@ class Boards implements BoardsInterface
             "board" => $board->getAsArray()
         );
 
-        $this->notifyParticipants($board->getParticipants(),$workspace, "", "", "");
-
         return 1;
     }
 
@@ -424,8 +414,6 @@ class Boards implements BoardsInterface
             "type" => "delete",
             "board_id" => $boardId
         );
-
-        $this->notifyParticipants($board->getParticipants(),$workspace, "", "", "");
 
         return 1;
     }

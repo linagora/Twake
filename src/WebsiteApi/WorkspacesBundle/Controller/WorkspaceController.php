@@ -109,12 +109,12 @@ class WorkspaceController extends Controller
 		}
 
 		$ws = $this->get("app.workspaces")->create($name, $groupId, $this->getUser()->getId());
-        $ws_id = $ws->getId();
 
 		if(!$ws || is_string($ws)){
                 $response["errors"][] = "notallowed";
                 $response["errors"]["max"] = $ws;
 		}else{
+            $ws_id = $ws->getId();
 			$response["data"]["status"] = "success";
 			$response["data"]["workspace_id"] = $ws_id;
 		}

@@ -48,7 +48,7 @@ class DashboardController extends Controller
         $data["users"]["accounts_by_hours"] = $accounts_chart;
 
 
-        $_connections_usage_array = $this->get("admin.TwakeServerStats")->getUsersConnected(1000, "hourly");
+        $_connections_usage_array = $this->get("admin.TwakeServerStats")->getUsersConnected(61);
         $_connections_usage_array = array_reverse($_connections_usage_array);
 
 
@@ -100,10 +100,12 @@ class DashboardController extends Controller
 		//workspaces
 		$data["workspaces"]["count"] = $this->get('admin.TwakeGroupManagement')->countWorkspace();
 		$data["workspaces"]["drive_usage"]= $this->get('admin.TwakeStatistics')->numberOfExtensions();
-		$drive_data = [['Extension', 'Number of files']];
-		foreach ($data["workspaces"]["drive_usage"] as $ext){
-			$drive_data[] = [$ext["extension"], intval($ext["nb"])];
-		}
+        $drive_data = [['Extension', 'Number of files']];
+        if($data["workspaces"]["drive_usage"]){
+            foreach ($data["workspaces"]["drive_usage"] as $ext){
+                $drive_data[] = [$ext["extension"], intval($ext["nb"])];
+            }    
+        }
 		$drive_usage_chart = new PieChart();
 		$drive_usage_chart->getData()->setArrayToDataTable($drive_data);
         $drive_usage_chart->getOptions()->setHeight(200);
@@ -119,6 +121,8 @@ class DashboardController extends Controller
         $data["nbmessages"] = $this->get("admin.TwakeServerStats")->getNumberMessages();
         $data["nbevents"] = $this->get("admin.TwakeServerStats")->getNumberEvents();
         $data["nbfiles"] = $this->get("admin.TwakeServerStats")->getNumberFiles();
+
+        $data["usersConnectedYesterday"] = $this->get("admin.TwakeUserManagement")->getUserConnectedLastDay();
 
 		return $this->render('AdministrationAuthenticationBundle:Dashboard:dashboard.html.twig', $data);
 	}

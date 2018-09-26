@@ -53,7 +53,7 @@ class CalendarEvent implements ObjectLinksInterface {
     /**
      * @ORM\Column(name="participant", type="text")
      */
-    private $participant;
+    private $participants;
 
     public  function __construct($event, $from, $to)
     {
@@ -158,17 +158,17 @@ class CalendarEvent implements ObjectLinksInterface {
     /**
      * @return mixed
      */
-    public function getParticipant()
+    public function getParticipants()
     {
-        return json_decode($this->participant, 1);
+        return json_decode($this->participants, 1);
     }
 
     /**
      * @param mixed $event
      */
-    public function setParticipant($event)
+    public function setParticipants($event)
     {
-        $this->participant = json_encode($event);
+        $this->participants = json_encode($event);
     }
 
     /**
@@ -199,12 +199,20 @@ class CalendarEvent implements ObjectLinksInterface {
     }
 
     public function getAsArray(){
-        return Array(
+        $res = Array(
             "id" => $this->getId(),
             "calendar" => $this->getCalendar()->getId(),
             "event" => $this->getEvent(),
-            "participant" => $this->getParticipant(),
+            "participant" => Array(),
+            "participant_full" => Array(),
         );
+        if ($this->getParticipants()) {
+            foreach ($this->getParticipants() as $participant) {
+                $res["participant"][] = (isset($participant["id"]) ? $participant["id"] : $participant);
+                $res["participant_full"][] = $participant;
+            }
+        }
+        return $res;
     }
     public function getAsArrayMinimal()
     {
@@ -245,6 +253,7 @@ class CalendarEvent implements ObjectLinksInterface {
     }
 
     public function get($fieldName){
+
         if(!property_exists($this, $fieldName))
             return false;
 

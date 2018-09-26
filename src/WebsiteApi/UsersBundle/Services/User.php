@@ -91,6 +91,31 @@ class User implements UserInterface
 		}
 	}
 
+    public function loginWithUsername($usernameOrMail)
+    {
+
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("username" => $this->string_cleaner->simplifyUsername($usernameOrMail)));
+        if ($user == null) {
+            $user = $userRepository->findOneBy(Array("email" => $this->string_cleaner->simplifyMail($usernameOrMail)));
+        }
+
+        if ($user == null) {
+            return false;
+        }
+
+        // User log in
+        $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
+        $this->token_storage->setToken($token);
+
+        $request = $this->request_stack->getCurrentRequest();
+        $event = new InteractiveLoginEvent($request, $token);
+        $this->event_dispatcher->dispatch("security.interactive_login", $event);
+
+        return $user;
+
+    }
+
 	public function login($usernameOrMail, $password, $rememberMe = false, $request = null, $response = null)
 	{
 
@@ -289,19 +314,6 @@ class User implements UserInterface
     public function testRecaptcha($recaptcha){
         if ($this->standalone) {
 
-            //[REMOVE_ONPREMISE]
-            $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
-            $remoteip = $_SERVER['REMOTE_ADDR'];
-
-            $api_url = "https://www.google.com/recaptcha/api/siteverify?secret="
-                . $secret
-                . "&response=" . $recaptcha
-                . "&remoteip=" . $remoteip;
-
-            $decode = json_decode(file_get_contents($api_url), true);
-            return $decode["success"];
-            //[/REMOVE_ONPREMISE]
-
         } else {
 
             $masterServer = "https://app.twakeapp.com/api/remote";
@@ -310,7 +322,7 @@ class User implements UserInterface
                 "client_ip" => $_SERVER['REMOTE_ADDR'],
                 "recaptcha" => $recaptcha
             );
-            $result = $this->circle->post($masterServer . "/recaptcha", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            $result = $this->restClient->post($masterServer . "/recaptcha", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
             $result = json_decode($result->getContent(), true);
 
             if (isset($result["status"])) {
@@ -322,10 +334,10 @@ class User implements UserInterface
 
     }
 
-	public function subscribeInfo($mail,$password,$pseudo,$firstName,$lastName,$phone,$workspace,$company,$friends,$recaptcha){
+    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $workspace, $company, $friends, $recaptcha, $force = false)
+    {
         $mail = $this->string_cleaner->simplifyMail($mail);
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
-
 
         $avaible = $this->getAvaibleMailPseudo($mail,$pseudo);
         if(is_bool($avaible) && !$avaible){
@@ -334,7 +346,7 @@ class User implements UserInterface
         if($mail==null || $password==null || $pseudo==null){
             return false;
         }
-        if(!$this->testRecaptcha($recaptcha)){
+        if (!($force || $this->testRecaptcha($recaptcha))) {
             error_log("-#-#-#-#-#-#-#-no captcha-#-#-#-#-#-#-#-");
             return false;
         }

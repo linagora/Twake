@@ -288,9 +288,10 @@ class DiscussionController extends Controller
         $streamIsPrivate = $request->request->get("isPrivate",false);
         $streamDescription = $request->request->get("description","");
         $workspaceId = $request->request->get("workspaceId",0);
+        $members = $request->request->get("members",Array());
 
         //Warning, auth done in service
-        $res = $this->get("app.streamSystem")->createStream($this->getUser(),$workspaceId,$streamName,$streamDescription,$streamIsPrivate);
+        $res = $this->get("app.streamSystem")->createStream($this->getUser(),$workspaceId,$streamName,$streamDescription,$streamIsPrivate,"stream",$members);
 
         if(!$res)
             $data["errors"][] = "Fail to add stream";

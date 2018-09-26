@@ -72,4 +72,24 @@ class AdministrationTwakeUserManagement implements AdministrationTwakeUserManage
         }
         return $repository->sumAllFileSize($idTwakeUser);
     }
+
+    public function getUserConnectedLastDay(){
+        $from = new \DateTime(date("Y-m-d",time() - 60 * 60 * 24)." 00:00:00");
+        $to   = new \DateTime(date("Y-m-d",time() - 60 * 60 * 24)." 23:59:59");
+        $statsConnected = $this->doctrine->getRepository("AdministrationAuthenticationBundle:UserConnectionStats")->getConnectionBetweenDate($from,$to);
+        $userStat = [];
+        if($statsConnected){
+            error_log("table : ".print_r($statsConnected, TRUE));
+            foreach($statsConnected as $stat){
+                $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($stat["userId"]);
+                if($user){
+                    $userStat[] = Array(
+                        "user" => $user,
+                        "duree" => $stat["duree"]
+                    );
+                }
+            }
+        }
+        return $userStat;
+    }
 }

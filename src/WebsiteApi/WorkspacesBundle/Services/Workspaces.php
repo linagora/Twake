@@ -3,11 +3,21 @@
 namespace WebsiteApi\WorkspacesBundle\Services;
 
 
+use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\CalendarBundle\Entity\Calendar;
+use WebsiteApi\CalendarBundle\Entity\CalendarEvent;
+use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\DiscussionBundle\Entity\Stream;
+use WebsiteApi\ProjectBundle\Entity\Board;
+use WebsiteApi\ProjectBundle\Entity\BoardTask;
+use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
+use WebsiteApi\ProjectBundle\Entity\ListOfTasks;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceApp;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Model\WorkspacesInterface;
+use WebsiteApi\CoreBundle\Services\TranslationObject;
+
 
 class Workspaces implements WorkspacesInterface
 {
@@ -22,10 +32,15 @@ class Workspaces implements WorkspacesInterface
     private $pricing;
     private $string_cleaner;
     private $pusher;
+    private $translate;
+    private $taskService;
     /* @var WorkspacesActivities $workspacesActivities*/
     var $workspacesActivities;
+    var $calendarEventService;
+    var $calendarService;
+    var $driveService;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $groups_service, $priceService, $cleaner, $pusher,$workspacesActivities)
+    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $groups_service, $priceService, $cleaner, $pusher,$workspacesActivities,$translate,$taskService,$calendarService,$calendarEventService,$driveService)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -38,6 +53,11 @@ class Workspaces implements WorkspacesInterface
         $this->string_cleaner = $cleaner;
         $this->pusher = $pusher;
         $this->workspacesActivities = $workspacesActivities;
+        $this->translate = $translate;
+        $this->taskService = $taskService;
+        $this->calendarService = $calendarService;
+        $this->calendarEventService = $calendarEventService;
+        $this->driveService = $driveService;
     }
 
     public function getPrivate($userId = null)
@@ -99,12 +119,13 @@ class Workspaces implements WorkspacesInterface
         $uniquename = $this->string_cleaner->simplify($name);
         $uniquenameIncremented = $uniquename;
 
+        $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($userId);
 
         if ($groupId != null) {
             $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
             $group = $groupRepository->find($groupId);
-            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-            $user = $userRepository->find($userId);
+
 
             $groupUserdRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
             $group_user = $groupUserdRepository->findOneBy(Array("group" => $group, "user" => $user));
@@ -141,14 +162,133 @@ class Workspaces implements WorkspacesInterface
         $this->doctrine->persist($workspace);
         $this->doctrine->flush();
 
+        $twakebot = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "twake_bot"));
+        $twakebotId = $twakebot->getId();
+
+
+
+
+
         // Create stream
-        $streamGeneral = new Stream($workspace, "General", false, "This is the general stream");
+        $streamGeneral = new Stream($workspace, new TranslationObject($this->translate,"general"), false, "This is the general stream");
         $streamGeneral->setType("stream");
         //$streamRandom = new Stream($workspace, "Random", false, "This is the random stream");
         //$streamRandom->setType("stream");
-
         $this->doctrine->persist($streamGeneral);
         //$this->doctrine->persist($streamRandom);
+
+        $this->doctrine->flush();
+
+        $links = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("user"=>$user));
+        if(count($links)<=1){
+            $t = microtime(true);
+            $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
+            $content = new TranslationObject($this->translate,"message.hello1",$user->getUsername());
+            $message = new Message($twakebot, "S", $streamGeneral, false, null, false, new \DateTime(date('Y-m-d H:i:s.' . $micro, $t)), $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), null);
+            $message->setFrontId("");
+            $this->doctrine->persist($message);
+
+            $t = microtime(true);
+            $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
+            $content = new TranslationObject($this->translate,"message.hello2");
+            $message = new Message($twakebot, "S", $streamGeneral, false, null, false, new \DateTime(date('Y-m-d H:i:s.' . $micro, $t)), $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), null);
+            $message->setFrontId("");
+            $this->doctrine->persist($message);
+
+            $t = microtime(true);
+            $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
+            $content = new TranslationObject($this->translate,"message.hello3");
+            $message = new Message($twakebot, "S", $streamGeneral, false, null, false, new \DateTime(date('Y-m-d H:i:s.' . $micro, $t)), $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), null);
+            $message->setFrontId("");
+            $this->doctrine->persist($message);
+
+
+
+            $board = new Board(new TranslationObject($this->translate,"general"),new TranslationObject($this->translate,"project.generalBoardDescription"), false);
+            $this->doctrine->persist($board);
+
+            $boardWorkspace = new LinkBoardWorkspace($workspace,$board,true,true);
+            $this->doctrine->persist($boardWorkspace);
+
+            $list1 = new ListOfTasks($board,new TranslationObject($this->translate,"project.todo") ,"f44242", false, Array());
+            $this->doctrine->persist($list1);
+
+            $list2 = new ListOfTasks($board,new TranslationObject($this->translate,"project.doing") ,"f49d41", false, Array());
+            $list3 = new ListOfTasks($board,new TranslationObject($this->translate,"project.done") ,"f49d41", true, Array());
+            $this->doctrine->persist($list2);
+            $this->doctrine->persist($list3);
+            $this->doctrine->flush();
+
+            $task1 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate,"project.createTwakeWorkspace"), new TranslationObject($this->translate,"project.createTwakeWorkspaceDescription"), 0, 0, NULL);
+            $task2 = $this->taskService->createTask($list2, Array(), new TranslationObject($this->translate,"project.discoverTwake"), new TranslationObject($this->translate,"project.discoverTwakeDescription"), 0, 0, NULL);
+            $task3 = $this->taskService->createTask($list3, Array(), new TranslationObject($this->translate,"project.signin"), "", 0, 0, NULL);
+            $task4 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate,"project.invitePartner"), new TranslationObject($this->translate,"project.invitePartnerDescription"), 0, 0, NULL);
+
+
+            $calendar1 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate,"general"), "3de8a0", $currentUserId=null, $icsLink=null);
+            $calendar2 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate,"calendar.communication"), "f0434b", $currentUserId=null, $icsLink=null);
+            $calendar3 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate,"calendar.custumer"), "017aba", $currentUserId=null, $icsLink=null);
+
+            $monday = strtotime("last Monday");
+            $times = Array(
+                Array(
+                    "from" => strtotime("+14 hours",$monday),
+                    "to" => strtotime("+16 hours",$monday),
+                    "name" => "calendar.generalMeeting",
+                    "calendar" => $calendar1->getId()
+                ),
+                Array(
+                    "from" => strtotime("+1 day 10 hours 30 minutes",$monday),
+                    "to" => strtotime("+1 day 12 hours",$monday),
+                    "name" => "calendar.meetingDurant",
+                    "calendar" => $calendar3->getId()
+                ),
+                Array(
+                    "from" => strtotime("+1 day 12 hours 0 minutes",$monday),
+                    "to" => strtotime("+1 day 12 hours",$monday),
+                    "name" => "calendar.meetingNextAds",
+                    "calendar" => $calendar2->getId()
+                ),
+                Array(
+                    "from" => strtotime("+3 day 16 hours 0 minutes",$monday),
+                    "to" => strtotime("+3 day 17 hours",$monday),
+                    "name" => "calendar.meetingXu",
+                    "calendar" => $calendar3->getId()
+                ),
+                Array(
+                    "from" => strtotime("+4 day 8 hours 30 minutes",$monday),
+                    "to" => strtotime("+4 day 12 hours",$monday),
+                    "name" => "calendar.interview",
+                    "calendar" => $calendar2->getId()
+                ),
+            );
+            foreach ($times as $time){
+                $eventJSON = Array(
+                    "start" => new \DateTime(date('Y-m-d H:i:s.000000' , $time["from"])),
+                    "end" => new \DateTime(date('Y-m-d H:i:s.000000' , $time["to"])),
+                    "from" => $time["from"],
+                    "to" => $time["to"],
+                    "calendar" => $time["calendar"],
+                    "id" => "",
+                    "new" => false,
+                    "participant" => Array(),
+                    "color" => "E2333A",
+                    "title" => strval(new TranslationObject($this->translate,$time["name"])),
+                    "typeEvent"=> "event"
+                );
+                $event = $this->calendarEventService->createEvent($workspace->getId(), $time["calendar"], $eventJSON);
+            }
+
+            $dirSociety = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.society") , "" , true,   false, null,  $twakebotId, null);
+            $dirCommunication = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.comminucation") , "" , true,   false, null,  $twakebotId, null);
+            $dirFinancial = $this->driveService->create($workspace, $dirSociety, new TranslationObject($this->translate,"drive.financial") , "" , true,   false, null,  $twakebotId, null);
+            $dirHR = $this->driveService->create($workspace, $dirSociety, new TranslationObject($this->translate,"drive.hr") , "" , true,   false, null,  $twakebotId, null);
+            $fileRule = $this->driveService->create($workspace, $dirSociety, new TranslationObject($this->translate,"drive.rules") ,  new TranslationObject($this->translate,"drive.ruleSmoke") , false,   false, null,  $twakebotId, null);
+            $fileAccounting = $this->driveService->create($workspace, $dirFinancial, new TranslationObject($this->translate,"drive.accounting") , "" , false,   false, null,  $twakebotId, null);
+
+        }
+
+
 
         //Create admin level
         $level = new WorkspaceLevel();
@@ -167,7 +307,6 @@ class Workspaces implements WorkspacesInterface
         }
 
         //Add twake_bot
-        $twakebotId = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "twake_bot"))->getId();
         $this->wms->addMember($workspace->getId(), $twakebotId, false, $level->getId());
 
         $this->ws->create($workspace); //Create workspace stat element

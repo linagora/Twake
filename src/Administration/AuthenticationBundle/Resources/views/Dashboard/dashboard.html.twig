@@ -104,7 +104,17 @@
                     <div id="events_chart"></div>
                 </div>
             </div>
-
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Users connected yesterday</h3>
+                </div>
+                <div>
+                    {% for user in usersConnectedYesterday %}
+                        <b>{{ user.user.username }}</b> {{ user.duree|date('H:i:s') }}
+                        <br>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
 
         <div class="col-md-4">

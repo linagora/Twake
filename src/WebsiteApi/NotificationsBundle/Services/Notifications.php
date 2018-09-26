@@ -401,13 +401,10 @@ class Notifications implements NotificationsInterface
         }
         for($i = 0; $i < $count; $i++) {
             $this->doctrine->remove($notif[$i]);
-
         }
 
         if($count>0 || $force) {
             $this->doctrine->flush();
-
-            $totalNotifications = $this->countAll($user);
 
             $data = Array(
                 "action" => "remove_all_non_messages"
@@ -415,6 +412,7 @@ class Notifications implements NotificationsInterface
             //convert
             $this->pusher->push($data, "notifications/".$user->getId());
 
+            $totalNotifications = $this->countAll($user);
             $this->updateDeviceBadge($user, $totalNotifications);
             return true;
         }

@@ -73,6 +73,11 @@ twake_drive_getshared:
     methods: [POST]
 
 twake_drive_share:
+    path:     /update_public_access
+    defaults: { _controller: TwakeDriveBundle:Files:updatePublicAccessKey }
+    methods: [POST]
+
+twake_drive_share:
     path:     /share
     defaults: { _controller: TwakeDriveBundle:Files:share }
     methods: [POST]
