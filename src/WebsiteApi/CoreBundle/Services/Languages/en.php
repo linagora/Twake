@@ -39,7 +39,7 @@ $translation = Array(
 
 
     "calendar.communication" => "Communication",
-    "calendar.custumer" => "Custumer",
+    "calendar.customer" => "Customer",
     "calendar.generalMeeting" => "Team meeting",
     "calendar.meetingDurant" => "Meeting with Mr Durant",
     "calendar.meetingNextAds" => "Preparation to TV advertising",
