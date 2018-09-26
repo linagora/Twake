@@ -191,6 +191,10 @@ class MarketApplication implements MarketApplicationInterface
                 $to_test[] = $to_test[count($to_test) - 1] . $match[0];
                 $i++;
                 if ($i >= 2) {
+                    preg_match("/([a-z0-9-]+)\.[a-z]+($|[^a-z])/", strtolower($domain_name), $result);
+                    if (isset($result[1])) {
+                        $to_test[] = preg_replace("/[^a-z0-9]/", "", $result[1]);
+                    }
                     break;
                 }
             }
@@ -199,6 +203,10 @@ class MarketApplication implements MarketApplicationInterface
                 $to_test[] = $to_test[count($to_test) - 1] . $match[0];
                 $i++;
                 if ($i >= 2) {
+                    preg_match("/([a-z0-9-]+)\.[a-z]+($|[^a-z])/", strtolower($domain_name_2), $result);
+                    if (isset($result[1])) {
+                        $to_test[] = preg_replace("/[^a-z0-9]/", "", $result[1]);
+                    }
                     break;
                 }
             }
