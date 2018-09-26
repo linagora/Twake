@@ -313,7 +313,7 @@ class Workspace
             "color" => $this->getColor(),
 			"group" => (($this->getGroup())?$this->getGroup()->getAsArray():null),
 			"name" => $this->getName(),
-            "total_members" => $this->getMemberCount(),
+            "total_members" => $this->getMemberCount() - 1, //Remove Twake bot
             "uniqueName" => $this->getUniqueName(),
             "isArchived" => $this->getisArchived(),
             "isNew" => $this->getisNew()

@@ -311,8 +311,33 @@ class User implements UserInterface
         return $retour;
     }
 
+    public function verifyReCaptchaAction($recaptcha, $client_ip)
+    {
+        //[REMOVE_ONPREMISE]
+
+        $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
+
+        $api_url = "https://www.google.com/recaptcha/api/siteverify?secret="
+            . $secret
+            . "&response=" . $recaptcha
+            . "&remoteip=" . $client_ip;
+
+        $decode = json_decode(file_get_contents($api_url), true);
+
+        if (isset($decode["success"])) {
+            return true;
+        }
+
+        //[/REMOVE_ONPREMISE]
+
+        return false;
+
+    }
+
     public function testRecaptcha($recaptcha){
         if ($this->standalone) {
+
+            return $this->verifyReCaptchaAction($recaptcha, $_SERVER['REMOTE_ADDR']);
 
         } else {
 
