@@ -214,7 +214,7 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($list1);
 
             $list2 = new ListOfTasks($board,new TranslationObject($this->translate,"project.doing") ,"f49d41", false, Array());
-            $list3 = new ListOfTasks($board,new TranslationObject($this->translate,"project.done") ,"f49d41", true, Array());
+            $list3 = new ListOfTasks($board,new TranslationObject($this->translate,"project.done") ,"00bb4d", true, Array());
             $this->doctrine->persist($list2);
             $this->doctrine->persist($list3);
             $this->doctrine->flush();
