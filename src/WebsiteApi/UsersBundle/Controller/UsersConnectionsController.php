@@ -201,8 +201,10 @@ class UsersConnectionsController extends Controller
                 $value["isHidden"] = $workspace_obj["isHidden"];
                 $value["hasNotifications"] = $workspace_obj["hasNotifications"];
                 $value["isFavorite"] = $workspace_obj["isFavorite"];
+
                 $workspaces[] = $value;
-			}
+
+            }
 
 			$data["data"]["workspaces"] = $workspaces;
 			$data["data"]["privateworkspace"] = $private->getAsArray();

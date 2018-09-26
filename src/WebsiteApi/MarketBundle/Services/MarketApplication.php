@@ -191,6 +191,10 @@ class MarketApplication implements MarketApplicationInterface
                 $to_test[] = $to_test[count($to_test) - 1] . $match[0];
                 $i++;
                 if ($i >= 2) {
+                    preg_match("/([a-z0-9-]+)\.[a-z]+($|[^a-z])/", strtolower($domain_name), $result);
+                    if (isset($result[1])) {
+                        $to_test[] = preg_replace("/[^a-z0-9]/", "", $result[1]);
+                    }
                     break;
                 }
             }
@@ -199,6 +203,10 @@ class MarketApplication implements MarketApplicationInterface
                 $to_test[] = $to_test[count($to_test) - 1] . $match[0];
                 $i++;
                 if ($i >= 2) {
+                    preg_match("/([a-z0-9-]+)\.[a-z]+($|[^a-z])/", strtolower($domain_name_2), $result);
+                    if (isset($result[1])) {
+                        $to_test[] = preg_replace("/[^a-z0-9]/", "", $result[1]);
+                    }
                     break;
                 }
             }
@@ -208,6 +216,8 @@ class MarketApplication implements MarketApplicationInterface
                 preg_match("/(?:&|\?)app=([A-Za-z0-9]+)/", $url, $app, PREG_OFFSET_CAPTURE);
                 $to_test[] = $domain_name . "/" . $app[1][0];
             }
+
+            $to_test[] = "any_url";
 
             foreach ($to_test as $url) {
                 $url = strtolower($url);

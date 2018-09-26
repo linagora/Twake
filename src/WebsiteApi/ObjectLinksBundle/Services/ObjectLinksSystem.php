@@ -82,17 +82,31 @@ class ObjectLinksSystem
         ));
 
         if (!$exists) {
-            $objA = $this->getObjectFromRepositoryAndId($link->getTypeA(), $idA);
-            $objB = $this->getObjectFromRepositoryAndId($link->getTypeB(), $idB);
-            if ($objA && $objB) {
-                $this->doctrine->persist($link);
-                $this->doctrine->flush();
 
-                $this->updateObject($objA);
+            $exists = $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks')->findBy(array(
+                'idB' => $idA,
+                'idA' => $idB,
+                'typeB' => $link->getTypeA(),
+                'typeA' => $link->getTypeB()
+            ));
 
-                $link = "success";
-            }else{
-                $link = "idNotFound";
+            if (!$exists) {
+
+                $objA = $this->getObjectFromRepositoryAndId($link->getTypeA(), $idA);
+                $objB = $this->getObjectFromRepositoryAndId($link->getTypeB(), $idB);
+                if ($objA && $objB) {
+                    $this->doctrine->persist($link);
+                    $this->doctrine->flush();
+
+                    $this->updateObject($objA);
+
+                    $link = "success";
+                } else {
+                    $link = "idNotFound";
+                }
+
+            } else {
+                $link = "alreadyThere";
             }
         } else {
             $link = "alreadyThere";
