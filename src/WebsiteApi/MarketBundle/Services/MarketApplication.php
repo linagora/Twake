@@ -217,6 +217,8 @@ class MarketApplication implements MarketApplicationInterface
                 $to_test[] = $domain_name . "/" . $app[1][0];
             }
 
+            $to_test[] = "any_url";
+
             foreach ($to_test as $url) {
                 $url = strtolower($url);
                 $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("domain_name" => $url));

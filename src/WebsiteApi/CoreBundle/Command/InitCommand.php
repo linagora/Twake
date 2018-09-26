@@ -902,7 +902,11 @@ class InitCommand extends ContainerAwareCommand
             ["/medias/apps/web/twitch.png", "Twitch", "twitch", "twitch", "6444a4", Array()],
             ["/medias/apps/web/udemy.png", "Udemy", "udemy", "udemy", "ec5454", Array()],
             ["/medias/apps/web/what3words.png", "What3words Map", "", "what3wordsmap", "dc1c24", Array()],
-            ["/medias/apps/web/zapier.png", "Zapier", "zapier", "zapier", "FF4A00", Array()]
+            ["/medias/apps/web/zapier.png", "Zapier", "zapier", "zapier", "FF4A00", Array()],
+            ["/medias/apps/web/zimbra.png", "Zimbra", "zimbra", "zimbra", "3784BC", Array()],
+
+
+            ["/medias/apps/web/any_url.png", "External app", "any_url", "any_app", "888888", Array()]
 
         ];
 
