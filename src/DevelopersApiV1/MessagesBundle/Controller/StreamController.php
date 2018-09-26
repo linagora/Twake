@@ -79,9 +79,9 @@ class StreamController extends Controller
         $streamDescription = isset($data["stream_description"]) ? $data["stream_description"] : "";
         $streamIsPrivate = isset($data["stream_is_private"]) ? $data["stream_is_private"] : false;
         $type = isset($data["type"]) ? $data["type"] : "stream";
-
+        $members = isset($data["members"]) ? $data["members"] : Array();
         //$workspaceId,$streamName,$streamDescription,$streamIsPrivate,$type
-        $stream = $this->get("app.streamsystem")->createStreamFromApp($workspace_id,$streamName,$streamDescription,$streamIsPrivate,$type);
+        $stream = $this->get("app.streamsystem")->createStreamFromApp($workspace_id,$streamName,$streamDescription,$streamIsPrivate,$type,$members);
 
         $data = Array(
             "stream" => $stream,

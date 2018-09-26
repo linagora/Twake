@@ -140,7 +140,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $originalName = join(".", $originalCompleteName);
 
         $currentNames = [];
-        if ($fileOrDirectory->getParent() != null) {
+        if ($fileOrDirectory->getParent() != null && $fileOrDirectory->getParent()->getChildren()!=null){
             foreach ($fileOrDirectory->getParent()->getChildren() as $brothers) {
                 if ($brothers->getId() != $fileOrDirectory->getId()) {
                     $currentNames[] = $brothers->getName();

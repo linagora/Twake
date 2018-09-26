@@ -7,12 +7,51 @@
  */
 
 $translation = Array(
+    "general" => "General",
+
     "drive.move_file" => "Move file",
     "drive.new_file" => "New file",
     "drive.has_been_added" => "$1 has been added to $2",
     "drive.has_been_moved" => "$1 has been moved into $2",
     "drive.file_updated" => "Updated file",
     "drive.has_been_update" => "$1 has been update",
+
+    "project.generalBoardDescription" => "General board of tasks",
+    "project.todo" => "To do",
+    "project.doing" => "Doing",
+    "project.done" => "Done",
+    "project.createTwakeWorkspace" => "Create your first workspace",
+    "project.createTwakeWorkspaceDescription" => "To create a workspace, you have to click on the \"+\" in your workspace list",
+    "project.discoverTwake" => "Discover Twake",
+    "project.discoverTwakeDescription" => "Open each application to see what Twake can do for you",
+    "project.signin" => "Sign in",
+    "project.invitePartner" => "Invite your partners",
+    "project.invitePartnerDescription" => "Go to your workspace, in the \"members\" tabs, add your partners with their username or email address if they are not already registered",
+
+
+    "drive.society" => "Company",
+    "drive.comminucation" => "Communication",
+    "drive.financial" => "Financial",
+    "drive.hr" => "Human resources",
+    "drive.rules" => "Rules.docx",
+    "drive.ruleSmoke" => "Do not smoke the grass from the garden",
+    "drive.accounting" => "Accounting.xlsx",
+
+
+    "calendar.communication" => "Communication",
+    "calendar.custumer" => "Custumer",
+    "calendar.generalMeeting" => "Team meeting",
+    "calendar.meetingDurant" => "Meeting with Mr Durant",
+    "calendar.meetingNextAds" => "Preparation to TV advertising",
+    "calendar.meetingXu" => "Meeting with Mr Xu",
+    "calendar.interview" => "TV advertising",
+
+    "message.hello1" => "Hello $1, welcome on board !:tada:",
+    "message.hello2" => "I am Twake_bot, I am  here to help you",
+    "message.hello3" => "Ready to use Twake ? :grinning:",
+
+
+
     "mail.request_new_password" => "Your request for a new password",
     "mail.hello" => "Hello",
     "mail.request_new_password_body" => "You requested a new password, there is the activation code you need",
@@ -22,6 +61,7 @@ $translation = Array(
     "quote.read_text" => "Don't read that text.",
     "subquote.read_text" => "You just lost",
     "quote.love_the_live" => "Love the life you live, and live the life you love.",
+
     "workspace.activity.task.update" => "$1 has updated $2 task(s)",
     "workspace.activity.task.remove" => "$1 has removed $2 task(s)",
     "workspace.activity.task.create" => "$1 has created $2 task(s)",
