@@ -95,7 +95,6 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
         }
-
         return $workspace;
 
     }
@@ -279,12 +278,10 @@ class Workspaces implements WorkspacesInterface
                 $event = $this->calendarEventService->createEvent($workspace->getId(), $time["calendar"], $eventJSON);
             }
 
-            $dirSociety = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.society") , "" , true,   false, null,  $twakebotId, null);
-            $dirCommunication = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.comminucation") , "" , true,   false, null,  $twakebotId, null);
-            $dirFinancial = $this->driveService->create($workspace, $dirSociety, new TranslationObject($this->translate,"drive.financial") , "" , true,   false, null,  $twakebotId, null);
-            $dirHR = $this->driveService->create($workspace, $dirSociety, new TranslationObject($this->translate,"drive.hr") , "" , true,   false, null,  $twakebotId, null);
-            $fileRule = $this->driveService->create($workspace, $dirSociety, new TranslationObject($this->translate,"drive.rules") ,  new TranslationObject($this->translate,"drive.ruleSmoke") , false,   false, null,  $twakebotId, null);
-            $fileAccounting = $this->driveService->create($workspace, $dirFinancial, new TranslationObject($this->translate,"drive.accounting") , "" , false,   false, null,  $twakebotId, null);
+            $dirTwake = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.twake") , "" , true,   false, null,  $twakebotId, null);
+            $fileRule = $this->driveService->create($workspace, $dirTwake->getId(), new TranslationObject($this->translate,"drive.rules") ,  new TranslationObject($this->translate,"drive.ruleText") , false,   false, null,  $twakebotId, null);
+            $fileWelcome = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.welcome") , new TranslationObject($this->translate,"drive.welcomeText")  , false,   false, null,  $twakebotId, null);
+
 
         }
 

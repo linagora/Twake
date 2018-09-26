@@ -34,9 +34,14 @@ $translation = Array(
     "drive.financial" => "Finances",
     "drive.hr" => "Ressources humaines",
     "drive.rules" => "Règles.docx",
-    "drive.ruleSmoke" => "Ne pas fumez pas l'herbe du jardin",
+    "drive.ruleSmoke" => "",
     "drive.accounting" => "Comptabilité.xlsx",
 
+    "drive.twake" => "Twake",
+    "drive.rules" => "Règles.docx",
+    "drive.ruleText" => "Ne pas fumez pas l'herbe du jardin",
+    "drive.welcome" => "Bienvenue.docx",
+    "drive.welcomeText" => "Bienvenue sur Twake ! \nNous sommes très heureux de t'accueillir sur notre plateforme. :D",
 
     "calendar.communication" => "Communication",
     "calendar.customer" => "Client",
