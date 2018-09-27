@@ -443,12 +443,15 @@ class FilesController extends Controller
             }else{
                 foreach ($files as $index => $file) {
 
-                    if ($file->getCopyOf() != null){//if it's a copy shortcut to another folder, link directly the folder
-                        $data["data"]["files"][] = $fileSystem->getInfos($groupId,$file->getCopyOf(),true);
-                        $data["data"]["files"][$index]["shortcut"] = true;
-                    }else{
-                        $data["data"]["files"][] = $fileSystem->getInfos($groupId,$file,true);
-                        $data["data"]["files"][$index]["shortcut"] = false;
+                    if (!$file->getIsDirectory()) {
+                        if ($file->getCopyOf() != null) {//if it's a copy shortcut to another folder, link directly the folder
+                            $add = $fileSystem->getInfos($groupId, $file->getCopyOf(), true);
+                            $add["shortcut"] = true;
+                        } else {
+                            $add = $fileSystem->getInfos($groupId, $file, true);
+                            $add["shortcut"] = false;
+                        }
+                        $data["data"]["files"][] = $add;
                     }
 
                 }
