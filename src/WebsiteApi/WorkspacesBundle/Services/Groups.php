@@ -108,6 +108,7 @@ class Groups implements GroupsInterface
 			$pricingPlan = $pricingPlanRepository->find($planId);
 
 			$group->setPricingPlan($pricingPlan);
+            $group->setFreeOfferEnd(null);
 
 			$this->doctrine->persist($group);
 			$this->doctrine->flush();
@@ -360,6 +361,31 @@ class Groups implements GroupsInterface
             $this->doctrine->flush();
             return true;
             }
+
+        return false;
+    }
+
+    public function runFreeOffer($groupId, $currentUserId, $offerLength = 216000)
+    {
+        if ($currentUserId == null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "VIEW_USERS")) {
+
+            $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+            $group = $groupRepository->find($groupId);
+            if ($group->getPricingPlan()->getLabel() != "free") {
+                return false; //Need to be in a free group already
+            }
+
+            $pricingPlanRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
+            $pricingPlan = $pricingPlanRepository->findOneBy(Array("name" => "standard"));
+
+            $group->setPricingPlan($pricingPlan);
+            $group->setFreeOfferEnd(date("U") + $offerLength);
+
+            $this->doctrine->persist($group);
+            $this->doctrine->flush();
+
+            return true;
+        }
 
         return false;
     }

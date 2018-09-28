@@ -39,10 +39,15 @@ class Group
 	 */
 	protected $logo;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\PricingPlan")
-	 */
-	protected $pricingPlan;
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\PricingPlan")
+     */
+    protected $pricingPlan;
+
+    /**
+     * @ORM\Column(name="free_offer_end", type="integer", nullable=true)
+     */
+    protected $free_offer_end = null;
 
 	/**
 	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace", mappedBy="group")
@@ -221,6 +226,22 @@ class Group
         $this->isBlocked = $isBlocked;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getFreeOfferEnd()
+    {
+        return $this->free_offer_end;
+    }
+
+    /**
+     * @param mixed $free_offer_end
+     */
+    public function setFreeOfferEnd($free_offer_end)
+    {
+        $this->free_offer_end = $free_offer_end;
+    }
+
 	public function getAsArray(){
 		return Array(
 			"unique_name" => $this->getName(),
@@ -228,7 +249,8 @@ class Group
 			"plan" => $this->getPricingPlan()->getLabel(),
 			"id" => $this->getId(),
 			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):""),
-            "isBlocked" => $this->getIsBlocked()
+            "isBlocked" => $this->getIsBlocked(),
+            "free_offer_end" => $this->getFreeOfferEnd()
 		);
 	}
 
