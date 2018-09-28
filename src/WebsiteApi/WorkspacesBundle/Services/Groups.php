@@ -394,7 +394,7 @@ class Groups implements GroupsInterface
     {
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
         $group = $groupRepository->find($groupId);
-        if ($group->getPricingPlan()->getLabel() != "free" || $group->getFreeOfferEnd() - date("U") < 0) {
+        if ($group->getPricingPlan()->getLabel() != "free" && $group->getFreeOfferEnd() > 0 && $group->getFreeOfferEnd() - date("U") < 0) {
             $pricingPlanRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
             $pricingPlan = $pricingPlanRepository->findOneBy(Array("label" => "free"));
 
