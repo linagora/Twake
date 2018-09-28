@@ -376,7 +376,7 @@ class Groups implements GroupsInterface
             }
 
             $pricingPlanRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
-            $pricingPlan = $pricingPlanRepository->findOneBy(Array("name" => "standard"));
+            $pricingPlan = $pricingPlanRepository->findOneBy(Array("label" => "standard"));
 
             $group->setPricingPlan($pricingPlan);
             $group->setFreeOfferEnd(date("U") + $offerLength);
