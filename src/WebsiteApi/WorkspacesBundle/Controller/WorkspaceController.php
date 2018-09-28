@@ -30,6 +30,11 @@ class WorkspaceController extends Controller
 		if(!$ws){
 			$response["errors"][] = "notallowed";
 		}else{
+
+            if ($ws->getGroup() != null) {
+                $this->get("app.groups")->stopFreeOffer($ws->getGroup()->getId());
+            }
+
 			$response["data"] = $ws->getAsArray();
 
             $workspaceApps = $this->get("app.workspaces_apps")->getApps($workspaceId);
@@ -58,6 +63,7 @@ class WorkspaceController extends Controller
 
             $wp = $workspaceRepository->find($workspaceId);
             if($wp->getGroup() != null){
+
                 $group = $groupRepository->find($wp->getGroup()->getId());
 
                 $level = $this->get("app.group_managers")->getLevel($group,$this->getUser()->getId());

@@ -390,4 +390,19 @@ class Groups implements GroupsInterface
         return false;
     }
 
+    public function stopFreeOffer($groupId)
+    {
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $group = $groupRepository->find($groupId);
+        if ($group->getPricingPlan()->getLabel() != "free" || $group->getFreeOfferEnd() - date("U") < 0) {
+            $pricingPlanRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
+            $pricingPlan = $pricingPlanRepository->findOneBy(Array("label" => "free"));
+
+            $group->setPricingPlan($pricingPlan);
+
+            $this->doctrine->persist($group);
+            $this->doctrine->flush();
+        }
+    }
+
 }
