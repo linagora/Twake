@@ -365,13 +365,13 @@ class Groups implements GroupsInterface
         return false;
     }
 
-    public function runFreeOffer($groupId, $currentUserId, $offerLength = 216000)
+    public function runFreeOffer($groupId, $currentUserId, $offerLength = 5184000)
     {
         if ($currentUserId == null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "VIEW_USERS")) {
 
             $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
             $group = $groupRepository->find($groupId);
-            if ($group->getPricingPlan()->getLabel() != "free") {
+            if ($group->getPricingPlan()->getLabel() != "free" || $group->getFreeOfferEnd() > 0) {
                 return false; //Need to be in a free group already
             }
 
