@@ -27,7 +27,7 @@ easy_admin:
             label: 'Users'
             list:
                 title: "Most recent users"
-                fields: ['id', { property: 'connected', label: 'Connected', type: 'boolean' }, 'enabled', {property: 'thumbnail.publicURL', label: 'Image', type: 'image'}, 'username', 'first_name', 'last_name', 'email', 'phone', 'language']
+                fields: ['id', { property: 'connected', label: 'Connected', type: 'boolean' }, 'enabled', {property: 'thumbnail.publicURL', label: 'Image', type: 'image'}, 'username', 'first_name', 'last_name', 'email', 'phone', 'language', 'origin', 'creationDate']
             form:
                 fields: ['enabled', 'first_name', 'last_name', 'email']
             show:
@@ -83,7 +83,7 @@ easy_admin:
             list:
                 title: "Twake groups"
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'pricingPlan', 'workspaces']
-                dql_filter: 'entity.is_private = 0'
+                dql_filter: 'entity.isPrivate = 0'
             show:
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'pricingPlan']
             disabled_actions: ['new', 'edit', 'delete']

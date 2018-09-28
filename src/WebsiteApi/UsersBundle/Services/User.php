@@ -359,7 +359,7 @@ class User implements UserInterface
 
     }
 
-    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $workspace, $company, $friends, $recaptcha, $language, $force = false)
+    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $workspace, $company, $friends, $recaptcha, $language, $origin = "", $force = false)
     {
         $mail = $this->string_cleaner->simplifyMail($mail);
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
@@ -387,6 +387,7 @@ class User implements UserInterface
         $user->setPhone($phone);
         $user->setLanguage($language);
         $user->setCreationDate(new \DateTime());
+        $user->setOrigin($origin);
         $this->em->persist($user);
         $this->em->flush();
         if($workspace != "" && $workspace!=null){

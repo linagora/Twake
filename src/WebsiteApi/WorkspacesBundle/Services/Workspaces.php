@@ -224,9 +224,9 @@ class Workspaces implements WorkspacesInterface
             $task4 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate,"project.invitePartner"), new TranslationObject($this->translate,"project.invitePartnerDescription"), 0, 0, NULL);
 
 
-            $calendar1 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate,"general"), "3de8a0", $currentUserId=null, $icsLink=null);
-            $calendar2 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate,"calendar.communication"), "f0434b", $currentUserId=null, $icsLink=null);
-            $calendar3 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate, "calendar.customer"), "017aba", $currentUserId = null, $icsLink = null);
+            $calendar1 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate, "general"), "#3DE8A0", $currentUserId = null, $icsLink = null);
+            $calendar2 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate, "calendar.communication"), "#F0434B", $currentUserId = null, $icsLink = null);
+            $calendar3 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate, "calendar.customer"), "#017ABA", $currentUserId = null, $icsLink = null);
 
             $monday = strtotime("last Monday");
             $times = Array(

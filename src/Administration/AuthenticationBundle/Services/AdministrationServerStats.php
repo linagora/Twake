@@ -130,6 +130,11 @@ class AdministrationServerStats
             ->select('count(U)');
         $messagesnumber = $req5->getQuery()->getSingleScalarResult();
 
+        $req6 = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")
+            ->createQueryBuilder('U')
+            ->select('count(U)');
+        $tasksnumber = $req6->getQuery()->getSingleScalarResult();
+
         $em = $this->doctrine;
 
         $serverStat = new ServerUsersStats();
@@ -139,6 +144,7 @@ class AdministrationServerStats
         $serverStat->setEvent($eventnumber);
         $serverStat->setFiles($filesnumber);
         $serverStat->setMessages($messagesnumber);
+        $serverStat->setTasks($tasksnumber);
 
         $em->persist($serverStat);
         $em->flush();
@@ -182,6 +188,9 @@ class AdministrationServerStats
             if (!isset($currentValues["messages"]) || $currentValues["messages"] < $el->getAsArray()["messages"]) {
                 $currentValues["messages"] = $el->getAsArray()["messages"];
             }
+            if (!isset($currentValues["tasks"]) || $currentValues["tasks"] < $el->getAsArray()["tasks"]) {
+                $currentValues["tasks"] = $el->getAsArray()["tasks"];
+            }
             $currentValues["datesave"] = $el->getAsArray()["datesave"];
         }
 
@@ -191,6 +200,14 @@ class AdministrationServerStats
     public function getNumberFiles()
     {
         $req1 = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+            ->createQueryBuilder('F')
+            ->select('count(F)');
+        return $req1->getQuery()->getSingleScalarResult();
+    }
+
+    public function getNumberTasks()
+    {
+        $req1 = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")
             ->createQueryBuilder('F')
             ->select('count(F)');
         return $req1->getQuery()->getSingleScalarResult();

@@ -97,6 +97,21 @@ class DashboardController extends Controller
         $event_chart->getOptions()->setHeight(200);
         $data["events_by_hours"] = $event_chart;
 
+        //event by hour
+        $array = [['Date', 'Tasks']];
+        $last = -1;
+        foreach ($_connections_usage_array as $datum) {
+            if ($last == -1) {
+                $last = $datum["tasks"];
+            }
+            $array[] = [date("d/m/Y H:i", $datum["datesave"]), $datum["tasks"] - $last];
+            $last = $datum["tasks"];
+        }
+        $event_chart = new AreaChart();
+        $event_chart->getData()->setArrayToDataTable($array);
+        $event_chart->getOptions()->setHeight(200);
+        $data["tasks_by_hours"] = $event_chart;
+
 		//workspaces
 		$data["workspaces"]["count"] = $this->get('admin.TwakeGroupManagement')->countWorkspace();
 		$data["workspaces"]["drive_usage"]= $this->get('admin.TwakeStatistics')->numberOfExtensions();
@@ -121,6 +136,7 @@ class DashboardController extends Controller
         $data["nbmessages"] = $this->get("admin.TwakeServerStats")->getNumberMessages();
         $data["nbevents"] = $this->get("admin.TwakeServerStats")->getNumberEvents();
         $data["nbfiles"] = $this->get("admin.TwakeServerStats")->getNumberFiles();
+        $data["nbtasks"] = $this->get("admin.TwakeServerStats")->getNumberTasks();
 
         $data["usersConnectedYesterday"] = $this->get("admin.TwakeUserManagement")->getUserConnectedLastDay();
 

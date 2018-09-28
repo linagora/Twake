@@ -104,6 +104,16 @@
                     <div id="events_chart"></div>
                 </div>
             </div>
+
+            <div class="box box-default">
+                <div class="box-header with-border">
+                    <h3 class="box-title">Tasks</h3>
+                </div>
+                <div class="box-body">
+                    <div id="tasks_chart"></div>
+                </div>
+            </div>
+
             <div class="box box-default">
                 <div class="box-header with-border">
                     <h3 class="box-title">Users connected yesterday</h3>
@@ -152,6 +162,14 @@
                 </div>
             </div>
 
+            <div class="info-box">
+                <span class="info-box-icon bg-green"><i class="fa fa-tasks"></i></span>
+                <div class="info-box-content">
+                    <span class="info-box-text">Tasks</span>
+                    <span class="info-box-number">{{ nbtasks|number_format(0, '.', ',') }}</span>
+                </div>
+            </div>
+
         </div>
 
     </div>
@@ -169,5 +187,6 @@
         {{ gc_draw(files_by_hours, 'files_chart') }}
         {{ gc_draw(messages_by_hours, 'messages_chart') }}
         {{ gc_draw(events_by_hours, 'events_chart') }}
+        {{ gc_draw(tasks_by_hours, 'tasks_chart') }}
     </script>
 {% endblock %}

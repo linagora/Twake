@@ -97,6 +97,11 @@ class User extends BaseUser
     protected $phone = "";
 
     /**
+     * @ORM\Column(name="origin", type="string", length=64)
+     */
+    protected $origin = "";
+
+    /**
      * @ORM\Column(name="isNew", type="boolean")
      */
     protected $isNew = true;
@@ -300,7 +305,21 @@ class User extends BaseUser
         $this->isNew = $isNew;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getOrigin()
+    {
+        return $this->origin;
+    }
 
+    /**
+     * @param mixed $origin
+     */
+    public function setOrigin($origin)
+    {
+        $this->origin = $origin;
+    }
 
 	/**
 	 * @return mixed

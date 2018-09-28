@@ -89,7 +89,7 @@ class ConnectionsUsingCASController extends Controller
             $res = $this->get("app.user")->loginWithUsername($username);
             if (!$res) {
                 //Create user with this username
-                $this->get("app.user")->subscribeInfo($mail, md5(bin2hex(random_bytes(32))), $username, $firstname, $lastname, "", null, "", "", null, true);
+                $this->get("app.user")->subscribeInfo($mail, md5(bin2hex(random_bytes(32))), $username, $firstname, $lastname, "", null, "", "", null, $this->getParameter("cas_default_language"), "CAS", true);
                 $res = $this->get("app.user")->loginWithUsername($username);
             }
 
