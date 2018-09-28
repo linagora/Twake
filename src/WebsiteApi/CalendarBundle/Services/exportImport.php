@@ -64,11 +64,10 @@ class exportImport implements exportImportInterface{
                 }
                 if( isset($evt["to"])){
                     //If allday we need to remove one day because we dont use the normal format
-                    $dateEnd = new \DateTime(date("c", (int)$evt["to"] - ((isset($evt["allDay"]) && $evt["allDay"]) ? (60 * 60 * 25) : 0)), $tz);
+                    $dateEnd = new \DateTime(date("c", (int)$evt["to"]), $tz);
                 }else{
                     return new JsonResponse($this->errorService->getError(4015));
                 }
-
                 $vEvent = new Component\Event();
 
                 $vEvent
