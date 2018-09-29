@@ -82,7 +82,7 @@ easy_admin:
             label: 'Groups'
             list:
                 title: "Twake groups"
-                fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'pricingPlan', 'workspaces']
+                fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'on_creation_data', 'pricingPlan', 'workspaces']
                 dql_filter: 'entity.isPrivate = 0'
             show:
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'pricingPlan']

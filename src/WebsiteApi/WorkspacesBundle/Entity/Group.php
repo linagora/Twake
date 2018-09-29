@@ -63,6 +63,12 @@ class Group
 	 * @ORM\Column(type="datetime")
 	 */
 	private $date_added;
+
+    /**
+     * @ORM\Column(name="on_creation_data", type="string", length=1000)
+     */
+    protected $on_creation_data = "{}";
+
     /**
      * @ORM\Column(type="boolean")
      */
@@ -241,6 +247,28 @@ class Group
     {
         $this->free_offer_end = $free_offer_end;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getOnCreationData()
+    {
+        @$v = json_decode($this->on_creation_data, 1);
+        if (!$v) {
+            $v = Array();
+        }
+        return $v;
+    }
+
+    /**
+     * @param mixed $on_creation_data
+     */
+    public function setOnCreationData($on_creation_data)
+    {
+        $this->on_creation_data = json_encode($on_creation_data);
+    }
+
+
 
 	public function getAsArray(){
 		return Array(

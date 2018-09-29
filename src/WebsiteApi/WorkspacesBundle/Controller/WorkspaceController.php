@@ -107,6 +107,12 @@ class WorkspaceController extends Controller
 
 		if(!$groupId){
             $group_name = $request->request->get("group_name", "");
+            @$group_creation_data = json_decode($request->request->get("group_creation_data", "{}"));
+
+            if (!$group_creation_data) {
+                $group_creation_data = Array();
+            }
+
             //Auto create group
             if (!$group_name) {
                 $group_name = $name;
@@ -116,7 +122,7 @@ class WorkspaceController extends Controller
 
 			$plan = $this->get("app.pricing_plan")->getMinimalPricing();
 			$planId = $plan->getId();
-            $group = $this->get("app.groups")->create($this->getUser()->getId(), $group_name, $uniquename, $planId);
+            $group = $this->get("app.groups")->create($this->getUser()->getId(), $group_name, $uniquename, $planId, $group_creation_data);
 			$groupId = $group->getId();
 		}
 

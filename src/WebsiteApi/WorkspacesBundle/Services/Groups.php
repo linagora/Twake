@@ -27,7 +27,7 @@ class Groups implements GroupsInterface
         $this->wms = $workspace_member_service;
     }
 
-	public function create($userId, $name, $uniquename, $planId)
+    public function create($userId, $name, $uniquename, $planId, $group_data_on_create = Array())
 	{
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
@@ -51,6 +51,7 @@ class Groups implements GroupsInterface
 		$group = new Group($uniquenameIncremented);
 		$group->setDisplayName($name);
 		$group->setPricingPlan($plan);
+        $group->setOnCreationData($group_data_on_create);
 
 		$this->doctrine->persist($group);
 		$this->doctrine->flush();
