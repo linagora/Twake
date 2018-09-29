@@ -107,9 +107,9 @@ class WorkspaceController extends Controller
 
 		if(!$groupId){
             $group_name = $request->request->get("group_name", "");
-            @$group_creation_data = json_decode($request->request->get("group_creation_data", "{}"));
+            $group_creation_data = $request->request->get("group_creation_data", "");
 
-            if (!$group_creation_data) {
+            if (!is_array($group_creation_data)) {
                 $group_creation_data = Array();
             }
 
