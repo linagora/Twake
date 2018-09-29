@@ -32,6 +32,8 @@ class WorkspaceActivitiesController extends Controller
 
         $activities = $this->get("app.workspaces_activities")->getWorkspaceActivityResumed($workspace, $users, 20);
 
+        error_log("LANGUAGE ======== " . $this->getUser()->getLanguage());
+
         $translator = $this->get("app.translate");
         foreach($activities as $key=>$activity) {
             $activities[$key]["title"] = $translator->translate(

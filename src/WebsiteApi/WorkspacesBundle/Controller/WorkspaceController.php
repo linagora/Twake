@@ -106,11 +106,17 @@ class WorkspaceController extends Controller
 		$groupId = $request->request->getInt("groupId", 0);
 
 		if(!$groupId){
+            $group_name = $request->request->get("group_name", "");
             //Auto create group
-			$uniquename = $this->get("app.string_cleaner")->simplify($name);
+            if (!$group_name) {
+                $group_name = $name;
+            }
+
+            $uniquename = $this->get("app.string_cleaner")->simplify($group_name);
+
 			$plan = $this->get("app.pricing_plan")->getMinimalPricing();
 			$planId = $plan->getId();
-			$group = $this->get("app.groups")->create($this->getUser()->getId(), $name, $uniquename, $planId);
+            $group = $this->get("app.groups")->create($this->getUser()->getId(), $group_name, $uniquename, $planId);
 			$groupId = $group->getId();
 		}
 

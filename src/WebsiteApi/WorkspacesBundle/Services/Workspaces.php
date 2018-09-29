@@ -165,8 +165,7 @@ class Workspaces implements WorkspacesInterface
         $twakebotId = $twakebot->getId();
 
 
-
-
+        $this->translate->setDefaultLanguage($user->getLanguage());
 
         // Create stream
         $streamGeneral = new Stream($workspace, new TranslationObject($this->translate,"general"), false, "This is the general stream");

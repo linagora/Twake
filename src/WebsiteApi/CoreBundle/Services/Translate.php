@@ -29,18 +29,36 @@ class TranslationObject {
         return $final;
     }
 
-    public function toString($lang){
+    public function toString($lang = null)
+    {
+        if (!$lang) {
+            $lang = $this->translator->getDefaultLanguage();
+        }
         return $this->setVariables($this->translator->translate($this->key,$lang));
     }
 
     public function __toString(){
-        return $this->setVariables($this->translator->translate($this->key,'en'));
+        $lang = $this->translator->getDefaultLanguage();
+        return $this->setVariables($this->translator->translate($this->key, $lang));
     }
 }
 
 class Translate
 {
+
+    var $defaultLanguage = 'en';
+
     public function __construct(){
+    }
+
+    public function getDefaultLanguage()
+    {
+        return $this->defaultLanguage;
+    }
+
+    public function setDefaultLanguage($lang)
+    {
+        $this->defaultLanguage = $lang;
     }
 
     public function translate($key, $lang){
