@@ -31,3 +31,4 @@ parameters:
     cas_email_key:
     cas_firstname_key:
     cas_lastname_key:
+    cas_default_language: fr

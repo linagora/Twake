@@ -54,8 +54,6 @@ class RemoteController extends Controller
 
         if ($this->container->getParameter('STANDALONE')) {
 
-            $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
-
             $remoteLicenceKey = $request->request->get("licenceKey", "");
             $remoteIp = $request->getClientIp();
 
@@ -76,14 +74,9 @@ class RemoteController extends Controller
             $recaptcha = $request->request->get("recaptcha", "");
             $ip = $request->request->get("client_ip", "");
 
-            $api_url = "https://www.google.com/recaptcha/api/siteverify?secret="
-                . $secret
-                . "&response=" . $recaptcha
-                . "&remoteip=" . $ip;
+            $res = $this->get("app.user")->verifyReCaptchaAction($recaptcha, $ip);
 
-            $decode = json_decode(file_get_contents($api_url), true);
-
-            return new JsonResponse(Array("status" => $decode["success"]));
+            return new JsonResponse(Array("status" => $res ? "success" : "error"));
 
         }
         //[/REMOVE_ONPREMISE]

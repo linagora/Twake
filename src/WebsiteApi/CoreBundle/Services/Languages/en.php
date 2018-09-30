@@ -29,17 +29,15 @@ $translation = Array(
     "project.invitePartnerDescription" => "Go to your workspace, in the \"members\" tabs, add your partners with their username or email address if they are not already registered",
 
 
-    "drive.society" => "Company",
-    "drive.comminucation" => "Communication",
-    "drive.financial" => "Financial",
-    "drive.hr" => "Human resources",
+    "drive.twake" => "Twake",
     "drive.rules" => "Rules.docx",
-    "drive.ruleSmoke" => "Do not smoke the grass from the garden",
-    "drive.accounting" => "Accounting.xlsx",
+    "drive.ruleText" => "Do not smoke the grass from the garden",
+    "drive.welcome" => "Welcome.docx",
+    "drive.welcomeText" => "Welcome on Twake ! \nWe are very happy to welcome you on our plateforme :D",
 
 
     "calendar.communication" => "Communication",
-    "calendar.custumer" => "Custumer",
+    "calendar.customer" => "Customer",
     "calendar.generalMeeting" => "Team meeting",
     "calendar.meetingDurant" => "Meeting with Mr Durant",
     "calendar.meetingNextAds" => "Preparation to TV advertising",

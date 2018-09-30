@@ -68,6 +68,13 @@ class ServerUsersStats
     /**
      * @var integer
      *
+     * @ORM\Column(name="tasks", type="integer")
+     */
+    private $tasks;
+
+    /**
+     * @var integer
+     *
      * @ORM\Column(name="accounts", type="integer")
      */
     private $accounts;
@@ -184,7 +191,21 @@ class ServerUsersStats
         $this->messages = $messages;
     }
 
+    /**
+     * @return int
+     */
+    public function getTasks()
+    {
+        return $this->tasks;
+    }
 
+    /**
+     * @param int $tasks
+     */
+    public function setTasks($tasks)
+    {
+        $this->tasks = $tasks;
+    }
 
     public function getAsArray(){
         return Array(
@@ -193,6 +214,7 @@ class ServerUsersStats
             "event" => $this->getEvent(),
             "files" => $this->getFiles(),
             "messages" => $this->getMessages(),
+            "tasks" => $this->getTasks(),
             "accounts" => $this->getAccounts(),
             "datesave" => ($this->getDateSave() ? $this->getDateSave()->getTimestamp() : null)
         );

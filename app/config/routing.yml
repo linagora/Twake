@@ -154,6 +154,10 @@ developers_api_v1_calendar:
     resource: "@DevelopersApiV1CalendarBundle/Resources/config/routing.yml"
     prefix:   /api/v1/
 
+developers_api_v1_project:
+    resource: "@DevelopersApiV1ProjectBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/
+
 developers_api_v1_workspaces:
     resource: "@DevelopersApiV1WorkspacesBundle/Resources/config/routing.yml"
     prefix:   /api/v1/

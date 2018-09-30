@@ -32,7 +32,7 @@ class WorkspaceDataController extends Controller
 		}else{
 			$response["data"] = $ws->getAsArray();
 			$mw = $this->get("app.workspace_members");
-			$response["data"]["total_members"] = count($mw->getMembers($workspaceId))+count($mw->getPendingMembers($workspaceId));
+            $response["data"]["total_members"] = count($mw->getMembers($workspaceId)) + count($mw->getPendingMembers($workspaceId)) - 1;
 			$response["data"]["isArchived"] = $ws->getisArchived();
 		}
 

@@ -39,10 +39,15 @@ class Group
 	 */
 	protected $logo;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\PricingPlan")
-	 */
-	protected $pricingPlan;
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\PricingPlan")
+     */
+    protected $pricingPlan;
+
+    /**
+     * @ORM\Column(name="free_offer_end", type="integer", nullable=true)
+     */
+    protected $free_offer_end = null;
 
 	/**
 	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace", mappedBy="group")
@@ -58,6 +63,12 @@ class Group
 	 * @ORM\Column(type="datetime")
 	 */
 	private $date_added;
+
+    /**
+     * @ORM\Column(name="on_creation_data", type="string", length=1000)
+     */
+    protected $on_creation_data = "{}";
+
     /**
      * @ORM\Column(type="boolean")
      */
@@ -221,6 +232,44 @@ class Group
         $this->isBlocked = $isBlocked;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getFreeOfferEnd()
+    {
+        return $this->free_offer_end;
+    }
+
+    /**
+     * @param mixed $free_offer_end
+     */
+    public function setFreeOfferEnd($free_offer_end)
+    {
+        $this->free_offer_end = $free_offer_end;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOnCreationData()
+    {
+        @$v = json_decode($this->on_creation_data, 1);
+        if (!$v) {
+            $v = Array();
+        }
+        return $v;
+    }
+
+    /**
+     * @param mixed $on_creation_data
+     */
+    public function setOnCreationData($on_creation_data)
+    {
+        $this->on_creation_data = json_encode($on_creation_data);
+    }
+
+
+
 	public function getAsArray(){
 		return Array(
 			"unique_name" => $this->getName(),
@@ -228,7 +277,8 @@ class Group
 			"plan" => $this->getPricingPlan()->getLabel(),
 			"id" => $this->getId(),
 			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):""),
-            "isBlocked" => $this->getIsBlocked()
+            "isBlocked" => $this->getIsBlocked(),
+            "free_offer_end" => $this->getFreeOfferEnd()
 		);
 	}
 

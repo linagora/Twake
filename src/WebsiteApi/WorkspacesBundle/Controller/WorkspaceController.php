@@ -30,6 +30,11 @@ class WorkspaceController extends Controller
 		if(!$ws){
 			$response["errors"][] = "notallowed";
 		}else{
+
+            if ($ws->getGroup() != null) {
+                $this->get("app.groups")->stopFreeOffer($ws->getGroup()->getId());
+            }
+
 			$response["data"] = $ws->getAsArray();
 
             $workspaceApps = $this->get("app.workspaces_apps")->getApps($workspaceId);
@@ -58,6 +63,7 @@ class WorkspaceController extends Controller
 
             $wp = $workspaceRepository->find($workspaceId);
             if($wp->getGroup() != null){
+
                 $group = $groupRepository->find($wp->getGroup()->getId());
 
                 $level = $this->get("app.group_managers")->getLevel($group,$this->getUser()->getId());
@@ -100,11 +106,23 @@ class WorkspaceController extends Controller
 		$groupId = $request->request->getInt("groupId", 0);
 
 		if(!$groupId){
+            $group_name = $request->request->get("group_name", "");
+            $group_creation_data = $request->request->get("group_creation_data", "");
+
+            if (!is_array($group_creation_data)) {
+                $group_creation_data = Array();
+            }
+
             //Auto create group
-			$uniquename = $this->get("app.string_cleaner")->simplify($name);
+            if (!$group_name) {
+                $group_name = $name;
+            }
+
+            $uniquename = $this->get("app.string_cleaner")->simplify($group_name);
+
 			$plan = $this->get("app.pricing_plan")->getMinimalPricing();
 			$planId = $plan->getId();
-			$group = $this->get("app.groups")->create($this->getUser()->getId(), $name, $uniquename, $planId);
+            $group = $this->get("app.groups")->create($this->getUser()->getId(), $group_name, $uniquename, $planId, $group_creation_data);
 			$groupId = $group->getId();
 		}
 

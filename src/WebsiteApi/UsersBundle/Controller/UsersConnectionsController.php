@@ -65,8 +65,9 @@ class UsersConnectionsController extends Controller
     public function isLoggedAction(Request $request)
     {
         $ok = $this->get("app.user")->current();
+        $origin = $request->query->get("origin", "");
         if(!$ok){
-            return $this->redirect("https://app.twakeapp.com/?subscribe=1");
+            return $this->redirect("https://app.twakeapp.com/?subscribe=1&origin=" . $origin);
         }
         return $this->redirect($this->getParameter("SERVER_NAME"));
     }

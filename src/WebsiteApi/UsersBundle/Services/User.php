@@ -311,8 +311,33 @@ class User implements UserInterface
         return $retour;
     }
 
+    public function verifyReCaptchaAction($recaptcha, $client_ip)
+    {
+        //[REMOVE_ONPREMISE]
+
+        $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
+
+        $api_url = "https://www.google.com/recaptcha/api/siteverify?secret="
+            . $secret
+            . "&response=" . $recaptcha
+            . "&remoteip=" . $client_ip;
+
+        $decode = json_decode(file_get_contents($api_url), true);
+
+        if (isset($decode["success"])) {
+            return true;
+        }
+
+        //[/REMOVE_ONPREMISE]
+
+        return false;
+
+    }
+
     public function testRecaptcha($recaptcha){
         if ($this->standalone) {
+
+            return $this->verifyReCaptchaAction($recaptcha, $_SERVER['REMOTE_ADDR']);
 
         } else {
 
@@ -334,7 +359,7 @@ class User implements UserInterface
 
     }
 
-    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $workspace, $company, $friends, $recaptcha, $force = false)
+    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $workspace, $company, $friends, $recaptcha, $language, $origin = "", $force = false)
     {
         $mail = $this->string_cleaner->simplifyMail($mail);
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
@@ -360,7 +385,9 @@ class User implements UserInterface
         $user->setFirstName($firstName);
         $user->setLastName($lastName);
         $user->setPhone($phone);
+        $user->setLanguage($language);
         $user->setCreationDate(new \DateTime());
+        $user->setOrigin($origin);
         $this->em->persist($user);
         $this->em->flush();
         if($workspace != "" && $workspace!=null){

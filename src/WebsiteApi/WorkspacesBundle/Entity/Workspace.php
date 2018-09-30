@@ -92,6 +92,11 @@ class Workspace
     private $isNew = true;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $total_activity = 0;
+
+    /**
      * Workspace constructor.
      * @param $name
      */
@@ -303,6 +308,22 @@ class Workspace
         $this->isNew = $isNew;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getTotalActivity()
+    {
+        return intval($this->total_activity);
+    }
+
+    /**
+     * @param mixed $total_activity
+     */
+    public function setTotalActivity($total_activity)
+    {
+        $this->total_activity = $total_activity;
+    }
+
 
 	public function getAsArray(){
 		return Array(
@@ -313,7 +334,7 @@ class Workspace
             "color" => $this->getColor(),
 			"group" => (($this->getGroup())?$this->getGroup()->getAsArray():null),
 			"name" => $this->getName(),
-            "total_members" => $this->getMemberCount(),
+            "total_members" => $this->getMemberCount() - 1, //Remove Twake bot
             "uniqueName" => $this->getUniqueName(),
             "isArchived" => $this->getisArchived(),
             "isNew" => $this->getisNew()

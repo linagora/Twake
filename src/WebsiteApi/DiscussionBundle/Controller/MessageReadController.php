@@ -25,8 +25,7 @@ class MessageReadController extends Controller
         }
         else {
             if($request->request->get("stream_id") != null){
-                $tmp = $this->get('app.messages
-                ')->readStream($request->request->get("stream_id"), $this->getUser());
+                $tmp = $this->get('app.messages')->readStream($request->request->get("stream_id"), $this->getUser());
                 if($tmp != null){
                     $data["errors"][] = "errorSystem";
                 }else{

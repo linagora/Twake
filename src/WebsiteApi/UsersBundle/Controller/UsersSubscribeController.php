@@ -145,10 +145,11 @@ class UsersSubscribeController extends Controller
         $company = $request->request->get("company", "");
         $friends = $request->request->get("friends", "");
         $recaptcha = $request->request->get("recaptcha", "");
+        $language = $request->request->get("language", "en");
+        $origin = $request->request->get("origin", "");
 
 
-
-        $res = $this->get("app.user")->subscribeInfo($mail,$password,$username,$firstName,$lastName,$phone,$workspace,$company,$friends,$recaptcha);
+        $res = $this->get("app.user")->subscribeInfo($mail, $password, $username, $firstName, $lastName, $phone, $workspace, $company, $friends, $recaptcha, $language, $origin);
 
         if ( $res==true && is_bool($res)) {
 

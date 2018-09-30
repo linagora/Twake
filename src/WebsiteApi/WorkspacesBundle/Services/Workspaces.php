@@ -95,7 +95,6 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
         }
-
         return $workspace;
 
     }
@@ -166,8 +165,7 @@ class Workspaces implements WorkspacesInterface
         $twakebotId = $twakebot->getId();
 
 
-
-
+        $this->translate->setDefaultLanguage($user->getLanguage());
 
         // Create stream
         $streamGeneral = new Stream($workspace, new TranslationObject($this->translate,"general"), false, "This is the general stream");
@@ -214,7 +212,7 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($list1);
 
             $list2 = new ListOfTasks($board,new TranslationObject($this->translate,"project.doing") ,"f49d41", false, Array());
-            $list3 = new ListOfTasks($board,new TranslationObject($this->translate,"project.done") ,"f49d41", true, Array());
+            $list3 = new ListOfTasks($board,new TranslationObject($this->translate,"project.done") ,"00bb4d", true, Array());
             $this->doctrine->persist($list2);
             $this->doctrine->persist($list3);
             $this->doctrine->flush();
@@ -225,9 +223,9 @@ class Workspaces implements WorkspacesInterface
             $task4 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate,"project.invitePartner"), new TranslationObject($this->translate,"project.invitePartnerDescription"), 0, 0, NULL);
 
 
-            $calendar1 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate,"general"), "3de8a0", $currentUserId=null, $icsLink=null);
-            $calendar2 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate,"calendar.communication"), "f0434b", $currentUserId=null, $icsLink=null);
-            $calendar3 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate,"calendar.custumer"), "017aba", $currentUserId=null, $icsLink=null);
+            $calendar1 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate, "general"), "#3DE8A0", $currentUserId = null, $icsLink = null);
+            $calendar2 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate, "calendar.communication"), "#F0434B", $currentUserId = null, $icsLink = null);
+            $calendar3 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate, "calendar.customer"), "#017ABA", $currentUserId = null, $icsLink = null);
 
             $monday = strtotime("last Monday");
             $times = Array(
@@ -279,12 +277,10 @@ class Workspaces implements WorkspacesInterface
                 $event = $this->calendarEventService->createEvent($workspace->getId(), $time["calendar"], $eventJSON);
             }
 
-            $dirSociety = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.society") , "" , true,   false, null,  $twakebotId, null);
-            $dirCommunication = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.comminucation") , "" , true,   false, null,  $twakebotId, null);
-            $dirFinancial = $this->driveService->create($workspace, $dirSociety, new TranslationObject($this->translate,"drive.financial") , "" , true,   false, null,  $twakebotId, null);
-            $dirHR = $this->driveService->create($workspace, $dirSociety, new TranslationObject($this->translate,"drive.hr") , "" , true,   false, null,  $twakebotId, null);
-            $fileRule = $this->driveService->create($workspace, $dirSociety, new TranslationObject($this->translate,"drive.rules") ,  new TranslationObject($this->translate,"drive.ruleSmoke") , false,   false, null,  $twakebotId, null);
-            $fileAccounting = $this->driveService->create($workspace, $dirFinancial, new TranslationObject($this->translate,"drive.accounting") , "" , false,   false, null,  $twakebotId, null);
+            $dirTwake = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.twake") , "" , true,   false, null,  $twakebotId, null);
+            $fileRule = $this->driveService->create($workspace, $dirTwake->getId(), new TranslationObject($this->translate,"drive.rules") ,  new TranslationObject($this->translate,"drive.ruleText") , false,   false, null,  $twakebotId, null);
+            $fileWelcome = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.welcome") , new TranslationObject($this->translate,"drive.welcomeText")  , false,   false, null,  $twakebotId, null);
+
 
         }
 

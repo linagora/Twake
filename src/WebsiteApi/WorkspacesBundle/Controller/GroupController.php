@@ -122,4 +122,25 @@ class GroupController extends Controller
 
         return new JsonResponse($response);
     }
+
+    public function runFreeOfferAction(Request $request)
+    {
+        $response = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $groupId = $request->request->getInt("groupId");
+
+        $res = $this->get("app.groups")->runFreeOffer($groupId, $this->getUser()->getId());
+
+        if ($res) {
+            $response["data"] = "success";
+        } else {
+            $response["errors"] = ["error"];
+        }
+
+
+        return new JsonResponse($response);
+    }
 }

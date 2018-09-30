@@ -27,7 +27,7 @@ class Groups implements GroupsInterface
         $this->wms = $workspace_member_service;
     }
 
-	public function create($userId, $name, $uniquename, $planId)
+    public function create($userId, $name, $uniquename, $planId, $group_data_on_create = Array())
 	{
 		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
@@ -51,6 +51,7 @@ class Groups implements GroupsInterface
 		$group = new Group($uniquenameIncremented);
 		$group->setDisplayName($name);
 		$group->setPricingPlan($plan);
+        $group->setOnCreationData($group_data_on_create);
 
 		$this->doctrine->persist($group);
 		$this->doctrine->flush();
@@ -108,6 +109,7 @@ class Groups implements GroupsInterface
 			$pricingPlan = $pricingPlanRepository->find($planId);
 
 			$group->setPricingPlan($pricingPlan);
+            $group->setFreeOfferEnd(null);
 
 			$this->doctrine->persist($group);
 			$this->doctrine->flush();
@@ -362,6 +364,46 @@ class Groups implements GroupsInterface
             }
 
         return false;
+    }
+
+    public function runFreeOffer($groupId, $currentUserId, $offerLength = 5184000)
+    {
+        if ($currentUserId == null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "VIEW_USERS")) {
+
+            $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+            $group = $groupRepository->find($groupId);
+            if ($group->getPricingPlan()->getLabel() != "free" || $group->getFreeOfferEnd() > 0) {
+                return false; //Need to be in a free group already
+            }
+
+            $pricingPlanRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
+            $pricingPlan = $pricingPlanRepository->findOneBy(Array("label" => "standard"));
+
+            $group->setPricingPlan($pricingPlan);
+            $group->setFreeOfferEnd(date("U") + $offerLength);
+
+            $this->doctrine->persist($group);
+            $this->doctrine->flush();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    public function stopFreeOffer($groupId)
+    {
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $group = $groupRepository->find($groupId);
+        if ($group->getPricingPlan()->getLabel() != "free" && $group->getFreeOfferEnd() > 0 && $group->getFreeOfferEnd() - date("U") < 0) {
+            $pricingPlanRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
+            $pricingPlan = $pricingPlanRepository->findOneBy(Array("label" => "free"));
+
+            $group->setPricingPlan($pricingPlan);
+
+            $this->doctrine->persist($group);
+            $this->doctrine->flush();
+        }
     }
 
 }
