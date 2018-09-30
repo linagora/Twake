@@ -37,3 +37,9 @@ services:
         arguments: ["@doctrine.orm.entity_manager"]
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
+
+    admin.AdministrationUserTracking:
+        class: Administration\AuthenticationBundle\Services\AdministrationUserTracking
+        arguments: ["@doctrine.orm.entity_manager", "@security.token_storage"]
+        tags:
+            - { name: kernel.event_listener, event: kernel.response, method: onKernelResponse }

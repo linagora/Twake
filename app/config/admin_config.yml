@@ -11,6 +11,7 @@ easy_admin:
               icon: 'users'
               children:
               - { entity: 'User', icon: 'list' }
+              - { entity: 'UserTrackedSessions', icon: 'location-arrow', label: 'Tracked Sessions' }
               - { entity: 'Device', icon: 'phone' }
               - { entity: 'VerificationNumberMail', label: 'Mail verification', icon: 'envelope' }
             - label: 'Workspaces'
@@ -33,6 +34,15 @@ easy_admin:
             show:
                 fields: ['id', { property: 'connected', label: 'Connected', type: 'boolean' }, 'connections', 'enabled', {property: 'thumbnail.publicURL', label: 'Image', type: 'image'}, 'username', 'first_name', 'last_name', 'email', 'phone', 'language']
             disabled_actions: ['new', 'delete']
+        UserTrackedSessions:
+            class: Administration\AuthenticationBundle\Entity\UserTrackedSessions
+            label: 'Tracked Sessions'
+            list:
+                title: "Tracked Sessions"
+                fields: ['id', 'user', 'date', 'session_size', 'session_time']
+            show:
+                fields: ['id', 'user', 'date', 'session_size', 'session_time', 'data']
+            disabled_actions: ['new', 'edit', 'delete']
         VerificationNumberMail:
             class: WebsiteApi\UsersBundle\Entity\VerificationNumberMail
             label: 'Number verification by mail'
@@ -70,7 +80,7 @@ easy_admin:
             label: 'Workspaces'
             list:
                 title: "Twake workspaces"
-                fields: ['id', 'isDeleted', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', {property: 'dateAdded', type: 'date'}, 'group', 'members', 'member_count']
+                fields: ['id', 'isDeleted', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', {property: 'dateAdded', type: 'date'}, 'group', 'members', 'member_count', 'total_activity']
                 dql_filter: 'entity.isDeleted = 0 AND entity.user IS NULL'
             show:
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', {property: 'dateAdded', type: 'date'}, 'group', 'members']

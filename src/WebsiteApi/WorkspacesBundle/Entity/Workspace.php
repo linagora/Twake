@@ -92,6 +92,11 @@ class Workspace
     private $isNew = true;
 
     /**
+     * @ORM\Column(type="integer")
+     */
+    private $total_activity = 0;
+
+    /**
      * Workspace constructor.
      * @param $name
      */
@@ -301,6 +306,22 @@ class Workspace
     public function setIsNew($isNew)
     {
         $this->isNew = $isNew;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTotalActivity()
+    {
+        return intval($this->total_activity);
+    }
+
+    /**
+     * @param mixed $total_activity
+     */
+    public function setTotalActivity($total_activity)
+    {
+        $this->total_activity = $total_activity;
     }
 
 

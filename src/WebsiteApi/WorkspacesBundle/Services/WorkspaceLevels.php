@@ -53,6 +53,10 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			return false;
 		}
 
+        $workspace->setTotalActivity($workspace->getTotalActivity() + 1);
+        $this->doctrine->persist($workspace);
+        //No flush, if this is just a read we don't count the activity
+
 		if($link->getLevel()->getisAdmin()){
 			return true; //Admin can do everything
 		}
