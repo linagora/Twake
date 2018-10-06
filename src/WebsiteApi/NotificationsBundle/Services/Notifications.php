@@ -135,7 +135,15 @@ class Notifications implements NotificationsInterface
             }
 
             $n = new Notification($application, $workspace, $user);
+            if (is_string($_data)) {
+                $_data = Array("shortcut" => $_data);
+            }
+            if (!$_data) {
+                $_data = Array();
+            }
             if ($_data) {
+                $_data["workspace"] = $data["workspace_id"];
+                $_data["app"] = $data["app_id"];
                 $n->setData($_data);
             }
             if($code){

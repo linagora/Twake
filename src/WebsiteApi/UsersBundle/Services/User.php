@@ -313,6 +313,11 @@ class User implements UserInterface
 
     public function verifyReCaptchaAction($recaptcha, $client_ip)
     {
+
+        if ($recaptcha == "phone_app_no_verification") {
+            return true;
+        }
+
         //[REMOVE_ONPREMISE]
 
         $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";

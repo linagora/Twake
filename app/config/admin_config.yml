@@ -41,8 +41,8 @@ easy_admin:
                 title: "Tracked Sessions"
                 fields: ['id', 'user', 'date', 'session_size', 'session_time']
             show:
-                fields: ['id', 'user', 'date', 'session_size', 'session_time', 'data']
-            disabled_actions: ['new', 'edit', 'delete']
+                fields: ['id', 'user', 'date', 'session_size', 'session_time', 'dataAsText']
+            disabled_actions: ['new', 'edit']
         VerificationNumberMail:
             class: WebsiteApi\UsersBundle\Entity\VerificationNumberMail
             label: 'Number verification by mail'
@@ -92,7 +92,7 @@ easy_admin:
             label: 'Groups'
             list:
                 title: "Twake groups"
-                fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'on_creation_data', 'pricingPlan', 'workspaces']
+                fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'onCreationDataAsText', 'pricingPlan', 'workspaces']
                 dql_filter: 'entity.isPrivate = 0'
             show:
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', 'displayName', {property: 'dateAdded', type: 'date'}, 'pricingPlan']

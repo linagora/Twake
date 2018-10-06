@@ -26,6 +26,14 @@ class UsersConnectionsController extends Controller
         $this->loginAction($request);
         return $this->redirect($this->getParameter("SERVER_NAME"));
     }
+
+    public function mobileRedirectAction(Request $request)
+    {
+        $response = new Response();
+        $response->setContent("<script>document.location='" . base64_decode($request->query->get("redirect")) . "'</script>");
+        return $response;;
+    }
+
 	public function loginAction(Request $request)
 	{
 
