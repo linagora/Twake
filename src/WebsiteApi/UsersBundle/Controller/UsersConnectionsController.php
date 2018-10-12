@@ -73,26 +73,26 @@ class UsersConnectionsController extends Controller
     public function isLoggedAction(Request $request)
     {
         $ok = $this->get("app.user")->current();
-        $origin = $request->query->get("origin", "");
-        $name = $request->query->get("name", "");
-        $forename = $request->query->get("forename", "");
-        $mail = $request->query->get("mail", "");
-        $username = $request->query->get("username", "");
-        $url = "https://app.twakeapp.com/?subscribe=1&origin=".$origin;
-        if($username && $username!=""){
-            $url = $url."&username=".$username;
-        }
-        if($mail && $mail!=""){
-            $url = $url."&mail=".$mail;
-        }
-        if($name && $name!=""){
-            $url = $url."&name=".$name;
-        }
-        if($forename && $forename!=""){
-            $url = $url."&forename=".$forename;
-        }
 
-        if(!$ok){
+        if (!$ok) {
+            $origin = $request->query->get("origin", "");
+            $name = $request->query->get("name", "");
+            $forename = $request->query->get("forename", "");
+            $mail = $request->query->get("mail", "");
+            $username = $request->query->get("username", "");
+            $url = "https://app.twakeapp.com/?subscribe=1&origin=" . $origin;
+            if ($username && $username != "") {
+                $url = $url . "&username=" . $username;
+            }
+            if ($mail && $mail != "") {
+                $url = $url . "&mail=" . $mail;
+            }
+            if ($name && $name != "") {
+                $url = $url . "&name=" . $name;
+            }
+            if ($forename && $forename != "") {
+                $url = $url . "&forename=" . $forename;
+            }
             return $this->redirect($url);
         }
         return $this->redirect($this->getParameter("SERVER_NAME"));

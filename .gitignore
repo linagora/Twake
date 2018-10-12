@@ -118,3 +118,6 @@ fabric.properties
 ### Twake specific ###
 /build/
 /vendor/
+
+### AWS ###
+/app/config/aws_config.yml

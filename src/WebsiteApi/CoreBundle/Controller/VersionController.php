@@ -16,7 +16,10 @@ class VersionController extends Controller
     public function getAction()
     {
 
-        return new JsonResponse(Array("version" => "1.1.0-0"));
+        return new JsonResponse(Array(
+            "version" => "1.1.0-0",
+            "last_compatible_mobile_version" => "1.1.300"
+        ));
 
 
     }

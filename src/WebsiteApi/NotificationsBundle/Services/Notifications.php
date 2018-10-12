@@ -161,11 +161,20 @@ class Notifications implements NotificationsInterface
             }
 
             if(in_array("push", $type) && $toPush){
+
+                $_data = Array(
+                    "workspace_id" => ($workspace != null ? $workspace->getId() : null),
+                    "app_id" => ($application != null ? $application->getId() : null),
+                    "title" => $title,
+                    "text" => $text,
+                    "shortcut" => isset($_data["shortcut"]) ? $_data["shortcut"] : ""
+                );
+
                 $totalNotifications = $this->countAll($user) + 1;
                 if($useDevices) {
                     @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $_data);
                 }else{
-                    @$this->updateDeviceBadge($user, $totalNotifications);
+                    @$this->updateDeviceBadge($user, $totalNotifications, $_data);
                 }
             }
             if(in_array("mail", $type)){
@@ -318,7 +327,8 @@ class Notifications implements NotificationsInterface
 
 
     /* Private */
-    private function updateDeviceBadge($user, $badge=0){
+    private function updateDeviceBadge($user, $badge = 0, $data = null)
+    {
         $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
         $devices = $devicesRepo->findBy(Array("user"=>$user));
 
@@ -332,7 +342,7 @@ class Notifications implements NotificationsInterface
                 null,
                 null,
                 $badge,
-                null
+                $data
             );
 
 

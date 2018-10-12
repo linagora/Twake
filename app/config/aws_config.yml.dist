@@ -1,0 +1,9 @@
+aws:
+    S3:
+        use: true
+        version: latest
+        buckets:
+            france: eu-west-3
+        credentials:
+            key: A
+            secret: B
