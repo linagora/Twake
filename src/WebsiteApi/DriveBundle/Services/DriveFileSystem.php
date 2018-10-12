@@ -272,7 +272,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             $from = $this->getRoot() . $inFile->getPath();
             $to = $this->getRoot() . $outFile->getPath();
 
-            if (file_exists($from)) {
+            if ($this->file_exists($from, $inFile)) {
                 copy($from, $to);
             } else {
                 $this->delete($inFile);
@@ -627,8 +627,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 
             $path = $this->getRoot() . $newFile->getPath();
             $this->verifyPath($path);
+            $size = strlen($content);
             $this->writeEncode($path, $fileVersion->getKey(), $content, $fileVersion->getMode());
-            $size = filesize($path);
 
             $fileVersion->setSize($size);
             $this->doctrine->persist($fileVersion);
@@ -681,7 +681,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $this->verifyPath($path);
 
-        if (!file_exists($path)) {
+        if (!$this->file_exists($path, $file)) {
             return null;
         }
 
@@ -708,7 +708,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $this->verifyPath($path);
 
-        if (!file_exists($path)) {
+        if (!$this->file_exists($path, $file)) {
             return null;
         }
 
@@ -728,7 +728,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $path = $this->getRoot() . $file->getPath();
 
-        if (file_exists($path)) {
+        if ($this->file_exists($path, $file)) {
 
             if ($newVersion) {
                 $newVersion = new DriveFileVersion($file, $user);
@@ -738,10 +738,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 
             if ($content != null) {
                 $this->verifyPath($path);
+                $file->setSize(strlen($content));
                 $this->writeEncode($path, $file->getLastVersion()->getKey(), $content, $file->getLastVersion()->getMode());
             }
 
-            $file->setSize(filesize($path));
             $file->setLastModified();
             $this->updateSize($file->getParent(), $file->getSize());
 
@@ -1002,8 +1002,23 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
+    protected function deleteFile($file)
+    {
+        // Remove real file
+        $real = $this->getRoot() . $file->getPath();
+        if ($this->file_exists($real, $file)) {
+            unlink($real);
+        }
+        // Remove preview file
+        $real = $this->getRoot() . $file->getPreviewPath();
+        if ($this->file_exists($real, $file)) {
+            unlink($real);
+        }
+    }
+
     protected function recursDelete($fileOrDirectory)
     {
+
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
         $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
         $userToNotifyRepo->deleteByDriveFile($fileOrDirectory);
@@ -1016,16 +1031,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         if (!$fileOrDirectory->getIsDirectory()) {
 
-            // Remove real file
-            $real = $this->getRoot() . $fileOrDirectory->getPath();
-            if (file_exists($real)) {
-                unlink($real);
-            }
-            // Remove preview file
-            $real = $this->getRoot() . $fileOrDirectory->getPreviewPath();
-            if (file_exists($real)) {
-                unlink($real);
-            }
+            $this->deleteFile($fileOrDirectory);
 
         } else {
             $copies = $driveRepository->findBy(Array("copyOf" => $fileOrDirectory));
@@ -1177,6 +1183,9 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $real = $this->getRoot() . $file->getPath();
+        $size = filesize($fileData["tmp_name"]);
+
+        $file->setSize($size);
 
         $context = Array(
             "max_size" => 100000000 // 100Mo
@@ -1219,11 +1228,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $real = $this->getRoot() . $newFile->getPath();
+        $size = filesize($file["tmp_name"]);
+
         $context = Array(
             "max_size" => 100000000 // 100Mo
         );
         $errors = $uploader->upload($file, $real, $context);
 
+        $newFile->setSize($size);
 
         $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
 
@@ -1350,7 +1362,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             header('Expires: 0');
             header('Cache-Control: must-revalidate');
             header('Pragma: public');
-            header('Content-Length: ' . filesize($zip_path));
+            header('Content-Length: ' . $this->filesize($zip_path));
 
             $fp = fopen($zip_path, "r");
 
@@ -1405,7 +1417,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             header('Expires: 0');
             header('Cache-Control: must-revalidate');
             header('Pragma: public');
-            header('Content-Length: ' . filesize($completePath));
+            header('Content-Length: ' . $this->filesize($completePath));
 
             $fp = fopen($completePath, "r");
 
@@ -1428,7 +1440,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     protected function verifyPath($path)
     {
         $path = dirname($path);
-        if (!file_exists($path)) {
+        if (!$this->file_exists($path, null)) {
             mkdir($path, 0777, true);
         }
     }
@@ -1532,6 +1544,8 @@ class DriveFileSystem implements DriveFileSystemInterface
     {
         if (!$file->getIsDirectory() && $file->getLastVersion()) {
 
+            error_log("Start generating preview for " . $file->getName());
+
             $path = $this->getRoot() . "/" . $file->getPath();
             $previewPath = $this->getRoot() . "/" . $file->getPreviewPath();
 
@@ -1539,21 +1553,27 @@ class DriveFileSystem implements DriveFileSystemInterface
 
             $ext = $file->getExtension();
             $tmppath = $this->decode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
-            rename($tmppath, $tmppath . ".tw");
-            $tmppath = $tmppath . ".tw";
 
-            try {
-                $this->preview->generatePreview(basename($path), $tmppath, dirname($path), $ext);
-                if (file_exists($path . ".png")) {
-                    rename($path . ".png", $previewPath);
-                } else {
-                    error_log("FILE NOT GENERATED !");
+            if ($tmppath) {
+                error_log("Got tmp path " . $file->getName());
+
+                rename($tmppath, $tmppath . ".tw");
+                $tmppath = $tmppath . ".tw";
+
+                try {
+                    $this->preview->generatePreview(basename($path), $tmppath, dirname($path), $ext);
+                    if ($this->file_exists($path . ".png", null)) {
+                        rename($path . ".png", $previewPath);
+                    } else {
+                        error_log("FILE NOT GENERATED !");
+                    }
+                } catch (\Exception $e) {
+
                 }
-            } catch (\Exception $e) {
+
+                @unlink($tmppath);
 
             }
-
-            @unlink($tmppath);
 
         }
 
@@ -1659,4 +1679,15 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         return true;
     }
+
+    protected function file_exists($path, $file)
+    {
+        return file_exists($path);
+    }
+
+    protected function filesize($path, $file)
+    {
+        return filesize($path);
+    }
+
 }

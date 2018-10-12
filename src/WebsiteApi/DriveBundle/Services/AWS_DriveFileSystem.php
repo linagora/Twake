@@ -42,7 +42,6 @@ class AWS_DriveFileSystem extends DriveFileSystem
     public function encode($path, $key, $mode = null)
     {
 
-
         $key = "AWS" . $this->parameter_drive_salt;
         $key = md5($key);
 
@@ -61,8 +60,7 @@ class AWS_DriveFileSystem extends DriveFileSystem
             ];
 
             // Upload data.
-            $this->aws_s3_client->putObject($data);
-
+            $result = $this->aws_s3_client->putObject($data);
             @unlink($path);
 
         } catch (S3Exception $e) {
@@ -96,10 +94,47 @@ class AWS_DriveFileSystem extends DriveFileSystem
             return $tmpPath;
 
         } catch (S3Exception $e) {
-            error_log($e->getMessage() . PHP_EOL);
+            error_log("Error accessing aws file.");
         }
 
         return false;
+    }
+
+    protected function deleteFile($file)
+    {
+        // Remove real file
+        $key_path = $file->getPath();
+        try {
+            $this->aws_s3_client->deleteObject([
+                'Bucket' => $this->aws_bucket_name,
+                'Key' => "drive/" . $key_path,
+            ]);
+        } catch (S3Exception $e) {
+            error_log($e->getMessage());
+        }
+
+        // Remove preview file
+        $real = $this->getRoot() . $file->getPreviewPath();
+        if (file_exists($real)) {
+            unlink($real);
+        }
+    }
+
+    public function verifyPath($path)
+    {
+        if (strpos($path, "/tmp") !== false) {
+            parent::verifyPath($path);
+        }
+    }
+
+    protected function file_exists($path, $file)
+    {
+        return true;
+    }
+
+    protected function filesize($path, $file)
+    {
+        return 10;
     }
 
 }
