@@ -770,7 +770,7 @@ class User implements UserInterface
 		return false;
 	}
 
-	public function updateUserBasicData($userId, $firstName, $lastName, $thumbnail=null)
+    public function updateUserBasicData($userId, $firstName, $lastName, $thumbnail = null, $uploader = null)
 	{
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
@@ -784,7 +784,11 @@ class User implements UserInterface
                 $user->setThumbnail(null);
             } else if ($thumbnail != null && !is_string($thumbnail)) {
                 if ($user->getThumbnail()) {
-                    $user->getThumbnail()->deleteFromDisk();
+                    if ($uploader) {
+                        $uploader->removeFile($user->getThumbnail(), false);
+                    } else {
+                        $user->getThumbnail()->deleteFromDisk();
+                    }
                     $this->em->remove($user->getThumbnail());
                 }
 				$user->setThumbnail($thumbnail);

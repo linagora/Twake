@@ -387,7 +387,7 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function changeLogo($workspaceId, $logo, $currentUserId = null)
+    public function changeLogo($workspaceId, $logo, $currentUserId = null, $uploader = null)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
@@ -397,7 +397,11 @@ class Workspaces implements WorkspacesInterface
             $workspace = $workspaceRepository->find($workspaceId);
 
             if ($workspace->getLogo()) {
-                $workspace->getLogo()->deleteFromDisk();
+                if ($uploader) {
+                    $uploader->removeFile($workspace->getLogo(), false);
+                } else {
+                    $workspace->getLogo()->deleteFromDisk();
+                }
                 $this->doctrine->remove($workspace->getLogo());
             }
             $workspace->setLogo($logo);
@@ -420,7 +424,7 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function changeWallpaper($workspaceId, $wallpaper, $color = null, $currentUserId = null)
+    public function changeWallpaper($workspaceId, $wallpaper, $color = null, $currentUserId = null, $uploader = null)
     {
 
         if ($color == null) {
@@ -435,7 +439,11 @@ class Workspaces implements WorkspacesInterface
             $workspace = $workspaceRepository->find($workspaceId);
 
             if ($workspace->getWallpaper()) {
-                $workspace->getWallpaper()->deleteFromDisk();
+                if ($uploader) {
+                    $uploader->removeFile($workspace->getWallpaper(), false);
+                } else {
+                    $workspace->getWallpaper()->deleteFromDisk();
+                }
                 $this->doctrine->remove($workspace->getWallpaper());
             }
             $workspace->setWallpaper($wallpaper);

@@ -64,12 +64,18 @@ class File
 	 */
 	private $date; //Creation date
 
-	/**
-	 * @var int
-	 *
-	 * @ORM\Column(name="weight", type="integer")
-	 */
-	private $weight;
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="weight", type="integer")
+     */
+    private $weight;
+
+    /**
+     *
+     * @ORM\Column(name="aws_pubblic_link", type="string", length=1024)
+     */
+    private $aws_public_link = false;
 
 
 
@@ -97,6 +103,11 @@ class File
 	 * @return string
 	 */
 	public function getPublicURL($size = 0){
+
+        if ($this->aws_public_link) {
+            return $this->aws_public_link;
+        }
+
 		if(!$this->size_exists($size)){
 			return "";
 		}
@@ -109,6 +120,9 @@ class File
 	 * @return string
 	 */
 	public function getLocalServerURL($size = 0){
+        if ($this->aws_public_link) {
+            return false;
+        }
 		return APPPATH."/../web/".$this->getPublicURL($size);
 	}
 
@@ -217,6 +231,22 @@ class File
 	{
 		$this->realName = $realName;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getAwsPublicLink()
+    {
+        return $this->aws_public_link;
+    }
+
+    /**
+     * @param mixed $aws_public_link
+     */
+    public function setAwsPublicLink($aws_public_link)
+    {
+        $this->aws_public_link = $aws_public_link;
+    }
 
 
 

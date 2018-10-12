@@ -25,17 +25,6 @@ services:
     app.string_cleaner:
         class: WebsiteApi\CoreBundle\Services\StringCleaner
 
-    app.images_modifiers:
-        class: WebsiteApi\UploadBundle\Services\ImagesModifiers
-
-    app.upload:
-        class: WebsiteApi\UploadBundle\Services\Upload
-        arguments: ["@app.images_modifiers"]
-
-    app.uploader:
-        class: WebsiteApi\UploadBundle\Services\Uploader
-        arguments: ["@doctrine.orm.entity_manager", "@app.upload", "@app.images_modifiers"]
-
     #app.contacts:
     #    class: WebsiteApi\UsersBundle\Services\Contacts
     #    arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer", "%SERVER_NAME%"]
