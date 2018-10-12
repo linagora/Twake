@@ -13,6 +13,16 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 
 class FilesController extends Controller
 {
+
+    public function chooseFileSystemService()
+    {
+        $aws = $this->getParameter('aws');
+        if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
+            return $this->get('app.drive.AWS_FileSystem');
+        }
+        return $this->get('app.drive.FileSystem');
+    }
+    
     public function createAction(Request $request)
     {
 
@@ -33,7 +43,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -84,7 +94,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -116,7 +126,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -154,7 +164,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -184,7 +194,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -224,7 +234,7 @@ class FilesController extends Controller
 
         if($objectId>0) {
 
-            $fileSystem = $this->get('app.drive.FileSystem');
+            $fileSystem = $this->chooseFileSystemService();
 
             if ($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
                 $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -276,7 +286,7 @@ class FilesController extends Controller
 
         $public_access_key = $request->request->get("public_access_key", false);
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -424,7 +434,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -480,7 +490,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -513,7 +523,7 @@ class FilesController extends Controller
             $newVersion = false;
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -565,7 +575,7 @@ class FilesController extends Controller
         }
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -596,7 +606,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -646,7 +656,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -675,7 +685,7 @@ class FilesController extends Controller
         $fileId = $request->request->get("fileId", 0);
         $public_access_key = $request->request->get("public_access_key", "");
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if ($public_access_key == "generate") {
             $public_access_key = bin2hex(random_bytes(128));
@@ -711,7 +721,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if ($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -741,7 +751,7 @@ class FilesController extends Controller
         $public_access_key = $request->query->get("public_access_key", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -776,7 +786,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -814,7 +824,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -848,7 +858,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -874,7 +884,7 @@ class FilesController extends Controller
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
-        $fileSystem = $this->get('app.drive.FileSystem');
+        $fileSystem = $this->chooseFileSystemService();
 
         if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -905,7 +915,7 @@ class FilesController extends Controller
             $directory = $request->request->get("directory", false);
             $externalDrive = $directory;
 
-            $fileSystem = $this->get('app.drive.FileSystem');
+            $fileSystem = $this->chooseFileSystemService();
 
             if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
                 $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
@@ -941,7 +951,7 @@ class FilesController extends Controller
         $fileId = $request->request->get("fileId", 0);
         $app = $request->request->get("app", 0);
 
-        $res = $this->get('app.drive.FileSystem')->changeDefaultWebApp($fileId, $app);
+        $res = $this->chooseFileSystemService()->changeDefaultWebApp($fileId, $app);
 
         if($res){
             $data["data"] = "success";

@@ -51,7 +51,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->workspacesActivities = $workspacesActivities;
     }
 
-    private function convertToEntity($var, $repository)
+    protected function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
             $var = intval($var);
@@ -145,7 +145,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     }
 
 
-    private function getRoot()
+    protected function getRoot()
     {
         return dirname($this->root) . "/" . "drive" . "/";
     }
@@ -155,7 +155,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     /**
      * @param $fileOrDirectory
      */
-    private function improveName($fileOrDirectory)
+    protected function improveName($fileOrDirectory)
     {
         $originalCompleteName = explode(".", $fileOrDirectory->getName());
         $originalExt = array_pop($originalCompleteName);
@@ -196,7 +196,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
     }
 
-    private function updateSize($directory, $delta)
+    protected function updateSize($directory, $delta)
     {
         while ($directory != null) {
             $currentSize = $directory->getSize();
@@ -264,7 +264,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    private function recursCopy($inFile, $outFile)
+    protected function recursCopy($inFile, $outFile)
     {
         if (!$inFile->getIsDirectory()) {
 
@@ -1002,7 +1002,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    private function recursDelete($fileOrDirectory)
+    protected function recursDelete($fileOrDirectory)
     {
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
         $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
@@ -1063,7 +1063,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    private function removeLabels($fileOrDirectory, $flush = true)
+    protected function removeLabels($fileOrDirectory, $flush = true)
     {
 
         $labels_link = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("file" => $fileOrDirectory));
@@ -1425,7 +1425,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    private function verifyPath($path)
+    protected function verifyPath($path)
     {
         $path = dirname($path);
         if (!file_exists($path)) {
@@ -1433,7 +1433,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
     }
 
-    private function encode($path, $key, $mode = "AES")
+    protected function encode($path, $key, $mode = "AES")
     {
 
         if ($mode == "AES") {
@@ -1457,7 +1457,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    private function decode($path, $key, $mode = "AES")
+    protected function decode($path, $key, $mode = "AES")
     {
 
         if ($mode == "AES") {
@@ -1481,7 +1481,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    private function writeEncode($path, $key, $content, $mode = "AES")
+    protected function writeEncode($path, $key, $content, $mode = "AES")
     {
         file_put_contents($path, $content);
         if ($content != "") {
@@ -1489,7 +1489,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
     }
 
-    private function readDecode($path, $key, $mode = "AES")
+    protected function readDecode($path, $key, $mode = "AES")
     {
         $path = $this->decode($path, $key, $mode);
         $var = file_get_contents($path);
@@ -1497,7 +1497,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $var;
     }
 
-    private function read($path)
+    protected function read($path)
     {
         $var = file_get_contents($path);
         return $var;
@@ -1595,7 +1595,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return false;
     }
 
-    private function updateLabelsCount($workspace, $flush = true)
+    protected function updateLabelsCount($workspace, $flush = true)
     {
         $labelsRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel");
 

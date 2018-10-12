@@ -23,8 +23,6 @@ class UserTrackedSessions
     private $id;
 
     /**
-     * @var int
-     *
      * Utilisateur associé à cette session
      *
      * @ORM\OneToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")

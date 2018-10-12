@@ -49,3 +49,8 @@ services:
         tags:
             - { name: gos_web_socket.topic }
         arguments: []
+
+    # AWS
+    app.drive.AWS_FileSystem:
+        class: WebsiteApi\DriveBundle\Services\AWS_DriveFileSystem
+        arguments: [%aws%, "@doctrine.orm.entity_manager", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@website_api_market.applications','@app.drive.UserToNotifyService', '@app.translate', '@app.workspaces_apps','@app.workspaces_activities']
