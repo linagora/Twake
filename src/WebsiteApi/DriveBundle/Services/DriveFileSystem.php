@@ -302,62 +302,6 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
     }
 
-    public function copy($fileOrDirectory, $newParent = null, $userId=0)
-    {
-
-        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
-        $newParent = $this->convertToEntity($newParent, "TwakeDriveBundle:DriveFile");
-        $user = $this->convertToEntity($userId, "TwakeUsersBundle:User");
-
-        if ($fileOrDirectory == null || $this->getFreeSpace($fileOrDirectory->getGroup()) <= 0) {
-            return false;
-        }
-
-        $parent = $fileOrDirectory->getParent();
-        if ($newParent != null) {
-            $parent = $newParent;
-        }
-
-        $newFile = new DriveFile(
-            $fileOrDirectory->getGroup(),
-            $parent,
-            $fileOrDirectory->getName(),
-            $fileOrDirectory->getIsDirectory(),
-            $fileOrDirectory->setCopyOf(null),
-            $fileOrDirectory->getUrl()
-        );
-
-        $newFile->setSize($fileOrDirectory->getSize());
-
-        $this->improveName($newFile);
-
-        //If file copy version (same key currently -> to improve)
-        if (!$newFile->getIsDirectory()) {
-
-            $this->doctrine->persist($newFile);
-            $this->doctrine->flush();
-
-            $newVersion = new DriveFileVersion($newFile, $user);
-            $newFile->setLastVersion($newVersion);
-
-            $newVersion->setKey($fileOrDirectory->getLastVersion()->getKey());
-            $newVersion->setSize($fileOrDirectory->getSize());
-            $this->doctrine->persist($newVersion);
-        }
-
-        // Copy real file and sub files (copy entities)
-        $this->recursCopy($fileOrDirectory, $newFile);
-
-        $this->updateSize($parent, $newFile->getSize());
-        $this->improveName($fileOrDirectory);
-
-        $this->doctrine->persist($newFile);
-        $this->doctrine->flush();
-
-        return true;
-
-    }
-
     public function getSharedWorkspace($groupId, $fileId)
     {
         $directory = $this->convertToEntity($fileId, "TwakeDriveBundle:DriveFile");
@@ -677,6 +621,13 @@ class DriveFileSystem implements DriveFileSystemInterface
             return false;
         }
 
+        return $this->rawPreview($file);
+
+    }
+
+    public function rawPreview($file)
+    {
+
         $path = $this->getRoot() . $file->getPreviewPath();
 
         $this->verifyPath($path);
@@ -686,7 +637,6 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         return $this->read($path);
-
     }
 
     public function getRawContent($workspace, $file)
@@ -704,8 +654,12 @@ class DriveFileSystem implements DriveFileSystemInterface
             return "";
         }
 
-        $path = $this->getRoot() . $file->getPath();
+        return $this->rawContent($file);
+    }
 
+    public function rawContent($file)
+    {
+        $path = $this->getRoot() . $file->getPath();
         $this->verifyPath($path);
 
         if (!$this->file_exists($path, $file)) {
@@ -1544,8 +1498,6 @@ class DriveFileSystem implements DriveFileSystemInterface
     {
         if (!$file->getIsDirectory() && $file->getLastVersion()) {
 
-            error_log("Start generating preview for " . $file->getName());
-
             $path = $this->getRoot() . "/" . $file->getPath();
             $previewPath = $this->getRoot() . "/" . $file->getPreviewPath();
 
@@ -1555,7 +1507,6 @@ class DriveFileSystem implements DriveFileSystemInterface
             $tmppath = $this->decode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
 
             if ($tmppath) {
-                error_log("Got tmp path " . $file->getName());
 
                 rename($tmppath, $tmppath . ".tw");
                 $tmppath = $tmppath . ".tw";
@@ -1578,6 +1529,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
     }
+
 
     //Used to show content of a drive folder since now other group can see others content
     public function isWorkspaceAllowed($workspaceId, $directoryId)

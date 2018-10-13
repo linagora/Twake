@@ -1,23 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+      "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-  "content-hash": "72a3ef43aa51b9755d15f912ec19dec4",
+  "content-hash": "308746e685dba3776b7d0aec99dee1c3",
     "packages": [
         {
           "name": "aws/aws-sdk-php",
-          "version": "3.69.5",
+          "version": "3.69.6",
           "source": {
             "type": "git",
             "url": "https://github.com/aws/aws-sdk-php.git",
-            "reference": "cf01c814404a28a76a2431f80d2e6ea82c9045c8"
+            "reference": "7772d90f021a160d8208e484513a41eaca848693"
           },
           "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/cf01c814404a28a76a2431f80d2e6ea82c9045c8",
-            "reference": "cf01c814404a28a76a2431f80d2e6ea82c9045c8",
+            "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/7772d90f021a160d8208e484513a41eaca848693",
+            "reference": "7772d90f021a160d8208e484513a41eaca848693",
             "shasum": ""
           },
           "require": {
@@ -87,7 +87,7 @@
             "s3",
             "sdk"
           ],
-          "time": "2018-10-11T22:32:08+00:00"
+          "time": "2018-10-12T21:44:38+00:00"
         },
       {
         "name": "aws/aws-sdk-php-symfony",
@@ -1692,7 +1692,7 @@
             "keywords": [
                 "User management"
             ],
-          "time": "2018-09-19 15:05:28"
+          "time": "2018-09-19T15:05:28+00:00"
         },
         {
             "name": "google/apiclient",
@@ -2734,6 +2734,58 @@
           "time": "2018-07-22T01:22:08+00:00"
         },
         {
+          "name": "maennchen/zipstream-php",
+          "version": "v0.5.2",
+          "source": {
+            "type": "git",
+            "url": "https://github.com/maennchen/ZipStream-PHP.git",
+            "reference": "95922b6324955974675fd4923f987faa598408af"
+          },
+          "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/maennchen/ZipStream-PHP/zipball/95922b6324955974675fd4923f987faa598408af",
+            "reference": "95922b6324955974675fd4923f987faa598408af",
+            "shasum": ""
+          },
+          "require": {
+            "ext-mbstring": "*",
+            "php": ">= 7.0"
+          },
+          "require-dev": {
+            "phpunit/phpunit": "^6.3"
+          },
+          "type": "library",
+          "autoload": {
+            "psr-4": {
+              "ZipStream\\": "src/"
+            }
+          },
+          "notification-url": "https://packagist.org/downloads/",
+          "license": [
+            "MIT"
+          ],
+          "authors": [
+            {
+              "name": "Paul Duncan",
+              "email": "pabs@pablotron.org"
+            },
+            {
+              "name": "Jesse Donat",
+              "email": "donatj@gmail.com"
+            },
+            {
+              "name": "Jonatan Männchen",
+              "email": "jonatan@maennchen.ch"
+            }
+          ],
+          "description": "ZipStream is a library for dynamically streaming dynamic zip files from PHP without writing to the disk at all on the server.",
+          "keywords": [
+            "stream",
+            "zip"
+          ],
+          "time": "2018-02-09T09:26:57+00:00"
+        },
+      {
             "name": "michelf/php-markdown",
             "version": "1.8.0",
             "source": {

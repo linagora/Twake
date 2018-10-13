@@ -586,7 +586,7 @@ class FilesController extends Controller
 
         if ($can) {
 
-            $fileSystem->download($groupId, $fileId, $download, $versionId);
+            return $fileSystem->download($groupId, $fileId, $download, $versionId);
 
         }
 
@@ -642,37 +642,6 @@ class FilesController extends Controller
 
         return new JsonResponse($data);
 
-    }
-
-    public function copyAction(Request $request)
-    {
-        $data = Array(
-            "errors" => Array()
-        );
-
-        $groupId = $request->request->get("groupId", 0);
-        $fileId = $request->request->get("fileToCopyId", 0);
-        $newParentId = $request->request->get("newParentId", null);
-        $directory = $request->request->get("directory", false);
-        $externalDrive = $directory;
-
-        $fileSystem = $this->chooseFileSystemService();
-
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
-
-
-        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read")) {
-            if (!$fileSystem->canAccessTo($fileId, $groupId, $this->getUser())) {
-                $data["errors"][] = "notallowed";
-            } else if (!$fileSystem->copy($fileId, $newParentId)) {
-                $data["errors"][] = "unknown";
-            }
-        }
-
-        return new JsonResponse($data);
     }
 
     public function updatePublicAccessKeyAction(Request $request)

@@ -135,6 +135,11 @@ class DriveFile implements ObjectLinksInterface
      */
     private $default_web_app;
 
+    /**
+     * @ORM\Column(type="string", length=2048, nullable = true)
+     */
+    private $aws_preview_link = "";
+
 
     public function __construct($group, $parent, $name, $isDirectory = false,$directoryToCopy = null, $url = null)
     {
@@ -528,6 +533,7 @@ class DriveFile implements ObjectLinksInterface
             "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
             "detached" => $this->getDetachedFile(),
             "cache" => $this->getCache(),
+            "direct_preview_link" => $this->getAwsPreviewLink(),
             "preview" => $this->getPreviewPath(),
             "copyOf" => ($this->getCopyOf()?$this->getCopyOf()->getId():null),
             "shared" => $this->getShared(),
@@ -602,4 +608,22 @@ class DriveFile implements ObjectLinksInterface
     {
         $this->group = $group;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAwsPreviewLink()
+    {
+        return $this->aws_preview_link;
+    }
+
+    /**
+     * @param mixed $aws_preview_link
+     */
+    public function setAwsPreviewLink($aws_preview_link)
+    {
+        $this->aws_preview_link = $aws_preview_link;
+    }
+
+
 }
