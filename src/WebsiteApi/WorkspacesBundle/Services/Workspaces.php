@@ -38,9 +38,9 @@ class Workspaces implements WorkspacesInterface
     var $workspacesActivities;
     var $calendarEventService;
     var $calendarService;
-    var $driveService;
+    var $driveAdapteService;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $groups_service, $priceService, $cleaner, $pusher,$workspacesActivities,$translate,$taskService,$calendarService,$calendarEventService,$driveService)
+    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $taskService, $calendarService, $calendarEventService, $driveAdapteService)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -57,7 +57,7 @@ class Workspaces implements WorkspacesInterface
         $this->taskService = $taskService;
         $this->calendarService = $calendarService;
         $this->calendarEventService = $calendarEventService;
-        $this->driveService = $driveService;
+        $this->driveAdapteService = $driveAdapteService;
     }
 
     public function getPrivate($userId = null)

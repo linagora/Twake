@@ -29,7 +29,7 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		$can = $this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null);
+        $can = $this->get("app.drive.adapter_selector")->getFileSystem()->canAccessTo($fileId, $request["workspace"], null);
 
 		if ($can) {
 
@@ -69,12 +69,12 @@ class DefaultController extends Controller
 			$url = "https://" . str_replace("https://", "", $url);
 		}
 
-		if (!$url || !$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
+        if (!$url || !$this->get("app.drive.adapter_selector")->getFileSystem()->canAccessTo($fileId, $request["workspace"], null)) {
 			$data["errors"][] = 3004;
 		} else {
 
 			$content = file_get_contents($url);
-			$this->get("app.drive.FileSystem")->setRawContent($fileId, $content);
+            $this->get("app.drive.adapter_selector")->getFileSystem()->setRawContent($fileId, $content);
 
 		}
 
@@ -98,11 +98,11 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
+        if (!$this->get("app.drive.adapter_selector")->getFileSystem()->canAccessTo($fileId, $request["workspace"], null)) {
 			$data["errors"][] = 3004;
 		} else {
 
-			$content = $this->get("app.drive.FileSystem")->getRawContent($fileId);
+            $content = $this->get("app.drive.adapter_selector")->getFileSystem()->getRawContent($fileId);
 			if ($content === false) {
 				$data["errors"][] = 3001;
 			} else {
@@ -131,11 +131,11 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
+        if (!$this->get("app.drive.adapter_selector")->getFileSystem()->canAccessTo($fileId, $request["workspace"], null)) {
 			$data["errors"][] = 3004;
 		} else {
 
-			$file = $this->get("app.drive.FileSystem")->setRawContent($fileId, $content);
+            $file = $this->get("app.drive.adapter_selector")->getFileSystem()->setRawContent($fileId, $content);
 			if (!$file) {
 				$data["errors"][] = 3001;
 			}
@@ -165,7 +165,7 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		$file = $this->get("app.drive.FileSystem")->create($request["workspace"], $directoryId, $filename, $content, $directory,$url);
+        $file = $this->get("app.drive.adapter_selector")->getFileSystem()->create($request["workspace"], $directoryId, $filename, $content, $directory, $url);
 		if (!$file) {
 			$data["errors"][] = 3001;
 		} else {
@@ -195,16 +195,16 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
+        if (!$this->get("app.drive.adapter_selector")->getFileSystem()->canAccessTo($fileId, $request["workspace"], null)) {
 			$data["errors"][] = 3004;
 		} else {
 			if ($directoryId != false) {
-				if (!$this->get("app.drive.FileSystem")->move($fileId, $directoryId)) {
+                if (!$this->get("app.drive.adapter_selector")->getFileSystem()->move($fileId, $directoryId)) {
 					$data["errors"][] = 3001;
 				}
 			}
 			if ($newFilename != false) {
-				$this->get("app.drive.FileSystem")->rename($fileId, $newFilename);
+                $this->get("app.drive.adapter_selector")->getFileSystem()->rename($fileId, $newFilename);
 			}
 		}
 
@@ -228,10 +228,10 @@ class DefaultController extends Controller
 			"errors" => Array()
 		);
 
-		if (!$this->get("app.drive.FileSystem")->canAccessTo($fileId, $request["workspace"], null)) {
+        if (!$this->get("app.drive.adapter_selector")->getFileSystem()->canAccessTo($fileId, $request["workspace"], null)) {
 			$data["errors"][] = 3004;
 		} else {
-			if (!$this->get("app.drive.FileSystem")->delete($fileId)) {
+            if (!$this->get("app.drive.adapter_selector")->getFileSystem()->delete($fileId)) {
 				$data["errors"][] = 3001;
 			}
 		}

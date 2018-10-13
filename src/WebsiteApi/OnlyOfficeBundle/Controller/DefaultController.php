@@ -132,17 +132,17 @@ class DefaultController extends Controller
                         $url = "https://" . str_replace("https://", "", $url);
                     }
 
-                    if (!$url || !$this->get("app.drive.FileSystem")->canAccessTo($fileKey->getFileId(), $file->getWorkspaceId(), null)) {
+                    if (!$url || !$this->get("app.drive.adapter_selector")->getFileSystem()->canAccessTo($fileKey->getFileId(), $file->getWorkspaceId(), null)) {
 
                         return new JsonResponse(Array("error" => 1));
 
                     } else {
 
                         $content = file_get_contents($url);
-                        $this->get("app.drive.FileSystem")->setRawContent($fileKey->getFileId(), $content);
+                        $this->get("app.drive.adapter_selector")->getFileSystem()->setRawContent($fileKey->getFileId(), $content);
 
                         if ($newName != $oldFilename) {
-                            $this->get("app.drive.FileSystem")->rename($fileKey->getFileId(), $newName);
+                            $this->get("app.drive.adapter_selector")->getFileSystem()->rename($fileKey->getFileId(), $newName);
                         }
 
                     }

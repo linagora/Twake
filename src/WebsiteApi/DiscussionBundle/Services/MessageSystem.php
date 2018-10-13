@@ -26,12 +26,12 @@ class MessageSystem implements MessagesSystemInterface
     var $commandExecutorService;
     var $pusher;
     var $levelManager;
-    var $fileSystem;
+    var $fileSystemAdapter;
     var $messagesNotificationCenter;
     var $user_stats;
     var $workspace_stats;
 
-    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager, $fileSystem, $messagesNotificationCenter, $user_stats, $workspace_stats)
+    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager, $fileSystemAdapter, $messagesNotificationCenter, $user_stats, $workspace_stats)
     {
         $this->string_cleaner = $string_cleaner;
         $this->doctrine = $doctrine;
@@ -39,7 +39,7 @@ class MessageSystem implements MessagesSystemInterface
         $this->commandExecutorService = $commandExecutorService;
         $this->pusher = $pusher;
         $this->levelManager = $levelManager;
-        $this->fileSystem = $fileSystem;
+        $this->fileSystemAdapter = $fileSystemAdapter;
         $this->messagesNotificationCenter = $messagesNotificationCenter;
         $this->user_stats = $user_stats;
         $this->workspace_stats = $workspace_stats;
@@ -606,7 +606,7 @@ class MessageSystem implements MessagesSystemInterface
             $retour = [];
             foreach ($messages as $message) {
                 $mess = $message->getAsArray();
-                $mess["file"] = $this->fileSystem->getInfos(null, $message->getApplicationData()["file"], true);
+                $mess["file"] = $this->fileSystemAdapter->getFileSystem()->getInfos(null, $message->getApplicationData()["file"], true);
                 $retour[] = $mess;
             }
         }

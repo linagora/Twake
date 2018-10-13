@@ -1,7 +1,7 @@
 services:
     app.messages:
             class: WebsiteApi\DiscussionBundle\Services\MessageSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker', "@app.command_executor", '@app.pusher','@app.workspace_levels','@app.drive.FileSystem', '@app.messagesNotificationsCenter', '@app.user_stats', '@app.workspace_stats']
+            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker', "@app.command_executor", '@app.pusher','@app.workspace_levels','@app.drive.adapter_selector', '@app.messagesNotificationsCenter', '@app.user_stats', '@app.workspace_stats']
 
     app.messages_master:
             class: WebsiteApi\DiscussionBundle\Services\MessagesMasterService

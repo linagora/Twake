@@ -30,7 +30,7 @@ services:
 
     app.workspaces:
         class: WebsiteApi\WorkspacesBundle\Services\Workspaces
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.workspace_stats", "@app.groups", "@app.pricing_plan","@app.string_cleaner","@app.pusher",'@app.workspaces_activities','@app.translate','@app.board_tasks','@app.calendars','@app.calendar_events','@app.drive.FileSystem']
+        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.workspace_stats", "@app.groups", "@app.pricing_plan","@app.string_cleaner","@app.pusher",'@app.workspaces_activities','@app.translate','@app.board_tasks','@app.calendars','@app.calendar_events','@app.drive.adapter_selector']
 
     app.workspaces_activities:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesActivities

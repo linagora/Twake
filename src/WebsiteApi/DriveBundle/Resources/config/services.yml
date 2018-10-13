@@ -50,6 +50,10 @@ services:
             - { name: gos_web_socket.topic }
         arguments: []
 
+    app.drive.adapter_selector:
+        class: WebsiteApi\DriveBundle\Services\DriveAdapterSelector
+        arguments: [%aws%, "@app.drive.AWS_FileSystem", "@app.drive.FileSystem"]
+
     # AWS
     app.drive.AWS_FileSystem:
         class: WebsiteApi\DriveBundle\Services\AWS_DriveFileSystem

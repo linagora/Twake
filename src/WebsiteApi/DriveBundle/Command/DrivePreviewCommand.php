@@ -25,21 +25,13 @@ class DrivePreviewCommand extends ContainerAwareCommand
             ->setName("twake:preview_worker");
     }
 
-    public function chooseFileSystemService()
-    {
-        $services = $this->getApplication()->getKernel()->getContainer();
-        $aws = $this->getContainer()->getParameter('aws');
-        if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
-            return $services->get('app.drive.AWS_FileSystem');
-        }
-        return $services->get('app.drive.FileSystem');
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
+        $services = $this->getApplication()->getKernel()->getContainer();
+
         /* @var DriveFileSystem $driveFileSystem*/
-        $driveFileSystem = $this->chooseFileSystemService();
+        $driveFileSystem = $services->get("app.drive.adapter_selector")->getFileSystem();
 
         $driveFileSystem->autoGenPreview();
     }
