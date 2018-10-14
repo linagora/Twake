@@ -306,7 +306,7 @@ class AWS_DriveFileSystem extends DriveFileSystem
                 header('Expires: 0');
                 header('Cache-Control: must-revalidate');
                 header('Pragma: public');
-                header('Content-Length: ' . $file->getSize());
+                header('Content-Length: ' . $result['ContentLength']);
 
                 // Display the object in the browser.
                 header("Content-Type: {$result['ContentType']}");

@@ -648,7 +648,7 @@ class FilesController extends Controller
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
 
         if ($public_access_key == "generate") {
-            $public_access_key = bin2hex(random_bytes(128));
+            $public_access_key = bin2hex(random_bytes(64));
         } else if ($public_access_key != "") {
             $data["errors"][] = "badparameters";
             return new JsonResponse($data);
