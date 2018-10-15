@@ -571,6 +571,13 @@ class DriveFile implements ObjectLinksInterface
             "id" => $this->getId(),
             "title" => "File",
             "object_name" => $this->getName(),
+            "object_data" => Array(
+                "direct_preview_link" => $this->getAwsPreviewLink(),
+                "extension" => $this->getExtension(),
+                "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
+                'parent' => (($this->getParent()) ? $this->getParent()->getId() : 0),
+                "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null
+            ),
             "key" => "drive",
             "type" => "file",
             "code" => "twake/" . ($this->getParent() ? $this->getParent()->getId() : 0) . "/" . $this->getId(),

@@ -304,7 +304,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         ) {
 
             if ($userId == $currentUserId) {
-                if (count($this->getMembers($workspaceId)) == 1) {
+                if (count($this->getMembers($workspaceId, null, false)) == 1) {
                     return false; // can't remove myself if I'm the last
                 }
             }
@@ -394,7 +394,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
     }
 
-    public function getMembers($workspaceId, $currentUserId = null)
+    public function getMembers($workspaceId, $currentUserId = null, $twake_bot = true)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "")
@@ -413,7 +413,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $users = Array();
             foreach ($link as $user) {
 
-                if ($user->getUser()->getUsername() == "twake_bot") {
+                if ($user->getUser()->getUsername() == "twake_bot" && !$twake_bot) {
                     continue;
                 }
 
