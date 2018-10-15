@@ -32,8 +32,12 @@ class WorkspaceMembersController extends Controller
 
         $list = Array();
         foreach ($members as $member) {
+            $user = $member["user"]->getAsArray();
+            if ($user["username"] == "twake_bot") {
+                continue;
+            }
             $list[] = Array(
-                "user" => $member["user"]->getAsArray(),
+                "user" => $user,
                 "level" => $member["level"]->getAsArray(),
                 "externe" => $member["externe"]
             );

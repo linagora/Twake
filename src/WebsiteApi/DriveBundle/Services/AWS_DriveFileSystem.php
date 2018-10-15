@@ -247,7 +247,6 @@ class AWS_DriveFileSystem extends DriveFileSystem
             {
                 return false;
             }
-
             $archive_name = ($file ? $file->getName() : "Documents");
 
             $this->aws_s3_client->registerStreamWrapper();

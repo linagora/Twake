@@ -217,7 +217,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(),));
                 $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUser", PHP_INT_MAX);
 
-                if (count($nbuserGroup) >= $limit) {
+                if (count($nbuserGroup) >= $limit + 1) { // Margin of 1 to be sure we do not count twakebot
                     return false;
                 }
             }
@@ -330,6 +330,12 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $groupmember = $groupUserRepository->findOneBy(Array("group" => $workspace->getGroup(), "user" => $user));
 
             $groupmember->decreaseNbWorkspace();
+            if ($groupmember->getNbWorkspace() == 0) {
+                //Verify we are not the only manager
+                if ($groupmember->getLevel() == 3) {
+                    return false;
+                }
+            }
             $this->doctrine->persist($groupmember);
 
             $datatopush = Array(
@@ -406,6 +412,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $users = Array();
             foreach ($link as $user) {
+
+                if ($user->getUser()->getUsername() == "twake_bot") {
+                    continue;
+                }
 
                 if ($user->getGroupUser()) { //Private workspaces does not have a group user assiociated
                     $users[] = Array(
