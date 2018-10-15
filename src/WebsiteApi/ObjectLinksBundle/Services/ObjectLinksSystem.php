@@ -250,14 +250,18 @@ class ObjectLinksSystem
 
             if ($partner) {
                 $didSync = false;
+
+                $data = Array();
                 /* @var ObjectLinksInterface $partner */
                 foreach ($fields as $field) {
                     $value = $object->get($field);
+                    $data[$field] = $value;
                     if ($value || is_array($value)) {
                         $didSync = true;
                         $partner->synchroniseField($field, $value);
                     }
                 }
+                $partner->finishSynchroniseField($data);
 
                 if ($didSync) {
                     $route = $partner->getPushRoute();

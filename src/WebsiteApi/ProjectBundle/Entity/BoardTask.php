@@ -63,12 +63,12 @@ class BoardTask implements ObjectLinksInterface {
     private $like;
 
     /**
-     * @ORM\Column(name="from_ts", type="bigint")
+     * @ORM\Column(name="from_ts", type="bigint", nullable=true)
      */
     private $from;
 
     /**
-     * @ORM\Column(name="to_ts", type="bigint")
+     * @ORM\Column(name="to_ts", type="bigint", nullable=true)
      */
     private $to;
 
@@ -209,6 +209,10 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function setFrom($from)
     {
+        if (intval($from) <= 0) {
+            $this->from = null;
+            return;
+        }
         $this->from = $from;
     }
 
@@ -225,6 +229,10 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function setTo($to)
     {
+        if (intval($to) <= 0) {
+            $this->to = null;
+            return;
+        }
         $this->to = $to;
     }
 
@@ -554,5 +562,10 @@ class BoardTask implements ObjectLinksInterface {
     public function getAllUsersToNotify()
     {
         return array_merge($this->getParticipants(),$this->getUserIdToNotify());
+    }
+
+    public function finishSynchroniseField($data)
+    {
+        // TODO: Implement finishSynchroniseField($data) method.
     }
 }

@@ -156,9 +156,9 @@ class BoardTasks implements BoardTasksInterface
             $task->setParticipants($participants);
         if ($userToNotify !== null)
             $task->setUserIdToNotify($userToNotify);
-        if($startDate!=null)
+        if ($startDate !== null)
             $task->setFrom($startDate);
-        if($endDate!=null)
+        if ($endDate !== null)
             $task->setTo($endDate);
 
         $this->doctrine->persist($task);

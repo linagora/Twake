@@ -274,4 +274,9 @@ class Subject implements ObjectLinksInterface
     {
         return "discussion/".$this->getId();
     }
+
+    public function finishSynchroniseField($data)
+    {
+        // TODO: Implement finishSynchroniseField($data) method.
+    }
 }

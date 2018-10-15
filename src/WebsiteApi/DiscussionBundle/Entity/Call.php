@@ -128,5 +128,9 @@ class Call implements ObjectLinksInterface
     }
 
 
+    public function finishSynchroniseField($data)
+    {
+        // TODO: Implement finishSynchroniseField($data) method.
+    }
 }
 

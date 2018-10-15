@@ -21,6 +21,8 @@ interface ObjectLinksInterface
 
     public function synchroniseField($fieldName, $value);
 
+    public function finishSynchroniseField($data);
+
     public function get($fieldName);
 
     public function getPushRoute();
