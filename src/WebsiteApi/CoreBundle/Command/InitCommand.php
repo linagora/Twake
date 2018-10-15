@@ -906,7 +906,7 @@ class InitCommand extends ContainerAwareCommand
             ["/medias/apps/web/zimbra.png", "Zimbra", "zimbra", "zimbra", "3784BC", Array()],
 
 
-            ["/medias/apps/web/any_url.png", "External app", "any_url", "any_app", "888888", Array()]
+            ["/medias/apps/web/any_url.png", "External app", "any_url", "any_app", "888888", Array("order" => 1000000000)]
 
         ];
 
@@ -930,7 +930,7 @@ class InitCommand extends ContainerAwareCommand
             $app->setDefault(0);
             $app->setCreateFileData(json_decode("", true));
             $app->setMessageModule(0);
-            $app->setOrder(2);
+            $app->setOrder(isset($application[5]["order"]) ? $application[5]["order"] : 2);
             $app->setThumbnail($serverbase .$application[0] );
             $app->setMessageModuleUrl("");
             $app->setEditableRights(0);

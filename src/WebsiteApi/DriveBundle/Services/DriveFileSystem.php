@@ -1128,6 +1128,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         if($userId==0)
             $user = null;
         $file->setName($fileData["name"]);
+        $file->setPreviewHasBeenGenerated(false);
+
         $lastVersion = new DriveFileVersion($file,$user);
         $this->doctrine->persist($lastVersion);
         $file->setLastVersion($lastVersion);
@@ -1338,6 +1340,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             if($versionId!=0){
                 $version = $this->convertToEntity($versionId,"TwakeDriveBundle:DriveFileVersion");
                 $file->setLastVersion($version);
+                $file->setName($version->getFileName() . "_" . date("Y-m-d_h:i", $version->getDateAdded()->getTimestamp()));
             }
 
             $completePath = $this->getRoot() . $file->getPath();
