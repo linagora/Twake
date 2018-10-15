@@ -1475,16 +1475,17 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         while ($time_elapsed_secs < 60) {
             /* @var DriveFile $file */
-            $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("previewHasBeenGenerated" => false));
-            if(count($files)==0){
+            $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("previewHasBeenGenerated" => false));
+            if (!$file) {
                 sleep(1);
             }else {
-                $file = $files[0];
+
                 $file->setPreviewHasBeenGenerated(true);
-                $this->doctrine->persist($file);
-                $this->doctrine->flush();
 
                 $this->genPreview($file);
+
+                $this->doctrine->persist($file);
+                $this->doctrine->flush();
 
                 $this->pusher->push(Array("action" => "update"), "drive/" . $file->getGroup()->getId());
             }
@@ -1632,12 +1633,12 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    protected function file_exists($path, $file)
+    protected function file_exists($path, $file = null)
     {
         return file_exists($path);
     }
 
-    protected function filesize($path, $file)
+    protected function filesize($path, $file = null)
     {
         return filesize($path);
     }

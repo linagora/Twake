@@ -33,7 +33,7 @@ class DefaultController extends Controller
 
 		if ($can) {
 
-			$this->get('app.drive.FileSystem')->download($workspaceId, $fileId, false);
+            $this->get("app.drive.adapter_selector")->getFileSystem()->download($workspaceId, $fileId, false);
 
 		} else {
 

@@ -369,6 +369,9 @@ class AWS_DriveFileSystem extends DriveFileSystem
     public function rawPreview($file)
     {
         $link = $file->getAwsPreviewLink();
+        if (!$link) {
+            return false;
+        }
         return $this->read($link);
     }
 
@@ -400,14 +403,15 @@ class AWS_DriveFileSystem extends DriveFileSystem
                     }
 
                     $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext);
-                    if (file_exists($tmppath . ".png")) {
+                    $previewpath = dirname($tmppath) . "/" . basename($file->getPath());
+                    if (file_exists($previewpath . ".png")) {
 
                         try {
                             // Upload data.
                             $result = $this->aws_s3_client->putObject([
                                 'Bucket' => $this->aws_bucket_name,
                                 'Key' => "public/uploads/previews/" . $file->getPath() . ".png",
-                                'Body' => fopen($tmppath . ".png", "rb"),
+                                'Body' => fopen($previewpath . ".png", "rb"),
                                 'ACL' => 'public-read'
                             ]);
 
@@ -417,11 +421,13 @@ class AWS_DriveFileSystem extends DriveFileSystem
                             $e->getMessage();
                         }
 
-                        @unlink($tmppath . ".png");
+                        @unlink($previewpath . ".png");
+                        error_log("PREVIEW GENERATED !");
 
                     } else {
                         error_log("FILE NOT GENERATED !");
                     }
+
                 } catch (\Exception $e) {
 
                 }
@@ -441,12 +447,12 @@ class AWS_DriveFileSystem extends DriveFileSystem
         }
     }
 
-    protected function file_exists($path, $file)
+    protected function file_exists($path, $file = null)
     {
         return true;
     }
 
-    protected function filesize($path, $file)
+    protected function filesize($path, $file = null)
     {
         return 10;
     }

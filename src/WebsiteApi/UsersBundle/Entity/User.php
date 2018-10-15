@@ -327,7 +327,7 @@ class User extends BaseUser
 	public function getNotificationPreference()
 	{
 		$preferences = json_decode($this->notification_preference, 1);
-		$preferences["devices"] = (isset($preferences["devices"]))?$preferences["devices"]:1;
+        $preferences["devices"] = (isset($preferences["devices"])) ? $preferences["devices"] : 0;
 		$preferences["dont_disturb_between"] = (isset($preferences["dont_disturb_between"]))?$preferences["dont_disturb_between"]:null;
 		$preferences["dont_disturb_and"] = (isset($preferences["dont_disturb_and"]))?$preferences["dont_disturb_and"]:null;
 		$preferences["privacy"] = (isset($preferences["privacy"]))?$preferences["privacy"]:0;
