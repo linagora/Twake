@@ -107,6 +107,11 @@ twake_objectLinks:
     prefix:   /ajax/objectLinks/
     methods: [POST]
 
+twake_onlyoffice:
+    resource: "@TwakeOnlyOfficeBundle/Resources/config/routing.yml"
+    prefix:   /ajax/onlyoffice/
+    methods: [POST, GET]
+
 twake_api_error:
     path:     /ajax/{req}
     defaults: { _controller: DevelopersApiV1CoreBundle:Default:BadRequest }

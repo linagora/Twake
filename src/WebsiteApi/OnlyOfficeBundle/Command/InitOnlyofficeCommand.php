@@ -46,7 +46,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $doctrine = $this->getContainer()->get('doctrine');
         $manager = $doctrine->getManager();
 
-        $serverbase = $this->getContainer()->getParameter('SERVER_NAME');
+        $serverbase = $this->getContainer()->getParameter('SERVER_NAME') . "/";
 
         // Création des applications
         $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "onlyoffice_presentation"));
@@ -61,7 +61,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $app->setUserRights(Array());
         $app->setApplicationRights(json_decode('{"drive":"write"}', true));
         $app->setEnabled(1);
-        $app->setColor("E56442");
+        $app->setColor("aa5252");
         $app->setCanCreateFile(1);
         $app->setIsCapable(0);
         $app->setDefault(1);
@@ -88,7 +88,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $app->setUserRights(Array());
         $app->setApplicationRights(json_decode('{"drive":"write"}', true));
         $app->setEnabled(1);
-        $app->setColor("5680BE");
+        $app->setColor("446995");
         $app->setCanCreateFile(1);
         $app->setIsCapable(0);
         $app->setDefault(1);
@@ -115,7 +115,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $app->setUserRights(Array());
         $app->setApplicationRights(json_decode('{"drive":"write"}', true));
         $app->setEnabled(1);
-        $app->setColor("88A761");
+        $app->setColor("40865c");
         $app->setCanCreateFile(1);
         $app->setIsCapable(0);
         $app->setDefault(1);

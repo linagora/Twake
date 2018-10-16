@@ -21,21 +21,21 @@ class DefaultController extends Controller
             case "slide":
                 $mode = "presentation";
                 $name = "Presentation";
-                $color = "E56442";
+                $color = "aa5252";
                 $defaultExtension = ".pptx";
                 $apikey = $this->APIPUBLICKEY_SLIDE;
                 break;
             case "spreadsheet":
                 $mode = "spreadsheet";
                 $name = "Spreadsheet";
-                $color = "88A761";
+                $color = "40865c";
                 $defaultExtension = ".xlsx";
                 $apikey = $this->APIPUBLICKEY_SPREADSHEET;
                 break;
             default:
                 $mode = "text";
                 $name = "Document";
-                $color = "5680BE";
+                $color = "446995";
                 $defaultExtension = ".docx";
                 $apikey = $this->APIPUBLICKEY_TEXT;
                 break;
@@ -66,14 +66,14 @@ class DefaultController extends Controller
             $data["userid"] = $user->getId();
             $data["username"] = $user->getUsername();
             $data["language"] = $user->getLanguage();
-            $data["userimage"] = $user->getThumbnail();
+            $data["userimage"] = ($user->getThumbnail() == null) ? null : $user->getThumbnail()->getPublicURL(2);
             $data["mode"] = $parameters["mode"];
             $data["onlyoffice_server"] = $this->getParameter('ONLYOFFICE_SERVER');
             $data["defaultExtension"] = $parameters["defaultExtension"];
             $data["color"] = $parameters["color"];
             $data["modeName"] = $parameters["name"];
             $data["workspaceId"] = $workspaceId;
-            $data["server"] = $this->getParameter('SERVER_NAME');
+            $data["server"] = $this->getParameter('SERVER_NAME') . "/";
 
             return $this->render('TwakeOnlyOfficeBundle:Default:index.html.twig', $data);
 
