@@ -330,13 +330,17 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $groupmember = $groupUserRepository->findOneBy(Array("group" => $workspace->getGroup(), "user" => $user));
 
             $groupmember->decreaseNbWorkspace();
-            if ($groupmember->getNbWorkspace() == 0) {
+            if ($groupmember->getNbWorkspace() <= 0) {
                 //Verify we are not the only manager
                 if ($groupmember->getLevel() == 3) {
                     return false;
+                } else {
+                    //Verify user is in no other workspaces of the group
+                    $this->doctrine->remove($groupmember);
                 }
+            } else {
+                $this->doctrine->persist($groupmember);
             }
-            $this->doctrine->persist($groupmember);
 
             $datatopush = Array(
                 "type" => "CHANGE_MEMBERS",

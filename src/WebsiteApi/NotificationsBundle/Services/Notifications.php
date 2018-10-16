@@ -172,9 +172,9 @@ class Notifications implements NotificationsInterface
 
                 $totalNotifications = $this->countAll($user) + 1;
                 if($useDevices) {
-                    @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $_data);
+                    @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $_data, false);
                 }else{
-                    @$this->updateDeviceBadge($user, $totalNotifications, $_data);
+                    @$this->updateDeviceBadge($user, $totalNotifications, $_data, false);
                 }
             }
             if(in_array("mail", $type)){
@@ -183,9 +183,9 @@ class Notifications implements NotificationsInterface
 
             $data = $n->getAsArray();
             $data["action"] = "add";
-            if($toPush)
-                $this->pusher->push($data, "notifications/".$user->getId());
-
+            if ($toPush) {
+                $this->pusher->push($data, "notifications/" . $user->getId());
+            }
 
 
         }
@@ -327,7 +327,7 @@ class Notifications implements NotificationsInterface
 
 
     /* Private */
-    private function updateDeviceBadge($user, $badge = 0, $data = null)
+    private function updateDeviceBadge($user, $badge = 0, $data = null, $doPush = true)
     {
         $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
         $devices = $devicesRepo->findBy(Array("user"=>$user));
@@ -342,14 +342,16 @@ class Notifications implements NotificationsInterface
                 null,
                 null,
                 $badge,
-                $data
+                $data,
+                $doPush
             );
 
 
         }
     }
 
-    private function pushDevice($user, $text, $title, $badge=null, $data=null){
+    private function pushDevice($user, $text, $title, $badge = null, $data = null, $doPush = true)
+    {
 
         $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
         $devices = $devicesRepo->findBy(Array("user"=>$user));
@@ -364,7 +366,8 @@ class Notifications implements NotificationsInterface
                 substr($text, 0, 100),
                 substr($title, 0, 50),
                 $badge,
-                $data
+                $data,
+                $doPush
             );
 
 
@@ -372,7 +375,7 @@ class Notifications implements NotificationsInterface
     }
 
 
-    public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $_data)
+    public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $_data, $doPush = true)
     {
 
         if (strlen($deviceId) < 32) { //False device
@@ -390,7 +393,9 @@ class Notifications implements NotificationsInterface
         try {
             $element = new PushNotificationQueue($data);
             $this->doctrine->persist($element);
-            $this->doctrine->flush();
+            if ($doPush) {
+                $this->doctrine->flush();
+            }
         } catch (\Exception $exception) {
             error_log("ERROR");
         }
