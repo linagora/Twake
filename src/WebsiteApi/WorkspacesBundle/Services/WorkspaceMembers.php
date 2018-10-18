@@ -332,7 +332,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $groupmember->decreaseNbWorkspace();
             if ($groupmember->getNbWorkspace() <= 0) {
                 //Verify we are not the only manager
-                if ($groupmember->getLevel() == 3) {
+                if ($groupmember->getLevel() == 3 && $currentUserId != null) {
                     return false;
                 } else {
                     //Verify user is in no other workspaces of the group
