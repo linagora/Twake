@@ -208,11 +208,11 @@ class Workspaces implements WorkspacesInterface
             $boardWorkspace = new LinkBoardWorkspace($workspace,$board,true,true);
             $this->doctrine->persist($boardWorkspace);
 
-            $list1 = new ListOfTasks($board,new TranslationObject($this->translate,"project.todo") ,"f44242", false, Array());
+            $list1 = new ListOfTasks($board, new TranslationObject($this->translate, "project.todo"), "f44242", Array());
             $this->doctrine->persist($list1);
 
-            $list2 = new ListOfTasks($board,new TranslationObject($this->translate,"project.doing") ,"f49d41", false, Array());
-            $list3 = new ListOfTasks($board,new TranslationObject($this->translate,"project.done") ,"00bb4d", true, Array());
+            $list2 = new ListOfTasks($board, new TranslationObject($this->translate, "project.doing"), "f49d41", Array());
+            $list3 = new ListOfTasks($board, new TranslationObject($this->translate, "project.done"), "00bb4d", Array());
             $this->doctrine->persist($list2);
             $this->doctrine->persist($list3);
             $this->doctrine->flush();

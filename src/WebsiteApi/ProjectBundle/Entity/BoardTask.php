@@ -109,14 +109,9 @@ class BoardTask implements ObjectLinksInterface {
     private $description;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\ListOfTasks",cascade={"persist"})
+     * @ORM\Column(type="text", nullable=false)
      */
-    private $doneList;
-
-    /**
-     * @ORM\Column(type="datetime", nullable=true)
-     */
-    private $doneDate;
+    private $status = "todo"; //"current" "done" "cancelled"
 
     public  function __construct($from, $to, $name, $description, $dependingTask, $participants, $user, $weight=1)
     {
@@ -288,7 +283,7 @@ class BoardTask implements ObjectLinksInterface {
             "like" => $this->getLike(),
             "labels" => $this->getLabels(),
             "user" => $this->getUser() !=null ? $this->getUser()->getId() : 0,
-            "doneDate" => $this->getDoneDate(),
+            "status" => $this->getStatus(),
         );
     }
 
@@ -354,22 +349,6 @@ class BoardTask implements ObjectLinksInterface {
     public function setListOfTasks($listOfTasks)
     {
         $this->listOfTasks = $listOfTasks;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDoneList()
-    {
-        return $this->doneList;
-    }
-
-    /**
-     * @param mixed $doneList
-     */
-    public function setDoneList($doneList)
-    {
-        $this->doneList = $doneList;
     }
 
     /**
@@ -546,17 +525,17 @@ class BoardTask implements ObjectLinksInterface {
     /**
      * @return mixed
      */
-    public function getDoneDate()
+    public function getStatus()
     {
-        return $this->doneDate;
+        return $this->status;
     }
 
     /**
-     * @param mixed $doneDate
+     * @param mixed $status
      */
-    public function setDoneDate($doneDate)
+    public function setStatus($status)
     {
-        $this->doneDate = $doneDate;
+        $this->status = $status;
     }
 
     public function getAllUsersToNotify()

@@ -147,8 +147,9 @@ class TaskController extends Controller
         $userToNotify = $this->convertObjectListToIdList($request->request->get("watch_members",Array()));
         $participants = $this->convertObjectListToIdList($request->request->get("participants",Array()));
         $labels = $request->request->get("labels", Array());
+        $status = $request->request->get("status", 0);
 
-        $data['data'] = $this->get("app.board_tasks")->updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify,$participants, $weight, $labels);
+        $data['data'] = $this->get("app.board_tasks")->updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify, $participants, $weight, $labels, $status);
 
         if($data['data'])
             $data['data'] = $data['data']->getAsArray();

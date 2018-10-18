@@ -33,15 +33,14 @@ class ListOfTasks
     private $board;
 
     /**
-     * @ORM\Column(name="order_ts",type="integer")
+     * @ORM\Column(name="order_ts", type="integer")
      */
-    private $order;
+    private $order = 0;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $title
-    ;
+    private $title;
 
     /**
      * @ORM\Column(type="string", length=10)
@@ -49,22 +48,25 @@ class ListOfTasks
     private $color;
 
     /**
-     * @ORM\Column(type="boolean")
-     */
-    private $isDoneList;
-
-    /**
      * @ORM\Column(type="text")
      */
     private $userIdToNotify;
+
+
+    public function __construct($board, $title, $color, $participants = Array())
+    {
+        $this->setTitle($title);
+        $this->setColor($color);
+        $this->setUserIdToNotify($participants);
+        $this->setBoard($board);
+    }
 
     public function getAsArray(){
         return Array(
             "id" => $this->id,
             "label" => $this->title,
             "color" => $this->color,
-            "order" => $this->getOrder(),
-            "done" => $this->getisDoneList()
+            "order" => $this->getOrder()
         );
     }
 
@@ -118,22 +120,6 @@ class ListOfTasks
     }
 
     /**
-     * @return mixed
-     */
-    public function getisDoneList()
-    {
-        return $this->isDoneList;
-    }
-
-    /**
-     * @param mixed $isDoneList
-     */
-    public function setIsDoneList($isDoneList)
-    {
-        $this->isDoneList = $isDoneList;
-    }
-
-    /**
      * @return Board
      */
     public function getBoard()
@@ -147,20 +133,6 @@ class ListOfTasks
     public function setBoard($board)
     {
         $this->board = $board;
-    }
-
-
-    public  function __construct($board, $title,$color, $isDoneList, $participants = Array())
-    {
-        $this->setTitle($title);
-        $this->setColor($color);
-        $this->setIsDoneList($isDoneList);
-        $this->setUserIdToNotify($participants);
-        $this->setBoard($board);
-        if(!$isDoneList)
-            $this->setOrder(0);
-        else
-            $this->setOrder(10000);
     }
 
     /**

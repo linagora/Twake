@@ -75,12 +75,13 @@ class ListOfTasksService
         return $ListsOfTasks;
     }
 
-    public function createListOfTasks($newTitle, $newColor, $boardId,$userIdToNotify){
+    public function createListOfTasks($newTitle, $newColor, $boardId, $userIdToNotify)
+    {
         $board = $this->convertToEntity($boardId, "TwakeProjectBundle:Board");
         $workspace = $this->getWorkspaceFromBoard($board->getId());
 
         /* @var ListOfTasks $listOfTasks */
-        $listOfTasks = new ListOfTasks($board,$newTitle,$newColor,false,$userIdToNotify);
+        $listOfTasks = new ListOfTasks($board, $newTitle, $newColor, $userIdToNotify);
 
         if($listOfTasks==null){
             return false;
@@ -130,7 +131,7 @@ class ListOfTasksService
             $board = $this->convertToEntity($boardId,"TwakeProjectBundle:Board");
             /* @var ListOfTasks $listOfTasks */
             $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $id, "board" => $board));
-            if($listOfTasks==null || $listOfTasks->getisDoneList() || in_array($order,$order_used))
+            if ($listOfTasks == null || in_array($order, $order_used))
                 continue;
             $listOfTasks->setOrder($order);
             array_push($order_used,$order);
@@ -153,8 +154,6 @@ class ListOfTasksService
             /* @var BoardTask $task */
 
             $total+=$task->getWeight();
-            if($task->getListOfTasks()->getIsDoneList())
-                $done+=$task->getWeight();
         }
 
         if($total!=0)
@@ -186,7 +185,7 @@ class ListOfTasksService
 
         $m = -100000;
         foreach ($ListsOfTasks as $list){
-            if($list->getOrder()>$m && !$list->getisDoneList())
+            if ($list->getOrder() > $m)
                 $m = $list->getOrder();
         }
         return $m;

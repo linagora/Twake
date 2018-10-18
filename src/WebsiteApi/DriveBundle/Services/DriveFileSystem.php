@@ -1341,7 +1341,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             if($versionId!=0){
                 $version = $this->convertToEntity($versionId,"TwakeDriveBundle:DriveFileVersion");
                 $file->setLastVersion($version);
-                $file->setName($version->getFileName() . "_" . date("Y-m-d_h:i", $version->getDateAdded()->getTimestamp()));
+                $file->setName(date("Y-m-d_h:i", $version->getDateAdded()->getTimestamp()) . "_" . $version->getFileName());
             }
 
             $completePath = $this->getRoot() . $file->getPath();

@@ -92,10 +92,7 @@ class Boards implements BoardsInterface
 
         foreach ($tasks as $task){
             /* @var BoardTask $task */
-
             $total+=$task->getWeight();
-            if($task->getListOfTasks()->getIsDoneList())
-                $done+=$task->getWeight();
         }
 
         if($total!=0)
@@ -208,8 +205,8 @@ class Boards implements BoardsInterface
             $board->setWorkspacesNumber(1);
             $this->doctrine->persist($board);
 
-            $doneListOfTasks = new ListOfTasks($board,"Done","#51b75b",true);
-            $this->doctrine->persist($doneListOfTasks);
+            $initialList = new ListOfTasks($board, "To do", "#51b75b");
+            $this->doctrine->persist($initialList);
             $this->doctrine->flush();
 
             $link = new LinkBoardWorkspace($workspace, $board, true);

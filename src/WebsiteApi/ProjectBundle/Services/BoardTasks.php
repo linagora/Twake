@@ -124,7 +124,7 @@ class BoardTasks implements BoardTasksInterface
         return $task->getLike();
     }
 
-    public function updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId, $userToNotify,$participants, $weight, $labels)
+    public function updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId, $userToNotify, $participants, $weight, $labels, $status)
     {
         /* @var BoardTask $task */
         $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
@@ -160,6 +160,8 @@ class BoardTasks implements BoardTasksInterface
             $task->setFrom($startDate);
         if ($endDate !== null)
             $task->setTo($endDate);
+        if ($status !== null)
+            $task->setStatus($status);
 
         $this->doctrine->persist($task);
 
@@ -234,6 +236,11 @@ class BoardTasks implements BoardTasksInterface
             if($task==null)
                 continue;
 
+
+            $task->setListOfTasks($list);
+            $task->setOrder($order);
+
+            /*
             $wasInDone = $task->getListOfTasks()->getisDoneList();
 
             $task->setListOfTasks($list);
@@ -244,7 +251,7 @@ class BoardTasks implements BoardTasksInterface
 
             if ($list->getisDoneList() && !$wasInDone && !$board->getisPrivate()) {
                 $this->workspacesActivities->recordActivity($workspace, $currentUserId, "tasks", "workspace.activity.task.done", "TwakeProjectBundle:BoardTask", $task->getId());
-            }
+            }*/
 
             $this->doctrine->persist($task);
         }
