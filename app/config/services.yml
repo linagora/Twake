@@ -12,13 +12,6 @@ services:
         public: false
         arguments: ["@router", "@session"]
 
-    acme.periodic_sample_service:
-            class: WebsiteApi\CoreBundle\Services\PDOPinger
-            arguments:
-                - '@?pdo'
-            tags:
-                - { name: gos_web_socket.periodic }
-
     app.minifier:
         class: WebsiteApi\CoreBundle\Services\Minifier
 

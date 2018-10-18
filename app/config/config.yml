@@ -111,6 +111,8 @@ gos_web_socket:
     client:
         firewall: main #can be an array of firewalls
         session_handler: '@session.handler.pdo'
+    periodic:
+        - '@websocket.pdo.ping'
     pushers:
         wamp:
             host: "%websocket_host%"

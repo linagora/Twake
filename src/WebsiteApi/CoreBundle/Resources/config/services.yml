@@ -11,3 +11,6 @@ services:
     app.translate:
         class: WebsiteApi\CoreBundle\Services\Translate
         arguments: []
+
+    websocket.pdo.ping:
+        class: WebsiteApi\CoreBundle\Services\PDOPinger
