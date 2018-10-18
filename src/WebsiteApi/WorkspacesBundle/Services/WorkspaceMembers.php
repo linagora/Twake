@@ -303,8 +303,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
         ) {
 
+            $total_membres_not_bot = count($this->getMembers($workspaceId, null, false));
+
             if ($userId == $currentUserId) {
-                if (count($this->getMembers($workspaceId, null, false)) == 1) {
+                if ($total_membres_not_bot == 1) {
                     return false; // can't remove myself if I'm the last
                 }
             }
@@ -328,18 +330,37 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
             $groupmember = $groupUserRepository->findOneBy(Array("group" => $workspace->getGroup(), "user" => $user));
-
             $groupmember->decreaseNbWorkspace();
-            if ($groupmember->getNbWorkspace() <= 0) {
-                //Verify we are not the only manager
-                if ($groupmember->getLevel() == 3 && $currentUserId != null) {
-                    return false;
-                } else {
-                    //Verify user is in no other workspaces of the group
-                    $this->doctrine->remove($groupmember);
+            $this->doctrine->persist($groupmember);
+
+            //If multiple users
+            if ($total_membres_not_bot > 1) {
+
+                //Test if other workspace administrators are present
+                if ($currentUserId != null && $member->getLevel()->getisAdmin()) {
+                    $other_workspace_admins = $workspaceUserRepository->findBy(Array("workspace" => $workspace, "level" => $member->getLevel()));
+                    if (count($other_workspace_admins) <= 2) {
+                        foreach ($other_workspace_admins as $other_workspace_admin) {
+                            if ($other_workspace_admin->getUser()->getUsername() == "twake_bot") {
+                                header("twake-debug: no other workspace admins");
+                                return false;
+                            }
+                        }
+                    }
                 }
-            } else {
-                $this->doctrine->persist($groupmember);
+
+            }
+
+            //Test if other group administrators are present in case this is the last workspace of the user
+            if ($groupmember->getNbWorkspace() <= 0) {
+                if ($currentUserId != null && $groupmember->getLevel() == 3) {
+                    $otherGroupAdmin = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(), "level" => 3));
+                    if (count($otherGroupAdmin) == 1) {
+                        header("twake-debug: no other group admins");
+                        return false;
+                    }
+                }
+                $this->doctrine->remove($groupmember);
             }
 
             $datatopush = Array(

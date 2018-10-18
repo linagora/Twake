@@ -318,6 +318,9 @@ class User extends BaseUser
      */
     public function setOrigin($origin)
     {
+        if (!$origin) {
+            $origin = "";
+        }
         $this->origin = $origin;
     }
 
