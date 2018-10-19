@@ -509,7 +509,13 @@ class CalendarEvents implements CalendarEventsInterface
                 $auth = $calendars[$calendar->getId()];
             }
 
-            $events[] = $auth ? $event->getAsArray() : $event->getAsArrayMinimal();
+            $event = $auth ? $event->getAsArray() : $event->getAsArrayMinimal();
+            if (!$auth) {
+                $event["private_content"] = true;
+                $event["participant"] = [$targetUserId];
+            }
+            $events[] = $event;
+
         }
 
         return $events;

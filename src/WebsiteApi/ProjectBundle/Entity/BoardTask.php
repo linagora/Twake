@@ -426,7 +426,6 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function setChecklist($checklist)
     {
-        header("twake-debug:" . json_encode($checklist));
         $this->checklist = json_encode($checklist);
     }
 
