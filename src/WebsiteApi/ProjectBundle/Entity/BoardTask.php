@@ -34,6 +34,11 @@ class BoardTask implements ObjectLinksInterface {
     private $weight;
 
     /**
+     * @ORM\Column(type="text")
+     */
+    private $checklist = "[]";
+
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\Board")
      * @ORM\JoinColumn(nullable=true)
      */
@@ -113,7 +118,7 @@ class BoardTask implements ObjectLinksInterface {
      */
     private $status = "todo"; //"current" "done" "cancelled"
 
-    public  function __construct($from, $to, $name, $description, $dependingTask, $participants, $user, $weight=1)
+    public function __construct($from, $to, $name, $description, $dependingTask, $participants, $user, $weight = 0.5)
     {
         $this->setFrom($from);
         $this->setTo($to);
@@ -284,6 +289,8 @@ class BoardTask implements ObjectLinksInterface {
             "labels" => $this->getLabels(),
             "user" => $this->getUser() !=null ? $this->getUser()->getId() : 0,
             "status" => $this->getStatus(),
+            "progress" => $this->getProgress(),
+            "checklist" => $this->getChecklist()
         );
     }
 
@@ -372,7 +379,7 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function getWeight()
     {
-        return $this->weight;
+        return $this->weight / 10;
     }
 
     /**
@@ -380,7 +387,47 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function setWeight($weight)
     {
-        $this->weight = $weight;
+        $this->weight = intval($weight * 10);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProgress()
+    {
+        $progress = 0;
+        $total = 0;
+        foreach ($this->getChecklist() as $row) {
+            if (isset($row["value"]) && $row["value"]) {
+                $progress += 1;
+            }
+            $total++;
+        }
+        if ($total == 0) {
+            return $progress = 0;
+        }
+        return intval(($progress / $total) * 100);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getChecklist()
+    {
+        @$val = json_decode($this->checklist, 1);
+        if (!is_array($val)) {
+            $val = Array();
+        }
+        return $val;
+    }
+
+    /**
+     * @param mixed $checklist
+     */
+    public function setChecklist($checklist)
+    {
+        header("twake-debug:" . json_encode($checklist));
+        $this->checklist = json_encode($checklist);
     }
 
     /**

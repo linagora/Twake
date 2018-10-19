@@ -13,7 +13,7 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 
 class FilesController extends Controller
 {
-    
+
     public function createAction(Request $request)
     {
 
@@ -224,16 +224,24 @@ class FilesController extends Controller
                 $fileSystem->setRootDirectory($directory);
             }
 
-            $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($objectId, $public_access_key);
+            $data["data"] = $fileSystem->getInfos($groupId, $objectId, true);
 
+            if (isset($data["data"]["id"])) {
 
-            if ($can) {
-                $data["data"] = $fileSystem->getInfos($groupId, $objectId, true);
+                $can = true;
+                if (!$data["data"]["detached"]) {
+                    $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($objectId, $public_access_key);
+                }
+
+                if (!$can) {
+                    $data["data"] = [];
+                }
+
             }
 
             if (!$externalDrive)
                 $haveReadAccess = $this->get('app.workspace_levels')->can(
-                    $fileSystem->getWorkspace($objectId),
+                        $fileSystem->getWorkspace($objectId),
                         $this->getUser(), "drive:read")
                     || $fileSystem->verifyPublicAccess($objectId, $public_access_key);
             else
@@ -453,7 +461,7 @@ class FilesController extends Controller
             $data["data"]["maxspace"] = $fileSystem->getTotalSpace($groupId);
             $data["data"]["totalsize"] = $fileSystem->getUsedSpace($groupId);
 
-       }
+        }
 
         if(isset($data["data"]["files"])) {
             for ($i = 0; $i < count($data["data"]["files"]); $i++)

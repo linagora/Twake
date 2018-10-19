@@ -69,7 +69,7 @@ class BoardTasks implements BoardTasksInterface
 
     }
 
-    public function createTask($listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $userIdsToNotify=Array(), $participants=Array(), $weight=1, $labels=Array())
+    public function createTask($listId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId = null, $userIdsToNotify = Array(), $participants = Array(), $weight = 1, $labels = Array(), $status = "todo")
     {
         /* @var ListOfTasks $list */
         $list = $this->convertToEntity($listId,"TwakeProjectBundle:ListOfTasks");
@@ -94,6 +94,7 @@ class BoardTasks implements BoardTasksInterface
         $task->setParticipants($participants);
         $task->setOrder($this->getMinOrder($board)-1);
         $task->setLabels($labels);
+        $task->setStatus($status);
 
         $task->setListOfTasks($list);
         $task->setBoard($board);
@@ -124,7 +125,7 @@ class BoardTasks implements BoardTasksInterface
         return $task->getLike();
     }
 
-    public function updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId, $userToNotify, $participants, $weight, $labels, $status)
+    public function updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $currentUserId, $userToNotify, $participants, $weight, $labels, $status, $checklist)
     {
         /* @var BoardTask $task */
         $task = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->find($taskId);
@@ -162,6 +163,8 @@ class BoardTasks implements BoardTasksInterface
             $task->setTo($endDate);
         if ($status !== null)
             $task->setStatus($status);
+        if ($checklist !== null)
+            $task->setChecklist($checklist);
 
         $this->doctrine->persist($task);
 

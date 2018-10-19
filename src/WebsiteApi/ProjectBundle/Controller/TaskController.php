@@ -106,7 +106,7 @@ class TaskController extends Controller
 
         $task = $request->request->get("task", Array());
         $listId = $request->request->get("listId", 0);
-        $weight = $request->request->get("weight", 1);
+        $weight = $request->request->get("weight", 0.5);
         $name = $request->request->get("name", "");
         $description = $request->request->get("description","");
         $startDate = $request->request->get("from", 0);
@@ -138,7 +138,7 @@ class TaskController extends Controller
 
         $taskArray = $request->request->get("task", Array());
         $taskId = $request->request->get("id", 0);
-        $weight = $request->request->get("weight", 1);
+        $weight = $request->request->get("weight", 0.5);
         $name = $request->request->get("name", "");
         $description = $request->request->get("description","");
         $startDate = $request->request->get("from", 0);
@@ -147,9 +147,10 @@ class TaskController extends Controller
         $userToNotify = $this->convertObjectListToIdList($request->request->get("watch_members",Array()));
         $participants = $this->convertObjectListToIdList($request->request->get("participants",Array()));
         $labels = $request->request->get("labels", Array());
-        $status = $request->request->get("status", 0);
+        $status = $request->request->get("status", null);
+        $checklist = $request->request->get("checklist", Array());
 
-        $data['data'] = $this->get("app.board_tasks")->updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify, $participants, $weight, $labels, $status);
+        $data['data'] = $this->get("app.board_tasks")->updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify, $participants, $weight, $labels, $status, $checklist);
 
         if($data['data'])
             $data['data'] = $data['data']->getAsArray();

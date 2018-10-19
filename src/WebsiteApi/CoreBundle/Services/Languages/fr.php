@@ -17,9 +17,8 @@ $translation = Array(
     "drive.has_been_update" => "$1 a été mit à jour",
     
     "project.generalBoardDescription" => "Tableau général de tâches",
-    "project.todo" => "A faire",
-    "project.doing" => "En cours",
-    "project.done" => "Fait",
+    "project.discover_twake" => "Découvrir Twake",
+    "project.project" => "Mon projet",
     "project.createTwakeWorkspace" => "Créez votre premier espace de travail",
     "project.createTwakeWorkspaceDescription" => "Pour créer un espace de travail, cliquez sur le bouton \"+\" dans ta liste d\'espaces de travail",
     "project.discoverTwake" => "Découvrir Twake",

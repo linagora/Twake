@@ -112,10 +112,14 @@ class UsersConnectionsController extends Controller
 
     public function identiconAction(Request $request)
     {
+        $username = $request->query->get("username", "");
+
+        $tsstring = gmdate('D, d M Y H:i:s ', date("U") + 60 * 60 * 24 * 31) . 'GMT';
+        header("Expires: " . $tsstring);
+
         //Generate identicon
         $draw = new \ImagickDraw();
 
-        $username = $request->query->get("username", "");
         $md5 = md5($username);
         $seed1 = intval(hexdec(bin2hex(substr($md5, 0, 8))));
         $seed2 = intval(hexdec(bin2hex(substr($md5, 10, 8))));
