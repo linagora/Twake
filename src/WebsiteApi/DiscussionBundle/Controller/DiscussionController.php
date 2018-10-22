@@ -291,7 +291,7 @@ class DiscussionController extends Controller
         $members = $request->request->get("members",Array());
 
         //Warning, auth done in service
-        $res = $this->get("app.streamSystem")->createStream($this->getUser(),$workspaceId,$streamName,$streamDescription,$streamIsPrivate,"stream",$members);
+        $res = $this->get("app.streamSystem")->createStream($this->getUser(), $workspaceId, $streamName, $streamDescription, $streamIsPrivate, "stream", $members, $this->getUser()->getId());
 
         if(!$res)
             $data["errors"][] = "Fail to add stream";
@@ -333,7 +333,7 @@ class DiscussionController extends Controller
         $members = $request->request->get("members",Array());
 
         //Warning, auth done in service
-        $res = $this->get("app.streamSystem")->editStream($this->getUser(),"s-".$id,$name,$streamDescription,$isPrivate,$members);
+        $res = $this->get("app.streamSystem")->editStream($this->getUser(), "s-" . $id, $name, $streamDescription, $isPrivate, $members, $this->getUser()->getId());
 
         if(!$res)
             $data["errors"][] = "Fail to edit stream";

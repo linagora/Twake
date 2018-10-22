@@ -63,6 +63,12 @@ class BoardTask implements ObjectLinksInterface {
     private $user;
 
     /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $workspace;
+
+    /**
      * @ORM\Column(name="like_ts",type="bigint")
      */
     private $like;
@@ -290,7 +296,19 @@ class BoardTask implements ObjectLinksInterface {
             "user" => $this->getUser() !=null ? $this->getUser()->getId() : 0,
             "status" => $this->getStatus(),
             "progress" => $this->getProgress(),
-            "checklist" => $this->getChecklist()
+            "checklist" => $this->getChecklist(),
+            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null
+        );
+    }
+
+    public function getAsMinimalArray()
+    {
+        return Array(
+            "id" => $this->getId(),
+            "board" => $this->getBoard()->getId(),
+            "list" => $this->getListOfTasks()->getId(),
+            "weight" => $this->getWeight(),
+            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null
         );
     }
 
@@ -593,4 +611,22 @@ class BoardTask implements ObjectLinksInterface {
     {
         // TODO: Implement finishSynchroniseField($data) method.
     }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
+
+    /**
+     * @param mixed $workspace
+     */
+    public function setWorkspace($workspace)
+    {
+        $this->workspace = $workspace;
+    }
+
+
 }

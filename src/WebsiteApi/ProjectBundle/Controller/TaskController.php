@@ -66,12 +66,7 @@ class TaskController extends Controller
         $tasks = $this->get("app.board_tasks")->getTasksForUser($workspaceId, $userId, $this->getUser()->getId());
 
         if ($tasks) {
-            $tasks_formated = Array();
-            foreach ($tasks as $task) {
-                $tasks_temp = $task->getAsArray();
-                $tasks_formated[] = $tasks_temp;
-            }
-            $data["data"] = $tasks_formated;
+            $data["data"] = $tasks;
         }
 
         return new JsonResponse($data);

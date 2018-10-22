@@ -81,7 +81,7 @@ class StreamController extends Controller
         $type = isset($data["type"]) ? $data["type"] : "stream";
         $members = isset($data["members"]) ? $data["members"] : Array();
         //$workspaceId,$streamName,$streamDescription,$streamIsPrivate,$type
-        $stream = $this->get("app.streamsystem")->createStreamFromApp($workspace_id,$streamName,$streamDescription,$streamIsPrivate,$type,$members);
+        $stream = $this->get("app.streamsystem")->createStreamFromApp($workspace_id, $streamName, $streamDescription, $streamIsPrivate, $type, $members, $this->getUser()->getId());
 
         $data = Array(
             "stream" => $stream,
@@ -152,7 +152,7 @@ class StreamController extends Controller
         $members = $old_stream->getMembers();
 
         //$streamKey,$name,$streamDescription,$isPrivate,$members
-        $stream = $this->get("app.streamsystem")->editStreamFromApp("s-".$stream_id,$name,$streamDescription,$isPrivate,$members);
+        $stream = $this->get("app.streamsystem")->editStreamFromApp("s-" . $stream_id, $name, $streamDescription, $isPrivate, $members, $this->getUser()->getId());
 
         $data = Array(
             "stream" => $stream->getAsArray()
@@ -199,7 +199,7 @@ class StreamController extends Controller
         if($add){
             array_push($membersId, $user_id);
             //$streamKey,$name,$streamDescription,$isPrivate,$members
-            $success = $this->get("app.streamsystem")->editStreamFromApp($streamKey,$name,$streamDescription,$isPrivate,$membersId);
+            $success = $this->get("app.streamsystem")->editStreamFromApp($streamKey, $name, $streamDescription, $isPrivate, $membersId, $this->getUser()->getId());
 
         }
 
@@ -246,7 +246,7 @@ class StreamController extends Controller
         }
         if($remove){
             //$streamKey,$name,$streamDescription,$isPrivate,$members
-            $success = $this->get("app.streamsystem")->editStreamFromApp($streamKey,$name,$streamDescription,$isPrivate,$membersId);
+            $success = $this->get("app.streamsystem")->editStreamFromApp($streamKey, $name, $streamDescription, $isPrivate, $membersId, $this->getUser()->getId());
 
         }
 

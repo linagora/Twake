@@ -55,6 +55,12 @@ class CalendarEvent implements ObjectLinksInterface {
      */
     private $participants;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $workspace;
+
     public  function __construct($event, $from, $to)
     {
         $this->setEvent($event);
@@ -205,6 +211,7 @@ class CalendarEvent implements ObjectLinksInterface {
             "event" => $this->getEvent(),
             "participant" => Array(),
             "participant_full" => Array(),
+            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null
         );
         if ($this->getParticipants()) {
             foreach ($this->getParticipants() as $participant) {
@@ -222,6 +229,7 @@ class CalendarEvent implements ObjectLinksInterface {
             "id" => $this->getId(),
             "calendar" => $this->getCalendar()->getId(),
             "event" => $event,
+            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null
         );
     }
 
@@ -296,4 +304,22 @@ class CalendarEvent implements ObjectLinksInterface {
             $this->setEvent($event);
         }
     }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
+
+    /**
+     * @param mixed $workspace
+     */
+    public function setWorkspace($workspace)
+    {
+        $this->workspace = $workspace;
+    }
+
+
 }
