@@ -224,7 +224,7 @@ class StreamSystem implements StreamSystemInterface
     public function editStreamFromApp($streamKey, $name, $streamDescription, $isPrivate, $members, $currentUserId = null)
     {
 
-        if ($currentUserId && $streamIsPrivate && !in_array($currentUserId, $members)) {
+        if ($currentUserId && $isPrivate && !in_array($currentUserId, $members)) {
             $members[] = $currentUserId;
         }
 
@@ -272,7 +272,7 @@ class StreamSystem implements StreamSystemInterface
     public function editStream($user, $streamKey, $name, $streamDescription, $isPrivate, $members, $currentUserId = null)
     {
 
-        if ($currentUserId && $streamIsPrivate && !in_array($currentUserId, $members)) {
+        if ($currentUserId && $isPrivate && !in_array($currentUserId, $members)) {
             $members[] = $currentUserId;
         }
 
