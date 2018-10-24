@@ -403,7 +403,7 @@ class Notifications implements NotificationsInterface
 
     private function sendMail($application, $workspace, $user, $text){
         $this->mailer->send($user->getEmail(), "notification", Array(
-            "_language" => $user->getLanguage(),
+            "_language" => $user ? $user->getLanguage() : "en",
             "application_name"=>($application)?$application->getName():"Twake",
             "workspace_name"=>($workspace)?$workspace->getName():"Account",
             "username"=>$user->getUsername(),

@@ -108,6 +108,7 @@ class UserRepository extends \Doctrine\ORM\EntityRepository
     public function countUsers(){
         $req = $this->createQueryBuilder('U')
             ->select('count(U.id)');
+        $req->where('U.enabled = 1');
         $req = $req->getQuery()->getSingleScalarResult();
         return $req;
     }

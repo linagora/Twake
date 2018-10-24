@@ -221,7 +221,7 @@ class User implements UserInterface
 			$code = $verificationNumberMail->getCode();
 
 			$this->twake_mailer->send($mail, "requestPassword", Array(
-                "_language" => $user->getLanguage(),
+                "_language" => $user ? $user->getLanguage() : "en",
 			    "code"=>$code,
                 "username" => $user->getUsername()
                 ));
@@ -433,7 +433,7 @@ class User implements UserInterface
 		$code = $verificationNumberMail->getCode();
 
 		if($sendEmail){
-            $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user->getLanguage(), "code" => $code));
+            $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code));
         }
 
 		$this->em->persist($verificationNumberMail);
@@ -481,7 +481,7 @@ class User implements UserInterface
 				$user->setUsername($pseudo);
 				$user->setEmail($mail);
 
-                $this->twake_mailer->send($mail, "newMember", Array("_language" => $user->getLanguage(), "username" => $user->getUsername()));
+                $this->twake_mailer->send($mail, "newMember", Array("_language" => $user ? $user->getLanguage() : "en", "username" => $user->getUsername()));
 
 				$this->em->remove($ticket);
 				$this->em->persist($user);
@@ -594,7 +594,7 @@ class User implements UserInterface
 				$code = $verificationNumberMail->getCode();
 
 				$this->twake_mailer->send($mail, "addMail",
-                    Array("_language" => $user->getLanguage(), "code" => $code, "username" => $user->getUsername()));
+                    Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "username" => $user->getUsername()));
 
 				$this->em->persist($verificationNumberMail);
 				$this->em->flush();

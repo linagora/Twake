@@ -166,7 +166,7 @@ class GroupManagers implements GroupManagersInterface
             }else{
                 $manager->setLevel($level);
 
-                $this->twake_mailer->send($user->getEmail(), "addedToGroupManagersMail", Array("_language" => $user->getLanguage(), "group" => $group->getDisplayName(), "username" => $user->getUsername()));
+                $this->twake_mailer->send($user->getEmail(), "addedToGroupManagersMail", Array("_language" => $user ? $user->getLanguage() : "en", "group" => $group->getDisplayName(), "username" => $user->getUsername()));
 
                 $this->doctrine->persist($manager);
                 $this->doctrine->flush();
