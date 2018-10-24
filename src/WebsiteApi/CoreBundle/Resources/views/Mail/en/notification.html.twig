@@ -6,7 +6,7 @@
 
 {% block body %}
 
-    <b>Hello {{ username }},</b>
+    <b>Hello {{ username|capitalize }},</b>
     <br>
     You have a new notification from <b>{{ application_name }}</b> in the workspace <b>{{ workspace_name }}</b>
     <br><br>

@@ -6,7 +6,7 @@
 
 {% block body %}
 
-    <b>Hello {{ username }},</b>
+    <b>Hello {{ username|capitalize }},</b>
     <br>
     Your status in {{ workspace }} (group {{ group }}) was changed to {{ level }}
     <br>

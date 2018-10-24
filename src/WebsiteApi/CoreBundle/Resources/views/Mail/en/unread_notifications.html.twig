@@ -6,7 +6,7 @@
 
 {% block body %}
 
-    <b>Hello {{ username }},</b>
+    <b>Hello {{ username|capitalize }},</b>
     <br>
     You have received <span class="badge"
                             style="background: #ff2c2c;padding: 2px 5px;border-radius: 4px;color: #FFF;">{{ total_notifications }}</span> unread notification(s) on Twake {{ time_text }}.</b>
