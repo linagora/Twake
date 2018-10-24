@@ -38,7 +38,7 @@ class CalendarEvents implements CalendarEventsInterface
         $this->objectLinksSystem = $objectLinksSystem;
     }
 
-    public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false, $participants=Array(), $disableLog=false)
+    public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false, $participants = Array(), $disableLog = false, $notify = true)
     {
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
@@ -96,15 +96,19 @@ class CalendarEvents implements CalendarEventsInterface
             $this->addUsers($workspaceId, $calendarId, $event, Array($currentUserId), $currentUserId);
         }
 
+        if ($notify) {
 
-        $data = Array(
-            "type" => "create",
-            "event" => $event->getAsArray()
-        );
-        $this->pusher->push($data, "calendar/".$calendarId);
+            $data = Array(
+                "type" => "create",
+                "event" => $event->getAsArray()
+            );
+            $this->pusher->push($data, "calendar/" . $calendarId);
+            if (!$disableLog)
+                $this->workspacesActivities->recordActivity($workspace, $currentUserId, "calendar", "workspace.activity.event.create", "TwakeCalendarBundle:CalendarEvent", $event->getId());
+
+        }
+
         $this->doctrine->flush();
-        if(!$disableLog)
-            $this->workspacesActivities->recordActivity($workspace, $currentUserId, "calendar", "workspace.activity.event.create", "TwakeCalendarBundle:CalendarEvent", $event->getId());
 
         return $event;
 

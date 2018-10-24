@@ -60,7 +60,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $this->doctrine->flush();
 
             if ($workspace->getUser() != null) {
-                $this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("workspace" => $workspace->getName(), "group" => $workspace->getGroup()->getDisplayName(), "username" => $user->getUsername(), "level" => $level->getLabel()));
+                $this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("_language" => $user->getLanguage(), "workspace" => $workspace->getName(), "group" => $workspace->getGroup()->getDisplayName(), "username" => $user->getUsername(), "level" => $level->getLabel()));
             }
 
             $datatopush = Array(
@@ -138,6 +138,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             //Send mail
             $this->twake_mailer->send($mail, "inviteToWorkspaceMail", Array(
+                "_language" => $user->getLanguage(),
                 "mail" => $mail,
                 "workspace" => $workspace->getName(),
                 "group" => $workspace->getGroup()->getDisplayName()
@@ -283,7 +284,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $this->pusher->push($datatopush, "notifications/" . $user->getId());
 
             if ($workspace->getGroup() != null && $userId != $currentUserId) {
-                $this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
+                $this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("_language" => $user->getLanguage(), "workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
             }
 
 
@@ -387,7 +388,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $this->doctrine->remove($member);
             $this->doctrine->flush();
 
-            $this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
+            $this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("_language" => $user->getLanguage(), "workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 
             $this->messages->delWorkspaceMember($workspace, $user);
             $this->calendar->delWorkspaceMember($workspace, $user);
