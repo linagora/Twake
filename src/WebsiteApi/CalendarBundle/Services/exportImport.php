@@ -116,7 +116,8 @@ class exportImport implements exportImportInterface{
     }
 
     public function importCalendarByLink($workspaceId, $icsLink, $color = null, $currentUserId=null){
-        if(strpos($icsLink,"http://")!=0 && strpos($icsLink,"https://")!=0)
+
+        if (strpos($icsLink, "http://") != 0 && strpos($icsLink, "https://") != 0 && strpos($icsLink, "webcal://") != 0)
             return false;
         //ini_set('default_socket_timeout', 10);
         $ical = new ICal(file_get_contents($icsLink), array(
@@ -139,7 +140,7 @@ class exportImport implements exportImportInterface{
             $calendar = $this->calendarsService->createCalendar($workspaceId,$title,$color,$currentUserId,$icsLink);
 
             foreach ($eventsArray as $eventArray) {
-                $result = $this->calendarEventService->createEvent($workspaceId, $calendar->getId(), $eventArray[0], $currentUserId, false, $eventArray[1]);
+                $result = $this->calendarEventService->createEvent($workspaceId, $calendar->getId(), $eventArray[0], $currentUserId, false, $eventArray[1], true, false);
             }
         }
         else {
@@ -168,7 +169,7 @@ class exportImport implements exportImportInterface{
                     $this->calendarEventService->updateEvent($workspaceId, $calendar->getId(), $eventId, $eventArray, $currentUserId,true);
                 }
                 else{
-                    $this->calendarEventService->createEvent($workspaceId,$calendar->getId(),$eventArray,$currentUserId,false,$eventArray["participants"]);
+                    $this->calendarEventService->createEvent($workspaceId, $calendar->getId(), $eventArray, $currentUserId, false, $eventArray["participants"], true, false);
                 }
             }
         }
@@ -238,7 +239,7 @@ class exportImport implements exportImportInterface{
         $events = $this->buildEventArrayFromICal($ical);
 
         foreach ($events as $evt){
-            $result = $this->calendarEventService->createEvent($workspace_id, $calendar_id, $evt, null, false, $evt["participants"]);
+            $result = $this->calendarEventService->createEvent($workspace_id, $calendar_id, $evt, null, false, $evt["participants"], true, false);
 
             if ($result == false || $result == null) {
                 $data = $this->errorService->getError(4001);
