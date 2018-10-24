@@ -210,6 +210,8 @@ class CalendarEvents implements CalendarEventsInterface
             $this->doctrine->remove($userLinked);
         }
 
+        $this->objectLinksSystem->deleteObject($event);
+
         $this->doctrine->remove($event);
         $this->doctrine->flush();
 

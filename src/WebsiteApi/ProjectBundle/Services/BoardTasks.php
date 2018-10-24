@@ -210,6 +210,7 @@ class BoardTasks implements BoardTasksInterface
             $this->doctrine->remove($userLinked);
         }
 
+        $this->objectLinksSystem->deleteObject($task);
         $this->doctrine->remove($task);
         $this->doctrine->flush();
 

@@ -36,7 +36,9 @@ class DriveFileSystem implements DriveFileSystemInterface
     /* @var WorkspacesActivities $workspacesActivities*/
     var $workspacesActivities;
 
-    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService, $userToNotifyService, $translate, $workspacesApps,$workspacesActivities)
+    var $objectLinkSystem;
+
+    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem)
     {
         $this->doctrine = $doctrine;
         $this->root = $rootDirectory;
@@ -49,6 +51,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->translate = $translate;
         $this->workspacesApps = $workspacesApps;
         $this->workspacesActivities = $workspacesActivities;
+        $this->objectLinkSystem = $objectLinkSystem;
     }
 
     protected function convertToEntity($var, $repository)
@@ -1000,6 +1003,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             }
         }
 
+        $this->objectLinkSystem->deleteObject($fileOrDirectory);
         $this->removeLabels($fileOrDirectory, false);
         $this->doctrine->remove($fileOrDirectory);
 

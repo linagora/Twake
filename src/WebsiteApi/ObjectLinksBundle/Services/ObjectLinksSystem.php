@@ -279,4 +279,15 @@ class ObjectLinksSystem
 
         return $partnersAndFields;
     }
+
+    public function deleteObject(ObjectLinksInterface $object)
+    {
+        $relations = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $object->getId(), "typeA" => $object->getRepository()));
+        $relations = array_merge($relations, $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $object->getId(), "typeB" => $object->getRepository())));
+        foreach ($relations as $relation) {
+            $this->doctrine->remove($relation);
+        }
+        $this->doctrine->flush($relation);
+    }
+
 }

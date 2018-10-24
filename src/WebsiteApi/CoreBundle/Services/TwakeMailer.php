@@ -45,13 +45,13 @@ class TwakeMailer
         $language = "en";
         if (isset($data["_language"])) {
             $language = "fr";
-            $templateName = $templateDirectory . ":" . $language . ":" . $template . '.html.twig';
+            $templateName = $templateDirectory . ":" . $language . "/" . $template . '.html.twig';
             if (!$this->templating->exists($templateName)) {
                 $language = "en";
             }
         }
 
-        $templateName = $templateDirectory . ":" . $language . ":" . $template . '.html.twig';
+        $templateName = $templateDirectory . ":" . $language . "/" . $template . '.html.twig';
 
 		$html = $this->templating->render(
             $templateName,
