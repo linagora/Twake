@@ -1,17 +1,17 @@
 {% extends "TwakeCoreBundle:Mail:all.html.twig" %}
 
-{% block title %}You have {{ total_notifications }} unread notification(s) on Twake{% endblock %}
+{% block title %}Vous avez {{ total_notifications }} notification(s) non lue(s) sur Twake{% endblock %}
 
-{% block secondtitle %}You have {{ total_notifications }} unread notification(s) on Twake{% endblock %}
+{% block secondtitle %}Vous avez {{ total_notifications }} notification(s) non lue(s) sur Twake{% endblock %}
 
 {% block body %}
 
-    <b>Hello {{ username }},</b>
+    <b>Bonjour {{ username }},</b>
     <br>
-    You have received <span class="badge"
-                            style="background: #ff2c2c;padding: 2px 5px;border-radius: 4px;color: #FFF;">{{ total_notifications }}</span> unread notification(s) on Twake {{ time_text }}.</b>
+    Vous avez <span class="badge"
+                            style="background: #ff2c2c;padding: 2px 5px;border-radius: 4px;color: #FFF;">{{ total_notifications }}</span> notification(s) non lues sur Twake {{ time_text }}.</b>
     <br><br>
-    Last notification(s) :
+    Dernières notification(s) :
 
     {% for notification in notifications %}
         <div class="card"

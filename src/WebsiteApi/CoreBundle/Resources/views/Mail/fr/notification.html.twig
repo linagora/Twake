@@ -1,14 +1,14 @@
 {% extends "TwakeCoreBundle:Mail:all.html.twig" %}
 
-{% block title %}Twake, new notification from {{ application_name }} in {{ workspace_name }}{% endblock %}
+{% block title %}Twake, nouvelle notification de {{ application_name }} dans {{ workspace_name }}{% endblock %}
 
-{% block secondtitle %}Twake, new notification from {{ application_name }} in {{ workspace_name }}{% endblock %}
+{% block secondtitle %}Twake, nouvelle notification {{ application_name }} dans {{ workspace_name }}{% endblock %}
 
 {% block body %}
 
-    <b>Hello {{ username }},</b>
+    <b>Bonjour {{ username }},</b>
     <br>
-    You have a new notification from <b>{{ application_name }}</b> in the workspace <b>{{ workspace_name }}</b>
+    Vous avez une nouvelle notification de l'applcation <b>{{ application_name }}</b> dans l'espace de travail <b>{{ workspace_name }}</b>
     <br><br>
     {{ text }}
     <br>
