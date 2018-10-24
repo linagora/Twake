@@ -1,147 +1,52 @@
-<!doctype html>
-<html>
-<head>
-    <meta name="viewport" content="width=device-width">
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>{% block title %}Twake{% endblock %}</title>
-    <style>
-        @media only screen and (max-width: 620px) {
-            table[class=body] h1 {
-                font-size: 28px !important;
-                margin-bottom: 10px !important;
-            }
-            table[class=body] p,
-            table[class=body] ul,
-            table[class=body] ol,
-            table[class=body] td,
-            table[class=body] span,
-            table[class=body] a {
-                font-size: 16px !important;
-            }
-            table[class=body] .wrapper,
-            table[class=body] .article {
-                padding: 10px !important;
-            }
-            table[class=body] .content {
-                padding: 0 !important;
-            }
-            table[class=body] .container {
-                padding: 0 !important;
-                width: 100% !important;
-            }
-            table[class=body] .main {
-                border-left-width: 0 !important;
-                border-right-width: 0 !important;
-            }
-            table[class=body] .btn table {
-                width: 100% !important;
-            }
-            table[class=body] .btn a {
-                width: 100% !important;
-            }
-            table[class=body] .img-responsive {
-                height: auto !important;
-                max-width: 100% !important;
-                width: auto !important;
-            }
+{% extends "TwakeCoreBundle:Mail:all_style.html.twig" %}
 
-            .container {
-                margin-top: 0px !important;
-            }
+{% block content %}
 
-            body {
-                padding: 10px !important;
-            }
-        }
+    <table class="main"
+           style="box-shadow: 5px 5px 100px rgba(0,0,0,0.2);border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 0 0 4px 4px;">
 
-        @media all {
-            .ExternalClass {
-                width: 100%;
-            }
-            .ExternalClass,
-            .ExternalClass p,
-            .ExternalClass span,
-            .ExternalClass font,
-            .ExternalClass td,
-            .ExternalClass div {
-                line-height: 100%;
-            }
-            .apple-link a {
-                color: inherit !important;
-                font-family: inherit !important;
-                font-size: inherit !important;
-                font-weight: inherit !important;
-                line-height: inherit !important;
-                text-decoration: none !important;
-            }
-            .btn-primary table td:hover {
-                background-color: #1176BB !important;
-            }
-            .btn-primary a:hover {
-                background-color: #1176BB !important;
-                border-color: #1176BB !important;
-            }
-            a {
-                color: #0787DC;
-            }
-        }
-    </style>
-</head>
-<body class="" style="background-color: #f6f6f6; font-family: sans-serif; -webkit-font-smoothing: antialiased; font-size: 14px; line-height: 1.4; margin: 0; padding: 0; -ms-text-size-adjust: 100%; -webkit-text-size-adjust: 100%;">
-<table border="0" cellpadding="0" cellspacing="0" class="body" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background-color: #f6f6f6;">
-    <tr>
-        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;"> </td>
-        <td class="container"
-            style="font-family: sans-serif; font-size: 14px; vertical-align: top; display: block; margin: 0 auto; margin-top: 30px; max-width: 580px; padding: 10px; width: 580px;">
+        <tr>
+            <td class="wrapper"
+                style="font-family: sans-serif; font-size: 16px; vertical-align: top; box-sizing: border-box; padding: 20px;border-radius: 6px;color: #333;">
 
-            <div style="box-shadow: 5px 5px 100px rgba(0,0,0,0.2);border-radius: 4px 4px 0 0;width: 100%;height: 100px;margin: 0px;background-size: auto 50px;background-repeat: no-repeat;background-position: center;background-color:#0787DC;background-image: url(data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4NCjwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAxNS4wLjAsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiA2LjAwIEJ1aWxkIDApICAtLT4NCjwhRE9DVFlQRSBzdmcgUFVCTElDICItLy9XM0MvL0RURCBTVkcgMS4xLy9FTiIgImh0dHA6Ly93d3cudzMub3JnL0dyYXBoaWNzL1NWRy8xLjEvRFREL3N2ZzExLmR0ZCI+DQo8c3ZnIHZlcnNpb249IjEuMSIgaWQ9IkxheWVyXzEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgeG1sbnM6eGxpbms9Imh0dHA6Ly93d3cudzMub3JnLzE5OTkveGxpbmsiIHg9IjBweCIgeT0iMHB4Ig0KCSB3aWR0aD0iMTMwcHgiIGhlaWdodD0iNTBweCIgdmlld0JveD0iMCAwIDEzMCA1MCIgZW5hYmxlLWJhY2tncm91bmQ9Im5ldyAwIDAgMTMwIDUwIiB4bWw6c3BhY2U9InByZXNlcnZlIj4NCjxnPg0KCTxkZWZzPg0KCQk8ZmlsdGVyIGlkPSJBZG9iZV9PcGFjaXR5TWFza0ZpbHRlciIgZmlsdGVyVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSI0LjU2MSIgeT0iNi4wODQiIHdpZHRoPSIzNy4wNDIiIGhlaWdodD0iMzcuMTc3Ij4NCgkJCTxmZUNvbG9yTWF0cml4ICB0eXBlPSJtYXRyaXgiIHZhbHVlcz0iMSAwIDAgMCAwICAwIDEgMCAwIDAgIDAgMCAxIDAgMCAgMCAwIDAgMSAwIi8+DQoJCTwvZmlsdGVyPg0KCTwvZGVmcz4NCgk8bWFzayBtYXNrVW5pdHM9InVzZXJTcGFjZU9uVXNlIiB4PSI0LjU2MSIgeT0iNi4wODQiIHdpZHRoPSIzNy4wNDIiIGhlaWdodD0iMzcuMTc3IiBpZD0iU1ZHSURfMV8iPg0KCQk8ZyBmaWx0ZXI9InVybCgjQWRvYmVfT3BhY2l0eU1hc2tGaWx0ZXIpIj4NCgkJCTxnPg0KCQkJCTxwb2x5Z29uIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBmaWxsPSIjRkZGRkZGIiBwb2ludHM9IjEzLjc2LDIyLjAxNyAxMy43NiwxMS4zOTUgMjMuMDIxLDYuMDg0IA0KCQkJCQkzMi40MDQsMTEuMzk1IDMyLjQwNCwyMi4wMTcgMjMuMDIxLDE2LjcwNiAJCQkJIi8+DQoJCQkJPHBvbHlnb24gZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiIGZpbGw9IiNGRkZGRkYiIHBvaW50cz0iMjMuMTQzLDM3Ljk1MSAxMy41MzksNDMuMjM1IDQuNTYxLDM3Ljk1MSANCgkJCQkJNC41NjEsMjcuMzI5IDEzLjc2LDIyLjAxNyAxMy43NiwzMi43MDEgCQkJCSIvPg0KCQkJCTxwb2x5Z29uIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBmaWxsPSIjRkZGRkZGIiBwb2ludHM9IjMyLjQwNCwyMi4wMTcgNDEuNjAzLDI3LjMyOSA0MS42MDMsMzcuOTUxIA0KCQkJCQkzMi4zNDIsNDMuMjYyIDIzLjE0MywzNy45NTEgMzIuNDA0LDMyLjY0IAkJCQkiLz4NCgkJCTwvZz4NCgkJCQ0KCQkJCTxpbWFnZSBvdmVyZmxvdz0idmlzaWJsZSIgd2lkdGg9IjE3NDYiIGhlaWdodD0iMTk2MyIgeGxpbms6aHJlZj0iOTNEQzA1MTYucG5nIiAgdHJhbnNmb3JtPSJtYXRyaXgoMC4wNDM2IDAgMCAwLjA0MzYgLTE1LjUxNjYgLTE2LjY1NjcpIj4NCgkJCTwvaW1hZ2U+DQoJCTwvZz4NCgk8L21hc2s+DQoJPGcgbWFzaz0idXJsKCNTVkdJRF8xXykiPg0KCQk8cG9seWdvbiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZmlsbD0iI0ZGRkZGRiIgcG9pbnRzPSIxMy43NiwyMi4wMTcgMTMuNzYsMTEuMzk1IDIzLjAyMSw2LjA4NCAzMi40MDQsMTEuMzk1IA0KCQkJMzIuNDA0LDIyLjAxNyAyMy4wMjEsMTYuNzA2IAkJIi8+DQoJCTxwb2x5Z29uIGZpbGwtcnVsZT0iZXZlbm9kZCIgY2xpcC1ydWxlPSJldmVub2RkIiBmaWxsPSIjRkZGRkZGIiBwb2ludHM9IjIzLjE0MywzNy45NTEgMTMuNTM5LDQzLjIzNSA0LjU2MSwzNy45NTEgNC41NjEsMjcuMzI5IA0KCQkJMTMuNzYsMjIuMDE3IDEzLjc2LDMyLjcwMSAJCSIvPg0KCQk8cG9seWdvbiBmaWxsLXJ1bGU9ImV2ZW5vZGQiIGNsaXAtcnVsZT0iZXZlbm9kZCIgZmlsbD0iI0ZGRkZGRiIgcG9pbnRzPSIzMi40MDQsMjIuMDE3IDQxLjYwMywyNy4zMjkgNDEuNjAzLDM3Ljk1MSANCgkJCTMyLjM0Miw0My4yNjIgMjMuMTQzLDM3Ljk1MSAzMi40MDQsMzIuNjQgCQkiLz4NCgk8L2c+DQoJPGc+DQoJCTxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik02NC4xMTQsMTcuMzczbC0wLjM2NiwyLjc0MmgtNC43djE1LjNoLTMuNDczdi0xNS4zaC00Ljg1NnYtMi43NDJINjQuMTE0eiIvPg0KCQk8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNODIuMzM4LDIxLjYwM2wtMy4wMDIsMTMuODEyaC00LjE3OGwtMi4wODktMTAuODM1bC0yLjE0MSwxMC44MzVoLTQuMDk5bC0zLjA1NS0xMy44MTJoMy4zNDINCgkJCWwxLjkzMiwxMS4zNTdsMi40MDItMTEuMzU3aDMuNDJsMi4xOTMsMTEuMzU3bDIuMDYyLTExLjM1N0g4Mi4zMzh6Ii8+DQoJCTxwYXRoIGZpbGw9IiNGRkZGRkYiIGQ9Ik05NC43NTQsMzIuOTQ3YzAuMTY1LDAuMjUyLDAuNDMxLDAuNDQ4LDAuNzk2LDAuNTg3bC0wLjcwNSwyLjIxOWMtMC43ODMtMC4wNy0xLjQyMy0wLjI2MS0xLjkxOS0wLjU3NA0KCQkJYy0wLjQ5Ni0wLjMxMy0wLjg3NS0wLjc5Mi0xLjEzNi0xLjQzNmMtMC40NywwLjY5Ni0xLjA1NywxLjIxNC0xLjc2MiwxLjU1M2MtMC43MDUsMC4zNC0xLjQ5MywwLjUwOS0yLjM2MywwLjUwOQ0KCQkJYy0xLjM3NSwwLTIuNDYzLTAuMzkyLTMuMjY0LTEuMTc1UzgzLjIsMzIuODIxLDgzLjIsMzEuNTVjMC0xLjQ5NywwLjU0My0yLjY0MSwxLjYzMi0zLjQzNGMxLjA4Ny0wLjc5MiwyLjY0MS0xLjE4OCw0LjY2MS0xLjE4OA0KCQkJaDEuNzIzdi0wLjc4M2MwLTAuODg4LTAuMjA1LTEuNTEtMC42MTQtMS44NjdjLTAuNDA5LTAuMzU3LTEuMDY2LTAuNTM2LTEuOTcxLTAuNTM2Yy0xLjAxLDAtMi4yMjksMC4yNDQtMy42NTUsMC43MzENCgkJCWwtMC43ODMtMi4yNzJjMS43MjMtMC42NjEsMy4zOTQtMC45OTIsNS4wMTMtMC45OTJjMy41MzQsMCw1LjMwMSwxLjU4NCw1LjMwMSw0Ljc1MnY1Ljc5Ng0KCQkJQzk0LjUwNiwzMi4yOTksOTQuNTg4LDMyLjY5NSw5NC43NTQsMzIuOTQ3eiBNOTEuMjE2LDMxLjY4MXYtMi43OTNoLTEuMzg0Yy0yLjE1OSwwLTMuMjM4LDAuODAxLTMuMjM4LDIuNDAyDQoJCQljMCwwLjY2MiwwLjE2NiwxLjE3NSwwLjQ5NiwxLjU0MWMwLjMzMSwwLjM2NiwwLjgxOCwwLjU0OCwxLjQ2MiwwLjU0OEM4OS42ODQsMzMuMzc4LDkwLjU3MiwzMi44MTIsOTEuMjE2LDMxLjY4MXoiLz4NCgkJPHBhdGggZmlsbD0iI0ZGRkZGRiIgZD0iTTEwMS44OTUsMTUuNzAydjE5LjcxM2gtMy4zNDJWMTYuMDY3TDEwMS44OTUsMTUuNzAyeiBNMTEwLjE3MSwyMS42MDNsLTQuNTk1LDYuMDgzbDUuMDM5LDcuNzI5aC0zLjgzOA0KCQkJbC00Ljc1Mi03LjU0Nmw0LjYyMi02LjI2NkgxMTAuMTcxeiIvPg0KCQk8cGF0aCBmaWxsPSIjRkZGRkZGIiBkPSJNMTIzLjQ2MSwyOS41NGgtOC42NjhjMC4xMDQsMS4zNDEsMC40NTMsMi4yOTgsMS4wNDQsMi44NzNjMC41OTIsMC41NzQsMS4zNzUsMC44NjEsMi4zNSwwLjg2MQ0KCQkJYzAuNjA5LDAsMS4xODQtMC4xLDEuNzIzLTAuM2MwLjU0LTAuMiwxLjExNC0wLjUwOSwxLjcyMy0wLjkyN2wxLjM4NCwxLjkwNmMtMS41MzIsMS4yMzYtMy4yMzcsMS44NTQtNS4xMTcsMS44NTQNCgkJCWMtMi4xMDYsMC0zLjczLTAuNjQ0LTQuODctMS45MzJjLTEuMTQtMS4yODgtMS43MS0zLjA0Ni0xLjcxLTUuMjc0YzAtMS40MSwwLjI0NC0yLjY3NiwwLjczMS0zLjc5OQ0KCQkJYzAuNDg3LTEuMTIzLDEuMTkyLTIuMDAxLDIuMTE1LTIuNjM3YzAuOTIyLTAuNjM1LDIuMDE5LTAuOTUzLDMuMjktMC45NTNjMS45MzIsMCwzLjQyOSwwLjYxNCw0LjQ5MSwxLjg0MQ0KCQkJYzEuMDYyLDEuMjI4LDEuNTkzLDIuOTM4LDEuNTkzLDUuMTMxQzEyMy41NCwyOC4zNTYsMTIzLjUxNCwyOC44MDksMTIzLjQ2MSwyOS41NHogTTEyMC4yMjQsMjcuMjE2DQoJCQljMC0yLjQxOS0wLjg5Ny0zLjYyOS0yLjY4OS0zLjYyOWMtMC44MTgsMC0xLjQ1OCwwLjMtMS45MTksMC45Yy0wLjQ2MSwwLjYwMS0wLjczNiwxLjU2Mi0wLjgyMywyLjg4NWg1LjQzMVYyNy4yMTZ6Ii8+DQoJPC9nPg0KPC9nPg0KPC9zdmc+DQo=);"></div>
+                <div style="font-size: 22px;text-align: center;margin-bottom: 30px;color: #0787DC;font-weight: bold;">{% block secondtitle %}Bonjour !{% endblock %}</div>
 
-            <div class="content" style="box-sizing: border-box; display: block; margin: 0 auto; max-width: 580px;">
+                {% block body %}{% endblock %}
 
-                <table class="main"
-                       style="box-shadow: 5px 5px 100px rgba(0,0,0,0.2);border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 0 0 4px 4px;">
+                <br><br>
+                A très bientôt sur Twake,
+                <br>
+                L'équipe Twake
+                <br>
+                <a style="color: #0787DC;" href="{{ twakeurl }}">{{ twakeurl }}</a>
 
-                    <tr>
-                        <td class="wrapper" style="font-family: sans-serif; font-size: 16px; vertical-align: top; box-sizing: border-box; padding: 20px;border-radius: 6px;color: #333;">
+            </td>
+        </tr>
 
-                            <div style="font-size: 22px;text-align: center;margin-bottom: 30px;color: #0787DC;font-weight: bold;">{% block secondtitle %}Bonjour !{% endblock %}</div>
+    </table>
 
-                            {% block body %}{% endblock %}
+    <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
+        <table border="0" cellpadding="0" cellspacing="0"
+               style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
+            <tr>
+                <td class="content-block"
+                    style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
+                <span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">
+                    {{ twakeaddress }}
+                </span>
+                </td>
+            </tr>
+            <tr>
+                <td class="content-block powered-by"
+                    style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
+                    Cet email a été envoyé à {{ mail }}. Aller sur Twake pour en voir plus.<br>
+                    Vous recevez cet email parce que vous avez un compte sur <a href="{{ twakeurl }}"
+                                                                                style="color: #999999; font-size: 12px; text-align: center; text-decoration: none;">{{ twakeurl }}</a>
+                    ou parce que vous avez été invité par un autre utilisateur. Si vous souhaitez recevoir moins de
+                    courriels, allez dans les paramètres de votre compte.
+                </td>
+            </tr>
+        </table>
+    </div>
 
-                            <br><br>
-                            A très bientôt sur Twake,
-                            <br>
-                            L'équipe Twake
-                            <br>
-                            <a style="color: #0787DC;" href="{{ twakeurl }}">{{ twakeurl }}</a>
-
-                        </td>
-                    </tr>
-
-                </table>
-
-                <div class="footer" style="clear: both; Margin-top: 10px; text-align: center; width: 100%;">
-                    <table border="0" cellpadding="0" cellspacing="0" style="border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%;">
-                        <tr>
-                            <td class="content-block" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
-                                <span class="apple-link" style="color: #999999; font-size: 12px; text-align: center;">
-                                    {{ twakeaddress }}
-                                </span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="content-block powered-by" style="font-family: sans-serif; vertical-align: top; padding-bottom: 10px; padding-top: 10px; font-size: 12px; color: #999999; text-align: center;">
-                                Cet email a été envoyé à {{ mail }}. Aller sur Twake pour en voir plus.<br>
-                                Vous recevez cet email parce que vous avez un compte sur <a href="{{ twakeurl }}" style="color: #999999; font-size: 12px; text-align: center; text-decoration: none;" >{{ twakeurl }}</a> ou parce que vous avez été invité par un autre utilisateur. Si vous souhaitez recevoir moins de courriels, allez dans les paramètres de votre compte.
-                            </td>
-                        </tr>
-                    </table>
-                </div>
-
-            </div>
-        </td>
-        <td style="font-family: sans-serif; font-size: 14px; vertical-align: top;"> </td>
-    </tr>
-</table>
-</body>
-</html>
+{% endblock %}
