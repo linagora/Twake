@@ -105,7 +105,7 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
         //Sending verification mail
         $message = \Swift_Message::newInstance()
             ->setSubject($this->html2title($html))
-            ->setFrom($this->mailfrom)
+            ->setFrom($this->mailfrom, "Twake")
             ->setTo($mail)
             ->setBody(
                 $html,

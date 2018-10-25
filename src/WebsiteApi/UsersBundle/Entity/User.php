@@ -399,4 +399,20 @@ class User extends BaseUser
         $this->isRobot = $isRobot;
     }
 
+    /**
+     * @return int
+     */
+    public function getLastActivity()
+    {
+        return $this->lastActivity;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getLastLogin()
+    {
+        return $this->lastLogin;
+    }
+
 }

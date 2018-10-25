@@ -21,32 +21,26 @@ class NotificationMailCommand extends ContainerAwareCommand
         $doctrine = $this->getContainer()->get('doctrine');
         $em = $doctrine->getManager();
 
-
-        // Week notifications
-
-        if (date('N') == 1) { // Monday
-
-            $number_of_mails = 1;
-            $last_mail_before = new \DateTime();
-            $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before);
-
-            $this->sendMail($users_id_count, "this week");
-            $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before);
-
-        }
-
-        //Today notifications
-
-        $number_of_mails = 0;
-        $last_mail_before = null;
+        //Daily send an email with a summary of unread notifications for all apps after 8 hours without mails sent (including messages)
+        $number_of_mails = 1;
+        $last_mail_before = new \DateTime();
+        $last_mail_before->setTimestamp(date("U") - 60 * 60 * 8);
         $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before);
+        $this->sendMail($users_id_count, "unread_notifications");
+        $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before);
 
-        $this->sendMail($users_id_count, "today");
+        //Send an email for unread notifications after more than 30 minutes only for messages
+        $number_of_mails = 0; //Never notified
+        $last_mail_before = null; //Never notified
+        $delay = 60 * 30;
+        $app = $em->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "messages"));
+        $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before, $delay, $app);
+        $this->sendMail($users_id_count, "messages_notifications");
         $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before);
 
     }
 
-    protected function sendMail($users_id_count, $time_text)
+    protected function sendMail($users_id_count, $template = "unread_notifications")
     {
 
         $services = $this->getApplication()->getKernel()->getContainer();
@@ -63,18 +57,17 @@ class NotificationMailCommand extends ContainerAwareCommand
             $data = Array(
                 "username" => $user->getUsername(),
                 "total_notifications" => $count,
-                "notifications" => Array(),
-                "time_text" => $time_text
+                "notifications" => Array()
             );
             foreach ($notifications as $notification) {
                 $data["notifications"][] = Array(
                     "title" => $notification->getTitle(),
-                    "delay" => (new \DateTime())->diff($notification->getDate())->format("%a"),
+                    "delay" => (new \DateTime())->diff($notification->getDate())->format("%h"),
                     "text" => $notification->getText()
                 );
             }
 
-            $services->get("app.twake_mailer")->send($user->getEmail(), "unread_notifications", $data);
+            $services->get("app.twake_mailer")->send($user->getEmail(), $template, $data);
         }
 
     }
