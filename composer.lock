@@ -1,23 +1,23 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-      "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
+      "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-  "content-hash": "308746e685dba3776b7d0aec99dee1c3",
+  "content-hash": "56837117de6b4eedb87da6bc8ded6074",
     "packages": [
         {
           "name": "aws/aws-sdk-php",
-          "version": "3.69.6",
+          "version": "3.69.14",
           "source": {
             "type": "git",
             "url": "https://github.com/aws/aws-sdk-php.git",
-            "reference": "7772d90f021a160d8208e484513a41eaca848693"
+            "reference": "904e9e21389efe93935701be0b857990752d6245"
           },
           "dist": {
             "type": "zip",
-            "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/7772d90f021a160d8208e484513a41eaca848693",
-            "reference": "7772d90f021a160d8208e484513a41eaca848693",
+            "url": "https://api.github.com/repos/aws/aws-sdk-php/zipball/904e9e21389efe93935701be0b857990752d6245",
+            "reference": "904e9e21389efe93935701be0b857990752d6245",
             "shasum": ""
           },
           "require": {
@@ -25,7 +25,7 @@
             "ext-pcre": "*",
             "ext-simplexml": "*",
             "ext-spl": "*",
-            "guzzlehttp/guzzle": "^5.3.1|^6.2.1",
+            "guzzlehttp/guzzle": "^5.3.3|^6.2.1",
             "guzzlehttp/promises": "~1.0",
             "guzzlehttp/psr7": "^1.4.1",
             "mtdowling/jmespath.php": "~2.2",
@@ -87,7 +87,7 @@
             "s3",
             "sdk"
           ],
-          "time": "2018-10-12T21:44:38+00:00"
+          "time": "2018-10-24T19:17:46+00:00"
         },
       {
         "name": "aws/aws-sdk-php-symfony",
@@ -245,16 +245,16 @@
         },
         {
             "name": "composer/ca-bundle",
-          "version": "1.1.2",
+          "version": "1.1.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/composer/ca-bundle.git",
-              "reference": "46afded9720f40b9dc63542af4e3e43a1177acb0"
+              "reference": "8afa52cd417f4ec417b4bfe86b68106538a87660"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/composer/ca-bundle/zipball/46afded9720f40b9dc63542af4e3e43a1177acb0",
-              "reference": "46afded9720f40b9dc63542af4e3e43a1177acb0",
+              "url": "https://api.github.com/repos/composer/ca-bundle/zipball/8afa52cd417f4ec417b4bfe86b68106538a87660",
+              "reference": "8afa52cd417f4ec417b4bfe86b68106538a87660",
                 "shasum": ""
             },
             "require": {
@@ -297,7 +297,7 @@
                 "ssl",
                 "tls"
             ],
-          "time": "2018-08-08T08:57:40+00:00"
+          "time": "2018-10-18T06:09:13+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1624,12 +1624,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/FriendsOfSymfony/FOSUserBundle.git",
-              "reference": "4125505ba6eba82ddf944378a3d636081c06da0c"
+              "reference": "a8f9aa39f3bd0f752a9cd997cda579d599e727ea"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/4125505ba6eba82ddf944378a3d636081c06da0c",
-              "reference": "4125505ba6eba82ddf944378a3d636081c06da0c",
+              "url": "https://api.github.com/repos/FriendsOfSymfony/FOSUserBundle/zipball/a8f9aa39f3bd0f752a9cd997cda579d599e727ea",
+              "reference": "a8f9aa39f3bd0f752a9cd997cda579d599e727ea",
                 "shasum": ""
             },
             "require": {
@@ -1692,7 +1692,7 @@
             "keywords": [
                 "User management"
             ],
-          "time": "2018-09-19T15:05:28+00:00"
+          "time": "2018-10-15 11:35:47"
         },
         {
             "name": "google/apiclient",
@@ -1755,16 +1755,16 @@
         },
         {
             "name": "google/apiclient-services",
-          "version": "v0.71",
+          "version": "v0.73",
             "source": {
                 "type": "git",
               "url": "https://github.com/googleapis/google-api-php-client-services.git",
-              "reference": "f066aac8c0ea88cf5880611d589fd1e01c4fd082"
+              "reference": "df35c41d842f5167654e8f38343a21bfe277aeda"
             },
             "dist": {
                 "type": "zip",
-              "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/f066aac8c0ea88cf5880611d589fd1e01c4fd082",
-              "reference": "f066aac8c0ea88cf5880611d589fd1e01c4fd082",
+              "url": "https://api.github.com/repos/googleapis/google-api-php-client-services/zipball/df35c41d842f5167654e8f38343a21bfe277aeda",
+              "reference": "df35c41d842f5167654e8f38343a21bfe277aeda",
                 "shasum": ""
             },
             "require": {
@@ -1788,7 +1788,7 @@
             "keywords": [
                 "google"
             ],
-          "time": "2018-10-09T00:22:49+00:00"
+          "time": "2018-10-20T00:22:35+00:00"
         },
         {
             "name": "google/auth",
@@ -2448,21 +2448,21 @@
         },
         {
             "name": "johngrogg/ics-parser",
-            "version": "v2.1.5",
+          "version": "v2.1.6",
             "source": {
                 "type": "git",
                 "url": "https://github.com/u01jmg3/ics-parser.git",
-                "reference": "ffd1788215b19da9813420935715b2bb7919b88e"
+              "reference": "b0e51b6ba2d5e28583387480835b6632b9d91f9a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/u01jmg3/ics-parser/zipball/ffd1788215b19da9813420935715b2bb7919b88e",
-                "reference": "ffd1788215b19da9813420935715b2bb7919b88e",
+              "url": "https://api.github.com/repos/u01jmg3/ics-parser/zipball/b0e51b6ba2d5e28583387480835b6632b9d91f9a",
+              "reference": "b0e51b6ba2d5e28583387480835b6632b9d91f9a",
                 "shasum": ""
             },
             "require": {
                 "ext-mbstring": "*",
-                "nesbot/carbon": "~1.28",
+              "nesbot/carbon": "~1.34",
                 "php": ">=5.3.0"
             },
             "require-dev": {
@@ -2479,11 +2479,6 @@
                 "MIT"
             ],
             "authors": [
-                {
-                    "name": "Martin Thoma",
-                    "email": "info@martin-thoma.de",
-                    "role": "Original Developer"
-                },
                 {
                     "name": "John Grogg",
                     "email": "john.grogg@gmail.com",
@@ -2504,7 +2499,7 @@
                 "ics-parser",
                 "ifb"
             ],
-            "time": "2018-05-24T14:12:00+00:00"
+          "time": "2018-10-19T10:10:58+00:00"
         },
         {
             "name": "kriswallsmith/assetic",
@@ -3223,8 +3218,136 @@
             "time": "2017-05-04T11:12:50+00:00"
         },
         {
+          "name": "onurb/doctrine-metadata-grapher",
+          "version": "1.1.11",
+          "source": {
+            "type": "git",
+            "url": "https://github.com/Nono1971/Doctrine-MetadataGrapher.git",
+            "reference": "414b95f81d36b6530b083b296c5eeb700679ab3b"
+          },
+          "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/Nono1971/Doctrine-MetadataGrapher/zipball/414b95f81d36b6530b083b296c5eeb700679ab3b",
+            "reference": "414b95f81d36b6530b083b296c5eeb700679ab3b",
+            "shasum": ""
+          },
+          "require": {
+            "doctrine/annotations": "1.*",
+            "doctrine/orm": "^2.5",
+            "php": ">=5.3.2"
+          },
+          "require-dev": {
+            "phpunit/phpunit": "~6.5",
+            "squizlabs/php_codesniffer": "~2"
+          },
+          "suggest": {
+            "onurb/doctrine-yuml-bundle": "Symfony bundle to generate Entities mapping"
+          },
+          "type": "library",
+          "autoload": {
+            "psr-4": {
+              "Onurb\\Doctrine\\ORMMetadataGrapher\\": "lib/Onurb/Doctrine/ORMMetadataGrapher/"
+            }
+          },
+          "notification-url": "https://packagist.org/downloads/",
+          "authors": [
+            {
+              "name": "Marco Pivetta",
+              "email": "ocramius@gmail.com"
+            },
+            {
+              "name": "Bruno Heron",
+              "email": "herobrun@gmail.com"
+            }
+          ],
+          "description": "Helper to format doctrine metadata for UML API",
+          "homepage": "http://www.doctrine-project.org/",
+          "keywords": [
+            "diagram",
+            "doctrine",
+            "grapher",
+            "metadata",
+            "orm",
+            "yuml"
+          ],
+          "time": "2018-02-18T00:55:15+00:00"
+        },
+      {
+        "name": "onurb/doctrine-yuml-bundle",
+        "version": "1.1.1",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/Nono1971/doctrine-yuml-bundle.git",
+          "reference": "4edf763d4e8bd05615e068a05f34cbfd4fe1e30a"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/Nono1971/doctrine-yuml-bundle/zipball/4edf763d4e8bd05615e068a05f34cbfd4fe1e30a",
+          "reference": "4edf763d4e8bd05615e068a05f34cbfd4fe1e30a",
+          "shasum": ""
+        },
+        "require": {
+          "doctrine/common": "~2.0",
+          "doctrine/orm": "~2.0",
+          "onurb/doctrine-metadata-grapher": "~1.0",
+          "php": ">=5.3.2"
+        },
+        "require-dev": {
+          "doctrine/doctrine-bundle": "^1.5",
+          "php": ">7.0",
+          "phpunit/phpunit": "~6.5",
+          "squizlabs/php_codesniffer": "~2",
+          "symfony/symfony": "~3.0|~4.0"
+        },
+        "type": "symfony-bundle",
+        "extra": {
+          "symfony": {
+            "allow-contrib": "true"
+          }
+        },
+        "autoload": {
+          "psr-4": {
+            "Onurb\\Bundle\\YumlBundle\\": "lib/Onurb/Bundle/YumlBundle/"
+          }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+          "MIT"
+        ],
+        "authors": [
+          {
+            "name": "Symfony Community",
+            "homepage": "http://symfony.com/contributors"
+          },
+          {
+            "name": "Doctrine Project",
+            "homepage": "http://www.doctrine-project.org/"
+          },
+          {
+            "name": "Marco Pivetta",
+            "email": "ocramius@gmail.com"
+          },
+          {
+            "name": "Bruno Heron",
+            "email": "herobrun@gmail.com"
+          }
+        ],
+        "description": "Symfony Bundle to visualize the mapping of your entities with Yuml",
+        "keywords": [
+          "bundle",
+          "diagram",
+          "doctrine",
+          "graph",
+          "mapping",
+          "symfony",
+          "uml",
+          "yuml"
+        ],
+        "time": "2018-02-13T19:58:42+00:00"
+      },
+      {
             "name": "pagerfanta/pagerfanta",
-          "version": "v2.0.1",
+        "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/whiteoctober/Pagerfanta.git",
@@ -3289,7 +3412,7 @@
                 "paginator",
                 "paging"
             ],
-          "time": "2018-05-17T09:23:52+00:00"
+        "time": "2018-05-17T09:23:52+00:00"
         },
         {
             "name": "paragonie/random_compat",

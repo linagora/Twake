@@ -35,12 +35,12 @@ class NotificationMailCommand extends ContainerAwareCommand
         $delay = 60 * 30;
         $app = $em->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "messages"));
         $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before, $delay, $app);
-        $this->sendMail($users_id_count, "messages_notifications");
+        $this->sendMail($users_id_count, "messages_notifications", $app);
         $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before);
 
     }
 
-    protected function sendMail($users_id_count, $template = "unread_notifications")
+    protected function sendMail($users_id_count, $template = "unread_notifications", $app = null)
     {
 
         $services = $this->getApplication()->getKernel()->getContainer();
@@ -52,7 +52,11 @@ class NotificationMailCommand extends ContainerAwareCommand
             $count = $user_id_count[2];
 
             $user = $em->getRepository("TwakeUsersBundle:User")->find($user_id);
-            $notifications = $em->getRepository("TwakeNotificationsBundle:Notification")->findBy(Array("user" => $user_id), Array("date" => "DESC"), min(10, $count));
+            $filter = Array("user" => $user_id);
+            if ($app) {
+                $filter["application"] = $app;
+            }
+            $notifications = $em->getRepository("TwakeNotificationsBundle:Notification")->findBy($filter, Array("date" => "DESC"), min(10, $count));
 
             $data = Array(
                 "username" => $user->getUsername(),

@@ -54,6 +54,7 @@ class AppKernel extends Kernel
             new DevelopersApiV1\CalendarBundle\DevelopersApiV1CalendarBundle(),
             new DevelopersApiV1\ProjectBundle\DevelopersApiV1ProjectBundle(),
             new DevelopersApiV1\WorkspacesBundle\DevelopersApiV1WorkspacesBundle(),
+            new Onurb\Bundle\YumlBundle\OnurbYumlBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
