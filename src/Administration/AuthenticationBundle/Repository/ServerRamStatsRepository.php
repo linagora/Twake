@@ -11,7 +11,7 @@ namespace Administration\AuthenticationBundle\Repository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Administration\AuthenticationBundle\Entity\ServerRamStats;
 
-class ServerRamStatsRepository extends \Doctrine\ORM\EntityRepository
+class ServerRamStatsRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
     public function getLastId()

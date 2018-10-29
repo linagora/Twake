@@ -85,6 +85,43 @@ class ImagesModifiers
 		$this->max_dimension = $md;
 	}
 
+
+    private function autorotate(\Imagick $image)
+    {
+        switch ($image->getImageOrientation()) {
+            case \Imagick::ORIENTATION_TOPLEFT:
+                break;
+            case \Imagick::ORIENTATION_TOPRIGHT:
+                $image->flopImage();
+                break;
+            case \Imagick::ORIENTATION_BOTTOMRIGHT:
+                $image->rotateImage("#000", 180);
+                break;
+            case \Imagick::ORIENTATION_BOTTOMLEFT:
+                $image->flopImage();
+                $image->rotateImage("#000", 180);
+                break;
+            case \Imagick::ORIENTATION_LEFTTOP:
+                $image->flopImage();
+                $image->rotateImage("#000", -90);
+                break;
+            case \Imagick::ORIENTATION_RIGHTTOP:
+                $image->rotateImage("#000", 90);
+                break;
+            case \Imagick::ORIENTATION_RIGHTBOTTOM:
+                $image->flopImage();
+                $image->rotateImage("#000", 90);
+                break;
+            case \Imagick::ORIENTATION_LEFTBOTTOM:
+                $image->rotateImage("#000", -90);
+                break;
+            default: // Invalid orientation
+                break;
+        }
+        $image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
+        return $image;
+    }
+
 	/**
 	 * Draw/create thumbnail image
 	 *
@@ -94,6 +131,7 @@ class ImagesModifiers
 	 */
 	public function draw($image_path, $target_path = null)
 	{
+
 		if(!file_exists($image_path)) // check if image exists
 		{
 			trigger_error('Image "' . $image_path . '" does not exist', E_USER_ERROR);
@@ -157,7 +195,12 @@ class ImagesModifiers
 		{
 			$img_new = $fc($img_new_w, $img_new_h);
 			$f = 'imagecreatefrom' . self::$__image_types[$img_type];
-			$img = $f($image_path);
+
+            $img = new \Imagick($image_path);
+            $img = $this->autorotate($img);
+            $img->writeImage();
+
+            $img = $f($image_path);
 			imagecopyresampled($img_new, $img, 0, 0, 0, 0, $img_new_w, $img_new_h, $img_w, $img_h);
 			imagedestroy($img);
 		}

@@ -4,7 +4,7 @@ namespace Administration\AuthenticationBundle\Repository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Administration\AuthenticationBundle\Entity\Errors;
 
-class ErrorsRepository extends \Doctrine\ORM\EntityRepository
+class ErrorsRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
     public function findAllIdOrderByOcc()
     {

@@ -5,6 +5,6 @@ namespace WebsiteApi\DriveBundle\Repository;
 /**
  * DriveSmartFolderRepository
  */
-class DriveSmartFolderRepository extends \Doctrine\ORM\EntityRepository
+class DriveSmartFolderRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 }

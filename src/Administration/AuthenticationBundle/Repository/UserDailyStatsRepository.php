@@ -11,7 +11,7 @@ use Symfony\Bridge\Doctrine\RegistryInterface;
 use Administration\AuthenticationBundle\Entity\UserDailyStats;
 use Symfony\Component\Validator\Constraints\DateTime;
 
-class UserDailyStatsRepository extends \Doctrine\ORM\EntityRepository
+class UserDailyStatsRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
     public function getStatsPublicMessage($idUser,$startdate,$enddate){
 

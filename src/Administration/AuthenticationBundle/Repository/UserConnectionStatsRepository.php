@@ -9,8 +9,7 @@
 namespace Administration\AuthenticationBundle\Repository;
 
 
-
-class UserConnectionStatsRepository extends \Doctrine\ORM\EntityRepository
+class UserConnectionStatsRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
     public function getAllConnection($userId,$startdate,$enddate)
     {

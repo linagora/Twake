@@ -13,43 +13,43 @@ class ZpricingTest extends WebTestCaseExtended
 
     public function initData(){
 /**
-        $user = $this->newUser();
-        $this->getDoctrine()->persist($user);
-        $this->getDoctrine()->flush();
-
-        $group = $this->newGroup($user->getId());
-        $this->getDoctrine()->persist($group);
-        $this->getDoctrine()->flush();
-
-        $work = $this->newWorkspace($group->getId());
-        $this->getDoctrine()->persist($work);
-        $this->getDoctrine()->flush();
-
-        $this->get("app.workspace_members")->addMember($work->getId(),$user->getId());
-
-        // creer des utilisateurs
-        for($i = 1; $i < 10 ; $i++){
-            $user = $this->newUserByName("PHPUNIT".$i);
-            $this->get("app.workspace_members")->addMember($work->getId(),$user->getId());
-            $this->getDoctrine()->persist($user);
-        }
-
-        $pricing = new \WebsiteApi\WorkspacesBundle\Entity\PricingPlan("phpunit");
-        $pricing->setMonthPrice(30);
-        $pricing->setYearPrice(270);
-        $this->getDoctrine()->persist($pricing);
-
-        $groupPricing = new \WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance($group,"monthly",$pricing);
-        $this->getDoctrine()->persist($groupPricing);
-
-        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupPeriod");
-        $groupPeriod = $groupPeriodRepository->findOneBy(Array("group"=>$group));
-        $groupPeriod->getGroupPricingInstance($groupPricing);
-        $this->getDoctrine()->persist($groupPeriod);
-
-        $this->getDoctrine()->flush();
-
-        return $group;
+        * $user = $this->newUser();
+ * $this->get("app.doctrine_adapter")->persist($user);
+ * $this->get("app.doctrine_adapter")->flush();
+ *
+* $group = $this->newGroup($user->getId());
+ * $this->get("app.doctrine_adapter")->persist($group);
+ * $this->get("app.doctrine_adapter")->flush();
+ *
+* $work = $this->newWorkspace($group->getId());
+ * $this->get("app.doctrine_adapter")->persist($work);
+ * $this->get("app.doctrine_adapter")->flush();
+ *
+* $this->get("app.workspace_members")->addMember($work->getId(),$user->getId());
+ *
+* // creer des utilisateurs
+        * for($i = 1; $i < 10 ; $i++){
+            * $user = $this->newUserByName("PHPUNIT".$i);
+            * $this->get("app.workspace_members")->addMember($work->getId(),$user->getId());
+ * $this->get("app.doctrine_adapter")->persist($user);
+        * }
+ *
+* $pricing = new \WebsiteApi\WorkspacesBundle\Entity\PricingPlan("phpunit");
+        * $pricing->setMonthPrice(30);
+        * $pricing->setYearPrice(270);
+ * $this->get("app.doctrine_adapter")->persist($pricing);
+ *
+* $groupPricing = new \WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance($group,"monthly",$pricing);
+ * $this->get("app.doctrine_adapter")->persist($groupPricing);
+ *
+ * $groupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:groupPeriod");
+        * $groupPeriod = $groupPeriodRepository->findOneBy(Array("group"=>$group));
+        * $groupPeriod->getGroupPricingInstance($groupPricing);
+ * $this->get("app.doctrine_adapter")->persist($groupPeriod);
+ *
+ * $this->get("app.doctrine_adapter")->flush();
+ *
+* return $group;
     */
     }
 
@@ -81,9 +81,10 @@ class ZpricingTest extends WebTestCaseExtended
     }
 
     //teste l'incrementation des connexions au jour
-    public function assertIncrementDailyData(){
-        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
-        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+    public function assertIncrementDailyData()
+    {
+        $groupUserRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("username" => "phpunit"));
         $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
 
@@ -93,8 +94,8 @@ class ZpricingTest extends WebTestCaseExtended
         $groupUser->setDidConnectToday(1);
         $groupUser->setUsedAppsToday(["14"]);
 
-        $this->getDoctrine()->persist($groupUser);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($groupUser);
+        $this->get("app.doctrine_adapter")->flush();
 
         // appeler une fois le cron
         $this->get("app.pricing_plan")->dailyDataGroupUser();
@@ -109,7 +110,7 @@ class ZpricingTest extends WebTestCaseExtended
     //teste la justesse des dates
     public function assertDates($group){
 
-        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+        $groupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupPeriod");
         $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
 
         $datedeb = $groupPeriod->getPeriodStartedAt();
@@ -125,21 +126,21 @@ class ZpricingTest extends WebTestCaseExtended
     //Teste le renouvellement de period
     public function assertRenew($group){
 
-        $groupPricingInstanceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+        $groupPricingInstanceRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
         $groupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
 
         $res = $this->get("app.group_period")->changePlanOrRenew($group,"monthly",1);
 
         $this->assertEquals($res, true, 'renew billing went Wrong : No group period  associated with test group');
 
-        $groupPricingInstanceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+        $groupPricingInstanceRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
         $newGroupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
 
         $this->assertTrue($groupPricingInstance->getId() != $newGroupPricingInstance->getId() , "Error : renew did not generate a new pricing instance");
         $this->assertEquals($newGroupPricingInstance->getBilledType(), "monthly", 'renew billing went Wrong : pricing instance have wrong billing type');
         $this->assertEquals($newGroupPricingInstance->getOriginalPricingReference()->getId(), 1, 'renew billing went Wrong : pricing instance have wrong pricing');
 
-        $closedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
+        $closedGroupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
         $closedGroupPeriod = $closedGroupPeriodRepository->findOneBy(Array("group" => $group));
 
         $this->assertTrue($closedGroupPeriod != null,"renew billing went wrong : period not closed");
@@ -149,10 +150,10 @@ class ZpricingTest extends WebTestCaseExtended
     //Teste le renouvellement de period
     public function assertEndOfPeriod($group){
 
-        $groupPricingInstanceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+        $groupPricingInstanceRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
         $groupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
 
-        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+        $groupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupPeriod");
         $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
 
         $this->assertNotNull($groupPricingInstance, 'closing period went Wrong : group pricing instance should not be null');
@@ -162,7 +163,7 @@ class ZpricingTest extends WebTestCaseExtended
         $this->assertNull($group->getPricingPlan(), 'closing period went Wrong : group\'s pricing plan should be null');
         $this->assertNull($groupPeriod->getGroupPricingInstance(), 'closing period went Wrong : group period\'s pricing instance should be null');
 
-        $closedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
+        $closedGroupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
         $closedGroupPeriod = $closedGroupPeriodRepository->findOneBy(Array("group" => $group));
 
         $this->assertTrue($closedGroupPeriod != null,"closing period went wrong : period not closed");
@@ -173,15 +174,15 @@ class ZpricingTest extends WebTestCaseExtended
     public function assertPeriodOverCost($group){
 
 
-        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+        $groupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupPeriod");
         $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
 
         $this->get("app.group_period")->groupPeriodOverCost($groupPeriod);
 
-        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+        $groupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupPeriod");
         $newgroupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
 
-        $closedGroupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
+        $closedGroupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:ClosedGroupPeriod");
         $closedGroupPeriod = $closedGroupPeriodRepository->findOneBy(Array("group" => $group));
 
         $this->assertTrue($groupPeriod->getId() != $newgroupPeriod->getId(),"closing period went wrong : old period not replaced by a new j+1");
@@ -190,9 +191,10 @@ class ZpricingTest extends WebTestCaseExtended
     }
 
     //teste l'incrementation des connexions des tests 5 fois
-    public function assertNbConnection(){
-        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
-        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+    public function assertNbConnection()
+    {
+        $groupUserRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("username" => "phpunit"));
         $groupUser = $groupUserRepository->findOneBy(Array("user" => $user));
 
@@ -204,8 +206,8 @@ class ZpricingTest extends WebTestCaseExtended
             $groupUser->setDidConnectToday(1);
             $groupUser->setUsedAppsToday(["14"]);
 
-            $this->getDoctrine()->persist($groupUser);
-            $this->getDoctrine()->flush();
+            $this->get("app.doctrine_adapter")->persist($groupUser);
+            $this->get("app.doctrine_adapter")->flush();
 
             $this->get("app.pricing_plan")->dailyDataGroupUser();
 
@@ -219,9 +221,10 @@ class ZpricingTest extends WebTestCaseExtended
      * Verify when user have last day of update
      */
 
-    public function assertNbConnections(){
-        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
-        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+    public function assertNbConnections()
+    {
+        $groupUserRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User");
 
         $user = $userRepository->findOneBy(Array("username" => "phpunit1"));
 
@@ -233,8 +236,8 @@ class ZpricingTest extends WebTestCaseExtended
         $groupUser->setUsedAppsToday(["14"]);
 
 
-            $this->getDoctrine()->persist($groupUser);
-            $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($groupUser);
+        $this->get("app.doctrine_adapter")->flush();
 
             $this->get("app.pricing_plan")->dailyDataGroupUser();
 
@@ -247,9 +250,10 @@ class ZpricingTest extends WebTestCaseExtended
      * Verify when GroupUser connect without use
      */
 
-    public function assertConnection(){
-        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
-        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+    public function assertConnection()
+    {
+        $groupUserRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User");
 
         $user = $userRepository->findOneBy(Array("username" => "phpunit3"));
 
@@ -259,8 +263,8 @@ class ZpricingTest extends WebTestCaseExtended
         $groupUser->setLastDayOfUpdate(date('z'));
         $groupUser->setDidConnectToday(1);
 
-        $this->getDoctrine()->persist($groupUser);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($groupUser);
+        $this->get("app.doctrine_adapter")->flush();
 
         $this->get("app.pricing_plan")->dailyDataGroupUser();
 
@@ -271,11 +275,12 @@ class ZpricingTest extends WebTestCaseExtended
 
     }
 
-    public function getMonthlyData($group){
-        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
-        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+    public function getMonthlyData($group)
+    {
+        $groupUserRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User");
 
-        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupPeriod");
+        $groupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:groupPeriod");
         $groupPeriod = $groupPeriodRepository->findOneBy(Array("group"=>$group));
 
         $user = $userRepository->findOneBy(Array("username" => "phpunit1"));
@@ -288,8 +293,8 @@ class ZpricingTest extends WebTestCaseExtended
         $groupUser->setUsedAppsToday(["14"]);
 
 
-        $this->getDoctrine()->persist($groupUser);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($groupUser);
+        $this->get("app.doctrine_adapter")->flush();
 
         $this->get("app.pricing_plan")->dailyDataGroupUser();
 
@@ -299,11 +304,12 @@ class ZpricingTest extends WebTestCaseExtended
 
     }
 
-    public function MonthlyData($group){
-        $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupUser");
-        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+    public function MonthlyData($group)
+    {
+        $groupUserRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:groupUser");
+        $userRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User");
 
-        $groupPeriodRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:groupPeriod");
+        $groupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:groupPeriod");
         $groupPeriod = $groupPeriodRepository->findOneBy(Array("group"=>$group));
 
         $user = $userRepository->findOneBy(Array("username" => "phpunit1"));
@@ -316,8 +322,8 @@ class ZpricingTest extends WebTestCaseExtended
         $groupUser->setUsedAppsToday(["14"]);
 
 
-        $this->getDoctrine()->persist($groupUser);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($groupUser);
+        $this->get("app.doctrine_adapter")->flush();
 
         $this->get("app.pricing_plan")->dailyDataGroupUser();
 

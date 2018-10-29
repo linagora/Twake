@@ -27,8 +27,8 @@ class CalendarActivityController extends Controller
         $application_tmp = $request->request->get("application");
         $workspace_id_tmp = $request->request->get("workspace_id");
 
-        $workspace_id = $this->getDoctrine()->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
-        $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->find($application_tmp);
+        $workspace_id = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
+        $application = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeMarketBundle:Application")->find($application_tmp);
 
         $data['data'] = $this->get("app.calendarActivity")->createCalendarActivity($application, $workspace_id, $this->getUser()->getId());
 
@@ -41,8 +41,8 @@ class CalendarActivityController extends Controller
         $application_tmp = $request->request->get("application");
         $workspace_id_tmp = $request->request->get("workspace_id");
 
-        $workspace_id = $this->getDoctrine()->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
-        $application = $this->getDoctrine()->getManager()->getRepository("TwakeMarketBundle:Application")->find($application_tmp);
+        $workspace_id = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
+        $application = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeMarketBundle:Application")->find($application_tmp);
 
         $user = $this->getUser();
         $delete = $this->get('app.calendarActivity')->removeAll($application, $workspace_id, $user, null, true);
@@ -55,7 +55,7 @@ class CalendarActivityController extends Controller
 
         $workspace_id_tmp = $request->request->get("workspaceId");
 
-        $workspace_id = $this->getDoctrine()->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
+        $workspace_id = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
 
         $user = $this->getUser();
         $read = $this->get('app.calendarActivity')->readAll($workspace_id, $user);
@@ -67,7 +67,7 @@ class CalendarActivityController extends Controller
         $activity_id = $request->request->get("activityId");
         $workspace_id= $request->request->get("workspaceId");
 
-        $workspaceId = $this->getDoctrine()->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id);
+        $workspaceId = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id);
         $read = $this->get('app.calendarActivity')->readOne($workspaceId,$activity_id);
         return new JsonResponse();
     }

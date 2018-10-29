@@ -20,9 +20,9 @@ class WorkspaceTest extends WebTestCaseExtended
         $group = $this->newGroup($user->getId());
         $work = $this->newWorkspace($group->getId());
 
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->flush();
 
-        $workspaceappRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+        $workspaceappRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
         $workspaceapp = $workspaceappRepository->findBy(Array("workspace" => $work));
 
         $app = $workspaceapp[0];
@@ -40,7 +40,7 @@ class WorkspaceTest extends WebTestCaseExtended
         $workspaceapp = $workspaceappRepository->findBy(Array("workspace" => $work));
         $this->assertEquals($npWorkApp, count($workspaceapp), "test activer appplication");
 
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->flush();
         */
     }
 }

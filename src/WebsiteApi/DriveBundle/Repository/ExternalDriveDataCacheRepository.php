@@ -11,6 +11,6 @@ namespace WebsiteApi\DriveBundle\Repository;
 
 use WebsiteApi\DriveBundle\Entity\ExternalDriveDataCache;
 
-class ExternalDriveDataCacheRepository extends \Doctrine\ORM\EntityRepository
+class ExternalDriveDataCacheRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 }

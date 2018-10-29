@@ -31,11 +31,11 @@ class WebTestCaseExtended extends WebTestCase
         $user = $this->get("app.user")->subscribe($userToken,null, "phpunit","phpunit",true);
 
         if (!$user) {
-            return $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "phpunit"));
+            return $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "phpunit"));
         }
 
-        $this->getDoctrine()->persist($user);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($user);
+        $this->get("app.doctrine_adapter")->flush();
 
         return $user;
     }
@@ -45,29 +45,29 @@ class WebTestCaseExtended extends WebTestCase
         $user = $this->get("app.user")->subscribe($userToken,null, $name,$name,true);
 
         if (!$user) {
-            return $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => $name));
+            return $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => $name));
         }
 
-        $this->getDoctrine()->persist($user);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($user);
+        $this->get("app.doctrine_adapter")->flush();
 
         return $user;
     }
 
     public function newGroup($userId){
         $group = $this->get("app.groups")->create($userId,"phpunit","phpunit",1);
-        $this->getDoctrine()->persist($group);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($group);
+        $this->get("app.doctrine_adapter")->flush();
 
         $groupIdentity = $this->get("app.group_identitys")->create($group, "fake","fake","fake",0);
-        $this->getDoctrine()->persist($groupIdentity);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($groupIdentity);
+        $this->get("app.doctrine_adapter")->flush();
 
         return $group;
     }
 
     public function newWorkspace($groupId){
-        $userRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:User");
+        $userRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User");
        // $user = $userRepository->findByName("phpunit");
         $user = $userRepository->findOneBy(Array("username" => "phpunit"));
         if (count($user) == 0) {
@@ -77,8 +77,8 @@ class WebTestCaseExtended extends WebTestCase
 
         $userId = $user->getId(); //TODO
         $work = $this->get("app.workspaces")->create("phpunit", $groupId, $userId); // Get a service and run function
-        $this->getDoctrine()->persist($work);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($work);
+        $this->get("app.doctrine_adapter")->flush();
 
         return $work;
     }

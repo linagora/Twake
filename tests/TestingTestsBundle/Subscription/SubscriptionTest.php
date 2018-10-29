@@ -27,14 +27,14 @@ class SubscriptionTest extends WebTestCaseExtended
         $pricing_plan = new PricingPlan("testPHP");
         $pricing_plan->setMonthPrice(100);
         $pricing_plan->setYearPrice(1200);
-        $this->getDoctrine()->persist($pricing_plan);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($pricing_plan);
+        $this->get("app.doctrine_adapter")->flush();
 
         $pricing_plan_2 = new PricingPlan("testChangementPlan");
         $pricing_plan_2->setMonthPrice(200);
         $pricing_plan_2->setYearPrice(1400);
-        $this->getDoctrine()->persist($pricing_plan_2);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($pricing_plan_2);
+        $this->get("app.doctrine_adapter")->flush();
 
         $events_default = Array();
 
@@ -89,7 +89,7 @@ class SubscriptionTest extends WebTestCaseExtended
         var_dump("before scenario");
         $scenario = new ScenarioPayment($this,"benoit.tallandier@telecomnancy.net", "Benoit",
             "BN", "Group_Test", "Project",$pricing_plan,
-            8, $this->getDoctrine(), 2,$list_freq,
+            8, $this->get("app.doctrine_adapter"), 2, $list_freq,
             false,false, $events3);
         var_dump("after creation scenario, and before exec()");
         $scenario->exec();
@@ -98,23 +98,23 @@ class SubscriptionTest extends WebTestCaseExtended
 
 
         $user = $this->newUserByName("phpunit");
-        $this->getDoctrine()->persist($user);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($user);
+        $this->get("app.doctrine_adapter")->flush();
 
         $group = $this->newGroup($user->getId());
-        $this->getDoctrine()->persist($group);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($group);
+        $this->get("app.doctrine_adapter")->flush();
 
         $work = $this->newWorkspace($group->getId());
-        $this->getDoctrine()->persist($work);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($work);
+        $this->get("app.doctrine_adapter")->flush();
 
 
         try {
 
             $subscription = $this->newSubscription($group, $pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false);
-            $this->getDoctrine()->persist($subscription);
-            $this->getDoctrine()->flush();
+            $this->get("app.doctrine_adapter")->persist($subscription);
+            $this->get("app.doctrine_adapter")->flush();
 
         } catch (\Exception $e) {
             \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : " . $e->getTraceAsString());
@@ -245,8 +245,8 @@ class SubscriptionTest extends WebTestCaseExtended
         $pricing_plan_cher = new \WebsiteApi\WorkspacesBundle\Entity\PricingPlan("testCher");
         $pricing_plan_cher->setMonthPrice(1000);
         $pricing_plan_cher->setYearPrice(12000);
-        $this->getDoctrine()->persist($pricing_plan_cher);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($pricing_plan_cher);
+        $this->get("app.doctrine_adapter")->flush();
 
         try{
             $cost = $sub->getBalance()+$this->get("app.subscription_system")->getRemainingBalance($sub->getGroup());
@@ -285,8 +285,8 @@ class SubscriptionTest extends WebTestCaseExtended
         $pricing_plan = new \WebsiteApi\WorkspacesBundle\Entity\Pricingplan("testPHPpasCher");
         $pricing_plan->setMonthPrice(10);
         $pricing_plan->setYearPrice( 120);
-        $this->getDoctrine()->persist($pricing_plan);
-        //$this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($pricing_plan);
+        //$this->get("app.doctrine_adapter")->flush();
         try{
             $cost = $sub->getBalance()+$this->get("app.subscription_system")->getRemainingBalance($sub->getGroup());
             $bill =  $this->get("app.subscription_manager")->renew($sub->getGroup(),$pricing_plan, $pricing_plan->getMonthPrice(), new \DateTime('now'), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false,$cost);
@@ -360,23 +360,23 @@ class SubscriptionTest extends WebTestCaseExtended
     public function assertUpdateLockDate(){
 
         $user = $this->newUserByName("phpunit2");
-        $this->getDoctrine()->persist($user);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($user);
+        $this->get("app.doctrine_adapter")->flush();
 
         $group = $this->newGroup($user->getId());
-        $this->getDoctrine()->persist($group);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($group);
+        $this->get("app.doctrine_adapter")->flush();
 
         $pricing_plan = new \WebsiteApi\WorkspacesBundle\Entity\Pricingplan("testPHPLock");
         $pricing_plan->setMonthPrice(100);
         $pricing_plan->setYearPrice( 1200);
-        $this->getDoctrine()->persist($pricing_plan);
-        //$this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($pricing_plan);
+        //$this->get("app.doctrine_adapter")->flush();
 
         try{
             $subscription = $this->newSubscription($group,$pricing_plan, $pricing_plan->getMonthPrice(), (new \DateTime('now'))->sub(new \DateInterval("P5D")), (new \DateTime('now'))->add(new \DateInterval("P1M")), false, false);
-            $this->getDoctrine()->persist($subscription);
-            $this->getDoctrine()->flush();
+            $this->get("app.doctrine_adapter")->persist($subscription);
+            $this->get("app.doctrine_adapter")->flush();
 
         }catch(\Exception $e){
             \Monolog\Handler\error_log("Pb avec l'init de subscription, error log : ".$e->getTraceAsString());
@@ -393,8 +393,8 @@ class SubscriptionTest extends WebTestCaseExtended
         //modif de la date en bd
         $testLockDate = $this->get("app.subscription_system")->testChangeLockDate($group);
         //var_dump($testLockDate);
-        $this->getDoctrine()->persist($group);
-        $this->getDoctrine()->flush();
+        $this->get("app.doctrine_adapter")->persist($group);
+        $this->get("app.doctrine_adapter")->flush();
         $this->assertTrue($this->get("app.subscription_manager")->checkLocked()[$subscription->getGroup()->getId()],"Doit être true car lock avec le overusing");
 
 

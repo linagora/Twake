@@ -11,6 +11,6 @@ namespace WebsiteApi\DriveBundle\Repository;
 
 use WebsiteApi\DriveBundle\Entity\ExternalDrive;
 
-class ExternalDriveRepository extends \Doctrine\ORM\EntityRepository
+class ExternalDriveRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 }

@@ -1,35 +1,35 @@
 services:
     app.messages:
             class: WebsiteApi\DiscussionBundle\Services\MessageSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker', "@app.command_executor", '@app.pusher','@app.workspace_levels','@app.drive.adapter_selector', '@app.messagesNotificationsCenter', '@app.user_stats', '@app.workspace_stats']
+            arguments: ["@app.string_cleaner", "@app.doctrine_adapter", '@security.authorization_checker', "@app.command_executor", '@app.pusher','@app.workspace_levels','@app.drive.adapter_selector', '@app.messagesNotificationsCenter', '@app.user_stats', '@app.workspace_stats']
 
     app.messages_master:
             class: WebsiteApi\DiscussionBundle\Services\MessagesMasterService
-            arguments: ["@doctrine.orm.entity_manager",'@app.workspace_levels']
+            arguments: ["@app.doctrine_adapter",'@app.workspace_levels']
 
     app.streamSystem:
             class: WebsiteApi\DiscussionBundle\Services\StreamSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@app.pusher', '@app.contacts', '@app.workspace_levels', '@app.workspace_members','@app.messagesNotificationsCenter','@app.callSystem',"@app.messages"]
+            arguments: ["@app.string_cleaner", "@app.doctrine_adapter", '@security.authorization_checker','@app.pusher', '@app.contacts', '@app.workspace_levels', '@app.workspace_members','@app.messagesNotificationsCenter','@app.callSystem',"@app.messages"]
 
     app.subjectSystem:
             class: WebsiteApi\DiscussionBundle\Services\SubjectSystem
-            arguments: ["@app.string_cleaner", "@doctrine.orm.entity_manager", '@security.authorization_checker','@app.pusher','@app.workspace_levels','@app.messages', '@app.objectLinks', '@website_api_market.applications']
+            arguments: ["@app.string_cleaner", "@app.doctrine_adapter", '@security.authorization_checker','@app.pusher','@app.workspace_levels','@app.messages', '@app.objectLinks', '@website_api_market.applications']
 
     app.messagesNotificationsCenter:
             class: WebsiteApi\DiscussionBundle\Services\MessagesNotificationsCenter
-            arguments: [ "@doctrine.orm.entity_manager","@app.notifications",'@app.pusher', "@app.workspaces"]
+            arguments: [ "@app.doctrine_adapter","@app.notifications",'@app.pusher', "@app.workspaces"]
 
     discussion.topic:
           class: WebsiteApi\DiscussionBundle\Topic\DiscussionTopic
           tags:
               - { name: gos_web_socket.topic }
-          arguments: ["@app.messages","@app.subjectSystem" , "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager", "@app.notifications"]
+          arguments: ["@app.messages","@app.subjectSystem" , "@gos_web_socket.websocket.client_manipulator", "@app.doctrine_adapter", "@app.notifications"]
 
     discussion.notifications.topic:
           class: WebsiteApi\DiscussionBundle\Topic\NotificationsCenterTopic
           tags:
               - { name: gos_web_socket.topic }
-          arguments: ["@app.streamSystem", "@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager"]
+          arguments: ["@app.streamSystem", "@gos_web_socket.websocket.client_manipulator", "@app.doctrine_adapter"]
 
     discussionspace.topic:
           class: WebsiteApi\DiscussionBundle\Topic\DiscussionSpaceTopic

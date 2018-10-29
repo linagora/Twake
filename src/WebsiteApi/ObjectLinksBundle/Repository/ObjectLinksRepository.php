@@ -9,7 +9,7 @@
 namespace WebsiteApi\ObjectLinksBundle\Repository;
 
 
-class ObjectLinksRepository extends \Doctrine\ORM\EntityRepository
+class ObjectLinksRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
 }

@@ -11,7 +11,7 @@ namespace Administration\AuthenticationBundle\Repository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Administration\AuthenticationBundle\Entity\WorkspaceDailyStats;
 
-class WorkspaceDailyStatsRepository extends \Doctrine\ORM\EntityRepository
+class WorkspaceDailyStatsRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
     public function getStatsPublicMessageByWorkspace($idWorkspace,$startdate,$enddate){
 

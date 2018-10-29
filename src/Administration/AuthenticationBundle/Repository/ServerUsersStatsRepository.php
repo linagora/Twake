@@ -11,7 +11,7 @@ namespace Administration\AuthenticationBundle\Repository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Administration\AuthenticationBundle\Entity\ServerRamStats;
 
-class ServerUsersStatsRepository extends \Doctrine\ORM\EntityRepository
+class ServerUsersStatsRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
 }

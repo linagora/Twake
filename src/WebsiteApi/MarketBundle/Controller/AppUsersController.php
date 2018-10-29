@@ -19,7 +19,7 @@ class AppUsersController extends Controller
   public function acquireAction(Request $request){
 
 
-    $manager = $this->getDoctrine()->getManager();
+      $manager = $this->get("app.doctrine_adapter")->getManager();
     $data = array(
       "data" => Array(),
       "errors" => Array()
@@ -69,7 +69,7 @@ class AppUsersController extends Controller
 
     public function removeAction(Request $request)
     {
-        $manager = $this->getDoctrine()->getManager();
+        $manager = $this->get("app.doctrine_adapter")->getManager();
         $data = array(
             "data" => Array(),
             "errors" => Array()
@@ -115,7 +115,7 @@ class AppUsersController extends Controller
     }
 
   public function voteAction(Request $request){
-    $manager = $this->getDoctrine()->getManager();
+      $manager = $this->get("app.doctrine_adapter")->getManager();
     $data = array(
       "data" => Array(),
       "errors" => Array()

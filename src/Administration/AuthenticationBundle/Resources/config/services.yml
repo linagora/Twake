@@ -2,39 +2,39 @@ services:
 
     admin.Authentication:
         class: Administration\AuthenticationBundle\Services\AdministrationAuthentication
-        arguments: ["@doctrine.orm.entity_manager", "@security.encoder_factory"]
+        arguments: ["@app.doctrine_adapter", "@security.encoder_factory"]
 
     admin.Management:
         class: Administration\AuthenticationBundle\Services\AdministrationUpdate
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@app.doctrine_adapter"]
 
     admin.TwakeUserManagement:
         class: Administration\AuthenticationBundle\Services\AdministrationTwakeUserManagement
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@app.doctrine_adapter"]
 
     admin.TwakeGroupManagement:
         class: Administration\AuthenticationBundle\Services\AdministrationTwakeGroupManagement
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@app.doctrine_adapter"]
 
     admin.TwakeStatistics:
         class: Administration\AuthenticationBundle\Services\AdministrationStatistics
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@app.doctrine_adapter"]
 
     admin.TwakeDailyConnection:
         class: Administration\AuthenticationBundle\Services\AdministrationConnection
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@app.doctrine_adapter"]
 
     admin.TwakeDailyMessage:
         class: Administration\AuthenticationBundle\Services\AdministrationMessageStats
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@app.doctrine_adapter"]
 
     admin.TwakeServerStats:
         class: Administration\AuthenticationBundle\Services\AdministrationServerStats
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@app.doctrine_adapter"]
 
     admin.TwakeErrorsListener:
         class: Administration\AuthenticationBundle\EventSubscriber\ErrorsListener
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@app.doctrine_adapter"]
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
 

@@ -111,6 +111,42 @@ class DrivePreview
         return true;
     }
 
+    private function autorotate(\Imagick $image)
+    {
+        switch ($image->getImageOrientation()) {
+            case \Imagick::ORIENTATION_TOPLEFT:
+                break;
+            case \Imagick::ORIENTATION_TOPRIGHT:
+                $image->flopImage();
+                break;
+            case \Imagick::ORIENTATION_BOTTOMRIGHT:
+                $image->rotateImage("#000", 180);
+                break;
+            case \Imagick::ORIENTATION_BOTTOMLEFT:
+                $image->flopImage();
+                $image->rotateImage("#000", 180);
+                break;
+            case \Imagick::ORIENTATION_LEFTTOP:
+                $image->flopImage();
+                $image->rotateImage("#000", -90);
+                break;
+            case \Imagick::ORIENTATION_RIGHTTOP:
+                $image->rotateImage("#000", 90);
+                break;
+            case \Imagick::ORIENTATION_RIGHTBOTTOM:
+                $image->flopImage();
+                $image->rotateImage("#000", 90);
+                break;
+            case \Imagick::ORIENTATION_LEFTBOTTOM:
+                $image->rotateImage("#000", -90);
+                break;
+            default: // Invalid orientation
+                break;
+        }
+        $image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
+        return $image;
+    }
+
     public function generateImagePreview($filename, $file, $path, $isText = false, $isOffice = false)
     {
         $filepath = $path . "/" . $filename;
@@ -128,6 +164,8 @@ class DrivePreview
             $im->readimage($file);
         }
 
+        $im = $this->autorotate($im);
+
         // get the current image dimensions
         $im->ThumbnailImage($width, $height, true);
         $geo = $im->getImageGeometry();
@@ -140,7 +178,6 @@ class DrivePreview
         $canvas->compositeImage($im, \Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
 
         $im = $canvas;
-
 
         // thumbnail the image
 

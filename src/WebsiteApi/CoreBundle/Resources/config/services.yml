@@ -6,11 +6,25 @@ services:
 
     app.pusher:
         class: WebsiteApi\CoreBundle\Services\ZMQPusher
-        arguments: ["%websocket_pusher_remote_host%", "%websocket_pusher_port%", "@doctrine.orm.entity_manager"]
+        arguments: ["%websocket_pusher_remote_host%", "%websocket_pusher_port%", "@app.doctrine_adapter"]
 
     app.translate:
         class: WebsiteApi\CoreBundle\Services\Translate
         arguments: []
 
+    app.doctrine_adapter:
+        class: WebsiteApi\CoreBundle\Services\DoctrineAdapter\ManagerAdapter
+        arguments: ["@doctrine.orm.entity_manager"]
+
     websocket.pdo.ping:
         class: WebsiteApi\CoreBundle\Services\PDOPinger
+
+    websocket.command:
+        class: WebsiteApi\CoreBundle\Command\WebsocketServerCommand
+        arguments:
+            - '@gos_web_socket.entry_point'
+            - '%web_socket_server.host%'
+            - '%web_socket_server.port%'
+            - '@?monolog.logger.websocket'
+        tags:
+            - { name: console.command, command: twake:websocket:run }

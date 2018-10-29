@@ -9,7 +9,7 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  * repository methods below.
  */
 
-class WorkspaceStatsRepository extends \Doctrine\ORM\EntityRepository
+class WorkspaceStatsRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
 }

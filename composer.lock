@@ -4,7 +4,7 @@
       "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-  "content-hash": "56837117de6b4eedb87da6bc8ded6074",
+  "content-hash": "308746e685dba3776b7d0aec99dee1c3",
     "packages": [
         {
           "name": "aws/aws-sdk-php",
@@ -3218,136 +3218,8 @@
             "time": "2017-05-04T11:12:50+00:00"
         },
         {
-          "name": "onurb/doctrine-metadata-grapher",
-          "version": "1.1.11",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/Nono1971/Doctrine-MetadataGrapher.git",
-            "reference": "414b95f81d36b6530b083b296c5eeb700679ab3b"
-          },
-          "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/Nono1971/Doctrine-MetadataGrapher/zipball/414b95f81d36b6530b083b296c5eeb700679ab3b",
-            "reference": "414b95f81d36b6530b083b296c5eeb700679ab3b",
-            "shasum": ""
-          },
-          "require": {
-            "doctrine/annotations": "1.*",
-            "doctrine/orm": "^2.5",
-            "php": ">=5.3.2"
-          },
-          "require-dev": {
-            "phpunit/phpunit": "~6.5",
-            "squizlabs/php_codesniffer": "~2"
-          },
-          "suggest": {
-            "onurb/doctrine-yuml-bundle": "Symfony bundle to generate Entities mapping"
-          },
-          "type": "library",
-          "autoload": {
-            "psr-4": {
-              "Onurb\\Doctrine\\ORMMetadataGrapher\\": "lib/Onurb/Doctrine/ORMMetadataGrapher/"
-            }
-          },
-          "notification-url": "https://packagist.org/downloads/",
-          "authors": [
-            {
-              "name": "Marco Pivetta",
-              "email": "ocramius@gmail.com"
-            },
-            {
-              "name": "Bruno Heron",
-              "email": "herobrun@gmail.com"
-            }
-          ],
-          "description": "Helper to format doctrine metadata for UML API",
-          "homepage": "http://www.doctrine-project.org/",
-          "keywords": [
-            "diagram",
-            "doctrine",
-            "grapher",
-            "metadata",
-            "orm",
-            "yuml"
-          ],
-          "time": "2018-02-18T00:55:15+00:00"
-        },
-      {
-        "name": "onurb/doctrine-yuml-bundle",
-        "version": "1.1.1",
-        "source": {
-          "type": "git",
-          "url": "https://github.com/Nono1971/doctrine-yuml-bundle.git",
-          "reference": "4edf763d4e8bd05615e068a05f34cbfd4fe1e30a"
-        },
-        "dist": {
-          "type": "zip",
-          "url": "https://api.github.com/repos/Nono1971/doctrine-yuml-bundle/zipball/4edf763d4e8bd05615e068a05f34cbfd4fe1e30a",
-          "reference": "4edf763d4e8bd05615e068a05f34cbfd4fe1e30a",
-          "shasum": ""
-        },
-        "require": {
-          "doctrine/common": "~2.0",
-          "doctrine/orm": "~2.0",
-          "onurb/doctrine-metadata-grapher": "~1.0",
-          "php": ">=5.3.2"
-        },
-        "require-dev": {
-          "doctrine/doctrine-bundle": "^1.5",
-          "php": ">7.0",
-          "phpunit/phpunit": "~6.5",
-          "squizlabs/php_codesniffer": "~2",
-          "symfony/symfony": "~3.0|~4.0"
-        },
-        "type": "symfony-bundle",
-        "extra": {
-          "symfony": {
-            "allow-contrib": "true"
-          }
-        },
-        "autoload": {
-          "psr-4": {
-            "Onurb\\Bundle\\YumlBundle\\": "lib/Onurb/Bundle/YumlBundle/"
-          }
-        },
-        "notification-url": "https://packagist.org/downloads/",
-        "license": [
-          "MIT"
-        ],
-        "authors": [
-          {
-            "name": "Symfony Community",
-            "homepage": "http://symfony.com/contributors"
-          },
-          {
-            "name": "Doctrine Project",
-            "homepage": "http://www.doctrine-project.org/"
-          },
-          {
-            "name": "Marco Pivetta",
-            "email": "ocramius@gmail.com"
-          },
-          {
-            "name": "Bruno Heron",
-            "email": "herobrun@gmail.com"
-          }
-        ],
-        "description": "Symfony Bundle to visualize the mapping of your entities with Yuml",
-        "keywords": [
-          "bundle",
-          "diagram",
-          "doctrine",
-          "graph",
-          "mapping",
-          "symfony",
-          "uml",
-          "yuml"
-        ],
-        "time": "2018-02-13T19:58:42+00:00"
-      },
-      {
             "name": "pagerfanta/pagerfanta",
-        "version": "v2.0.1",
+          "version": "v2.0.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/whiteoctober/Pagerfanta.git",
@@ -3412,7 +3284,7 @@
                 "paginator",
                 "paging"
             ],
-        "time": "2018-05-17T09:23:52+00:00"
+          "time": "2018-05-17T09:23:52+00:00"
         },
         {
             "name": "paragonie/random_compat",

@@ -25,7 +25,7 @@ class CurrentUserController extends Controller
 		    "errors" => Array()
 	    );
 
-        $manager = $this->getDoctrine()->getManager();
+        $manager = $this->get("app.doctrine_adapter")->getManager();
 
         /** @var DataToken $t */
         $t = $this->get("website_api_market.data_token")->getDataToken($requestData["token"]);

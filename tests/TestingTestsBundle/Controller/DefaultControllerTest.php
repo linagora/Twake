@@ -8,7 +8,7 @@ class DefaultControllerTest extends WebTestCaseExtended
 {
     public function testIndex()
     {
-        // $this->getDoctrine(); // Get Doctrine Entity Manager
+        // $this->get("app.doctrine_adapter"); // Get Doctrine Entity Manager
         // $this->get("app.service_name")->function(); // Get a service and run function
 //        $a = 1;
 //        $b = 1;

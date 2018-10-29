@@ -2,44 +2,44 @@ services:
 
     app.group_managers:
         class: WebsiteApi\WorkspacesBundle\Services\GroupManagers
-        arguments: ["@doctrine.orm.entity_manager", "@app.twake_mailer", "@app.pusher"]
+        arguments: ["@app.doctrine_adapter", "@app.twake_mailer", "@app.pusher"]
 
     app.groups:
         class: WebsiteApi\WorkspacesBundle\Services\Groups
-        arguments: ["@doctrine.orm.entity_manager", "@app.group_managers","@website_api_market.applications","@app.string_cleaner","@app.group_period","@app.workspace_members"]
+        arguments: ["@app.doctrine_adapter", "@app.group_managers","@website_api_market.applications","@app.string_cleaner","@app.group_period","@app.workspace_members"]
 
     app.group_apps:
         class: WebsiteApi\WorkspacesBundle\Services\GroupApps
-        arguments: ["@doctrine.orm.entity_manager", "@app.group_managers"]
+        arguments: ["@app.doctrine_adapter", "@app.group_managers"]
 
     app.group_period:
         class: WebsiteApi\WorkspacesBundle\Services\GroupPeriods
-        arguments: ["@doctrine.orm.entity_manager", "@app.subscription_system"]
+        arguments: ["@app.doctrine_adapter", "@app.subscription_system"]
 
     app.pricing_plan:
         class: WebsiteApi\WorkspacesBundle\Services\PricingPlan
-        arguments: ["@doctrine.orm.entity_manager","@app.group_period"]
+        arguments: ["@app.doctrine_adapter","@app.group_period"]
 
     app.workspace_levels:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceLevels
-        arguments: ["@doctrine.orm.entity_manager", "@app.pusher"]
+        arguments: ["@app.doctrine_adapter", "@app.pusher"]
 
     app.workspace_members:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceMembers
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner","@app.pusher","@app.pricing_plan", "@app.messages_master", "@app.calendars",'@app.workspaces_activities']
+        arguments: ["@app.doctrine_adapter", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner","@app.pusher","@app.pricing_plan", "@app.messages_master", "@app.calendars",'@app.workspaces_activities']
 
     app.workspaces:
         class: WebsiteApi\WorkspacesBundle\Services\Workspaces
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.workspace_stats", "@app.groups", "@app.pricing_plan","@app.string_cleaner","@app.pusher",'@app.workspaces_activities','@app.translate','@app.board_tasks','@app.calendars','@app.calendar_events','@app.drive.adapter_selector']
+        arguments: ["@app.doctrine_adapter", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.workspace_stats", "@app.groups", "@app.pricing_plan","@app.string_cleaner","@app.pusher",'@app.workspaces_activities','@app.translate','@app.board_tasks','@app.calendars','@app.calendar_events','@app.drive.adapter_selector']
 
     app.workspaces_activities:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesActivities
-        arguments: ["@doctrine.orm.entity_manager", '@website_api_market.applications']
+        arguments: ["@app.doctrine_adapter", '@website_api_market.applications']
 
     app.workspaces_apps:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesApps
-        arguments: ["@doctrine.orm.entity_manager", "@app.workspace_levels", "@app.group_apps","@app.group_managers","@app.pusher"]
+        arguments: ["@app.doctrine_adapter", "@app.workspace_levels", "@app.group_apps","@app.group_managers","@app.pusher"]
 
     app.workspace_stats:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceStats
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@app.doctrine_adapter"]

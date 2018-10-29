@@ -5,7 +5,7 @@ namespace WebsiteApi\DriveBundle\Repository;
 /**
  * DriveFileVersionRepository
  */
-class DriveFileVersionRepository extends \Doctrine\ORM\EntityRepository
+class DriveFileVersionRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
 }

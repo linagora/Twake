@@ -51,7 +51,7 @@ $translation = Array(
     "calendar.interview" => "Publicité TV",
 
     "message.hello1" => "Bonjour $1, bienvenue sur Twake !:tada:",
-    "message.hello2" => "Je suis Twake_bot, je suis ici pour t'aider",
+    "message.hello2" => "Je suis Twake_bot, je suis ici pour vous aider",
     "message.hello3" => "Prêt à utiliser Twake ? :grinning:",
 
 
