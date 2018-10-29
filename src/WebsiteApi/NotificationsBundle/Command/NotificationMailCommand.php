@@ -51,30 +51,39 @@ class NotificationMailCommand extends ContainerAwareCommand
             $count = $user_id_count[2];
 
             $user = $em->getRepository("TwakeUsersBundle:User")->find($user_id);
-            $filter = Array("user" => $user_id);
-            if ($app) {
-                $filter["application"] = $app;
-            }
-            $notifications = $em->getRepository("TwakeNotificationsBundle:Notification")->findBy($filter, Array("date" => "DESC"), ($all_and_delete ? 10 : min(10, $count)));
 
-            $data = Array(
-                "username" => $user->getUsername(),
-                "total_notifications" => $count,
-                "notifications" => Array()
-            );
-            foreach ($notifications as $notification) {
-                $data["notifications"][] = Array(
-                    "title" => $notification->getTitle(),
-                    "delay" => (new \DateTime())->diff($notification->getDate())->format("%h"),
-                    "text" => $notification->getText()
+            $preferences = $user->getNotificationPreference();
+            $mail_preferences = isset($preferences["mail_notifications"]) ? $preferences["mail_notifications"] : 2;
+
+            if (($mail_preferences == 2) || ($mail_preferences == 1 && $app == null)) { // Everything or Only daily mails
+
+                $filter = Array("user" => $user_id);
+                if ($app) {
+                    $filter["application"] = $app;
+                }
+                $notifications = $em->getRepository("TwakeNotificationsBundle:Notification")->findBy($filter, Array("date" => "DESC"), ($all_and_delete ? 10 : min(10, $count)));
+
+                $data = Array(
+                    "username" => $user->getUsername(),
+                    "total_notifications" => $count,
+                    "notifications" => Array()
                 );
-            }
+                foreach ($notifications as $notification) {
+                    $data["notifications"][] = Array(
+                        "title" => $notification->getTitle(),
+                        "delay" => (new \DateTime())->diff($notification->getDate())->format("%h"),
+                        "text" => $notification->getText()
+                    );
+                }
 
-            $services->get("app.twake_mailer")->send($user->getEmail(), $template, $data);
+                $services->get("app.twake_mailer")->send($user->getEmail(), $template, $data);
+
+            }
 
             if ($all_and_delete) {
                 $em->getRepository("TwakeNotificationsBundle:Notification")->deleteForUser(1, $user);
             }
+
         }
 
     }
