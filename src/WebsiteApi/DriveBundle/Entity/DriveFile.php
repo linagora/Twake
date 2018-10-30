@@ -404,7 +404,11 @@ class DriveFile implements ObjectLinksInterface
      */
     public function setExtension($extension)
     {
-        $this->extension = $extension;
+        if (!$this->getIsDirectory()) {
+            $this->extension = $extension;
+        } else {
+            $this->extension = "";
+        }
     }
 
     /**
