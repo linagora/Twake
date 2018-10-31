@@ -65,7 +65,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $app->setCanCreateFile(1);
         $app->setIsCapable(0);
         $app->setDefault(1);
-        $app->setCreateFileData(json_decode('{"name": "Presentation", "url": "' . $serverbase . 'apps/OnlyOffice/empty.pptx", "extension": "pptx"}', true));
+        $app->setCreateFileData(json_decode('{"name": "Presentation", "url": "' . $serverbase . 'medias/apps/empty_files/empty.pptx", "extension": "pptx"}', true));
         $app->setFilesTypes(json_decode('{"main": ["pptx", "ppt", "odp"], "other": []}', true));
         $app->setMessageModule(0);
         $app->setOrder(1);
@@ -92,7 +92,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $app->setCanCreateFile(1);
         $app->setIsCapable(0);
         $app->setDefault(1);
-        $app->setCreateFileData(json_decode('{"name": "Document", "url": "' . $serverbase . 'apps/OnlyOffice/empty.docx", "extension": "docx"}', true));
+        $app->setCreateFileData(json_decode('{"name": "Document", "url": "' . $serverbase . 'medias/apps/empty_files/empty.docx", "extension": "docx"}', true));
         $app->setFilesTypes(json_decode('{"main": ["docx", "doc", "odt", "mht", "epub", "djvu", "xps"], "other": []}', true));
         $app->setMessageModule(0);
         $app->setOrder(1);
@@ -119,7 +119,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $app->setCanCreateFile(1);
         $app->setIsCapable(0);
         $app->setDefault(1);
-        $app->setCreateFileData(json_decode('{"name": "Spreadsheet", "url": "' . $serverbase . 'apps/OnlyOffice/empty.xlsx", "extension": "xlsx"}', true));
+        $app->setCreateFileData(json_decode('{"name": "Spreadsheet", "url": "' . $serverbase . 'medias/apps/empty_files/empty.xlsx", "extension": "xlsx"}', true));
         $app->setFilesTypes(json_decode('{"main": ["xlsx", "xls", "ods"], "other": ["csv"]}', true));
         $app->setMessageModule(0);
         $app->setOrder(1);
