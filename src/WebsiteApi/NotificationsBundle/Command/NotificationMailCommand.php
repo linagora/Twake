@@ -35,7 +35,7 @@ class NotificationMailCommand extends ContainerAwareCommand
         $app = $em->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "messages"));
         $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before, $delay, $app);
         $this->sendMail($users_id_count, "messages_notifications", $app);
-        $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before);
+        $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before, $delay);
 
     }
 

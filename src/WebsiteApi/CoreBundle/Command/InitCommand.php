@@ -241,7 +241,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setDefault(1);
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
-        $app->setOrder(0);
+        $app->setOrder(2);
         $app->setThumbnail($serverbase . "/medias/apps/images_viewer.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
@@ -267,7 +267,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setDefault(1);
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
-        $app->setOrder(0);
+        $app->setOrder(2);
         $app->setThumbnail($serverbase . "/medias/apps/pdf_viewer.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
@@ -293,7 +293,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setDefault(1);
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
-        $app->setOrder(0);
+        $app->setOrder(2);
         $app->setThumbnail($serverbase . "/medias/apps/note.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
@@ -319,7 +319,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setDefault(1);
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(1);
-        $app->setOrder(0);
+        $app->setOrder(2);
         $app->setThumbnail($serverbase . "/medias/apps/calls.png");
         $app->setMessageModuleUrl("/calls.html?message=true");
         $app->setEditableRights(1);

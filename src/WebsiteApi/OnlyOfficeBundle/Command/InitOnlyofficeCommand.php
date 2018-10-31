@@ -68,7 +68,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $app->setCreateFileData(json_decode('{"name": "Presentation", "url": "' . $serverbase . 'apps/OnlyOffice/empty.pptx", "extension": "pptx"}', true));
         $app->setFilesTypes(json_decode('{"main": ["pptx", "ppt", "odp"], "other": []}', true));
         $app->setMessageModule(0);
-        $app->setOrder(0);
+        $app->setOrder(1);
         $app->setThumbnail($serverbase . "/medias/apps/onlyoffice_presentation.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
@@ -95,7 +95,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $app->setCreateFileData(json_decode('{"name": "Document", "url": "' . $serverbase . 'apps/OnlyOffice/empty.docx", "extension": "docx"}', true));
         $app->setFilesTypes(json_decode('{"main": ["docx", "doc", "odt", "mht", "epub", "djvu", "xps"], "other": []}', true));
         $app->setMessageModule(0);
-        $app->setOrder(0);
+        $app->setOrder(1);
         $app->setThumbnail($serverbase . "/medias/apps/onlyoffice_text.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
@@ -122,7 +122,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $app->setCreateFileData(json_decode('{"name": "Spreadsheet", "url": "' . $serverbase . 'apps/OnlyOffice/empty.xlsx", "extension": "xlsx"}', true));
         $app->setFilesTypes(json_decode('{"main": ["xlsx", "xls", "ods"], "other": ["csv"]}', true));
         $app->setMessageModule(0);
-        $app->setOrder(0);
+        $app->setOrder(1);
         $app->setThumbnail($serverbase . "/medias/apps/onlyoffice_spreadsheet.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);

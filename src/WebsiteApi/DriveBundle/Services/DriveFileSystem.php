@@ -161,7 +161,10 @@ class DriveFileSystem implements DriveFileSystemInterface
     protected function improveName($fileOrDirectory)
     {
         $originalCompleteName = explode(".", $fileOrDirectory->getName());
-        $originalExt = array_pop($originalCompleteName);
+        $originalExt = "";
+        if (count($originalCompleteName) > 1) {
+            $originalExt = array_pop($originalCompleteName);
+        }
         $originalName = join(".", $originalCompleteName);
 
         $currentNames = [];

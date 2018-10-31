@@ -45,7 +45,7 @@ class NotificationRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
 
     }
 
-    public function updateMailCandidates($number_of_mails, $before_date = null, $app = null)
+    public function updateMailCandidates($number_of_mails, $before_date = null, $minimum_delay_sec = null, $app = null)
     {
 
         $qb = $this->createQueryBuilder('m');
@@ -62,6 +62,12 @@ class NotificationRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
                 ->setParameter("lastmail", $before_date);
         } else {
             $qb = $qb->andWhere('m.last_mail IS NULL');
+        }
+
+        if ($minimum_delay_sec) {
+            $date = new \DateTime();
+            $qb = $qb->andWhere('m.date < :delaydate')
+                ->setParameter("delaydate", $date->setTimestamp(date("U") - $minimum_delay_sec));
         }
 
         if ($app) {

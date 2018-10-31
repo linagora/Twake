@@ -212,7 +212,10 @@ class DriveFile implements ObjectLinksInterface
     {
         $this->name = $name;
         $array = explode(".", $name);
-        $ext = array_pop($array);
+        $ext = "";
+        if (count($array) > 1) {
+            $ext = array_pop($array);
+        }
         $this->setExtension($ext);
     }
 
