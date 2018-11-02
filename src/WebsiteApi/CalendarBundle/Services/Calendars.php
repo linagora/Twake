@@ -121,9 +121,12 @@ class Calendars implements CalendarsInterface
 
             $this->doctrine->flush();
 
+            $calendar = $cal->getAsArray();
+            $calendar["application"] = $app ? $app->getId() : null;
+
             $data = Array(
                 "type" => "update",
-                "calendar" => $cal->getAsArray()
+                "calendar" => $calendar
             );
             $this->pusher->push($data, "calendar/workspace/".$workspaceId);
 

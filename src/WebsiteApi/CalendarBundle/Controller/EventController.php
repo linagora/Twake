@@ -81,7 +81,7 @@ class EventController extends Controller
         $participants = $event["participant"];
 
         if (!$calendarId && $appId) {
-            $calendarId = $this->get("app.calendar_events")->getCalendarForApp($workspaceId, $appId, $this->getUser()->getId());
+            $calendarId = $this->get("app.calendars")->getCalendarForApp($workspaceId, $appId, $this->getUser()->getId());
             if ($calendarId) {
                 $calendarId = $calendarId->getId();
             }
