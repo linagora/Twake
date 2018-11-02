@@ -244,7 +244,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setOrder(2);
         $app->setThumbnail($serverbase . "/medias/apps/images_viewer.png");
         $app->setMessageModuleUrl("");
-        $app->setEditableRights(1);
+        $app->setEditableRights(0);
         $app->setCgu("");
         $app->setFilesTypes(Array("main" => Array("png","jpg","jpeg","gif","bmp","tiff"), "other" => Array()));
         $manager->persist($app);
@@ -270,7 +270,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setOrder(2);
         $app->setThumbnail($serverbase . "/medias/apps/pdf_viewer.png");
         $app->setMessageModuleUrl("");
-        $app->setEditableRights(1);
+        $app->setEditableRights(0);
         $app->setCgu("");
         $app->setFilesTypes(Array("main" => Array("pdf"), "other" => Array()));
         $manager->persist($app);
@@ -322,7 +322,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setOrder(2);
         $app->setThumbnail($serverbase . "/medias/apps/calls.png");
         $app->setMessageModuleUrl("/calls.html?message=true");
-        $app->setEditableRights(1);
+        $app->setEditableRights(0);
         $app->setCgu("");
         $app->setFilesTypes(Array());
         $manager->persist($app);
