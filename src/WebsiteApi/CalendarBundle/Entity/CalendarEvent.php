@@ -61,6 +61,11 @@ class CalendarEvent implements ObjectLinksInterface {
      */
     private $workspace;
 
+    /**
+     * @ORM\Column(type="text")
+     */
+    private $object_link_cache;
+
     public  function __construct($event, $from, $to)
     {
         $this->setEvent($event);
@@ -211,7 +216,8 @@ class CalendarEvent implements ObjectLinksInterface {
             "event" => $this->getEvent(),
             "participant" => Array(),
             "participant_full" => Array(),
-            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null
+            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null,
+            "object_link_cache" => $this->getObjectLinkCache()
         );
         if ($this->getParticipants()) {
             foreach ($this->getParticipants() as $participant) {
@@ -319,6 +325,16 @@ class CalendarEvent implements ObjectLinksInterface {
     public function setWorkspace($workspace)
     {
         $this->workspace = $workspace;
+    }
+
+    public function setObjectLinkCache($cache)
+    {
+        $this->object_link_cache = json_encode($cache);
+    }
+
+    public function getObjectLinkCache()
+    {
+        return json_decode($this->object_link_cache, 1);
     }
 
 

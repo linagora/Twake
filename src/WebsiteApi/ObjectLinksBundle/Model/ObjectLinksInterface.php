@@ -11,6 +11,10 @@ namespace WebsiteApi\ObjectLinksBundle\Model;
 
 interface ObjectLinksInterface
 {
+    public function setObjectLinkCache($cache);
+
+    public function getObjectLinkCache();
+
     public function getId();
 
     public function getRepository();

@@ -120,6 +120,11 @@ class BoardTask implements ObjectLinksInterface {
     private $description;
 
     /**
+     * @ORM\Column(type="text")
+     */
+    private $object_link_cache;
+
+    /**
      * @ORM\Column(type="text", nullable=false)
      */
     private $status = "todo"; //"current" "done" "cancelled"
@@ -297,7 +302,8 @@ class BoardTask implements ObjectLinksInterface {
             "status" => $this->getStatus(),
             "progress" => $this->getProgress(),
             "checklist" => $this->getChecklist(),
-            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null
+            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null,
+            "object_link_cache" => $this->getObjectLinkCache()
         );
     }
 
@@ -628,5 +634,14 @@ class BoardTask implements ObjectLinksInterface {
         $this->workspace = $workspace;
     }
 
+    public function setObjectLinkCache($cache)
+    {
+        $this->object_link_cache = json_encode($cache);
+    }
+
+    public function getObjectLinkCache()
+    {
+        return json_decode($this->object_link_cache, 1);
+    }
 
 }
