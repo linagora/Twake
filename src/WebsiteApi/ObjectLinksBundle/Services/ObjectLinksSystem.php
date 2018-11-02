@@ -37,6 +37,8 @@ class ObjectLinksSystem
         $resA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $id, "typeA" => self::$keyMap[$type]));
         $resB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $id, "typeB" => self::$keyMap[$type]));
 
+        $object = $this->doctrine->getRepository(self::$keyMap[$type])->findOneBy(Array("id" => $id));
+
         $returnVal = Array();
         if($resA || $resB) {
 
@@ -55,6 +57,17 @@ class ObjectLinksSystem
                 }
 
             }
+
+            if ($object) {
+                $formated = [];
+                foreach ($returnVal as $ret) {
+                    $formated[] = $ret->getAsArrayFormated();
+                }
+                $object->setObjectLinkCache($formated);
+                $this->doctrine->persist($object);
+                $this->doctrine->flush();
+            }
+
             return $returnVal;
         }else{
             return [];
