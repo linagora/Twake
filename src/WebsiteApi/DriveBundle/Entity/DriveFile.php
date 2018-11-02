@@ -141,7 +141,7 @@ class DriveFile implements ObjectLinksInterface
     private $aws_preview_link = "";
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="text", nullable=true)
      */
     private $object_link_cache;
 

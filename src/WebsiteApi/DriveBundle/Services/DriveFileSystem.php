@@ -776,8 +776,6 @@ class DriveFileSystem implements DriveFileSystemInterface
     public function listDirectory($workspaceId, $directory, $trash = false)
     {
 
-        return [];
-
         $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
         $workspace = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
 
