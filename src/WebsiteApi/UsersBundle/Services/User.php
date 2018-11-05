@@ -91,7 +91,7 @@ class User implements UserInterface
 		}
 	}
 
-    public function loginWithUsername($usernameOrMail)
+    public function loginWithUsernameOnly($usernameOrMail)
     {
 
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
@@ -104,13 +104,19 @@ class User implements UserInterface
             return false;
         }
 
+        if ($user->getBanned()) {
+            return false;
+        }
+
         // User log in
         $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
         $this->token_storage->setToken($token);
 
         $request = $this->request_stack->getCurrentRequest();
-        $event = new InteractiveLoginEvent($request, $token);
-        $this->event_dispatcher->dispatch("security.interactive_login", $event);
+        if ($request) {
+            $event = new InteractiveLoginEvent($request, $token);
+            $this->event_dispatcher->dispatch("security.interactive_login", $event);
+        }
 
         return $user;
 
@@ -127,6 +133,7 @@ class User implements UserInterface
 		}
 
 		if($user==null){
+            error_log("No such user");
 			return false;
 		}
 
@@ -138,15 +145,16 @@ class User implements UserInterface
 
 			// User log in
 			$token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
-			if($rememberMe){
+            if ($rememberMe && $request && $response) {
 				$this->core_remember_me_manager->doRemember($request, $response, $token);
 			}
 			$this->token_storage->setToken($token);
 
 			$request = $this->request_stack->getCurrentRequest();
-			$event = new InteractiveLoginEvent($request, $token);
-			$this->event_dispatcher->dispatch("security.interactive_login", $event);
-
+            if ($request) {
+                $event = new InteractiveLoginEvent($request, $token);
+                $this->event_dispatcher->dispatch("security.interactive_login", $event);
+            }
 
 			return $user;
 
@@ -362,7 +370,7 @@ class User implements UserInterface
 
     }
 
-    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $workspace, $company, $friends, $recaptcha, $language, $origin = "", $force = false)
+    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $recaptcha, $language, $origin = "", $force = false)
     {
         $mail = $this->string_cleaner->simplifyMail($mail);
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
@@ -371,14 +379,12 @@ class User implements UserInterface
         if(is_bool($avaible) && !$avaible){
             return $avaible;
         }
-        if($mail==null || $password==null || $pseudo==null){
+        if ($mail == null || $password == null || $pseudo == null || !filter_var($mail, FILTER_VALIDATE_EMAIL)) {
             return false;
         }
         if (!($force || $this->testRecaptcha($recaptcha))) {
-            error_log("-#-#-#-#-#-#-#-no captcha-#-#-#-#-#-#-#-");
             return false;
         }
-
 
         $token = $this->subscribeMail($mail,false);
         $user = $this->subscribe($token,"",$pseudo,$password,true);
@@ -393,21 +399,6 @@ class User implements UserInterface
         $user->setOrigin($origin);
         $this->em->persist($user);
         $this->em->flush();
-        if($workspace != "" && $workspace!=null){
-            $uniquename = $this->string_cleaner->simplify($company);
-            $plan = $this->pricing_plan->getMinimalPricing();
-            $group = $this->group_service->create($user->getId(), $company, $uniquename,$plan);
-            $workspace = $this->workspace_service->create($workspace,$group->getId(),$user->getId());
-            if($workspace){
-                if(is_array($friends) && count($friends)>0){
-                    foreach($friends as $friend){
-                        if($friend != $mail){
-                            $this->workspace_members_service->addMemberByMail($workspace->getId(),$friend,false);
-                        }
-                    }
-                }
-            }
-        }
 
         return true;
     }
@@ -881,4 +872,21 @@ class User implements UserInterface
 
         return true;
     }
+
+    public function removeUserByUsername($username)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("username" => $username));
+
+        if (!$user) {
+            return false;
+        }
+
+        $this->em->remove($user);
+        $this->em->flush();
+
+        return true;
+
+    }
+
 }

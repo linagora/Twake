@@ -22,7 +22,6 @@ class ManagerAdapter
 
     public function flush()
     {
-        error_log("FLUSH !");
         try {
             $a = $this->manager->flush();
         } catch (\Exception $e) {
@@ -34,13 +33,11 @@ class ManagerAdapter
 
     public function remove($object)
     {
-        error_log("REMOVE : " . get_class($object));
         return $this->manager->remove($object);
     }
 
     public function persist($object)
     {
-        error_log("PERSIST : " . get_class($object));
         return $this->manager->persist($object);
     }
 

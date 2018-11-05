@@ -25,6 +25,14 @@ class WebTestCaseExtended extends WebTestCase
         return $this->client->getContainer()->get($service);
     }
 
+    protected function getUser()
+    {
+        if (!isset($this->client)) {
+            $this->client = static::createClient();
+        }
+        return $this->client->getContainer()->getUser();
+    }
+
 
     public function newUser(){
         $userToken = $this->get("app.user")->subscribeMail("phpunit@PHPUNIT.fr");
