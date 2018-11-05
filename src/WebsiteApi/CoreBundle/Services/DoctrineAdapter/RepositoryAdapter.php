@@ -30,7 +30,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
     public function findBy(Array $filter, ?array $sort = null, $limit = null, $offset = null)
     {
         try {
-            $a = parent::findBy($filter, $sort, $limit = null, $offset = null);
+            $a = parent::findBy($filter, $sort, $limit, $offset);
         } catch (\Exception $e) {
             error_log($e);
             die("ERROR with findOneBy");

@@ -22,6 +22,7 @@ class ManagerAdapter
 
     public function flush()
     {
+        error_log("FLUSH !");
         try {
             $a = $this->manager->flush();
         } catch (\Exception $e) {

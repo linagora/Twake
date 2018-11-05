@@ -1177,6 +1177,12 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->pusher->push(Array("action" => "update"), "drive/" . $file->getGroup()->getId());
         $this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.upload_new_version","TwakeDriveBundle:DriveFile", $file->getId());
 
+
+        if ($this->preview->isImage($file->getExtension())) {
+            $this->genPreview($file);
+            $file->setPreviewHasBeenGenerated(true);
+        }
+
         return $file;
 
     }
@@ -1208,6 +1214,11 @@ class DriveFileSystem implements DriveFileSystemInterface
         if (count($errors["errors"]) > 0) {
             $this->delete($newFile);
             return false;
+        }
+
+        if ($this->preview->isImage($newFile->getExtension())) {
+            $this->genPreview($newFile);
+            $newFile->setPreviewHasBeenGenerated(true);
         }
 
         return $newFile;
@@ -1508,6 +1519,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function genPreview(DriveFile $file)
     {
+        $res = false;
+
         if (!$file->getIsDirectory() && $file->getLastVersion()) {
 
             $path = $this->getRoot() . "/" . $file->getPath();
@@ -1519,16 +1532,16 @@ class DriveFileSystem implements DriveFileSystemInterface
             $tmppath = $this->decode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
 
             if ($tmppath) {
-
                 rename($tmppath, $tmppath . ".tw");
                 $tmppath = $tmppath . ".tw";
 
                 try {
-                    $this->preview->generatePreview(basename($path), $tmppath, dirname($path), $ext);
+                    $res = $this->preview->generatePreview(basename($path), $tmppath, dirname($path), $ext);
                     if ($this->file_exists($path . ".png", null)) {
                         rename($path . ".png", $previewPath);
                     } else {
                         error_log("FILE NOT GENERATED !");
+                        $res = false;
                     }
                 } catch (\Exception $e) {
 
@@ -1539,6 +1552,8 @@ class DriveFileSystem implements DriveFileSystemInterface
             }
 
         }
+
+        return $res;
 
     }
 
