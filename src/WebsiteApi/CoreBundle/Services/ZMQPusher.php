@@ -65,32 +65,27 @@ class ZMQPusher
     public function pushForReal($data, $route)
     {
 
-        if (false === $this->connected) {
-            if (!extension_loaded('zmq')) {
-                throw new \RuntimeException(sprintf(
-                    '%s pusher require ZMQ php extension',
-                    get_class($this)
-                ));
-            }
+        $config = Array(
+            "linger" => 1,
+            "protocol" => "tcp",
+            "host" => $this->host,
+            "port" => $this->port
+        );
 
-            $config = Array(
-                "persistent" => false,
-                "protocol" => "tcp",
-                "linger" => 1,
-                "host" => $this->host,
-                "port" => $this->port
-            );
-
-            $context = new \ZMQContext(1, $config['persistent']);
-            $this->connection = new \ZMQSocket($context, \ZMQ::SOCKET_PUSH);
-            $this->connection->setSockOpt(\ZMQ::SOCKOPT_LINGER, $config['linger']);
-            $this->connection->connect($config['protocol'] . "://" . $config['host'] . ":" . $config['port']);
-
-            $this->connected = true;
+        if (!extension_loaded('zmq')) {
+            throw new \RuntimeException(sprintf(
+                '%s pusher require ZMQ php extension',
+                get_class($this)
+            ));
         }
 
+        $context = new \ZMQContext(1);
+        $this->connection = $context->getSocket(\ZMQ::SOCKET_PUSH);
+        $this->connection->setSockOpt(\ZMQ::SOCKOPT_LINGER, $config['linger']);
+        $this->connection->connect($config['protocol'] . "://" . $config['host'] . ":" . $config['port']);
         $this->connection->send($data);
-	}
+
+    }
 
 
 

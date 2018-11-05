@@ -155,8 +155,6 @@ class DrivePreview
 
     public function generateImagePreview($filename, $file, $path, $isText = false, $isOffice = false)
     {
-        error_log("GENERATE IM PREVIEW");
-
         $filepath = $path . "/" . $filename;
         $width = $this->img_width;
         $height = $this->img_height;
