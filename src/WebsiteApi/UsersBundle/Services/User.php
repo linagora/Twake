@@ -193,12 +193,6 @@ class User implements UserInterface
 		$this->em->flush();
 	}
 
-	public function delete($userId)
-	{
-		// TODO: Implement delete() method.
-		$this->ban($userId); //To replace with a real delete
-	}
-
 	public function unsubscribe($userId, $reason)
 	{
 		// TODO: Implement unsubscribe() method.
@@ -664,6 +658,10 @@ class User implements UserInterface
 			return false;
 		}
 
+        if (!$password) {
+            return false;
+        }
+
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$user = $userRepository->find($userId);
 		$factory = $this->encoder_factory;
@@ -693,6 +691,10 @@ class User implements UserInterface
 	{
 
 		$pseudo = $this->string_cleaner->simplifyUsername($pseudo);
+
+        if (!$pseudo) {
+            return false;
+        }
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$user = $userRepository->find($userId);

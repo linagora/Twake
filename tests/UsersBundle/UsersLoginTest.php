@@ -4,6 +4,8 @@ namespace Tests\UsersBundle\Controller;
 
 use Tests\WebTestCaseExtended;
 use WebsiteApi\UsersBundle\Entity\User;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 
 class UsersLoginTest extends WebTestCaseExtended
@@ -34,8 +36,8 @@ class UsersLoginTest extends WebTestCaseExtended
             Array("language" => "it", "expected" => true),
             Array("language" => "de", "expected" => true),
 
-            Array("mail" => "test1@twakeapp.com", "remove" => false),
-            Array("mail" => "test2@twakeapp.com", "expected" => false), //Duplicata for username
+            Array("mail" => "unittest1@twakeapp.com", "remove" => false),
+            Array("mail" => "unittest2@twakeapp.com", "expected" => false), //Duplicata for username
 
             Array("username" => "unittest1", "remove" => false),
             Array("username" => "unittest2", "expected" => false), //Duplicata for emails
@@ -83,10 +85,11 @@ class UsersLoginTest extends WebTestCaseExtended
     public function testLogin()
     {
         $userService = $this->get("app.user");
+        $random_key = date("U");
 
         $userService->removeUserByUsername("testuser");
         $userService->subscribeInfo(
-            "testuser@twakeapp.com",
+            $random_key . "testuser@twakeapp.com",
             "testuser",
             "testuser",
             "",
@@ -100,10 +103,11 @@ class UsersLoginTest extends WebTestCaseExtended
 
         $loginCases = [
             Array(),
-            Array("login" => "testuser@twakeapp.com"),
+            Array("login" => $random_key . "testuser@twakeapp.com"),
             Array("password" => "fdsqfsdq", "expected" => false),
             Array("login" => "fdsqfsdq", "expected" => false),
             Array("remindme" => false),
+            Array("request" => new Request(Array(), Array(), Array(), Array(), Array(), $_SERVER), "response" => new Response()),
         ];
 
         foreach ($loginCases as $loginCase) {
@@ -111,10 +115,12 @@ class UsersLoginTest extends WebTestCaseExtended
             $login = isset($subscribeCase["login"]) ? $subscribeCase["login"] : "testuser";
             $password = isset($subscribeCase["password"]) ? $subscribeCase["password"] : "testuser";
             $remindme = isset($subscribeCase["remindme"]) ? $subscribeCase["remindme"] : true;
+            $request = isset($subscribeCase["request"]) ? $subscribeCase["request"] : null;
+            $response = isset($subscribeCase["response"]) ? $subscribeCase["response"] : null;
 
             $expected = isset($subscribeCase["expected"]) ? $subscribeCase["expected"] : true;
 
-            $result = $userService->login($login, $password, $remindme);
+            $result = $userService->login($login, $password, $remindme, $request, $response);
             if ($expected) {
                 $this->assertInstanceOf(User::class, $result, "Try to login user with good params " . json_encode($loginCase));
             } else {
@@ -134,7 +140,7 @@ class UsersLoginTest extends WebTestCaseExtended
 
         $userService->removeUserByUsername("testuser");
         $userService->subscribeInfo(
-            "testuser@twakeapp.com",
+            date("U") . "testuser@twakeapp.com",
             "testuser",
             "testuser",
             "",
@@ -163,6 +169,9 @@ class UsersLoginTest extends WebTestCaseExtended
 
         $user = $userService->login("testuser", "testuser", true);
         $this->assertInstanceOf(User::class, $user, "Test non banned user can login again after being banned");
+
+        $user = $userService->loginWithUsernameOnly("testuser");
+        $this->assertInstanceOf(User::class, $user, "Test non banned user can login again either with loginWithUsernameOnly");
 
     }
 

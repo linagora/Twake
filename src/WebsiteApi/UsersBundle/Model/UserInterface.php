@@ -28,9 +28,6 @@ interface UserInterface
 	// @unban enable access for an user
 	public function unban($userId);
 
-	// @delete delete user data
-	public function delete($userId);
-
 	// @unsubscribe start unsubscribe process for an user
 	public function unsubscribe($userId, $reason);
 

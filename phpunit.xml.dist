@@ -9,6 +9,7 @@
 >
     <php>
         <ini name="error_reporting" value="-1" />
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
         <server name="KERNEL_DIR" value="app/" />
     </php>
 
@@ -20,11 +21,34 @@
 
     <filter>
         <whitelist>
-            <directory>src</directory>
+            <directory>src/WebsiteApi</directory>
             <exclude>
-                <directory>src/*Bundle/Resources</directory>
-                <directory>src/*/*Bundle/Resources</directory>
-                <directory>src/*/Bundle/*Bundle/Resources</directory>
+                <directory>src/WebsiteApi/*Bundle/Resources</directory>
+                <directory>src/WebsiteApi/*/*Bundle/Resources</directory>
+                <directory>src/WebsiteApi/*/Bundle/*Bundle/Resources</directory>
+                <directory>src/WebsiteApi/*Bundle/DependencyInjection</directory>
+                <directory>src/WebsiteApi/*/*Bundle/DependencyInjection</directory>
+                <directory>src/WebsiteApi/*/Bundle/*Bundle/DependencyInjection</directory>
+
+                <file>src/WebsiteApi/*Bundle/*Bundle.php</file>
+                <file>src/WebsiteApi/*/Bundle/*Bundle.php</file>
+                <file>src/WebsiteApi/*/Bundle/*Bundle/*Bundle.php</file>
+
+                <directory>src/WebsiteApi/*Bundle/Command</directory>
+                <directory>src/WebsiteApi/*/*Bundle/Command</directory>
+                <directory>src/WebsiteApi/*/Bundle/*Bundle/Command</directory>
+
+                <directory>src/WebsiteApi/*Bundle/Controller</directory>
+                <directory>src/WebsiteApi/*/*Bundle/Controller</directory>
+                <directory>src/WebsiteApi/*/Bundle/*Bundle/Controller</directory>
+
+                <directory>src/WebsiteApi/*Bundle/Topic</directory>
+                <directory>src/WebsiteApi/*/*Bundle/Topic</directory>
+                <directory>src/WebsiteApi/*/Bundle/*Bundle/Topic</directory>
+
+                <directory>src/WebsiteApi/*Bundle/Tests</directory>
+                <directory>src/WebsiteApi/*/*Bundle/Tests</directory>
+                <directory>src/WebsiteApi/*/Bundle/*Bundle/Tests</directory>
             </exclude>
         </whitelist>
     </filter>

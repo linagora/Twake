@@ -121,3 +121,6 @@ fabric.properties
 
 ### AWS ###
 /app/config/aws_config.yml
+
+### Test ###
+/tests/code_coverage/

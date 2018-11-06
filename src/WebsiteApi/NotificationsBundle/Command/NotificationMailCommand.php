@@ -67,7 +67,7 @@ class NotificationMailCommand extends ContainerAwareCommand
                 if ($app) {
                     $filter["application"] = $app;
                 }
-                $notifications = $em->getRepository("TwakeNotificationsBundle:Notification")->findBy($filter, Array("date" => "DESC"), ($all_and_delete ? 10 : min(10, $count)));
+                $notifications = $em->getRepository("TwakeNotificationsBundle:Notification")->findBy($filter, Array("date" => "DESC"), 20);
 
                 $data = Array(
                     "username" => $user->getUsername(),
