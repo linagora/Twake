@@ -30,7 +30,7 @@ $translation = Array(
 
     "drive.twake" => "Twake",
     "drive.rules" => "Rules.docx",
-    "drive.ruleText" => "Do not smoke the grass from the garden",
+    "drive.ruleText" => "Do not smoke grass from the garden",
     "drive.welcome" => "Welcome.docx",
     "drive.welcomeText" => "Welcome on Twake ! \nWe are very happy to welcome you on our plateforme :D",
 
