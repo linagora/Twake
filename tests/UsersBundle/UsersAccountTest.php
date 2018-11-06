@@ -44,6 +44,9 @@ class UsersAccountTest extends WebTestCaseExtended
         $res = $userService->changePseudo($user->getId(), "testuser2");
         $this->assertFalse($res, "Verify we cannot change to already used pseudo");
 
+        $res = $userService->changePseudo(-1, "testuserfsqf");
+        $this->assertFalse($res, "Verify no error when we use bad user id on pseudo change");
+
         $res = $userService->changePseudo($user->getId(), "testuser3");
         $this->assertTrue($res, "Verify can choose a new pseudo");
 
@@ -57,6 +60,9 @@ class UsersAccountTest extends WebTestCaseExtended
 
         $res = $userService->changePassword($user->getId(), "testuser", "");
         $this->assertFalse($res, "Verify we cannot change to empty password");
+
+        $res = $userService->changePassword(-1, "testuser", "");
+        $this->assertFalse($res, "Verify no error when we use bad user id on password change");
 
         $res = $userService->changePassword($user->getId(), "testuser", "1234567");
         $this->assertFalse($res, "Verify we cannot change to too short password");

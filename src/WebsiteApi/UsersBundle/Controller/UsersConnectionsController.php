@@ -18,7 +18,7 @@ class UsersConnectionsController extends Controller
 		if($this->getUser()) {
 			$this->get("app.user")->alive($this->getUser()->getId());
 		}
-		return new JsonResponse(Array());
+        return new JsonResponse(Array("data" => "ok"));
 	}
 
     public function autoLoginAction(Request $request)
@@ -52,8 +52,8 @@ class UsersConnectionsController extends Controller
 		if ($loginResult) {
 
 			$device = $request->request->get("device", false);
-            if ($device && isset($device["type"])) {
-				$this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], $device["version"]);
+            if ($device && isset($device["type"]) && isset($device["value"])) {
+                $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], isset($device["version"]) ? $device["version"] : null);
 			}
 
 			$data["data"]["status"] = "connected";

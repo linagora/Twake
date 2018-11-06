@@ -38,10 +38,6 @@
                 <directory>src/WebsiteApi/*/*Bundle/Command</directory>
                 <directory>src/WebsiteApi/*/Bundle/*Bundle/Command</directory>
 
-                <directory>src/WebsiteApi/*Bundle/Controller</directory>
-                <directory>src/WebsiteApi/*/*Bundle/Controller</directory>
-                <directory>src/WebsiteApi/*/Bundle/*Bundle/Controller</directory>
-
                 <directory>src/WebsiteApi/*Bundle/Topic</directory>
                 <directory>src/WebsiteApi/*/*Bundle/Topic</directory>
                 <directory>src/WebsiteApi/*/Bundle/*Bundle/Topic</directory>

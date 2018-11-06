@@ -100,6 +100,7 @@ class UsersLoginTest extends WebTestCaseExtended
             "", //Origin
             true // force bypass captcha
         );
+        $user = $userService->login("testuser", "testuser", true);
 
         $loginCases = [
             Array(),
@@ -107,27 +108,90 @@ class UsersLoginTest extends WebTestCaseExtended
             Array("password" => "fdsqfsdq", "expected" => false),
             Array("login" => "fdsqfsdq", "expected" => false),
             Array("remindme" => false),
-            Array("request" => new Request(Array(), Array(), Array(), Array(), Array(), $_SERVER), "response" => new Response()),
+            Array("device" => Array(
+                "type" => "APNS",
+                "value" => "1234567890",
+                "version" => "0.0.0"
+            )),
+            Array("device" => Array(
+                "value" => "1234567890",
+                "version" => "0.0.0"
+            )),
+            Array("device" => Array(
+                "type" => "APNS",
+                "version" => "0.0.0"
+            )),
+            Array("device" => Array(
+                "type" => "APNS",
+                "value" => "1234567890",
+            )),
+            Array("device" => Array(
+                "type" => "DSQKLMMQ",
+                "value" => "1234567890",
+                "version" => "0.0.0"
+            )),
+            Array("device" => Array(
+                "type" => "DSQKLMMQ",
+                "value" => "",
+                "version" => "0.0.0"
+            ))
         ];
 
         foreach ($loginCases as $loginCase) {
 
-            $login = isset($subscribeCase["login"]) ? $subscribeCase["login"] : "testuser";
-            $password = isset($subscribeCase["password"]) ? $subscribeCase["password"] : "testuser";
-            $remindme = isset($subscribeCase["remindme"]) ? $subscribeCase["remindme"] : true;
-            $request = isset($subscribeCase["request"]) ? $subscribeCase["request"] : null;
-            $response = isset($subscribeCase["response"]) ? $subscribeCase["response"] : null;
+            $login = isset($loginCase["login"]) ? $loginCase["login"] : "testuser";
+            $password = isset($loginCase["password"]) ? $loginCase["password"] : "testuser";
+            $remindme = isset($loginCase["remindme"]) ? $loginCase["remindme"] : true;
+            $device = isset($loginCase["device"]) ? $loginCase["device"] : null;
 
-            $expected = isset($subscribeCase["expected"]) ? $subscribeCase["expected"] : true;
+            $expected = isset($loginCase["expected"]) ? $loginCase["expected"] : true;
 
-            $result = $userService->login($login, $password, $remindme, $request, $response);
+            $result = $this->doPost("/ajax/users/login", Array(
+                "_username" => $login,
+                "_password" => $password,
+                "_remember_me" => $remindme,
+                "device" => $device
+            ));
+
             if ($expected) {
-                $this->assertInstanceOf(User::class, $result, "Try to login user with good params " . json_encode($loginCase));
+                $this->assertEquals("connected", $result["data"]["status"], "Try to login user with good params " . json_encode($loginCase));
+
+                $resultPasswordCheck = $userService->checkPassword($user->getId(), $password);
+                $this->assertTrue($resultPasswordCheck, "Test checkPassword method is true as login worked");
+
             } else {
-                $this->assertFalse($result, "Try to login user with bad params " . json_encode($loginCase));
+
+                $test_user_exists = $userService->loginWithUsernameOnly($login);
+                if ($test_user_exists) {
+                    $resultPasswordCheck = $userService->checkPassword($test_user_exists->getId(), $password);
+                    $this->assertFalse($resultPasswordCheck, "Test checkPassword method is false as login did not worked but user exists");
+                }
+
+                $this->assertEquals("disconnected", $result["data"]["status"], "Try to login user with bad params " . json_encode($loginCase));
             }
 
         }
+
+        $resultPasswordCheck = $userService->checkPassword(-1, "AZERTYUIOP");
+        $this->assertFalse($resultPasswordCheck, "Test checkPassword method is false when user does not exists");
+
+
+        //Test login, current, alive then logout
+
+        $this->doPost("/ajax/users/login", Array(
+            "_username" => "testuser",
+            "_password" => "testuser",
+            "_remember_me" => true
+        ));
+
+        $user_data = $this->doPost("/ajax/users/current/get");
+        $this->assertEquals("testuser", $user_data["data"]["username"], "Test current user data");
+        $this->assertGreaterThan(0, $user_data["data"]["privateworkspace"]["id"], "Test current user has private workspace");
+
+        $alive = $this->doPost("/ajax/users/alive");
+        $this->assertEquals("ok", $alive["data"], "Test alive return response");
+
+        $this->doPost("/ajax/users/logout");
 
         $userService->removeUserByUsername("testuser");
 
@@ -151,6 +215,8 @@ class UsersLoginTest extends WebTestCaseExtended
             "", //Origin
             true // force bypass captcha
         );
+
+        $this->get("request_stack")->push(new Request(Array(), Array(), Array(), Array(), Array(), $_SERVER));
 
         $user = $userService->login("testuser", "testuser", true);
         $this->assertInstanceOf(User::class, $user, "Test non banned user can login");

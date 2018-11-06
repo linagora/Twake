@@ -133,7 +133,6 @@ class User implements UserInterface
 		}
 
 		if($user==null){
-            error_log("No such user");
 			return false;
 		}
 
@@ -170,6 +169,13 @@ class User implements UserInterface
 		$response->headers->clearCookie('REMEMBERME');
 		$response->sendHeaders();
 
+        $this->token_storage->setToken(null);
+
+        $request = $this->request_stack->getCurrentRequest();
+        if ($request) {
+            $request->getSession()->invalidate();
+        }
+
 		(new Session())->invalidate();
 
 		return true;
@@ -191,21 +197,6 @@ class User implements UserInterface
 		$user->setBanned(false);
 		$this->em->persist($user);
 		$this->em->flush();
-	}
-
-	public function unsubscribe($userId, $reason)
-	{
-		// TODO: Implement unsubscribe() method.
-	}
-
-	public function cancelUnsubscribe($userId)
-	{
-		// TODO: Implement cancelUnsubscribe() method.
-	}
-
-	public function checkUnsubscribedUsers()
-	{
-		// TODO: Implement checkUnsubscribedUsers() method.
 	}
 
 	public function requestNewPassword($mail)
@@ -653,12 +644,11 @@ class User implements UserInterface
 	public function changePassword($userId, $oldPassword, $password)
 	{
 
-		if(!$this->string_cleaner->verifyPassword($password))
-		{
-			return false;
-		}
-
         if (!$password) {
+            return false;
+        }
+
+        if (!$this->string_cleaner->verifyPassword($password)) {
             return false;
         }
 
@@ -875,6 +865,15 @@ class User implements UserInterface
         return true;
     }
 
+    private function removeLinkedToUserRows($entity, $user, $col = "user")
+    {
+        $repo = $this->em->getRepository($entity);
+        $toRemove = $repo->findOneBy(Array($col => $user));
+        foreach ($toRemove as $r) {
+            $this->em->remove($r);
+        }
+    }
+
     public function removeUserByUsername($username)
     {
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
@@ -883,6 +882,17 @@ class User implements UserInterface
         if (!$user) {
             return false;
         }
+
+        $this->removeLinkedToUserRows("TwakeUsersBundle:Device", $user, "user");
+        $this->removeLinkedToUserRows("TwakeUsersBundle:Contact", $user, "from");
+        $this->removeLinkedToUserRows("TwakeUsersBundle:Contact", $user, "to");
+        $this->removeLinkedToUserRows("TwakeUsersBundle:Mail", $user, "user");
+        $this->removeLinkedToUserRows("TwakeUsersBundle:Token", $user, "user");
+        $this->removeLinkedToUserRows("TwakeUsersBundle:UserStats", $user, "user");
+
+        $this->removeLinkedToUserRows("TwakeWorkspacesBundle:WorkspaceUser", $user, "user");
+        $this->removeLinkedToUserRows("TwakeWorkspacesBundle:GroupUser", $user, "user");
+        $this->removeLinkedToUserRows("TwakeWorkspacesBundle:Workspace", $user, "user");
 
         $this->em->remove($user);
         $this->em->flush();

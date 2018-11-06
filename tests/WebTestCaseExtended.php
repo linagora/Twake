@@ -25,14 +25,31 @@ class WebTestCaseExtended extends WebTestCase
         return $this->client->getContainer()->get($service);
     }
 
-    protected function getUser()
+    protected function getClient()
     {
         if (!isset($this->client)) {
             $this->client = static::createClient();
         }
-        return $this->client->getContainer()->getUser();
+        return $this->client;
     }
 
+    protected function doPost($route, $data = Array())
+    {
+        return $this->call($route, $data, "POST");
+    }
+
+    protected function doGet($route)
+    {
+        return $this->call($route, $data, "GET");
+    }
+
+    protected function call($route, $data = Array(), $method = "GET")
+    {
+        $this->getClient()->request($method, $route, array(), array(), array('CONTENT_TYPE' => 'application/json'),
+            json_encode($data)
+        );
+        return json_decode($this->getClient()->getResponse()->getContent(), 1);
+    }
 
     public function newUser(){
         $userToken = $this->get("app.user")->subscribeMail("phpunit@PHPUNIT.fr");
