@@ -135,7 +135,7 @@
                                     <td>
                                         <a href="/administration/V2/user?id={{ user.user.id }}">{{ user.user.username }}</a>
                                     </td>
-                                    <td>{{ user.duree/60 }}min</td>
+                                    <td>{{ user.duree|date('H:i:s', '+00:00 GMT') }}min</td>
                                 </tr>
                             {% endfor %}
                             </tbody>

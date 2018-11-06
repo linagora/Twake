@@ -48,7 +48,7 @@
         "aws/aws-sdk-php-symfony": "~2.0",
         "maennchen/zipstream-php": "^0.5.1",
         "onurb/doctrine-yuml-bundle": "~1.0",
-        "phpunit/phpunit": "^5.7.22"
+        "phpunit/phpunit": ">=5.7"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

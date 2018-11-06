@@ -39,6 +39,12 @@ class NotificationMailCommand extends ContainerAwareCommand
 
     }
 
+    /**
+     * @param $users_id_count
+     * @param string $template
+     * @param null $app
+     * @param bool $all_and_delete
+     */
     protected function sendMail($users_id_count, $template = "unread_notifications", $app = null, $all_and_delete = false)
     {
 
@@ -68,6 +74,21 @@ class NotificationMailCommand extends ContainerAwareCommand
                     "total_notifications" => $count,
                     "notifications" => Array()
                 );
+
+                $do_not_send = false;
+                foreach ($notifications as $notification) {
+                    if ($notification->getMailSent() == 1) {
+                        $timestamp = $notification->getLastMail();
+                        if ($timestamp && $timestamp->diff(new Date(), true)->getTimestamp() < 60 * 20) {
+                            $do_not_send = true;
+                            break;
+                        }
+                    }
+                }
+                if ($do_not_send) {
+                    continue;
+                }
+
                 foreach ($notifications as $notification) {
                     $data["notifications"][] = Array(
                         "title" => $notification->getTitle(),
