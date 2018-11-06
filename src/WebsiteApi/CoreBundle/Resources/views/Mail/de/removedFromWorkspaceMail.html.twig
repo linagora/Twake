@@ -1,0 +1,14 @@
+{% extends "TwakeCoreBundle:Mail:de/all.html.twig" %}
+
+{% block title %}Sie wurden aus dem Arbeitsbereich {{ workspace }} entfernt.{% endblock %}
+
+{% block secondtitle %}Sie wurden aus dem Arbeitsbereich {{ workspace }} entfernt.{% endblock %}
+
+{% block body %}
+
+    <b>Guten Tag {{ username|capitalize }},</b>
+    <br>
+    Sie wurden aus dem Arbeitsbereich {{ workspace }} in der Gruppe {{ group }} gelöscht.
+    <br>
+
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "TwakeCoreBundle:Mail:de/all.html.twig" %}
+
+{% block title %}E-Mail Bestätigung{% endblock %}
+
+{% block secondtitle %}E-Mail Bestätigung{% endblock %}
+
+{% block body %}
+
+    <b>Herzlich willkommen auf Twake!</b>
+    <br>
+    Um Ihr Konto einzurichten, brauchen Sie folgenden Code:
+    <br>
+    <br>
+    <center>
+        <div style="display: inline-block; color: #ffffff; background-color: #057CD7; border: solid 1px #057CD7; border-radius: 5px; box-sizing: border-box; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #057CD7;">
+            {{ code }}
+        </div>
+    </center>
+
+{% endblock %}
