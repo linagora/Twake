@@ -14,7 +14,7 @@ $translation = Array(
     "drive.has_been_added" => "$1 has been added to $2",
     "drive.has_been_moved" => "$1 has been moved into $2",
     "drive.file_updated" => "Updated file",
-    "drive.has_been_update" => "$1 has been update",
+    "drive.has_been_update" => "$1 has been updated",
 
     "project.generalBoardDescription" => "General board of tasks",
     "project.discover_twake" => "Discover Twake",

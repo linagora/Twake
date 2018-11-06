@@ -65,7 +65,7 @@ class Translate
         if($key instanceof TranslationObject)
             return $key->toString($lang);
 
-        $availableLanguages = Array("fr","en");
+        $availableLanguages = Array("fr", "en", "de");
 
         if (in_array($lang, $availableLanguages)) {
             $translation = Array();
