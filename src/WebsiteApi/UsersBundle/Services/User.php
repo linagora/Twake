@@ -487,11 +487,11 @@ class User implements UserInterface
 			->getEncoder($user)
 			->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
+        $res = false;
 		if($passwordValid){
-			return true;
+            $res = true;
 		}
-
-		return false;
+		return $res;
 	}
 
 	public function addDevice($userId, $type, $value, $version = "?")
@@ -500,6 +500,7 @@ class User implements UserInterface
 		$devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
 		$user = $userRepository->find($userId);
 
+        $res = false;
 		if($user != null) {
 			$device = $devicesRepository->findOneBy(Array("type"=>$type, "value"=>$value));
 			if(!$device){
@@ -515,10 +516,10 @@ class User implements UserInterface
 			$this->em->persist($newDevice);
 			$this->em->flush();
 
-			return true;
+			$res = true;
 		}
 
-		return false;
+		return $res;
 	}
 
 	public function removeDevice($userId, $type, $value)
@@ -527,16 +528,17 @@ class User implements UserInterface
 		$devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
 		$user = $userRepository->find($userId);
 
+        $res = false;
 		if($user != null) {
 			$device = $devicesRepository->findOneBy(Array("user"=>$user, "type"=>$type, "value"=>$value));
 			if($device) {
 				$this->em->remove($device);
 				$this->em->flush();
 			}
-			return true;
+            $res = true;
 		}
 
-		return false;
+		return $res;
 	}
 
 	public function getSecondaryMails($userId){
@@ -560,6 +562,8 @@ class User implements UserInterface
 
 		$userWithThisMailAsMainMail = $userRepository->findOneBy(Array("email"=>$mail));
 
+        $res = false;
+
 		if($user != null && $userWithThisMailAsMainMail==null) {
 			$mailExists = $mailRepository->findOneBy(Array("mail"=>$mail));
 
@@ -574,13 +578,13 @@ class User implements UserInterface
 
 				$this->em->persist($verificationNumberMail);
 				$this->em->flush();
-				return $verificationNumberMail->getToken();
+                $res = $verificationNumberMail->getToken();
 
 			}
 
 		}
 
-		return false;
+		return $res;
 	}
 
 	public function removeSecondaryMail($userId, $mail)
@@ -592,15 +596,17 @@ class User implements UserInterface
 		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
 		$user = $userRepository->find($userId);
 
+		$res = false;
+
 		if($user != null) {
 			$mail = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
 			$this->em->remove($mail);
 			$this->em->flush();
 
-			return true;
+			$res = true;
 		}
 
-		return false;
+		return $res;
 	}
 
 	public function checkNumberForAddNewMail($userId, $token, $code)

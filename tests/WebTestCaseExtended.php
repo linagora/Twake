@@ -40,7 +40,7 @@ class WebTestCaseExtended extends WebTestCase
 
     protected function doGet($route)
     {
-        return $this->call($route, $data, "GET");
+        return $this->call($route, Array(), "GET");
     }
 
     protected function call($route, $data = Array(), $method = "GET")

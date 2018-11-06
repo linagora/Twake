@@ -239,6 +239,26 @@ class UsersLoginTest extends WebTestCaseExtended
         $user = $userService->loginWithUsernameOnly("testuser");
         $this->assertInstanceOf(User::class, $user, "Test non banned user can login again either with loginWithUsernameOnly");
 
+        //Test is new
+        $this->doPost("/ajax/users/set/isNew", Array("value" => false));
+        $this->assertEquals(200, $this->getClient()->getResponse()->getStatusCode(), "Test set is new to false");
+        $this->doPost("/ajax/users/set/isNew", Array("value" => true));
+        $this->assertEquals(200, $this->getClient()->getResponse()->getStatusCode(), "Test set is new to true");
+
+        //Autologin no 500 error test
+        $this->doPost("/ajax/users/autoLogin", Array());
+        $this->assertEquals(302, $this->getClient()->getResponse()->getStatusCode(), "Test autologin works");
+
+        //Autologin no 500 error test
+        $this->doGet("/ajax/users/mobile_redirect");
+        $this->assertEquals(200, $this->getClient()->getResponse()->getStatusCode(), "Test mobile_redirect works");
+
+        //Autologin no 500 error test
+        $this->doPost("/ajax/users/isLogged", Array());
+        $this->assertEquals(200, $this->getClient()->getResponse()->getStatusCode(), "Test isLogged works");
+
+        $userService->removeUserByUsername("testuser");
+
     }
 
 }

@@ -118,8 +118,6 @@ class UsersConnectionsController extends Controller
         header("Expires: " . $tsstring);
 
         //Generate identicon
-        $draw = new \ImagickDraw();
-
         $md5 = md5($username);
         $seed1 = intval(hexdec(bin2hex(substr($md5, 0, 8))));
         $seed2 = intval(hexdec(bin2hex(substr($md5, 10, 8))));
@@ -145,6 +143,8 @@ class UsersConnectionsController extends Controller
                 $colored[$i] = rand(0, 1 + $colored[$i] * 3);
             }
         }
+
+        $draw = new \ImagickDraw();
 
         srand($seed3);
         for ($i = 0; $i < 36; $i++) {

@@ -15,6 +15,7 @@ class UsersAccountTest extends WebTestCaseExtended
     {
 
         $userService = $this->get("app.user");
+        $em = $this->getDoctrine();
 
         $userService->removeUserByUsername("testuser3");
 
@@ -34,21 +35,38 @@ class UsersAccountTest extends WebTestCaseExtended
             "", "", "", null, "fr", "", true
         );
 
+        //Test change password and username do not work when not connected
+        $res = $this->doPost("/ajax/users/account/username", Array("username" => ""));
+        $this->assertGreaterThan(0, count($res["errors"]), "Verify we cannot change pseudo if not connected");
+        $res = $this->doPost("/ajax/users/account/password", Array("old_password" => "", "password" => ""));
+        $this->assertGreaterThan(0, count($res["errors"]), "Verify we cannot change password if not connected");
+
+        $em->clear();
+
         $user = $userService->login("testuser", "testuser", true);
+        $this->doPost("/ajax/users/login", Array("_username" => "testuser", "_password" => "testuser"));
 
         //Pseudo
 
-        $res = $userService->changePseudo($user->getId(), "");
-        $this->assertFalse($res, "Verify we cannot change to empty pseudo");
+        $res = $this->doPost("/ajax/users/account/username", Array("username" => ""));
+        $this->assertGreaterThan(0, count($res["errors"]), "Verify we cannot change to empty pseudo");
 
-        $res = $userService->changePseudo($user->getId(), "testuser2");
-        $this->assertFalse($res, "Verify we cannot change to already used pseudo");
+        $em->clear();
+
+        $res = $this->doPost("/ajax/users/account/username", Array("username" => "testuser2"));
+        $this->assertGreaterThan(0, count($res["errors"]),"Verify we cannot change to already used pseudo");
+
+        $em->clear();
 
         $res = $userService->changePseudo(-1, "testuserfsqf");
         $this->assertFalse($res, "Verify no error when we use bad user id on pseudo change");
 
-        $res = $userService->changePseudo($user->getId(), "testuser3");
-        $this->assertTrue($res, "Verify can choose a new pseudo");
+        $em->clear();
+
+        $res = $this->doPost("/ajax/users/account/username", Array("username" => "testuser3"));
+        $this->assertEquals(0, count($res["errors"]), "Verify can choose a new pseudo");
+
+        $em->clear();
 
         $user = $userService->login("testuser3", "testuser", true);
         $this->assertInstanceOf(User::class, $user, "Verify pseudo was changed 1");
@@ -58,20 +76,30 @@ class UsersAccountTest extends WebTestCaseExtended
 
         //Password
 
-        $res = $userService->changePassword($user->getId(), "testuser", "");
-        $this->assertFalse($res, "Verify we cannot change to empty password");
+        $res = $this->doPost("/ajax/users/account/password", Array("old_password" => "testuser"));
+        $this->assertGreaterThan(0, count($res["errors"]), "Verify we cannot change to empty password");
+
+        $em->clear();
 
         $res = $userService->changePassword(-1, "testuser", "");
         $this->assertFalse($res, "Verify no error when we use bad user id on password change");
 
-        $res = $userService->changePassword($user->getId(), "testuser", "1234567");
-        $this->assertFalse($res, "Verify we cannot change to too short password");
+        $em->clear();
 
-        $res = $userService->changePassword($user->getId(), "12341234", "new_password");
-        $this->assertFalse($res, "Verify we cannot change password with bad old password");
+        $res = $this->doPost("/ajax/users/account/password", Array("old_password" => "testuser", "password" => "1234567"));
+        $this->assertGreaterThan(0, count($res["errors"]), "Verify we cannot change to too short password");
 
-        $res = $userService->changePassword($user->getId(), "testuser", "new_password");
-        $this->assertTrue($res, "Verify we can change password");
+        $em->clear();
+
+        $res = $this->doPost("/ajax/users/account/password", Array("old_password" => "12341234", "password" => "new_password"));
+        $this->assertGreaterThan(0, count($res["errors"]), "Verify we cannot change password with bad old password");
+
+        $em->clear();
+
+        $res = $this->doPost("/ajax/users/account/password", Array("old_password" => "testuser", "password" => "new_password"));
+        $this->assertEquals(0, count($res["errors"]), "Verify we can change password");
+
+        $em->clear();
 
         $user = $userService->login("testuser", "new_password", true);
         $this->assertInstanceOf(User::class, $user, "Verify password was changed");
@@ -80,6 +108,43 @@ class UsersAccountTest extends WebTestCaseExtended
 
         $userService->removeUserByUsername("testuser");
         $userService->removeUserByUsername("testuser2");
+
+    }
+
+    public function testAccountLanguage()
+    {
+
+        $userService = $this->get("app.user");
+
+        $userService->removeUserByUsername("testuser");
+        $userService->subscribeInfo(
+            date("U") . "testuser@twakeapp.com",
+            "testuser",
+            "testuser",
+            "", "", "", null, "fr", "", true
+        );
+
+        //Test when not connected
+        $res = $this->doPost("/ajax/users/account/language", Array("language" => "fr"));
+        $this->assertGreaterThan(0, count($res["errors"]), "Verify we cannot change language if not connected");
+
+        $user = $userService->login("testuser", "testuser", true);
+        $this->doPost("/ajax/users/login", Array("_username" => "testuser", "_password" => "testuser"));
+
+        $em = $this->getDoctrine();
+        $repo = $em->getRepository("TwakeUsersBundle:User");
+
+        $this->doPost("/ajax/users/account/language", Array("language" => "en"));
+        $this->assertEquals(200, $this->getClient()->getResponse()->getStatusCode(), "Test change language option");
+        $user = $repo->find($user->getId());
+        $this->assertEquals("en", $user->getLanguage(), "Test change language worked");
+
+        $em->clear();
+
+        $this->doPost("/ajax/users/account/language", Array("language" => "de"));
+        $this->assertEquals(200, $this->getClient()->getResponse()->getStatusCode(), "Test change language option");
+        $user = $repo->find($user->getId());
+        $this->assertEquals("de", $user->getLanguage(), "Test change language worked");
 
     }
 
