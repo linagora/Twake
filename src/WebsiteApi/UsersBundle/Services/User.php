@@ -868,7 +868,7 @@ class User implements UserInterface
     private function removeLinkedToUserRows($entity, $user, $col = "user")
     {
         $repo = $this->em->getRepository($entity);
-        $toRemove = $repo->findOneBy(Array($col => $user));
+        $toRemove = $repo->findBy(Array($col => $user));
         foreach ($toRemove as $r) {
             $this->em->remove($r);
         }
