@@ -15,9 +15,9 @@ class VerificationNumberMail
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")  //TO ADD FOR CASSANDRA
 	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")  //TO ADD FOR CASSANDRA
 	 */
 	private $id;
 
@@ -45,7 +45,7 @@ class VerificationNumberMail
 	/**
 	 * @var \DateTime
 	 *
-	 * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="cassandra_datetime")  //TO ADD FOR CASSANDRA (replace datetime)
 	 */
 	private $date = "";
 
@@ -127,8 +127,6 @@ class VerificationNumberMail
 	{
 		return $this->clean_code;
 	}
-
-
 
 }
 

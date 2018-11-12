@@ -41,7 +41,7 @@ framework:
     trusted_proxies: ~
     session:
         # http://symfony.com/doc/current/reference/configuration/framework.html#handler-id
-        handler_id:  session.handler.pdo
+        #handler_id:  session.handler.pdo
         save_path:   "%kernel.root_dir%/../var/sessions/%kernel.environment%"
     fragments:       ~
     http_method_override: true
@@ -110,7 +110,7 @@ gos_web_socket:
         host: "%websocket_host%"   #The host ip to bind to
     client:
         firewall: main #can be an array of firewalls
-        session_handler: '@session.handler.pdo'
+        #session_handler: '@session.handler.pdo'
     periodic:
         - '@websocket.pdo.ping'
     pushers:

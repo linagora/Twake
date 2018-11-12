@@ -79,7 +79,7 @@ class NotificationMailCommand extends ContainerAwareCommand
                 foreach ($notifications as $notification) {
                     if ($notification->getMailSent() == 1) {
                         $timestamp = $notification->getLastMail();
-                        if ($timestamp && $timestamp->diff(new Date(), true)->getTimestamp() < 60 * 20) {
+                        if ($timestamp && (new \DateTime())->getTimestamp() - $timestamp->getTimestamp() < 60 * 20) {
                             $do_not_send = true;
                             break;
                         }

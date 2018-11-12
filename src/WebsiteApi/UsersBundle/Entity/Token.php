@@ -15,9 +15,9 @@ class Token
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -36,7 +36,7 @@ class Token
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=350)
+     * @ORM\Column(name="external_service_name", type="string", length=350)
      */
     private $externalServiceName;
 
@@ -93,6 +93,8 @@ class Token
      */
     public function getToken()
     {
+        var_dump($this->token);
+        var_dump(json_decode("" . $this->token));
         if($this->token==null)
             return null;
         return json_decode($this->token);
