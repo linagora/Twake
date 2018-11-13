@@ -14,14 +14,14 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Class ObjectLinks
  * @package WebsiteApi\ObjectLinksBundle\Entity
- * @ORM\Table(name="objectLinks", options={"engine":"MyISAM"})
+ * @ORM\Table(name="object_links", options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\ObjectLinksBundle\Repository\ObjectLinksRepository")
  */
 class ObjectLinks
 {
 
     /**
-     * @ORM\Column(name="id",type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */

@@ -23,7 +23,13 @@ class Driver implements \Doctrine\DBAL\Driver
             $password,
             $driverOptions
         );
+        $this->cassandra_connection = $conn;
         return $conn;
+    }
+
+    public function getConnection()
+    {
+        return $this->cassandra_connection;
     }
 
     /**

@@ -122,6 +122,17 @@ class CassandraConnection
             ->withContactPoints("scylladb")
             ->build();
         $this->session = $this->cluster->connect(strtolower($keyspace));
+        $this->keyspace = $keyspace;
+    }
+
+    public function getSchema()
+    {
+        return $this->session->schema();
+    }
+
+    public function getKeyspace()
+    {
+        return $this->keyspace;
     }
 
     public function beginTransaction()

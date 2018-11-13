@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * linkEventUser
  *
- * @ORM\Table(name="linkEventUser",options={"engine":"MyISAM"})
+ * @ORM\Table(name="link_event_user",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\LinkEventUserRepository")
  */
 

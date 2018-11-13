@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Class BoardActivity
  * @package WebsiteApi\ProjectBundle\Entity
  *
- * @ORM\Table(name="BoardActivity", options={"engine":"MyISAM"})
+ * @ORM\Table(name="board_activity", options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\ProjectBundle\Repository\BoardActivityRepository")
  */
 class BoardActivity

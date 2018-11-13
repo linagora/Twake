@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Class CalendarActivity
  * @package WebsiteApi\CalendarBundle\Entity
  *
- * @ORM\Table(name="CalendarActivity", options={"engine":"MyISAM"})
+ * @ORM\Table(name="calendar_activity", options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\CalendarActivityRepository")
  */
 class CalendarActivity

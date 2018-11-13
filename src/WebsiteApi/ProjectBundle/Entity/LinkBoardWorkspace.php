@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * linkBoardWorkspace
  *
- * @ORM\Table(name="linkBoardWorkspace",options={"engine":"MyISAM"})
+ * @ORM\Table(name="link_board_workspace",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\ProjectBundle\Repository\LinkBoardWorkspaceRepository")
  */
 

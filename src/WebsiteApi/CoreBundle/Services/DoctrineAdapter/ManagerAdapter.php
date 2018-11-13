@@ -20,24 +20,6 @@ class ManagerAdapter
         $paths = array(__DIR__ . "/entity/");
         $isDevMode = true;
         // the connection configuration
-
-        /*
-        $cluster   = Cassandra::cluster()                 // connects to localhost by default
-                    ->withContactPoints("scylladb")
-                    ->build();
-        $keyspace  = 'system';
-        $session   = $cluster->connect($keyspace);        // create session, optionally scoped to a keyspace
-        $statement = new Cassandra\SimpleStatement(       // also supports prepared and batch statements
-            'SELECT * FROM system_schema.keyspaces'
-        );
-        $future    = $session->executeAsync($statement);  // fully asynchronous and easy parallel execution
-        $result    = $future->get();                      // wait for the result, with an optional timeout
-
-        foreach ($result as $row) {                       // results and rows implement Iterator, Countable and ArrayAccess
-            printf("The keyspace %s, replication seems to be %s\n", $row['keyspace_name'], json_encode($row['replication']));
-        }
-        */
-
         $dbParams = array(
             'driver' => "pdo_cassandra",
             'host' => "scylladb",
@@ -67,7 +49,6 @@ class ManagerAdapter
         foreach ($this->manager->getUnitOfWork()->getScheduledEntityInsertions() as $insert) {
             error_log(get_class($insert));
         }
-
 
         try {
 

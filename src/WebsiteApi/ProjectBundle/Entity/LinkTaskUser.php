@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * linkTaskUser
  *
- * @ORM\Table(name="linkTaskUser",options={"engine":"MyISAM"})
+ * @ORM\Table(name="link_task_user",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\ProjectBundle\Repository\LinkTaskUserRepository")
  */
 

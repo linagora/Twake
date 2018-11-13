@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * linkCalendarWorkspace
  *
- * @ORM\Table(name="linkCalendarWorkspace",options={"engine":"MyISAM"})
+ * @ORM\Table(name="link_calendar_workspace",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\LinkCalendarWorkspaceRepository")
  */
 
