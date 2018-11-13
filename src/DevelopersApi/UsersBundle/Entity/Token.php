@@ -22,7 +22,7 @@ class Token
 	private $id;
 
 	/**
-	 * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="cassandra_datetime")
 	 */
 	private $date;
 

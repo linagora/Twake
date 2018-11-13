@@ -33,12 +33,12 @@ class Subject implements ObjectLinksInterface
 
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $dateCreate;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $dateUpdate;
 

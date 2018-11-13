@@ -33,14 +33,14 @@ class ServerRamStats
     private $id;
 
     /**
-     * @ORM\Column(name="dateSave", type="datetime")
+     * @ORM\Column(name="date_save", type="cassandra_datetime")
      */
     private $dateSave;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="used", type="float")
+     * @ORM\Column(name="used", type="cassandra_float")
      */
     private $used;
 

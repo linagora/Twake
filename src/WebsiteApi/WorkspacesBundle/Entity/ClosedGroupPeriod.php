@@ -41,17 +41,17 @@ class ClosedGroupPeriod
     protected $appsUsage;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
 	private $periodStartedAt;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="cassandra_datetime", nullable=true)
      */
     private $periodEndedAt;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $periodExpectedToEndAt;
 

@@ -74,12 +74,12 @@ class DriveFile implements ObjectLinksInterface
     private $children;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $added;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $last_modified;
 

@@ -39,7 +39,7 @@ class UserConnectionStats
     protected $user;
 
     /**
-    * @ORM\Column(name="date_connection", type="datetime")
+     * @ORM\Column(name="date_connection", type="cassandra_datetime")
     */
     protected $dateConnection;
 

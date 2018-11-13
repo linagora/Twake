@@ -44,12 +44,12 @@ class GroupPricingInstance
     private $originalPricingReference;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
 	private $startedAt;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="cassandra_datetime", nullable=true)
      */
     private $endAt;
 

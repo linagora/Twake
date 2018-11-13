@@ -57,7 +57,7 @@ class Notification
     private $data = "{}";
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $date;
 
@@ -67,7 +67,7 @@ class Notification
     private $mail_sent = 0;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="cassandra_datetime", nullable=true)
      */
     private $last_mail = null;
 

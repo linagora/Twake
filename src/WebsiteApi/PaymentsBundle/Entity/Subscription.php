@@ -57,12 +57,12 @@ class Subscription
     private $subscribedBalance = 0;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $startDate;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $endDate;
 

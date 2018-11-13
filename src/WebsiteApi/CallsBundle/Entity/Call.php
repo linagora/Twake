@@ -22,7 +22,7 @@ class Call
 	private $id;
 
 	/**
-	 * @ORM\Column(name="discussionKey", type="string", length=24)
+     * @ORM\Column(name="discussion_key", type="string", length=24)
 	 */
 	private $discussionKey;
 
@@ -39,7 +39,7 @@ class Call
 	 *
 	 * Date of start
 	 *
-	 * @ORM\Column(name="since", type="datetime")
+     * @ORM\Column(name="since", type="cassandra_datetime")
 	 */
 	private $since;
 

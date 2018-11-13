@@ -36,7 +36,7 @@ class WorkspaceApp
 	private $groupapp;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
 	private $date_added;
 

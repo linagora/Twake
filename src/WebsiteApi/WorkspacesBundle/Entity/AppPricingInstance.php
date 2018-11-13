@@ -44,7 +44,7 @@ class AppPricingInstance
     protected $costUser;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
 	private $startedAt;
 

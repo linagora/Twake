@@ -30,12 +30,12 @@ class PricingPlan
 	protected $label = "";
 
 	/**
-	 * @ORM\Column(name="month_price", type="float")
+     * @ORM\Column(name="month_price", type="cassandra_float")
 	 */
 	protected $month_price = 0;
 
 	/**
-	 * @ORM\Column(name="year_price", type="float")
+     * @ORM\Column(name="year_price", type="cassandra_float")
 	 */
 	protected $year_price = 0;
 

@@ -55,7 +55,7 @@ class DriveActivity
     private $text;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $date;
 
@@ -65,7 +65,7 @@ class DriveActivity
     private $data;
 
     /**
-     * @ORM\Column(name="isRead", type="boolean")
+     * @ORM\Column(name="is_read", type="boolean")
      */
     private $read = false;
 

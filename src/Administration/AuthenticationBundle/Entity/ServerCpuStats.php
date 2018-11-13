@@ -34,7 +34,7 @@ class ServerCpuStats
 
 
     /**
-     * @ORM\Column(name="dateSave", type="datetime")
+     * @ORM\Column(name="date_save", type="cassandra_datetime")
      */
     private $dateSave;
 
@@ -48,70 +48,70 @@ class ServerCpuStats
     /**
      * @var float
      *
-     * @ORM\Column(name="usr", type="float")
+     * @ORM\Column(name="usr", type="cassandra_float")
      */
     private $usr;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="nice", type="float")
+     * @ORM\Column(name="nice", type="cassandra_float")
      */
     private $nice;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="sys", type="float")
+     * @ORM\Column(name="sys", type="cassandra_float")
      */
     private $sys;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="iowait", type="float")
+     * @ORM\Column(name="iowait", type="cassandra_float")
      */
     private $iowait;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="irq", type="float")
+     * @ORM\Column(name="irq", type="cassandra_float")
      */
     private $irq;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="soft", type="float")
+     * @ORM\Column(name="soft", type="cassandra_float")
      */
     private $soft;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="steal", type="float")
+     * @ORM\Column(name="steal", type="cassandra_float")
      */
     private $steal;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="guest", type="float")
+     * @ORM\Column(name="guest", type="cassandra_float")
      */
     private $guest;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="gnice", type="float")
+     * @ORM\Column(name="gnice", type="cassandra_float")
      */
     private $gnice;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="idle", type="float")
+     * @ORM\Column(name="idle", type="cassandra_float")
      */
     private $idle;
 

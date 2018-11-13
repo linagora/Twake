@@ -63,7 +63,7 @@ class Message
 
 
     /**
-	 * @ORM\Column(type="datetime",nullable=true)
+     * @ORM\Column(type="cassandra_datetime",nullable=true)
 	 */
 	private $date;
 

@@ -60,7 +60,7 @@ class GroupUser
     protected $nbWorkspace;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
 	private $date_added;
 
@@ -70,7 +70,7 @@ class GroupUser
     protected $lastDayOfUpdate;
 
     /**
-     * @ORM\Column(name="nbConnectionsPeriod", type="integer")
+     * @ORM\Column(name="nb_connections_period", type="integer")
      */
     protected $connectionsPeriod;
 

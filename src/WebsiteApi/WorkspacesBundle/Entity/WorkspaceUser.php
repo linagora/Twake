@@ -44,12 +44,12 @@ class WorkspaceUser
 	private $level;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $date_added;
 
     /**
-     * @ORM\Column(type="datetime", options={"default" : "1970-01-02"})
+     * @ORM\Column(type="cassandra_datetime", options={"default" : "1970-01-02"})
      */
     private $last_access;
 

@@ -26,9 +26,18 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
     {
         $conversionFor = Array(
             "string" => "text",
-            "cassandra_timeuuid" => "timeuuid"
+            "cassandra_timeuuid" => "timeuuid",
+            "array" => "text",
+            "boolean" => "boolean",
+            "text" => "text",
+            "cassandra_float" => "float",
+            "integer" => "int",
+            "bigint" => "bigint",
+            "decimal" => "decimal",
+            "cassandra_datetime" => "timestamp",
+            "blob" => "blob"
         );
-        return isset($conversionFor[$type]) ? $conversionFor[$type] : $type;
+        return isset($conversionFor[$type]) ? $conversionFor[$type] : "ERROR";
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -49,11 +58,37 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
 
         $schema = $connection->getSchema();
         $keyspace = $schema->keyspace(strtolower($connection->getKeyspace()));
-        $tables = $keyspace->tables();
 
         foreach ($entities as $entity) {
 
             $table_name = $entity->getTableName();
+            $fields = Array();
+            foreach ($entity->getFieldNames() as $fieldname) {
+
+                $mapping = Array();
+                if (!$entity->hasAssociation($fieldname)) {
+                    $mapping = $entity->getFieldMapping($fieldname);
+                } else {
+                    $mapping["type"] = "timeuuid";
+                }
+
+                if (isset($mapping["columnName"])) {
+                    $fieldname = $mapping["columnName"];
+                }
+
+                if (strtolower($fieldname) != $fieldname) {
+                    error_log("ERROR (IGNORING COLUMN) ! Column names MUST be snakecase and lowercase ! (" . $fieldname . " in " . $entity->getName() . ")");
+                    continue;
+                }
+
+                $type = $this->convertType($mapping["type"]);
+                if ($type == "ERROR") {
+                    error_log("ERROR (IGNORING COLUMN) ! Type " . $mapping["type"] . " is not allowed with Cassandra implementation (in " . $entity->getName() . ")");
+                    continue;
+                }
+
+                $fields[$fieldname] = $type;
+            }
 
             if (strtolower($table_name) != $table_name) {
                 error_log("ERROR (IGNORING TABLE) ! Tables names MUST be snakecase and lowercase ! (" . $entity->getName() . ")");
@@ -80,16 +115,57 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
                         continue;
                     }
                 } else {
-                    $mapping["type"] = "timeuuid";
+                    $mapping["type"] = "cassandra_timeuuid";
                 }
 
-                $create_table .= "(\"" . $identifier . "\" " . $this->convertType($mapping["type"]) . " PRIMARY KEY)";
+                $create_table .= "(";
+                $columns = Array();
+
+                $columns[] = "\"" . $identifier . "\" " . $this->convertType($mapping["type"]) . " PRIMARY KEY";
+                foreach ($fields as $fieldname => $type) {
+                    if ($fieldname != $identifier) {
+                        $columns[] = "\"" . $fieldname . "\" " . $type . "";
+                    }
+                }
+                $columns = join(", ", $columns);
+
+                $create_table .= $columns . " )";
 
                 $connection->exec($create_table);
             }
 
-            //TODO Add new columns
+            $cassandra_table = $keyspace->table($table_name);
+            if (!$cassandra_table) {
+                continue;
+            }
 
+            //Add columns
+            $columns_to_add = Array();
+            $alter_command = "ALTER TABLE " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
+            foreach ($fields as $fieldname => $type) {
+
+                $existing_col = $cassandra_table->column($fieldname);
+
+                if ($existing_col) {
+                    if ($existing_col->type() != $type) {
+                        $command = $alter_command . " ALTER \"" . $fieldname . "\" TYPE " . $type;
+                        $connection->exec($command);
+                    }
+                } else {
+                    /* MULTIPLE ADD COLUMN NOT SUPORTED FOR CURRENT SCYLLADB VERSION*/
+                    $add = "\"" . $fieldname . "\" " . $type . "";
+                    $connection->exec($alter_command . " ADD " . $add);
+                    $columns_to_add[] = $add;
+                }
+
+            }
+
+            /* MULTIPLE ADD COLUMN NOT SUPORTED FOR CURRENT SCYLLADB VERSION
+            if(count($columns_to_add) > 0){
+                $columns_to_add = join(", ", $columns_to_add);
+                $command = $alter_command . " ADD ".$columns_to_add."";
+                $connection->exec($command);
+            }*/
 
         }
 

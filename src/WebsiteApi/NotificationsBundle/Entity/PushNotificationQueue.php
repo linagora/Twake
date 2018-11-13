@@ -27,7 +27,7 @@ class PushNotificationQueue
 	private $text;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
 	private $date;
 

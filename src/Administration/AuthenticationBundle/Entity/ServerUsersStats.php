@@ -33,7 +33,7 @@ class ServerUsersStats
     private $id;
 
     /**
-     * @ORM\Column(name="dateSave", type="datetime")
+     * @ORM\Column(name="date_save", type="cassandra_datetime")
      */
     private $dateSave;
 

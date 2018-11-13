@@ -35,7 +35,7 @@ class CallMember
 	 *
 	 * Date of start
 	 *
-	 * @ORM\Column(name="since", type="date")
+     * @ORM\Column(name="since", type="cassandra_datetime")
 	 */
 	private $since;
 

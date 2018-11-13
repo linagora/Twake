@@ -60,7 +60,7 @@ class Group
 	private $managers;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
 	private $date_added;
 

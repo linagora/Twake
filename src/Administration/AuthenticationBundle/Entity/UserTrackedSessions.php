@@ -30,7 +30,7 @@ class UserTrackedSessions
     private $user;
 
     /**
-     * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="cassandra_datetime")
      */
     private $date;
 
@@ -48,7 +48,7 @@ class UserTrackedSessions
      * @var string
      *
      * Données de la session
-     * @ORM\Column(name="accessToken", type="string", length=1000000)
+     * @ORM\Column(name="access_token", type="string", length=1000000)
      */
 
     private $data;

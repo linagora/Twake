@@ -39,7 +39,7 @@ class UserDailyStats
      */
     protected $privateMsgCount;
     /**
-     * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="cassandra_datetime")
      */
     protected $date;
 

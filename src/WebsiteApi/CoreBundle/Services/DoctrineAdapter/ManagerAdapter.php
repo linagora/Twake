@@ -12,11 +12,16 @@ class ManagerAdapter
 
     public function __construct($doctrine_manager)
     {
-        $this->manager = $doctrine_manager;
+        $this->doctrine_manager = $doctrine_manager;
+        $this->manager = null;
     }
 
     public function getEntityManager()
     {
+        if ($this->manager) {
+            return $this->manager;
+        }
+
         $paths = array(__DIR__ . "/entity/");
         $isDevMode = true;
         // the connection configuration
@@ -30,6 +35,8 @@ class ManagerAdapter
         $conn = DriverManager::getConnection($dbParams, $config);
 
         $entityManager = EntityManager::create($conn, $config);
+
+        $this->manager = $entityManager;
         return $entityManager;
     }
 
@@ -40,15 +47,11 @@ class ManagerAdapter
 
     public function clear()
     {
-        return $this->manager->clear();
+        return $this->getEntityManager()->clear();
     }
 
     public function flush()
     {
-
-        foreach ($this->manager->getUnitOfWork()->getScheduledEntityInsertions() as $insert) {
-            error_log(get_class($insert));
-        }
 
         try {
 
@@ -62,16 +65,18 @@ class ManagerAdapter
 
     public function remove($object)
     {
-        return $this->manager->remove($object);
+        return $this->getEntityManager()->remove($object);
     }
 
     public function persist($object)
     {
-        return $this->manager->persist($object);
+        return $this->getEntityManager()->persist($object);
     }
 
     public function getRepository($name)
     {
+        $metadata = $this->doctrine_manager->getClassMetadata($name);
+        $name = $metadata->getName();
         $em = $this->getEntityManager();
         $factory = new DefaultRepositoryFactory($em, $name);
         return $factory->getRepository($em, $name);
@@ -79,7 +84,7 @@ class ManagerAdapter
 
     public function createQueryBuilder($qb = null)
     {
-        return $this->manager->createQueryBuilder($qb);
+        return $this->getEntityManager()->createQueryBuilder($qb);
     }
 
 }

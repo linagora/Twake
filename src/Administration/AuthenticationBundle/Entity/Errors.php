@@ -22,12 +22,12 @@ class Errors
     private $id;
 
 	/**
-	 * @ORM\Column(name="first_date", type="datetime")
+     * @ORM\Column(name="first_date", type="cassandra_datetime")
 	 */
 	private $firstDate;
 
 	/**
-	 * @ORM\Column(name="last_date", type="datetime")
+     * @ORM\Column(name="last_date", type="cassandra_datetime")
 	 */
 	private $lastDate;
 

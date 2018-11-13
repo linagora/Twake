@@ -40,7 +40,7 @@ class File
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="realName", type="string", length=255)
+     * @ORM\Column(name="real_name", type="string", length=255)
 	 */
 	private $realName; //Original name of the files on user computer
 

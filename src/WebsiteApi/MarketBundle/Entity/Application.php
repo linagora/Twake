@@ -63,7 +63,7 @@ class Application
 
 
 	/**
-	 * @ORM\Column(name="shortDescription", type="text")
+     * @ORM\Column(name="short_description", type="text")
 	 */
 	private $shortDescription = "";
 
@@ -73,12 +73,12 @@ class Application
 	private $description = "";
 
 	/**
-	 * @ORM\Column(name="price_monthly", type="float")
+     * @ORM\Column(name="price_monthly", type="cassandra_float")
 	 */
 	private $priceMonthly = 0;
 
     /**
-     * @ORM\Column(name="price_user", type="float")
+     * @ORM\Column(name="price_user", type="cassandra_float")
      */
     private $priceUser = 0;
 
@@ -88,17 +88,17 @@ class Application
 	private $workspace;
 
 	/**
-	 * @ORM\Column(name="userCount", type="integer")
+     * @ORM\Column(name="user_count", type="integer")
 	 */
 	private $userCount = 0;
 
 	/**
-	 * @ORM\Column(name="voteCount", type="integer")
+     * @ORM\Column(name="vote_count", type="integer")
 	 */
 	private $voteCount = 0;
 
 	/**
-	 * @ORM\Column(name="score", type="float")
+     * @ORM\Column(name="score", type="cassandra_float")
 	 */
 	private $score = 0;
 
@@ -133,7 +133,7 @@ class Application
     protected $editableRights;
 
 	/**
-	 * @ORM\Column(type="date")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
 	protected $date;
 
@@ -168,7 +168,7 @@ class Application
 	protected $applicationRights;
 
     /**
-     * @ORM\Column(name="installCount", type="integer")
+     * @ORM\Column(name="install_count", type="integer")
      */
     private $installCount = 0;
 

@@ -33,7 +33,7 @@ class Board {
     private $workspacesNumber = 1;
 
     /**
-     * @ORM\Column(name="autoParticipateList", type="string", length=264, nullable=false)
+     * @ORM\Column(name="auto_participate_list", type="string", length=264, nullable=false)
      */
     private $autoParticipantList;
 

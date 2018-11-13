@@ -31,7 +31,7 @@ class OnlyofficeFile
     private $fileId;
 
     /**
-     * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="cassandra_datetime")
      */
     private $date;
 

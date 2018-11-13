@@ -34,13 +34,13 @@ class AdminUser
      * @var string
      *
      * Token utilisé pour vérifier la connexion
-     * @ORM\Column(name="accessToken", type="string", length=256)
+     * @ORM\Column(name="access_token", type="string", length=256)
      */
 
     private $accessToken;
 
     /**
-     * @ORM\Column(name="dateReset", type="datetime")
+     * @ORM\Column(name="date_reset", type="cassandra_datetime")
      */
     private $dateReset;
 

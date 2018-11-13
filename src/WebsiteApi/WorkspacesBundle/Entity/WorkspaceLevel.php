@@ -36,12 +36,12 @@ class WorkspaceLevel
 	protected $rights;
 
 	/**
-	 * @ORM\Column(name="isDefault", type="boolean", length=1)
+     * @ORM\Column(name="is_default", type="boolean", length=1)
 	 */
 	protected $isDefault = false;
 
 	/**
-	 * @ORM\Column(name="isAdmin", type="boolean", length=1)
+     * @ORM\Column(name="is_admin", type="boolean", length=1)
 	 */
 	protected $isAdmin = false;
 

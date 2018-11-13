@@ -30,7 +30,7 @@ class PaymentsHistory
 	private $workspace;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
 	private $date;
 

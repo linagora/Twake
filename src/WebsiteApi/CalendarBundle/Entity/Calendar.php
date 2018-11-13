@@ -39,7 +39,7 @@ class Calendar {
     private $workspacesNumber = 1;
 
     /**
-     * @ORM\Column(name="autoParticipateList", type="string", length=264, nullable=false)
+     * @ORM\Column(name="auto_participate_list", type="string", length=264, nullable=false)
      */
     private $autoParticipantList;
 
@@ -50,7 +50,7 @@ class Calendar {
     private $icsLink;
 
     /**
-     * @ORM\Column(type="datetime" , options={"default" : "2018-07-27 14:00:58"})
+     * @ORM\Column(type="cassandra_datetime" , options={"default" : "2018-07-27 14:00:58"})
      */
     private $lastUpdateDate;
 

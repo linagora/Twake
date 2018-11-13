@@ -46,7 +46,7 @@ class WorkspaceDailyStats
 	 */
 	protected $privateChannelMsgCount;
     /**
-     * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="cassandra_datetime")
      */
     protected $date;
 

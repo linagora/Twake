@@ -41,12 +41,12 @@ class StreamMember
     private $mute;
 
     /**
-     * @ORM\Column(type="datetime", options={"default" : "1970-01-02"})
+     * @ORM\Column(type="cassandra_datetime", options={"default" : "1970-01-02"})
      */
     private $last_read;
 
     /**
-     * @ORM\Column(type="datetime", options={"default" : "1970-01-02"})
+     * @ORM\Column(type="cassandra_datetime", options={"default" : "1970-01-02"})
      */
     private $last_update;
 
