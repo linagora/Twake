@@ -35,7 +35,7 @@ class User implements UserInterface
 	protected $banned = false;
 
     /**
-     * @ORM\Column(type="boolean", options={"default" : false } )
+     * @ORM\Column(name="is_robot", type="boolean", options={"default" : false } )
      */
     protected $isRobot;
 
@@ -79,7 +79,7 @@ class User implements UserInterface
 
     /**
      * @var int
-     * @ORM\Column(type="cassandra_datetime",nullable=true, options={"default" : "1970-01-02"})
+     * @ORM\Column(name="creation_date", type="cassandra_datetime",nullable=true, options={"default" : "1970-01-02"})
      */
     protected $creationDate;
 
@@ -114,7 +114,7 @@ class User implements UserInterface
     protected $username;
 
     /**
-     * @ORM\Column(type="string", length=64)
+     * @ORM\Column(name="username_canonical", type="string", length=64)
      */
     protected $usernameCanonical;
 
@@ -124,7 +124,7 @@ class User implements UserInterface
     protected $email;
 
     /**
-     * @ORM\Column(type="string", length=512)
+     * @ORM\Column(name="email_canonical", type="string", length=512)
      */
     protected $emailCanonical;
 
@@ -144,17 +144,17 @@ class User implements UserInterface
     protected $password;
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(name="last_login", type="cassandra_datetime")
      */
     protected $lastLogin;
 
     /**
-     * @ORM\Column(type="string", nullable = true)
+     * @ORM\Column(name="confirmation_token", type="string", nullable = true)
      */
     protected $confirmationToken;
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(name="password_requested_at", type="cassandra_datetime")
      */
     protected $passwordRequestedAt;
 

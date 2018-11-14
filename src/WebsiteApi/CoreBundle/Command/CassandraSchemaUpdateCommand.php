@@ -90,6 +90,25 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
                 $fields[$fieldname] = $type;
             }
 
+            foreach ($entity->getAssociationNames() as $fieldname) {
+
+
+                $mapping = $entity->getAssociationMapping($fieldname);
+
+                if (isset($mapping["columnName"])) {
+                    $fieldname = $mapping["columnName"];
+                }
+
+                if (strtolower($fieldname) != $fieldname) {
+                    error_log("ERROR (IGNORING COLUMN) ! Column names MUST be snakecase and lowercase ! (" . $fieldname . " in " . $entity->getName() . ")");
+                    continue;
+                }
+
+                $fieldname = $fieldname . "_id";
+
+                $fields[$fieldname] = "timeuuid";
+            }
+
             if (strtolower($table_name) != $table_name) {
                 error_log("ERROR (IGNORING TABLE) ! Tables names MUST be snakecase and lowercase ! (" . $entity->getName() . ")");
                 continue;

@@ -63,7 +63,13 @@ class PricingPlan implements PricingPlanInterface
     public function getMinimalPricing()
     {
         $planRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
-        $plan = $planRepository->findOneBy(Array("id" => 1));
+        $plans = $planRepository->findBy(Array());
+        $plan = null;
+        foreach ($plans as $_plan) {
+            if (!$plan || $plan->getMonthPrice() > $_plan->getMonthPrice()) {
+                $plan = $_plan;
+            }
+        }
         return $plan;
     }
 
