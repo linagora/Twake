@@ -180,6 +180,7 @@ final class DriverManager
             Type::addType('cassandra_float', 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraFloatType');
             Type::addType('cassandra_datetime', 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraDateTimeType');
             Type::addType('cassandra_timeuuid', 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraTimeUUIDType');
+            Type::addType('cassandra_boolean', 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraBooleanType');
         }
 
         return new $wrapperClass($params, $driver, $config, $eventManager);

@@ -77,17 +77,17 @@ class Workspace
 	private $date_added;
 
 	/**
-	 * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
 	 */
 	private $isDeleted = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $isArchived = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $isNew = true;
 

@@ -70,11 +70,11 @@ class Group
     protected $on_creation_data = "{}";
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $isBlocked = false;
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $isPrivate = false;
 

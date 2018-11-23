@@ -34,12 +34,12 @@ class LinkCalendarWorkspace{
     private $application = null;
 
     /**
-     * @ORM\Column(name="calendarright", type="boolean")
+     * @ORM\Column(name="calendarright", type="cassandra_boolean")
      */
     private $calendarRight;
 
     /**
-     * @ORM\Column(name="owner", type="boolean")
+     * @ORM\Column(name="owner", type="cassandra_boolean")
      */
     private $owner;
 

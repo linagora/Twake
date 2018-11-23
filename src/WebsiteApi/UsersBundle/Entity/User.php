@@ -30,12 +30,12 @@ class User implements UserInterface
 	protected $id;
 
 	/**
-	 * @ORM\Column(name="banned", type="boolean")
+     * @ORM\Column(name="banned", type="cassandra_boolean")
 	 */
 	protected $banned = false;
 
     /**
-     * @ORM\Column(name="is_robot", type="boolean", options={"default" : false } )
+     * @ORM\Column(name="is_robot", type="cassandra_boolean", options={"default" : false } )
      */
     protected $isRobot;
 
@@ -67,7 +67,7 @@ class User implements UserInterface
 
 	/**
 	 * @var int
-	 * @ORM\Column(name="connected", type="boolean")
+     * @ORM\Column(name="connected", type="cassandra_boolean")
 	 */
 	protected $connected;
 
@@ -104,7 +104,7 @@ class User implements UserInterface
     protected $origin = "";
 
     /**
-     * @ORM\Column(name="is_new", type="boolean")
+     * @ORM\Column(name="is_new", type="cassandra_boolean")
      */
     protected $isNew = true;
 
@@ -129,7 +129,7 @@ class User implements UserInterface
     protected $emailCanonical;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     protected $enabled;
 
@@ -621,12 +621,8 @@ class User implements UserInterface
     {
         $roles = $this->roles;
 
-        foreach ($this->getGroups() as $group) {
-            $roles = array_merge($roles, $group->getRoles());
-        }
-
         // we need to make sure to have at least one role
-        $roles[] = static::ROLE_DEFAULT;
+        $roles[] = 'ROLE_USER';
 
         return array_unique($roles);
     }

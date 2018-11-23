@@ -48,7 +48,7 @@ class Board {
     private $participants;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $isPrivate;
 

@@ -27,7 +27,7 @@ class Application
 	private $name;
 
     /**
-     * @ORM\Column(name="isdefault", type="boolean")
+     * @ORM\Column(name="isdefault", type="cassandra_boolean")
      */
     private $default;
 
@@ -47,7 +47,7 @@ class Application
 	private $url = "";
 
 	/**
-	 * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
 	 */
 	private $canCreateFile; //Will be visible in the list of new files in Drive
 
@@ -57,7 +57,7 @@ class Application
 	private $createFileData = "{}"; //Will be visible in the list of new files in Drive
 
 	/**
-	 * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
 	 */
 	private $isCapable; //Can be opened as app in window (displayed in the left bar of apps)
 
@@ -118,7 +118,7 @@ class Application
 	protected $screenshot = "[]";
 
 	/**
-	 * @ORM\Column(name="message_module" , type="boolean")
+     * @ORM\Column(name="message_module" , type="cassandra_boolean")
 	 */
 	protected $messageModule;
 
@@ -128,7 +128,7 @@ class Application
     private $messageModuleUrl = "";
 
     /**
-     * @ORM\Column(name="editable_rights" , type="boolean")
+     * @ORM\Column(name="editable_rights" , type="cassandra_boolean")
      */
     protected $editableRights;
 
@@ -148,7 +148,7 @@ class Application
 	protected $publicKey;
 
 	/**
-	 * @ORM\Column(type="boolean" )
+     * @ORM\Column(type="cassandra_boolean" )
 	 */
 	protected $enabled;
 
@@ -178,7 +178,7 @@ class Application
     private $cgu ;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $urlApp = false;
 

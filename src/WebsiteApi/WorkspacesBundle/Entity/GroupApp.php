@@ -41,7 +41,7 @@ class GroupApp
 	private $date_added;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $workspaceDefault;
 

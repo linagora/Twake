@@ -59,17 +59,17 @@ class GroupIdentity
     private $lockDate;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $haveAlreadySendIsOverUsingALotMail;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $haveAlreadySendIsOverUsingALittleMail;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $haveAlreadySendWillBeOverUsingMail;
 

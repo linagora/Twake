@@ -53,12 +53,12 @@ class DriveFile implements ObjectLinksInterface
     private $description;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $isDirectory;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $isInTrash;
 
@@ -100,12 +100,12 @@ class DriveFile implements ObjectLinksInterface
     private $cache;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $detached_file = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $previewHasBeenGenerated = false;
 
@@ -115,7 +115,7 @@ class DriveFile implements ObjectLinksInterface
 	private $copyOf;
 
 	/**
-    * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
     */
     private $shared = false;
 

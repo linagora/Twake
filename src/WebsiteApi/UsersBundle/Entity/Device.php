@@ -22,7 +22,7 @@ class Device
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="secondary_mails")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", options={"index": true})
 	 */
     private $user;
 

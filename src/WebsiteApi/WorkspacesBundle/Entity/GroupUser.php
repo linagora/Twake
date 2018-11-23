@@ -40,12 +40,12 @@ class GroupUser
 	protected $level;
 
     /**
-     * @ORM\Column(name="did_connect_today", type="boolean")
+     * @ORM\Column(name="did_connect_today", type="cassandra_boolean")
      */
     private $didConnectToday;
 
     /**
-     * @ORM\Column(name="is_externe", type="boolean")
+     * @ORM\Column(name="is_externe", type="cassandra_boolean")
      */
     private $externe;
 

@@ -43,7 +43,7 @@ class Subject implements ObjectLinksInterface
     private $dateUpdate;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $isOpen = true;
 

@@ -31,7 +31,7 @@ class WorkspaceUserByMail
 	private $mail;
 
     /**
-     * @ORM\Column(name="is_externe", type="boolean")
+     * @ORM\Column(name="is_externe", type="cassandra_boolean")
      */
     private $externe;
 

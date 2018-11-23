@@ -65,7 +65,7 @@ class BoardActivity
     private $data;
 
     /**
-     * @ORM\Column(name="is_read", type="boolean")
+     * @ORM\Column(name="is_read", type="cassandra_boolean")
      */
     private $read = false;
 

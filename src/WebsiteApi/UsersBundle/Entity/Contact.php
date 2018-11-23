@@ -23,12 +23,12 @@ class Contact
 	protected $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", options={"index": true})
 	 */
 	private $from;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", options={"index": true})
 	 */
 	private $to;
 

@@ -28,6 +28,7 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
             "string" => "text",
             "cassandra_timeuuid" => "timeuuid",
             "array" => "text",
+            "cassandra_boolean" => "tinyint",
             "boolean" => "tinyint",
             "text" => "text",
             "cassandra_float" => "float",

@@ -28,12 +28,12 @@ class LinkBoardWorkspace{
     private $workspace;
 
     /**
-     * @ORM\Column(name="boardright", type="boolean")
+     * @ORM\Column(name="boardright", type="cassandra_boolean")
      */
     private $boardRight;
 
     /**
-     * @ORM\Column(name="owner", type="boolean")
+     * @ORM\Column(name="owner", type="cassandra_boolean")
      */
     private $owner;
 

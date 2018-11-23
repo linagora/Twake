@@ -44,7 +44,7 @@ class Message
 	private $streamReciever;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $isApplicationMessage = false;
 
@@ -55,7 +55,7 @@ class Message
     private $applicationSender;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $isSystemMessage = false;
 
@@ -84,12 +84,12 @@ class Message
 
 
 	/**
-	 * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
 	 */
 	private $edited = false;
 
 	/**
-	 * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
 	 */
 	private $pinned = false;
 
@@ -100,7 +100,7 @@ class Message
 	private $responseTo = null;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $hasResponses = false;
 

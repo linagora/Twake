@@ -36,7 +36,7 @@ class StreamMember
 	private $workspace;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $mute;
 

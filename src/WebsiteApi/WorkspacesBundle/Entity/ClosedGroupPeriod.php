@@ -71,7 +71,7 @@ class ClosedGroupPeriod
     protected $expectedCost;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $billed;
 

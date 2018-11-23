@@ -72,7 +72,7 @@ class Notification
     private $last_mail = null;
 
     /**
-     * @ORM\Column(type="boolean" , options={"default" : true})
+     * @ORM\Column(type="cassandra_boolean" , options={"default" : true})
      */
     private $isRead;
 

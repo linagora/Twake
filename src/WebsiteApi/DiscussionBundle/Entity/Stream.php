@@ -46,12 +46,12 @@ class Stream
     private $description = "";
 
 	/**
-	 * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
 	 */
 	private $isPrivate;
 
     /**
-     * @ORM\Column(type="boolean", options={"default" : false })
+     * @ORM\Column(type="cassandra_boolean", options={"default" : false })
      */
     private $isHide;
 
