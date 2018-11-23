@@ -139,8 +139,8 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
                 $mapping = Array();
                 if (!$entity->hasAssociation($identifier)) {
                     $mapping = $entity->getFieldMapping($identifier);
-                    if (!in_array($mapping["type"], Array("cassandra_timeuuid", "string"))) {
-                        error_log("ERROR (IGNORING TABLE) ! Tables index MUST be of type cassandra_timeuuid or string ! (in " . $entity->getName() . ")");
+                    if (!in_array($mapping["type"], Array("cassandra_timeuuid", "string", "blob"))) {
+                        error_log("ERROR (IGNORING TABLE) ! Tables index MUST be of type cassandra_timeuuid or string or blob ! (in " . $entity->getName() . ")");
                         continue;
                     }
                 } else {

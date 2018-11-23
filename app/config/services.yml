@@ -98,18 +98,9 @@ services:
     ###################### System
     #################################################################################
 
-    pdo:
-        class: PDO
-        arguments:
-            dsn: mysql:host=%database_host%;port=%database_port%;dbname=%database_name%
-            user: '%database_user%'
-            password: '%database_password%'
-        calls:
-            - [ setAttribute, [3, 2] ] # \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION
-
-    session.handler.pdo:
-        class:     Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
-        arguments: ['@pdo', {lock_mode: 0}]
+    session.handler.cassandra:
+        class:     WebsiteApi\CoreBundle\Services\DoctrineAdapter\CassandraSessionHandler
+        arguments: ['@app.doctrine_adapter', {lock_mode: 0}]
 
     kernel.event_listener.json_request_transformer:
       class: Qandidate\Common\Symfony\HttpKernel\EventListener\JsonRequestTransformerListener

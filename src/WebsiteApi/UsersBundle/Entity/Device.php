@@ -22,7 +22,8 @@ class Device
     private $id;
 
 	/**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", options={"index": true})
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\Column(options={"index": true})
 	 */
     private $user;
 
