@@ -2,7 +2,6 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Driver\PDOCassandra;
 
-use Doctrine\DBAL\Driver\PDOConnection;
 use Cassandra;
 
 class PDOStatementAdapter
@@ -119,9 +118,12 @@ class CassandraConnection
     public function __construct($keyspace, $username, $password, $driverOptions)
     {
         $this->cluster = Cassandra::cluster()
-            ->withContactPoints("scylladb")
+            ->withContactPoints($driverOptions["host"])
             ->build();
         $this->session = $this->cluster->connect(strtolower($keyspace));
+
+        error_log(json_encode($this->session->metrics()));
+
         $this->keyspace = $keyspace;
     }
 

@@ -97,7 +97,7 @@ class DefaultController extends Controller
             $key = $request["key"];
             $document = $request["url"];
 
-            $em = $this->get("app.doctrine_adapter")->getManager();
+            $em = $this->get("app.cassandra_doctrine")->getManager();
 
             $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFileKeys");
             $fileKey = $repo->findOneBy(Array("key" => $key));
@@ -166,7 +166,7 @@ class DefaultController extends Controller
 
             $fId = $request->request->getInt("fileId", 0);
             $filename = $request->request->get("filename", 0);
-            $em = $this->get("app.doctrine_adapter")->getManager();
+            $em = $this->get("app.cassandra_doctrine")->getManager();
 
             $file = new OnlyofficeFile($workspaceId, $fId);
             $em->persist($file);
@@ -201,7 +201,7 @@ class DefaultController extends Controller
         $fToken = $request->query->get("fileToken", null);
         $fId = $request->query->getInt("fileId", 0);
 
-        $em = $this->get("app.doctrine_adapter")->getManager();
+        $em = $this->get("app.cassandra_doctrine")->getManager();
         $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFile");
 
         /** @var OnlyofficeFile $file */

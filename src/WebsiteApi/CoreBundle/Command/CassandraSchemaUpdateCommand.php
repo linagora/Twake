@@ -46,7 +46,7 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
         $mysql_doctrine = $this->getContainer()->get('doctrine');
         $mysql_em = $mysql_doctrine->getManager();
 
-        $doctrine = $this->getContainer()->get('app.doctrine_adapter');
+        $doctrine = $this->getContainer()->get('app.cassandra_doctrine');
         $em = $doctrine->getManager();
         $connection = $em->getConnection();
         $connection = $connection->getWrappedConnection();

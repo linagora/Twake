@@ -16,6 +16,15 @@ class Driver implements \Doctrine\DBAL\Driver
      */
     public function connect(array $params, $username = null, $password = null, array $driverOptions = array())
     {
+        // the connection configuration
+        $params = array(
+            'host' => "scylladb",
+            'port' => "9160",
+            'dbname' => "Twake",
+        );
+
+        $driverOptions = array_merge($driverOptions, $params);
+
         $driverOptions[\PDO::ATTR_ERRMODE] = \PDO::ERRMODE_EXCEPTION;
         $conn = new CassandraConnection(
             $params['dbname'],

@@ -114,7 +114,7 @@ class User implements UserInterface
     protected $username;
 
     /**
-     * @ORM\Column(name="username_canonical", type="string", length=64)
+     * @ORM\Column(name="username_canonical", type="string", length=64, options={"index": true})
      */
     protected $usernameCanonical;
 
@@ -124,7 +124,7 @@ class User implements UserInterface
     protected $email;
 
     /**
-     * @ORM\Column(name="email_canonical", type="string", length=512)
+     * @ORM\Column(name="email_canonical", type="string", length=512, options={"index": true})
      */
     protected $emailCanonical;
 

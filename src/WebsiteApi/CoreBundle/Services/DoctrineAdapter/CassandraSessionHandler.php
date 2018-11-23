@@ -90,6 +90,8 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     public function destroy($sessionId)
     {
+        $this->prepareStatements();
+
         $blobSessionId = new \Cassandra\Blob($sessionId);
         $result = $this->getSession()->execute($this->preparedStatements['destroy'],
             new \Cassandra\ExecutionOptions(array('arguments' => array($blobSessionId)))
@@ -110,6 +112,8 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     public function write($sessionId, $data)
     {
+        $this->prepareStatements();
+
         $blobData = new \Cassandra\Blob($data);
         $nowTimestamp = new \Cassandra\Timestamp();
         $blobSessionId = new \Cassandra\Blob($sessionId);
@@ -118,6 +122,7 @@ class CassandraSessionHandler implements \SessionHandlerInterface
                 $blobData, $nowTimestamp, $blobSessionId
             )))
         );
+
         return true;
     }
 
@@ -126,6 +131,8 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     public function read($sessionId)
     {
+        $this->prepareStatements();
+
         $blobSessionId = new \Cassandra\Blob($sessionId);
         $result = $this->getSession()->execute($this->preparedStatements['read'],
             new \Cassandra\ExecutionOptions(array('arguments' => array($blobSessionId)))
@@ -144,7 +151,6 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     protected function getSession()
     {
-        $this->prepareStatements();
         return $this->session;
     }
 

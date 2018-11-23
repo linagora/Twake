@@ -5,8 +5,8 @@ services:
 
     website_api_market.applications:
         class: WebsiteApi\MarketBundle\Services\MarketApplication
-        arguments: ["@app.doctrine_adapter", "@app.group_managers","@app.pricing_plan"]
+        arguments: ["@app.cassandra_doctrine", "@app.group_managers","@app.pricing_plan"]
 
     website_api_market.data_token:
         class: WebsiteApi\MarketBundle\Services\DataTokenSystem
-        arguments: ["@app.doctrine_adapter"]
+        arguments: ["@app.cassandra_doctrine"]

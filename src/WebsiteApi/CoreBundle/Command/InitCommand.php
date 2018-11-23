@@ -75,7 +75,7 @@ class InitCommand extends ContainerAwareCommand
             $output->writeln('WARNING : doctrine schema update failed, error was ignored');
         }
 
-        $doctrine = $this->getContainer()->get('app.doctrine_adapter');
+        $doctrine = $this->getContainer()->get('app.cassandra_doctrine');
         $manager = $doctrine->getManager();
 
 

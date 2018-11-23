@@ -24,20 +24,15 @@ class ManagerAdapter
 
         $paths = array(__DIR__ . "/entity/");
         $isDevMode = true;
-        // the connection configuration
-        $dbParams = array(
-            'driver' => "pdo_cassandra",
-            'host' => "scylladb",
-            'port' => "9160",
-            'dbname' => "Twake",
-        );
         $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, null, null, false);
-        $conn = DriverManager::getConnection($dbParams, $config);
+        $conn = DriverManager::getConnection(Array(
+            'driver' => "pdo_cassandra"
+        ), $config);
 
         $entityManager = EntityManager::create($conn, $config);
 
         $this->manager = $entityManager;
-        return $entityManager;
+        return $this->doctrine_manager;
     }
 
     public function getManager()

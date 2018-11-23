@@ -20,11 +20,11 @@ services:
 
     #app.contacts:
     #    class: WebsiteApi\UsersBundle\Services\Contacts
-    #    arguments: ["@app.string_cleaner", "@app.doctrine_adapter", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer", "%SERVER_NAME%"]
+    #    arguments: ["@app.string_cleaner", "@app.cassandra_doctrine", '@security.authorization_checker',"@app.notifications", "@templating", "@mailer", "%SERVER_NAME%"]
 
     #app.deleteUser:
     #    class: WebsiteApi\UsersBundle\Services\deleteUser
-    #    arguments: ["@app.doctrine_adapter"]
+    #    arguments: ["@app.cassandra_doctrine"]
 
     app.updateGroup:
         class: WebsiteApi\WorkspacesBundle\Services\UpdateGroup
@@ -32,21 +32,21 @@ services:
 
     app.callSystem:
             class: WebsiteApi\CallsBundle\Services\Calls
-            arguments: ["@app.string_cleaner", "@app.doctrine_adapter", '@security.authorization_checker', "@app.messages", "@app.pusher"]
+            arguments: ["@app.string_cleaner", "@app.cassandra_doctrine", '@security.authorization_checker', "@app.messages", "@app.pusher"]
 
     app.command_executor:
                 class: WebsiteApi\DiscussionBundle\Services\CommandExecutor
-                arguments: ["@app.string_cleaner", "@app.doctrine_adapter", '@security.authorization_checker',"@app.notifications"]
+                arguments: ["@app.string_cleaner", "@app.cassandra_doctrine", '@security.authorization_checker',"@app.notifications"]
 
     app.before_render:
             class: WebsiteApi\CoreBundle\Services\BeforeRender
             tags: [{ name: kernel.event_listener, event: kernel.response, method: beforeRender }]
-            arguments: ["@app.doctrine_adapter", '@security.authorization_checker']
+            arguments: ["@app.cassandra_doctrine", '@security.authorization_checker']
 
     #[REMOVE_ONPREMISE]
     api.CheckRightApplication:
             class: DevelopersApi\CheckBundle\Services\CheckRight
-            arguments: ["@app.doctrine_adapter"]
+            arguments: ["@app.cassandra_doctrine"]
     #[/REMOVE_ONPREMISE]
 
 
@@ -57,7 +57,7 @@ services:
     #    class: WebsiteApi\UsersBundle\Topic\NotificationTopic
     #    tags:
     #        - { name: gos_web_socket.topic }
-    #    arguments : ["@app.doctrine_adapter","@app.notifications","@gos_web_socket.websocket.client_manipulator"]
+    #    arguments : ["@app.cassandra_doctrine","@app.notifications","@gos_web_socket.websocket.client_manipulator"]
 
     group.topic:
         class: WebsiteApi\WorkspacesBundle\Topic\GroupTopic
@@ -80,7 +80,7 @@ services:
       class: WebsiteApi\UsersBundle\Services\Connections
       arguments:
           - "@gos_web_socket.websocket.client_manipulator"
-          - "@app.doctrine_adapter"
+          - "@app.cassandra_doctrine"
           - "@app.pusher"
           - "@app.callSystem"
           #[REMOVE_ONPREMISE]
@@ -100,7 +100,7 @@ services:
 
     session.handler.cassandra:
         class:     WebsiteApi\CoreBundle\Services\DoctrineAdapter\CassandraSessionHandler
-        arguments: ['@app.doctrine_adapter', {lock_mode: 0}]
+        arguments: ['@app.cassandra_doctrine', {lock_mode: 0}]
 
     kernel.event_listener.json_request_transformer:
       class: Qandidate\Common\Symfony\HttpKernel\EventListener\JsonRequestTransformerListener

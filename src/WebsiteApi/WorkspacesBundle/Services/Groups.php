@@ -199,37 +199,37 @@ class Groups implements GroupsInterface
 
 	    //TODO REMOVE USERS FROM WORKSPACE
         if ($group != null){
-            $groupappsRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupApp");
+            $groupappsRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:GroupApp");
             $groupapps = $groupappsRepository->findBy(Array("group" => $group));
 
-            $workspaceRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspaceRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace");
             $workspace = $workspaceRepository->findOneBy(Array("name" => "phpunit"));
 
-            $workspaceUserRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $workspaceUserRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspaceUsers = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
 
-            $workspaceappsRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+            $workspaceappsRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
             $workspaceapps = $workspaceappsRepository->findBy(Array("workspace" => $workspace));
 
-            $workspacelevelRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+            $workspacelevelRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
             $workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $workspace));
 
-            $workspacestatsRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:WorkspaceStats");
+            $workspacestatsRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceStats");
             $workspacestats = $workspacestatsRepository->findOneBy(Array("workspace" => $workspace));
 
-            $streamRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeDiscussionBundle:Stream");
+            $streamRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeDiscussionBundle:Stream");
             $streams = $streamRepository->findBy(Array("workspace" => $workspace));
 
-            $groupUserdRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupUserdRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:GroupUser");
             $groupUsers = $groupUserdRepository->findBy(Array("group" => $group));
 
-            $groupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+            $groupPeriodRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:GroupPeriod");
             $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
 
-            $groupPricingRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+            $groupPricingRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
             $groupPricing = $groupPricingRepository->findOneBy(Array("group" => $group));
 
-            $closedGroupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:closedGroupPeriod");
+            $closedGroupPeriodRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:closedGroupPeriod");
             $closedGroupPeriods = $closedGroupPeriodRepository->findBy(Array("group" => $group));
         }
 
@@ -239,69 +239,69 @@ class Groups implements GroupsInterface
             if ($groupapps != null ){
                 if (is_array($groupapps)){
                     foreach($groupapps as $groupapp){
-                        $this->get("app.doctrine_adapter")->remove($groupapp);
+                        $this->get("app.cassandra_doctrine")->remove($groupapp);
                     }
                 }
             }
             if ($workspaceapps != null ) {
                 if (is_array($workspaceapps)) {
                     foreach ($workspaceapps as $workspaceapp) {
-                        $this->get("app.doctrine_adapter")->remove($workspaceapp);
+                        $this->get("app.cassandra_doctrine")->remove($workspaceapp);
                     }
                 }
             }
             if ($workspaceUsers != null ) {
                 if (is_array($workspaceUsers)) {
                     foreach ($workspaceUsers as $workspaceUser) {
-                        $this->get("app.doctrine_adapter")->remove($workspaceUser);
+                        $this->get("app.cassandra_doctrine")->remove($workspaceUser);
                     }
                 }
             }
             if($groupPricing != null){
-                $this->get("app.doctrine_adapter")->remove($groupPricing);
+                $this->get("app.cassandra_doctrine")->remove($groupPricing);
             }
             if ($closedGroupPeriods != null ) {
                 if (is_array($closedGroupPeriods)) {
                     foreach ($closedGroupPeriods as $closedGroupPeriod) {
-                        $this->get("app.doctrine_adapter")->remove($closedGroupPeriod);
+                        $this->get("app.cassandra_doctrine")->remove($closedGroupPeriod);
                     }
                 }
             }
             if ($workspacelevels != null ) {
                 if (is_array($workspacelevels)) {
                     foreach ($workspacelevels as $workspacelevel) {
-                        $this->get("app.doctrine_adapter")->remove($workspacelevel);
+                        $this->get("app.cassandra_doctrine")->remove($workspacelevel);
                     }
                 }
             }
             if ($streams != null ) {
                 if (is_array($streams)) {
                     foreach ($streams as $stream) {
-                        $this->get("app.doctrine_adapter")->remove($stream);
+                        $this->get("app.cassandra_doctrine")->remove($stream);
                     }
                 }
             }
             if($workspacestats != null){
-                $this->get("app.doctrine_adapter")->remove($workspacestats);
+                $this->get("app.cassandra_doctrine")->remove($workspacestats);
             }
             if($workspace != null){
-                $this->get("app.doctrine_adapter")->remove($workspace);
+                $this->get("app.cassandra_doctrine")->remove($workspace);
             }
             if (is_array($groupUsers)){
                 foreach($groupUsers as $groupUser){
-                    $this->get("app.doctrine_adapter")->remove($groupUser);
+                    $this->get("app.cassandra_doctrine")->remove($groupUser);
                 }
             }
             if($groupPeriod != null){
-                $this->get("app.doctrine_adapter")->remove($groupPeriod);
+                $this->get("app.cassandra_doctrine")->remove($groupPeriod);
             }
         }
 
         if($group != null){
-            $this->get("app.doctrine_adapter")->remove($group);
+            $this->get("app.cassandra_doctrine")->remove($group);
         }
 
-        $this->get("app.doctrine_adapter")->flush();
+        $this->get("app.cassandra_doctrine")->flush();
     }
 
     public function countUsersGroup($groupId)

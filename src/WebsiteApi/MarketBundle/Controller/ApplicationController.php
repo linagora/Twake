@@ -23,7 +23,7 @@ class ApplicationController extends Controller
    *  Retrieves data from an application
    */
   public function getAction(Request $request){
-      $manager = $this->get("app.doctrine_adapter")->getManager();
+      $manager = $this->get("app.cassandra_doctrine")->getManager();
     $data = array(
       "data" => Array(),
       "errors" => Array()
@@ -220,7 +220,7 @@ class ApplicationController extends Controller
    */
 
   public function createAction(Request $request){
-      $manager = $this->get("app.doctrine_adapter")->getManager();
+      $manager = $this->get("app.cassandra_doctrine")->getManager();
     $data = array(
       "data" => Array(),
       'errors' => Array()
@@ -284,7 +284,7 @@ class ApplicationController extends Controller
   }
 
   function getRecomended(Request $request){
-      $manager = $this->get("app.doctrine_adapter")->getManager();
+      $manager = $this->get("app.cassandra_doctrine")->getManager();
     $data = array(
       "data" => Array(),
       'errors' => Array()
@@ -309,7 +309,7 @@ class ApplicationController extends Controller
   }
 
   function getByCategoryAction(Request $request){
-      $manager = $this->get("app.doctrine_adapter")->getManager();
+      $manager = $this->get("app.cassandra_doctrine")->getManager();
       $data = array(
         "data" => Array(),
         'errors' => Array()
@@ -336,7 +336,7 @@ class ApplicationController extends Controller
 
 
     function getCategoryAction(Request $request){
-        $manager = $this->get("app.doctrine_adapter")->getManager();
+        $manager = $this->get("app.cassandra_doctrine")->getManager();
         $data = array(
             "data" => Array(),
             'errors' => Array()
@@ -353,7 +353,7 @@ class ApplicationController extends Controller
 
 	public function getUserTokenAction(Request $request){
 
-        $manager = $this->get("app.doctrine_adapter")->getManager();
+        $manager = $this->get("app.cassandra_doctrine")->getManager();
 
 		$data = array(
 			"data" => Array(),

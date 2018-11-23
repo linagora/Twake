@@ -6,13 +6,13 @@ services:
 
     app.pusher:
         class: WebsiteApi\CoreBundle\Services\ZMQPusher
-        arguments: ["%websocket_pusher_remote_host%", "%websocket_pusher_port%", "@app.doctrine_adapter"]
+        arguments: ["%websocket_pusher_remote_host%", "%websocket_pusher_port%", "@app.cassandra_doctrine"]
 
     app.translate:
         class: WebsiteApi\CoreBundle\Services\Translate
         arguments: []
 
-    app.doctrine_adapter:
+    app.cassandra_doctrine:
         class: WebsiteApi\CoreBundle\Services\DoctrineAdapter\ManagerAdapter
         arguments: ["@doctrine.orm.entity_manager"]
 
