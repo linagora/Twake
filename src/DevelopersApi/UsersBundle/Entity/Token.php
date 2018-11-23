@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Token
  *
- * @ORM\Table(name="token",options={"engine":"MyISAM"})
+ * @ORM\Table(name="token_table",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="DevelopersApi\UsersBundle\Repository\TokenRepository")
  */
 class Token
@@ -27,7 +27,7 @@ class Token
 	private $date;
 
 	/**
-	 * @ORM\Column(name="token", type="string", length=128)
+     * @ORM\Column(name="token_column", type="string", length=128)
 	 */
 	private $token;
 

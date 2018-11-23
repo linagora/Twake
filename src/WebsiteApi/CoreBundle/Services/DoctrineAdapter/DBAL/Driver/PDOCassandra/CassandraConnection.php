@@ -258,12 +258,18 @@ class CassandraConnection
         $sql = join(") VALUES ", $sql);
 
         $sql = explode('WHERE ', $sql, 2);
-        if (isset($sql[1])) { //There is a FROM
+        if (isset($sql[1])) { //There is a WHERE
+            $sql[1] = " " . $sql[1];
             foreach ($keys as $key) {
-                $sql[1] = preg_replace('/[^a-z_-]' . preg_quote($key, '/') . ' *=/', '$1"' . $key . '"=', $sql[1]);
+                $sql[1] = preg_replace('/([^a-z_-])' . preg_quote($key, '/') . ' *=/', '$1"' . $key . '" =', $sql[1]);
             }
         }
         $sql = join("WHERE ", $sql);
+
+
+        foreach ($keys as $key) {
+            $sql = preg_replace('/\(' . preg_quote($key, '/') . '\)/', '("' . $key . '")', $sql);
+        }
 
         error_log($sql);
 

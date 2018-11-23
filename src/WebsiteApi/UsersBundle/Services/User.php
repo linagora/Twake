@@ -439,6 +439,7 @@ class User implements UserInterface
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$user = $userRepository->findOneBy(Array("username"=>$pseudo));
 		if($user != null){
+            error_log("*** HELLO A ***");
 			return false;
 		}
 

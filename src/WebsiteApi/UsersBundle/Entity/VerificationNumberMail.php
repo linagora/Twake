@@ -38,7 +38,7 @@ class VerificationNumberMail
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="token", type="string", length=256)
+     * @ORM\Column(name="token_column", type="string", length=256, options={"index": true})
 	 */
 	private $token = "";
 

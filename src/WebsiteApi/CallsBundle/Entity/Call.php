@@ -47,7 +47,7 @@ class Call
 	 *
 	 * Access token for meet.twakeapp
 	 *
-	 * @ORM\Column(name="token", type="string", length=256)
+     * @ORM\Column(name="token_column", type="string", length=256)
 	 */
 	private $token;
 

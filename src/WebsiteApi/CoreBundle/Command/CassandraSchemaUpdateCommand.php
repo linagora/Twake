@@ -28,7 +28,7 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
             "string" => "text",
             "cassandra_timeuuid" => "timeuuid",
             "array" => "text",
-            "boolean" => "boolean",
+            "boolean" => "tinyint",
             "text" => "text",
             "cassandra_float" => "float",
             "integer" => "int",
@@ -63,6 +63,7 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
 
             $table_name = $entity->getTableName();
             $fields = Array();
+            $indexed_fields = Array();
             foreach ($entity->getFieldNames() as $fieldname) {
 
                 $mapping = Array();
@@ -74,6 +75,10 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
 
                 if (isset($mapping["columnName"])) {
                     $fieldname = $mapping["columnName"];
+                }
+
+                if (isset($mapping["options"]) && isset($mapping["options"]["index"]) && $mapping["options"]["index"]) {
+                    $indexed_fields[$fieldname] = true;
                 }
 
                 if (strtolower($fieldname) != $fieldname) {
@@ -105,6 +110,10 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
                 }
 
                 $fieldname = $fieldname . "_id";
+
+                if (isset($mapping["options"]) && isset($mapping["options"]["index"]) && $mapping["options"]["index"]) {
+                    $indexed_fields[$fieldname] = true;
+                }
 
                 $fields[$fieldname] = "timeuuid";
             }
@@ -185,6 +194,12 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
                 $command = $alter_command . " ADD ".$columns_to_add."";
                 $connection->exec($command);
             }*/
+
+            $index_base_command = "CREATE INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
+            foreach ($indexed_fields as $indexed_field => $dummy) {
+                $command = $index_base_command . "(" . $indexed_field . ")";
+                $connection->exec($command);
+            }
 
         }
 

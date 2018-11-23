@@ -26,7 +26,7 @@ class WorkspaceUserByMail
 	private $workspace;
 
 	/**
-	 * @ORM\Column(name="mail", type="string", length=255)
+     * @ORM\Column(name="mail", type="string", length=255, options={"index": true})
 	 */
 	private $mail;
 

@@ -23,13 +23,14 @@ class Mail
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="secondary_mails")
+     * @ORM\Column(type="cassandra_timeuuid", options={"index": true})
 	 */
     private $user;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="mail", type="string", length=350)
+     * @ORM\Column(name="mail", type="string", length=350, options={"index": true})
      */
     private $mail;
 

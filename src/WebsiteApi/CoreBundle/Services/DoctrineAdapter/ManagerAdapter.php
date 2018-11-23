@@ -54,8 +54,7 @@ class ManagerAdapter
     {
 
         try {
-
-            //$a = $this->manager->flush();
+            $a = $this->manager->flush();
         } catch (\Exception $e) {
             error_log($e);
             die("ERROR with flush");
