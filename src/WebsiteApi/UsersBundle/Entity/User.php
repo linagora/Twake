@@ -691,6 +691,7 @@ class User implements UserInterface
     public function setUsername($username)
     {
         $this->username = $username;
+        $this->usernameCanonical = $username;
 
         return $this;
     }
@@ -721,6 +722,7 @@ class User implements UserInterface
     public function setEmail($email)
     {
         $this->email = $email;
+        $this->emailCanonical = $email;
 
         return $this;
     }

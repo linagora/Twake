@@ -106,9 +106,9 @@ class GroupController extends Controller
         $workspaces =  $this->get("app.groups")->getWorkspaces($groupId, $this->getUser()->getId());
 
         foreach ($workspaces as $workspace){
-            $isDeleted = $workspace->getisDeleted();
+            $is_deleted = $workspace->getis_deleted();
 
-            if (!$isDeleted){
+            if (!$is_deleted) {
                 $response["data"][] = Array(
                     "workspace" => $workspace->getAsArray()
                 );

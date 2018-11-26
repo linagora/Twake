@@ -82,7 +82,7 @@ class CalendarActivities implements CalendarActivityInterface
 
     public function createCalendarActivity($application, $workspaceId, $user)
     {
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
 
 
         if ($workspace == null) {

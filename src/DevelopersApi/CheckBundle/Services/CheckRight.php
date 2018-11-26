@@ -61,7 +61,7 @@ class CheckRight
 
 		$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
 			->findOneBy(Array("publicKey" => $publicKey));
-		$workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$workspaceId,"isDeleted"=>false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
 
 
 		if ($application == null) {

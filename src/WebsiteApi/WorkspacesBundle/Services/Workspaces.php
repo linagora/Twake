@@ -150,7 +150,7 @@ class Workspaces implements WorkspacesInterface
         if ($groupId != null) {
             $limit = $this->pricing->getLimitation($groupId, "maxWorkspace", PHP_INT_MAX);
 
-            $nbWorkspace = $workspaceRepository->findBy(Array("group" => $group, "isDeleted" => 0));
+            $nbWorkspace = $workspaceRepository->findBy(Array("group" => $group, "is_deleted" => 0));
 
             if (count($nbWorkspace) >= $limit) {
                 return false;
@@ -324,7 +324,7 @@ class Workspaces implements WorkspacesInterface
 
             $this->wms->removeAllMember($workspaceId);
 
-            $workspace->setIsDeleted(true);
+            $workspace->setis_deleted(true);
 
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
@@ -502,7 +502,7 @@ class Workspaces implements WorkspacesInterface
         }
 
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-        $workspace = $workspaceRepository->findOneBy(Array("uniqueName" => $workspaceName, "group" => $group, "isDeleted" => 0));
+        $workspace = $workspaceRepository->findOneBy(Array("uniqueName" => $workspaceName, "group" => $group, "is_deleted" => 0));
 
         if($workspace != null){
             return $workspace->getAsArray();
@@ -558,9 +558,9 @@ class Workspaces implements WorkspacesInterface
             $workspace = $workspaceRepository->find($workspaceId);
 
             $isArchived = $workspace->getisArchived();
-            $isDeleted = $workspace->getisDeleted();
+            $is_deleted = $workspace->getis_deleted();
 
-            if ($isDeleted == false && $isArchived == false){
+            if ($is_deleted == false && $isArchived == false) {
                 $workspace->setIsArchived(true);
                 $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.archive","TwakeWorkspacesBundle:Workspace", $workspaceId);
             }
@@ -594,9 +594,9 @@ class Workspaces implements WorkspacesInterface
             $workspace = $workspaceRepository->find($workspaceId);
 
             $isArchived = $workspace->getisArchived();
-            $isDeleted = $workspace->getisDeleted();
+            $is_deleted = $workspace->getis_deleted();
 
-            if ($isDeleted == false && $isArchived == true){
+            if ($is_deleted == false && $isArchived == true) {
                 $workspace->setIsArchived(false);
                 $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.unarchive","TwakeWorkspacesBundle:Workspace", $workspaceId);
             }

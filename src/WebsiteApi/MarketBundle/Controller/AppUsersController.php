@@ -33,7 +33,7 @@ class AppUsersController extends Controller
     } else {
       // Vérifier que le groupe existe
       $groupId = $request->request->get('groupId');
-      $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+        $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id" => $groupId, "is_deleted" => false));
       if ($group == null){
         $data['errors'][] = "nosuchgroup";
       } else {
@@ -83,7 +83,7 @@ class AppUsersController extends Controller
         } else {
             // Vérifier que le groupe existe
             $groupId = $request->request->get('groupId');
-            $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id" => $groupId, "isDeleted" => false));
+            $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id" => $groupId, "is_deleted" => false));
             if ($group == null) {
                 $data['errors'][] = "nosuchgroup";
             } else {
@@ -132,7 +132,7 @@ class AppUsersController extends Controller
         $data['errors'][] = "invalidvote";
       } else {
         $groupId = $request->request->get('groupId');
-        $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+          $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id" => $groupId, "is_deleted" => false));
         if ($group == null){
           $data['errors'][] = "nosuchgroup";
         } else {

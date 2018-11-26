@@ -65,11 +65,11 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
             $table_name = $entity->getTableName();
             $fields = Array();
             $indexed_fields = Array();
-            foreach ($entity->getFieldNames() as $fieldname) {
+            foreach ($entity->getFieldNames() as $_fieldname) {
 
                 $mapping = Array();
-                if (!$entity->hasAssociation($fieldname)) {
-                    $mapping = $entity->getFieldMapping($fieldname);
+                if (!$entity->hasAssociation($_fieldname)) {
+                    $mapping = $entity->getFieldMapping($_fieldname);
                 } else {
                     $mapping["type"] = "timeuuid";
                 }
@@ -96,8 +96,9 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
                 $fields[$fieldname] = $type;
             }
 
-            foreach ($entity->getAssociationNames() as $fieldname) {
+            foreach ($entity->getAssociationNames() as $_fieldname) {
 
+                $fieldname = $_fieldname;
 
                 $mapping = $entity->getAssociationMapping($fieldname);
 
@@ -112,7 +113,8 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
 
                 $fieldname = $fieldname . "_id";
 
-                if (isset($mapping["options"]) && isset($mapping["options"]["index"]) && $mapping["options"]["index"]) {
+                //Add associations in indexed fields
+                if (!in_array($_fieldname, $entity->getIdentifier())) {
                     $indexed_fields[$fieldname] = true;
                 }
 
@@ -144,8 +146,11 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
                         continue;
                     }
                 } else {
+                    $mapping["columnName"] = $identifier . "_id";
                     $mapping["type"] = "cassandra_timeuuid";
                 }
+
+                $identifier = $mapping["columnName"];
 
                 $create_table .= "(";
                 $columns = Array();

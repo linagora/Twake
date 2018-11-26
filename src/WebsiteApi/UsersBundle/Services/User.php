@@ -25,7 +25,6 @@ class User implements UserInterface
 	private $core_remember_me_manager;
 	private $event_dispatcher;
 	private $request_stack;
-	private $user_stats;
 	private $twake_mailer;
 	private $string_cleaner;
 	private $token_storage;
@@ -40,7 +39,7 @@ class User implements UserInterface
     private $licenceKey;
 
 
-    public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $user_stats, $twake_mailer, $string_cleaner, $workspace_members_service, $group_service, $workspace_service, $pricing_plan, $restClient, $translate, $standalone, $licenceKey)
+    public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $twake_mailer, $string_cleaner, $workspace_members_service, $group_service, $workspace_service, $pricing_plan, $restClient, $translate, $standalone, $licenceKey)
     {
 		$this->em = $em;
 		$this->pusher = $pusher;
@@ -48,7 +47,6 @@ class User implements UserInterface
 		$this->core_remember_me_manager = $core_remember_me_manager;
 		$this->event_dispatcher = $event_dispatcher;
 		$this->request_stack = $request_stack;
-		$this->user_stats = $user_stats;
 		$this->twake_mailer = $twake_mailer;
 		$this->string_cleaner = $string_cleaner;
 		$this->authorization_checker = $authorization_checker;

@@ -77,17 +77,17 @@ class Workspace
 	private $date_added;
 
 	/**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(name="isdeleted", type="cassandra_boolean")
 	 */
-	private $isDeleted = false;
+    private $is_deleted = false;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(name="isarchived", type="cassandra_boolean")
      */
     private $isArchived = false;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(name="isnew", type="cassandra_boolean")
      */
     private $isNew = true;
 
@@ -220,17 +220,17 @@ class Workspace
 	/**
 	 * @return mixed
 	 */
-	public function getisDeleted()
-	{
-		return $this->isDeleted;
+    public function getis_deleted()
+    {
+        return $this->is_deleted;
 	}
 
 	/**
-	 * @param mixed $isDeleted
+     * @param mixed $is_deleted
 	 */
-	public function setIsDeleted($isDeleted)
-	{
-		$this->isDeleted = $isDeleted;
+    public function setis_deleted($is_deleted)
+    {
+        $this->is_deleted = $is_deleted;
 	}
 
 	/**

@@ -122,8 +122,6 @@ class CassandraConnection
             ->build();
         $this->session = $this->cluster->connect(strtolower($keyspace));
 
-        error_log(json_encode($this->session->metrics()));
-
         $this->keyspace = $keyspace;
     }
 

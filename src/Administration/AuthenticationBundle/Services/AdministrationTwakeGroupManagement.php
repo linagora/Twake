@@ -20,7 +20,7 @@ class AdministrationTwakeGroupManagement
 		$qb = $this->doctrine->createQueryBuilder();
 		$qb->select($qb->expr()->count('w'))
 			->from('TwakeWorkspacesBundle:Workspace', 'w')
-			->where('w.isDeleted = 0');
+            ->where('w.is_deleted = 0');
 		$query = $qb->getQuery();
 		return $query->getSingleScalarResult();
 	}

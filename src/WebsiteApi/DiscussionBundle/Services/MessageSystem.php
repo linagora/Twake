@@ -28,10 +28,9 @@ class MessageSystem implements MessagesSystemInterface
     var $levelManager;
     var $fileSystemAdapter;
     var $messagesNotificationCenter;
-    var $user_stats;
     var $workspace_stats;
 
-    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager, $fileSystemAdapter, $messagesNotificationCenter, $user_stats, $workspace_stats)
+    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager, $fileSystemAdapter, $messagesNotificationCenter, $workspace_stats)
     {
         $this->string_cleaner = $string_cleaner;
         $this->doctrine = $doctrine;
@@ -41,7 +40,6 @@ class MessageSystem implements MessagesSystemInterface
         $this->levelManager = $levelManager;
         $this->fileSystemAdapter = $fileSystemAdapter;
         $this->messagesNotificationCenter = $messagesNotificationCenter;
-        $this->user_stats = $user_stats;
         $this->workspace_stats = $workspace_stats;
     }
 
@@ -241,7 +239,6 @@ class MessageSystem implements MessagesSystemInterface
         }
 
         if ($sender != null && $stream != null) { // select only user message and not system or application message without user
-            $this->user_stats->sendMessage($sender, false);
             if ($workspace != null) {
                 $this->workspace_stats->sendMessage($workspace, false, $stream->getIsPrivate());
             }

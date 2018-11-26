@@ -132,6 +132,7 @@ class CassandraSessionHandler implements \SessionHandlerInterface
     public function read($sessionId)
     {
         $this->prepareStatements();
+        error_log("SEARCH BLOB FOR ID " . $sessionId);
 
         $blobSessionId = new \Cassandra\Blob($sessionId);
         $result = $this->getSession()->execute($this->preparedStatements['read'],
@@ -139,6 +140,7 @@ class CassandraSessionHandler implements \SessionHandlerInterface
         );
         if (null !== ($sessionData = $result->first())) {
             $data = $sessionData[$this->options['data_field']];
+            error_log("READED BLOB");
             return ($data instanceof \Cassandra\Blob ? $data->toBinaryString() : '');
         }
         return '';
