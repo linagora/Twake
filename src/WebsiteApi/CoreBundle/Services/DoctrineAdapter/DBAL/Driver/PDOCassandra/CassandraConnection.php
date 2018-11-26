@@ -84,18 +84,31 @@ class PDOStatementAdapter
     {
         $query = $this->query;
         ksort($this->values);
-        foreach ($this->values as $position => $value) {
 
-            if ($value == NULL) {
-                $value = "NULL";
-            } else
-                if (is_string($value)) {
-                    $value = addslashes($value);
-                    $value = "'" . $value . "'";
-                }
+        $query_explode = explode("?", $query);
+        $query = "";
 
-            $from = '/' . preg_quote("?", '/') . '/';
-            $query = preg_replace($from, $value, $query, 1);
+        foreach ($query_explode as $position => $query_part) {
+
+            if ($position == count($query_explode) - 1) {
+
+                $query .= $query_explode[count($query_explode) - 1];
+
+            } else {
+
+                $value = $this->values[$position + 1];
+
+                if ($value == NULL) {
+                    $value = "NULL";
+                } else
+                    if (is_string($value)) {
+                        $value = addslashes($value);
+                        $value = "'" . $value . "'";
+                    }
+
+                $query .= $query_part . "" . $value;
+
+            }
         }
 
         $this->executor->exec($query, $this);

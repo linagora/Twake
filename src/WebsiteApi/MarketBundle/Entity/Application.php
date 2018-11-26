@@ -47,17 +47,17 @@ class Application
 	private $url = "";
 
 	/**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(name="cancreatefile", type="cassandra_boolean")
 	 */
 	private $canCreateFile; //Will be visible in the list of new files in Drive
 
 	/**
-	 * @ORM\Column(type="text")
+     * @ORM\Column(name="createfiledata", type="text")
 	 */
 	private $createFileData = "{}"; //Will be visible in the list of new files in Drive
 
 	/**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(name="iscapable", type="cassandra_boolean")
 	 */
 	private $isCapable; //Can be opened as app in window (displayed in the left bar of apps)
 
@@ -123,14 +123,14 @@ class Application
 	protected $messageModule;
 
     /**
-     * @ORM\Column(type="string", length=512)
+     * @ORM\Column(name="message_module_url", type="text")
      */
     private $messageModuleUrl = "";
 
     /**
      * @ORM\Column(name="editable_rights" , type="cassandra_boolean")
      */
-    protected $editableRights;
+    protected $editableRights = 0;
 
 	/**
      * @ORM\Column(type="cassandra_datetime")
@@ -138,32 +138,32 @@ class Application
 	protected $date;
 
 	/**
-	 * @ORM\Column(type="text")
+     * @ORM\Column(name="privatekey", type="text")
 	 */
 	protected $privateKey;
 
 	/**
-	 * @ORM\Column(type="text",nullable=true)
+     * @ORM\Column(name="publickey", type="text",nullable=true, options={"index"=true})
 	 */
 	protected $publicKey;
 
 	/**
      * @ORM\Column(type="cassandra_boolean" )
 	 */
-	protected $enabled;
+    protected $enabled = 0;
 
 	/**
-	 * @ORM\Column(type="text" )
+     * @ORM\Column(name="filestypes", type="text" )
 	 */
 	protected $filesTypes;
 
 	/**
-	 * @ORM\Column(type="text" )
+     * @ORM\Column(name="userrights", type="text" )
 	 */
 	protected $userRights;
 
 	/**
-	 * @ORM\Column(type="text")
+     * @ORM\Column(name="applicationrights",type="text")
 	 */
 	protected $applicationRights;
 
@@ -175,10 +175,10 @@ class Application
     /**
      * @ORM\Column(name="cgu", type="text")
      */
-    private $cgu ;
+    private $cgu = "";
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(name="urlapp", type="cassandra_boolean")
      */
     private $urlApp = false;
 
@@ -188,7 +188,7 @@ class Application
     private $domain_name;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(name="searchwords", type="text")
      */
     private $searchWords;
 

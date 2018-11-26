@@ -25,7 +25,7 @@ class PricingPlan
 	protected $id;
 
 	/**
-	 * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, options={"index"=true})
 	 */
 	protected $label = "";
 
