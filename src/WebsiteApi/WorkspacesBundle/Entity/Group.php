@@ -25,7 +25,7 @@ class Group
 	protected $id;
 
 	/**
-	 * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, options={"index"=true})
 	 */
 	protected $name;
 
@@ -70,11 +70,11 @@ class Group
     protected $on_creation_data = "{}";
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(name="isblocked", type="cassandra_boolean")
      */
     private $isBlocked = false;
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(name="isprivate", type="cassandra_boolean")
      */
     private $isPrivate = false;
 

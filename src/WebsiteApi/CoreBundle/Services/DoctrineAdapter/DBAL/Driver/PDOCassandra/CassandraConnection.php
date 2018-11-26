@@ -83,7 +83,14 @@ class PDOStatementAdapter
     public function execute($parameters = Array())
     {
         $query = $this->query;
-        ksort($this->values);
+
+        //lowercase columns
+        $query = preg_replace_callback('/ ([a-zA-Z0-9_]+ +)AS /', function ($match) {
+            return ' ' . strtolower($match[1]) . ' AS ';
+        }, $query);
+        $query = preg_replace_callback('/ ([a-zA-Z0-9_]+ +)([^a-zA-Z0-9_]{1,2}) *\?/', function ($match) {
+            return ' ' . strtolower($match[1]) . ' ' . $match[2] . ' ?';
+        }, $query);
 
         $query_explode = explode("?", $query);
         $query = "";

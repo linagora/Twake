@@ -82,10 +82,7 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
                     $indexed_fields[$fieldname] = true;
                 }
 
-                if (strtolower($fieldname) != $fieldname) {
-                    error_log("ERROR (IGNORING COLUMN) ! Column names MUST be snakecase and lowercase ! (" . $fieldname . " in " . $entity->getName() . ")");
-                    continue;
-                }
+                $fieldname = strtolower($fieldname);
 
                 $type = $this->convertType($mapping["type"]);
                 if ($type == "ERROR") {
@@ -106,10 +103,7 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
                     $fieldname = $mapping["columnName"];
                 }
 
-                if (strtolower($fieldname) != $fieldname) {
-                    error_log("ERROR (IGNORING COLUMN) ! Column names MUST be snakecase and lowercase ! (" . $fieldname . " in " . $entity->getName() . ")");
-                    continue;
-                }
+                $fieldname = strtolower($fieldname);
 
                 $fieldname = $fieldname . "_id";
 
