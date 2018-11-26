@@ -73,7 +73,13 @@ class WorkspaceController extends Controller
 
                 $limit =  $this->get("app.pricing_plan")->getLimitation($group->getId(),"maxWorkspace",PHP_INT_MAX);
 
-                $nbWorkspace = $workspaceRepository->findBy(Array("group" => $group, "is_deleted" => 0));
+                $nbWorkspace = [];
+                $_nbWorkspace = $workspaceRepository->findBy(Array("group" => $group));
+                foreach ($_nbWorkspace as $ws) {
+                    if (!$ws->getis_deleted()) {
+                        $nbWorkspace[] = $ws;
+                    }
+                }
 
                 $nbuserGroup = $groupUserRepository->findBy(Array("group"=>$wp->getGroup()));
                 $limitUser = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(), "maxUser", PHP_INT_MAX);

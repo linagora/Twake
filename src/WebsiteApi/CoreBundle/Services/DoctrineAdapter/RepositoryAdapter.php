@@ -22,6 +22,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
             $a = parent::findOneBy($filter, $sort);
         } catch (\Exception $e) {
             error_log($e);
+            var_dump($e->getTraceAsString());
             die("ERROR with findOneBy");
         }
         return $a;

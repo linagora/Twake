@@ -23,6 +23,11 @@ class WorkspaceUser
      */
     private $id;
 
+    /**
+     * @ORM\Column(type="text", options={"index": true})
+     */
+    protected $user_workspace_id;
+
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
@@ -71,6 +76,9 @@ class WorkspaceUser
 	public function __construct($workspace, $user, $level) {
 		$this->workspace = $workspace;
 		$this->user = $user;
+
+        $this->user_workspace_id = $user->getId() . "_" . $workspace->getId();
+
 		$this->level = $level;
 		$this->date_added = new \DateTime();
         $this->last_access = new \DateTime();

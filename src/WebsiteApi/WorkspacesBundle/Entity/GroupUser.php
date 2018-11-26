@@ -10,7 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * GroupUser
  *
- * @ORM\Table(name="group_user",options={"engine":"MyISAM"})
+ * @ORM\Table(name="group_user",options={"engine":"MyISAM"},
+ *     indexes={
+ *     @ORM\Index(columns={"user_id", "group_id"})
+ * })
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupUserRepository")
  */
 class GroupUser
@@ -23,6 +26,11 @@ class GroupUser
      * @ORM\GeneratedValue(strategy="UUID")
 	 */
 	protected $id;
+
+    /**
+     * @ORM\Column(type="text", options={"index": true})
+     */
+    protected $user_group_id;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
@@ -82,6 +90,8 @@ class GroupUser
 	public function __construct($group, $user) {
 		$this->group = $group;
 		$this->user = $user;
+        $this->user_group_id = $user->getId() . "_" . $group->getId();
+
 		$this->level = 0;
 		$this->date_added = new \DateTime();
 		$this->nbWorkspace = 0;
@@ -106,27 +116,11 @@ class GroupUser
 	}
 
 	/**
-	 * @param mixed $user
-	 */
-	public function setUser($user)
-	{
-		$this->user = $user;
-	}
-
-	/**
 	 * @return mixed
 	 */
 	public function getGroup()
 	{
 		return $this->group;
-	}
-
-	/**
-	 * @param mixed $group
-	 */
-	public function setGroup($group)
-	{
-		$this->group = $group;
 	}
 
 	/**

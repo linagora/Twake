@@ -27,7 +27,7 @@ class Application
 	private $name;
 
     /**
-     * @ORM\Column(name="isdefault", type="cassandra_boolean")
+     * @ORM\Column(name="isdefault", type="cassandra_boolean", options={"index": true})
      */
     private $default;
 

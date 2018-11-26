@@ -104,7 +104,7 @@ class InitCommand extends ContainerAwareCommand
         }
 
         //Création de l'user twake_bot
-        $twake_bot = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username"=>"twake_bot"));
+        $twake_bot = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernameCanonical" => "twake_bot"));
         if($twake_bot==null){
             $twake_bot = new User();
         }

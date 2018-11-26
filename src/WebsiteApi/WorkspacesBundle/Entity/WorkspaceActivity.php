@@ -56,7 +56,7 @@ class WorkspaceActivity
     private $objectRepository;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="cassandra_timeuuid", nullable=true)
      */
     private $objectId = 0;
 

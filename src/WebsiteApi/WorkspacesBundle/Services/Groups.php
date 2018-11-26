@@ -355,7 +355,7 @@ class Groups implements GroupsInterface
             $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             $group = $groupRepository->find($groupId);
-            $user = $groupManagerRepository->findOneBy(Array("group" => $group, "user" => $userId ));
+            $user = $groupManagerRepository->findOneBy(Array("user_group_id" => $userId . "_" . $group->getId()));
 
             $user->setExterne($externe);
             $this->doctrine->persist($user);

@@ -26,7 +26,6 @@ class PDOStatementAdapter
 
     public function setFetchMode($mode)
     {
-        error_log($mode);
     }
 
     private function stripslashesCell($obj = "")
@@ -108,8 +107,9 @@ class PDOStatementAdapter
                 if ($value == NULL) {
                     $value = "NULL";
                 } else
-                    if (is_string($value)) {
+                    if (is_string($value) || (is_object($value) && method_exists($value, 'toCqlString'))) {
                         $value = addslashes($value);
+                        $value = str_replace("'", "''", $value);
                         $value = "'" . $value . "'";
                     }
 
@@ -293,7 +293,13 @@ class CassandraConnection
             $sql = preg_replace('/\(' . preg_quote($key, '/') . '\)/', '("' . $key . '")', $sql);
         }
 
-        error_log($sql);
+        $vals = explode("FROM ", $sql);
+        if (isset($vals[1])) {
+            error_log($vals[0]);
+            error_log("FROM " . $vals[1]);
+        } else {
+            error_log($sql);
+        }
 
         return $sql;
     }

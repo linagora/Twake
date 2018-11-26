@@ -7,7 +7,11 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Mail
  *
- * @ORM\Table(name="mail",options={"engine":"MyISAM"})
+ * @ORM\Table(name="mail",options={"engine":"MyISAM"},
+ *     indexes={
+ *     @ORM\Index(columns={"user_id"}),
+ *     @ORM\Index(columns={"mail"})
+ * })
  * @ORM\Entity(repositoryClass="WebsiteApi\UsersBundle\Repository\MailRepository")
  */
 class Mail
@@ -23,14 +27,13 @@ class Mail
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="secondary_mails")
-     * @ORM\Column(type="cassandra_timeuuid", options={"index": true})
 	 */
     private $user;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="mail", type="string", length=350, options={"index": true})
+     * @ORM\Column(name="mail", type="string", length=350)
      */
     private $mail;
 

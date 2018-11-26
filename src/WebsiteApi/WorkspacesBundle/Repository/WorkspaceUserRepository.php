@@ -50,4 +50,20 @@ class WorkspaceUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAd
 		return $qb->getQuery()->getResult();
 	}
 
+    public function findOneBy(array $array)
+    {
+        if (isset($array["workspace"]) && isset($array["user"])) {
+            if (!is_integer($array["workspace"])) {
+                $array["workspace"] = $array["workspace"]->getId();
+            }
+            if (!is_integer($array["user"])) {
+                $array["user"] = $array["user"]->getId();
+            }
+            $array["user_workspace_id"] = $array["user"] . "_" . $array["workspace"];
+            unset($array["user"]);
+            unset($array["workspace"]);
+        }
+        return parent::findOneBy($array);
+    }
+
 }

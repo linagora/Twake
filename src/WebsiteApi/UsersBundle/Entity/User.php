@@ -108,9 +108,7 @@ class User implements UserInterface
      */
     protected $isNew = true;
 
-    /**
-     * @ORM\Column(type="string", length=64, options={"index": true})
-     */
+
     protected $username;
 
     /**
@@ -118,9 +116,6 @@ class User implements UserInterface
      */
     protected $usernameCanonical;
 
-    /**
-     * @ORM\Column(type="string", length=512, options={"index": true})
-     */
     protected $email;
 
     /**

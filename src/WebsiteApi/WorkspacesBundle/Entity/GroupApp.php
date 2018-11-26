@@ -25,6 +25,11 @@ class GroupApp
      */
     private $id;
 
+    /**
+     * @ORM\Column(type="text", options={"index": true})
+     */
+    protected $app_group_id;
+
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
 	 */
@@ -49,6 +54,9 @@ class GroupApp
 	public function __construct($group, $app) {
 		$this->group = $group;
 		$this->app = $app;
+
+        $this->app_group_id = $app->getId() . "_" . $group->getId();
+
 		$this->date_added = new \DateTime();
 		$this->workspaceDefault = false;
 	}

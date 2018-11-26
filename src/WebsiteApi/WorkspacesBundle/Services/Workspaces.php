@@ -114,9 +114,8 @@ class Workspaces implements WorkspacesInterface
 
         $workspace = new Workspace($name);
 
-        $increment = 0;
         $uniquename = $this->string_cleaner->simplify($name);
-        $uniquenameIncremented = $uniquename;
+        $uniquenameIncremented = $uniquename . "-" . substr(md5(date("U") . rand()), 0, 10);
 
         $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->find($userId);
@@ -133,16 +132,6 @@ class Workspaces implements WorkspacesInterface
                 return false;
             }
 
-            //Find a name
-            $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquename, "group" => $group));
-
-            while ($WorkspaceUsingThisName != null) {
-                $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented, "group" => $group));
-                $increment += 1;
-                if ($WorkspaceUsingThisName != null) {
-                    $uniquenameIncremented = $uniquename . "-" . $increment;
-                }
-            }
         }
 
         $workspace->setUniqueName($uniquenameIncremented);
@@ -150,7 +139,13 @@ class Workspaces implements WorkspacesInterface
         if ($groupId != null) {
             $limit = $this->pricing->getLimitation($groupId, "maxWorkspace", PHP_INT_MAX);
 
-            $nbWorkspace = $workspaceRepository->findBy(Array("group" => $group, "is_deleted" => 0));
+            $_nbWorkspace = $workspaceRepository->findBy(Array("group" => $group));
+            $nbWorkspace = [];
+            foreach ($_nbWorkspace as $ws) {
+                if (!$ws->getis_deleted()) {
+                    $nbWorkspace[] = $ws;
+                }
+            }
 
             if (count($nbWorkspace) >= $limit) {
                 return false;
@@ -161,7 +156,7 @@ class Workspaces implements WorkspacesInterface
         $this->doctrine->persist($workspace);
         $this->doctrine->flush();
 
-        $twakebot = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "twake_bot"));
+        $twakebot = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernameCanonical" => "twake_bot"));
         $twakebotId = $twakebot->getId();
 
 
@@ -346,24 +341,7 @@ class Workspaces implements WorkspacesInterface
             $workspace->setName($name);
 
             $uniquename = $this->string_cleaner->simplify($name);
-            $uniquenameIncremented = $uniquename;
-
-            //Find a name
-            if ($workspace->getGroup() != null) {
-                $increment = 0;
-
-                $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-                $group = $groupRepository->find($workspace->getGroup()->getId());
-                $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $name, "group" => $group));
-
-                while ($WorkspaceUsingThisName != null) {
-                    $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented, "group" => $group));
-                    $increment += 1;
-                    if ($WorkspaceUsingThisName != null) {
-                        $uniquenameIncremented = $uniquename . "-" . $increment;
-                    }
-                }
-            }
+            $uniquenameIncremented = $uniquename . "-" . substr(md5(date("U") . rand()), 0, 10);
 
             $workspace->setUniqueName($uniquenameIncremented);
             $this->doctrine->persist($workspace);

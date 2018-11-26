@@ -94,7 +94,7 @@ class WebTestCaseExtended extends WebTestCase
     public function newWorkspace($groupId){
         $userRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeUsersBundle:User");
        // $user = $userRepository->findByName("phpunit");
-        $user = $userRepository->findOneBy(Array("username" => "phpunit"));
+        $user = $userRepository->findOneBy(Array("usernameCanonical" => "phpunit"));
         if (count($user) == 0) {
             $user = $this->newUser();
         }

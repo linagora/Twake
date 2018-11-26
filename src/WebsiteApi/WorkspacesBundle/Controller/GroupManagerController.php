@@ -58,7 +58,7 @@ class GroupManagerController extends Controller
         $username = str_replace(Array("@", " "), "", $username);
 
         $userRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("username"=>$username));
+        $user = $userRepository->findOneBy(Array("usernameCanonical" => $username));
 
         if(!$user){
             $response["errors"][] = "usernotfound";

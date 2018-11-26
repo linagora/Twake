@@ -10,4 +10,21 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  */
 class GroupAppRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
+
+    public function findOneBy(array $array)
+    {
+        if (isset($array["group"]) && isset($array["app"])) {
+            if (!is_integer($array["group"])) {
+                $array["group"] = $array["group"]->getId();
+            }
+            if (!is_integer($array["app"])) {
+                $array["app"] = $array["app"]->getId();
+            }
+            $array["app_group_id"] = $array["app"] . "_" . $array["group"];
+            unset($array["app"]);
+            unset($array["group"]);
+        }
+        return parent::findOneBy($array);
+    }
+
 }

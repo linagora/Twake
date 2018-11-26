@@ -107,8 +107,7 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
 
                 $fieldname = $fieldname . "_id";
 
-                //Add associations in indexed fields
-                if (!in_array($_fieldname, $entity->getIdentifier())) {
+                if (isset($mapping["options"]) && isset($mapping["options"]["index"]) && $mapping["options"]["index"]) {
                     $indexed_fields[$fieldname] = true;
                 }
 
@@ -194,6 +193,20 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
                 $command = $alter_command . " ADD ".$columns_to_add."";
                 $connection->exec($command);
             }*/
+
+
+            $index_base_command = "CREATE CUSTOM INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
+            if (isset($entity->table["indexes"])) {
+                foreach ($entity->table["indexes"] as $index_name => $data) {
+                    $columns = $data["columns"];
+                    if (count($columns) == 1) {
+                        $indexed_fields[$columns[0]] = true;
+                    } else {
+                        $command = $index_base_command . "(" . join(",", $columns) . ") USING ";
+                        //$connection->exec($command);
+                    }
+                }
+            }
 
             $index_base_command = "CREATE INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
             foreach ($indexed_fields as $indexed_field => $dummy) {
