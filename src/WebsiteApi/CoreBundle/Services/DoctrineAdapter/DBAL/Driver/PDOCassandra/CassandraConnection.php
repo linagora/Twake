@@ -65,6 +65,20 @@ class PDOStatementAdapter
         return $this->stripslashesRow($res);
     }
 
+    public function fetchAll($fetch_style, $fetch_argument = null, $ctor_args = array())
+    {
+        $res = Array();
+
+        while ($row) {
+            $row = $this->fetch();
+            if ($row) {
+                $res[] = $row;
+            }
+        }
+
+        return $res;
+    }
+
     public function rowCount()
     {
         if (!$this->data) {

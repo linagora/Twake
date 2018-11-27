@@ -23,6 +23,11 @@ class LinkCalendarWorkspace{
     private $id;
 
     /**
+     * @ORM\Column(type="text", options={"index": true})
+     */
+    protected $calendar_workspace_id;
+
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
      */
     private $workspace;
@@ -52,6 +57,9 @@ class LinkCalendarWorkspace{
     {
         $this->setWorkspace($workspace);
         $this->setCalendar($calendar);
+
+        $this->calendar_workspace_id = $this->getCalendar()->getId() . "_" . $this->getWorkspace()->getId();
+
         $this->setOwner($owner);
         $this->setCalendarRight($calendarRight);
     }

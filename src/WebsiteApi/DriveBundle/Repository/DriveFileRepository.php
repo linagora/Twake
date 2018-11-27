@@ -14,32 +14,28 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
 
     public function sumSize($group, $directory = null)
     {
-        $qb = $this->createQueryBuilder('f')
-            ->select('sum(f.size)')
-            ->where('f.group = :group')
-            ->setParameter("group", $group);
 
-        if ($directory == null) {
-            $qb = $qb->andWhere('f.parent IS NULL');
-        } else {
-            $qb = $qb->andWhere('f.parent = :directory')
-                ->setParameter("directory", $directory);
+        try {
+            $qb = $this->createQueryBuilder('f')
+                ->select('sum(f.size)');
+            if ($directory == null) {
+                $qb = $qb->where('f.root_group_folder = :group')
+                    ->setParameter("group", $group);
+            } else {
+                $qb = $qb->where('f.parent = :directory')
+                    ->setParameter("directory", $directory);
+            }
+
+            return $qb->getQuery()->getSingleScalarResult();
+        } catch (\Exception $e) {
+
         }
-
-        return $qb->getQuery()->getSingleScalarResult();
+        return 0;
     }
 
     public function sumSizeByExt($group)
     {
-        $qb = $this->createQueryBuilder('f')
-            ->select('f.extension, sum(f.size) as sizes')
-            ->where('f.group = :group')
-            ->setParameter("group", $group)
-            ->andWhere('f.isDirectory = false')
-            ->groupBy('f.extension')
-            ->orderBy('sizes', 'DESC');
-
-        return $qb->getQuery()->getResult();
+        return Array();
     }
 
     public function listDirectory($group, $directory = null, $trash = false, $detached = false)

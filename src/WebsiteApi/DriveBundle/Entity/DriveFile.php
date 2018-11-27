@@ -9,7 +9,7 @@ use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 /**
  * DriveFile
  *
- * @ORM\Table(name="drive_file",options={"engine":"MyISAM"})
+ * @ORM\Table(name="drive_file",options={"engine":"MyISAM"}, indexes={@ORM\Index(columns={"parent_id"}), @ORM\Index(columns={"root_group_folder_id"})})
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileRepository")
  */
 class DriveFile implements ObjectLinksInterface
@@ -25,6 +25,12 @@ class DriveFile implements ObjectLinksInterface
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
      */
     private $group;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $root_group_folder = NULL;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
@@ -200,6 +206,11 @@ class DriveFile implements ObjectLinksInterface
     public function setParent($parent)
     {
         $this->parent = $parent;
+        if ($parent) {
+            $this->root_group_folder = NULL;
+        } else {
+            $this->root_group_folder = $this->getGroup()->getId();
+        }
     }
 
     /**
