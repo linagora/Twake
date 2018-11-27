@@ -20,7 +20,13 @@ class StreamMember
      */
     private $id;
 
-	/**
+    /**
+     * @ORM\Column(type="text", options={"index": true})
+     */
+    protected $user_stream_id;
+
+
+    /**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
 	 */
     private $user;
@@ -66,6 +72,9 @@ class StreamMember
     	$this->workspace = $stream->getWorkspace();
 	    $this->setStream($stream);
 	    $this->setUser($user);
+
+        $this->user_stream_id = $user->getId() . "_" . $stream->getId();
+
 	    $this->setMute(false);
 	    $this->setLastRead();
         $this->setLastUpdate();

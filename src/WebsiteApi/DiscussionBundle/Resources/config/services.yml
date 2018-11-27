@@ -1,7 +1,7 @@
 services:
     app.messages:
             class: WebsiteApi\DiscussionBundle\Services\MessageSystem
-            arguments: ["@app.string_cleaner", "@app.cassandra_doctrine", '@security.authorization_checker', "@app.command_executor", '@app.pusher','@app.workspace_levels','@app.drive.adapter_selector', '@app.messagesNotificationsCenter', '@app.workspace_stats']
+            arguments: ["@app.string_cleaner", "@app.cassandra_doctrine", '@security.authorization_checker', "@app.command_executor", '@app.pusher','@app.workspace_levels','@app.drive.adapter_selector', '@app.messagesNotificationsCenter']
 
     app.messages_master:
             class: WebsiteApi\DiscussionBundle\Services\MessagesMasterService

@@ -28,4 +28,20 @@ class StreamMemberRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
         return $result;
     }
 
+    public function findOneBy(array $array)
+    {
+        if (isset($array["user"]) && isset($array["stream"])) {
+            if (!is_integer($array["user"])) {
+                $array["user"] = $array["user"]->getId();
+            }
+            if (!is_integer($array["stream"])) {
+                $array["stream"] = $array["stream"]->getId();
+            }
+            $array["user_stream_id"] = $array["user"] . "_" . $array["stream"];
+            unset($array["user"]);
+            unset($array["stream"]);
+        }
+        return parent::findOneBy($array);
+    }
+
 }

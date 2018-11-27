@@ -32,7 +32,7 @@ class WorkspacesActivities
             $var = intval($var);
         }
 
-        if (is_int($var)) {
+        if (is_int($var) || get_class($var) == "Cassandra\Timeuuid") {
             try {
                 $r = $this->doctrine->getRepository($repository)->find($var);
             } catch (ORMException $e) {

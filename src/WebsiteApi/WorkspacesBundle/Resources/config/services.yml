@@ -30,7 +30,7 @@ services:
 
     app.workspaces:
         class: WebsiteApi\WorkspacesBundle\Services\Workspaces
-        arguments: ["@app.cassandra_doctrine", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.workspace_stats", "@app.groups", "@app.pricing_plan","@app.string_cleaner","@app.pusher",'@app.workspaces_activities','@app.translate','@app.board_tasks','@app.calendars','@app.calendar_events','@app.drive.adapter_selector']
+        arguments: ["@app.cassandra_doctrine", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.groups", "@app.pricing_plan","@app.string_cleaner","@app.pusher",'@app.workspaces_activities','@app.translate','@app.board_tasks','@app.calendars','@app.calendar_events','@app.drive.adapter_selector']
 
     app.workspaces_activities:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesActivities
@@ -39,7 +39,3 @@ services:
     app.workspaces_apps:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesApps
         arguments: ["@app.cassandra_doctrine", "@app.workspace_levels", "@app.group_apps","@app.group_managers","@app.pusher"]
-
-    app.workspace_stats:
-        class: WebsiteApi\WorkspacesBundle\Services\WorkspaceStats
-        arguments: ["@app.cassandra_doctrine"]

@@ -27,7 +27,6 @@ class Workspaces implements WorkspacesInterface
     private $gms;
     private $gas;
     private $gs;
-    private $ws;
     private $doctrine;
     private $pricing;
     private $string_cleaner;
@@ -40,7 +39,7 @@ class Workspaces implements WorkspacesInterface
     var $calendarService;
     var $driveAdapteService;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $taskService, $calendarService, $calendarEventService, $driveAdapteService)
+    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $taskService, $calendarService, $calendarEventService, $driveAdapteService)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -48,7 +47,6 @@ class Workspaces implements WorkspacesInterface
         $this->gms = $groups_managers_service;
         $this->gas = $groups_apps_service;
         $this->gs = $groups_service;
-        $this->ws = $workspace_stats;
         $this->pricing = $priceService;
         $this->string_cleaner = $cleaner;
         $this->pusher = $pusher;
@@ -297,8 +295,6 @@ class Workspaces implements WorkspacesInterface
         //Add twake_bot
         $this->wms->addMember($workspace->getId(), $twakebotId, false, $level->getId());
 
-        $this->ws->create($workspace); //Create workspace stat element
-
         //init default apps
         $this->init($workspace);
 
@@ -450,8 +446,6 @@ class Workspaces implements WorkspacesInterface
         ) {
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $workspace = $workspaceRepository->find($workspaceId);
-
-            $this->ws->create($workspace); //Create workspace stat element
 
             return $workspace;
         }
