@@ -49,7 +49,7 @@ class StreamSystem implements StreamSystemInterface
             $var = intval($var);
         }
 
-        if (is_int($var)) {
+        if (is_int($var) || get_class($var) == "Cassandra\Timeuuid") {
             return $this->doctrine->getRepository($repository)->find($var);
         } else if (is_object($var)) {
             return $var;

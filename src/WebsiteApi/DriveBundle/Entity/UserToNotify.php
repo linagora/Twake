@@ -27,7 +27,7 @@ class UserToNotify
     private $user;
 
     /**
-     * @ORM\Column(type="string", length=512)
+     * @ORM\Column(type="string", length=512, options={"index":true})
      */
     private $driveFile;
 

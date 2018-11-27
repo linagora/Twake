@@ -90,6 +90,7 @@ class PDOStatementAdapter
 
     public function bindValue($parameter, $value, $type)
     {
+        $this->types[$parameter] = $type;
         $this->values[$parameter] = $value;
     }
 
@@ -121,16 +122,21 @@ class PDOStatementAdapter
                 if ($value == NULL) {
                     $value = "NULL";
                 } else
-                    if (is_string($value) || (is_object($value) && method_exists($value, 'toCqlString'))) {
-                        $value = addslashes($value);
-                        $value = str_replace("'", "''", $value);
-                        $value = "'" . $value . "'";
-                    }
+                    if ($this->types[$position + 1] == \PDO::PARAM_INT) {
+                        $value = $value;
+                    } else
+                        if (is_string($value) || (is_object($value) && method_exists($value, 'toCqlString'))) {
+                            $value = addslashes($value);
+                            $value = str_replace("'", "''", $value);
+                            $value = "'" . $value . "'";
+                        }
 
                 $query .= $query_part . "" . $value;
 
             }
         }
+
+        $query = preg_replace("/ +IS +NULL( |$)/", " = NULL ", $query);
 
         $this->executor->exec($query, $this);
 

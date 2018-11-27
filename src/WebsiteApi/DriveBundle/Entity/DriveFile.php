@@ -27,8 +27,7 @@ class DriveFile implements ObjectLinksInterface
     private $group;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\Column(name="root_group_folder_id", type="cassandra_timeuuid", nullable=true)
      */
     private $root_group_folder = NULL;
 

@@ -20,7 +20,7 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
                 ->select('sum(f.size)');
             if ($directory == null) {
                 $qb = $qb->where('f.root_group_folder = :group')
-                    ->setParameter("group", $group);
+                    ->setParameter("group", $group->getId());
             } else {
                 $qb = $qb->where('f.parent = :directory')
                     ->setParameter("directory", $directory);
@@ -42,21 +42,31 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
     {
 
         if ($directory){
-            return $this->findBy(Array(
-                "parent" => $directory,
-                "isInTrash" => $trash,
-                "detached_file" => $detached,
-                "copyOf" => null
-            ), Array("name" => "ASC"));
+
+            $res = $this->findBy(Array(
+                "parent" => $directory
+            ));
+
+        } else {
+
+            if (!$group) {
+                return Array();
+            }
+
+            $res = $this->findBy(Array(
+                "root_group_folder" => $group->getId()
+            ));
+
         }
 
-        return $this->findBy(Array(
-            "group" => $group,
-            "parent" => $directory,
-            "isInTrash" => $trash,
-            "detached_file" => $detached,
-            "copyOf" => null
-        ), Array("name" => "ASC"));
+        $objects = Array();
+        foreach ($res as $file) {
+            if (($file->getIsInTrash() == $trash) && ($file->getDetachedFile() == $detached) && !$file->getCopyOf()) {
+                $objects[] = $file;
+            }
+        }
+
+        return $objects;
 
     }
 
