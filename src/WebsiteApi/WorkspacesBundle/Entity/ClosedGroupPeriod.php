@@ -43,12 +43,12 @@ class ClosedGroupPeriod
 	/**
      * @ORM\Column(type="cassandra_datetime")
 	 */
-	private $periodStartedAt;
+    private $periodstartedat;
 
     /**
      * @ORM\Column(type="cassandra_datetime", nullable=true)
      */
-    private $periodEndedAt;
+    private $periodendedat;
 
     /**
      * @ORM\Column(type="cassandra_datetime")
@@ -81,8 +81,8 @@ class ClosedGroupPeriod
 		$this->group = $groupPeriod->getGroup();
 		$this->setConnexions($groupPeriod->getConnexions());
         $this->setAppsUsagePeriod($groupPeriod->getAppsUsagePeriod());
-		$this->periodStartedAt = $groupPeriod->getPeriodStartedAt();
-        $this->periodEndedAt = new \DateTime();
+        $this->periodstartedat = $groupPeriod->getPeriodStartedAt();
+        $this->periodendedat = new \DateTime();
         $this->periodExpectedToEndAt = $groupPeriod->getPeriodExpectedToEndAt();
         $this->currentCost = $groupPeriod->getCurrentCost();
         $this->estimatedCost = $groupPeriod->getEstimatedCost();
@@ -143,15 +143,15 @@ class ClosedGroupPeriod
      */
     public function getPeriodStartedAt()
     {
-        return $this->periodStartedAt;
+        return $this->periodstartedat;
     }
 
     /**
-     * @param mixed $periodStartedAt
+     * @param mixed $periodstartedat
      */
-    public function setPeriodStartedAt($periodStartedAt)
+    public function setPeriodStartedAt($periodstartedat)
     {
-        $this->periodStartedAt = $periodStartedAt;
+        $this->periodstartedat = $periodstartedat;
     }
 
     /**
@@ -159,15 +159,15 @@ class ClosedGroupPeriod
      */
     public function getPeriodEndedAt()
     {
-        return $this->periodEndedAt;
+        return $this->periodendedat;
     }
 
     /**
-     * @param mixed $periodEndedAt
+     * @param mixed $periodendedat
      */
-    public function setPeriodEndedAt($periodEndedAt)
+    public function setPeriodEndedAt($periodendedat)
     {
-        $this->periodEndedAt = $periodEndedAt;
+        $this->periodendedat = $periodendedat;
     }
 
     /**
@@ -270,8 +270,8 @@ class ClosedGroupPeriod
         return Array(
             "connexions" => $this->getConnexions(),
             "appUsage" => $this->getAppsUsagePeriod(),
-            "periodStartedAt" => $this->getPeriodStartedAt(),
-        "periodEndedAt" => $this->getPeriodEndedAt(),
+            "periodstartedat" => $this->getPeriodStartedAt(),
+            "periodendedat" => $this->getPeriodEndedAt(),
         "periodExpectedToEndAt" => $this->getPeriodExpectedToEndAt(),
         "currentCost" => $this->getCurrentCost(),
         "estimatedCost" => $this->getEstimatedCost(),

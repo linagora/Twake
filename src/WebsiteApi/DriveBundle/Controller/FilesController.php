@@ -357,7 +357,7 @@ class FilesController extends Controller
             } else if (strpos($state, "label_") === 0) {
 
                 $label_id = explode("_", $state);
-                $label_id = intval($label_id[1]);
+                $label_id = $label_id[1];
 
                 $files = $fileSystem->byLabel($groupId, $label_id, $offset, $max);
 

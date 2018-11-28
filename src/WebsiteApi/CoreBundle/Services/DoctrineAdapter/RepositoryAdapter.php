@@ -34,6 +34,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
             $a = parent::find($id);
         } catch (\Exception $e) {
             error_log($e);
+            var_dump($e->getTraceAsString());
             die("ERROR with find");
         }
         return $a;
@@ -57,6 +58,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
             $a = parent::findBy($filter, $sort, $limit, $offset);
         } catch (\Exception $e) {
             error_log($e);
+            var_dump($e->getTraceAsString());
             die("ERROR with findOneBy");
         }
         return $a;

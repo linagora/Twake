@@ -237,7 +237,7 @@ class DiscussionController extends Controller
 		    $data['errors'][] = "notconnected";
 	    }
 	    else {
-		    $streamId = $request->request->getInt("id");
+            $streamId = $request->request->get("id");
 		    $muteValue = $request->request->getBoolean("mute");
 		    $result = $this->get("app.streamSystem")->mute($this->getUser(), $streamId, $muteValue);
 		    $data["data"]["mute"] = ($result?$muteValue:false);

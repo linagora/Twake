@@ -42,7 +42,7 @@ class Group
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\PricingPlan")
      */
-    protected $pricingPlan;
+    protected $pricingplan;
 
     /**
      * @ORM\Column(name="free_offer_end", type="integer", nullable=true)
@@ -141,15 +141,15 @@ class Group
 	 */
 	public function getPricingPlan()
 	{
-		return $this->pricingPlan;
+        return $this->pricingplan;
 	}
 
 	/**
-	 * @param mixed $pricingPlan
+     * @param mixed $pricing_plan
 	 */
-	public function setPricingPlan($pricingPlan)
-	{
-		$this->pricingPlan = $pricingPlan;
+    public function setPricingPlan($pricing_plan)
+    {
+        $this->pricingplan = $pricing_plan;
 	}
 
 	/**
@@ -280,7 +280,7 @@ class Group
             "id" => $this->getId(),
 			"unique_name" => $this->getName(),
 			"name" => $this->getDisplayName(),
-            "plan" => (($this->getPricingPlan() != null) ? $this->getPricingPlan()->getLabel() : null),
+            "plan" => (($this->getpricing_plan() != null) ? $this->getpricing_plan()->getLabel() : null),
 			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):""),
             "isBlocked" => $this->getIsBlocked(),
             "free_offer_end" => $this->getFreeOfferEnd()

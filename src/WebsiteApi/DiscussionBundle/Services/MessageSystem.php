@@ -44,10 +44,10 @@ class MessageSystem implements MessagesSystemInterface
     private function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
-            $var = intval($var);
+            $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var) || get_class($var) == "Cassandra\Timeuuid") {
+        if (is_int($var) || is_string($var)) {
             return $this->doctrine->getRepository($repository)->find($var);
         } else if (is_object($var)) {
             return $var;
@@ -397,7 +397,7 @@ class MessageSystem implements MessagesSystemInterface
         $recieverId = $vals["id"];
         $recieverType = $vals["type"];
 
-        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverId, intval($maxId), $subjectId, $maxResult);
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverId, $maxId, $subjectId, $maxResult);
 
         $headIds = [];
         foreach ($messages as $message) {

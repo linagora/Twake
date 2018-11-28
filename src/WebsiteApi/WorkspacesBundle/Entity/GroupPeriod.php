@@ -41,12 +41,12 @@ class GroupPeriod
 	/**
      * @ORM\Column(type="cassandra_datetime")
 	 */
-	private $periodStartedAt;
+    private $periodstartedat;
 
     /**
      * @ORM\Column(type="cassandra_datetime", nullable=true)
      */
-    private $periodEndedAt;
+    private $periodendedat;
 
     /**
      * @ORM\Column(type="cassandra_datetime")
@@ -77,8 +77,8 @@ class GroupPeriod
 		$this->group = $group;
 		$this->connexions = "{}";
         $this->appsUsage = "{}";
-		$this->periodStartedAt = new \DateTime();
-        $this->periodEndedAt = null;
+        $this->periodstartedat = new \DateTime();
+        $this->periodendedat = null;
         $datefin = new \DateTime();
         $datefin->modify('+1 month');
         $this->periodExpectedToEndAt = $datefin;
@@ -93,8 +93,8 @@ class GroupPeriod
 	        "groupId" => $this->group->getId(),
             "connexions" => $this->getConnexions(),
             "appsUsage" => $this->getAppsUsagePeriod(),
-            "periodStartedAt" => $this->periodStartedAt ,
-            "periodEndedAt" => $this->periodEndedAt,
+            "periodstartedat" => $this->periodstartedat,
+            "periodendedat" => $this->periodendedat,
             "periodExpectedToEndAt" => $this->periodExpectedToEndAt,
             "groupPricingInstanceId" => $this->groupPricingInstance==null ?  null : $this->groupPricingInstance->getId(),
             "currentCost" => $this->currentCost,
@@ -204,15 +204,15 @@ class GroupPeriod
      */
     public function getPeriodStartedAt()
     {
-        return $this->periodStartedAt;
+        return $this->periodstartedat;
     }
 
     /**
-     * @param mixed $periodStartedAt
+     * @param mixed $periodstartedat
      */
-    public function setPeriodStartedAt($periodStartedAt)
+    public function setPeriodStartedAt($periodstartedat)
     {
-        $this->periodStartedAt = $periodStartedAt;
+        $this->periodstartedat = $periodstartedat;
     }
 
     /**
@@ -220,15 +220,15 @@ class GroupPeriod
      */
     public function getPeriodEndedAt()
     {
-        return $this->periodEndedAt;
+        return $this->periodendedat;
     }
 
     /**
-     * @param mixed $periodEndedAt
+     * @param mixed $periodendedat
      */
-    public function setPeriodEndedAt($periodEndedAt)
+    public function setPeriodEndedAt($periodendedat)
     {
-        $this->periodEndedAt = $periodEndedAt;
+        $this->periodendedat = $periodendedat;
     }
 
     /**
