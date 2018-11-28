@@ -185,9 +185,9 @@ class WorkspaceMembersController extends Controller
             $response["data"][] = Array(
                 "workspace" => $workspace["workspace"]->getAsArray(),
                 "last_access" => $workspace["last_access"],
-                "isHidden" => $workspace["isHidden"],
-                "isFavorite" => $workspace["isFavorite"],
-                "hasNotifications" => $workspace["hasNotifications"],
+                "ishidden" => $workspace["ishidden"],
+                "isfavorite" => $workspace["isfavorite"],
+                "hasnotifications" => $workspace["hasnotifications"],
                 "isArchived" => $workspace["isArchived"]            );
         }
 

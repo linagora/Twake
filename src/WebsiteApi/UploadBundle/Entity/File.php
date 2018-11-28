@@ -42,7 +42,7 @@ class File
 	 *
      * @ORM\Column(name="real_name", type="string", length=255)
 	 */
-	private $realName; //Original name of the files on user computer
+    private $realname; //Original name of the files on user computer
 
 	/**
 	 * @var int
@@ -221,15 +221,15 @@ class File
 	 */
 	public function getRealName()
 	{
-		return $this->realName;
+        return $this->realname;
 	}
 
 	/**
-	 * @param string $realName
+     * @param string $realname
 	 */
-	public function setRealName($realName)
-	{
-		$this->realName = $realName;
+    public function setRealName($realname)
+    {
+        $this->realname = $realname;
 	}
 
     /**

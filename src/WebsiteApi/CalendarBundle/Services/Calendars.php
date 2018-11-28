@@ -323,10 +323,10 @@ class Calendars implements CalendarsInterface
         return $allLinks;
     }
 
-    public function getCalendarForApp($workspaceId, $appId, $currentUserId = null)
+    public function getCalendarForApp($workspaceId, $appid, $currentUserId = null)
     {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
-        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($appId);
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($appid);
 
         if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
             return null;

@@ -32,19 +32,19 @@ class WorkspaceDailyStats
 	 * @var int
 	 * @ORM\Column(name="public_msg_count", type="integer")
 	 */
-	protected $publicMsgCount;
+    protected $publicmsgcount;
 
 	/**
 	 * @var int
 	 * @ORM\Column(name="private_msg_count", type="integer")
 	 */
-	protected $privateMsgCount;
+    protected $privatemsgcount;
 
 	/**
 	 * @var int
 	 * @ORM\Column(name="private_channel_msg_count", type="integer")
 	 */
-	protected $privateChannelMsgCount;
+    protected $privatechannelmsgcount;
     /**
      * @ORM\Column(name="date", type="cassandra_datetime")
      */
@@ -77,15 +77,15 @@ class WorkspaceDailyStats
 
 
 	public function getPublicMsgCount(){
-		return $this->publicMsgCount;
+        return $this->publicmsgcount;
 	}
 
 	public function getPrivateMsgCount(){
-		return $this->privateMsgCount;
+        return $this->privatemsgcount;
 	}
 
 	public function getPrivateChannelMsgCount(){
-		return $this->privateChannelMsgCount;
+        return $this->privatechannelmsgcount;
 	}
 
     public function getDate(){
@@ -93,27 +93,27 @@ class WorkspaceDailyStats
     }
 
 	/**
-	 * @param int $publicMsgCount
+     * @param int $publicmsgcount
 	 */
-	public function setPublicMsgCount($publicMsgCount)
-	{
-		$this->publicMsgCount = $publicMsgCount;
+    public function setPublicMsgCount($publicmsgcount)
+    {
+        $this->publicmsgcount = $publicmsgcount;
 	}
 
 	/**
-	 * @param int $privateMsgCount
+     * @param int $privatemsgcount
 	 */
-	public function setPrivateMsgCount($privateMsgCount)
-	{
-		$this->privateMsgCount = $privateMsgCount;
+    public function setPrivateMsgCount($privatemsgcount)
+    {
+        $this->privatemsgcount = $privatemsgcount;
 	}
 
 	/**
-	 * @param int $privateChannelMsgCount
+     * @param int $privatechannelmsgcount
 	 */
-	public function setPrivateChannelMsgCount($privateChannelMsgCount)
-	{
-		$this->privateChannelMsgCount = $privateChannelMsgCount;
+    public function setPrivateChannelMsgCount($privatechannelmsgcount)
+    {
+        $this->privatechannelmsgcount = $privatechannelmsgcount;
 	}
 
     /**

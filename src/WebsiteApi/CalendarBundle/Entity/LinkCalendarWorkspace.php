@@ -41,7 +41,7 @@ class LinkCalendarWorkspace{
     /**
      * @ORM\Column(name="calendarright", type="cassandra_boolean")
      */
-    private $calendarRight;
+    private $calendarright;
 
     /**
      * @ORM\Column(name="owner", type="cassandra_boolean")
@@ -53,7 +53,7 @@ class LinkCalendarWorkspace{
      */
     private $calendar;
 
-    public  function __construct($workspace,$calendar,$owner,$calendarRight = true)
+    public function __construct($workspace, $calendar, $owner, $calendarright = true)
     {
         $this->setWorkspace($workspace);
         $this->setCalendar($calendar);
@@ -61,7 +61,7 @@ class LinkCalendarWorkspace{
         $this->calendar_workspace_id = $this->getCalendar()->getId() . "_" . $this->getWorkspace()->getId();
 
         $this->setOwner($owner);
-        $this->setCalendarRight($calendarRight);
+        $this->setCalendarRight($calendarright);
     }
 
     /**
@@ -117,15 +117,15 @@ class LinkCalendarWorkspace{
      */
     public function getCalendarRight()
     {
-        return $this->calendarRight;
+        return $this->calendarright;
     }
 
     /**
      * @param mixed $right
      */
-    public function setCalendarRight($calendarRight)
+    public function setCalendarRight($calendarright)
     {
-        $this->calendarRight = $calendarRight;
+        $this->calendarright = $calendarright;
     }
 
     /**

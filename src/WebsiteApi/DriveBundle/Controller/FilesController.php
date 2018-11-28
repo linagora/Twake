@@ -30,7 +30,7 @@ class FilesController extends Controller
         $isDetached = $request->request->get("isDetached", false);
         $isDirectory = $request->request->get("isDirectory", true);
         $url = $request->request->get("url",null);
-        $appId = $request->request->get("appId",null);
+        $appid = $request->request->get("appid", null);
         $directory = $request->request->get("directory", false);
         $externalDrive = $directory;
 
@@ -48,7 +48,7 @@ class FilesController extends Controller
                 $data["errors"] = "notallowed";
             } else {
 
-                $file = $fileSystem->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached,$url, $this->getUser()->getId(),$appId);
+                $file = $fileSystem->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached, $url, $this->getUser()->getId(), $appid);
 
                 if($model){
                     //IMPORTANT ! Disable local files !!!
@@ -210,7 +210,7 @@ class FilesController extends Controller
         );
 
         $groupId = $request->request->get("groupId", 0);
-        $objectId = $request->request->get("id", 0);
+        $objectid = $request->request->get("id", 0);
         $directory = $request->request->get("directory", false);
         $public_access_key = $request->request->get("public_access_key", false);
         $externalDrive = $directory;
@@ -224,13 +224,13 @@ class FilesController extends Controller
                 $fileSystem->setRootDirectory($directory);
             }
 
-            $data["data"] = $fileSystem->getInfos($groupId, $objectId, true);
+            $data["data"] = $fileSystem->getInfos($groupId, $objectid, true);
 
             if (isset($data["data"]["id"])) {
 
                 $can = true;
                 if (!$data["data"]["detached"]) {
-                    $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($objectId, $public_access_key);
+                    $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($objectid, $public_access_key);
                 }
 
                 if (!$can) {
@@ -241,16 +241,16 @@ class FilesController extends Controller
 
             if (!$externalDrive)
                 $haveReadAccess = $this->get('app.workspace_levels')->can(
-                        $fileSystem->getWorkspace($objectId),
+                        $fileSystem->getWorkspace($objectid),
                         $this->getUser(), "drive:read")
-                    || $fileSystem->verifyPublicAccess($objectId, $public_access_key);
+                    || $fileSystem->verifyPublicAccess($objectid, $public_access_key);
             else
                 $haveReadAccess = true;
 
             if (!$data["data"] && $haveReadAccess) {
                 $data["data"] = $fileSystem->getInfos(
-                    $fileSystem->getWorkspace($objectId),
-                    $objectId, true);
+                    $fileSystem->getWorkspace($objectid),
+                    $objectid, true);
             }
 
             $data["data"]["drive"] = $directory;
@@ -509,7 +509,7 @@ class FilesController extends Controller
         $isDetached = $request->request->getBoolean("isDetached", false);
         $directory = $request->request->get("directory", false);
         $newVersion = $request->request->get("newVersion", 0);
-        $appId = $request->request->get("appId",null);
+        $appid = $request->request->get("appid", null);
         if($newVersion=="false")
             $newVersion = false;
         $externalDrive = $directory;
@@ -528,7 +528,7 @@ class FilesController extends Controller
             if($newVersion)
                 $file = $fileSystem->uploadNewVersion($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId(), $newVersion);
             else
-                $file = $fileSystem->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId(),$appId);
+                $file = $fileSystem->upload($groupId, $parentId, $file, $this->get("app.upload"), $isDetached, $this->getUser()->getId(), $appid);
 
             if ($file) {
                 $data["data"] = $file->getAsArray();

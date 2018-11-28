@@ -120,14 +120,14 @@ class ListOfTasksController extends Controller
         $newTitle = $request->request->get("label", "");
         $newColor = $request->request->get("color", "");
         $boardId = $request->request->get("boardId", 0);
-        $userIdToNotify = $this->convertObjectListToIdList($request->request->get("watch_members", Array()));
+        $useridtonotify = $this->convertObjectListToIdList($request->request->get("watch_members", Array()));
 
-        $listOfTasks  = $this->get("app.list_of_tasks_service")->createListOfTasks($newTitle, $newColor, $boardId,$userIdToNotify);
-        if(!$listOfTasks) {
+        $listoftasks = $this->get("app.list_of_tasks_service")->createListOfTasks($newTitle, $newColor, $boardId, $useridtonotify);
+        if (!$listoftasks) {
             $data["errors"][] = "Fail to create list of tasks";
         }
         else{
-            $data["data"] = $listOfTasks->getAsArray();
+            $data["data"] = $listoftasks->getAsArray();
         }
 
         return new JsonResponse($data);

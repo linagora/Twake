@@ -30,12 +30,12 @@ class Board {
     /**
      * @ORM\Column(name="workspaces_number", type="integer", nullable=true)
      */
-    private $workspacesNumber = 1;
+    private $workspacesnumber = 1;
 
     /**
      * @ORM\Column(name="auto_participate_list", type="string", length=264, nullable=false)
      */
-    private $autoParticipantList;
+    private $autoparticipantlist;
 
     /**
      * @ORM\Column(type="text")
@@ -50,12 +50,12 @@ class Board {
     /**
      * @ORM\Column(type="cassandra_boolean")
      */
-    private $isPrivate;
+    private $isprivate;
 
-    public  function __construct($title,$description, $isPrivate)
+    public function __construct($title, $description, $isprivate)
     {
         $this->setTitle($title);
-        $this->setIsPrivate($isPrivate);
+        $this->setIsPrivate($isprivate);
         $this->setAutoParticipantList(Array());
         $this->setParticipants(Array());
         $this->setDescription($description);
@@ -74,19 +74,19 @@ class Board {
      */
     public function getAutoParticipantList()
     {
-        if($this->autoParticipantList == null){
+        if ($this->autoparticipantlist == null) {
             return null;
         }else{
-            return json_decode($this->autoParticipantList, true );
+            return json_decode($this->autoparticipantlist, true);
         }
     }
 
     /**
-     * @param mixed $autoParticipantList
+     * @param mixed $autoparticipantlist
      */
-    public function setAutoParticipantList($autoParticipantList)
+    public function setAutoParticipantList($autoparticipantlist)
     {
-        $this->autoParticipantList = json_encode($autoParticipantList);
+        $this->autoparticipantlist = json_encode($autoparticipantlist);
     }
 
     /**
@@ -118,15 +118,15 @@ class Board {
      */
     public function getWorkspacesNumber()
     {
-        return $this->workspacesNumber;
+        return $this->workspacesnumber;
     }
 
     /**
-     * @param mixed $workspacesNumber
+     * @param mixed $workspacesnumber
      */
-    public function setWorkspacesNumber($workspacesNumber)
+    public function setWorkspacesNumber($workspacesnumber)
     {
-        $this->workspacesNumber = $workspacesNumber;
+        $this->workspacesnumber = $workspacesnumber;
     }
 
     public function getAsArray(){
@@ -162,15 +162,15 @@ class Board {
      */
     public function getisPrivate()
     {
-        return $this->isPrivate;
+        return $this->isprivate;
     }
 
     /**
-     * @param mixed $isPrivate
+     * @param mixed $isprivate
      */
-    public function setIsPrivate($isPrivate)
+    public function setIsPrivate($isprivate)
     {
-        $this->isPrivate = $isPrivate;
+        $this->isprivate = $isprivate;
     }
 
     /**

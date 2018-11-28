@@ -74,7 +74,7 @@ class Notification
     /**
      * @ORM\Column(type="cassandra_boolean" , options={"default" : true})
      */
-    private $isRead;
+    private $isread;
 
 	public function __construct($application, $workspace, $user)
 	{
@@ -243,15 +243,15 @@ class Notification
      */
     public function getisRead()
     {
-        return $this->isRead;
+        return $this->isread;
     }
 
     /**
-     * @param mixed $isRead
+     * @param mixed $isread
      */
-    public function setIsRead($isRead)
+    public function setIsRead($isread)
     {
-        $this->isRead = $isRead;
+        $this->isread = $isread;
     }
 
 }

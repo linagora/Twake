@@ -53,21 +53,22 @@ class WorkspaceActivity
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private $objectRepository;
+    private $objectrepository;
 
     /**
      * @ORM\Column(type="cassandra_timeuuid", nullable=true)
      */
-    private $objectId = 0;
+    private $objectid = 0;
 
-	public function __construct($workspace, $user, $app, $title, $objectRepository, $objectId) {
+    public function __construct($workspace, $user, $app, $title, $objectrepository, $objectid)
+    {
 		$this->workspace = $workspace;
 		$this->date_added = new \DateTime();
 		$this->user = $user;
 		$this->app = $app;
 		$this->title = $title;
-		$this->objectRepository = $objectRepository;
-		$this->objectId = $objectId;
+        $this->objectrepository = $objectrepository;
+        $this->objectid = $objectid;
 	}
 
 	/**
@@ -149,15 +150,15 @@ class WorkspaceActivity
      */
     public function getObjectId()
     {
-        return $this->objectId;
+        return $this->objectid;
     }
 
     /**
-     * @param mixed $objectId
+     * @param mixed $objectid
      */
-    public function setObjectId($objectId)
+    public function setObjectId($objectid)
     {
-        $this->objectId = $objectId;
+        $this->objectid = $objectid;
     }
 
     /**
@@ -165,7 +166,7 @@ class WorkspaceActivity
      */
     public function getObjectRepository()
     {
-        return $this->objectRepository;
+        return $this->objectrepository;
     }
 
 }

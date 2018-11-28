@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * CallMembers
  *
- * @ORM\Table(name="call_members",options={"engine":"MyISAM"})
+ * @ORM\Table(name="call_members",options={"engine":"myisam"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CallsBundle\Repository\CallMemberRepository")
  */
 class CallMember

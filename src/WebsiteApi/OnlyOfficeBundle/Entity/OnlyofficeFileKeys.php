@@ -23,12 +23,12 @@ class OnlyofficeFileKeys
     /**
      * @ORM\Column(name="workspace_id", type="integer")
      */
-    private $workspaceId;
+    private $workspaceid;
 
     /**
      * @ORM\Column(name="file_id", type="integer")
      */
-    private $fileId;
+    private $fileid;
 
     /**
      * @ORM\Column(name="versionkey", type="string", length=512)
@@ -41,10 +41,10 @@ class OnlyofficeFileKeys
     private $name;
 
 
-    public function __construct($workspaceId, $fileId)
+    public function __construct($workspaceid, $fileid)
     {
-        $this->fileId = $fileId;
-        $this->workspaceId = $workspaceId;
+        $this->fileid = $fileid;
+        $this->workspaceid = $workspaceid;
         $this->newKey();
     }
 
@@ -61,7 +61,7 @@ class OnlyofficeFileKeys
      */
     public function getWorkspaceId()
     {
-        return $this->workspaceId;
+        return $this->workspaceid;
     }
 
     /**
@@ -69,7 +69,7 @@ class OnlyofficeFileKeys
      */
     public function getFileId()
     {
-        return $this->fileId;
+        return $this->fileid;
     }
 
     /**

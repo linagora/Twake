@@ -24,40 +24,40 @@ class Message
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
 	 */
-	private $userSender;
+    private $usersender;
 
     /**
      * @ORM\Column(type="string", length=1)
      */
-    private $typeReciever;
+    private $typereciever;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=true)
 	 */
-	private $userReciever;
+    private $userreciever;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Stream",cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=true)
 	 */
-	private $streamReciever;
+    private $streamreciever;
 
     /**
      * @ORM\Column(type="cassandra_boolean")
      */
-    private $isApplicationMessage = false;
+    private $isapplicationmessage = false;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application",cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private $applicationSender;
+    private $applicationsender;
 
     /**
      * @ORM\Column(type="cassandra_boolean")
      */
-    private $isSystemMessage = false;
+    private $issystemmessage = false;
 
 
 
@@ -70,7 +70,7 @@ class Message
     /**
      * @ORM\Column(type="text", length=30000)
      */
-    private $htmlContent = "";
+    private $htmlcontent = "";
 
 	/**
 	 * @ORM\Column(type="text", length=20000)
@@ -80,7 +80,7 @@ class Message
 	/**
 	 * @ORM\Column(type="text", length=10000)
 	 */
-	private $cleanContent;
+    private $cleancontent;
 
 
 	/**
@@ -97,12 +97,12 @@ class Message
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message",cascade={"persist"})
 	 * @ORM\JoinColumn(nullable=true)
 	 */
-	private $responseTo = null;
+    private $responseto = null;
 
     /**
      * @ORM\Column(type="cassandra_boolean")
      */
-    private $hasResponses = false;
+    private $hasresponses = false;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Subject",cascade={"persist"})
@@ -113,7 +113,7 @@ class Message
     /**
      * @ORM\Column(type="text")
      */
-    private $applicationData = "{}";
+    private $applicationdata = "{}";
 
     /**
      * @ORM\Column(type="string", length=40)
@@ -121,24 +121,24 @@ class Message
     private $front_id;
 
 
-	public function __construct($sender,$typeReciever,$reciever,$isApplicationMessage,$applicationMessage,$isSystemMessage,$date,$content,$cleanContent,$subject){
+    public function __construct($sender, $typereciever, $reciever, $isapplicationmessage, $applicationmessage, $issystemmessage, $date, $content, $cleancontent, $subject)
+    {
         $this->setUserSender($sender);
-        if($isApplicationMessage) {
-            $this->setIsApplicationMessage($isApplicationMessage);
-            $this->setApplicationSender($applicationMessage);
+        if ($isapplicationmessage) {
+            $this->setIsApplicationMessage($isapplicationmessage);
+            $this->setApplicationSender($applicationmessage);
         }
 
-        $this->setTypeReciever($typeReciever);
-        if($typeReciever == "S"){
+        $this->setTypeReciever($typereciever);
+        if ($typereciever == "S") {
             $this->setStreamReciever($reciever);
-        }
-        elseif($typeReciever == "U"){
+        } elseif ($typereciever == "U") {
             $this->setUserReciever($reciever);
         }
-        $this->setIsSystemMessage($isSystemMessage);
+        $this->setIsSystemMessage($issystemmessage);
         $this->setDate($date);
         $this->setContent($content);
-        $this->setCleanContent($cleanContent);
+        $this->setCleanContent($cleancontent);
         if($subject != null){
             $this->setSubject($subject);
         }
@@ -165,15 +165,15 @@ class Message
      */
     public function getUserSender()
     {
-        return $this->userSender;
+        return $this->usersender;
     }
 
     /**
-     * @param mixed $userSender
+     * @param mixed $usersender
      */
-    public function setUserSender($userSender)
+    public function setUserSender($usersender)
     {
-        $this->userSender = $userSender;
+        $this->usersender = $usersender;
     }
 
     /**
@@ -181,15 +181,15 @@ class Message
      */
     public function getTypeReciever()
     {
-        return $this->typeReciever;
+        return $this->typereciever;
     }
 
     /**
-     * @param mixed $typeReciever
+     * @param mixed $typereciever
      */
-    public function setTypeReciever($typeReciever)
+    public function setTypeReciever($typereciever)
     {
-        $this->typeReciever = $typeReciever;
+        $this->typereciever = $typereciever;
     }
 
     /**
@@ -197,15 +197,15 @@ class Message
      */
     public function getUserReciever()
     {
-        return $this->userReciever;
+        return $this->userreciever;
     }
 
     /**
-     * @param mixed $userReciever
+     * @param mixed $userreciever
      */
-    public function setUserReciever($userReciever)
+    public function setUserReciever($userreciever)
     {
-        $this->userReciever = $userReciever;
+        $this->userreciever = $userreciever;
     }
 
     /**
@@ -213,15 +213,15 @@ class Message
      */
     public function getStreamReciever()
     {
-        return $this->streamReciever;
+        return $this->streamreciever;
     }
 
     /**
-     * @param mixed $streamReciever
+     * @param mixed $streamreciever
      */
-    public function setStreamReciever($streamReciever)
+    public function setStreamReciever($streamreciever)
     {
-        $this->streamReciever = $streamReciever;
+        $this->streamreciever = $streamreciever;
     }
 
     /**
@@ -229,15 +229,15 @@ class Message
      */
     public function getIsApplicationMessage()
     {
-        return $this->isApplicationMessage;
+        return $this->isapplicationmessage;
     }
 
     /**
-     * @param mixed $isApplicationMessage
+     * @param mixed $isapplicationmessage
      */
-    public function setIsApplicationMessage($isApplicationMessage)
+    public function setIsApplicationMessage($isapplicationmessage)
     {
-        $this->isApplicationMessage = $isApplicationMessage;
+        $this->isapplicationmessage = $isapplicationmessage;
     }
 
     /**
@@ -245,15 +245,15 @@ class Message
      */
     public function getApplicationSender()
     {
-        return $this->applicationSender;
+        return $this->applicationsender;
     }
 
     /**
-     * @param mixed $applicationSender
+     * @param mixed $applicationsender
      */
-    public function setApplicationSender($applicationSender)
+    public function setApplicationSender($applicationsender)
     {
-        $this->applicationSender = $applicationSender;
+        $this->applicationsender = $applicationsender;
     }
 
     /**
@@ -261,15 +261,15 @@ class Message
      */
     public function getIsSystemMessage()
     {
-        return $this->isSystemMessage;
+        return $this->issystemmessage;
     }
 
     /**
-     * @param mixed $isSystemMessage
+     * @param mixed $issystemmessage
      */
-    public function setIsSystemMessage($isSystemMessage)
+    public function setIsSystemMessage($issystemmessage)
     {
-        $this->isSystemMessage = $isSystemMessage;
+        $this->issystemmessage = $issystemmessage;
     }
 
     /**
@@ -334,15 +334,15 @@ class Message
      */
     public function getCleanContent()
     {
-        return $this->cleanContent;
+        return $this->cleancontent;
     }
 
     /**
-     * @param mixed $cleanContent
+     * @param mixed $cleancontent
      */
-    public function setCleanContent($cleanContent)
+    public function setCleanContent($cleancontent)
     {
-        $this->cleanContent = $cleanContent;
+        $this->cleancontent = $cleancontent;
     }
 
     /**
@@ -382,15 +382,15 @@ class Message
      */
     public function getResponseTo()
     {
-        return $this->responseTo;
+        return $this->responseto;
     }
 
     /**
-     * @param mixed $responseTo
+     * @param mixed $responseto
      */
-    public function setResponseTo($responseTo)
+    public function setResponseTo($responseto)
     {
-        $this->responseTo = $responseTo;
+        $this->responseto = $responseto;
     }
 
     /**
@@ -398,15 +398,15 @@ class Message
      */
     public function getHasResponses()
     {
-        return $this->hasResponses;
+        return $this->hasresponses;
     }
 
     /**
-     * @param mixed $hasResponses
+     * @param mixed $hasresponses
      */
-    public function setHasResponses($hasResponses)
+    public function setHasResponses($hasresponses)
     {
-        $this->hasResponses = $hasResponses;
+        $this->hasresponses = $hasresponses;
     }
 
     /**
@@ -430,15 +430,15 @@ class Message
      */
     public function getApplicationData()
     {
-        return json_decode($this->applicationData,true);
+        return json_decode($this->applicationdata, true);
     }
 
     /**
-     * @param mixed $applicationData
+     * @param mixed $applicationdata
      */
-    public function setApplicationData($applicationData)
+    public function setApplicationData($applicationdata)
     {
-        $this->applicationData = json_encode($applicationData);
+        $this->applicationdata = json_encode($applicationdata);
     }
 
     public function getDiscussionKey(){

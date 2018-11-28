@@ -271,7 +271,7 @@ class Notifications implements NotificationsInterface
             $search["workspace"] = $workspace;
         }
 
-        $search["isRead"] = false;
+        $search["isread"] = false;
 
         $notif = $nRepo->findBy($search);
 

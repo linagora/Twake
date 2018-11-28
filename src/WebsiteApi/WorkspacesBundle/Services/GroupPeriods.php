@@ -25,7 +25,7 @@ class GroupPeriods implements GroupPeriodInterface
 	public function changePlanOrRenew($group, $billingType ,$planId){
 
         $groupPricingInstanceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
-        $groupPricingInstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
+        $grouppricinginstance = $groupPricingInstanceRepository->findOneBy(Array("group" => $group));
 
         $groupPeriodRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
         $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
@@ -67,8 +67,8 @@ class GroupPeriods implements GroupPeriodInterface
             $newGroupPeriod->setExpectedCost($groupPeriod->getExpectedCost());
             $newGroupPeriod->setGroupPricingInstance($newGroupPricing);
 
-            if($groupPricingInstance){
-                $this->doctrine->remove($groupPricingInstance);
+            if ($grouppricinginstance) {
+                $this->doctrine->remove($grouppricinginstance);
 
                 foreach ($appPricings as $appPricing){
                     $this->doctrine->remove($appPricing);
@@ -83,13 +83,13 @@ class GroupPeriods implements GroupPeriodInterface
             // $closedGroupPeriod->setBilled(false);
 
             //Reset user period utilisation
-            foreach ($groupUsers as $groupUser){//User left group between two periods, it can be removed
-                if ($groupUser->getNbWorkspace() == 0){
-                    $this->doctrine->remove($groupUser);
+            foreach ($groupUsers as $groupuser) {//User left group between two periods, it can be removed
+                if ($groupuser->getNbWorkspace() == 0) {
+                    $this->doctrine->remove($groupuser);
                 }else{
-                    $groupUser->setConnectionsPeriod(0);
-                    $groupUser->setUsedAppsToday(Array());
-                    $this->doctrine->persist($groupUser);
+                    $groupuser->setConnectionsPeriod(0);
+                    $groupuser->setUsedAppsToday(Array());
+                    $this->doctrine->persist($groupuser);
                 }
             }
 

@@ -36,7 +36,7 @@ class GroupPeriod
     /**
      * @ORM\Column(name="app_usage", type="string", length=100000)
      */
-    protected $appsUsage;
+    protected $appsusage;
 
 	/**
      * @ORM\Column(type="cassandra_datetime")
@@ -51,40 +51,40 @@ class GroupPeriod
     /**
      * @ORM\Column(type="cassandra_datetime")
      */
-    private $periodExpectedToEndAt;
+    private $periodexpectedtoendat;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance")
      */
-    private $groupPricingInstance;
+    private $grouppricinginstance;
 
     /**
      * @ORM\Column(name="current_cost", type="decimal", precision=65, scale=3)
      */
-    protected $currentCost;
+    protected $currentcost;
 
     /**
      * @ORM\Column(name="expected_cost", type="decimal" , precision=15, scale=3)
      */
-    protected $expectedCost;
+    protected $expectedcost;
 
     /**
      * @ORM\Column(name="estimated_cost", type="decimal", precision=15, scale=3)
      */
-    protected $estimatedCost;
+    protected $estimatedcost;
 
 	public function __construct($group) {
 		$this->group = $group;
 		$this->connexions = "{}";
-        $this->appsUsage = "{}";
+        $this->appsusage = "{}";
         $this->periodstartedat = new \DateTime();
         $this->periodendedat = null;
         $datefin = new \DateTime();
         $datefin->modify('+1 month');
-        $this->periodExpectedToEndAt = $datefin;
-        $this->groupPricingInstance = null;
-        $this->currentCost = 0;
-        $this->estimatedCost = 0;
+        $this->periodexpectedtoendat = $datefin;
+        $this->grouppricinginstance = null;
+        $this->currentcost = 0;
+        $this->estimatedcost = 0;
         $this->expectedCost= 0;
 	}
 
@@ -95,11 +95,11 @@ class GroupPeriod
             "appsUsage" => $this->getAppsUsagePeriod(),
             "periodstartedat" => $this->periodstartedat,
             "periodendedat" => $this->periodendedat,
-            "periodExpectedToEndAt" => $this->periodExpectedToEndAt,
-            "groupPricingInstanceId" => $this->groupPricingInstance==null ?  null : $this->groupPricingInstance->getId(),
-            "currentCost" => $this->currentCost,
-            "estimatedCost" => $this->estimatedCost,
-            "expectedCost" => $this->expectedCost
+            "periodexpectedtoendat" => $this->periodexpectedtoendat,
+            "groupPricingInstanceId" => $this->groupPricingInstance == null ? null : $this->grouppricinginstance->getId(),
+            "currentCost" => $this->currentcost,
+            "estimatedCost" => $this->estimatedcost,
+            "expectedCost" => $this->expectedcost
         );
     }
 
@@ -188,15 +188,15 @@ class GroupPeriod
      */
     public function getAppsUsagePeriod()
     {
-        return json_decode($this->appsUsage,true);
+        return json_decode($this->appsusage, true);
     }
 
     /**
-     * @param mixed $appsUsage
+     * @param mixed $appsusage
      */
-    public function setAppsUsagePeriod($appsUsage)
+    public function setAppsUsagePeriod($appsusage)
     {
-        $this->appsUsage = json_encode($appsUsage);
+        $this->appsusage = json_encode($appsusage);
     }
 
     /**
@@ -236,15 +236,15 @@ class GroupPeriod
      */
     public function getPeriodExpectedToEndAt()
     {
-        return $this->periodExpectedToEndAt;
+        return $this->periodexpectedtoendat;
     }
 
     /**
-     * @param mixed $periodExpectedToEndAt
+     * @param mixed $periodexpectedtoendat
      */
-    public function setPeriodExpectedToEndAt($periodExpectedToEndAt)
+    public function setPeriodExpectedToEndAt($periodexpectedtoendat)
     {
-        $this->periodExpectedToEndAt = $periodExpectedToEndAt;
+        $this->periodexpectedtoendat = $periodexpectedtoendat;
     }
 
     /**
@@ -252,17 +252,17 @@ class GroupPeriod
      */
     public function getGroupPricingInstance()
     {
-        return $this->groupPricingInstance;
+        return $this->grouppricinginstance;
     }
 
     /**
-     * @param mixed $groupPricingInstance
+     * @param mixed $grouppricinginstance
      */
-    public function setGroupPricingInstance($groupPricingInstance)
+    public function setGroupPricingInstance($grouppricinginstance)
     {
-        $this->groupPricingInstance = $groupPricingInstance;
-        if ($groupPricingInstance != null){
-            $this->periodExpectedToEndAt = $groupPricingInstance->getEndAt();
+        $this->grouppricinginstance = $grouppricinginstance;
+        if ($grouppricinginstance != null) {
+            $this->periodexpectedtoendat = $grouppricinginstance->getEndAt();
         }
     }
 
@@ -271,15 +271,15 @@ class GroupPeriod
      */
     public function getCurrentCost()
     {
-        return $this->currentCost;
+        return $this->currentcost;
     }
 
     /**
-     * @param mixed $currentEstimatedCost
+     * @param mixed $currentestimatedcost
      */
-    public function setCurrentCost($currentEstimatedCost)
+    public function setCurrentCost($currentestimatedcost)
     {
-        $this->currentCost = $currentEstimatedCost;
+        $this->currentcost = $currentestimatedcost;
     }
 
     /**
@@ -287,30 +287,30 @@ class GroupPeriod
      */
     public function getExpectedCost()
     {
-        return $this->expectedCost;
+        return $this->expectedcost;
     }
 
     /**
-     * @param mixed $expectedCost
+     * @param mixed $expectedcost
      */
-    public function setExpectedCost($expectedCost)
+    public function setExpectedCost($expectedcost)
     {
-        $this->expectedCost = $expectedCost;
+        $this->expectedcost = $expectedcost;
     }
     /**
      * @return mixed
      */
     public function getEstimatedCost()
     {
-        return $this->estimatedCost;
+        return $this->estimatedcost;
     }
 
     /**
-     * @param mixed $EstimatedCost
+     * @param mixed $estimatedcost
      */
-    public function setEstimatedCost($EstimatedCost)
+    public function setEstimatedCost($estimatedcost)
     {
-        $this->estimatedCost = $EstimatedCost;
+        $this->estimatedcost = $estimatedcost;
     }
     /**
      * @return int

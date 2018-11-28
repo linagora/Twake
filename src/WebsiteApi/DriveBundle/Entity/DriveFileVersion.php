@@ -36,7 +36,7 @@ class DriveFileVersion
 	/**
 	 * @ORM\Column(type="string", length=255)
 	 */
-	private $realName;
+    private $realname;
 
 	/**
 	 * @ORM\Column(name="aes_key", type="string", length=1024)
@@ -61,7 +61,7 @@ class DriveFileVersion
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $fileName;
+    private $filename;
 
 
 	public function __construct(DriveFile $file, User $user)
@@ -104,15 +104,15 @@ class DriveFileVersion
 	 */
 	public function getRealName()
 	{
-		return $this->realName;
+        return $this->realname;
 	}
 
 	/**
-	 * @param mixed $realName
+     * @param mixed $realname
 	 */
 	public function resetRealName()
 	{
-		$this->realName = sha1(microtime() . rand(0, 10000)) . ".tw";
+        $this->realname = sha1(microtime() . rand(0, 10000)) . ".tw";
 	}
 
 	/**
@@ -157,15 +157,15 @@ class DriveFileVersion
      */
     public function getFileName()
     {
-        return $this->fileName;
+        return $this->filename;
     }
 
     /**
-     * @param mixed $fileName
+     * @param mixed $filename
      */
-    public function setFileName($fileName)
+    public function setFileName($filename)
     {
-        $this->fileName = $fileName;
+        $this->filename = $filename;
     }
 
     /**

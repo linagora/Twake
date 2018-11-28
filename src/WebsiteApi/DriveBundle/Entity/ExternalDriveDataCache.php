@@ -40,13 +40,13 @@ class ExternalDriveDataCache
     /**
      * @ORM\Column(type="cassandra_datetime")
      */
-    private $lastUpdate;
+    private $lastupdate;
 
     public function __construct($id,$drive){
         $this->id = $id;
         $this->drive = $drive;
         $this->json = new JsonResponse();
-        $this->lastUpdate = new \DateTime();
+        $this->lastupdate = new \DateTime();
     }
 
     /**

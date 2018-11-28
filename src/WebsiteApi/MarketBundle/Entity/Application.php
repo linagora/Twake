@@ -49,23 +49,23 @@ class Application
 	/**
      * @ORM\Column(name="cancreatefile", type="cassandra_boolean")
 	 */
-	private $canCreateFile; //Will be visible in the list of new files in Drive
+    private $cancreatefile; //Will be visible in the list of new files in Drive
 
 	/**
      * @ORM\Column(name="createfiledata", type="text")
 	 */
-	private $createFileData = "{}"; //Will be visible in the list of new files in Drive
+    private $createfiledata = "{}"; //Will be visible in the list of new files in Drive
 
 	/**
      * @ORM\Column(name="iscapable", type="cassandra_boolean")
 	 */
-	private $isCapable; //Can be opened as app in window (displayed in the left bar of apps)
+    private $iscapable; //Can be opened as app in window (displayed in the left bar of apps)
 
 
 	/**
      * @ORM\Column(name="short_description", type="text")
 	 */
-	private $shortDescription = "";
+    private $shortdescription = "";
 
 	/**
 	 * @ORM\Column(name="description", type="text")
@@ -75,12 +75,12 @@ class Application
 	/**
      * @ORM\Column(name="price_monthly", type="cassandra_float")
 	 */
-	private $priceMonthly = 0;
+    private $pricemonthly = 0;
 
     /**
      * @ORM\Column(name="price_user", type="cassandra_float")
      */
-    private $priceUser = 0;
+    private $priceuser = 0;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
@@ -90,12 +90,12 @@ class Application
 	/**
      * @ORM\Column(name="user_count", type="integer")
 	 */
-	private $userCount = 0;
+    private $usercount = 0;
 
 	/**
      * @ORM\Column(name="vote_count", type="integer")
 	 */
-	private $voteCount = 0;
+    private $votecount = 0;
 
 	/**
      * @ORM\Column(name="score", type="cassandra_float")
@@ -120,17 +120,17 @@ class Application
 	/**
      * @ORM\Column(name="message_module" , type="cassandra_boolean")
 	 */
-	protected $messageModule;
+    protected $messagemodule;
 
     /**
      * @ORM\Column(name="message_module_url", type="text")
      */
-    private $messageModuleUrl = "";
+    private $messagemoduleurl = "";
 
     /**
      * @ORM\Column(name="editable_rights" , type="cassandra_boolean")
      */
-    protected $editableRights = 0;
+    protected $editablerights = 0;
 
 	/**
      * @ORM\Column(type="cassandra_datetime")
@@ -140,12 +140,12 @@ class Application
 	/**
      * @ORM\Column(name="privatekey", type="text")
 	 */
-	protected $privateKey;
+    protected $privatekey;
 
 	/**
      * @ORM\Column(name="publickey", type="text",nullable=true, options={"index"=true})
 	 */
-	protected $publicKey;
+    protected $publickey;
 
 	/**
      * @ORM\Column(type="cassandra_boolean" )
@@ -155,22 +155,22 @@ class Application
 	/**
      * @ORM\Column(name="filestypes", type="text" )
 	 */
-	protected $filesTypes;
+    protected $filestypes;
 
 	/**
      * @ORM\Column(name="userrights", type="text" )
 	 */
-	protected $userRights;
+    protected $userrights;
 
 	/**
      * @ORM\Column(name="applicationrights",type="text")
 	 */
-	protected $applicationRights;
+    protected $applicationrights;
 
     /**
      * @ORM\Column(name="install_count", type="integer")
      */
-    private $installCount = 0;
+    private $installcount = 0;
 
     /**
      * @ORM\Column(name="cgu", type="text")
@@ -180,7 +180,7 @@ class Application
     /**
      * @ORM\Column(name="urlapp", type="cassandra_boolean")
      */
-    private $urlApp = false;
+    private $urlapp = false;
 
     /**
      * @ORM\Column(type="string", length = 256, nullable = true)
@@ -190,18 +190,18 @@ class Application
     /**
      * @ORM\Column(name="searchwords", type="text")
      */
-    private $searchWords;
+    private $searchwords;
 
 
     public function __construct()
 	{
 		$this->date = new \DateTime();
-		$this->privateKey = Application::generatePrivateKey();
+        $this->privatekey = Application::generatePrivateKey();
 		$this->setUserRights(Array());
 		$this->setFilesTypes(Array());
 		$this->setApplicationRights(Array());
 		$this->enabled = false;
-		$this->messageModule = false;
+        $this->messagemodule = false;
 		$this->domain_name =null;
 	}
 
@@ -223,32 +223,32 @@ class Application
 
 	public function getPrivateKey()
 	{
-		return $this->privateKey;
+        return $this->privatekey;
 	}
 
 	public function setPrivateKey($key)
 	{
-		$this->privateKey = $key;
+        $this->privatekey = $key;
 	}
 
 	public function getUserRights()
 	{
-		return json_decode($this->userRights, 1);
+        return json_decode($this->userrights, 1);
 	}
 
 	public function getApplicationRights()
 	{
-		return json_decode($this->applicationRights, 1);
+        return json_decode($this->applicationrights, 1);
 	}
 
 	public function setUserRights($rights)
 	{
-		$this->userRights = json_encode($rights);
+        $this->userrights = json_encode($rights);
 	}
 
 	public function setApplicationRights($rights)
 	{
-		$this->applicationRights = json_encode($rights);
+        $this->applicationrights = json_encode($rights);
 	}
 
 	/**
@@ -272,15 +272,15 @@ class Application
 	 */
 	public function getFilesTypes()
 	{
-		return json_decode($this->filesTypes, true);
+        return json_decode($this->filestypes, true);
 	}
 
 	/**
-	 * @param mixed $filesTypes
+     * @param mixed $filestypes
 	 */
-	public function setFilesTypes($filesTypes)
-	{
-		$this->filesTypes = json_encode($filesTypes);
+    public function setFilesTypes($filestypes)
+    {
+        $this->filestypes = json_encode($filestypes);
 	}
 
 	/**
@@ -288,45 +288,45 @@ class Application
 	 */
 	public function getFilesTypesRaw()
 	{
-		return $this->filesTypes;
+        return $this->filestypes;
 	}
 
 	/**
-	 * @param mixed $filesTypes
+     * @param mixed $filestypes
 	 */
-	public function setFilesTypesRaw($filesTypes)
-	{
-		$this->filesTypes = $filesTypes;
+    public function setFilesTypesRaw($filestypes)
+    {
+        $this->filestypes = $filestypes;
 	}
 
 	public function changePrivateKey()
 	{
-		$this->privateKey = Application::generatePrivateKey();
+        $this->privatekey = Application::generatePrivateKey();
 	}
 
 	public function getPublicKey()
 	{
-		return $this->publicKey;
+        return $this->publickey;
 	}
 
 	public function setPublicKey($x)
 	{
-		$this->publicKey = $x;
+        $this->publickey = $x;
 	}
 
 	public function newVote($score)
 	{
-		$scoreTotal = $this->score * $this->voteCount;
-		$scoreTotal += $score;
+        $scoretotal = $this->score * $this->votecount;
+        $scoretotal += $score;
 		$this->voteCount++;
-		$this->score = $scoreTotal / (float)$this->voteCount;
-	}
+        $this->score = $scoretotal / (float)$this->votecount;
+    }
 
-	public function replaceVote($oldScore, $score)
-	{
-		$scoreTotal = $this->score * $this->voteCount;
-		$scoreTotal += $score - $oldScore;
-		$this->score = $scoreTotal / (float)$this->voteCount;
+    public function replaceVote($oldscore, $score)
+    {
+        $scoretotal = $this->score * $this->votecount;
+        $scoretotal += $score - $oldscore;
+        $this->score = $scoretotal / (float)$this->votecount;
 	}
 
 	/**
@@ -339,10 +339,10 @@ class Application
 
 	public function removeVote($score)
 	{
-		$scoreTotal = $this->score * $this->voteCount;
-		$scoreTotal -= $score;
+        $scoretotal = $this->score * $this->votecount;
+        $scoretotal -= $score;
 		$this->voteCount--;
-		$this->score = $scoreTotal / (float)$this->voteCount;
+        $this->score = $scoretotal / (float)$this->votecount;
 	}
 
 	public function getCssThumbnail()
@@ -421,7 +421,7 @@ class Application
 
 	public function setShortDescription($descr)
 	{
-		$this->shortDescription = $descr;
+        $this->shortdescription = $descr;
 	}
 
 	public function getGroup()
@@ -436,7 +436,7 @@ class Application
 
 	public function getUserCount()
 	{
-		return $this->userCount;
+        return $this->usercount;
 	}
 
 	public function addUser()
@@ -456,22 +456,22 @@ class Application
 
 	public function getVoteCount()
 	{
-		return $this->voteCount;
+        return $this->votecount;
 	}
 
     public function getInstallCount()
     {
-        return $this->installCount;
+        return $this->installcount;
     }
 
     public function increaseInstall()
     {
-        return $this->installCount = $this->installCount+1;
+        return $this->installcount = $this->installCount + 1;
     }
 
     public function decreaseInstall()
     {
-        return $this->installCount = $this->installCount-1;
+        return $this->installcount = $this->installCount - 1;
     }
 	public function getThumbnail()
 	{
@@ -537,15 +537,15 @@ class Application
 	 */
 	public function getCanCreateFile()
 	{
-		return $this->canCreateFile;
+        return $this->cancreatefile;
 	}
 
 	/**
-	 * @param mixed $canCreateFile
+     * @param mixed $cancreatefile
 	 */
-	public function setCanCreateFile($canCreateFile)
-	{
-		$this->canCreateFile = $canCreateFile;
+    public function setCanCreateFile($cancreatefile)
+    {
+        $this->cancreatefile = $cancreatefile;
 	}
 
 	/**
@@ -553,15 +553,15 @@ class Application
 	 */
 	public function getCreateFileData()
 	{
-		return json_decode($this->createFileData, 1);
+        return json_decode($this->createfiledata, 1);
 	}
 
 	/**
-	 * @param mixed $createFileData
+     * @param mixed $createfiledata
 	 */
-	public function setCreateFileData($createFileData)
-	{
-		$this->createFileData = json_encode($createFileData);
+    public function setCreateFileData($createfiledata)
+    {
+        $this->createfiledata = json_encode($createfiledata);
 	}
 
 	/**
@@ -569,15 +569,15 @@ class Application
 	 */
 	public function getCreateFileDataRaw()
 	{
-		return $this->createFileData;
+        return $this->createfiledata;
 	}
 
 	/**
-	 * @param mixed $createFileData
+     * @param mixed $createfiledata
 	 */
-	public function setCreateFileDataRaw($createFileData)
-	{
-		$this->createFileData = $createFileData;
+    public function setCreateFileDataRaw($createfiledata)
+    {
+        $this->createfiledata = $createfiledata;
 	}
 
 	/**
@@ -585,15 +585,15 @@ class Application
 	 */
 	public function getisCapable()
 	{
-		return $this->isCapable;
+        return $this->iscapable;
 	}
 
 	/**
-	 * @param mixed $isCapable
+     * @param mixed $iscapable
 	 */
-	public function setIsCapable($isCapable)
-	{
-		$this->isCapable = $isCapable;
+    public function setIsCapable($iscapable)
+    {
+        $this->iscapable = $iscapable;
 	}
 
 	/**
@@ -617,15 +617,15 @@ class Application
      */
     public function getMessageModule()
     {
-        return $this->messageModule;
+        return $this->messagemodule;
     }
 
     /**
-     * @param mixed $messageModule
+     * @param mixed $messagemodule
      */
-    public function setMessageModule($messageModule)
+    public function setMessageModule($messagemodule)
     {
-        $this->messageModule = $messageModule;
+        $this->messagemodule = $messagemodule;
     }
 
     /**
@@ -633,15 +633,15 @@ class Application
      */
     public function getMessageModuleUrl()
     {
-        return $this->messageModuleUrl;
+        return $this->messagemoduleurl;
     }
 
     /**
-     * @param mixed $messageModulUrl
+     * @param mixed $messagemodulurl
      */
-    public function setMessageModuleUrl($messageModuleUrl)
+    public function setMessageModuleUrl($messagemoduleurl)
     {
-        $this->messageModuleUrl = $messageModuleUrl;
+        $this->messagemoduleurl = $messagemoduleurl;
     }
 
     /**
@@ -649,15 +649,15 @@ class Application
      */
     public function getEditableRights()
     {
-        return $this->editableRights;
+        return $this->editablerights;
     }
 
     /**
-     * @param mixed $editableRights
+     * @param mixed $editablerights
      */
-    public function setEditableRights($editableRights)
+    public function setEditableRights($editablerights)
     {
-        $this->editableRights = $editableRights;
+        $this->editablerights = $editablerights;
     }
 
     /**
@@ -681,15 +681,15 @@ class Application
      */
     public function getPriceMonthly()
     {
-        return $this->priceMonthly;
+        return $this->pricemonthly;
     }
 
     /**
-     * @param mixed $priceMonthly
+     * @param mixed $pricemonthly
      */
-    public function setPriceMonthly($priceMonthly)
+    public function setPriceMonthly($pricemonthly)
     {
-        $this->priceMonthly = $priceMonthly;
+        $this->pricemonthly = $pricemonthly;
     }
 
     /**
@@ -697,15 +697,15 @@ class Application
      */
     public function getPriceUser()
     {
-        return $this->priceUser;
+        return $this->priceuser;
     }
 
     /**
-     * @param mixed $priceUser
+     * @param mixed $priceuser
      */
-    public function setPriceUser($priceUser)
+    public function setPriceUser($priceuser)
     {
-        $this->priceUser = $priceUser;
+        $this->priceuser = $priceuser;
     }
 
     /**
@@ -724,15 +724,15 @@ class Application
      */
     public function getUrlApp()
     {
-        return $this->urlApp;
+        return $this->urlapp;
     }
 
     /**
-     * @param mixed $urlApp
+     * @param mixed $urlapp
      */
-    public function setUrlApp($urlApp)
+    public function setUrlApp($urlapp)
     {
-        $this->urlApp = $urlApp;
+        $this->urlapp = $urlapp;
     }
 
 
@@ -742,13 +742,13 @@ class Application
 			"id" => $this->id,
 			"name" => $this->name,
 			"score" => $this->score,
-			"nbvote" => $this->voteCount,
-            "nbInstall" => $this->installCount,
-			"nbUsers" => $this->userCount,
+            "nbvote" => $this->votecount,
+            "nbInstall" => $this->installcount,
+            "nbUsers" => $this->usercount,
 			"description" => $this->description,
-			"shortDescription" => $this->shortDescription,
-			"priceMonthly" => $this->priceMonthly,
-            "priceUser" => $this->priceUser,
+            "shortDescription" => $this->shortdescription,
+            "priceMonthly" => $this->pricemonthly,
+            "priceUser" => $this->priceuser,
             "cssthumbnail" => $this->getCssThumbnail(),
 			"thumbnail" => $this->getUrlThumbnail(),
 			"csscover" => $this->getCssCover(),
@@ -793,20 +793,20 @@ class Application
      */
     public function getSearchWords()
     {
-        return $this->searchWords;
+        return $this->searchwords;
     }
 
     /**
-     * @param mixed $searchWords
+     * @param mixed $searchwords
      */
-    public function setSearchWords($searchWords)
+    public function setSearchWords($searchwords)
     {
-        $this->searchWords = $searchWords;
+        $this->searchwords = $searchwords;
     }
 
-    public function addSearchWord($searchWord)
+    public function addSearchWord($searchword)
     {
-        $this->searchWords .= " ".$searchWord;
+        $this->searchwords .= " " . $searchword;
     }
 
 }

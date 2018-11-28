@@ -59,41 +59,41 @@ class UserTrackedSessions
 
         $this->setUser($user);
 
-        $maxTime = 0;
-        $minTime = date("U");
+        $maxtime = 0;
+        $mintime = date("U");
         foreach ($data as $datum) {
             if (isset($datum["time"])) {
-                $maxTime = max($maxTime, intval($datum["time"]));
-                $minTime = min($minTime, intval($datum["time"]));
+                $maxtime = max($maxtime, intval($datum["time"]));
+                $mintime = min($mintime, intval($datum["time"]));
             }
         }
         $this->setSessionSize(count($data));
-        $this->setSessionTime($maxTime - $minTime);
+        $this->setSessionTime($maxtime - $mintime);
 
         $time = new \DateTime();
-        $time->setTimestamp(intval($minTime));
+        $time->setTimestamp(intval($mintime));
         $this->setDate($time);
     }
 
     public function addData($data)
     {
-        $allData = $this->getData();
+        $alldata = $this->getData();
         $allData[] = $data;
-        $this->setData($allData);
+        $this->setData($alldata);
 
-        $maxTime = 0;
-        $minTime = date("U");
-        foreach ($allData as $datum) {
+        $maxtime = 0;
+        $mintime = date("U");
+        foreach ($alldata as $datum) {
             if (isset($datum["time"])) {
-                $maxTime = max($maxTime, intval($datum["time"]));
-                $minTime = min($minTime, intval($datum["time"]));
+                $maxtime = max($maxtime, intval($datum["time"]));
+                $mintime = min($mintime, intval($datum["time"]));
             }
         }
-        $this->setSessionSize(count($allData));
-        $this->setSessionTime($maxTime - $minTime);
+        $this->setSessionSize(count($alldata));
+        $this->setSessionTime($maxtime - $mintime);
 
         $time = new \DateTime();
-        $time->setTimestamp(intval($minTime));
+        $time->setTimestamp(intval($mintime));
         $this->setDate($time);
     }
 

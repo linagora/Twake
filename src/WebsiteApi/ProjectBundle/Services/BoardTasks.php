@@ -82,13 +82,13 @@ class BoardTasks implements BoardTasksInterface
 
         $board = $list->getBoard();
 
-        //$from, $to, $name, $description, $dependingTask, $weight
+        //$from, $to, $name, $description, $dependingtask, $weight
         if($dependingTaskId!=0)
-            $dependingTask = $this->convertToEntity($dependingTaskId,"TwakeProjectBundle:BoardTask");
+            $dependingtask = $this->convertToEntity($dependingTaskId, "TwakeProjectBundle:BoardTask");
         else
-            $dependingTask = null;
+            $dependingtask = null;
 
-        $task = new BoardTask($startDate, $endDate, $name, $description, $dependingTask,$participants,$user, $weight);
+        $task = new BoardTask($startDate, $endDate, $name, $description, $dependingtask, $participants, $user, $weight);
 
         $task->setUserIdToNotify($userIdsToNotify);
         $task->setParticipants($participants);
@@ -570,11 +570,11 @@ class BoardTasks implements BoardTasksInterface
 
         /* @var \WebsiteApi\ProjectBundle\Entity\BoardTask $task */
         $task = $boardTaskRepository->findOneBy(Array("id" => $taskId));
-        /* @var \WebsiteApi\ProjectBundle\Entity\ListOfTasks $listofTasks */
-        $listOfTasks = $listOfTasksRepository->findOneBy(Array("id" => $listOfTasksId));
+        /* @var \WebsiteApi\ProjectBundle\Entity\ListOfTasks $listoftasks */
+        $listoftasks = $listOfTasksRepository->findOneBy(Array("id" => $listOfTasksId));
 
         $board = $task->getBoard();
-        $task->setListOfTasks($listOfTasks);
+        $task->setListOfTasks($listoftasks);
 
         $this->doctrine->persist($task);
         $this->doctrine->flush();

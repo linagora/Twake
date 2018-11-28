@@ -48,17 +48,17 @@ class Stream
 	/**
      * @ORM\Column(type="cassandra_boolean")
 	 */
-	private $isPrivate;
+    private $isprivate;
 
     /**
      * @ORM\Column(type="cassandra_boolean", options={"default" : false })
      */
-    private $isHide;
+    private $ishide;
 
 	/**
 	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\StreamMember", mappedBy="stream")
 	 */
-	private $membersLinks;
+    private $memberslinks;
 
 	/**
 	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message", mappedBy="streamReceiver")
@@ -66,12 +66,12 @@ class Stream
 	private $messages;
 
 
-
-    public function __construct($workspace, $name, $isPrivate, $description) {
+    public function __construct($workspace, $name, $isprivate, $description)
+    {
 
 	    $this->setWorkspace($workspace);
 	    $this->setName($name);
-        $this->setIsPrivate($isPrivate);
+        $this->setIsPrivate($isprivate);
         $this->setDescription($description);
         $this->setMembersLinks(Array());
         $this->setIsHide(false);
@@ -90,7 +90,7 @@ class Stream
 	}
 
 	public function getMembersLinks() {
-        return $this->membersLinks;
+        return $this->memberslinks;
 	}
 
 	public function getMessages() {
@@ -101,8 +101,8 @@ class Stream
 
     	$members = Array();
 
-    	foreach ($this->membersLinks as $memberLink) {
-		    $members[] = $memberLink->getUser();
+        foreach ($this->memberslinks as $memberlink) {
+            $members[] = $memberlink->getUser();
 	    }
 
 	    return $members;
@@ -121,25 +121,25 @@ class Stream
 	}
 
 	public function addMember($user) {
-    	$memberLink = new StreamMember($this, $user);
-		$this->membersLinks[] = $memberLink;
-		return $memberLink;
+        $memberlink = new StreamMember($this, $user);
+        $this->membersLinks[] = $memberlink;
+        return $memberlink;
 	}
 
 	public function getLinkUser($user){
-        foreach ($this->membersLinks as $memberLink) {
-            if($memberLink->getUser() == $user){
-                return $memberLink;
+        foreach ($this->memberslinks as $memberlink) {
+            if ($memberlink->getUser() == $user) {
+                return $memberlink;
             }
         }
         return null;
     }
 
     public function getIsPrivate(){
-        return $this->isPrivate;
+        return $this->isprivate;
     }
     public function setIsPrivate($x){
-        $this->isPrivate = ($x)?true:false;
+        $this->isprivate = ($x) ? true : false;
     }
 
     /**
@@ -192,8 +192,8 @@ class Stream
 
     public function getAsArray(){
         $members = [];
-        $membersLink = $this->getMembersLinks();
-        foreach ($membersLink as $link){
+        $memberslink = $this->getMembersLinks();
+        foreach ($memberslink as $link) {
             $members[] = $link->getUser()->getAsArray();
         }
         $key = "s-";
@@ -218,9 +218,9 @@ class Stream
         );
     }
 
-    private function setMembersLinks($Array)
+    private function setMembersLinks($array)
     {
-        $this->membersLinks = $Array;
+        $this->memberslinks = $array;
     }
 
     /**
@@ -228,15 +228,15 @@ class Stream
      */
     public function getisHide()
     {
-        return $this->isHide;
+        return $this->ishide;
     }
 
     /**
-     * @param mixed $isHide
+     * @param mixed $ishide
      */
-    public function setIsHide($isHide)
+    public function setIsHide($ishide)
     {
-        $this->isHide = $isHide;
+        $this->ishide = $ishide;
     }
 
 }

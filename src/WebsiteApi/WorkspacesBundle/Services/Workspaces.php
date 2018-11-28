@@ -604,8 +604,8 @@ class Workspaces implements WorkspacesInterface
             $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
             if($wanted_value === null) {
-                $isHidden = $workspaceUser->getisHidden();
-                $workspaceUser->setisHidden(!$isHidden);
+                $ishidden = $workspaceUser->getisHidden();
+                $workspaceUser->setisHidden(!$ishidden);
             }
             $workspaceUser->setisHidden($wanted_value);
 
@@ -639,8 +639,8 @@ class Workspaces implements WorkspacesInterface
             $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
             if($wanted_value === null) {
-                $hasNotifications = $workspaceUser->getHasNotifications();
-                $workspaceUser->setHasNotifications(!$hasNotifications);
+                $hasnotifications = $workspaceUser->getHasNotifications();
+                $workspaceUser->setHasNotifications(!$hasnotifications);
             }
             $workspaceUser->setHasNotifications($wanted_value);
 
@@ -675,8 +675,8 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
-            $isFavorite = $workspaceUser->getisFavorite();
-            $workspaceUser->setisFavorite(!$isFavorite);
+            $isfavorite = $workspaceUser->getisFavorite();
+            $workspaceUser->setisFavorite(!$isfavorite);
             $this->doctrine->persist($workspaceUser);
 
             $this->doctrine->flush();
@@ -693,7 +693,7 @@ class Workspaces implements WorkspacesInterface
             }
 
             $result["answer"] = true;
-            $result["isFavorite"] = $workspaceUser->getisFavorite();
+            $result["isfavorite"] = $workspaceUser->getisFavorite();
 
             return $result;
         }

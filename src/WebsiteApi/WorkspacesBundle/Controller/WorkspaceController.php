@@ -222,9 +222,9 @@ class WorkspaceController extends Controller
         $response = Array("errors"=>Array(), "data"=>Array());
 
         $workspaceId = $request->request->get("workspaceId");
-        $appId = $request->request->get("appId");
+        $appid = $request->request->get("appid");
 
-        $res = $this->get("app.workspaces_apps")->disableApp($workspaceId,$appId);
+        $res = $this->get("app.workspaces_apps")->disableApp($workspaceId, $appid);
         if(!$res){
             $response["errors"][] = "notauthorized";
         }else{
@@ -242,9 +242,9 @@ class WorkspaceController extends Controller
         $response = Array("errors"=>Array(), "data"=>Array());
 
         $workspaceId = $request->request->get("workspaceId");
-        $appId = $request->request->get("appId");
+        $appid = $request->request->get("appid");
 
-        $res = $this->get("app.workspaces_apps")->enableApp($workspaceId,$appId);
+        $res = $this->get("app.workspaces_apps")->enableApp($workspaceId, $appid);
         if(!$res){
             $response["errors"][] = "notauthorized";
         }else{
@@ -353,7 +353,7 @@ class WorkspaceController extends Controller
         $res = $this->get("app.workspaces")->favoriteOrUnfavoriteWorkspace($workspaceId, $this->getUser()->getId());
 
         if ($res["answer"]){
-            $response["data"] = $res["isFavorite"];
+            $response["data"] = $res["isfavorite"];
         }else{
             $response["errors"] = "impossible to put as favorite a workspace";
         }

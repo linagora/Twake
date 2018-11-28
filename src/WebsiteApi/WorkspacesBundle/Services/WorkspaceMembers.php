@@ -511,9 +511,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $workspaces[] = Array(
                     "last_access" => $workspace->getLastAccess(),
                     "workspace" => $workspace->getWorkspace(),
-                    "isHidden" => $workspace->getisHidden(),
-                    "isFavorite" => $workspace->getisFavorite(),
-                    "hasNotifications" => $workspace->getHasNotifications(),
+                    "ishidden" => $workspace->getisHidden(),
+                    "isfavorite" => $workspace->getisFavorite(),
+                    "hasnotifications" => $workspace->getHasNotifications(),
                     "isArchived" => $workspace->getWorkspace()->getisArchived()
                 );
             }

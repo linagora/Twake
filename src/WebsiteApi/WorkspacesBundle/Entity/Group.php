@@ -32,7 +32,7 @@ class Group
 	/**
 	 * @ORM\Column(name="display_name", type="string", length=255)
 	 */
-	protected $displayName;
+    protected $displayname;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
@@ -72,11 +72,11 @@ class Group
     /**
      * @ORM\Column(name="isblocked", type="cassandra_boolean")
      */
-    private $isBlocked = false;
+    private $isblocked = false;
     /**
      * @ORM\Column(name="isprivate", type="cassandra_boolean")
      */
-    private $isPrivate = false;
+    private $isprivate = false;
 
 
     public function __construct($name) {
@@ -109,15 +109,15 @@ class Group
 	 */
 	public function getDisplayName()
 	{
-		return $this->displayName;
+        return $this->displayname;
 	}
 
 	/**
-	 * @param mixed $displayName
+     * @param mixed $displayname
 	 */
-	public function setDisplayName($displayName)
-	{
-		$this->displayName = $displayName;
+    public function setDisplayName($displayname)
+    {
+        $this->displayname = $displayname;
 	}
 
 	/**
@@ -205,15 +205,15 @@ class Group
      */
     public function getisPrivate()
     {
-        return $this->isPrivate;
+        return $this->isprivate;
     }
 
     /**
-     * @param mixed $isPrivate
+     * @param mixed $isprivate
      */
-    public function setIsPrivate($isPrivate)
+    public function setIsPrivate($isprivate)
     {
-        $this->isPrivate = $isPrivate;
+        $this->isprivate = $isprivate;
     }
 
     /**
@@ -221,15 +221,15 @@ class Group
      */
     public function getIsBlocked()
     {
-        return $this->isBlocked;
+        return $this->isblocked;
     }
 
     /**
-     * @param mixed $isBlocked
+     * @param mixed $isblocked
      */
-    public function setIsBlocked($isBlocked)
+    public function setIsBlocked($isblocked)
     {
-        $this->isBlocked = $isBlocked;
+        $this->isblocked = $isblocked;
     }
 
     /**
@@ -280,7 +280,7 @@ class Group
             "id" => $this->getId(),
 			"unique_name" => $this->getName(),
 			"name" => $this->getDisplayName(),
-            "plan" => (($this->getpricing_plan() != null) ? $this->getpricing_plan()->getLabel() : null),
+            "plan" => (($this->getPricingPlan() != null) ? $this->getPricingPlan()->getLabel() : null),
 			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):""),
             "isBlocked" => $this->getIsBlocked(),
             "free_offer_end" => $this->getFreeOfferEnd()

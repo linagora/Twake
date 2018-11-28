@@ -30,7 +30,7 @@ class LinkBoardWorkspace{
     /**
      * @ORM\Column(name="boardright", type="cassandra_boolean")
      */
-    private $boardRight;
+    private $boardright;
 
     /**
      * @ORM\Column(name="owner", type="cassandra_boolean")
@@ -42,12 +42,12 @@ class LinkBoardWorkspace{
      */
     private $board;
 
-    public  function __construct($workspace,$board,$owner,$boardRight = true)
+    public function __construct($workspace, $board, $owner, $boardright = true)
     {
         $this->setWorkspace($workspace);
         $this->setBoard($board);
         $this->setOwner($owner);
-        $this->setBoardRight($boardRight);
+        $this->setBoardRight($boardright);
     }
 
     /**
@@ -103,15 +103,15 @@ class LinkBoardWorkspace{
      */
     public function getBoardRight()
     {
-        return $this->boardRight;
+        return $this->boardright;
     }
 
     /**
      * @param mixed $right
      */
-    public function setBoardRight($boardRight)
+    public function setBoardRight($boardright)
     {
-        $this->boardRight = $boardRight;
+        $this->boardright = $boardright;
     }
 
     /**

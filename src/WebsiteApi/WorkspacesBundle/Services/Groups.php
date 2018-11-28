@@ -288,8 +288,8 @@ class Groups implements GroupsInterface
                 $this->get("app.cassandra_doctrine")->remove($workspace);
             }
             if (is_array($groupUsers)){
-                foreach($groupUsers as $groupUser){
-                    $this->get("app.cassandra_doctrine")->remove($groupUser);
+                foreach ($groupUsers as $groupuser) {
+                    $this->get("app.cassandra_doctrine")->remove($groupuser);
                 }
             }
             if($groupPeriod != null){

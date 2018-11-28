@@ -40,8 +40,8 @@ class AppUsersController extends Controller
 	      if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:apps:acquire")) {
           $response["errors"][] = "notallowed";
         } else {
-          $appId = $request->request->get('appId');
-          $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appId);
+              $appid = $request->request->get('appId');
+              $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appid);
           if ($app == null) {
             $data['errors'][] = "nosuchapp";
           } else {
@@ -90,8 +90,8 @@ class AppUsersController extends Controller
                 if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:apps:acquire")) {
                     $response["errors"][] = "notallowed";
                 } else {
-                    $appId = $request->request->get('appId');
-                    $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appId);
+                    $appid = $request->request->get('appId');
+                    $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appid);
                     if ($app == null) {
                         $data['errors'][] = "nosuchapp";
                     } else {
@@ -136,8 +136,8 @@ class AppUsersController extends Controller
         if ($group == null){
           $data['errors'][] = "nosuchgroup";
         } else {
-          $appId = $request->request->get('appId');
-          $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appId);
+            $appid = $request->request->get('appId');
+            $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appid);
           if ($app == null){
             $data['errors'][] = "nosuchapp";
           } else {

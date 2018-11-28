@@ -174,10 +174,10 @@ class ApplicationController extends Controller
         $response = Array("errors"=>Array(), "data"=>Array());
 
         $groupId = $request->request->get("groupId");
-        $appId = $request->request->get("appId");
+        $appid = $request->request->get("appid");
 
-        if(isset($groupId) && isset($appId)){
-            $returnVal = $this->get("website_api_market.applications")->addApplication($groupId,$appId,$this->getUser()->getId());
+        if (isset($groupId) && isset($appid)) {
+            $returnVal = $this->get("website_api_market.applications")->addApplication($groupId, $appid, $this->getUser()->getId());
         }
 
 
@@ -199,12 +199,12 @@ class ApplicationController extends Controller
 
         $groupId = $request->request->get("groupId");
         $workspaceId = $request->request->get("workspaceId");
-        $appId = $request->request->get("appId");
+        $appid = $request->request->get("appid");
 
-        if (isset($groupId) && isset($appId)) {
-            $this->get("website_api_market.applications")->addFreeApplication($groupId, $appId, $this->getUser()->getId());
+        if (isset($groupId) && isset($appid)) {
+            $this->get("website_api_market.applications")->addFreeApplication($groupId, $appid, $this->getUser()->getId());
         }
-        $res = $this->get("app.workspaces_apps")->enableApp($workspaceId, $appId);
+        $res = $this->get("app.workspaces_apps")->enableApp($workspaceId, $appid);
 
         if (!$res) {
             $response["errors"][] = "notallowed";
@@ -361,11 +361,11 @@ class ApplicationController extends Controller
 		);
 
 
-        $appId = $request->request->get("appId", 0);
+        $appid = $request->request->get("appid", 0);
         $groupId = $request->request->get("workspaceId", 0);
 
 		$app = $manager->getRepository("TwakeMarketBundle:Application")
-			->find($appId);
+            ->find($appid);
 
 		if (!$this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "")) {
 			$data['errors'][] = "notallowed";

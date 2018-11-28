@@ -42,17 +42,17 @@ class User implements UserInterface
     /**
      * @ORM\Column(name="is_robot", type="cassandra_boolean", options={"default" : false } )
      */
-    protected $isRobot;
+    protected $isrobot;
 
 	/**
 	 * @ORM\Column(name="first_name", type="string", length=64)
 	 */
-	protected $firstName = "";
+    protected $firstname = "";
 
 	/**
 	 * @ORM\Column(name="last_name", type="string", length=64)
 	 */
-	protected $lastName = "";
+    protected $lastname = "";
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
@@ -80,13 +80,13 @@ class User implements UserInterface
 	 * @var int
 	 * @ORM\Column(name="last_activity", type="bigint")
 	 */
-	protected $lastActivity = 0;
+    protected $lastactivity = 0;
 
     /**
      * @var int
      * @ORM\Column(name="creation_date", type="cassandra_datetime",nullable=true, options={"default" : "1970-01-02"})
      */
-    protected $creationDate;
+    protected $creationdate;
 
 	/**
 	 * @ORM\Column(name="language", type="string", length=64)
@@ -111,7 +111,7 @@ class User implements UserInterface
     /**
      * @ORM\Column(name="is_new", type="cassandra_boolean")
      */
-    protected $isNew = true;
+    protected $isnew = true;
 
 
     protected $username;
@@ -119,14 +119,14 @@ class User implements UserInterface
     /**
      * @ORM\Column(name="username_canonical", type="string", length=64, options={"index": true})
      */
-    protected $usernameCanonical;
+    protected $usernamecanonical;
 
     protected $email;
 
     /**
      * @ORM\Column(name="email_canonical", type="string", length=512, options={"index": true})
      */
-    protected $emailCanonical;
+    protected $emailcanonical;
 
     /**
      * @ORM\Column(type="cassandra_boolean")
@@ -146,17 +146,17 @@ class User implements UserInterface
     /**
      * @ORM\Column(name="last_login", type="cassandra_datetime")
      */
-    protected $lastLogin;
+    protected $lastlogin;
 
     /**
      * @ORM\Column(name="confirmation_token", type="string", nullable = true)
      */
-    protected $confirmationToken;
+    protected $confirmationtoken;
 
     /**
      * @ORM\Column(name="password_requested_at", type="cassandra_datetime")
      */
-    protected $passwordRequestedAt;
+    protected $passwordrequestedat;
 
     /**
      * @ORM\Column(type="array")
@@ -170,7 +170,7 @@ class User implements UserInterface
 		$this->enabled = true;
 		$this->connections = 0;
 		$this->connected = 1;
-		$this->isRobot = false;
+        $this->isrobot = false;
         $this->roles = array();
 	}
 
@@ -210,15 +210,15 @@ class User implements UserInterface
 	 */
 	public function getFirstName()
 	{
-		return $this->firstName;
+        return $this->firstname;
 	}
 
 	/**
-	 * @param mixed $firstName
+     * @param mixed $firstname
 	 */
-	public function setFirstName($firstName)
-	{
-		$this->firstName = $firstName;
+    public function setFirstName($firstname)
+    {
+        $this->firstname = $firstname;
 	}
 
     /**
@@ -226,15 +226,15 @@ class User implements UserInterface
      */
     public function getCreationDate()
     {
-        return $this->creationDate;
+        return $this->creationdate;
     }
 
     /**
-     * @param datetime $creationDate
+     * @param datetime $creationdate
      */
-    public function setCreationDate($creationDate)
+    public function setCreationDate($creationdate)
     {
-        $this->creationDate = $creationDate;
+        $this->creationdate = $creationdate;
     }
 
 	/**
@@ -242,15 +242,15 @@ class User implements UserInterface
 	 */
 	public function getLastName()
 	{
-		return $this->lastName;
+        return $this->lastname;
 	}
 
 	/**
-	 * @param mixed $lastName
+     * @param mixed $lastname
 	 */
-	public function setLastName($lastName)
-	{
-		$this->lastName = $lastName;
+    public function setLastName($lastname)
+    {
+        $this->lastname = $lastname;
 	}
 
 	/**
@@ -282,7 +282,7 @@ class User implements UserInterface
 	}
 
 	public function isActive(){
-		$this->lastActivity = date("U");
+        $this->lastactivity = date("U");
 	}
 
 	/* Manage connections with websocket */
@@ -293,7 +293,7 @@ class User implements UserInterface
 
 	public function isConnected()
 	{
-		if(date("U") - $this->lastActivity > 120){
+        if (date("U") - $this->lastactivity > 120) {
 			$this->connected = false;
 			return false;
 		}
@@ -308,10 +308,10 @@ class User implements UserInterface
 
 	public function addConnection()
 	{
-		if(date("U") - $this->lastActivity > 120){
+        if (date("U") - $this->lastactivity > 120) {
 			$this->connections = 0;
 		}
-		$this->lastActivity = date("U");
+        $this->lastactivity = date("U");
 		$this->connections += 1;
 		$this->connected = true;
 	}
@@ -359,15 +359,15 @@ class User implements UserInterface
      */
     public function getisNew()
     {
-        return $this->isNew;
+        return $this->isnew;
     }
 
     /**
-     * @param mixed $isNew
+     * @param mixed $isnew
      */
-    public function setIsNew($isNew)
+    public function setIsNew($isnew)
     {
-        $this->isNew = $isNew;
+        $this->isnew = $isnew;
     }
 
     /**
@@ -450,15 +450,15 @@ class User implements UserInterface
      */
     public function getisRobot()
     {
-        return $this->isRobot;
+        return $this->isrobot;
     }
 
     /**
-     * @param mixed $isRobot
+     * @param mixed $isrobot
      */
-    public function setIsRobot($isRobot)
+    public function setIsRobot($isrobot)
     {
-        $this->isRobot = $isRobot;
+        $this->isrobot = $isrobot;
     }
 
     /**
@@ -466,7 +466,7 @@ class User implements UserInterface
      */
     public function getLastActivity()
     {
-        return $this->lastActivity;
+        return $this->lastactivity;
     }
 
     /**
@@ -474,7 +474,7 @@ class User implements UserInterface
      */
     public function getLastLogin()
     {
-        return $this->lastLogin;
+        return $this->lastlogin;
     }
 
 
@@ -511,12 +511,12 @@ class User implements UserInterface
         return serialize(array(
             $this->password,
             $this->salt,
-            $this->usernameCanonical,
+            $this->usernamecanonical,
             $this->username,
             $this->enabled,
             $this->id,
             $this->email,
-            $this->emailCanonical,
+            $this->emailcanonical,
         ));
     }
 
@@ -540,12 +540,12 @@ class User implements UserInterface
         list(
             $this->password,
             $this->salt,
-            $this->usernameCanonical,
+            $this->usernamecanonical,
             $this->username,
             $this->enabled,
             $this->id,
             $this->email,
-            $this->emailCanonical
+            $this->emailcanonical
             ) = $data;
     }
 
@@ -554,7 +554,7 @@ class User implements UserInterface
      */
     public function eraseCredentials()
     {
-        $this->plainPassword = null;
+        $this->plainpassword = null;
     }
 
     /**
@@ -570,7 +570,7 @@ class User implements UserInterface
      */
     public function getUsernameCanonical()
     {
-        return $this->usernameCanonical;
+        return $this->usernamecanonical;
     }
 
     /**
@@ -594,7 +594,7 @@ class User implements UserInterface
      */
     public function getEmailCanonical()
     {
-        return $this->emailCanonical;
+        return $this->emailcanonical;
     }
 
     /**
@@ -610,7 +610,7 @@ class User implements UserInterface
      */
     public function getPlainPassword()
     {
-        return $this->plainPassword;
+        return $this->plainpassword;
     }
 
     /**
@@ -618,7 +618,7 @@ class User implements UserInterface
      */
     public function getConfirmationToken()
     {
-        return $this->confirmationToken;
+        return $this->confirmationtoken;
     }
 
     /**
@@ -698,7 +698,7 @@ class User implements UserInterface
     public function setUsername($username)
     {
         $this->username = $username;
-        $this->usernameCanonical = $username;
+        $this->usernamecanonical = $username;
 
         return $this;
     }
@@ -706,9 +706,9 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function setUsernameCanonical($usernameCanonical)
+    public function setUsernameCanonical($usernamecanonical)
     {
-        $this->usernameCanonical = $usernameCanonical;
+        $this->usernamecanonical = $usernamecanonical;
 
         return $this;
     }
@@ -729,7 +729,7 @@ class User implements UserInterface
     public function setEmail($email)
     {
         $this->email = $email;
-        $this->emailCanonical = $email;
+        $this->emailcanonical = $email;
 
         return $this;
     }
@@ -737,9 +737,9 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function setEmailCanonical($emailCanonical)
+    public function setEmailCanonical($emailcanonical)
     {
-        $this->emailCanonical = $emailCanonical;
+        $this->emailcanonical = $emailcanonical;
 
         return $this;
     }
@@ -783,7 +783,7 @@ class User implements UserInterface
      */
     public function setPlainPassword($password)
     {
-        $this->plainPassword = $password;
+        $this->plainpassword = $password;
 
         return $this;
     }
@@ -793,7 +793,7 @@ class User implements UserInterface
      */
     public function setLastLogin(\DateTime $time = null)
     {
-        $this->lastLogin = $time;
+        $this->lastlogin = $time;
 
         return $this;
     }
@@ -801,9 +801,9 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function setConfirmationToken($confirmationToken)
+    public function setConfirmationToken($confirmationtoken)
     {
-        $this->confirmationToken = $confirmationToken;
+        $this->confirmationtoken = $confirmationtoken;
 
         return $this;
     }
@@ -813,7 +813,7 @@ class User implements UserInterface
      */
     public function setPasswordRequestedAt(\DateTime $date = null)
     {
-        $this->passwordRequestedAt = $date;
+        $this->passwordrequestedat = $date;
 
         return $this;
     }
@@ -825,7 +825,7 @@ class User implements UserInterface
      */
     public function getPasswordRequestedAt()
     {
-        return $this->passwordRequestedAt;
+        return $this->passwordrequestedat;
     }
 
     /**

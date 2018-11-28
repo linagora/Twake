@@ -38,7 +38,7 @@ class ClosedGroupPeriod
     /**
      * @ORM\Column(name="app_usage", type="string", length=100000)
      */
-    protected $appsUsage;
+    protected $appsusage;
 
 	/**
      * @ORM\Column(type="cassandra_datetime")
@@ -53,22 +53,22 @@ class ClosedGroupPeriod
     /**
      * @ORM\Column(type="cassandra_datetime")
      */
-    private $periodExpectedToEndAt;
+    private $periodexpectedtoendat;
 
     /**
      * @ORM\Column(name="current_cost", type="decimal", precision=15, scale=3)
      */
-    protected $currentCost;
+    protected $currentcost;
 
     /**
      * @ORM\Column(name="current_estimated_cost",  type="decimal", precision=15, scale=3)
      */
-    protected $estimatedCost;
+    protected $estimatedcost;
 
     /**
      * @ORM\Column(name="expected_cost",  type="decimal", precision=15, scale=3)
      */
-    protected $expectedCost;
+    protected $expectedcost;
 
     /**
      * @ORM\Column(type="cassandra_boolean")
@@ -76,17 +76,17 @@ class ClosedGroupPeriod
     private $billed;
 
 
-
-	public function __construct($groupPeriod) {
-		$this->group = $groupPeriod->getGroup();
-		$this->setConnexions($groupPeriod->getConnexions());
-        $this->setAppsUsagePeriod($groupPeriod->getAppsUsagePeriod());
-        $this->periodstartedat = $groupPeriod->getPeriodStartedAt();
+    public function __construct($groupperiod)
+    {
+        $this->group = $groupperiod->getGroup();
+        $this->setConnexions($groupperiod->getConnexions());
+        $this->setAppsUsagePeriod($groupperiod->getAppsUsagePeriod());
+        $this->periodstartedat = $groupperiod->getPeriodStartedAt();
         $this->periodendedat = new \DateTime();
-        $this->periodExpectedToEndAt = $groupPeriod->getPeriodExpectedToEndAt();
-        $this->currentCost = $groupPeriod->getCurrentCost();
-        $this->estimatedCost = $groupPeriod->getEstimatedCost();
-        $this->expectedCost = $groupPeriod->getExpectedCost();
+        $this->periodexpectedtoendat = $groupperiod->getPeriodExpectedToEndAt();
+        $this->currentcost = $groupperiod->getCurrentCost();
+        $this->estimatedcost = $groupperiod->getEstimatedCost();
+        $this->expectedcost = $groupperiod->getExpectedCost();
         $this->billed = false;
 	}
 
@@ -127,15 +127,15 @@ class ClosedGroupPeriod
      */
     public function getAppsUsagePeriod()
     {
-        return json_decode($this->appsUsage,true);
+        return json_decode($this->appsusage, true);
     }
 
     /**
-     * @param mixed $appsUsage
+     * @param mixed $appsusage
      */
-    public function setAppsUsagePeriod($appsUsage)
+    public function setAppsUsagePeriod($appsusage)
     {
-        $this->appsUsage = json_encode($appsUsage);
+        $this->appsusage = json_encode($appsusage);
     }
 
     /**
@@ -175,15 +175,15 @@ class ClosedGroupPeriod
      */
     public function getPeriodExpectedToEndAt()
     {
-        return $this->periodExpectedToEndAt;
+        return $this->periodexpectedtoendat;
     }
 
     /**
-     * @param mixed $periodExpectedToEndAt
+     * @param mixed $periodexpectedtoendat
      */
-    public function setPeriodExpectedToEndAt($periodExpectedToEndAt)
+    public function setPeriodExpectedToEndAt($periodexpectedtoendat)
     {
-        $this->periodExpectedToEndAt = $periodExpectedToEndAt;
+        $this->periodexpectedtoendat = $periodexpectedtoendat;
     }
 
     /**
@@ -191,15 +191,15 @@ class ClosedGroupPeriod
      */
     public function getCurrentCost()
     {
-        return $this->currentCost;
+        return $this->currentcost;
     }
 
     /**
-     * @param mixed $currentEstimatedCost
+     * @param mixed $currentestimatedcost
      */
-    public function setCurrentCost($currentEstimatedCost)
+    public function setCurrentCost($currentestimatedcost)
     {
-        $this->currentCost = $currentEstimatedCost;
+        $this->currentcost = $currentestimatedcost;
     }
 
     /**
@@ -207,15 +207,15 @@ class ClosedGroupPeriod
      */
     public function getEstimatedCost()
     {
-        return $this->estimatedCost;
+        return $this->estimatedcost;
     }
 
     /**
-     * @param mixed $currentEstimatedCost
+     * @param mixed $currentestimatedcost
      */
-    public function setEstimatedCost($currentEstimatedCost)
+    public function setEstimatedCost($currentestimatedcost)
     {
-        $this->estimatedCost = $currentEstimatedCost;
+        $this->estimatedcost = $currentestimatedcost;
     }
 
     /**
@@ -223,15 +223,15 @@ class ClosedGroupPeriod
      */
     public function getExpectedCost()
     {
-        return $this->expectedCost;
+        return $this->expectedcost;
     }
 
     /**
-     * @param mixed $expectedCost
+     * @param mixed $expectedcost
      */
-    public function setExpectedCost($expectedCost)
+    public function setExpectedCost($expectedcost)
     {
-        $this->expectedCost = $expectedCost;
+        $this->expectedcost = $expectedcost;
     }
 
     /**
@@ -272,7 +272,7 @@ class ClosedGroupPeriod
             "appUsage" => $this->getAppsUsagePeriod(),
             "periodstartedat" => $this->getPeriodStartedAt(),
             "periodendedat" => $this->getPeriodEndedAt(),
-        "periodExpectedToEndAt" => $this->getPeriodExpectedToEndAt(),
+            "periodexpectedtoendat" => $this->getPeriodExpectedToEndAt(),
         "currentCost" => $this->getCurrentCost(),
         "estimatedCost" => $this->getEstimatedCost(),
         "expectedCost" => $this->getExpectedCost(),

@@ -50,7 +50,7 @@ class GroupUser
     /**
      * @ORM\Column(name="did_connect_today", type="cassandra_boolean")
      */
-    private $didConnectToday;
+    private $didconnecttoday;
 
     /**
      * @ORM\Column(name="is_externe", type="cassandra_boolean")
@@ -60,12 +60,12 @@ class GroupUser
     /**
      * @ORM\Column(name="app_used_today", type="string", length=100000)
      */
-    protected $usedAppsToday;
+    protected $usedappstoday;
 
     /**
      * @ORM\Column(name="nb_workspace", type="integer")
      */
-    protected $nbWorkspace;
+    protected $nbworkspace;
 
 	/**
      * @ORM\Column(type="cassandra_datetime")
@@ -75,17 +75,17 @@ class GroupUser
     /**
      * @ORM\Column(name="last_update_day", type="integer")
      */
-    protected $lastDayOfUpdate;
+    protected $lastdayofupdate;
 
     /**
      * @ORM\Column(name="nb_connections_period", type="integer")
      */
-    protected $connectionsPeriod;
+    protected $connectionsperiod;
 
     /**
      * @ORM\Column(name="app_used_period", type="string", length=100000)
      */
-    protected $appsUsage_period;
+    protected $appsusage_period;
 
 	public function __construct($group, $user) {
 		$this->group = $group;
@@ -94,12 +94,12 @@ class GroupUser
 
 		$this->level = 0;
 		$this->date_added = new \DateTime();
-		$this->nbWorkspace = 0;
-        $this->didConnectToday = false;
-        $this->usedAppsToday = "[]";
-		$this->lastDayOfUpdate = date('z')+1;
-        $this->connectionsPeriod = 0;
-        $this->appsUsage_period = "[]";
+        $this->nbworkspace = 0;
+        $this->didconnecttoday = false;
+        $this->usedappstoday = "[]";
+        $this->lastdayofupdate = date('z') + 1;
+        $this->connectionsperiod = 0;
+        $this->appsusage_period = "[]";
         $this->externe = false;
 	}
 
@@ -144,7 +144,7 @@ class GroupUser
      */
     public function getNbWorkspace()
     {
-        return $this->nbWorkspace;
+        return $this->nbworkspace;
     }
 
     /**
@@ -152,15 +152,15 @@ class GroupUser
      */
     public function getConnectionsPeriod()
     {
-        return $this->connectionsPeriod;
+        return $this->connectionsperiod;
     }
 
     /**
-     * @param mixed $connectionsPeriod
+     * @param mixed $connectionsperiod
      */
-    public function setConnectionsPeriod($connectionsPeriod)
+    public function setConnectionsPeriod($connectionsperiod)
     {
-        $this->connectionsPeriod = $connectionsPeriod;
+        $this->connectionsperiod = $connectionsperiod;
     }
 
     /**
@@ -168,29 +168,29 @@ class GroupUser
      */
     public function increaseConnectionsPeriod()
     {
-        return $this->connectionsPeriod = $this->connectionsPeriod + 1;
+        return $this->connectionsperiod = $this->connectionsperiod + 1;
     }
 
 
     /**
-     * @param mixed $nbWorkspace
+     * @param mixed $nbworkspace
      */
-    public function setNbWorkspace($nbWorkspace)
+    public function setNbWorkspace($nbworkspace)
     {
-        $this->nbWorkspace = $nbWorkspace;
+        $this->nbworkspace = $nbworkspace;
     }
 
     public function increaseNbWorkspace()
     {
-        return $this->nbWorkspace = $this->nbWorkspace+1;
+        return $this->nbworkspace = $this->nbWorkspace + 1;
     }
 
     public function decreaseNbWorkspace()
     {
-        if ($this->nbWorkspace == 0){
-            return $this->nbWorkspace;
+        if ($this->nbworkspace == 0) {
+            return $this->nbworkspace;
         }else{
-            return $this->nbWorkspace = $this->nbWorkspace-1;
+            return $this->nbworkspace = $this->nbWorkspace - 1;
         }
     }
 
@@ -199,18 +199,18 @@ class GroupUser
      */
     public function getLastDayOfUpdate()
     {
-        if ($this->lastDayOfUpdate == 0) {
+        if ($this->lastdayofupdate == 0) {
             return date('z') + 1;
         }
-        return $this->lastDayOfUpdate;
+        return $this->lastdayofupdate;
     }
 
     /**
-     * @param mixed $lastDayOfUpdate
+     * @param mixed $lastdayofupdate
      */
-    public function setLastDayOfUpdate($lastDayOfUpdate)
+    public function setLastDayOfUpdate($lastdayofupdate)
     {
-        $this->lastDayOfUpdate = $lastDayOfUpdate;
+        $this->lastdayofupdate = $lastdayofupdate;
     }
 
     /**
@@ -218,18 +218,18 @@ class GroupUser
      */
     public function getAppsUsagePeriod()
     {
-        if ($this->appsUsage_period == null) {
+        if ($this->appsusage_period == null) {
             return Array();
         }
-        return json_decode($this->appsUsage_period, true);
+        return json_decode($this->appsusage_period, true);
     }
 
     /**
-     * @param mixed $appsUsage_period
+     * @param mixed $appsusage_period
      */
-    public function setAppsUsagePeriod($appsUsage_period)
+    public function setAppsUsagePeriod($appsusage_period)
     {
-        $this->appsUsage_period = json_encode($appsUsage_period);
+        $this->appsusage_period = json_encode($appsusage_period);
     }
 
     /**
@@ -237,18 +237,18 @@ class GroupUser
      */
     public function getUsedAppsToday()
     {
-        if ($this->usedAppsToday == null) {
+        if ($this->usedappstoday == null) {
             return Array();
         }
-        return json_decode($this->usedAppsToday, true);
+        return json_decode($this->usedappstoday, true);
     }
 
     /**
-     * @param mixed $usedApps
+     * @param mixed $usedapps
      */
-    public function setUsedAppsToday($usedApps)
+    public function setUsedAppsToday($usedapps)
     {
-        $this->usedAppsToday = json_encode($usedApps);
+        $this->usedappstoday = json_encode($usedapps);
     }
 
     /**
@@ -256,18 +256,18 @@ class GroupUser
      */
     public function getDidConnectToday()
     {
-        if ($this->didConnectToday == null) {
+        if ($this->didconnecttoday == null) {
             return false;
         }
-        return $this->didConnectToday;
+        return $this->didconnecttoday;
     }
 
     /**
-     * @param mixed $didConnectToday
+     * @param mixed $didconnecttoday
      */
-    public function setDidConnectToday($didConnectToday)
+    public function setDidConnectToday($didconnecttoday)
     {
-        $this->didConnectToday = $didConnectToday;
+        $this->didconnecttoday = $didconnecttoday;
     }
 
     /**
@@ -279,7 +279,7 @@ class GroupUser
     }
 
     /**
-     * @param mixed $isClient
+     * @param mixed $isclient
      */
     public function setExterne($externe)
     {

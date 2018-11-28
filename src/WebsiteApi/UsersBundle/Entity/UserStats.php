@@ -28,13 +28,13 @@ class UserStats
      * @var int
      * @ORM\Column(name="public_msg_count", type="integer")
      */
-    protected $publicMsgCount = 0;
+    protected $publicmsgcount = 0;
 
 	/**
 	 * @var int
 	 * @ORM\Column(name="private_msg_count", type="integer")
 	 */
-	protected $privateMsgCount = 0;
+    protected $privatemsgcount = 0;
 
 	/**
 	 * UserStats constructor.
@@ -46,37 +46,37 @@ class UserStats
 	}
 
 	public function getPublicMsgCount(){
-		return $this->publicMsgCount;
+        return $this->publicmsgcount;
 	}
 
     /**
-     * @param int $publicMsgCount
+     * @param int $publicmsgcount
      */
-    public function setPublicMsgCount($publicMsgCount)
+    public function setPublicMsgCount($publicmsgcount)
     {
-        $this->publicMsgCount = $publicMsgCount;
+        $this->publicmsgcount = $publicmsgcount;
     }
 
     /**
-     * @param int $privateMsgCount
+     * @param int $privatemsgcount
      */
-    public function setPrivateMsgCount($privateMsgCount)
+    public function setPrivateMsgCount($privatemsgcount)
     {
-        $this->privateMsgCount = $privateMsgCount;
+        $this->privatemsgcount = $privatemsgcount;
     }
 
 
 
 	public function addPublicMsgCount($val=1){
-		$this->publicMsgCount += $val;
+        $this->publicmsgcount += $val;
 	}
 
 	public function getPrivateMsgCount(){
-		return $this->privateMsgCount;
+        return $this->privatemsgcount;
 	}
 
 	public function addPrivateMsgCount($val=1){
-		$this->privateMsgCount += $val;
+        $this->privatemsgcount += $val;
 	}
 
 

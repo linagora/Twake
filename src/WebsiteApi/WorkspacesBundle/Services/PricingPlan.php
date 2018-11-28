@@ -368,10 +368,10 @@ class PricingPlan implements PricingPlanInterface
     public function checkEnded($gp)
     {
         $group = $gp->getGroup();
-        $groupPricingInstance = $gp->getGroupPricingInstance();
-        if ($groupPricingInstance != null) {
-            $billingtype = $groupPricingInstance->getBilledType();
-            $pricingId = $groupPricingInstance->getOriginalPricingReference();
+        $grouppricinginstance = $gp->getGroupPricingInstance();
+        if ($grouppricinginstance != null) {
+            $billingtype = $grouppricinginstance->getBilledType();
+            $pricingId = $grouppricinginstance->getOriginalPricingReference();
             $this->groupPeriod->changePlanOrRenew($group, $billingtype, $pricingId);
         }
     }

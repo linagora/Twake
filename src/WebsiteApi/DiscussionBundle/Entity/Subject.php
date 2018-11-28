@@ -35,29 +35,29 @@ class Subject implements ObjectLinksInterface
     /**
      * @ORM\Column(type="cassandra_datetime")
      */
-    private $dateCreate;
+    private $datecreate;
 
     /**
      * @ORM\Column(type="cassandra_datetime")
      */
-    private $dateUpdate;
+    private $dateupdate;
 
     /**
      * @ORM\Column(type="cassandra_boolean")
      */
-    private $isOpen = true;
+    private $isopen = true;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
      */
-    private $userOpen;
+    private $useropen;
 
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message",cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private $firstMessage;
+    private $firstmessage;
 
     /**
      * @ORM\Column(type="string")
@@ -70,12 +70,12 @@ class Subject implements ObjectLinksInterface
     private $object_link_cache;
 
 
-    public function __construct($name,$stream,$dateCreate,$dateUpdate,$description,$user)
+    public function __construct($name, $stream, $datecreate, $dateupdate, $description, $user)
     {
         $this->setName($name);
         $this->setStream($stream);
-        $this->setDateCreate($dateCreate);
-        $this->setDateUpdate($dateUpdate);
+        $this->setDateCreate($datecreate);
+        $this->setDateUpdate($dateupdate);
         $this->setUserOpen($user);
         $this->setDescription($description);
     }
@@ -133,15 +133,15 @@ class Subject implements ObjectLinksInterface
      */
     public function getDateCreate()
     {
-        return $this->dateCreate;
+        return $this->datecreate;
     }
 
     /**
-     * @param mixed $dateCreate
+     * @param mixed $datecreate
      */
-    public function setDateCreate($dateCreate)
+    public function setDateCreate($datecreate)
     {
-        $this->dateCreate = $dateCreate;
+        $this->datecreate = $datecreate;
     }
 
     /**
@@ -149,15 +149,15 @@ class Subject implements ObjectLinksInterface
      */
     public function getDateUpdate()
     {
-        return $this->dateUpdate;
+        return $this->dateupdate;
     }
 
     /**
-     * @param mixed $dateUpdate
+     * @param mixed $dateupdate
      */
-    public function setDateUpdate($dateUpdate)
+    public function setDateUpdate($dateupdate)
     {
-        $this->dateUpdate = $dateUpdate;
+        $this->dateupdate = $dateupdate;
     }
 
     /**
@@ -165,15 +165,15 @@ class Subject implements ObjectLinksInterface
      */
     public function getisOpen()
     {
-        return $this->isOpen;
+        return $this->isopen;
     }
 
     /**
-     * @param mixed $isOpen
+     * @param mixed $isopen
      */
-    public function setIsOpen($isOpen)
+    public function setIsOpen($isopen)
     {
-        $this->isOpen = $isOpen;
+        $this->isopen = $isopen;
     }
 
     /**
@@ -181,15 +181,15 @@ class Subject implements ObjectLinksInterface
      */
     public function getFirstMessage()
     {
-        return $this->firstMessage;
+        return $this->firstmessage;
     }
 
     /**
-     * @param mixed $firstMessage
+     * @param mixed $firstmessage
      */
-    public function setFirstMessage($firstMessage)
+    public function setFirstMessage($firstmessage)
     {
-        $this->firstMessage = $firstMessage;
+        $this->firstmessage = $firstmessage;
     }
 
     /**
@@ -197,15 +197,15 @@ class Subject implements ObjectLinksInterface
      */
     public function getUserOpen()
     {
-        return $this->userOpen;
+        return $this->useropen;
     }
 
     /**
-     * @param mixed $userOpen
+     * @param mixed $useropen
      */
-    public function setUserOpen($userOpen)
+    public function setUserOpen($useropen)
     {
-        $this->userOpen = $userOpen;
+        $this->useropen = $useropen;
     }
 
     /**
@@ -256,22 +256,23 @@ class Subject implements ObjectLinksInterface
     }
 
 
-    public function synchroniseField($fieldName, $value)
+    public function synchroniseField($fieldname, $value)
     {
-        if(!property_exists($this, $fieldName))
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $setter = "set".ucfirst($fieldName);
+        $setter = "set" . ucfirst($fieldname);
         $this->$setter($value);
 
         return true;
     }
 
-    public function get($fieldName){
-        if(!property_exists($this, $fieldName))
+    public function get($fieldname)
+    {
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $getter = "get".ucfirst($fieldName);
+        $getter = "get" . ucfirst($fieldname);
 
         return $this->$getter();
     }

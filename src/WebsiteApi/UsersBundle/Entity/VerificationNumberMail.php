@@ -33,7 +33,7 @@ class VerificationNumberMail
 	 *
 	 * @ORM\Column(name="hash_code", type="string", length=256)
 	 */
-	private $hashCode;
+    private $hashcode;
 
 	/**
 	 * @var string
@@ -52,7 +52,7 @@ class VerificationNumberMail
 	/**
 	 * @ORM\Column(name="validity_time", type="integer")
 	 */
-	private $validityTime;
+    private $validitytime;
 
 
 	/**
@@ -61,19 +61,19 @@ class VerificationNumberMail
 	private $clean_code;
 
 
-	public function __construct($mail, $validityTime = 3600)
+    public function __construct($mail, $validitytime = 3600)
 	{
 		$this->mail = $mail;
 		$this->token = bin2hex(random_bytes(128));
-		$this->hashCode = bin2hex(random_bytes(128));
+        $this->hashcode = bin2hex(random_bytes(128));
 		$this->date = new \DateTime();
-		$this->validityTime = max(3600, $validityTime);
+        $this->validitytime = max(3600, $validitytime);
 	}
 
 	public function getCode(){
 		$code = substr(bin2hex(random_bytes(5)), 0, 9);
 		$this->clean_code = $code;
-		$this->hashCode = $this->hash($code);
+        $this->hashcode = $this->hash($code);
 		//Prettify
 		$code = str_split($code, 3);
 		$code = join("-", $code);
@@ -81,11 +81,11 @@ class VerificationNumberMail
 	}
 
 	public function verifyCode($code){
-		if($this->date->format('U') < (new \DateTime())->format('U') - $this->validityTime){
+        if ($this->date->format('U') < (new \DateTime())->format('U') - $this->validitytime) {
 			return false;
 		}
 		$code = preg_replace("/[^a-z0-9]/","",strtolower($code));
-		return $this->hash($code) == $this->hashCode;
+        return $this->hash($code) == $this->hashcode;
 	}
 
 	private function hash($str){

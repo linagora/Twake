@@ -47,13 +47,13 @@ class WorkspacesActivities
 
     }
 
-    public function recordActivity($workspace, $user, $appPublicKey, $title, $objectRepository = null, $objectId = null)
+    public function recordActivity($workspace, $user, $appPublicKey, $title, $objectrepository = null, $objectid = null)
     {
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
         $user = $this->convertToEntity($user,"TwakeUsersBundle:User");
         $app = $this->applicationManager->getAppByPublicKey($appPublicKey);
 
-        $workspaceActivity = new WorkspaceActivity($workspace,$user,$app,$title,$objectRepository,$objectId);
+        $workspaceActivity = new WorkspaceActivity($workspace, $user, $app, $title, $objectrepository, $objectid);
 
         $this->doctrine->persist($workspaceActivity);
         $this->doctrine->flush();

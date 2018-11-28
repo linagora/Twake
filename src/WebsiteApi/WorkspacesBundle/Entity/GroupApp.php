@@ -48,7 +48,7 @@ class GroupApp
     /**
      * @ORM\Column(type="cassandra_boolean")
      */
-    private $workspaceDefault;
+    private $workspacedefault;
 
 
 	public function __construct($group, $app) {
@@ -58,7 +58,7 @@ class GroupApp
         $this->app_group_id = $app->getId() . "_" . $group->getId();
 
 		$this->date_added = new \DateTime();
-		$this->workspaceDefault = false;
+        $this->workspacedefault = false;
 	}
 
 
@@ -109,15 +109,15 @@ class GroupApp
      */
     public function getWorkspaceDefault()
     {
-        return $this->workspaceDefault;
+        return $this->workspacedefault;
     }
 
     /**
-     * @param mixed $workspaceDefault
+     * @param mixed $workspacedefault
      */
-    public function setWorkspaceDefault($workspaceDefault)
+    public function setWorkspaceDefault($workspacedefault)
     {
-        $this->workspaceDefault = $workspaceDefault;
+        $this->workspacedefault = $workspacedefault;
     }
 
 }

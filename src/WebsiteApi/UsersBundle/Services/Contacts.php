@@ -37,8 +37,8 @@ class Contacts implements ContactsInterface
             $groupUserRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             foreach($users as $user){
-                $groupUser = $groupUserRepository->findOneBy(Array("user_group_id" => $user->getId() . "_" . $groupId));
-                if ($groupUser) {
+                $groupuser = $groupUserRepository->findOneBy(Array("user_group_id" => $user->getId() . "_" . $groupId));
+                if ($groupuser) {
                     $res[] = $user;
                 }
             }

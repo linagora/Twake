@@ -33,7 +33,7 @@ class CalendarEvent implements ObjectLinksInterface {
     /**
      * @ORM\Column(name="next_reminder", type="bigint")
      */
-    private $nextReminder = 0;
+    private $nextreminder = 0;
 
     /**
      * @ORM\Column(name="from_ts", type="bigint", nullable=true)
@@ -187,15 +187,15 @@ class CalendarEvent implements ObjectLinksInterface {
      */
     public function getNextReminder()
     {
-        return $this->nextReminder;
+        return $this->nextreminder;
     }
 
     /**
-     * @param mixed $nextReminder
+     * @param mixed $nextreminder
      */
-    public function setNextReminder($nextReminder)
+    public function setNextReminder($nextreminder)
     {
-        $this->nextReminder = $nextReminder;
+        $this->nextreminder = $nextreminder;
     }
 
     public function setReminder($delay = 1800)
@@ -229,7 +229,7 @@ class CalendarEvent implements ObjectLinksInterface {
     }
     public function getAsArrayMinimal()
     {
-        $completEvent = $this->getEvent();
+        $completevent = $this->getEvent();
         $event = Array("from" => $completEvent["from"], "to" => $completEvent["to"], "start" => $completEvent["start"], "end" => $completEvent["end"]);
         return Array(
             "id" => $this->getId(),
@@ -255,31 +255,32 @@ class CalendarEvent implements ObjectLinksInterface {
     }
 
 
-    public function synchroniseField($fieldName, $value)
+    public function synchroniseField($fieldname, $value)
     {
-        if(!property_exists($this, $fieldName))
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $setter = "set".ucfirst($fieldName);
+        $setter = "set" . ucfirst($fieldname);
         $this->$setter($value);
 
         return true;
     }
 
-    public function get($fieldName){
+    public function get($fieldname)
+    {
 
         $event = $this->getEvent();
-        if ($fieldName == "to" && isset($event["typeEvent"]) && $event["typeEvent"] == "reminder") {
+        if ($fieldname == "to" && isset($event["typeEvent"]) && $event["typeEvent"] == "reminder") {
             return null;
         }
-        if ($fieldName == "from" && isset($event["typeEvent"]) && $event["typeEvent"] == "deadline") {
+        if ($fieldname == "from" && isset($event["typeEvent"]) && $event["typeEvent"] == "deadline") {
             return null;
         }
 
-        if(!property_exists($this, $fieldName))
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $getter = "get".ucfirst($fieldName);
+        $getter = "get" . ucfirst($fieldname);
 
         return $this->$getter();
     }

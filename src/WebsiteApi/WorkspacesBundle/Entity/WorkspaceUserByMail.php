@@ -72,7 +72,7 @@ class WorkspaceUserByMail
     }
 
     /**
-     * @param mixed $isClient
+     * @param mixed $isclient
      */
     public function setExterne($externe)
     {

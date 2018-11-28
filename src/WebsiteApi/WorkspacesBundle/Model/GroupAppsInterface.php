@@ -12,8 +12,8 @@ interface GroupAppsInterface
 	public function getApps($groupId, $currentUserId=null);
 
 	// @setWorkspaceDefault set workspaceDefault for an application
-    public function setWorkspaceDefault($groupId, $appId, $boolean, $currentUserId = null);
+    public function setWorkspaceDefault($groupId, $appid, $boolean, $currentUserId = null);
 
     // @removeApplication the given application
-    public function removeApplication($groupId, $appId, $currentUserId = null);
+    public function removeApplication($groupId, $appid, $currentUserId = null);
 }

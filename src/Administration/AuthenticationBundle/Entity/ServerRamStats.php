@@ -35,7 +35,7 @@ class ServerRamStats
     /**
      * @ORM\Column(name="date_save", type="cassandra_datetime")
      */
-    private $dateSave;
+    private $datesave;
 
     /**
      * @var float
@@ -65,15 +65,15 @@ class ServerRamStats
      */
     public function getDateSave()
     {
-        return $this->dateSave;
+        return $this->datesave;
     }
 
     /**
-     * @param mixed $dateSave
+     * @param mixed $datesave
      */
-    public function setDateSave($dateSave)
+    public function setDateSave($datesave)
     {
-        $this->dateSave = $dateSave;
+        $this->datesave = $datesave;
     }
 
     /**

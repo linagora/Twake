@@ -45,14 +45,14 @@ class Boards implements BoardsInterface
         if(is_int($board))
             $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->findOneBy(Array("id" => $board));
 
-        $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
+        $listoftasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
 
         $result = [];
 
-        foreach ($listOfTasks as $listOfTask){
+        foreach ($listoftasks as $listOfTask) {
             $array = $listOfTask->getAsArray();
 
-            $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTasks" => $listOfTask));
+            $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listoftasks" => $listOfTask));
             $array["tasks"] = count($tasks);
             $array["tasks_pondered"] = 0;
             foreach ($tasks as $task)

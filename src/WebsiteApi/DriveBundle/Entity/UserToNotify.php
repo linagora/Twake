@@ -29,27 +29,27 @@ class UserToNotify
     /**
      * @ORM\Column(type="string", length=512, options={"index":true})
      */
-    private $driveFile;
+    private $drivefile;
 
 
     /**
      * @ORM\Column(type="string", length=512)
      */
-    private $driveType;
+    private $drivetype;
 
 
     /**
      * @ORM\Column(type="text")
      */
-    private $additionalData;
+    private $additionaldata;
 
 
-    public function __construct($user, $driveFile, $driveType, $additionalData=Array())
+    public function __construct($user, $drivefile, $drivetype, $additionalData = Array())
     {
         $this->setUser($user);
-        $this->setDriveFile($driveFile);
-        $this->setDriveType($driveType);
-        $this->setAdditionalData($additionalData);
+        $this->setDriveFile($drivefile);
+        $this->setDriveType($drivetype);
+        $this->setAdditionalData($additionaldata);
     }
 
     public function getAsArray()
@@ -92,15 +92,15 @@ class UserToNotify
      */
     public function getDriveFile()
     {
-        return $this->driveFile;
+        return $this->drivefile;
     }
 
     /**
-     * @param mixed $driveFile
+     * @param mixed $drivefile
      */
-    public function setDriveFile($driveFile)
+    public function setDriveFile($drivefile)
     {
-        $this->driveFile = strval($driveFile);
+        $this->drivefile = strval($drivefile);
     }
 
     /**
@@ -108,15 +108,15 @@ class UserToNotify
      */
     public function getDriveType()
     {
-        return $this->driveType;
+        return $this->drivetype;
     }
 
     /**
-     * @param mixed $driveType
+     * @param mixed $drivetype
      */
-    public function setDriveType($driveType)
+    public function setDriveType($drivetype)
     {
-        $this->driveType = $driveType;
+        $this->drivetype = $drivetype;
     }
 
     /**
@@ -124,15 +124,15 @@ class UserToNotify
      */
     public function getAdditionalData()
     {
-        return json_decode($this->additionalData, true);
+        return json_decode($this->additionaldata, true);
     }
 
     /**
-     * @param mixed $additionalData
+     * @param mixed $additionaldata
      */
-    public function setAdditionalData($additionalData)
+    public function setAdditionalData($additionaldata)
     {
-        $this->additionalData = json_encode($additionalData);
+        $this->additionaldata = json_encode($additionaldata);
     }
 
 }

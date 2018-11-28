@@ -60,18 +60,18 @@ class DriveFile implements ObjectLinksInterface
     /**
      * @ORM\Column(type="cassandra_boolean")
      */
-    private $isDirectory;
+    private $isdirectory;
 
     /**
      * @ORM\Column(type="cassandra_boolean")
      */
-    private $isInTrash;
+    private $isintrash;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $oldParent;
+    private $oldparent;
 
     /**
      * @ORM\OneToMany(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile", mappedBy="parent")
@@ -112,12 +112,12 @@ class DriveFile implements ObjectLinksInterface
     /**
      * @ORM\Column(type="cassandra_boolean")
      */
-    private $previewHasBeenGenerated = false;
+    private $previewhasbeengenerated = false;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
 	 */
-	private $copyOf;
+    private $copyof;
 
 	/**
      * @ORM\Column(type="cassandra_boolean")
@@ -151,20 +151,20 @@ class DriveFile implements ObjectLinksInterface
     private $object_link_cache;
 
 
-    public function __construct($group, $parent, $name, $isDirectory = false,$directoryToCopy = null, $url = null)
+    public function __construct($group, $parent, $name, $isdirectory = false, $directorytocopy = null, $url = null)
     {
         $this->group = $group;
         $this->setParent($parent);
         $this->setName($name);
         $this->setDescription("");
         $this->setSize(0);
-        $this->isDirectory = $isDirectory;
+        $this->isdirectory = $isdirectory;
         $this->setIsInTrash(false);
         $this->added = new \DateTime();
         $this->cache = "{}";
         $this->setLastModified();
-        if ($directoryToCopy){
-            $this->copyOf = $directoryToCopy;
+        if ($directorytocopy) {
+            $this->copyof = $directorytocopy;
         }
         if ($url != null){
             $this->setUrl($url);
@@ -178,9 +178,10 @@ class DriveFile implements ObjectLinksInterface
     {
         return $this->id;
     }
-    public function setId($newId)
+
+    public function setId($newid)
     {
-        return $this->id = $newId;
+        return $this->id = $newid;
     }
 
     /**
@@ -255,7 +256,7 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getIsDirectory()
     {
-        return $this->isDirectory;
+        return $this->isdirectory;
     }
 
     /**
@@ -263,15 +264,15 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getIsInTrash()
     {
-        return $this->isInTrash;
+        return $this->isintrash;
     }
 
     /**
-     * @param mixed $isInTrash
+     * @param mixed $isintrash
      */
-    public function setIsInTrash($isInTrash)
+    public function setIsInTrash($isintrash)
     {
-        $this->isInTrash = $isInTrash;
+        $this->isintrash = $isintrash;
     }
 
     /**
@@ -279,15 +280,15 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getOldParent()
     {
-        return $this->oldParent;
+        return $this->oldparent;
     }
 
     /**
-     * @param mixed $oldParent
+     * @param mixed $oldparent
      */
-    public function setOldParent($oldParent)
+    public function setOldParent($oldparent)
     {
-        $this->oldParent = $oldParent;
+        $this->oldparent = $oldparent;
     }
 
     /**
@@ -469,15 +470,15 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getCopyOf()
     {
-        return $this->copyOf;
+        return $this->copyof;
     }
 
     /**
-     * @param mixed $copyOf
+     * @param mixed $copyof
      */
-    public function setCopyOf($copyOf)
+    public function setCopyOf($copyof)
     {
-        $this->copyOf = $copyOf;
+        $this->copyof = $copyof;
     }
 
     /**
@@ -573,15 +574,15 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getPreviewHasBeenGenerated()
     {
-        return $this->previewHasBeenGenerated;
+        return $this->previewhasbeengenerated;
     }
 
     /**
-     * @param mixed $previewHasBeenGenerated
+     * @param mixed $previewhasbeengenerated
      */
-    public function setPreviewHasBeenGenerated($previewHasBeenGenerated)
+    public function setPreviewHasBeenGenerated($previewhasbeengenerated)
     {
-        $this->previewHasBeenGenerated = $previewHasBeenGenerated;
+        $this->previewhasbeengenerated = $previewhasbeengenerated;
     }
 
 
@@ -607,21 +608,22 @@ class DriveFile implements ObjectLinksInterface
         );
     }
 
-    public function synchroniseField($fieldName, $value)
+    public function synchroniseField($fieldname, $value)
     {
-        if(!property_exists($this, $fieldName))
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $setter = "set".ucfirst($fieldName);
+        $setter = "set" . ucfirst($fieldname);
         $this->$setter($value);
         return true;
     }
 
-    public function get($fieldName){
-        if(!property_exists($this, $fieldName))
+    public function get($fieldname)
+    {
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $getter = "get".ucfirst($fieldName);
+        $getter = "get" . ucfirst($fieldname);
 
         return $this->$getter();
     }
