@@ -16,7 +16,10 @@ class VersionController extends Controller
     public function getAction()
     {
 
-        return new JsonResponse(Array("version" => "1.1.0-0"));
+        return new JsonResponse(Array(
+            "version" => "1.1.0-0",
+            "last_compatible_mobile_version" => "1.1.300"
+        ));
 
 
     }
@@ -24,10 +27,16 @@ class VersionController extends Controller
     public function quoteAction()
     {
 
+        if ($this->getUser() && is_object($this->getUser())) {
+            $ln = $this->getUser()->getLanguage();
+        } else {
+            $ln = "en";
+        }
+
         $quotes = Array(
-            Array("quote" => $this->get("app.translate")->translate("quote.update_policy",$this->getUser()->getLanguage()), "subquote" => $this->get("app.translate")->translate("subquote.update_policy",$this->getUser()->getLanguage())),
-            Array("quote" => $this->get("app.translate")->translate("quote.read_text",$this->getUser()->getLanguage()), "subquote" => $this->get("app.translate")->translate("subquote.read_text",$this->getUser()->getLanguage())),
-            Array("quote" => $this->get("app.translate")->translate("quote.dont_worry",$this->getUser()->getLanguage()), "subquote" => "Dave"),
+            Array("quote" => $this->get("app.translate")->translate("quote.update_policy", $ln), "subquote" => $this->get("app.translate")->translate("subquote.update_policy", $ln)),
+            Array("quote" => $this->get("app.translate")->translate("quote.read_text", $ln), "subquote" => $this->get("app.translate")->translate("subquote.read_text", $ln)),
+            Array("quote" => $this->get("app.translate")->translate("quote.dont_worry", $ln), "subquote" => "Dave"),
             Array("quote" => "Dave is not available for now, please try again later.", "subquote" => "Dave"),
             Array("quote" => "Hello? Is there anyone here?", "subquote" => "Dave"),
             Array("quote" => "I don't work on weekends, or any other day that ends with \"Y\".", "subquote" => "Dave"),
@@ -36,7 +45,7 @@ class VersionController extends Controller
             Array("quote" => "Don't worry, be happy.", "subquote" => "The Twake team"),
             Array("quote" => "You're here? Today just got better!", "subquote" => "The Twake team"),
             Array("quote" => "Work hard. Dream big.", "subquote" => "The Twake team"),
-            Array("quote" => $this->get("app.translate")->translate("quote.love_the_live",$this->getUser()->getLanguage()), "subquote" => "Bob Marley"),
+            Array("quote" => $this->get("app.translate")->translate("quote.love_the_live", $ln), "subquote" => "Bob Marley"),
             Array("quote" => "Try and fail, but never fail to try.", "subquote" => "Jared Leto"),
             Array("quote" => "If you dream it, you can do it.", "subquote" => "Walt Disney"),
             Array("quote" => "Never, never, never give up.", "subquote" => "Winston Churchill"),

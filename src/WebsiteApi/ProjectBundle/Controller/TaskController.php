@@ -45,14 +45,6 @@ class TaskController extends Controller
             $tasks_formated = Array();
             foreach ($tasks as $task){
                 $tasks_temp = $task->getAsArray();
-                $participants = $this->get("app.board_tasks")->getParticipantsAsUser($task);
-                $tasks_temp["participants"] = [];
-                foreach ($participants as $participant)
-                    $tasks_temp["participants"][] = $participant->getAsArray();
-                $usersToNotify = $this->get("app.board_tasks")->getUserToNotifyAsUser($task);
-                $tasks_temp["watch_members"] = [];
-                foreach ($usersToNotify as $userToNotify)
-                    $tasks_temp["watch_members"][] = $userToNotify->getAsArray();
                 $tasks_formated[] = $tasks_temp;
             }
             $data["data"] = $tasks_formated;
@@ -60,6 +52,26 @@ class TaskController extends Controller
 
         return new JsonResponse($data);
     }
+
+    public function getForUserAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $userId = $request->request->get("userId", 0);
+        $workspaceId = $request->request->get("workspaceId", 0);
+
+        $tasks = $this->get("app.board_tasks")->getTasksForUser($workspaceId, $userId, $this->getUser()->getId());
+
+        if ($tasks) {
+            $data["data"] = $tasks;
+        }
+
+        return new JsonResponse($data);
+    }
+
     public function getOneTaskAction(Request $request)
     {
         $data = Array(
@@ -106,7 +118,7 @@ class TaskController extends Controller
 
         $task = $request->request->get("task", Array());
         $listId = $request->request->get("listId", 0);
-        $weight = $request->request->get("weight", 1);
+        $weight = $request->request->get("weight", 0.5);
         $name = $request->request->get("name", "");
         $description = $request->request->get("description","");
         $startDate = $request->request->get("from", 0);
@@ -138,7 +150,7 @@ class TaskController extends Controller
 
         $taskArray = $request->request->get("task", Array());
         $taskId = $request->request->get("id", 0);
-        $weight = $request->request->get("weight", 1);
+        $weight = $request->request->get("weight", 0.5);
         $name = $request->request->get("name", "");
         $description = $request->request->get("description","");
         $startDate = $request->request->get("from", 0);
@@ -147,8 +159,10 @@ class TaskController extends Controller
         $userToNotify = $this->convertObjectListToIdList($request->request->get("watch_members",Array()));
         $participants = $this->convertObjectListToIdList($request->request->get("participants",Array()));
         $labels = $request->request->get("labels", Array());
+        $status = $request->request->get("status", null);
+        $checklist = $request->request->get("checklist", Array());
 
-        $data['data'] = $this->get("app.board_tasks")->updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify,$participants, $weight, $labels);
+        $data['data'] = $this->get("app.board_tasks")->updateTask($taskId, $taskArray, $name, $description, $startDate, $endDate, $dependingTaskId, $this->getUser()->getId(), $userToNotify, $participants, $weight, $labels, $status, $checklist);
 
         if($data['data'])
             $data['data'] = $data['data']->getAsArray();
@@ -180,40 +194,6 @@ class TaskController extends Controller
         $listId = $request->request->get("listId");
         $boardId = $request->request->get("boardId");
         $data['data'] = $this->get("app.board_tasks")->moveTask($idsOrderMap, $listId, $boardId, $this->getUser()->getId());
-
-        return new JsonResponse($data);
-    }
-
-    public function addUsersAction(Request $request)
-    {
-        $data = Array(
-            'errors' => Array(),
-            'data' => Array()
-        );
-
-        $workspaceId = $request->request->get("workspaceId");
-        $taskId = $request->request->get("taskId");
-        $boardId = $request->request->get("boardId");
-        $usersId = $request->request->get("usersId");
-
-        $data['data'] = $this->get("app.board_tasks")->addUsers($workspaceId, $boardId, $taskId, $usersId, $this->getUser()->getId());
-
-        return new JsonResponse($data);
-    }
-
-    public function removeUsersAction(Request $request)
-    {
-        $data = Array(
-            'errors' => Array(),
-            'data' => Array()
-        );
-
-        $workspaceId = $request->request->get("workspaceId");
-        $taskId = $request->request->get("taskId");
-        $boardId = $request->request->get("boardId");
-        $usersId = $request->request->get("usersId");
-
-        $data['data'] = $this->get("app.board_tasks")->removeUsers($workspaceId, $boardId, $taskId, $usersId, $this->getUser()->getId());
 
         return new JsonResponse($data);
     }

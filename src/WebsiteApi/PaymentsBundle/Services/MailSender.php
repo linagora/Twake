@@ -62,7 +62,7 @@ class MailSender implements MailSenderInterface
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
-            $this->mailer->send($mail,"Bill",Array("username"=>$username),"TwakePaymentsBundle:Mail",$pathFiles);
+            $this->mailer->send($mail, "Bill", Array("_language" => $user ? $user->getLanguage() : "en", "username" => $username), "TwakePaymentsBundle:Mail", $pathFiles);
         }
     }
 
@@ -74,7 +74,7 @@ class MailSender implements MailSenderInterface
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
-            $this->mailer->send($mail,"endPeriod",Array("timeleft"=>$timeleft,"username"=>$username),"TwakePaymentsBundle:Mail");
+            $this->mailer->send($mail, "endPeriod", Array("_language" => $user ? $user->getLanguage() : "en", "timeleft" => $timeleft, "username" => $username), "TwakePaymentsBundle:Mail");
         }
     }
 
@@ -86,7 +86,7 @@ class MailSender implements MailSenderInterface
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
-            $this->mailer->send($mail,"IsOverUsingALittle",Array("overuse"=>$overuse,"username"=>$username),"TwakePaymentsBundle:Mail");
+            $this->mailer->send($mail, "IsOverUsingALittle", Array("_language" => $user ? $user->getLanguage() : "en", "overuse" => $overuse, "username" => $username), "TwakePaymentsBundle:Mail");
         }
     }
 
@@ -98,7 +98,7 @@ class MailSender implements MailSenderInterface
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
-            $this->mailer->send($mail,"WillBeOverUsing",Array("overuse"=>$overuse,"username"=>$username),"TwakePaymentsBundle:Mail");
+            $this->mailer->send($mail, "WillBeOverUsing", Array("_language" => $user ? $user->getLanguage() : "en", "overuse" => $overuse, "username" => $username), "TwakePaymentsBundle:Mail");
         }
     }
 
@@ -110,7 +110,7 @@ class MailSender implements MailSenderInterface
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
-            $this->mailer->send($mail,"IsOverUsingALot",Array("overuse"=>$overuse,"username"=>$username),"TwakePaymentsBundle:Mail");
+            $this->mailer->send($mail, "IsOverUsingALot", Array("_language" => $user ? $user->getLanguage() : "en", "overuse" => $overuse, "username" => $username), "TwakePaymentsBundle:Mail");
         }
     }
 
@@ -122,7 +122,7 @@ class MailSender implements MailSenderInterface
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
-            $this->mailer->send($mail,"DirectDebitNotification",Array("howMuch"=>$howMuch,"username"=>$username),"TwakePaymentsBundle:Mail");
+            $this->mailer->send($mail, "DirectDebitNotification", Array("_language" => $user ? $user->getLanguage() : "en", "howMuch" => $howMuch, "username" => $username), "TwakePaymentsBundle:Mail");
         }
     }
 
@@ -148,7 +148,7 @@ class MailSender implements MailSenderInterface
         foreach ($list as $user){
             $mail = $user["mail"];
             $username = $user["username"];
-            $this->mailer->send($mail,"UnpaidSubscription",Array("username"=>$username),"TwakePaymentsBundle:Mail");
+            $this->mailer->send($mail, "UnpaidSubscription", Array("_language" => $user ? $user->getLanguage() : "en", "username" => $username), "TwakePaymentsBundle:Mail");
         }
     }
 

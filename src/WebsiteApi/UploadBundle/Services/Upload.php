@@ -14,7 +14,7 @@ class Upload
 		$this->default_context = Array(
 			"is_img"=>1,
 			"max_size"=>1000000, //1mo
-			"sizes"=>3 //512 and original
+            "sizes" => 3 //512 && original
 		);
 
 	}
@@ -36,6 +36,21 @@ class Upload
 		return $res;
 	}
 
+    public function verifyContext(&$upload_status, $file, $context)
+    {
+        if (filesize($file['tmp_name']) > $context['max_size']) {
+            $upload_status["status"] = "error";
+            $upload_status["errors"][] = "max_size_exeeded";
+        }
+
+        $ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
+        if (isset($context["allowed_ext"]) && !in_array($ext, $context["allowed_ext"])) {
+            $upload_status["status"] = "error";
+            $upload_status["errors"][] = "ext_not_allowed_" . $ext;
+        }
+
+    }
+
 	public function upload($file, $path, $context){
 
 		error_log(json_encode($file));
@@ -51,20 +66,9 @@ class Upload
 
 		$upload_status["file"] = $file;
 
+        $this->verifyContext($upload_status, $file, $context);
 
 		$upload_status["filesize"] = filesize($file['tmp_name']);
-
-		if (filesize($file['tmp_name']) > $context['max_size'])
-		{
-			$upload_status["status"] = "error";
-			$upload_status["errors"][] = "max_size_exeeded";
-		}
-
-		$ext = strtolower(pathinfo($file['name'], PATHINFO_EXTENSION));
-		if (isset($context["allowed_ext"]) and !in_array($ext,$context["allowed_ext"])){
-			$upload_status["status"] = "error";
-			$upload_status["errors"][] = "ext_not_allowed_".$ext;
-		}
 
 		//Create directory if doesnt exists
 		if(!file_exists(dirname($path))){
@@ -81,7 +85,7 @@ class Upload
 		if($moved) {
 
 			//Verify that is it an image if wanted
-			if (isset($context["is_img"]) and $context["is_img"] == 1) {
+            if (isset($context["is_img"]) && $context["is_img"] == 1) {
 				$image_info = getimagesize($path);
 				if ($image_info === false) {
 					$upload_status["status"] = "error";
@@ -91,19 +95,19 @@ class Upload
 				$width = $image_info[0];
 				$height = $image_info[1];
 
-				if (isset($context["min_width"]) and $context["min_width"] > $width) {
+                if (isset($context["min_width"]) && $context["min_width"] > $width) {
 					$upload_status["status"] = "error";
 					$upload_status["errors"][] = "width_too_small";
 				}
-				if (isset($context["max_width"]) and $context["max_width"] < $width) {
+                if (isset($context["max_width"]) && $context["max_width"] < $width) {
 					$upload_status["status"] = "error";
 					$upload_status["errors"][] = "width_too_large";
 				}
-				if (isset($context["min_height"]) and $context["min_height"] > $height) {
+                if (isset($context["min_height"]) && $context["min_height"] > $height) {
 					$upload_status["status"] = "error";
 					$upload_status["errors"][] = "height_too_small";
 				}
-				if (isset($context["max_height"]) and $context["max_height"] < $height) {
+                if (isset($context["max_height"]) && $context["max_height"] < $height) {
 					$upload_status["status"] = "error";
 					$upload_status["errors"][] = "height_too_large";
 				}
@@ -112,9 +116,9 @@ class Upload
 
 		}
 
-		if($moved and $upload_status["status"]!="error") {
+        if ($moved && $upload_status["status"] != "error") {
 
-			if(isset($context["is_img"]) and $context["is_img"] == 1) {//Rectifie l'orientation des images prises avec l'appareil photo ios
+            if (isset($context["is_img"]) && $context["is_img"] == 1) {//Rectifie l'orientation des images prises avec l'appareil photo ios
 				$this->imagesModifiers->improve($path);
 			}
 

@@ -18,7 +18,7 @@ class UsersConnectionsController extends Controller
 		if($this->getUser()) {
 			$this->get("app.user")->alive($this->getUser()->getId());
 		}
-		return new JsonResponse(Array());
+        return new JsonResponse(Array("data" => "ok"));
 	}
 
     public function autoLoginAction(Request $request)
@@ -26,6 +26,14 @@ class UsersConnectionsController extends Controller
         $this->loginAction($request);
         return $this->redirect($this->getParameter("SERVER_NAME"));
     }
+
+    public function mobileRedirectAction(Request $request)
+    {
+        $response = new Response();
+        $response->setContent("<script>document.location='" . base64_decode($request->query->get("redirect")) . "'</script>");
+        return $response;;
+    }
+
 	public function loginAction(Request $request)
 	{
 
@@ -44,8 +52,8 @@ class UsersConnectionsController extends Controller
 		if ($loginResult) {
 
 			$device = $request->request->get("device", false);
-            if ($device && isset($device["type"])) {
-				$this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], $device["version"]);
+            if ($device && isset($device["type"]) && isset($device["value"])) {
+                $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], isset($device["version"]) ? $device["version"] : null);
 			}
 
 			$data["data"]["status"] = "connected";
@@ -65,9 +73,27 @@ class UsersConnectionsController extends Controller
     public function isLoggedAction(Request $request)
     {
         $ok = $this->get("app.user")->current();
-        $origin = $request->query->get("origin", "");
-        if(!$ok){
-            return $this->redirect("https://app.twakeapp.com/?subscribe=1&origin=" . $origin);
+
+        if (!$ok) {
+            $origin = $request->query->get("origin", "");
+            $name = $request->query->get("name", "");
+            $forename = $request->query->get("forename", "");
+            $mail = $request->query->get("mail", "");
+            $username = $request->query->get("username", "");
+            $url = "https://app.twakeapp.com/?subscribe=1&origin=" . $origin;
+            if ($username && $username != "") {
+                $url = $url . "&username=" . $username;
+            }
+            if ($mail && $mail != "") {
+                $url = $url . "&mail=" . $mail;
+            }
+            if ($name && $name != "") {
+                $url = $url . "&name=" . $name;
+            }
+            if ($forename && $forename != "") {
+                $url = $url . "&forename=" . $forename;
+            }
+            return $this->redirect($url);
         }
         return $this->redirect($this->getParameter("SERVER_NAME"));
     }
@@ -86,10 +112,12 @@ class UsersConnectionsController extends Controller
 
     public function identiconAction(Request $request)
     {
-        //Generate identicon
-        $draw = new \ImagickDraw();
-
         $username = $request->query->get("username", "");
+
+        $tsstring = gmdate('D, d M Y H:i:s ', date("U") + 60 * 60 * 24 * 31) . 'GMT';
+        header("Expires: " . $tsstring);
+
+        //Generate identicon
         $md5 = md5($username);
         $seed1 = intval(hexdec(bin2hex(substr($md5, 0, 8))));
         $seed2 = intval(hexdec(bin2hex(substr($md5, 10, 8))));
@@ -115,6 +143,8 @@ class UsersConnectionsController extends Controller
                 $colored[$i] = rand(0, 1 + $colored[$i] * 3);
             }
         }
+
+        $draw = new \ImagickDraw();
 
         srand($seed3);
         for ($i = 0; $i < 36; $i++) {

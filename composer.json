@@ -43,14 +43,17 @@
         "easycorp/easyadmin-bundle": "^1.17",
         "google/apiclient": "^2.0",
         "eluceo/ical": "^0.14.0",
-	"johngrogg/ics-parser": "^2",
-        "dompdf/dompdf": "^0.8.2"
-	},
+        "johngrogg/ics-parser": "^2",
+        "dompdf/dompdf": "^0.8.2",
+        "aws/aws-sdk-php-symfony": "~2.0",
+        "maennchen/zipstream-php": "^0.5.1",
+        "onurb/doctrine-yuml-bundle": "~1.0",
+        "phpunit/phpunit": ">=5.7"
+    },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
         "symfony/phpunit-bridge": "^4.0",
-        "phpunit/phpunit": "^6.2",
-        "ci/restclientbundle": "^2.0"
+      "ci/restclientbundle": "^2.0"
     },
     "scripts": {
         "symfony-scripts": [

@@ -60,7 +60,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $this->doctrine->flush();
 
             if ($workspace->getUser() != null) {
-                $this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("workspace" => $workspace->getName(), "group" => $workspace->getGroup()->getDisplayName(), "username" => $user->getUsername(), "level" => $level->getLabel()));
+                $this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "group" => $workspace->getGroup()->getDisplayName(), "username" => $user->getUsername(), "level" => $level->getLabel()));
             }
 
             $datatopush = Array(
@@ -109,6 +109,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             }
 
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $currentUser = null;
+            if ($currentUserId) {
+                $currentUser = $userRepository->find($currentUserId);
+            }
             $user = $userRepository->findOneBy(Array("email" => $mail));
 
             if ($user) {
@@ -138,7 +142,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             //Send mail
             $this->twake_mailer->send($mail, "inviteToWorkspaceMail", Array(
+                "_language" => $currentUser ? $currentUser->getLanguage() : "en",
                 "mail" => $mail,
+                "sender_user" => $currentUser ? $currentUser->getUsername() : "twakebot",
+                "sender_user_mail" => $currentUser ? $currentUser->getEmail() : "noreply@twakeapp.com",
                 "workspace" => $workspace->getName(),
                 "group" => $workspace->getGroup()->getDisplayName()
             ));
@@ -217,7 +224,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(),));
                 $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUser", PHP_INT_MAX);
 
-                if (count($nbuserGroup) >= $limit) {
+                if (count($nbuserGroup) >= $limit + 1) { // Margin of 1 to be sure we do not count twakebot
                     return false;
                 }
             }
@@ -283,7 +290,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $this->pusher->push($datatopush, "notifications/" . $user->getId());
 
             if ($workspace->getGroup() != null && $userId != $currentUserId) {
-                $this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
+                $this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
             }
 
 
@@ -303,8 +310,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
         ) {
 
+            $total_membres_not_bot = count($this->getMembers($workspaceId, null, false));
+
             if ($userId == $currentUserId) {
-                if (count($this->getMembers($workspaceId)) == 1) {
+                if ($total_membres_not_bot == 1) {
                     return false; // can't remove myself if I'm the last
                 }
             }
@@ -328,9 +337,38 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
             $groupmember = $groupUserRepository->findOneBy(Array("group" => $workspace->getGroup(), "user" => $user));
-
             $groupmember->decreaseNbWorkspace();
             $this->doctrine->persist($groupmember);
+
+            //If multiple users
+            if ($total_membres_not_bot > 1) {
+
+                //Test if other workspace administrators are present
+                if ($currentUserId != null && $member->getLevel()->getisAdmin()) {
+                    $other_workspace_admins = $workspaceUserRepository->findBy(Array("workspace" => $workspace, "level" => $member->getLevel()));
+                    if (count($other_workspace_admins) <= 2) {
+                        foreach ($other_workspace_admins as $other_workspace_admin) {
+                            if ($other_workspace_admin->getUser()->getUsername() == "twake_bot") {
+                                header("twake-debug: no other workspace admins");
+                                return false;
+                            }
+                        }
+                    }
+                }
+
+            }
+
+            //Test if other group administrators are present in case this is the last workspace of the user
+            if ($groupmember->getNbWorkspace() <= 0) {
+                if ($currentUserId != null && $groupmember->getLevel() == 3) {
+                    $otherGroupAdmin = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(), "level" => 3));
+                    if (count($otherGroupAdmin) == 1) {
+                        header("twake-debug: no other group admins");
+                        return false;
+                    }
+                }
+                $this->doctrine->remove($groupmember);
+            }
 
             $datatopush = Array(
                 "type" => "CHANGE_MEMBERS",
@@ -356,7 +394,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $this->doctrine->remove($member);
             $this->doctrine->flush();
 
-            $this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
+            $this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 
             $this->messages->delWorkspaceMember($workspace, $user);
             $this->calendar->delWorkspaceMember($workspace, $user);
@@ -388,7 +426,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
     }
 
-    public function getMembers($workspaceId, $currentUserId = null)
+    public function getMembers($workspaceId, $currentUserId = null, $twake_bot = true)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "")
@@ -406,6 +444,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $users = Array();
             foreach ($link as $user) {
+
+                if ($user->getUser()->getUsername() == "twake_bot" && !$twake_bot) {
+                    continue;
+                }
 
                 if ($user->getGroupUser()) { //Private workspaces does not have a group user assiociated
                     $users[] = Array(

@@ -28,6 +28,12 @@ class LinkCalendarWorkspace{
     private $workspace;
 
     /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $application = null;
+
+    /**
      * @ORM\Column(name="calendarright", type="boolean")
      */
     private $calendarRight;
@@ -130,13 +136,30 @@ class LinkCalendarWorkspace{
         $this->owner = $owner;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getApplication()
+    {
+        return $this->application;
+    }
+
+    /**
+     * @param mixed $application
+     */
+    public function setApplication($application)
+    {
+        $this->application = $application;
+    }
+
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
             "workspace" => $this->getWorkspace(),
             "calendar" => $this->getCalendar(),
             "owner" => $this->getOwner(),
-            "right" => $this->getCalendarRight()
+            "right" => $this->getCalendarRight(),
+            "application" => $this->getApplication()
         );
     }
 

@@ -2,14 +2,14 @@ services:
 
     app.notifications:
         class: WebsiteApi\NotificationsBundle\Services\Notifications
-        arguments: ["@doctrine.orm.entity_manager","@app.pusher", "@app.twake_mailer", "@circle.restclient", "%PUSH_NOTIFICATION_SERVER%", "%STANDALONE%", "%LICENCE_KEY%"]
+        arguments: ["@app.doctrine_adapter","@app.pusher", "@app.twake_mailer", "@circle.restclient", "%PUSH_NOTIFICATION_SERVER%", "%STANDALONE%", "%LICENCE_KEY%"]
         public: true
 
     notifications.topic:
         class: WebsiteApi\NotificationsBundle\Topic\NotificationsTopic
         tags:
             - { name: gos_web_socket.topic }
-        arguments: ["@gos_web_socket.websocket.client_manipulator", "@doctrine.orm.entity_manager"]
+        arguments: ["@gos_web_socket.websocket.client_manipulator", "@app.doctrine_adapter"]
 
 
     drive.activity.topic:

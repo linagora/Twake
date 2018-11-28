@@ -1,4 +1,16 @@
 services:
-#    citi_go_upload.example:
-#        class: WebsiteApi\UploadBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
+    app.images_modifiers:
+        class: WebsiteApi\UploadBundle\Services\ImagesModifiers
+
+    app.upload:
+        class: WebsiteApi\UploadBundle\Services\Upload
+        arguments: ["@app.images_modifiers"]
+
+    app.uploader:
+        class: WebsiteApi\UploadBundle\Services\Uploader
+        arguments: ["@app.doctrine_adapter", "@app.upload", "@app.images_modifiers"]
+
+    #AWS
+    app.aws_uploader:
+        class: WebsiteApi\UploadBundle\Services\AWS_Uploader
+        arguments: [%aws%, "@app.doctrine_adapter", "@app.upload", "@app.images_modifiers"]

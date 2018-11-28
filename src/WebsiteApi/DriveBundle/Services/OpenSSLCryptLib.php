@@ -34,8 +34,6 @@ class OpenSSLCryptLib
 
 		$iv = bin2hex(substr($key, 0, openssl_cipher_iv_length('aes-256-cbc')/2));
 
-		error_log('openssl enc -aes-256-cbc -base64 -e -A -p -K ' . $key . ' -iv ' . $iv . ' -in '.$in.' -out '.$temp);
-
 		shell_exec('openssl enc -aes-256-cbc -base64 -e -A -p -K ' . $key . ' -iv ' . $iv . ' -in '.$in.' -out '.$temp);
 
 		if($out==$in){

@@ -50,9 +50,9 @@ class Device
     public function __construct($user, $type, $value, $version)
     {
     	$this->user = $user;
-    	$this->type = $type;
-    	$this->value = $value;
-	    $this->version = $version;
+        $this->setType($type);
+        $this->setValue($value);
+        $this->setVersion($version);
     }
 
 	/**
@@ -92,7 +92,7 @@ class Device
 	 */
 	public function setType($type)
 	{
-		$this->type = $type;
+        $this->type = isset($type) ? $type : "";
 	}
 
 	/**
@@ -108,7 +108,7 @@ class Device
 	 */
 	public function setValue($value)
 	{
-		$this->value = $value;
+        $this->value = isset($value) ? $value : "";
 	}
 
 	/**
@@ -124,7 +124,7 @@ class Device
 	 */
 	public function setVersion($version)
 	{
-		$this->version = $version;
+        $this->version = isset($version) ? $version : "unknown";
 	}
 
 

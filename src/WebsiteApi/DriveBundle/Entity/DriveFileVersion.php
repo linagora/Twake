@@ -184,4 +184,22 @@ class DriveFileVersion
         $this->user = $user;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getDateAdded()
+    {
+        return $this->date_added;
+    }
+
+    /**
+     * @param mixed $date_added
+     */
+    public function setDateAdded($date_added)
+    {
+        $this->date_added = $date_added;
+    }
+
+
+
 }

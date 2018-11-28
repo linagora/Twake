@@ -93,6 +93,15 @@ class UsersAccountController extends Controller
         return new JsonResponse($data);
     }
 
+    public function getUploader()
+    {
+        $aws = $this->getParameter('aws');
+        if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
+            return $this->get("app.aws_uploader");
+        }
+        return $this->get("app.uploader");
+    }
+
 	public function setIdentityAction(Request $request)
 	{
 
@@ -108,16 +117,16 @@ class UsersAccountController extends Controller
             $thumbnail = $request->request->get("thumbnail", null);
 
 			if(isset($_FILES["thumbnail"])) {
-				$thumbnail = $this->get("app.uploader")->uploadFiles($this->getUser(), $_FILES["thumbnail"], "prfl");
+                $thumbnail = $this->getUploader()->uploadFiles($this->getUser(), $_FILES["thumbnail"], "prfl");
 				$thumbnail = $thumbnail[0];
 
 				if (count($thumbnail["errors"])>0) {
 					$data["errors"][] = "badimage";
 				} else {
-					$this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail["file"]);
+                    $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail["file"], $this->getUploader());
 				}
 			}else{
-                $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail);
+                $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail, $this->getUploader());
 			}
 
 		}else{

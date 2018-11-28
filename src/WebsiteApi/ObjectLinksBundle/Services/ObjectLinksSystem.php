@@ -37,6 +37,8 @@ class ObjectLinksSystem
         $resA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $id, "typeA" => self::$keyMap[$type]));
         $resB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $id, "typeB" => self::$keyMap[$type]));
 
+        $object = $this->doctrine->getRepository(self::$keyMap[$type])->findOneBy(Array("id" => $id));
+
         $returnVal = Array();
         if($resA || $resB) {
 
@@ -55,6 +57,17 @@ class ObjectLinksSystem
                 }
 
             }
+
+            if ($object) {
+                $formated = [];
+                foreach ($returnVal as $ret) {
+                    $formated[] = $ret->getAsArrayFormated();
+                }
+                $object->setObjectLinkCache($formated);
+                $this->doctrine->persist($object);
+                $this->doctrine->flush();
+            }
+
             return $returnVal;
         }else{
             return [];
@@ -250,14 +263,18 @@ class ObjectLinksSystem
 
             if ($partner) {
                 $didSync = false;
+
+                $data = Array();
                 /* @var ObjectLinksInterface $partner */
                 foreach ($fields as $field) {
                     $value = $object->get($field);
+                    $data[$field] = $value;
                     if ($value || is_array($value)) {
                         $didSync = true;
                         $partner->synchroniseField($field, $value);
                     }
                 }
+                $partner->finishSynchroniseField($data);
 
                 if ($didSync) {
                     $route = $partner->getPushRoute();
@@ -275,4 +292,15 @@ class ObjectLinksSystem
 
         return $partnersAndFields;
     }
+
+    public function deleteObject(ObjectLinksInterface $object)
+    {
+        $relations = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $object->getId(), "typeA" => $object->getRepository()));
+        $relations = array_merge($relations, $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $object->getId(), "typeB" => $object->getRepository())));
+        foreach ($relations as $relation) {
+            $this->doctrine->remove($relation);
+        }
+        $this->doctrine->flush($relation);
+    }
+
 }

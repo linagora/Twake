@@ -25,17 +25,13 @@ class DrivePreviewCommand extends ContainerAwareCommand
             ->setName("twake:preview_worker");
     }
 
-
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        /**
-         * Récupération des repository, de Twake et des applis de base
-         */
 
         $services = $this->getApplication()->getKernel()->getContainer();
 
         /* @var DriveFileSystem $driveFileSystem*/
-        $driveFileSystem = $services->get("app.drive.FileSystem");
+        $driveFileSystem = $services->get("app.drive.adapter_selector")->getFileSystem();
 
         $driveFileSystem->autoGenPreview();
     }

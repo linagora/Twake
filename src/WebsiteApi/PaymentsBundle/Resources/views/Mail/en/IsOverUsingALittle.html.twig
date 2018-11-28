@@ -1,0 +1,16 @@
+{% extends "TwakePaymentsBundle:Mail:en/all.html.twig" %}
+
+{% block title %}OverUsed{% endblock %}
+
+{% block secondtitle %}OverUsed{% endblock %}
+
+{% block body %}
+
+    <b>Hello {{ username|capitalize }},</b>
+    <br>
+    You have overused the platform. The overuse of {{ overuse }} will be reported on your next bill.
+    <br>
+
+
+
+{% endblock %}

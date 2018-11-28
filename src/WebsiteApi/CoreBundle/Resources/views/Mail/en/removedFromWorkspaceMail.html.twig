@@ -1,0 +1,14 @@
+{% extends "TwakeCoreBundle:Mail:en/all.html.twig" %}
+
+{% block title %}You have been removed from the workspace {{ workspace }}.{% endblock %}
+
+{% block secondtitle %}You have been removed from the workspace {{ workspace }}.{% endblock %}
+
+{% block body %}
+
+    <b>Hello {{ username|capitalize }},</b>
+    <br>
+    You have been removed from the workspace {{ workspace }} in the group {{ group }}.
+    <br>
+
+{% endblock %}

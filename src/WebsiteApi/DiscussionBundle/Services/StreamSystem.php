@@ -63,7 +63,13 @@ class StreamSystem implements StreamSystemInterface
         return$this->convertToEntity($streamId,"TwakeDiscussionBundle:Stream");
     }
 
-    public function createStreamFromApp($workspaceId,$streamName,$streamDescription,$streamIsPrivate,$type,$members=Array()){
+    public function createStreamFromApp($workspaceId, $streamName, $streamDescription, $streamIsPrivate, $type, $members = Array(), $currentUserId = null)
+    {
+
+        if ($currentUserId && $streamIsPrivate && !in_array($currentUserId, $members)) {
+            $members[] = $currentUserId;
+        }
+
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         $stream = new Stream($workspace, $streamName, $streamIsPrivate,$streamDescription);
@@ -102,8 +108,12 @@ class StreamSystem implements StreamSystemInterface
         return $stream->getAsArray();
     }
 
-    public function createStream($user,$workspaceId,$streamName,$streamDescription,$streamIsPrivate,$type="stream",$members=Array())
+    public function createStream($user, $workspaceId, $streamName, $streamDescription, $streamIsPrivate, $type = "stream", $members = Array(), $currentUserId = null)
     {
+
+        if ($currentUserId && $streamIsPrivate && !in_array($currentUserId, $members)) {
+            $members[] = $currentUserId;
+        }
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
         if ($workspace == null) {
@@ -211,7 +221,13 @@ class StreamSystem implements StreamSystemInterface
         return false;
     }
 
-    public function editStreamFromApp($streamKey,$name,$streamDescription,$isPrivate,$members){
+    public function editStreamFromApp($streamKey, $name, $streamDescription, $isPrivate, $members, $currentUserId = null)
+    {
+
+        if ($currentUserId && $isPrivate && !in_array($currentUserId, $members)) {
+            $members[] = $currentUserId;
+        }
+
         $stream = $this->messageSystem->getStream($streamKey);
         if(!$stream || $stream["type"]!="stream"){
             return false;
@@ -253,7 +269,12 @@ class StreamSystem implements StreamSystemInterface
         }
     }
 
-    public function editStream($user,$streamKey,$name,$streamDescription,$isPrivate,$members){
+    public function editStream($user, $streamKey, $name, $streamDescription, $isPrivate, $members, $currentUserId = null)
+    {
+
+        if ($currentUserId && $isPrivate && !in_array($currentUserId, $members)) {
+            $members[] = $currentUserId;
+        }
 
         $stream = $this->messageSystem->getStream($streamKey);
 	    if(!$stream || $stream["type"]!="stream"){

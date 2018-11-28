@@ -21,21 +21,21 @@ class DefaultController extends Controller
             case "slide":
                 $mode = "presentation";
                 $name = "Presentation";
-                $color = "E56442";
+                $color = "aa5252";
                 $defaultExtension = ".pptx";
                 $apikey = $this->APIPUBLICKEY_SLIDE;
                 break;
             case "spreadsheet":
                 $mode = "spreadsheet";
                 $name = "Spreadsheet";
-                $color = "88A761";
+                $color = "40865c";
                 $defaultExtension = ".xlsx";
                 $apikey = $this->APIPUBLICKEY_SPREADSHEET;
                 break;
             default:
                 $mode = "text";
                 $name = "Document";
-                $color = "5680BE";
+                $color = "446995";
                 $defaultExtension = ".docx";
                 $apikey = $this->APIPUBLICKEY_TEXT;
                 break;
@@ -66,14 +66,14 @@ class DefaultController extends Controller
             $data["userid"] = $user->getId();
             $data["username"] = $user->getUsername();
             $data["language"] = $user->getLanguage();
-            $data["userimage"] = $user->getThumbnail();
+            $data["userimage"] = ($user->getThumbnail() == null) ? null : $user->getThumbnail()->getPublicURL(2);
             $data["mode"] = $parameters["mode"];
             $data["onlyoffice_server"] = $this->getParameter('ONLYOFFICE_SERVER');
             $data["defaultExtension"] = $parameters["defaultExtension"];
             $data["color"] = $parameters["color"];
             $data["modeName"] = $parameters["name"];
             $data["workspaceId"] = $workspaceId;
-            $data["server"] = $this->getParameter('SERVER_NAME');
+            $data["server"] = $this->getParameter('SERVER_NAME') . "/";
 
             return $this->render('TwakeOnlyOfficeBundle:Default:index.html.twig', $data);
 
@@ -97,7 +97,7 @@ class DefaultController extends Controller
             $key = $request["key"];
             $document = $request["url"];
 
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->get("app.doctrine_adapter")->getManager();
 
             $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFileKeys");
             $fileKey = $repo->findOneBy(Array("key" => $key));
@@ -132,17 +132,17 @@ class DefaultController extends Controller
                         $url = "https://" . str_replace("https://", "", $url);
                     }
 
-                    if (!$url || !$this->get("app.drive.FileSystem")->canAccessTo($fileKey->getFileId(), $file->getWorkspaceId(), null)) {
+                    if (!$url || !$this->get("app.drive.adapter_selector")->getFileSystem()->canAccessTo($fileKey->getFileId(), $file->getWorkspaceId(), null)) {
 
                         return new JsonResponse(Array("error" => 1));
 
                     } else {
 
                         $content = file_get_contents($url);
-                        $this->get("app.drive.FileSystem")->setRawContent($fileKey->getFileId(), $content);
+                        $this->get("app.drive.adapter_selector")->getFileSystem()->setRawContent($fileKey->getFileId(), $content);
 
                         if ($newName != $oldFilename) {
-                            $this->get("app.drive.FileSystem")->rename($fileKey->getFileId(), $newName);
+                            $this->get("app.drive.adapter_selector")->getFileSystem()->rename($fileKey->getFileId(), $newName);
                         }
 
                     }
@@ -166,7 +166,7 @@ class DefaultController extends Controller
 
             $fId = $request->request->getInt("fileId", 0);
             $filename = $request->request->get("filename", 0);
-            $em = $this->getDoctrine()->getManager();
+            $em = $this->get("app.doctrine_adapter")->getManager();
 
             $file = new OnlyofficeFile($workspaceId, $fId);
             $em->persist($file);
@@ -201,7 +201,7 @@ class DefaultController extends Controller
         $fToken = $request->query->get("fileToken", null);
         $fId = $request->query->getInt("fileId", 0);
 
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->get("app.doctrine_adapter")->getManager();
         $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFile");
 
         /** @var OnlyofficeFile $file */
@@ -220,7 +220,7 @@ class DefaultController extends Controller
                 $response->headers->set('Content-Disposition', $disposition);
                 $response->sendHeaders();
 
-                $this->get('app.drive.FileSystem')->download($file->getWorkspaceId(), $file->getFileId(), false);
+                $this->get("app.drive.adapter_selector")->getFileSystem()->download($file->getWorkspaceId(), $file->getFileId(), false);
                 die();
 
 

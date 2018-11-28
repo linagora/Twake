@@ -318,6 +318,9 @@ class User extends BaseUser
      */
     public function setOrigin($origin)
     {
+        if (!$origin) {
+            $origin = "";
+        }
         $this->origin = $origin;
     }
 
@@ -327,7 +330,7 @@ class User extends BaseUser
 	public function getNotificationPreference()
 	{
 		$preferences = json_decode($this->notification_preference, 1);
-		$preferences["devices"] = (isset($preferences["devices"]))?$preferences["devices"]:1;
+        $preferences["devices"] = (isset($preferences["devices"])) ? $preferences["devices"] : 0;
 		$preferences["dont_disturb_between"] = (isset($preferences["dont_disturb_between"]))?$preferences["dont_disturb_between"]:null;
 		$preferences["dont_disturb_and"] = (isset($preferences["dont_disturb_and"]))?$preferences["dont_disturb_and"]:null;
 		$preferences["privacy"] = (isset($preferences["privacy"]))?$preferences["privacy"]:0;
@@ -335,6 +338,7 @@ class User extends BaseUser
 		$preferences["keywords"] = (isset($preferences["keywords"]))?$preferences["keywords"]:"";
         $preferences["disabled_workspaces"] = (isset($preferences["disabled_workspaces"]))?$preferences["disabled_workspaces"]:[];
         $preferences["workspace"] = (isset($preferences["workspace"]))?$preferences["workspace"]:[];
+        $preferences["mail_notifications"] = (isset($preferences["mail_notifications"])) ? $preferences["mail_notifications"] : 2;
 
 		return $preferences;
 	}
@@ -351,11 +355,7 @@ class User extends BaseUser
 		@$preferences["privacy"] = intval($notification_preference["privacy"]);
 		@$preferences["dont_use_keywords"] = intval($notification_preference["use_keywords"]);
 		@$preferences["keywords"] = substr($notification_preference["keywords"], 0, 512);
-
-
-		// $token = explode("[",$notification_preference["disabled_workspaces"])[1];
-		// $token2 = explode("]", $token)[0];
-        // $token3 = explode(",", $token2);
+        @$preferences["mail_notifications"] = intval($notification_preference["mail_notifications"]);
 
         foreach ($notification_preference["disabled_workspaces"] as $item) {
             @$preferences["disabled_workspaces"][] = intval($item);
@@ -394,6 +394,22 @@ class User extends BaseUser
     public function setIsRobot($isRobot)
     {
         $this->isRobot = $isRobot;
+    }
+
+    /**
+     * @return int
+     */
+    public function getLastActivity()
+    {
+        return $this->lastActivity;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getLastLogin()
+    {
+        return $this->lastLogin;
     }
 
 }

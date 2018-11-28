@@ -71,7 +71,7 @@ class Connections
 
 
 		if($user==null || is_string($user)){
-			$conn->close(); //Remove connexion (not connected)
+            //$conn->close(); //Remove connexion (not connected) COMMENTING THIS LINE SEEMS TO FIX FATAL LOOP IN WEBSOCKET SERVER
 			return;
 		}
 

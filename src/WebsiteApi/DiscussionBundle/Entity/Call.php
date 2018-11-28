@@ -32,6 +32,11 @@ class Call implements ObjectLinksInterface
      */
     private $token;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $object_link_cache;
+
 
     public function __construct($token, $name)
     {
@@ -55,7 +60,8 @@ class Call implements ObjectLinksInterface
         return Array(
             "id" => $this->getId(),
             "name" => $this->getName(),
-            "token" => $this->getToken()
+            "token" => $this->getToken(),
+            "object_link_cache" => $this->getObjectLinkCache()
         );
     }
 
@@ -127,6 +133,21 @@ class Call implements ObjectLinksInterface
         $this->token = $token;
     }
 
+
+    public function finishSynchroniseField($data)
+    {
+        // TODO: Implement finishSynchroniseField($data) method.
+    }
+
+    public function setObjectLinkCache($cache)
+    {
+        $this->object_link_cache = json_encode($cache);
+    }
+
+    public function getObjectLinkCache()
+    {
+        return json_decode($this->object_link_cache, 1);
+    }
 
 }
 

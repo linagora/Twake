@@ -150,7 +150,7 @@ class ProjectController extends Controller
             return new JSonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
-        if (!$this->get("api.v1.check")->isAllowedTo($application, "project:read", $workspace_id)) {
+        if (!$this->get("api.v1.check")->isAllowedTo($application, "tasks:read", $workspace_id)) {
             return new JSonResponse($this->get("api.v1.api_status")->getError(2));
         }
 
@@ -187,7 +187,7 @@ class ProjectController extends Controller
             return new JSonResponse($this->get("api.v1.api_status")->getError(1));
         }
 
-        if (!$this->get("api.v1.check")->isAllowedTo($application, "project:read", $workspace_id)) {
+        if (!$this->get("api.v1.check")->isAllowedTo($application, "tasks:read", $workspace_id)) {
             return new JSonResponse($this->get("api.v1.api_status")->getError(2));
         }
 

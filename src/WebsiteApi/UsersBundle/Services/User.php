@@ -91,7 +91,7 @@ class User implements UserInterface
 		}
 	}
 
-    public function loginWithUsername($usernameOrMail)
+    public function loginWithUsernameOnly($usernameOrMail)
     {
 
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
@@ -104,13 +104,19 @@ class User implements UserInterface
             return false;
         }
 
+        if ($user->getBanned()) {
+            return false;
+        }
+
         // User log in
         $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
         $this->token_storage->setToken($token);
 
         $request = $this->request_stack->getCurrentRequest();
-        $event = new InteractiveLoginEvent($request, $token);
-        $this->event_dispatcher->dispatch("security.interactive_login", $event);
+        if ($request) {
+            $event = new InteractiveLoginEvent($request, $token);
+            $this->event_dispatcher->dispatch("security.interactive_login", $event);
+        }
 
         return $user;
 
@@ -138,15 +144,16 @@ class User implements UserInterface
 
 			// User log in
 			$token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
-			if($rememberMe){
+            if ($rememberMe && $request && $response) {
 				$this->core_remember_me_manager->doRemember($request, $response, $token);
 			}
 			$this->token_storage->setToken($token);
 
 			$request = $this->request_stack->getCurrentRequest();
-			$event = new InteractiveLoginEvent($request, $token);
-			$this->event_dispatcher->dispatch("security.interactive_login", $event);
-
+            if ($request) {
+                $event = new InteractiveLoginEvent($request, $token);
+                $this->event_dispatcher->dispatch("security.interactive_login", $event);
+            }
 
 			return $user;
 
@@ -161,6 +168,13 @@ class User implements UserInterface
 		$response = new Response();
 		$response->headers->clearCookie('REMEMBERME');
 		$response->sendHeaders();
+
+        $this->token_storage->setToken(null);
+
+        $request = $this->request_stack->getCurrentRequest();
+        if ($request) {
+            $request->getSession()->invalidate();
+        }
 
 		(new Session())->invalidate();
 
@@ -185,27 +199,6 @@ class User implements UserInterface
 		$this->em->flush();
 	}
 
-	public function delete($userId)
-	{
-		// TODO: Implement delete() method.
-		$this->ban($userId); //To replace with a real delete
-	}
-
-	public function unsubscribe($userId, $reason)
-	{
-		// TODO: Implement unsubscribe() method.
-	}
-
-	public function cancelUnsubscribe($userId)
-	{
-		// TODO: Implement cancelUnsubscribe() method.
-	}
-
-	public function checkUnsubscribedUsers()
-	{
-		// TODO: Implement checkUnsubscribedUsers() method.
-	}
-
 	public function requestNewPassword($mail)
 	{
 
@@ -221,11 +214,9 @@ class User implements UserInterface
 			$code = $verificationNumberMail->getCode();
 
 			$this->twake_mailer->send($mail, "requestPassword", Array(
+                "_language" => $user ? $user->getLanguage() : "en",
 			    "code"=>$code,
-                "username"=>$user->getUsername(),
-                "request_new_password" => $this->translate->translate("mail.request_new_password",$user->getLanguage()),
-                "request_new_password_body" => $this->translate->translate("mail.request_new_password_body",$user->getLanguage()),
-                "hello" => $this->translate->translate("mail.hello",$user->getLanguage()),
+                "username" => $user->getUsername()
                 ));
 
 			$this->em->persist($verificationNumberMail);
@@ -313,6 +304,11 @@ class User implements UserInterface
 
     public function verifyReCaptchaAction($recaptcha, $client_ip)
     {
+
+        if ($recaptcha == "phone_app_no_verification") {
+            return true;
+        }
+
         //[REMOVE_ONPREMISE]
 
         $secret = "6LeXo1oUAAAAACHfOq50_H9n5W56_5rQycvT_IaZ";
@@ -359,7 +355,7 @@ class User implements UserInterface
 
     }
 
-    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $workspace, $company, $friends, $recaptcha, $language, $origin = "", $force = false)
+    public function subscribeInfo($mail, $password, $pseudo, $firstName, $lastName, $phone, $recaptcha, $language, $origin = "", $force = false)
     {
         $mail = $this->string_cleaner->simplifyMail($mail);
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
@@ -368,14 +364,12 @@ class User implements UserInterface
         if(is_bool($avaible) && !$avaible){
             return $avaible;
         }
-        if($mail==null || $password==null || $pseudo==null){
+        if ($mail == null || $password == null || $pseudo == null || !filter_var($mail, FILTER_VALIDATE_EMAIL)) {
             return false;
         }
         if (!($force || $this->testRecaptcha($recaptcha))) {
-            error_log("-#-#-#-#-#-#-#-no captcha-#-#-#-#-#-#-#-");
             return false;
         }
-
 
         $token = $this->subscribeMail($mail,false);
         $user = $this->subscribe($token,"",$pseudo,$password,true);
@@ -390,21 +384,6 @@ class User implements UserInterface
         $user->setOrigin($origin);
         $this->em->persist($user);
         $this->em->flush();
-        if($workspace != "" && $workspace!=null){
-            $uniquename = $this->string_cleaner->simplify($company);
-            $plan = $this->pricing_plan->getMinimalPricing();
-            $group = $this->group_service->create($user->getId(), $company, $uniquename,$plan);
-            $workspace = $this->workspace_service->create($workspace,$group->getId(),$user->getId());
-            if($workspace){
-                if(is_array($friends) && count($friends)>0){
-                    foreach($friends as $friend){
-                        if($friend != $mail){
-                            $this->workspace_members_service->addMemberByMail($workspace->getId(),$friend,false);
-                        }
-                    }
-                }
-            }
-        }
 
         return true;
     }
@@ -430,7 +409,7 @@ class User implements UserInterface
 		$code = $verificationNumberMail->getCode();
 
 		if($sendEmail){
-            $this->twake_mailer->send($mail, "subscribeMail", Array("code"=>$code));
+            $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code));
         }
 
 		$this->em->persist($verificationNumberMail);
@@ -478,7 +457,7 @@ class User implements UserInterface
 				$user->setUsername($pseudo);
 				$user->setEmail($mail);
 
-				$this->twake_mailer->send($mail, "newMember", Array("username"=>$user->getUsername()));
+                $this->twake_mailer->send($mail, "newMember", Array("_language" => $user ? $user->getLanguage() : "en", "username" => $user->getUsername()));
 
 				$this->em->remove($ticket);
 				$this->em->persist($user);
@@ -508,11 +487,11 @@ class User implements UserInterface
 			->getEncoder($user)
 			->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
+        $res = false;
 		if($passwordValid){
-			return true;
+            $res = true;
 		}
-
-		return false;
+		return $res;
 	}
 
 	public function addDevice($userId, $type, $value, $version = "?")
@@ -521,6 +500,7 @@ class User implements UserInterface
 		$devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
 		$user = $userRepository->find($userId);
 
+        $res = false;
 		if($user != null) {
 			$device = $devicesRepository->findOneBy(Array("type"=>$type, "value"=>$value));
 			if(!$device){
@@ -536,10 +516,10 @@ class User implements UserInterface
 			$this->em->persist($newDevice);
 			$this->em->flush();
 
-			return true;
+			$res = true;
 		}
 
-		return false;
+		return $res;
 	}
 
 	public function removeDevice($userId, $type, $value)
@@ -548,16 +528,17 @@ class User implements UserInterface
 		$devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
 		$user = $userRepository->find($userId);
 
+        $res = false;
 		if($user != null) {
 			$device = $devicesRepository->findOneBy(Array("user"=>$user, "type"=>$type, "value"=>$value));
 			if($device) {
 				$this->em->remove($device);
 				$this->em->flush();
 			}
-			return true;
+            $res = true;
 		}
 
-		return false;
+		return $res;
 	}
 
 	public function getSecondaryMails($userId){
@@ -581,6 +562,8 @@ class User implements UserInterface
 
 		$userWithThisMailAsMainMail = $userRepository->findOneBy(Array("email"=>$mail));
 
+        $res = false;
+
 		if($user != null && $userWithThisMailAsMainMail==null) {
 			$mailExists = $mailRepository->findOneBy(Array("mail"=>$mail));
 
@@ -591,17 +574,17 @@ class User implements UserInterface
 				$code = $verificationNumberMail->getCode();
 
 				$this->twake_mailer->send($mail, "addMail",
-					Array("code"=>$code, "username"=>$user->getUsername()));
+                    Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "username" => $user->getUsername()));
 
 				$this->em->persist($verificationNumberMail);
 				$this->em->flush();
-				return $verificationNumberMail->getToken();
+                $res = $verificationNumberMail->getToken();
 
 			}
 
 		}
 
-		return false;
+		return $res;
 	}
 
 	public function removeSecondaryMail($userId, $mail)
@@ -613,15 +596,17 @@ class User implements UserInterface
 		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
 		$user = $userRepository->find($userId);
 
+		$res = false;
+
 		if($user != null) {
 			$mail = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
 			$this->em->remove($mail);
 			$this->em->flush();
 
-			return true;
+			$res = true;
 		}
 
-		return false;
+		return $res;
 	}
 
 	public function checkNumberForAddNewMail($userId, $token, $code)
@@ -665,10 +650,13 @@ class User implements UserInterface
 	public function changePassword($userId, $oldPassword, $password)
 	{
 
-		if(!$this->string_cleaner->verifyPassword($password))
-		{
-			return false;
-		}
+        if (!$password) {
+            return false;
+        }
+
+        if (!$this->string_cleaner->verifyPassword($password)) {
+            return false;
+        }
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$user = $userRepository->find($userId);
@@ -699,6 +687,10 @@ class User implements UserInterface
 	{
 
 		$pseudo = $this->string_cleaner->simplifyUsername($pseudo);
+
+        if (!$pseudo) {
+            return false;
+        }
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$user = $userRepository->find($userId);
@@ -765,7 +757,7 @@ class User implements UserInterface
 		return false;
 	}
 
-	public function updateUserBasicData($userId, $firstName, $lastName, $thumbnail=null)
+    public function updateUserBasicData($userId, $firstName, $lastName, $thumbnail = null, $uploader = null)
 	{
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
@@ -779,7 +771,11 @@ class User implements UserInterface
                 $user->setThumbnail(null);
             } else if ($thumbnail != null && !is_string($thumbnail)) {
                 if ($user->getThumbnail()) {
-                    $user->getThumbnail()->deleteFromDisk();
+                    if ($uploader) {
+                        $uploader->removeFile($user->getThumbnail(), false);
+                    } else {
+                        $user->getThumbnail()->deleteFromDisk();
+                    }
                     $this->em->remove($user->getThumbnail());
                 }
 				$user->setThumbnail($thumbnail);
@@ -874,4 +870,41 @@ class User implements UserInterface
 
         return true;
     }
+
+    private function removeLinkedToUserRows($entity, $user, $col = "user")
+    {
+        $repo = $this->em->getRepository($entity);
+        $toRemove = $repo->findBy(Array($col => $user));
+        foreach ($toRemove as $r) {
+            $this->em->remove($r);
+        }
+    }
+
+    public function removeUserByUsername($username)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("username" => $username));
+
+        if (!$user) {
+            return false;
+        }
+
+        $this->removeLinkedToUserRows("TwakeUsersBundle:Device", $user, "user");
+        $this->removeLinkedToUserRows("TwakeUsersBundle:Contact", $user, "from");
+        $this->removeLinkedToUserRows("TwakeUsersBundle:Contact", $user, "to");
+        $this->removeLinkedToUserRows("TwakeUsersBundle:Mail", $user, "user");
+        $this->removeLinkedToUserRows("TwakeUsersBundle:Token", $user, "user");
+        $this->removeLinkedToUserRows("TwakeUsersBundle:UserStats", $user, "user");
+
+        $this->removeLinkedToUserRows("TwakeWorkspacesBundle:WorkspaceUser", $user, "user");
+        $this->removeLinkedToUserRows("TwakeWorkspacesBundle:GroupUser", $user, "user");
+        $this->removeLinkedToUserRows("TwakeWorkspacesBundle:Workspace", $user, "user");
+
+        $this->em->remove($user);
+        $this->em->flush();
+
+        return true;
+
+    }
+
 }

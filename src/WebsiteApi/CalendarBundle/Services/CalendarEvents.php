@@ -38,7 +38,7 @@ class CalendarEvents implements CalendarEventsInterface
         $this->objectLinksSystem = $objectLinksSystem;
     }
 
-    public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false, $participants=Array(), $disableLog=false)
+    public function createEvent($workspaceId, $calendarId, $event, $currentUserId = null, $addMySelf = false, $participants = Array(), $disableLog = false, $notify = true)
     {
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
@@ -62,7 +62,10 @@ class CalendarEvents implements CalendarEventsInterface
         $eventModified = $event->getEvent();
         $eventModified["title"] = isset($event->getEvent()["title"])? $event->getEvent()["title"] : "event";
         $eventModified["typeEvent"] = isset($event->getEvent()["typeEvent"])? $event->getEvent()["typeEvent"] : "event";
+        $eventModified["calendar"] = isset($event->getEvent()["calendar"]) ? $event->getEvent()["calendar"] : $calendarId;
+        $eventModified["color"] = isset($event->getEvent()["color"]) ? $event->getEvent()["color"] : $calendar->getColor();
 
+        $event->setWorkspace($workspace);
         $event->setEvent($eventModified);
         $event->setReminder();
         $event->setCalendar($calendar);
@@ -95,15 +98,19 @@ class CalendarEvents implements CalendarEventsInterface
             $this->addUsers($workspaceId, $calendarId, $event, Array($currentUserId), $currentUserId);
         }
 
+        if ($notify) {
 
-        $data = Array(
-            "type" => "create",
-            "event" => $event->getAsArray()
-        );
-        $this->pusher->push($data, "calendar/".$calendarId);
+            $data = Array(
+                "type" => "create",
+                "event" => $event->getAsArray()
+            );
+            $this->pusher->push($data, "calendar/" . $calendarId);
+            if (!$disableLog)
+                $this->workspacesActivities->recordActivity($workspace, $currentUserId, "calendar", "workspace.activity.event.create", "TwakeCalendarBundle:CalendarEvent", $event->getId());
+
+        }
+
         $this->doctrine->flush();
-        if(!$disableLog)
-            $this->workspacesActivities->recordActivity($workspace, $currentUserId, "calendar", "workspace.activity.event.create", "TwakeCalendarBundle:CalendarEvent", $event->getId());
 
         return $event;
 
@@ -204,6 +211,8 @@ class CalendarEvents implements CalendarEventsInterface
         foreach ($usersLinked as $userLinked){
             $this->doctrine->remove($userLinked);
         }
+
+        $this->objectLinksSystem->deleteObject($event);
 
         $this->doctrine->remove($event);
         $this->doctrine->flush();
@@ -509,7 +518,13 @@ class CalendarEvents implements CalendarEventsInterface
                 $auth = $calendars[$calendar->getId()];
             }
 
-            $events[] = $auth ? $event->getAsArray() : $event->getAsArrayMinimal();
+            $event = $auth ? $event->getAsArray() : $event->getAsArrayMinimal();
+            if (!$auth) {
+                $event["private_content"] = true;
+                $event["participant"] = [$targetUserId];
+            }
+            $events[] = $event;
+
         }
 
         return $events;

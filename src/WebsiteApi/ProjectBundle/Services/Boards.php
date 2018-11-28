@@ -92,10 +92,7 @@ class Boards implements BoardsInterface
 
         foreach ($tasks as $task){
             /* @var BoardTask $task */
-
             $total+=$task->getWeight();
-            if($task->getListOfTasks()->getIsDoneList())
-                $done+=$task->getWeight();
         }
 
         if($total!=0)
@@ -185,9 +182,12 @@ class Boards implements BoardsInterface
         }
     }
 
-    public function createBoard($workspaceId, $title, $description, $isPrivate, $currentUserId = null, $userIdToNotify = Array()){
-        if(count($userIdToNotify)==0)
-            $userIdToNotify = [$currentUserId];
+    public function createBoard($workspaceId, $title, $description, $isPrivate, $currentUserId = null, $userIdParticipants = Array())
+    {
+
+        if ($currentUserId && $isPrivate && !in_array($currentUserId, $userIdParticipants)) {
+            $userIdParticipants[] = $currentUserId;
+        }
 
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
@@ -204,12 +204,12 @@ class Boards implements BoardsInterface
             }
 
             $board = new Board($title,$description,$isPrivate);
-            $board->setParticipants($userIdToNotify);
+            $board->setParticipants($userIdParticipants);
             $board->setWorkspacesNumber(1);
             $this->doctrine->persist($board);
 
-            $doneListOfTasks = new ListOfTasks($board,"Done","#51b75b",true);
-            $this->doctrine->persist($doneListOfTasks);
+            $initialList = new ListOfTasks($board, "To do", "#51b75b");
+            $this->doctrine->persist($initialList);
             $this->doctrine->flush();
 
             $link = new LinkBoardWorkspace($workspace, $board, true);
@@ -239,11 +239,13 @@ class Boards implements BoardsInterface
         return $final;
     }
 
-    public function updateBoard($boardId, $title, $description, $isPrivate, $currentUserId = null, $autoParticipate = Array(), $userIdToNotify = Array())
+    public function updateBoard($boardId, $title, $description, $isPrivate, $currentUserId = null, $autoParticipate = Array(), $userIdParticipants = Array())
     {
-        if(count($userIdToNotify)==0) {
-            $userIdToNotify = [$currentUserId];
+
+        if ($currentUserId && $isPrivate && !in_array($currentUserId, $userIdParticipants)) {
+            $userIdParticipants[] = $currentUserId;
         }
+
         $workspace = $this->getWorkspaceFromBoard($boardId);
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:manage")) {
@@ -262,7 +264,7 @@ class Boards implements BoardsInterface
         $board->setTitle($title);
         $board->setisPrivate($isPrivate);
         $board->setDescription($description);
-        $board->setParticipants($userIdToNotify);
+        $board->setParticipants($userIdParticipants);
 
         $board->setAutoParticipantList($autoParticipate);
 

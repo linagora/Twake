@@ -57,9 +57,9 @@ class WorkspaceController extends Controller
 
             $response["data"]["currentUser"]["level"] = $level;
 
-            $groupRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group");
-            $workspaceRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace");
-            $groupUserRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:Group");
+            $workspaceRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:Workspace");
+            $groupUserRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             $wp = $workspaceRepository->find($workspaceId);
             if($wp->getGroup() != null){

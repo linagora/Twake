@@ -65,6 +65,15 @@ class WorkspaceDataController extends Controller
 
 	}
 
+    public function getUploader()
+    {
+        $aws = $this->getParameter('aws');
+        if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
+            return $this->get("app.aws_uploader");
+        }
+        return $this->get("app.uploader");
+    }
+
 	public function setLogoAction(Request $request)
 	{
 
@@ -80,17 +89,17 @@ class WorkspaceDataController extends Controller
 		}else {
 
 			if (isset($_FILES["logo"])) {
-				$thumbnail = $this->get("app.uploader")->uploadFiles($this->getUser(), $_FILES["logo"], "wslogo");
+                $thumbnail = $this->getUploader()->uploadFiles($this->getUser(), $_FILES["logo"], "wslogo");
 				$thumbnail = $thumbnail[0];
 
 				if (count($thumbnail["errors"]) > 0) {
 					$data["errors"][] = "badimage";
 				} else {
 
-					$this->get("app.workspaces")->changeLogo($workspaceId, $thumbnail["file"], $this->getUser()->getId());
+                    $this->get("app.workspaces")->changeLogo($workspaceId, $thumbnail["file"], $this->getUser()->getId(), $this->getUploader());
 				}
 			} else {
-				$this->get("app.workspaces")->changeLogo($workspaceId, null, $this->getUser()->getId());
+                $this->get("app.workspaces")->changeLogo($workspaceId, null, $this->getUser()->getId(), $this->getUploader());
 			}
 
 		}
@@ -114,29 +123,18 @@ class WorkspaceDataController extends Controller
 		}else {
 
 			if (isset($_FILES["wallpaper"])) {
-				$thumbnail = $this->get("app.uploader")->uploadFiles($this->getUser(), $_FILES["wallpaper"], "wswall");
+                $thumbnail = $this->getUploader()->uploadFiles($this->getUser(), $_FILES["wallpaper"], "wswall");
 
 				$thumbnail = $thumbnail[0];
 
 				if (count($thumbnail["errors"]) > 0) {
 					$data["errors"][] = "badimage";
 				} else {
-
                     $color = null;
-                    try {
-                        $image = new \Imagick($thumbnail["file"]->getLocalServerURL());
-                        $image->resizeImage(250, 250, \Imagick::FILTER_GAUSSIAN, 1);
-                        $image->cropImage(50, 250, 0, 0);
-                        $image->quantizeImage(1, \Imagick::COLORSPACE_RGB, 0, false, false);
-                        $image->setFormat('RGB');
-                        $color = "#" . substr(bin2hex($image), 0, 6);
-                    } catch (\ImagickException $e) {
-                        $color = null;
-                    }
-                    $this->get("app.workspaces")->changeWallpaper($workspaceId, $thumbnail["file"], $color, $this->getUser()->getId());
+                    $this->get("app.workspaces")->changeWallpaper($workspaceId, $thumbnail["file"], $color, $this->getUser()->getId(), $this->getUploader());
 				}
 			} else {
-                $this->get("app.workspaces")->changeWallpaper($workspaceId, null, null, $this->getUser()->getId());
+                $this->get("app.workspaces")->changeWallpaper($workspaceId, null, null, $this->getUser()->getId(), $this->getUploader());
 			}
 
 		}

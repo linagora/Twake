@@ -17,11 +17,6 @@ twake_drive_create:
     defaults: { _controller: TwakeDriveBundle:Files:create }
     methods: [POST]
 
-twake_drive_copy:
-    path:     /copy
-    defaults: { _controller: TwakeDriveBundle:Files:copy }
-    methods: [POST]
-
 twake_drive_list:
     path:     /list
     defaults: { _controller: TwakeDriveBundle:Files:list }

@@ -21,6 +21,21 @@ class DrivePreview
         $this->img_width = 300 ;
     }
 
+    public function isImage($ext)
+    {
+        return (
+            $ext === 'png' ||
+            $ext === 'jpg' ||
+            $ext === 'jpeg' ||
+            $ext === 'jp2' ||
+            $ext === 'gif' ||
+            $ext === 'svg' ||
+            $ext === 'tiff' ||
+            $ext === 'bmp' ||
+            $ext === 'ico' ||
+            $ext === 'webp');
+    }
+
     /* Do not generate preview for files larger than 50Mo */
     public function generatePreview($filename, $file, $path, $ext)
     {
@@ -44,22 +59,12 @@ class DrivePreview
                 $filetype === 'image/svg+xml' ||
                 $filetype === 'image/tiff' ||
                 $filetype === 'image/webp' ||
-                $ext === 'png' ||
-                $ext === 'jpg' ||
-                $ext === 'jpeg' ||
-                $ext === 'jp2' ||
-                $ext === 'gif' ||
-                $ext === 'svg' ||
-                $ext === 'tiff' ||
-                $ext === 'bmp' ||
-                $ext === 'ico' ||
-                $ext === 'webp'
-            ) {
-                $this->generateImagePreview($filename, $file, $path);
+                $this->isImage($ext)) {
+                return $this->generateImagePreview($filename, $file, $path);
             }
 
             if ($filetype === 'application/pdf') {
-                $this->generateImagePreview($filename, $file, $path, true);
+                return $this->generateImagePreview($filename, $file, $path, true);
             }
             if ($filetype === 'application/msword' ||
                 $filetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -99,8 +104,9 @@ class DrivePreview
                 $ext === 'txt' ||
                 $ext === 'svg'
             ) {
-                $this->generateImagePreview($filename, $file, $path, false, true);
+                return $this->generateImagePreview($filename, $file, $path, false, true);
             }
+
 
             finfo_close($finfo);
 
@@ -108,7 +114,43 @@ class DrivePreview
             error_log("Error during preview generation : " . $e);
         }
 
-        return true;
+        return false;
+    }
+
+    private function autorotate(\Imagick $image)
+    {
+        switch ($image->getImageOrientation()) {
+            case \Imagick::ORIENTATION_TOPLEFT:
+                break;
+            case \Imagick::ORIENTATION_TOPRIGHT:
+                $image->flopImage();
+                break;
+            case \Imagick::ORIENTATION_BOTTOMRIGHT:
+                $image->rotateImage("#000", 180);
+                break;
+            case \Imagick::ORIENTATION_BOTTOMLEFT:
+                $image->flopImage();
+                $image->rotateImage("#000", 180);
+                break;
+            case \Imagick::ORIENTATION_LEFTTOP:
+                $image->flopImage();
+                $image->rotateImage("#000", -90);
+                break;
+            case \Imagick::ORIENTATION_RIGHTTOP:
+                $image->rotateImage("#000", 90);
+                break;
+            case \Imagick::ORIENTATION_RIGHTBOTTOM:
+                $image->flopImage();
+                $image->rotateImage("#000", 90);
+                break;
+            case \Imagick::ORIENTATION_LEFTBOTTOM:
+                $image->rotateImage("#000", -90);
+                break;
+            default: // Invalid orientation
+                break;
+        }
+        $image->setImageOrientation(\Imagick::ORIENTATION_TOPLEFT);
+        return $image;
     }
 
     public function generateImagePreview($filename, $file, $path, $isText = false, $isOffice = false)
@@ -128,6 +170,8 @@ class DrivePreview
             $im->readimage($file);
         }
 
+        $im = $this->autorotate($im);
+
         // get the current image dimensions
         $im->ThumbnailImage($width, $height, true);
         $geo = $im->getImageGeometry();
@@ -140,7 +184,6 @@ class DrivePreview
         $canvas->compositeImage($im, \Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
 
         $im = $canvas;
-
 
         // thumbnail the image
 

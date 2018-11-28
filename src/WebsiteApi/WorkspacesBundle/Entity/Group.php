@@ -260,6 +260,11 @@ class Group
         return $v;
     }
 
+    public function getOnCreationDataAsText()
+    {
+        return $this->on_creation_data;
+    }
+
     /**
      * @param mixed $on_creation_data
      */

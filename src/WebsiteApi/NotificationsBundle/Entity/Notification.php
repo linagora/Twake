@@ -51,15 +51,15 @@ class Notification
 	 */
 	private $text;
 
-	/**
-	 * @ORM\Column(type="datetime")
-	 */
-	private $date;
+    /**
+     * @ORM\Column(type="text", length=1024)
+     */
+    private $data = "{}";
 
     /**
-     * @ORM\Column(type="text", length=64, nullable=true)
+     * @ORM\Column(type="datetime")
      */
-    private $data;
+    private $date;
 
     /**
      * @ORM\Column(type="integer", nullable=false)

@@ -11,6 +11,10 @@ namespace WebsiteApi\ObjectLinksBundle\Model;
 
 interface ObjectLinksInterface
 {
+    public function setObjectLinkCache($cache);
+
+    public function getObjectLinkCache();
+
     public function getId();
 
     public function getRepository();
@@ -20,6 +24,8 @@ interface ObjectLinksInterface
     public function getAsArrayFormated();
 
     public function synchroniseField($fieldName, $value);
+
+    public function finishSynchroniseField($data);
 
     public function get($fieldName);
 

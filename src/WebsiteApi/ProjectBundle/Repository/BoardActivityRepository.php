@@ -9,7 +9,7 @@ namespace WebsiteApi\ProjectBundle\Repository;
  */
 
 
-class BoardActivityRepository extends \Doctrine\ORM\EntityRepository
+class BoardActivityRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
 }

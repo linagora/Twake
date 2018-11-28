@@ -14,12 +14,11 @@ $translation = Array(
     "drive.has_been_added" => "$1 has been added to $2",
     "drive.has_been_moved" => "$1 has been moved into $2",
     "drive.file_updated" => "Updated file",
-    "drive.has_been_update" => "$1 has been update",
+    "drive.has_been_update" => "$1 has been updated",
 
     "project.generalBoardDescription" => "General board of tasks",
-    "project.todo" => "To do",
-    "project.doing" => "Doing",
-    "project.done" => "Done",
+    "project.discover_twake" => "Discover Twake",
+    "project.project" => "My project",
     "project.createTwakeWorkspace" => "Create your first workspace",
     "project.createTwakeWorkspaceDescription" => "To create a workspace, you have to click on the \"+\" in your workspace list",
     "project.discoverTwake" => "Discover Twake",
@@ -31,7 +30,7 @@ $translation = Array(
 
     "drive.twake" => "Twake",
     "drive.rules" => "Rules.docx",
-    "drive.ruleText" => "Do not smoke the grass from the garden",
+    "drive.ruleText" => "Do not smoke grass from the garden",
     "drive.welcome" => "Welcome.docx",
     "drive.welcomeText" => "Welcome on Twake ! \nWe are very happy to welcome you on our plateforme :D",
 
@@ -53,6 +52,8 @@ $translation = Array(
     "mail.request_new_password" => "Your request for a new password",
     "mail.hello" => "Hello",
     "mail.request_new_password_body" => "You requested a new password, there is the activation code you need",
+
+
     "quote.update_policy" => "We did not update our privacy policy.",
     "subquote.update_policy" => "Did we? I don't know, check your e-mails.",
     "quote.dont_worry" => "Don't worry, everything is under control.",

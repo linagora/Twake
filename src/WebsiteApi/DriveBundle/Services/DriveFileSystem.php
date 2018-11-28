@@ -36,7 +36,9 @@ class DriveFileSystem implements DriveFileSystemInterface
     /* @var WorkspacesActivities $workspacesActivities*/
     var $workspacesActivities;
 
-    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher,$applicationService, $userToNotifyService, $translate, $workspacesApps,$workspacesActivities)
+    var $objectLinkSystem;
+
+    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem)
     {
         $this->doctrine = $doctrine;
         $this->root = $rootDirectory;
@@ -49,9 +51,10 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->translate = $translate;
         $this->workspacesApps = $workspacesApps;
         $this->workspacesActivities = $workspacesActivities;
+        $this->objectLinkSystem = $objectLinkSystem;
     }
 
-    private function convertToEntity($var, $repository)
+    protected function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
             $var = intval($var);
@@ -145,7 +148,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     }
 
 
-    private function getRoot()
+    protected function getRoot()
     {
         return dirname($this->root) . "/" . "drive" . "/";
     }
@@ -155,10 +158,13 @@ class DriveFileSystem implements DriveFileSystemInterface
     /**
      * @param $fileOrDirectory
      */
-    private function improveName($fileOrDirectory)
+    protected function improveName($fileOrDirectory)
     {
         $originalCompleteName = explode(".", $fileOrDirectory->getName());
-        $originalExt = array_pop($originalCompleteName);
+        $originalExt = "";
+        if (count($originalCompleteName) > 1) {
+            $originalExt = array_pop($originalCompleteName);
+        }
         $originalName = join(".", $originalCompleteName);
 
         $currentNames = [];
@@ -196,7 +202,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
     }
 
-    private function updateSize($directory, $delta)
+    protected function updateSize($directory, $delta)
     {
         while ($directory != null) {
             $currentSize = $directory->getSize();
@@ -264,7 +270,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    private function recursCopy($inFile, $outFile)
+    protected function recursCopy($inFile, $outFile)
     {
         if (!$inFile->getIsDirectory()) {
 
@@ -272,7 +278,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             $from = $this->getRoot() . $inFile->getPath();
             $to = $this->getRoot() . $outFile->getPath();
 
-            if (file_exists($from)) {
+            if ($this->file_exists($from, $inFile)) {
                 copy($from, $to);
             } else {
                 $this->delete($inFile);
@@ -300,62 +306,6 @@ class DriveFileSystem implements DriveFileSystemInterface
 
             }
         }
-    }
-
-    public function copy($fileOrDirectory, $newParent = null, $userId=0)
-    {
-
-        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
-        $newParent = $this->convertToEntity($newParent, "TwakeDriveBundle:DriveFile");
-        $user = $this->convertToEntity($userId, "TwakeUsersBundle:User");
-
-        if ($fileOrDirectory == null || $this->getFreeSpace($fileOrDirectory->getGroup()) <= 0) {
-            return false;
-        }
-
-        $parent = $fileOrDirectory->getParent();
-        if ($newParent != null) {
-            $parent = $newParent;
-        }
-
-        $newFile = new DriveFile(
-            $fileOrDirectory->getGroup(),
-            $parent,
-            $fileOrDirectory->getName(),
-            $fileOrDirectory->getIsDirectory(),
-            $fileOrDirectory->setCopyOf(null),
-            $fileOrDirectory->getUrl()
-        );
-
-        $newFile->setSize($fileOrDirectory->getSize());
-
-        $this->improveName($newFile);
-
-        //If file copy version (same key currently -> to improve)
-        if (!$newFile->getIsDirectory()) {
-
-            $this->doctrine->persist($newFile);
-            $this->doctrine->flush();
-
-            $newVersion = new DriveFileVersion($newFile, $user);
-            $newFile->setLastVersion($newVersion);
-
-            $newVersion->setKey($fileOrDirectory->getLastVersion()->getKey());
-            $newVersion->setSize($fileOrDirectory->getSize());
-            $this->doctrine->persist($newVersion);
-        }
-
-        // Copy real file and sub files (copy entities)
-        $this->recursCopy($fileOrDirectory, $newFile);
-
-        $this->updateSize($parent, $newFile->getSize());
-        $this->improveName($fileOrDirectory);
-
-        $this->doctrine->persist($newFile);
-        $this->doctrine->flush();
-
-        return true;
-
     }
 
     public function getSharedWorkspace($groupId, $fileId)
@@ -627,8 +577,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 
             $path = $this->getRoot() . $newFile->getPath();
             $this->verifyPath($path);
+            $size = strlen($content);
             $this->writeEncode($path, $fileVersion->getKey(), $content, $fileVersion->getMode());
-            $size = filesize($path);
 
             $fileVersion->setSize($size);
             $this->doctrine->persist($fileVersion);
@@ -677,16 +627,22 @@ class DriveFileSystem implements DriveFileSystemInterface
             return false;
         }
 
+        return $this->rawPreview($file);
+
+    }
+
+    public function rawPreview($file)
+    {
+
         $path = $this->getRoot() . $file->getPreviewPath();
 
         $this->verifyPath($path);
 
-        if (!file_exists($path)) {
+        if (!$this->file_exists($path, $file)) {
             return null;
         }
 
         return $this->read($path);
-
     }
 
     public function getRawContent($workspace, $file)
@@ -704,11 +660,15 @@ class DriveFileSystem implements DriveFileSystemInterface
             return "";
         }
 
-        $path = $this->getRoot() . $file->getPath();
+        return $this->rawContent($file);
+    }
 
+    public function rawContent($file)
+    {
+        $path = $this->getRoot() . $file->getPath();
         $this->verifyPath($path);
 
-        if (!file_exists($path)) {
+        if (!$this->file_exists($path, $file)) {
             return null;
         }
 
@@ -728,7 +688,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         $path = $this->getRoot() . $file->getPath();
 
-        if (file_exists($path)) {
+        if ($this->file_exists($path, $file)) {
 
             if ($newVersion) {
                 $newVersion = new DriveFileVersion($file, $user);
@@ -738,10 +698,10 @@ class DriveFileSystem implements DriveFileSystemInterface
 
             if ($content != null) {
                 $this->verifyPath($path);
+                $file->setSize(strlen($content));
                 $this->writeEncode($path, $file->getLastVersion()->getKey(), $content, $file->getLastVersion()->getMode());
             }
 
-            $file->setSize(filesize($path));
             $file->setLastModified();
             $this->updateSize($file->getParent(), $file->getSize());
 
@@ -960,7 +920,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             return false;
         }
         //if deleting a shared file
-        if ($fileOrDirectory->getIsDirectory() && $fileOrDirectory->getGroup()->getId() != $workspace) {
+        if ($fileOrDirectory->getIsDirectory() && $fileOrDirectory->getGroup()->getId() != $workspace->getId()) {
             return $this->unshare($fileOrDirectory->getGroup()->getId(), $fileOrDirectory, $workspace, false);
         }
 
@@ -975,6 +935,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     }
 
     public function toTrash($fileOrDirectory, $user){
+
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
 
         if(!$fileOrDirectory){
@@ -1002,8 +963,23 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    private function recursDelete($fileOrDirectory)
+    protected function deleteFile($file)
     {
+        // Remove real file
+        $real = $this->getRoot() . $file->getPath();
+        if ($this->file_exists($real, $file)) {
+            unlink($real);
+        }
+        // Remove preview file
+        $real = $this->getRoot() . $file->getPreviewPath();
+        if ($this->file_exists($real, $file)) {
+            unlink($real);
+        }
+    }
+
+    protected function recursDelete($fileOrDirectory)
+    {
+
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
         $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
         $userToNotifyRepo->deleteByDriveFile($fileOrDirectory);
@@ -1016,16 +992,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         if (!$fileOrDirectory->getIsDirectory()) {
 
-            // Remove real file
-            $real = $this->getRoot() . $fileOrDirectory->getPath();
-            if (file_exists($real)) {
-                unlink($real);
-            }
-            // Remove preview file
-            $real = $this->getRoot() . $fileOrDirectory->getPreviewPath();
-            if (file_exists($real)) {
-                unlink($real);
-            }
+            $this->deleteFile($fileOrDirectory);
 
         } else {
             $copies = $driveRepository->findBy(Array("copyOf" => $fileOrDirectory));
@@ -1039,6 +1006,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             }
         }
 
+        $this->objectLinkSystem->deleteObject($fileOrDirectory);
         $this->removeLabels($fileOrDirectory, false);
         $this->doctrine->remove($fileOrDirectory);
 
@@ -1063,7 +1031,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return true;
     }
 
-    private function removeLabels($fileOrDirectory, $flush = true)
+    protected function removeLabels($fileOrDirectory, $flush = true)
     {
 
         $labels_link = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("file" => $fileOrDirectory));
@@ -1168,6 +1136,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         if($userId==0)
             $user = null;
         $file->setName($fileData["name"]);
+        $file->setPreviewHasBeenGenerated(false);
+
         $lastVersion = new DriveFileVersion($file,$user);
         $this->doctrine->persist($lastVersion);
         $file->setLastVersion($lastVersion);
@@ -1177,6 +1147,9 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $real = $this->getRoot() . $file->getPath();
+        $size = filesize($fileData["tmp_name"]);
+
+        $file->setSize($size);
 
         $context = Array(
             "max_size" => 100000000 // 100Mo
@@ -1204,6 +1177,12 @@ class DriveFileSystem implements DriveFileSystemInterface
         $this->pusher->push(Array("action" => "update"), "drive/" . $file->getGroup()->getId());
         $this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.upload_new_version","TwakeDriveBundle:DriveFile", $file->getId());
 
+
+        if ($this->preview->isImage($file->getExtension())) {
+            $this->genPreview($file);
+            $file->setPreviewHasBeenGenerated(true);
+        }
+
         return $file;
 
     }
@@ -1219,11 +1198,14 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $real = $this->getRoot() . $newFile->getPath();
+        $size = filesize($file["tmp_name"]);
+
         $context = Array(
             "max_size" => 100000000 // 100Mo
         );
         $errors = $uploader->upload($file, $real, $context);
 
+        $newFile->setSize($size);
 
         $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
 
@@ -1232,6 +1214,11 @@ class DriveFileSystem implements DriveFileSystemInterface
         if (count($errors["errors"]) > 0) {
             $this->delete($newFile);
             return false;
+        }
+
+        if ($this->preview->isImage($newFile->getExtension())) {
+            $this->genPreview($newFile);
+            $newFile->setPreviewHasBeenGenerated(true);
         }
 
         return $newFile;
@@ -1350,7 +1337,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             header('Expires: 0');
             header('Cache-Control: must-revalidate');
             header('Pragma: public');
-            header('Content-Length: ' . filesize($zip_path));
+            header('Content-Length: ' . $this->filesize($zip_path));
 
             $fp = fopen($zip_path, "r");
 
@@ -1372,6 +1359,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             if($versionId!=0){
                 $version = $this->convertToEntity($versionId,"TwakeDriveBundle:DriveFileVersion");
                 $file->setLastVersion($version);
+                $file->setName(date("Y-m-d_h:i", $version->getDateAdded()->getTimestamp()) . "_" . $version->getFileName());
             }
 
             $completePath = $this->getRoot() . $file->getPath();
@@ -1405,7 +1393,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             header('Expires: 0');
             header('Cache-Control: must-revalidate');
             header('Pragma: public');
-            header('Content-Length: ' . filesize($completePath));
+            header('Content-Length: ' . $this->filesize($completePath));
 
             $fp = fopen($completePath, "r");
 
@@ -1425,15 +1413,15 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    private function verifyPath($path)
+    protected function verifyPath($path)
     {
         $path = dirname($path);
-        if (!file_exists($path)) {
+        if (!$this->file_exists($path, null)) {
             mkdir($path, 0777, true);
         }
     }
 
-    private function encode($path, $key, $mode = "AES")
+    protected function encode($path, $key, $mode = "AES")
     {
 
         if ($mode == "AES") {
@@ -1457,7 +1445,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    private function decode($path, $key, $mode = "AES")
+    protected function decode($path, $key, $mode = "AES")
     {
 
         if ($mode == "AES") {
@@ -1481,7 +1469,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     }
 
-    private function writeEncode($path, $key, $content, $mode = "AES")
+    protected function writeEncode($path, $key, $content, $mode = "AES")
     {
         file_put_contents($path, $content);
         if ($content != "") {
@@ -1489,7 +1477,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
     }
 
-    private function readDecode($path, $key, $mode = "AES")
+    protected function readDecode($path, $key, $mode = "AES")
     {
         $path = $this->decode($path, $key, $mode);
         $var = file_get_contents($path);
@@ -1497,7 +1485,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return $var;
     }
 
-    private function read($path)
+    protected function read($path)
     {
         $var = file_get_contents($path);
         return $var;
@@ -1509,16 +1497,17 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         while ($time_elapsed_secs < 60) {
             /* @var DriveFile $file */
-            $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("previewHasBeenGenerated" => false));
-            if(count($files)==0){
+            $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("previewHasBeenGenerated" => false));
+            if (!$file) {
                 sleep(1);
             }else {
-                $file = $files[0];
+
                 $file->setPreviewHasBeenGenerated(true);
-                $this->doctrine->persist($file);
-                $this->doctrine->flush();
 
                 $this->genPreview($file);
+
+                $this->doctrine->persist($file);
+                $this->doctrine->flush();
 
                 $this->pusher->push(Array("action" => "update"), "drive/" . $file->getGroup()->getId());
             }
@@ -1530,6 +1519,8 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function genPreview(DriveFile $file)
     {
+        $res = false;
+
         if (!$file->getIsDirectory() && $file->getLastVersion()) {
 
             $path = $this->getRoot() . "/" . $file->getPath();
@@ -1539,25 +1530,33 @@ class DriveFileSystem implements DriveFileSystemInterface
 
             $ext = $file->getExtension();
             $tmppath = $this->decode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
-            rename($tmppath, $tmppath . ".tw");
-            $tmppath = $tmppath . ".tw";
 
-            try {
-                $this->preview->generatePreview(basename($path), $tmppath, dirname($path), $ext);
-                if (file_exists($path . ".png")) {
-                    rename($path . ".png", $previewPath);
-                } else {
-                    error_log("FILE NOT GENERATED !");
+            if ($tmppath) {
+                rename($tmppath, $tmppath . ".tw");
+                $tmppath = $tmppath . ".tw";
+
+                try {
+                    $res = $this->preview->generatePreview(basename($path), $tmppath, dirname($path), $ext);
+                    if ($this->file_exists($path . ".png", null)) {
+                        rename($path . ".png", $previewPath);
+                    } else {
+                        error_log("FILE NOT GENERATED !");
+                        $res = false;
+                    }
+                } catch (\Exception $e) {
+
                 }
-            } catch (\Exception $e) {
+
+                @unlink($tmppath);
 
             }
 
-            @unlink($tmppath);
-
         }
 
+        return $res;
+
     }
+
 
     //Used to show content of a drive folder since now other group can see others content
     public function isWorkspaceAllowed($workspaceId, $directoryId)
@@ -1595,7 +1594,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         return false;
     }
 
-    private function updateLabelsCount($workspace, $flush = true)
+    protected function updateLabelsCount($workspace, $flush = true)
     {
         $labelsRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel");
 
@@ -1659,4 +1658,15 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         return true;
     }
+
+    protected function file_exists($path, $file = null)
+    {
+        return file_exists($path);
+    }
+
+    protected function filesize($path, $file = null)
+    {
+        return filesize($path);
+    }
+
 }

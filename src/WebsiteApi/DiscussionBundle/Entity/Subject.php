@@ -64,6 +64,11 @@ class Subject implements ObjectLinksInterface
      */
     private $description;
 
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $object_link_cache;
+
 
     public function __construct($name,$stream,$dateCreate,$dateUpdate,$description,$user)
     {
@@ -232,6 +237,7 @@ class Subject implements ObjectLinksInterface
             "firstMessage" => ($this->getFirstMessage()!=null)?$this->getFirstMessage()->getId():null,
             "userOpen" => ($this->getUserOpen()!=null)?$this->getUserOpen()->getId():null,
             "description" => $this->getDescription(),
+            "object_link_cache" => $this->getObjectLinkCache()
         );
     }
     public function getRepository(){
@@ -274,4 +280,20 @@ class Subject implements ObjectLinksInterface
     {
         return "discussion/".$this->getId();
     }
+
+    public function finishSynchroniseField($data)
+    {
+        // TODO: Implement finishSynchroniseField($data) method.
+    }
+
+    public function setObjectLinkCache($cache)
+    {
+        $this->object_link_cache = json_encode($cache);
+    }
+
+    public function getObjectLinkCache()
+    {
+        return json_decode($this->object_link_cache, 1);
+    }
+
 }

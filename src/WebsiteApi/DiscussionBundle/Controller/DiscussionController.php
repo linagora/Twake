@@ -58,9 +58,9 @@ class DiscussionController extends Controller
             if($request->request->get("discussionKey")!=null){
                 $discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
                 if($discussionInfos["type"] == "S"){
-                    $stream = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Stream")->find($discussionInfos["id"]);
+                    $stream = $this->get("app.doctrine_adapter")->getRepository("TwakeDiscussionBundle:Stream")->find($discussionInfos["id"]);
                     if($stream != null){
-                        $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$this->getUser(),"stream"=>$stream));
+                        $link = $this->get("app.doctrine_adapter")->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user" => $this->getUser(), "stream" => $stream));
                         if( !$stream->getIsPrivate() || $link != null ){
                             $subjects = $this->get("app.subjectSystem")->getSubject($stream);
                             $data["data"] = $subjects;
@@ -99,12 +99,12 @@ class DiscussionController extends Controller
         }
         else {
             if($request->request->get("subject") != null){
-                $subject = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:Subject")->find($request->request->get("subject"));
+                $subject = $this->get("app.doctrine_adapter")->getRepository("TwakeDiscussionBundle:Subject")->find($request->request->get("subject"));
                 if($subject == null){
                     $data["errors"][] = "subjectnotfound";
                 }
                 else{
-                    $link = $this->getDoctrine()->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("stream"=>$subject->getStream(),"user"=>$this->getUser()));
+                    $link = $this->get("app.doctrine_adapter")->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("stream" => $subject->getStream(), "user" => $this->getUser()));
                     if($subject->getStream()->getIsPrivate() && $link == null){
                         $data["errors"][] = "notallowed";
                     }
@@ -291,7 +291,7 @@ class DiscussionController extends Controller
         $members = $request->request->get("members",Array());
 
         //Warning, auth done in service
-        $res = $this->get("app.streamSystem")->createStream($this->getUser(),$workspaceId,$streamName,$streamDescription,$streamIsPrivate,"stream",$members);
+        $res = $this->get("app.streamSystem")->createStream($this->getUser(), $workspaceId, $streamName, $streamDescription, $streamIsPrivate, "stream", $members, $this->getUser()->getId());
 
         if(!$res)
             $data["errors"][] = "Fail to add stream";
@@ -333,7 +333,7 @@ class DiscussionController extends Controller
         $members = $request->request->get("members",Array());
 
         //Warning, auth done in service
-        $res = $this->get("app.streamSystem")->editStream($this->getUser(),"s-".$id,$name,$streamDescription,$isPrivate,$members);
+        $res = $this->get("app.streamSystem")->editStream($this->getUser(), "s-" . $id, $name, $streamDescription, $isPrivate, $members, $this->getUser()->getId());
 
         if(!$res)
             $data["errors"][] = "Fail to edit stream";

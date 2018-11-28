@@ -38,9 +38,9 @@ class Workspaces implements WorkspacesInterface
     var $workspacesActivities;
     var $calendarEventService;
     var $calendarService;
-    var $driveService;
+    var $driveAdapteService;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $groups_service, $priceService, $cleaner, $pusher,$workspacesActivities,$translate,$taskService,$calendarService,$calendarEventService,$driveService)
+    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $taskService, $calendarService, $calendarEventService, $driveAdapteService)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -57,7 +57,7 @@ class Workspaces implements WorkspacesInterface
         $this->taskService = $taskService;
         $this->calendarService = $calendarService;
         $this->calendarEventService = $calendarEventService;
-        $this->driveService = $driveService;
+        $this->driveAdapteService = $driveAdapteService;
     }
 
     public function getPrivate($userId = null)
@@ -208,19 +208,16 @@ class Workspaces implements WorkspacesInterface
             $boardWorkspace = new LinkBoardWorkspace($workspace,$board,true,true);
             $this->doctrine->persist($boardWorkspace);
 
-            $list1 = new ListOfTasks($board,new TranslationObject($this->translate,"project.todo") ,"f44242", false, Array());
+            $list1 = new ListOfTasks($board, new TranslationObject($this->translate, "project.discover_twake"), "f49d41", Array());
             $this->doctrine->persist($list1);
-
-            $list2 = new ListOfTasks($board,new TranslationObject($this->translate,"project.doing") ,"f49d41", false, Array());
-            $list3 = new ListOfTasks($board,new TranslationObject($this->translate,"project.done") ,"00bb4d", true, Array());
+            $list2 = new ListOfTasks($board, new TranslationObject($this->translate, "project.project"), "00bb4d", Array());
             $this->doctrine->persist($list2);
-            $this->doctrine->persist($list3);
             $this->doctrine->flush();
 
-            $task1 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate,"project.createTwakeWorkspace"), new TranslationObject($this->translate,"project.createTwakeWorkspaceDescription"), 0, 0, NULL);
-            $task2 = $this->taskService->createTask($list2, Array(), new TranslationObject($this->translate,"project.discoverTwake"), new TranslationObject($this->translate,"project.discoverTwakeDescription"), 0, 0, NULL);
-            $task3 = $this->taskService->createTask($list3, Array(), new TranslationObject($this->translate,"project.signin"), "", 0, 0, NULL);
-            $task4 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate,"project.invitePartner"), new TranslationObject($this->translate,"project.invitePartnerDescription"), 0, 0, NULL);
+            $task1 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate, "project.createTwakeWorkspace"), new TranslationObject($this->translate, "project.createTwakeWorkspaceDescription"), 0, 0, NULL, NULL, Array(), Array(), 1, Array(), "current");
+            $task2 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate, "project.discoverTwake"), new TranslationObject($this->translate, "project.discoverTwakeDescription"), 0, 0, NULL, NULL, Array(), Array(), 1, Array(), "todo");
+            $task3 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate, "project.signin"), "", 0, 0, NULL, NULL, Array(), Array(), 1, Array(), "done");
+            $task4 = $this->taskService->createTask($list2, Array(), new TranslationObject($this->translate, "project.invitePartner"), new TranslationObject($this->translate, "project.invitePartnerDescription"), 0, 0, NULL, NULL, Array(), Array(), 1, Array(), "todo");
 
 
             $calendar1 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate, "general"), "#3DE8A0", $currentUserId = null, $icsLink = null);
@@ -277,9 +274,9 @@ class Workspaces implements WorkspacesInterface
                 $event = $this->calendarEventService->createEvent($workspace->getId(), $time["calendar"], $eventJSON);
             }
 
-            $dirTwake = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.twake") , "" , true,   false, null,  $twakebotId, null);
-            $fileRule = $this->driveService->create($workspace, $dirTwake->getId(), new TranslationObject($this->translate,"drive.rules") ,  new TranslationObject($this->translate,"drive.ruleText") , false,   false, null,  $twakebotId, null);
-            $fileWelcome = $this->driveService->create($workspace, null, new TranslationObject($this->translate,"drive.welcome") , new TranslationObject($this->translate,"drive.welcomeText")  , false,   false, null,  $twakebotId, null);
+            $dirTwake = $this->driveAdapteService->getFileSystem()->create($workspace, null, new TranslationObject($this->translate, "drive.twake"), "", true, false, null, $twakebotId, null);
+            $fileRule = $this->driveAdapteService->getFileSystem()->create($workspace, $dirTwake->getId(), new TranslationObject($this->translate, "drive.rules"), new TranslationObject($this->translate, "drive.ruleText"), false, false, null, $twakebotId, null);
+            $fileWelcome = $this->driveAdapteService->getFileSystem()->create($workspace, null, new TranslationObject($this->translate, "drive.welcome"), new TranslationObject($this->translate, "drive.welcomeText"), false, false, null, $twakebotId, null);
 
 
         }
@@ -387,7 +384,7 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function changeLogo($workspaceId, $logo, $currentUserId = null)
+    public function changeLogo($workspaceId, $logo, $currentUserId = null, $uploader = null)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
@@ -397,7 +394,11 @@ class Workspaces implements WorkspacesInterface
             $workspace = $workspaceRepository->find($workspaceId);
 
             if ($workspace->getLogo()) {
-                $workspace->getLogo()->deleteFromDisk();
+                if ($uploader) {
+                    $uploader->removeFile($workspace->getLogo(), false);
+                } else {
+                    $workspace->getLogo()->deleteFromDisk();
+                }
                 $this->doctrine->remove($workspace->getLogo());
             }
             $workspace->setLogo($logo);
@@ -420,7 +421,7 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function changeWallpaper($workspaceId, $wallpaper, $color = null, $currentUserId = null)
+    public function changeWallpaper($workspaceId, $wallpaper, $color = null, $currentUserId = null, $uploader = null)
     {
 
         if ($color == null) {
@@ -435,7 +436,11 @@ class Workspaces implements WorkspacesInterface
             $workspace = $workspaceRepository->find($workspaceId);
 
             if ($workspace->getWallpaper()) {
-                $workspace->getWallpaper()->deleteFromDisk();
+                if ($uploader) {
+                    $uploader->removeFile($workspace->getWallpaper(), false);
+                } else {
+                    $workspace->getWallpaper()->deleteFromDisk();
+                }
                 $this->doctrine->remove($workspace->getWallpaper());
             }
             $workspace->setWallpaper($wallpaper);

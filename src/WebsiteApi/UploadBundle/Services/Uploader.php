@@ -132,21 +132,11 @@ class Uploader extends Controller
 
 		$this->uploadService->setImageModifiers($this->modifiersService);
 
-		$upload_status = $this->uploadService->upload($realfile, $file->getLocalServerURL(0), $contexts[$context]); //Upload original
+        $upload_status = $this->upload($realfile, $file, $context); //Upload original
 
 		$file->setWeight($upload_status['filesize']);
 
 		if($upload_status["status"] == "success") {
-
-			//Ajouter les thumbnails !
-			if ($contexts[$context]['is_img']) {
-				$sizes = Array(0,512,256,128,64);
-				for($size=1;$size<=4;$size++) {
-					if(decbin($file->getSizes())[$size]==1) {
-						$this->uploadService->addThumbnail($file->getLocalServerURL(0), $sizes[$size], $file->getLocalServerURL($size)); //Upload thumbnails
-					}
-				}
-			}
 
 			$orm->persist($file);
 			$orm->flush();
@@ -163,8 +153,37 @@ class Uploader extends Controller
 
 	}
 
+    public function upload($realfile, $file, $context)
+    {
+        $contexts = $this->getContexts();
+        $upload_status = $this->uploadService->upload($realfile, $file->getLocalServerURL(0), $contexts[$context]);
+
+        if ($upload_status["status"] == "success") {
+            //Ajouter les thumbnails !
+            if ($contexts[$context]['is_img']) {
+                $sizes = Array(0, 512, 256, 128, 64);
+                for ($size = 1; $size <= 4; $size++) {
+                    if (decbin($file->getSizes())[$size] == 1) {
+                        $this->uploadService->addThumbnail($file->getLocalServerURL(0), $sizes[$size], $file->getLocalServerURL($size)); //Upload thumbnails
+                    }
+                }
+            }
+        }
+
+        return $upload_status;
+    }
+
 	private function getExtension($filename){
 		return pathinfo($filename, PATHINFO_EXTENSION);
 	}
+
+    public function removeFile($file, $flush = true)
+    {
+        $file->deleteFromDisk();
+        $this->doctrine->remove($file);
+        if ($flush) {
+            $this->doctrine->flush();
+        }
+    }
 
 }

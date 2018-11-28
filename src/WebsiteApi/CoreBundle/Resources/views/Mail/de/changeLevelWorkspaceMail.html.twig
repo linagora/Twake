@@ -1,0 +1,14 @@
+{% extends "TwakeCoreBundle:Mail:de/all.html.twig" %}
+
+{% block title %}Ihr Status in {{ workspace }} hat sich geändert{% endblock %}
+
+{% block secondtitle %}Ihr Status in {{ workspace }} hat sich geändert{% endblock %}
+
+{% block body %}
+
+    <b>Guten Tag {{ username|capitalize }},</b>
+    <br>
+    Ihr Status in {{ workspace }} (Gruppe {{ group }}) wurde geändert. Sie sind jetzt {{ level }}
+    <br>
+
+{% endblock %}

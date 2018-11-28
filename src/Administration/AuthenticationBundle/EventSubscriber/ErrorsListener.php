@@ -37,7 +37,8 @@ class ErrorsListener
 			$record->addData($data);
 		}
 
-		$this->doctrine->persist($record);
+
+        $this->doctrine->persist($record);
 		$this->doctrine->flush();
 
 	}

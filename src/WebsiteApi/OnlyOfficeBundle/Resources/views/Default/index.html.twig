@@ -1,10 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
+
     <script type="text/javascript" src="/public/js/jquery.min.js"></script>
     <script type="text/javascript" src="/public/js/Twake.js"></script>
 
     <script type="text/javascript" src="{{ onlyoffice_server }}/web-apps/apps/api/documents/api.js"></script>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0,minimum-scale=1.0,maximum-scale=1.0,user-scalable=no,shrink-to-fit=no">
 
 </head>
 <body style="height:100%">
@@ -19,7 +22,7 @@
     window.workspaceId = {{ workspaceId }};
     window.user = {
         id: {{ userid }},
-        username: "{{ username }}",
+        username: "{{ username|capitalize }}",
         language: "{{ language }}",
         userimage: "{{ userimage }}"
     };
@@ -60,6 +63,7 @@
                 documentType: mode,
                 document: doc,
                 token: doc.token,
+                type: (screen.width < 600) ? 'mobile' : 'desktop',
                 editorConfig: {
                     callbackUrl: window.baseURL + "save?token=" + doc.token,
                     "lang": window.user.language,
@@ -67,15 +71,15 @@
                         "id": window.user.id,
                         "name": window.user.username
                     },
-                    mode: (screen.width < 600) ? 'view' : 'edit',
                     customization: {
                         chat: false,
                         compactToolbar: true,
                         about: false,
                         feedback: false,
                         goback: {
-                            text: "Choose document",
-                            url: window.baseURL
+                            text: "",
+                            blank: false,
+                            url: "#"
                         }
                     }
                 },

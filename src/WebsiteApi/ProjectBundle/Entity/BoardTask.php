@@ -34,6 +34,11 @@ class BoardTask implements ObjectLinksInterface {
     private $weight;
 
     /**
+     * @ORM\Column(type="text")
+     */
+    private $checklist = "[]";
+
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\Board")
      * @ORM\JoinColumn(nullable=true)
      */
@@ -58,17 +63,23 @@ class BoardTask implements ObjectLinksInterface {
     private $user;
 
     /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $workspace;
+
+    /**
      * @ORM\Column(name="like_ts",type="bigint")
      */
     private $like;
 
     /**
-     * @ORM\Column(name="from_ts", type="bigint")
+     * @ORM\Column(name="from_ts", type="bigint", nullable=true)
      */
     private $from;
 
     /**
-     * @ORM\Column(name="to_ts", type="bigint")
+     * @ORM\Column(name="to_ts", type="bigint", nullable=true)
      */
     private $to;
 
@@ -109,16 +120,16 @@ class BoardTask implements ObjectLinksInterface {
     private $description;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\ListOfTasks",cascade={"persist"})
+     * @ORM\Column(type="text", nullable=true)
      */
-    private $doneList;
+    private $object_link_cache;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="text", nullable=false)
      */
-    private $doneDate;
+    private $status = "todo"; //"current" "done" "cancelled"
 
-    public  function __construct($from, $to, $name, $description, $dependingTask, $participants, $user, $weight=1)
+    public function __construct($from, $to, $name, $description, $dependingTask, $participants, $user, $weight = 0.5)
     {
         $this->setFrom($from);
         $this->setTo($to);
@@ -209,6 +220,10 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function setFrom($from)
     {
+        if (intval($from) <= 0) {
+            $this->from = null;
+            return;
+        }
         $this->from = $from;
     }
 
@@ -225,6 +240,10 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function setTo($to)
     {
+        if (intval($to) <= 0) {
+            $this->to = null;
+            return;
+        }
         $this->to = $to;
     }
 
@@ -280,7 +299,22 @@ class BoardTask implements ObjectLinksInterface {
             "like" => $this->getLike(),
             "labels" => $this->getLabels(),
             "user" => $this->getUser() !=null ? $this->getUser()->getId() : 0,
-            "doneDate" => $this->getDoneDate(),
+            "status" => $this->getStatus(),
+            "progress" => $this->getProgress(),
+            "checklist" => $this->getChecklist(),
+            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null,
+            "object_link_cache" => $this->getObjectLinkCache()
+        );
+    }
+
+    public function getAsMinimalArray()
+    {
+        return Array(
+            "id" => $this->getId(),
+            "board" => $this->getBoard()->getId(),
+            "list" => $this->getListOfTasks()->getId(),
+            "weight" => $this->getWeight(),
+            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null
         );
     }
 
@@ -351,22 +385,6 @@ class BoardTask implements ObjectLinksInterface {
     /**
      * @return mixed
      */
-    public function getDoneList()
-    {
-        return $this->doneList;
-    }
-
-    /**
-     * @param mixed $doneList
-     */
-    public function setDoneList($doneList)
-    {
-        $this->doneList = $doneList;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getOrder()
     {
         return $this->order;
@@ -385,7 +403,7 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function getWeight()
     {
-        return $this->weight;
+        return $this->weight / 10;
     }
 
     /**
@@ -393,7 +411,46 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function setWeight($weight)
     {
-        $this->weight = $weight;
+        $this->weight = intval($weight * 10);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getProgress()
+    {
+        $progress = 0;
+        $total = 0;
+        foreach ($this->getChecklist() as $row) {
+            if (isset($row["value"]) && $row["value"]) {
+                $progress += 1;
+            }
+            $total++;
+        }
+        if ($total == 0) {
+            return $progress = 0;
+        }
+        return intval(($progress / $total) * 100);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getChecklist()
+    {
+        @$val = json_decode($this->checklist, 1);
+        if (!is_array($val)) {
+            $val = Array();
+        }
+        return $val;
+    }
+
+    /**
+     * @param mixed $checklist
+     */
+    public function setChecklist($checklist)
+    {
+        $this->checklist = json_encode($checklist);
     }
 
     /**
@@ -538,21 +595,53 @@ class BoardTask implements ObjectLinksInterface {
     /**
      * @return mixed
      */
-    public function getDoneDate()
+    public function getStatus()
     {
-        return $this->doneDate;
+        return $this->status;
     }
 
     /**
-     * @param mixed $doneDate
+     * @param mixed $status
      */
-    public function setDoneDate($doneDate)
+    public function setStatus($status)
     {
-        $this->doneDate = $doneDate;
+        $this->status = $status;
     }
 
     public function getAllUsersToNotify()
     {
         return array_merge($this->getParticipants(),$this->getUserIdToNotify());
     }
+
+    public function finishSynchroniseField($data)
+    {
+        // TODO: Implement finishSynchroniseField($data) method.
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
+
+    /**
+     * @param mixed $workspace
+     */
+    public function setWorkspace($workspace)
+    {
+        $this->workspace = $workspace;
+    }
+
+    public function setObjectLinkCache($cache)
+    {
+        $this->object_link_cache = json_encode($cache);
+    }
+
+    public function getObjectLinkCache()
+    {
+        return json_decode($this->object_link_cache, 1);
+    }
+
 }

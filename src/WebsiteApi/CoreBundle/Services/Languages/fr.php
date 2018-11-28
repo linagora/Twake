@@ -14,19 +14,18 @@ $translation = Array(
     "drive.has_been_added" => "$1 a été ajouté dans $2",
     "drive.has_been_moved" => "$1 a été déplacé dans $2",
     "drive.file_updated" => "Fichier mis à jour",
-    "drive.has_been_update" => "$1 a été mit à jour",
+    "drive.has_been_update" => "$1 a été mis à jour",
     
     "project.generalBoardDescription" => "Tableau général de tâches",
-    "project.todo" => "A faire",
-    "project.doing" => "En cours",
-    "project.done" => "Fait",
-    "project.createTwakeWorkspace" => "Crée ton premier espace de travail",
-    "project.createTwakeWorkspaceDescription" => "Pour créer un espace de travail, clique sur le \"+\" dans ta liste d\'espaces de travail",
+    "project.discover_twake" => "Découvrir Twake",
+    "project.project" => "Mon projet",
+    "project.createTwakeWorkspace" => "Créez votre premier espace de travail",
+    "project.createTwakeWorkspaceDescription" => "Pour créer un espace de travail, cliquez sur le bouton \"+\" dans ta liste d\'espaces de travail",
     "project.discoverTwake" => "Découvrir Twake",
-    "project.discoverTwakeDescription" => "Ouvre chaque application pour découvrir en quoi Twake peut te faire gagner du temps",
+    "project.discoverTwakeDescription" => "Ouvrez chaque application pour découvrir en quoi Twake peut vous faire gagner du temps",
     "project.signin" => "S'inscrire sur Twake",
-    "project.invitePartner" => "Invite tes partenaires",
-    "project.invitePartnerDescription" => "Vas dans ton espace de travail, dans les onglets \"membres\", ajoutez tes partenaires avec leur nom d'utilisateur ou leur adresse mail s'ils ne sont pas déjà inscrits",
+    "project.invitePartner" => "Invitez vos partenaires",
+    "project.invitePartnerDescription" => "Allez dans votre espace de travail, dans les onglets \"membres\", ajoutez vos partenaires avec leur nom d'utilisateur ou leur adresse mail",
 
 
     "drive.society" => "Société",
@@ -41,7 +40,7 @@ $translation = Array(
     "drive.rules" => "Règles.docx",
     "drive.ruleText" => "Ne pas fumez pas l'herbe du jardin",
     "drive.welcome" => "Bienvenue.docx",
-    "drive.welcomeText" => "Bienvenue sur Twake ! \nNous sommes très heureux de t'accueillir sur notre plateforme. :D",
+    "drive.welcomeText" => "Bienvenue sur Twake ! \nNous sommes très heureux de vous accueillir sur notre plateforme. :D",
 
     "calendar.communication" => "Communication",
     "calendar.customer" => "Client",
@@ -51,8 +50,8 @@ $translation = Array(
     "calendar.meetingXu" => "RDV avec M. Xu",
     "calendar.interview" => "Publicité TV",
 
-    "message.hello1" => "Bonjour $1, bienvenu sur Twake !:tada:",
-    "message.hello2" => "Je suis Twake_bot, je suis ici pour t'aider",
+    "message.hello1" => "Bonjour $1, bienvenue sur Twake !:tada:",
+    "message.hello2" => "Je suis Twake_bot, je suis ici pour vous aider",
     "message.hello3" => "Prêt à utiliser Twake ? :grinning:",
 
 
@@ -69,7 +68,7 @@ $translation = Array(
     "workspace.activity.task.update" => "$1 a mis à jour $2 tâche(s)",
     "workspace.activity.task.remove" => "$1 a supprimé $2 tâche(s)",
     "workspace.activity.task.create" => "$1 a créé $2 tâche(s)",
-    "workspace.activity.task.done" => "$1 terminé $2 tâche(s)",
+    "workspace.activity.task.done" => "$1 a terminé $2 tâche(s)",
     "workspace.activity.event.update" => "$1 a mis à jour $2 événement(s)",
     "workspace.activity.event.remove" => "$1 a supprimé $2 événement(s)",
     "workspace.activity.event.create" => "$1 a créé $2 événement(s)",

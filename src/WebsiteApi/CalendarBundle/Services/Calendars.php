@@ -45,6 +45,7 @@ class Calendars implements CalendarsInterface
             foreach ($links as $link) {
                 $cal = $link->getCalendar()->getAsArray();
                 $cal["owner"] = $link->getOwner();
+                $cal["application"] = $link->getApplication() ? $link->getApplication()->getId() : null;
                 $result[] = $cal;
             }
 
@@ -90,7 +91,8 @@ class Calendars implements CalendarsInterface
         }
     }
 
-    public function createCalendar($workspaceId, $title, $color, $currentUserId=null, $icsLink=null){
+    public function createCalendar($workspaceId, $title, $color, $currentUserId = null, $icsLink = null, $app = null)
+    {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:manage")) {
@@ -110,13 +112,21 @@ class Calendars implements CalendarsInterface
             $this->doctrine->persist($cal);
 
             $link = new LinkCalendarWorkspace($workspace, $cal, true);
+
+            if ($app) {
+                $link->setApplication($app);
+            }
+
             $this->doctrine->persist($link);
 
             $this->doctrine->flush();
 
+            $calendar = $cal->getAsArray();
+            $calendar["application"] = $app ? $app->getId() : null;
+
             $data = Array(
                 "type" => "update",
-                "calendar" => $cal->getAsArray()
+                "calendar" => $calendar
             );
             $this->pusher->push($data, "calendar/workspace/".$workspaceId);
 
@@ -311,6 +321,26 @@ class Calendars implements CalendarsInterface
 
 
         return $allLinks;
+    }
+
+    public function getCalendarForApp($workspaceId, $appId, $currentUserId = null)
+    {
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($appId);
+
+        if (!$this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:write")) {
+            return null;
+        }
+
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("workspace" => $workspace, "application" => $application));
+
+        if (!$calendarLink) {
+            //Create calendar for app
+            return $this->createCalendar($workspaceId, $application->getName(), $application->getColor(), $currentUserId, null, $application);
+        } else {
+            return $calendarLink->getCalendar();
+        }
+
     }
 
     public function addWorkspaceMember($workspace, $user)

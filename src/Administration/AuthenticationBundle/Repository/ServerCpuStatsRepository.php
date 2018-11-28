@@ -10,7 +10,7 @@ namespace Administration\AuthenticationBundle\Repository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 use Administration\AuthenticationBundle\Entity\ServerCpuStats;
 
-class ServerCpuStatsRepository extends \Doctrine\ORM\EntityRepository
+class ServerCpuStatsRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
     public function getLastId()
     {

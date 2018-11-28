@@ -1,0 +1,10 @@
+parameters:
+    aws:
+        S3:
+            use: true
+            version: latest
+            buckets:
+                fr: eu-west-3
+            credentials:
+                key: A
+                secret: B

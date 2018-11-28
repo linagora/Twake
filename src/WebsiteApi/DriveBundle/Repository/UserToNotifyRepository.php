@@ -5,7 +5,7 @@ namespace WebsiteApi\DriveBundle\Repository;
 /**
  * UserToNotifyRepository
  */
-class UserToNotifyRepository extends \Doctrine\ORM\EntityRepository
+class UserToNotifyRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
     public function deleteByDriveFile($driveFile)
     {

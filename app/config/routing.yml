@@ -13,6 +13,18 @@ easy_admin_bundle_dashboard:
     defaults: {_controller: AdministrationAuthenticationBundle:Dashboard:show}
     path:   /administration/V2/dashboard
 
+easy_admin_bundle_workspace_data:
+    defaults: {_controller: AdministrationAuthenticationBundle:Workspace:show}
+    path:   /administration/V2/workspace
+
+easy_admin_bundle_group_data:
+    defaults: {_controller: AdministrationAuthenticationBundle:Workspace:showGroup}
+    path:   /administration/V2/group
+
+easy_admin_bundle_user_data:
+    defaults: {_controller: AdministrationAuthenticationBundle:User:show}
+    path:   /administration/V2/user
+
 #website_group:
 #    resource: "@WebsiteGroupBundle/Resources/config/routing.yml"
 #    prefix:   /group/
@@ -106,6 +118,11 @@ twake_objectLinks:
     resource: "@TwakeObjectLinksBundle/Resources/config/routing.yml"
     prefix:   /ajax/objectLinks/
     methods: [POST]
+
+twake_onlyoffice:
+    resource: "@TwakeOnlyOfficeBundle/Resources/config/routing.yml"
+    prefix:   /ajax/onlyoffice/
+    methods: [POST, GET]
 
 twake_api_error:
     path:     /ajax/{req}

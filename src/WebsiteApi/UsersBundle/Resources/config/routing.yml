@@ -24,6 +24,11 @@ twake_user_get:
     methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersConnections:currentUser }
 
+twake_user_mobile_redirect:
+    path:     /mobile_redirect
+    methods: [GET]
+    defaults: { _controller: TwakeUsersBundle:UsersConnections:mobileRedirect }
+
 twake_user_get_identicon:
     path:     /current/identicon
     defaults: { _controller: TwakeUsersBundle:UsersConnections:identicon }

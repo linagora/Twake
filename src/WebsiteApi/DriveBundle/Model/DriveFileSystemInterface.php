@@ -29,9 +29,6 @@ interface DriveFileSystemInterface
 	// @move moves a file to another directory
 	public function move($fileOrDirectory, $directory); // $file : entity or id, $directory : entity or id
 
-	// @copy copy a file to another directory
-	public function copy($fileOrDirectory, $newParent = null); // $fileOrDirectory : entity or id
-
 	// @rename renames a file
 	public function rename($fileOrDirectory, $filename, $description=null, $labels=Array()); // $file : entity or id, $filename : string
 

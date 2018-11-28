@@ -118,11 +118,29 @@
                 <div class="box-header with-border">
                     <h3 class="box-title">Users connected yesterday</h3>
                 </div>
-                <div>
-                    {% for user in usersConnectedYesterday %}
-                        <b>{{ user.user.username }}</b> {{ user.duree|date('H:i:s') }}
-                        <br>
-                    {% endfor %}
+                <div class="box-body">
+                    <div class="table-responsive">
+                        <table class="table no-margin">
+                            <thead>
+                            <tr>
+                                <th>ID</th>
+                                <th>Username</th>
+                                <th>Connexion time</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for user in usersConnectedYesterday %}
+                                <tr>
+                                    <td>{{ user.user.id }}</td>
+                                    <td>
+                                        <a href="/administration/V2/user?id={{ user.user.id }}">{{ user.user.username }}</a>
+                                    </td>
+                                    <td>{{ user.duree|date('H:i:s', '+00:00 GMT') }}min</td>
+                                </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </div>

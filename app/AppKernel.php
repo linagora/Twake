@@ -21,6 +21,7 @@ class AppKernel extends Kernel
 			new Symfony\Bundle\AsseticBundle\AsseticBundle(),
 	        new EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle(),
 	        new CMEN\GoogleChartsBundle\CMENGoogleChartsBundle(),
+            new \Aws\Symfony\AwsBundle(),
 
 			new WebsiteApi\CoreBundle\TwakeCoreBundle(),
 			new WebsiteApi\UsersBundle\TwakeUsersBundle(),
@@ -52,7 +53,7 @@ class AppKernel extends Kernel
             new DevelopersApiV1\CoreBundle\DevelopersApiV1CoreBundle(),
             new DevelopersApiV1\CalendarBundle\DevelopersApiV1CalendarBundle(),
             new DevelopersApiV1\ProjectBundle\DevelopersApiV1ProjectBundle(),
-            new DevelopersApiV1\WorkspacesBundle\DevelopersApiV1WorkspacesBundle(),
+            new DevelopersApiV1\WorkspacesBundle\DevelopersApiV1WorkspacesBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

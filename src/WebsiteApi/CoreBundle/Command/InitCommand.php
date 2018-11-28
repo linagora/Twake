@@ -241,10 +241,10 @@ class InitCommand extends ContainerAwareCommand
         $app->setDefault(1);
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
-        $app->setOrder(0);
+        $app->setOrder(2);
         $app->setThumbnail($serverbase . "/medias/apps/images_viewer.png");
         $app->setMessageModuleUrl("");
-        $app->setEditableRights(1);
+        $app->setEditableRights(0);
         $app->setCgu("");
         $app->setFilesTypes(Array("main" => Array("png","jpg","jpeg","gif","bmp","tiff"), "other" => Array()));
         $manager->persist($app);
@@ -267,10 +267,10 @@ class InitCommand extends ContainerAwareCommand
         $app->setDefault(1);
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
-        $app->setOrder(0);
+        $app->setOrder(2);
         $app->setThumbnail($serverbase . "/medias/apps/pdf_viewer.png");
         $app->setMessageModuleUrl("");
-        $app->setEditableRights(1);
+        $app->setEditableRights(0);
         $app->setCgu("");
         $app->setFilesTypes(Array("main" => Array("pdf"), "other" => Array()));
         $manager->persist($app);
@@ -293,7 +293,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setDefault(1);
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(0);
-        $app->setOrder(0);
+        $app->setOrder(2);
         $app->setThumbnail($serverbase . "/medias/apps/note.png");
         $app->setMessageModuleUrl("");
         $app->setEditableRights(1);
@@ -319,10 +319,10 @@ class InitCommand extends ContainerAwareCommand
         $app->setDefault(1);
         $app->setCreateFileData(json_decode("", true));
         $app->setMessageModule(1);
-        $app->setOrder(0);
+        $app->setOrder(2);
         $app->setThumbnail($serverbase . "/medias/apps/calls.png");
         $app->setMessageModuleUrl("/calls.html?message=true");
-        $app->setEditableRights(1);
+        $app->setEditableRights(0);
         $app->setCgu("");
         $app->setFilesTypes(Array());
         $manager->persist($app);
@@ -906,7 +906,7 @@ class InitCommand extends ContainerAwareCommand
             ["/medias/apps/web/zimbra.png", "Zimbra", "zimbra", "zimbra", "3784BC", Array()],
 
 
-            ["/medias/apps/web/any_url.png", "External app", "any_url", "any_app", "888888", Array()]
+            ["/medias/apps/web/any_url.png", "External app", "any_url", "any_app", "888888", Array("order" => 1000000000)]
 
         ];
 
@@ -930,7 +930,7 @@ class InitCommand extends ContainerAwareCommand
             $app->setDefault(0);
             $app->setCreateFileData(json_decode("", true));
             $app->setMessageModule(0);
-            $app->setOrder(2);
+            $app->setOrder(isset($application[5]["order"]) ? $application[5]["order"] : 2);
             $app->setThumbnail($serverbase .$application[0] );
             $app->setMessageModuleUrl("");
             $app->setEditableRights(0);

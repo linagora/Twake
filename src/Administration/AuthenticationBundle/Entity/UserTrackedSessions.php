@@ -23,8 +23,6 @@ class UserTrackedSessions
     private $id;
 
     /**
-     * @var int
-     *
      * Utilisateur associé à cette session
      *
      * @ORM\OneToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
@@ -102,6 +100,14 @@ class UserTrackedSessions
     /**
      * @return int
      */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @return int
+     */
     public function getUser()
     {
         return $this->user;
@@ -145,6 +151,14 @@ class UserTrackedSessions
     public function setData($data)
     {
         $this->data = json_encode($data);
+    }
+
+    /**
+     * @param string $data
+     */
+    public function getDataAsText()
+    {
+        return $this->data;
     }
 
     /**

@@ -135,6 +135,16 @@ class DriveFile implements ObjectLinksInterface
      */
     private $default_web_app;
 
+    /**
+     * @ORM\Column(type="string", length=2048, nullable = true)
+     */
+    private $aws_preview_link = "";
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $object_link_cache;
+
 
     public function __construct($group, $parent, $name, $isDirectory = false,$directoryToCopy = null, $url = null)
     {
@@ -207,7 +217,10 @@ class DriveFile implements ObjectLinksInterface
     {
         $this->name = $name;
         $array = explode(".", $name);
-        $ext = array_pop($array);
+        $ext = "";
+        if (count($array) > 1) {
+            $ext = array_pop($array);
+        }
         $this->setExtension($ext);
     }
 
@@ -399,7 +412,11 @@ class DriveFile implements ObjectLinksInterface
      */
     public function setExtension($extension)
     {
-        $this->extension = $extension;
+        if (!$this->getIsDirectory()) {
+            $this->extension = $extension;
+        } else {
+            $this->extension = "";
+        }
     }
 
     /**
@@ -528,6 +545,7 @@ class DriveFile implements ObjectLinksInterface
             "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
             "detached" => $this->getDetachedFile(),
             "cache" => $this->getCache(),
+            "direct_preview_link" => $this->getAwsPreviewLink(),
             "preview" => $this->getPreviewPath(),
             "copyOf" => ($this->getCopyOf()?$this->getCopyOf()->getId():null),
             "shared" => $this->getShared(),
@@ -535,7 +553,8 @@ class DriveFile implements ObjectLinksInterface
             "opening_rate" => $this->getOpeningRate(),
             "public_access_key" => $this->getPublicAccessKey(),
             "previewHasBeenGenerated" => $this->getPreviewHasBeenGenerated(),
-            "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null
+            "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null,
+            "object_link_cache" => $this->getObjectLinkCache()
         );
     }
 
@@ -565,6 +584,13 @@ class DriveFile implements ObjectLinksInterface
             "id" => $this->getId(),
             "title" => "File",
             "object_name" => $this->getName(),
+            "object_data" => Array(
+                "direct_preview_link" => $this->getAwsPreviewLink(),
+                "extension" => $this->getExtension(),
+                "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
+                'parent' => (($this->getParent()) ? $this->getParent()->getId() : 0),
+                "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null
+            ),
             "key" => "drive",
             "type" => "file",
             "code" => "twake/" . ($this->getParent() ? $this->getParent()->getId() : 0) . "/" . $this->getId(),
@@ -601,5 +627,37 @@ class DriveFile implements ObjectLinksInterface
     public function setGroup($group)
     {
         $this->group = $group;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAwsPreviewLink()
+    {
+        return $this->aws_preview_link;
+    }
+
+    /**
+     * @param mixed $aws_preview_link
+     */
+    public function setAwsPreviewLink($aws_preview_link)
+    {
+        $this->aws_preview_link = $aws_preview_link;
+    }
+
+
+    public function finishSynchroniseField($data)
+    {
+        // TODO: Implement finishSynchroniseField($data) method.
+    }
+
+    public function setObjectLinkCache($cache)
+    {
+        $this->object_link_cache = json_encode($cache);
+    }
+
+    public function getObjectLinkCache()
+    {
+        return json_decode($this->object_link_cache, 1);
     }
 }

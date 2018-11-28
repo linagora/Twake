@@ -43,25 +43,14 @@ board_get_share_board:
     defaults: { _controller: TwakeProjectBundle:Board:getShareBoard }
     methods: [POST]
 
-board_do_import:
-    path:     /boards/import
-    defaults: { _controller: TwakeProjectBundle:Board:importBoard }
-    methods: [POST]
-
-board_do_export:
-    path:     /boards/export/{workspaceId}/{boardsIds}/{useMine}/{from}/{to}
-    defaults: { _controller: TwakeProjectBundle:Board:exportBoard }
-    requirements:
-              workspaceId: "[0-9]+"
-              boardsIds: "[0-9]+(,[0-9]+)*"
-              useMine: "[0-1]"
-              from: "[0-9]+"
-              to: "[0-9]+"
-    methods: [GET]
-
 board_tasks_get:
     path:     /tasks/get
     defaults: { _controller: TwakeProjectBundle:Task:get }
+    methods: [POST]
+
+board_tasks_get_for_user:
+    path:     /tasks/get_for_user
+    defaults: { _controller: TwakeProjectBundle:Task:getForUser }
     methods: [POST]
 
 board_tasks_get_one_task:
@@ -94,15 +83,6 @@ board_tasks_move:
     defaults: { _controller: TwakeProjectBundle:Task:move }
     methods: [POST]
 
-board_tasks_share:
-    path:     /tasks/addUsers
-    defaults: { _controller: TwakeProjectBundle:Task:addUsers }
-    methods: [POST]
-
-board_tasks_unshare:
-    path:     /tasks/removeUsers
-    defaults: { _controller: TwakeProjectBundle:Task:removeUsers }
-    methods: [POST]
 board_tasks_like:
     path:     /tasks/like
     defaults: { _controller: TwakeProjectBundle:Task:like }

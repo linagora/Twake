@@ -5,7 +5,7 @@ namespace WebsiteApi\DriveBundle\Repository;
 /**
  * DriveFileLabelRepository
  */
-class DriveFileLabelRepository extends \Doctrine\ORM\EntityRepository
+class DriveFileLabelRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
     public function countByLabel($label)
     {

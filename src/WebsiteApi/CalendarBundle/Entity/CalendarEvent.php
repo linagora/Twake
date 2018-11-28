@@ -36,12 +36,12 @@ class CalendarEvent implements ObjectLinksInterface {
     private $nextReminder = 0;
 
     /**
-     * @ORM\Column(name="from_ts", type="bigint")
+     * @ORM\Column(name="from_ts", type="bigint", nullable=true)
      */
     private $from;
 
     /**
-     * @ORM\Column(name="to_ts", type="bigint")
+     * @ORM\Column(name="to_ts", type="bigint", nullable=true)
      */
     private $to;
 
@@ -54,6 +54,17 @@ class CalendarEvent implements ObjectLinksInterface {
      * @ORM\Column(name="participant", type="text")
      */
     private $participants;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\JoinColumn(nullable=true)
+     */
+    private $workspace;
+
+    /**
+     * @ORM\Column(type="text", nullable=true)
+     */
+    private $object_link_cache;
 
     public  function __construct($event, $from, $to)
     {
@@ -205,6 +216,8 @@ class CalendarEvent implements ObjectLinksInterface {
             "event" => $this->getEvent(),
             "participant" => Array(),
             "participant_full" => Array(),
+            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null,
+            "object_link_cache" => $this->getObjectLinkCache()
         );
         if ($this->getParticipants()) {
             foreach ($this->getParticipants() as $participant) {
@@ -222,6 +235,7 @@ class CalendarEvent implements ObjectLinksInterface {
             "id" => $this->getId(),
             "calendar" => $this->getCalendar()->getId(),
             "event" => $event,
+            "workspace" => $this->getWorkspace() ? $this->getWorkspace()->getId() : null
         );
     }
 
@@ -254,6 +268,14 @@ class CalendarEvent implements ObjectLinksInterface {
 
     public function get($fieldName){
 
+        $event = $this->getEvent();
+        if ($fieldName == "to" && isset($event["typeEvent"]) && $event["typeEvent"] == "reminder") {
+            return null;
+        }
+        if ($fieldName == "from" && isset($event["typeEvent"]) && $event["typeEvent"] == "deadline") {
+            return null;
+        }
+
         if(!property_exists($this, $fieldName))
             return false;
 
@@ -269,5 +291,51 @@ class CalendarEvent implements ObjectLinksInterface {
         }
         return "calendar/" . $this->getCalendar()->getId();
     }
+
+    public function finishSynchroniseField($data)
+    {
+        if (!$data["from"]) {
+            $this->setFrom($this->getTo() - 30 * 60);
+            $event = $this->getEvent();
+            $event["typeEvent"] = "deadline";
+            $this->setEvent($event);
+        } else if (!$data["to"]) {
+            $this->setTo($this->getFrom() + 30 * 60);
+            $event = $this->getEvent();
+            $event["typeEvent"] = "reminder";
+            $this->setEvent($event);
+        } else {
+            $event = $this->getEvent();
+            $event["typeEvent"] = "event";
+            $this->setEvent($event);
+        }
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
+
+    /**
+     * @param mixed $workspace
+     */
+    public function setWorkspace($workspace)
+    {
+        $this->workspace = $workspace;
+    }
+
+    public function setObjectLinkCache($cache)
+    {
+        $this->object_link_cache = json_encode($cache);
+    }
+
+    public function getObjectLinkCache()
+    {
+        return json_decode($this->object_link_cache, 1);
+    }
+
 
 }

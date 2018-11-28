@@ -49,7 +49,6 @@ class Calendar {
      */
     private $icsLink;
 
-
     /**
      * @ORM\Column(type="datetime" , options={"default" : "2018-07-27 14:00:58"})
      */
