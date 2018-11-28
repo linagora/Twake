@@ -121,15 +121,13 @@ class PDOStatementAdapter
 
                 if ($value == NULL) {
                     $value = "NULL";
-                } else
-                    if ($this->types[$position + 1] == \PDO::PARAM_INT) {
-                        $value = $value;
-                    } else
-                        if (is_string($value) || (is_object($value) && method_exists($value, 'toCqlString'))) {
-                            $value = addslashes($value);
-                            $value = str_replace("'", "''", $value);
-                            $value = "'" . $value . "'";
-                        }
+                } else if ($this->types[$position + 1] == \PDO::PARAM_INT || $this->types[$position + 1] == "cassandra_timeuuid") {
+                    $value = $value;
+                } else if (is_string($value) || (is_object($value) && method_exists($value, 'toCqlString'))) {
+                    $value = addslashes($value);
+                    $value = str_replace("'", "''", $value);
+                    $value = "'" . $value . "'";
+                }
 
                 $query .= $query_part . "" . $value;
 

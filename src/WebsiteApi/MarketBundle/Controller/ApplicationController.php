@@ -361,8 +361,8 @@ class ApplicationController extends Controller
 		);
 
 
-		$appId = $request->request->getInt("appId",0);
-		$groupId = $request->request->getInt("workspaceId",0);
+        $appId = $request->request->get("appId", 0);
+        $groupId = $request->request->get("workspaceId", 0);
 
 		$app = $manager->getRepository("TwakeMarketBundle:Application")
 			->find($appId);

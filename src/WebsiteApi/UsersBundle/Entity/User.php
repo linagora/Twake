@@ -29,6 +29,9 @@ class User implements UserInterface
      */
     protected $id;
 
+    /**
+     * Used for cassandra session handler because timeuuid cannot be unserialized
+     */
     public $id_as_string_for_session_handler;
 
 	/**
@@ -181,8 +184,8 @@ class User implements UserInterface
 
     public function setIdAsString()
     {
-        if ($this->id && str_replace(Array("0", "-"), "", $this->id->uuid())) {
-            $this->id_as_string_for_session_handler = $this->id->uuid();
+        if ($this->id && str_replace(Array("0", "-"), "", $this->id)) {
+            $this->id_as_string_for_session_handler = $this->id;
         }
     }
 

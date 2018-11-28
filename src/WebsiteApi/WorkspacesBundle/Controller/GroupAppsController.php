@@ -23,7 +23,7 @@ class GroupAppsController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("groupId");
 
         $apps_obj = $this->get("app.group_apps")->getApps($groupId);
 
@@ -49,8 +49,8 @@ class GroupAppsController extends Controller
     public function setWorkspaceDefaultAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
-        $appId = $request->request->getInt("appId");
+        $groupId = $request->request->get("groupId");
+        $appId = $request->request->get("appId");
         $boolean = $request->request->getInt("boolean");
 
         $apps_obj = $this->get("app.group_apps")->setWorkspaceDefault($groupId,$appId,$boolean,$this->getUser()->getId());
@@ -67,8 +67,8 @@ class GroupAppsController extends Controller
     public function removeApplicationAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
-        $appId = $request->request->getInt("appId");
+        $groupId = $request->request->get("groupId");
+        $appId = $request->request->get("appId");
 
         $apps_obj = $this->get("app.group_apps")->removeApplication($groupId,$appId,$this->getUser()->getId());
 
@@ -84,8 +84,8 @@ class GroupAppsController extends Controller
     public function forceApplicationAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
-        $appId = $request->request->getInt("appId");
+        $groupId = $request->request->get("groupId");
+        $appId = $request->request->get("appId");
 
         $apps_obj = $this->get("app.workspaces_apps")->forceApplication($groupId,$appId,$this->getUser()->getId());
 
@@ -106,9 +106,9 @@ class GroupAppsController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
-        $workspaceId = $request->request->getInt("workspaceId");
-        $appId = $request->request->getInt("appId");
+        $groupId = $request->request->get("groupId");
+        $workspaceId = $request->request->get("workspaceId");
+        $appId = $request->request->get("appId");
 
         $res = $this->get("app.group_apps")->useApp($groupId, $workspaceId, $this->getUser()->getId(), $appId);
 

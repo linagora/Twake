@@ -26,7 +26,7 @@ class WorkspaceMembersController extends Controller
 
         $response = Array("errors" => Array(), "data" => Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
         $members = $this->get("app.workspace_members")->getMembers($workspaceId, $this->getUser()->getId());
 
@@ -68,7 +68,7 @@ class WorkspaceMembersController extends Controller
 
         $response = Array("errors" => Array(), "data" => Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
         $list = $request->request->get("list", "");
         $asExterne = $request->request->getBoolean("asExterne");
 
@@ -109,7 +109,7 @@ class WorkspaceMembersController extends Controller
 
         $response = Array("errors" => Array(), "data" => Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
         $mail = $request->request->get("mail", "");
 
         $res = $this->get("app.workspace_members")
@@ -128,7 +128,7 @@ class WorkspaceMembersController extends Controller
 
         $response = Array("errors" => Array(), "data" => Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
         $ids = $request->request->get("ids", Array());
 
         $removed = 0;
@@ -153,7 +153,7 @@ class WorkspaceMembersController extends Controller
 
         $response = Array("errors" => Array(), "data" => Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
         $ids = $request->request->get("usersId", Array());
         $levelId = $request->request->get("levelId");
 

@@ -73,7 +73,7 @@ class File
 
     /**
      *
-     * @ORM\Column(name="aws_pubblic_link", type="string", length=1024)
+     * @ORM\Column(name="aws_public_link", type="string", length=1024)
      */
     private $aws_public_link = false;
 

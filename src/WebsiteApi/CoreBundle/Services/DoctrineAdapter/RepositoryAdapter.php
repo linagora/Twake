@@ -2,11 +2,34 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter;
 
+/** Used to generate a false ID from string ID */
+class FakeCassandraTimeuuid
+{
+    public function __construct($timeuuid)
+    {
+        $this->timeuuid = $timeuuid;
+    }
+
+    public function __toString()
+    {
+        return $this->timeuuid;
+    }
+}
+
 class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 {
 
     public function find($id)
     {
+
+        if (!$id) {
+            return null;
+        }
+
+        if (is_string($id)) {
+            $id = new FakeCassandraTimeuuid($id);
+        }
+
         try {
             $a = parent::find($id);
         } catch (\Exception $e) {

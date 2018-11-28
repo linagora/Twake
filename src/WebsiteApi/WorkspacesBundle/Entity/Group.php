@@ -277,10 +277,10 @@ class Group
 
 	public function getAsArray(){
 		return Array(
+            "id" => $this->getId(),
 			"unique_name" => $this->getName(),
 			"name" => $this->getDisplayName(),
-			"plan" => $this->getPricingPlan()->getLabel(),
-			"id" => $this->getId(),
+            "plan" => (($this->getPricingPlan() != null) ? $this->getPricingPlan()->getLabel() : null),
 			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):""),
             "isBlocked" => $this->getIsBlocked(),
             "free_offer_end" => $this->getFreeOfferEnd()

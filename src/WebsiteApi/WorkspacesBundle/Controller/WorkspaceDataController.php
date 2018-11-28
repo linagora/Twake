@@ -23,7 +23,7 @@ class WorkspaceDataController extends Controller
 
 		$response = Array("errors"=>Array(), "data"=>Array());
 
-		$workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
 		$ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
 
@@ -47,7 +47,7 @@ class WorkspaceDataController extends Controller
 			"data" => Array()
 		);
 
-		$workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 		$name = $request->request->get("name", null);
 
 		$ok = false;
@@ -82,7 +82,7 @@ class WorkspaceDataController extends Controller
 			"data" => Array()
 		);
 
-		$workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
 		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:write")){
 			$data["errors"][] = "notallowed";
@@ -116,7 +116,7 @@ class WorkspaceDataController extends Controller
 			"data" => Array()
 		);
 
-		$workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
 		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:write")){
 			$data["errors"][] = "notallowed";

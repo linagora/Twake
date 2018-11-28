@@ -23,7 +23,7 @@ class WorkspaceController extends Controller
 
 		$response = Array("errors"=>Array(), "data"=>Array());
 
-		$workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
 
 		$ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
@@ -109,7 +109,7 @@ class WorkspaceController extends Controller
             $name = "Untitled";
         }
 
-		$groupId = $request->request->getInt("groupId", 0);
+        $groupId = $request->request->get("groupId", 0);
 
 		if(!$groupId){
             $group_name = $request->request->get("group_name", "");
@@ -154,7 +154,7 @@ class WorkspaceController extends Controller
 		);
 
 		if($this->getUser()){
-			$workspaceId = $request->request->getInt("workspaceId");
+            $workspaceId = $request->request->get("workspaceId");
 			$ok = $this->get("app.workspaces")->remove(0, $workspaceId);
 			if($ok){
 				$data["data"] = "success";
@@ -173,7 +173,7 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
         $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
         if(!$ws){
@@ -197,7 +197,7 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
         $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
         if(!$ws){
@@ -221,8 +221,8 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
-        $appId = $request->request->getInt("appId");
+        $workspaceId = $request->request->get("workspaceId");
+        $appId = $request->request->get("appId");
 
         $res = $this->get("app.workspaces_apps")->disableApp($workspaceId,$appId);
         if(!$res){
@@ -241,8 +241,8 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
-        $appId = $request->request->getInt("appId");
+        $workspaceId = $request->request->get("workspaceId");
+        $appId = $request->request->get("appId");
 
         $res = $this->get("app.workspaces_apps")->enableApp($workspaceId,$appId);
         if(!$res){

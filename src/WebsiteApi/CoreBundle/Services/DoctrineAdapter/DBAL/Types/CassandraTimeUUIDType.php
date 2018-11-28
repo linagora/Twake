@@ -31,4 +31,13 @@ class CassandraTimeUUIDType extends StringType
     {
         return "cassandra_timeuuid";
     }
+
+    public function convertToPHPValue($value, AbstractPlatform $platform)
+    {
+        if (!$value) {
+            return null;
+        }
+        return $value . "";
+    }
+
 }

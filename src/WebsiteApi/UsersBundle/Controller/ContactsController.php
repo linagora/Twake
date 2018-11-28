@@ -20,7 +20,7 @@ class ContactsController extends Controller
 		);
 
 		if($this->getUser()){
-			$user_id = $request->request->getInt("user_id", 0);
+            $user_id = $request->request->get("user_id", 0);
 			$res = $this->get("app.contacts")->ask($this->getUser(), $user_id);
 			if($res){
 				$data["data"] = "success";
@@ -42,7 +42,7 @@ class ContactsController extends Controller
 		);
 
 		if($this->getUser()){
-			$user_id = $request->request->getInt("user_id", 0);
+            $user_id = $request->request->get("user_id", 0);
 			$res = $this->get("app.contacts")->remove($this->getUser(), $user_id);
 			if($res){
 				$data["data"] = "success";
@@ -64,7 +64,7 @@ class ContactsController extends Controller
 		);
 
 		if($this->getUser()){
-			$user_id = $request->request->getInt("user_id", 0);
+            $user_id = $request->request->get("user_id", 0);
 			$res = $this->get("app.contacts")->get($this->getUser(), $user_id);
 			if($res){
 				if($res->getStatus()){

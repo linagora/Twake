@@ -8,19 +8,6 @@ use Doctrine\ORM\NoResultException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 
-class FakeCassandraTimeuuid
-{
-    public function __construct($timeuuid)
-    {
-        $this->timeuuid = $timeuuid;
-    }
-
-    public function __toString()
-    {
-        return $this->timeuuid;
-    }
-}
-
 /**
  * UserRepository
  *
@@ -60,7 +47,7 @@ class UserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\Rep
             throw new UnsupportedUserException($message);
         }
 
-        return $this->find(new FakeCassandraTimeuuid($user->id_as_string_for_session_handler));
+        return $this->find($user->id_as_string_for_session_handler);
     }
 
 
