@@ -20,14 +20,16 @@ use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
 class User implements UserInterface
 {
 
-	/**
-	 * @var int
-	 *
+    /**
+     * @var int
+     *
      * @ORM\Column(name="id", type="cassandra_timeuuid")
-	 * @ORM\Id
+     * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
-	 */
-	protected $id;
+     */
+    protected $id;
+
+    public $id_as_string_for_session_handler;
 
 	/**
      * @ORM\Column(name="banned", type="cassandra_boolean")
@@ -176,6 +178,13 @@ class User implements UserInterface
 	{
 		return $this->id;
 	}
+
+    public function setIdAsString()
+    {
+        if ($this->id && str_replace(Array("0", "-"), "", $this->id->uuid())) {
+            $this->id_as_string_for_session_handler = $this->id->uuid();
+        }
+    }
 
 	/**
 	 * @return mixed

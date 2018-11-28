@@ -102,6 +102,11 @@ services:
         class:     WebsiteApi\CoreBundle\Services\DoctrineAdapter\CassandraSessionHandler
         arguments: ['@app.cassandra_doctrine', {lock_mode: 0}]
 
+    user.provider.cassandra:
+        class: WebsiteApi\UsersBundle\Repository\UserRepository
+        factory: ['@app.cassandra_doctrine', 'getRepository']
+        arguments: ['WebsiteApi\UsersBundle\Entity\User']
+
     kernel.event_listener.json_request_transformer:
       class: Qandidate\Common\Symfony\HttpKernel\EventListener\JsonRequestTransformerListener
       tags:
