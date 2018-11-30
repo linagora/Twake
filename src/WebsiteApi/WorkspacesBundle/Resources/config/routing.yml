@@ -10,6 +10,10 @@ twake_workspaces_create:
     path:     /create
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:create }
 
+twake_workspaces_duplicate:
+    path:     /duplicate
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:duplicate }
+
 twake_workspaces_delete:
     path:     /delete
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:delete }

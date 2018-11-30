@@ -332,7 +332,7 @@ class Calendars implements CalendarsInterface
             return null;
         }
 
-        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("workspace" => $workspace, "application" => $application));
+        $calendarLink = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $workspace, "application" => $application));
 
         if (!$calendarLink) {
             //Create calendar for app

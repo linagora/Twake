@@ -140,6 +140,41 @@ class WorkspaceController extends Controller
 		return new JsonResponse($response);
 	}
 
+    /**
+     * Récupère les informations de base d'un groupe
+     */
+    public function duplicateAction(Request $request)
+    {
+
+        $response = Array("errors" => Array(), "data" => Array());
+
+        $original_workspace_id = $request->request->get("original_workspace_id", 0);
+        $name = $request->request->get("config_name", "");
+
+        $config = Array();
+
+        $config["users"] = $request->request->get("config_users", "me");
+
+        $config["calendars"] = $request->request->get("config_calendars", 1);
+        $config["streams"] = $request->request->get("config_streams", 1);
+        $config["drive_labels"] = $request->request->get("config_drive_labels", 1);
+        $config["boards"] = $request->request->get("config_boards", 1);
+        $config["rights"] = $request->request->get("config_rights", 1);
+
+        $ws = $this->get("app.workspaces")->duplicate($original_workspace_id, $name, $config, $this->getUser()->getId());
+
+        if (!$ws || is_string($ws)) {
+            $response["errors"][] = "notallowed";
+            $response["errors"]["max"] = $ws;
+        } else {
+            $ws_id = $ws->getId();
+            $response["data"]["status"] = "success";
+            $response["data"]["workspace_id"] = $ws_id;
+        }
+
+        return new JsonResponse($response);
+    }
+
 	public function deleteAction(Request $request)
 	{
 		$data = Array(

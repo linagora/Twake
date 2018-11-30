@@ -311,6 +311,124 @@ class Workspaces implements WorkspacesInterface
 
     }
 
+    public function duplicate($original_workspace_id, $name, $config, $currentUserId = null)
+    {
+
+        $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $original_workspace = $workspaceRepository->find($original_workspace_id);
+
+        if (!$original_workspace || $original_workspace->getIsPrivate()) {
+            return false;
+        }
+
+        //Verify we have right to access this workspace
+        if ($currentUserId == null
+            || $this->wls->can($original_workspace_id, $currentUserId, "workspace:manage")
+        ) {
+
+            $groupId = $original_workspace->getGroup()->getId();
+
+            $workspace = $this->create($name, $groupId, $currentUserId);
+
+            if ($workspace) {
+
+                $workspacelevelRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+                $original_workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $original_workspace));
+                $adminLevelId = 0;
+                foreach ($original_workspacelevels as $level) {
+                    if ($level->getisAdmin()) {
+                        $adminLevelId = $level->getId();
+                    }
+                }
+
+                //Duplicate Rights
+                $old_levels_id_to_new_levels = Array();
+                $workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $workspace));
+                foreach ($workspacelevels as $level) {
+                    if ($level->getisAdmin()) {
+                        $old_levels_id_to_new_levels[$adminLevelId] = $level;
+                    }
+                }
+                if ($config["users"] == "all" || $config["rights"]) {
+                    foreach ($original_workspacelevels as $level) {
+                        if (!$level->getisAdmin()) {
+                            $level = new WorkspaceLevel();
+                            $level->setWorkspace($workspace);
+                            $level->setLabel($level->getLabel());
+                            $level->setIsAdmin($level->getisAdmin());
+                            $level->setIsDefault($level->getisDefault());
+                            $this->doctrine->persist($level);
+                            $old_levels_id_to_new_levels[$level->getId()] = $level;
+                        }
+                    }
+                    $this->doctrine->flush();
+                }
+
+                //Duplicate users
+                if ($config["users"] == "all" || $config["users"] == "admins") {
+                    $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $original_workspace));
+                    foreach ($members as $member) {
+                        if ($member->getUser()->getId() != $currentUserId && ($config["users"] == "all" || ($config["users"] == "admins" && $member->getLevel()->getId() == $adminLevelId))) {
+
+                            //Add user with good level
+                            if (isset($old_levels_id_to_new_levels[$member->getLevel()->getId()])) {
+                                $level_id = $old_levels_id_to_new_levels[$member->getLevel()->getId()]->getId();
+                                $this->wms->addMember($workspace->getId(), $member->getUser()->getId(), false, $level_id);
+                            }
+
+                        }
+                    }
+                }
+
+                //Duplicate applications
+                $old_applications = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp")->findBy(Array("workspace" => $original_workspace));
+                $new_applications = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp")->findBy(Array("workspace" => $workspace));
+                foreach ($old_applications as $old_application) {
+                    $found = false;
+                    foreach ($new_applications as $new_application) {
+                        if ($new_application->getGroupApp()->getId() == $old_application->getGroupApp()->getId()) {
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if (!$found) {
+                        $app = new WorkspaceApp($workspace, $old_application->getGroupApp());
+                        $this->doctrine->persist($app);
+                    }
+                }
+                foreach ($new_applications as $new_application) {
+                    $found = false;
+                    foreach ($old_applications as $old_application) {
+                        if ($new_application->getGroupApp()->getId() == $old_application->getGroupApp()->getId()) {
+                            $found = true;
+                            break;
+                        }
+                    }
+                    if (!$found) {
+                        $this->doctrine->remove($new_application);
+                    }
+                }
+                $this->doctrine->flush();
+
+
+                //TODO Duplicate calendars
+
+                //TODO Duplicate channels
+
+                //TODO Duplicate labels
+
+                //TODO Duplicate boards
+
+            }
+
+            return $workspace;
+
+        }
+
+        return false;
+
+    }
+
     public function remove($groupId, $workspaceId, $currentUserId = null)
     {
         if ($currentUserId == null
