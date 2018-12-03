@@ -452,6 +452,7 @@ class User implements UserInterface
 				$mail = $ticket->getMail();
 
 				$user = new \WebsiteApi\UsersBundle\Entity\User();
+                $user->setSalt(bin2hex(random_bytes(40)));
 				$encoder = $factory->getEncoder($user);
 				$user->setPassword($encoder->encodePassword($password, $user->getSalt()));
 				$user->setUsername($pseudo);
