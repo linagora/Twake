@@ -412,66 +412,74 @@ class Workspaces implements WorkspacesInterface
 
 
                 //Duplicate calendars
-                $old_calendarLinks = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $original_workspace));
-                foreach ($old_calendarLinks as $calendarLink) {
-                    $calendar = $calendarLink->getCalendar();
-                    if ($calendarLink->getOwner()) {
-                        $new_calendar = new Calendar($calendar->getTitle(), $calendar->getColor(), $calendar->getIcsLink());
-                        $this->doctrine->persist($new_calendar);
-                        $new_link = new LinkCalendarWorkspace($workspace, $new_calendar, true);
-                    } else {
-                        $new_link = new LinkCalendarWorkspace($workspace, $calendar, false, $calendarLink->getCalendarRight());
+                if ($config["calendars"]) {
+                    $old_calendarLinks = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $original_workspace));
+                    foreach ($old_calendarLinks as $calendarLink) {
+                        $calendar = $calendarLink->getCalendar();
+                        if ($calendarLink->getOwner()) {
+                            $new_calendar = new Calendar($calendar->getTitle(), $calendar->getColor(), $calendar->getIcsLink());
+                            $this->doctrine->persist($new_calendar);
+                            $new_link = new LinkCalendarWorkspace($workspace, $new_calendar, true);
+                        } else {
+                            $new_link = new LinkCalendarWorkspace($workspace, $calendar, false, $calendarLink->getCalendarRight());
+                        }
+                        $this->doctrine->persist($new_link);
                     }
-                    $this->doctrine->persist($new_link);
+                    $this->doctrine->flush();
                 }
-                $this->doctrine->flush();
 
 
                 //Duplicate channels
-                $old_streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace" => $original_workspace));
-                foreach ($old_streams as $stream) {
-                    $new_stream = new Stream($workspace, $stream->getName(), $stream->getIsPrivate(), $stream->getDescription());
-                    $new_stream->setType("stream");
-                    $this->doctrine->persist($new_stream);
+                if ($config["streams"]) {
+                    $old_streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace" => $original_workspace));
+                    foreach ($old_streams as $stream) {
+                        $new_stream = new Stream($workspace, $stream->getName(), $stream->getIsPrivate(), $stream->getDescription());
+                        $new_stream->setType("stream");
+                        $this->doctrine->persist($new_stream);
 
-                    foreach ($stream->getMembers() as $member) {
-                        $new_link = $new_stream->addMember($member);
-                        $this->doctrine->persist($new_link);
+                        foreach ($stream->getMembers() as $member) {
+                            $new_link = $new_stream->addMember($member);
+                            $this->doctrine->persist($new_link);
+                        }
                     }
+                    $this->doctrine->flush();
                 }
-                $this->doctrine->flush();
 
                 //Duplicate labels
-                $old_labels = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel")->findBy(Array("workspace" => $original_workspace));
-                foreach ($old_labels as $label) {
-                    $new_label = new DriveLabel($workspace, $label->getName(), $label->getColor());
-                    $this->doctrine->persist($new_label);
+                if ($config["drive_labels"]) {
+                    $old_labels = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel")->findBy(Array("workspace" => $original_workspace));
+                    foreach ($old_labels as $label) {
+                        $new_label = new DriveLabel($workspace, $label->getName(), $label->getColor());
+                        $this->doctrine->persist($new_label);
+                    }
+                    $this->doctrine->flush();
                 }
-                $this->doctrine->flush();
 
                 //Duplicate boards
-                $old_boardLinks = $this->doctrine->getRepository("TwakeCalendarBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $original_workspace));
-                foreach ($old_boardLinks as $boardLink) {
-                    $board = $boardLink->getCalendar();
-                    if ($boardLink->getOwner()) {
-                        $new_board = new Board($board->getTitle(), $board->getDescription(), $board->getisPrivate());
-                        $new_board->setParticipants($board->getParticipants());
-                        $this->doctrine->persist($new_board);
+                if ($config["boards"]) {
+                    $old_boardLinks = $this->doctrine->getRepository("TwakeCalendarBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $original_workspace));
+                    foreach ($old_boardLinks as $boardLink) {
+                        $board = $boardLink->getCalendar();
+                        if ($boardLink->getOwner()) {
+                            $new_board = new Board($board->getTitle(), $board->getDescription(), $board->getisPrivate());
+                            $new_board->setParticipants($board->getParticipants());
+                            $this->doctrine->persist($new_board);
 
-                        //Add lists
-                        $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
-                        foreach ($listOfTasks as $listOfTask) {
-                            $new_listOfTask = new ListOfTasks($new_board, $listOfTask->getTitle(), $listOfTask->getColor(), $listOfTask->getUserIdToNotify());
-                            $this->doctrine->persist($new_listOfTask);
+                            //Add lists
+                            $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
+                            foreach ($listOfTasks as $listOfTask) {
+                                $new_listOfTask = new ListOfTasks($new_board, $listOfTask->getTitle(), $listOfTask->getColor(), $listOfTask->getUserIdToNotify());
+                                $this->doctrine->persist($new_listOfTask);
+                            }
+
+                            $new_link = new LinkBoardWorkspace($workspace, $new_board, true);
+                        } else {
+                            $new_link = new LinkBoardWorkspace($workspace, $board, false, $boardLink->getBoardRight());
                         }
-
-                        $new_link = new LinkBoardWorkspace($workspace, $new_board, true);
-                    } else {
-                        $new_link = new LinkBoardWorkspace($workspace, $board, false, $boardLink->getBoardRight());
+                        $this->doctrine->persist($new_link);
                     }
-                    $this->doctrine->persist($new_link);
+                    $this->doctrine->flush();
                 }
-                $this->doctrine->flush();
 
             }
 

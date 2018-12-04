@@ -60,10 +60,15 @@ class DashboardController extends Controller
             $done_total[date("YW", $datum["datesave"])]++;
             $done[date("YW", $datum["datesave"])] += $datum["accounts"] - $previous;
             if (date("YWd", $datum["datesave"]) == date("YWd", date("U"))) {
+                //Estimation based on postulas "weekend == 1 day"
+                $dow = date("w");
+                if ($dow == 0) {
+                    $dow = 6;
+                }
                 $accounts_array[] = [
                     date("d/m/Y H:i", $datum["datesave"]),
                     $done[$previous_done],
-                    ($done_total[date("YW", $datum["datesave"])] / 7) * $done[date("YW", $datum["datesave"])]
+                    ($done[$previous_done] / (($dow + 5) % 6 + 1)) * (5 - ($dow + 5) % 6)
                 ];
             }
             $previous = $datum["accounts"];
