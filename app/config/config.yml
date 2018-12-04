@@ -81,6 +81,10 @@ doctrine:
             # Match agains should have the path to the MatchAgainst class created in the previous step
                 MATCH_AGAINST: WebsiteApi\CoreBundle\Extensions\MatchAgainst
 
+ambta_doctrine_encrypt:
+    encryptor_class: Halite
+    secret_directory_path: '%kernel.project_dir%'   # Path where to store the keyfiles
+
 # Swiftmailer Configuration
 swiftmailer:
     transport: "%mailer_transport%"

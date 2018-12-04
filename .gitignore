@@ -118,6 +118,7 @@ fabric.properties
 ### Twake specific ###
 /build/
 /vendor/
+/app/Ressources/DatabaseEncryption/.HaliteEncryptor.key
 
 ### AWS ###
 /app/config/aws_config.yml

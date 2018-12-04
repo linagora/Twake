@@ -22,6 +22,7 @@ class AppKernel extends Kernel
 	        new EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle(),
 	        new CMEN\GoogleChartsBundle\CMENGoogleChartsBundle(),
             new \Aws\Symfony\AwsBundle(),
+            new Ambta\DoctrineEncryptBundle\AmbtaDoctrineEncryptBundle(),
 
 			new WebsiteApi\CoreBundle\TwakeCoreBundle(),
 			new WebsiteApi\UsersBundle\TwakeUsersBundle(),
