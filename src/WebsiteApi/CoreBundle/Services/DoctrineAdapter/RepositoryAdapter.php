@@ -10,7 +10,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         try {
             $a = parent::find($id);
         } catch (\Exception $e) {
-            error_log($e);
+            var_dump($e->getTraceAsString());
             die("ERROR with find");
         }
         return $a;

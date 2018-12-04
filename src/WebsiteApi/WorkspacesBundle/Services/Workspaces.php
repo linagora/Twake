@@ -317,7 +317,7 @@ class Workspaces implements WorkspacesInterface
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
         $original_workspace = $workspaceRepository->find($original_workspace_id);
 
-        if (!$original_workspace || $original_workspace->getIsPrivate()) {
+        if (!$original_workspace) {
             return false;
         }
 
@@ -329,10 +329,12 @@ class Workspaces implements WorkspacesInterface
             $groupId = $original_workspace->getGroup()->getId();
 
             $workspace = $this->create($name, $groupId, $currentUserId);
+            $workspace->setIsNew(false);
+            $this->doctrine->persist($workspace);
 
-            if ($workspace) {
+            if ($workspace && $workspace->getGroup() && !$workspace->getisArchived() && !$workspace->getisDeleted()) {
 
-                $workspacelevelRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+                $workspacelevelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
                 $original_workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $original_workspace));
                 $adminLevelId = 0;
                 foreach ($original_workspacelevels as $level) {
@@ -413,13 +415,14 @@ class Workspaces implements WorkspacesInterface
 
                 //Duplicate calendars
                 if ($config["calendars"]) {
-                    $old_calendarLinks = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findOneBy(Array("workspace" => $original_workspace));
+                    $old_calendarLinks = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("workspace" => $original_workspace));
                     foreach ($old_calendarLinks as $calendarLink) {
                         $calendar = $calendarLink->getCalendar();
                         if ($calendarLink->getOwner()) {
                             $new_calendar = new Calendar($calendar->getTitle(), $calendar->getColor(), $calendar->getIcsLink());
                             $this->doctrine->persist($new_calendar);
                             $new_link = new LinkCalendarWorkspace($workspace, $new_calendar, true);
+                            $new_link->setApplication($calendarLink->getApplication());
                         } else {
                             $new_link = new LinkCalendarWorkspace($workspace, $calendar, false, $calendarLink->getCalendarRight());
                         }
@@ -431,6 +434,10 @@ class Workspaces implements WorkspacesInterface
 
                 //Duplicate channels
                 if ($config["streams"]) {
+                    $current_streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace" => $workspace));
+                    foreach ($current_streams as $stream) {
+                        $this->doctrine->remove($stream);
+                    }
                     $old_streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace" => $original_workspace));
                     foreach ($old_streams as $stream) {
                         $new_stream = new Stream($workspace, $stream->getName(), $stream->getIsPrivate(), $stream->getDescription());
@@ -457,9 +464,9 @@ class Workspaces implements WorkspacesInterface
 
                 //Duplicate boards
                 if ($config["boards"]) {
-                    $old_boardLinks = $this->doctrine->getRepository("TwakeCalendarBundle:LinkBoardWorkspace")->findOneBy(Array("workspace" => $original_workspace));
+                    $old_boardLinks = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findBy(Array("workspace" => $original_workspace));
                     foreach ($old_boardLinks as $boardLink) {
-                        $board = $boardLink->getCalendar();
+                        $board = $boardLink->getBoard();
                         if ($boardLink->getOwner()) {
                             $new_board = new Board($board->getTitle(), $board->getDescription(), $board->getisPrivate());
                             $new_board->setParticipants($board->getParticipants());
