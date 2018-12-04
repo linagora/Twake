@@ -8,7 +8,7 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 /**
  * Token
  *
- * @ORM\Table(name="token",options={"engine":"MyISAM"})
+ * @ORM\Table(name="token_table",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="DevelopersApi\UsersBundle\Repository\TokenRepository")
  */
 class Token
@@ -16,19 +16,19 @@ class Token
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
 	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
 	 */
 	private $id;
 
 	/**
-	 * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="cassandra_datetime")
 	 */
 	private $date;
 
 	/**
-	 * @ORM\Column(name="token", type="string", length=128)
+     * @ORM\Column(name="token_column", type="string", length=128)
 	 */
 	private $token;
 

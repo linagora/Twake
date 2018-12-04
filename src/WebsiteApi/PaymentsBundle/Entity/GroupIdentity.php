@@ -24,9 +24,9 @@ use WebsiteApi\UsersBundle\Entity\User;
 class GroupIdentity
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
     /**
@@ -37,7 +37,7 @@ class GroupIdentity
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $billingAddress;
+    private $billingaddress;
 
     /**
      * @ORM\Column(type="string", length=255)
@@ -52,46 +52,46 @@ class GroupIdentity
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $phoneNumber;
+    private $phonenumber;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="cassandra_datetime", nullable=true)
      */
-    private $lockDate;
+    private $lockdate;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
-    private $haveAlreadySendIsOverUsingALotMail;
+    private $havealreadysendisoverusingalotmail;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
-    private $haveAlreadySendIsOverUsingALittleMail;
+    private $havealreadysendisoverusingalittlemail;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
-    private $haveAlreadySendWillBeOverUsingMail;
+    private $havealreadysendwillbeoverusingmail;
 
-    public function __construct($group, $billingAddress, $address, $mail, $phoneNumber)
+    public function __construct($group, $billingaddress, $address, $mail, $phonenumber)
     {
         $this->group = $group;
-        $this->billingAddress = $billingAddress;
+        $this->billingaddress = $billingaddress;
         $this->address = $address;
         $this->mail = $mail;
-        $this->phoneNumber = $phoneNumber;
-        $this->haveAlreadySendIsOverUsingALittleMail = false;
-        $this->haveAlreadySendIsOverUsingALotMail = false;
-        $this->haveAlreadySendWillBeOverUsingMail = false;
+        $this->phonenumber = $phonenumber;
+        $this->havealreadysendisoverusingalittlemail = false;
+        $this->havealreadysendisoverusingalotmail = false;
+        $this->havealreadysendwillbeoverusingmail = false;
     }
 
     /**
-     * @param mixed $lockDate
+     * @param mixed $lockdate
      */
-    public function setLockDate($lockDate)
+    public function setLockDate($lockdate)
     {
-        $this->lockDate = $lockDate;
+        $this->lockdate = $lockdate;
     }
 
     /**
@@ -99,7 +99,7 @@ class GroupIdentity
      */
     public function getLockDate()
     {
-        return $this->lockDate;
+        return $this->lockdate;
     }
 
     /**
@@ -123,7 +123,7 @@ class GroupIdentity
      */
     public function getBillingAddress()
     {
-        return $this->billingAddress;
+        return $this->billingaddress;
     }
 
     /**
@@ -147,7 +147,7 @@ class GroupIdentity
      */
     public function getPhoneNumber()
     {
-        return $this->phoneNumber;
+        return $this->phonenumber;
     }
 
 
@@ -173,15 +173,15 @@ class GroupIdentity
      */
     public function getHaveAlreadySendIsOverUsingALotMail()
     {
-        return $this->haveAlreadySendIsOverUsingALotMail;
+        return $this->havealreadysendisoverusingalotmail;
     }
 
     /**
-     * @param mixed $haveAlreadySendIsOverUsingALotMail
+     * @param mixed $havealreadysendisoverusingalotmail
      */
-    public function setHaveAlreadySendIsOverUsingALotMail($haveAlreadySendIsOverUsingALotMail)
+    public function setHaveAlreadySendIsOverUsingALotMail($havealreadysendisoverusingalotmail)
     {
-        $this->haveAlreadySendIsOverUsingALotMail = $haveAlreadySendIsOverUsingALotMail;
+        $this->havealreadysendisoverusingalotmail = $havealreadysendisoverusingalotmail;
     }
 
     /**
@@ -189,15 +189,15 @@ class GroupIdentity
      */
     public function getHaveAlreadySendIsOverUsingALittleMail()
     {
-        return $this->haveAlreadySendIsOverUsingALittleMail;
+        return $this->havealreadysendisoverusingalittlemail;
     }
 
     /**
-     * @param mixed $haveAlreadySendIsOverUsingALittleMail
+     * @param mixed $havealreadysendisoverusingalittlemail
      */
-    public function setHaveAlreadySendIsOverUsingALittleMail($haveAlreadySendIsOverUsingALittleMail)
+    public function setHaveAlreadySendIsOverUsingALittleMail($havealreadysendisoverusingalittlemail)
     {
-        $this->haveAlreadySendIsOverUsingALittleMail = $haveAlreadySendIsOverUsingALittleMail;
+        $this->havealreadysendisoverusingalittlemail = $havealreadysendisoverusingalittlemail;
     }
 
     /**
@@ -205,15 +205,15 @@ class GroupIdentity
      */
     public function getHaveAlreadySendWillBeOverUsingMail()
     {
-        return $this->haveAlreadySendWillBeOverUsingMail;
+        return $this->havealreadysendwillbeoverusingmail;
     }
 
     /**
-     * @param mixed $haveAlreadySendWillBeOverUsingMail
+     * @param mixed $havealreadysendwillbeoverusingmail
      */
-    public function setHaveAlreadySendWillBeOverUsingMail($haveAlreadySendWillBeOverUsingMail)
+    public function setHaveAlreadySendWillBeOverUsingMail($havealreadysendwillbeoverusingmail)
     {
-        $this->haveAlreadySendWillBeOverUsingMail = $haveAlreadySendWillBeOverUsingMail;
+        $this->havealreadysendwillbeoverusingmail = $havealreadysendwillbeoverusingmail;
     }
 
 }

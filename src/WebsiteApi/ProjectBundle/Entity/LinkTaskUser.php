@@ -8,7 +8,7 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 /**
  * linkTaskUser
  *
- * @ORM\Table(name="linkTaskUser",options={"engine":"MyISAM"})
+ * @ORM\Table(name="link_task_user",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\ProjectBundle\Repository\LinkTaskUserRepository")
  */
 
@@ -17,9 +17,9 @@ class LinkTaskUser{
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 

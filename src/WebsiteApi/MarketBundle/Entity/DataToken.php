@@ -16,9 +16,9 @@ use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 class DataToken
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -30,12 +30,12 @@ class DataToken
     /**
      * @ORM\Column(type="integer")
      */
-    private $workspaceId;
+    private $workspaceid;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $userId;
+    private $userid;
 
     /**
      * @return mixed
@@ -59,15 +59,15 @@ class DataToken
      */
     public function getUserId()
     {
-        return $this->userId;
+        return $this->userid;
     }
 
     /**
-     * @param mixed $userId
+     * @param mixed $userid
      */
-    public function setUserId($userId)
+    public function setUserId($userid)
     {
-        $this->userId = $userId;
+        $this->userid = $userid;
     }
 
     /**
@@ -75,23 +75,23 @@ class DataToken
      */
     public function getWorkspaceId()
     {
-        return $this->workspaceId;
+        return $this->workspaceid;
     }
 
     /**
-     * @param mixed $workspaceId
+     * @param mixed $workspaceid
      */
-    public function setWorkspaceId($workspaceId)
+    public function setWorkspaceId($workspaceid)
     {
-        $this->workspaceId = $workspaceId;
+        $this->workspaceid = $workspaceid;
     }
 
-    public function __construct($workspaceId, $userId)
+    public function __construct($workspaceid, $userid)
     {
         $this->setId(1);
         $this->resetToken();
-        $this->setUserId($userId);
-        $this->setWorkspaceId($workspaceId);
+        $this->setUserId($userid);
+        $this->setWorkspaceId($workspaceid);
     }
 
     private function setId($int)

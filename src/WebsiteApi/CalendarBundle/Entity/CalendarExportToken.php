@@ -17,22 +17,22 @@ class CalendarExportToken {
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $workspaceId;
+    private $workspaceid;
 
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $useMine;
+    private $usemine;
 
 
     /**
@@ -53,19 +53,19 @@ class CalendarExportToken {
     /**
      * @ORM\Column(type="string", length=10)
      */
-    private $calendarsIds;
+    private $calendarsids;
 
     /**
      * @ORM\Column(type="string", length=100)
      */
     private $token;
 
-    public  function __construct($workspaceId,$calendarsIds,$useMine,$from,$to, $user_id)
+    public function __construct($workspaceid, $calendarsids, $usemine, $from, $to, $user_id)
     {
         $this->id = 0;
-        $this->workspaceId = $workspaceId;
-        $this->setCalendarsIds($calendarsIds);
-        $this->setUseMine($useMine);
+        $this->workspaceid = $workspaceid;
+        $this->setCalendarsIds($calendarsids);
+        $this->setUseMine($usemine);
         $this->setFrom($from);
         $this->setTo($to);
         $this->setUserId($user_id);
@@ -93,15 +93,15 @@ class CalendarExportToken {
      */
     public function getCalendarsIds()
     {
-        return $this->calendarsIds;
+        return $this->calendarsids;
     }
 
     /**
-     * @param mixed $calendarsIds
+     * @param mixed $calendarsids
      */
-    public function setCalendarsIds($calendarsIds)
+    public function setCalendarsIds($calendarsids)
     {
-        $this->calendarsIds = $calendarsIds;
+        $this->calendarsids = $calendarsids;
     }
 
     /**
@@ -109,15 +109,15 @@ class CalendarExportToken {
      */
     public function getWorkspaceId()
     {
-        return $this->workspaceId;
+        return $this->workspaceid;
     }
 
     /**
-     * @param mixed $workspaceId
+     * @param mixed $workspaceid
      */
-    public function setWorkspaceId($workspaceId)
+    public function setWorkspaceId($workspaceid)
     {
-        $this->workspaceId = $workspaceId;
+        $this->workspaceid = $workspaceid;
     }
 
     /**
@@ -125,15 +125,15 @@ class CalendarExportToken {
      */
     public function getUseMine()
     {
-        return $this->useMine;
+        return $this->usemine;
     }
 
     /**
-     * @param mixed $useMine
+     * @param mixed $usemine
      */
-    public function setUseMine($useMine)
+    public function setUseMine($usemine)
     {
-        $this->useMine = $useMine;
+        $this->usemine = $usemine;
     }
 
     /**

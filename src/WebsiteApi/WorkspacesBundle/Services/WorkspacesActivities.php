@@ -29,10 +29,10 @@ class WorkspacesActivities
     private function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
-            $var = intval($var);
+            $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var)) {
+        if (is_int($var) || is_string($var)) {
             try {
                 $r = $this->doctrine->getRepository($repository)->find($var);
             } catch (ORMException $e) {
@@ -47,13 +47,13 @@ class WorkspacesActivities
 
     }
 
-    public function recordActivity($workspace, $user, $appPublicKey, $title, $objectRepository = null, $objectId = null)
+    public function recordActivity($workspace, $user, $appPublicKey, $title, $objectrepository = null, $objectid = null)
     {
         $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
         $user = $this->convertToEntity($user,"TwakeUsersBundle:User");
         $app = $this->applicationManager->getAppByPublicKey($appPublicKey);
 
-        $workspaceActivity = new WorkspaceActivity($workspace,$user,$app,$title,$objectRepository,$objectId);
+        $workspaceActivity = new WorkspaceActivity($workspace, $user, $app, $title, $objectrepository, $objectid);
 
         $this->doctrine->persist($workspaceActivity);
         $this->doctrine->flush();

@@ -18,11 +18,16 @@ class WorkspaceUser
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="text", options={"index": true})
+     */
+    protected $user_workspace_id;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
@@ -37,7 +42,7 @@ class WorkspaceUser
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupUser")
      */
-    protected $groupUser;
+    protected $groupuser;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel")
@@ -45,33 +50,36 @@ class WorkspaceUser
 	private $level;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $date_added;
 
     /**
-     * @ORM\Column(type="datetime", options={"default" : "1970-01-02"})
+     * @ORM\Column(type="cassandra_datetime", options={"default" : "1970-01-02"})
      */
     private $last_access;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
-    private $isHidden = false;
+    private $ishidden = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
-    private $isFavorite = false;
+    private $isfavorite = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
-    private $hasNotifications = true;
+    private $hasnotifications = true;
 
 	public function __construct($workspace, $user, $level) {
 		$this->workspace = $workspace;
 		$this->user = $user;
+
+        $this->user_workspace_id = $user->getId() . "_" . $workspace->getId();
+
 		$this->level = $level;
 		$this->date_added = new \DateTime();
         $this->last_access = new \DateTime();
@@ -130,15 +138,15 @@ class WorkspaceUser
      */
     public function getGroupUser()
     {
-        return $this->groupUser;
+        return $this->groupuser;
     }
 
     /**
-     * @param mixed $groupUser
+     * @param mixed $groupuser
      */
-    public function setGroupUser($groupUser)
+    public function setGroupUser($groupuser)
     {
-        $this->groupUser = $groupUser;
+        $this->groupuser = $groupuser;
     }
 
     /**
@@ -162,15 +170,15 @@ class WorkspaceUser
      */
     public function getisHidden()
     {
-        return $this->isHidden;
+        return $this->ishidden;
     }
 
     /**
-     * @param mixed $isHidden
+     * @param mixed $ishidden
      */
-    public function setIsHidden($isHidden)
+    public function setIsHidden($ishidden)
     {
-        $this->isHidden = $isHidden;
+        $this->ishidden = $ishidden;
     }
 
     /**
@@ -178,15 +186,15 @@ class WorkspaceUser
      */
     public function getisFavorite()
     {
-        return $this->isFavorite;
+        return $this->isfavorite;
     }
 
     /**
-     * @param mixed $isFavorite
+     * @param mixed $isfavorite
      */
-    public function setIsFavorite($isFavorite)
+    public function setIsFavorite($isfavorite)
     {
-        $this->isFavorite = $isFavorite;
+        $this->isfavorite = $isfavorite;
     }
 
     /**
@@ -194,15 +202,15 @@ class WorkspaceUser
      */
     public function getHasNotifications()
     {
-        return $this->hasNotifications;
+        return $this->hasnotifications;
     }
 
     /**
-     * @param mixed $hasNotifications
+     * @param mixed $hasnotifications
      */
-    public function setHasNotifications($hasNotifications)
+    public function setHasNotifications($hasnotifications)
     {
-        $this->hasNotifications = $hasNotifications;
+        $this->hasnotifications = $hasnotifications;
     }
 
 

@@ -35,10 +35,10 @@ class ListOfTasksService
     private function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
-            $var = intval($var);
+            $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var)) {
+        if (is_int($var) || is_string($var)) {
             return $this->doctrine->getRepository($repository)->find($var);
         } else if (is_object($var)) {
             return $var;
@@ -49,19 +49,19 @@ class ListOfTasksService
     }
 
     public function removeListOfTasks($listOfTaskId, $workspaceId = 0){
-        /* @var ListOfTasks $listOfTasks */
-        $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTaskId));
+        /* @var ListOfTasks $listoftasks */
+        $listoftasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTaskId));
 
-        if(!$listOfTasks)
+        if (!$listoftasks)
             return false;
 
-        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTasks" => $listOfTasks));
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listoftasks" => $listoftasks));
 
         foreach ($tasks as $task){
             $this->doctrine->remove($task);
         }
 
-        $this->doctrine->remove($listOfTasks);
+        $this->doctrine->remove($listoftasks);
         $this->doctrine->flush();
 
         return true;
@@ -75,50 +75,51 @@ class ListOfTasksService
         return $ListsOfTasks;
     }
 
-    public function createListOfTasks($newTitle, $newColor, $boardId, $userIdToNotify)
+    public function createListOfTasks($newTitle, $newColor, $boardId, $useridtonotify)
     {
         $board = $this->convertToEntity($boardId, "TwakeProjectBundle:Board");
         $workspace = $this->getWorkspaceFromBoard($board->getId());
 
-        /* @var ListOfTasks $listOfTasks */
-        $listOfTasks = new ListOfTasks($board, $newTitle, $newColor, $userIdToNotify);
+        /* @var ListOfTasks $listoftasks */
+        $listoftasks = new ListOfTasks($board, $newTitle, $newColor, $useridtonotify);
 
         if($listOfTasks==null){
             return false;
         }
 
         if($newTitle!=null)
-            $listOfTasks->setTitle($newTitle);
+            $listoftasks->setTitle($newTitle);
         if($newColor!=null)
-            $listOfTasks->setColor($newColor);
+            $listoftasks->setColor($newColor);
 
-        $listOfTasks->setUserIdToNotify($userIdToNotify);
+        $listoftasks->setUserIdToNotify($useridtonotify);
 
-        $listOfTasks->setOrder($this->getMaxOrder($board)+1);
+        $listoftasks->setOrder($this->getMaxOrder($board) + 1);
 
-        $this->doctrine->persist($listOfTasks);
+        $this->doctrine->persist($listoftasks);
         $this->doctrine->flush();
 
-        return $listOfTasks;
+        return $listoftasks;
     }
 
-    public function updateListOfTasks($listOfTasksId, $newTitle, $newColor,$userIdToNotify){
-        /* @var ListOfTasks $listOfTasks */
-        $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTasksId));
-        $workspace = $this->getWorkspaceFromBoard($listOfTasks->getBoard());
+    public function updateListOfTasks($listOfTasksId, $newTitle, $newColor, $useridtonotify)
+    {
+        /* @var ListOfTasks $listoftasks */
+        $listoftasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTasksId));
+        $workspace = $this->getWorkspaceFromBoard($listoftasks->getBoard());
 
         if($listOfTasks==null){
             return false;
         }
 
         if($newTitle!=null)
-            $listOfTasks->setTitle($newTitle);
+            $listoftasks->setTitle($newTitle);
         if($newColor!=null)
-            $listOfTasks->setColor($newColor);
+            $listoftasks->setColor($newColor);
 
-        $listOfTasks->setUserIdToNotify($userIdToNotify);
+        $listoftasks->setUserIdToNotify($useridtonotify);
 
-        $this->doctrine->persist($listOfTasks);
+        $this->doctrine->persist($listoftasks);
         $this->doctrine->flush();
 
         return true;
@@ -129,13 +130,13 @@ class ListOfTasksService
 
         foreach ($idsOrderMap as $id => $order){
             $board = $this->convertToEntity($boardId,"TwakeProjectBundle:Board");
-            /* @var ListOfTasks $listOfTasks */
-            $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $id, "board" => $board));
-            if ($listOfTasks == null || in_array($order, $order_used))
+            /* @var ListOfTasks $listoftasks */
+            $listoftasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $id, "board" => $board));
+            if ($listoftasks == null || in_array($order, $order_used))
                 continue;
-            $listOfTasks->setOrder($order);
+            $listoftasks->setOrder($order);
             array_push($order_used,$order);
-            $this->doctrine->persist($listOfTasks);
+            $this->doctrine->persist($listoftasks);
         }
 
         $this->doctrine->flush();
@@ -143,9 +144,10 @@ class ListOfTasksService
         return true;
     }
 
-    public function getListPercent($listOfTasks){
-        $listOfTasks = $this->convertToEntity($listOfTasks,"TwakeProjectBundle:Board");
-        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTasks" => $listOfTasks));
+    public function getListPercent($listoftasks)
+    {
+        $listoftasks = $this->convertToEntity($listoftasks, "TwakeProjectBundle:Board");
+        $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listoftasks" => $listoftasks));
 
         $total = 0.0;
         $done = 0.0;

@@ -19,27 +19,30 @@ class ErrorsListener
 	public function onKernelException(GetResponseForExceptionEvent $event)
 	{
 
-		$exception = $event->getException();
+        /*
+        $exception = $event->getException();
 
-		$data = Array(
-			"desc" => $exception->getMessage()." | ".$exception->getCode(),
-			"line" => $exception->getLine()
-		);
+        $data = Array(
+            "desc" => $exception->getMessage()." | ".$exception->getCode(),
+            "line" => $exception->getLine()
+        );
 
-		$file = $exception->getFile();
+        $file = $exception->getFile();
 
-		$repo = $this->doctrine->getRepository("AdministrationAuthenticationBundle:Errors");
-		$record = $repo->findOneBy(Array("file"=>$file));
+        $repo = $this->doctrine->getRepository("AdministrationAuthenticationBundle:Errors");
+        $record = $repo->findOneBy(Array("file"=>$file));
 
-		if(!$record) {
-			$record = new Errors($file, $data);
-		}else {
-			$record->addData($data);
-		}
+        if(!$record) {
+            $record = new Errors($file, $data);
+        }else {
+            $record->addData($data);
+        }
 
 
         $this->doctrine->persist($record);
-		$this->doctrine->flush();
+        $this->doctrine->flush();
+
+        */
 
 	}
 }

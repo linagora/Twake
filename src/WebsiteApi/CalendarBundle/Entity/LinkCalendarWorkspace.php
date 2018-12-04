@@ -8,7 +8,7 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 /**
  * linkCalendarWorkspace
  *
- * @ORM\Table(name="linkCalendarWorkspace",options={"engine":"MyISAM"})
+ * @ORM\Table(name="link_calendar_workspace",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\LinkCalendarWorkspaceRepository")
  */
 
@@ -17,11 +17,16 @@ class LinkCalendarWorkspace{
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="text", options={"index": true})
+     */
+    protected $calendar_workspace_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
@@ -35,12 +40,12 @@ class LinkCalendarWorkspace{
     private $application = null;
 
     /**
-     * @ORM\Column(name="calendarright", type="boolean")
+     * @ORM\Column(name="calendarright", type="cassandra_boolean")
      */
-    private $calendarRight;
+    private $calendarright;
 
     /**
-     * @ORM\Column(name="owner", type="boolean")
+     * @ORM\Column(name="owner", type="cassandra_boolean")
      */
     private $owner;
 
@@ -49,12 +54,15 @@ class LinkCalendarWorkspace{
      */
     private $calendar;
 
-    public  function __construct($workspace,$calendar,$owner,$calendarRight = true)
+    public function __construct($workspace, $calendar, $owner, $calendarright = true)
     {
         $this->setWorkspace($workspace);
         $this->setCalendar($calendar);
+
+        $this->calendar_workspace_id = $this->getCalendar()->getId() . "_" . $this->getWorkspace()->getId();
+
         $this->setOwner($owner);
-        $this->setCalendarRight($calendarRight);
+        $this->setCalendarRight($calendarright);
     }
 
     /**
@@ -110,15 +118,15 @@ class LinkCalendarWorkspace{
      */
     public function getCalendarRight()
     {
-        return $this->calendarRight;
+        return $this->calendarright;
     }
 
     /**
      * @param mixed $right
      */
-    public function setCalendarRight($calendarRight)
+    public function setCalendarRight($calendarright)
     {
-        $this->calendarRight = $calendarRight;
+        $this->calendarright = $calendarright;
     }
 
     /**

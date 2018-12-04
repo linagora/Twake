@@ -16,21 +16,21 @@ class Errors
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
 	/**
-	 * @ORM\Column(name="first_date", type="datetime")
+     * @ORM\Column(name="first_date", type="cassandra_datetime")
 	 */
-	private $firstDate;
+    private $firstdate;
 
 	/**
-	 * @ORM\Column(name="last_date", type="datetime")
+     * @ORM\Column(name="last_date", type="cassandra_datetime")
 	 */
-	private $lastDate;
+    private $lastdate;
 
 	/**
 	 * @ORM\Column(name="number", type="integer")
@@ -50,7 +50,7 @@ class Errors
 
     public function __construct($file, $data)
     {
-	    $this->firstDate = new \DateTime();
+        $this->firstdate = new \DateTime();
 		$this->setFile($file);
 		$this->addData($data);
     }
@@ -68,15 +68,15 @@ class Errors
 	 */
 	public function getFirstDate()
 	{
-		return $this->firstDate;
+        return $this->firstdate;
 	}
 
 	/**
-	 * @param mixed $firstDate
+     * @param mixed $firstdate
 	 */
-	public function setFirstDate($firstDate)
-	{
-		$this->firstDate = $firstDate;
+    public function setFirstDate($firstdate)
+    {
+        $this->firstdate = $firstdate;
 	}
 
 	/**
@@ -84,15 +84,15 @@ class Errors
 	 */
 	public function getLastDate()
 	{
-		return $this->lastDate;
+        return $this->lastdate;
 	}
 
 	/**
-	 * @param mixed $lastDate
+     * @param mixed $lastdate
 	 */
-	public function setLastDate($lastDate)
-	{
-		$this->lastDate = $lastDate;
+    public function setLastDate($lastdate)
+    {
+        $this->lastdate = $lastdate;
 	}
 
 	/**
@@ -150,7 +150,7 @@ class Errors
 		}
 		$this->data = json_encode($cdata);
 		$this->number += 1;
-		$this->lastDate = new \DateTime();
+        $this->lastdate = new \DateTime();
 	}
 
 

@@ -19,9 +19,9 @@ class UserDailyStats
 {
 
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -33,24 +33,26 @@ class UserDailyStats
      * @var int
      * @ORM\Column(name="public_msg_count", type="integer")
      */
-    protected $publicMsgCount;
+    protected $publicmsgcount;
     /**
      * @var int
      * @ORM\Column(name="private_msg_count", type="integer")
      */
-    protected $privateMsgCount;
+    protected $privatemsgcount;
     /**
-     * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="cassandra_datetime")
      */
     protected $date;
 
 
-    public function setPublicMsgCount($publicCount){
-        $this->publicMsgCount = $publicCount;
+    public function setPublicMsgCount($publiccount)
+    {
+        $this->publicmsgcount = $publiccount;
     }
 
-    public function setPrivateMsgCount($privateCount){
-        $this->privateMsgCount = $privateCount;
+    public function setPrivateMsgCount($privatecount)
+    {
+        $this->privatemsgcount = $privatecount;
     }
 
     public function setDate($date){

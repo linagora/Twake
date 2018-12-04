@@ -16,9 +16,9 @@ class AdminUser
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -35,15 +35,15 @@ class AdminUser
      * @var string
      *
      * Token utilisé pour vérifier la connexion
-     * @ORM\Column(name="accessToken", type="string", length=256)
+     * @ORM\Column(name="access_token", type="string", length=256)
      */
 
-    private $accessToken;
+    private $accesstoken;
 
     /**
-     * @ORM\Column(name="dateReset", type="datetime")
+     * @ORM\Column(name="date_reset", type="cassandra_datetime")
      */
-    private $dateReset;
+    private $datereset;
 
 
     /**
@@ -65,22 +65,22 @@ class AdminUser
 
     public function setAccessToken($x)
     {
-        $this->accessToken = $x;
+        $this->accesstoken = $x;
     }
 
     public function getAccessToken()
     {
-        return $this->accessToken;
+        return $this->accesstoken;
     }
 
     public function setDateReset($x)
     {
-        $this->dateReset = $x;
+        $this->datereset = $x;
     }
 
     public function getDateReset()
     {
-        return $this->dateReset;
+        return $this->datereset;
     }
 
     public function newAccessToken()

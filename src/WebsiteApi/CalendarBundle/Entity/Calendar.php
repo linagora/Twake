@@ -18,9 +18,9 @@ class Calendar {
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -37,23 +37,23 @@ class Calendar {
     /**
      * @ORM\Column(name="workspaces_number", type="integer", nullable=true)
      */
-    private $workspacesNumber = 1;
+    private $workspacesnumber = 1;
 
     /**
-     * @ORM\Column(name="autoParticipateList", type="string", length=264, nullable=false)
+     * @ORM\Column(name="auto_participate_list", type="string", length=264, nullable=false)
      */
-    private $autoParticipantList;
+    private $autoparticipantlist;
 
 
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private $icsLink;
+    private $icslink;
 
     /**
-     * @ORM\Column(type="datetime" , options={"default" : "2018-07-27 14:00:58"})
+     * @ORM\Column(type="cassandra_datetime" , options={"default" : "2018-07-27 14:00:58"})
      */
-    private $lastUpdateDate;
+    private $lastupdatedate;
 
 
     public  function __construct($title,$color, $icsLink=null)
@@ -61,7 +61,7 @@ class Calendar {
         $this->setTitle($title);
         $this->setColor($color);
         $this->setAutoParticipantList(Array());
-        $this->setIcsLink($icsLink);
+        $this->setIcsLink($icslink);
         $this->setLastUpdateDate(new DateTime('now'));
     }
 
@@ -78,19 +78,19 @@ class Calendar {
      */
     public function getAutoParticipantList()
     {
-        if($this->autoParticipantList == null){
+        if ($this->autoparticipantlist == null) {
             return null;
         }else{
-            return json_decode($this->autoParticipantList, true );
+            return json_decode($this->autoparticipantlist, true);
         }
     }
 
     /**
-     * @param mixed $autoParticipantList
+     * @param mixed $autoparticipantlist
      */
-    public function setAutoParticipantList($autoParticipantList)
+    public function setAutoParticipantList($autoparticipantlist)
     {
-        $this->autoParticipantList = json_encode($autoParticipantList);
+        $this->autoparticipantlist = json_encode($autoparticipantlist);
     }
 
     /**
@@ -138,15 +138,15 @@ class Calendar {
      */
     public function getWorkspacesNumber()
     {
-        return $this->workspacesNumber;
+        return $this->workspacesnumber;
     }
 
     /**
-     * @param mixed $workspacesNumber
+     * @param mixed $workspacesnumber
      */
-    public function setWorkspacesNumber($workspacesNumber)
+    public function setWorkspacesNumber($workspacesnumber)
     {
-        $this->workspacesNumber = $workspacesNumber;
+        $this->workspacesnumber = $workspacesnumber;
     }
 
     /**
@@ -154,15 +154,15 @@ class Calendar {
      */
     public function getIcsLink()
     {
-        return $this->icsLink;
+        return $this->icslink;
     }
 
     /**
-     * @param mixed $icsLink
+     * @param mixed $icslink
      */
-    public function setIcsLink($icsLink)
+    public function setIcsLink($icslink)
     {
-        $this->icsLink = $icsLink;
+        $this->icslink = $icslink;
     }
 
     /**
@@ -170,15 +170,15 @@ class Calendar {
      */
     public function getLastUpdateDate()
     {
-        return $this->lastUpdateDate;
+        return $this->lastupdatedate;
     }
 
     /**
-     * @param mixed $lastUpdateDate
+     * @param mixed $lastupdatedate
      */
-    public function setLastUpdateDate($lastUpdateDate)
+    public function setLastUpdateDate($lastupdatedate)
     {
-        $this->lastUpdateDate = $lastUpdateDate;
+        $this->lastupdatedate = $lastupdatedate;
     }
 
     public function getAsArray()

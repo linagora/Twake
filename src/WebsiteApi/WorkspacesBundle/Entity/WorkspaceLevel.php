@@ -15,9 +15,9 @@ class WorkspaceLevel
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
 	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
 	 */
 	protected $id;
 
@@ -37,14 +37,14 @@ class WorkspaceLevel
 	protected $rights;
 
 	/**
-	 * @ORM\Column(name="isDefault", type="boolean", length=1)
+     * @ORM\Column(name="is_default", type="cassandra_boolean", length=1)
 	 */
-	protected $isDefault = false;
+    protected $isdefault = false;
 
 	/**
-	 * @ORM\Column(name="isAdmin", type="boolean", length=1)
+     * @ORM\Column(name="is_admin", type="cassandra_boolean", length=1)
 	 */
-	protected $isAdmin = false;
+    protected $isadmin = false;
 
 
 	function __construct()
@@ -110,15 +110,15 @@ class WorkspaceLevel
 	 */
 	public function getisDefault()
 	{
-		return $this->isDefault;
+        return $this->isdefault;
 	}
 
 	/**
-	 * @param mixed $isDefault
+     * @param mixed $isdefault
 	 */
-	public function setIsDefault($isDefault)
-	{
-		$this->isDefault = $isDefault;
+    public function setIsDefault($isdefault)
+    {
+        $this->isdefault = $isdefault;
 	}
 
 	/**
@@ -126,15 +126,15 @@ class WorkspaceLevel
 	 */
 	public function getisAdmin()
 	{
-		return $this->isAdmin;
+        return $this->isadmin;
 	}
 
 	/**
-	 * @param mixed $isAdmin
+     * @param mixed $isadmin
 	 */
-	public function setIsAdmin($isAdmin)
-	{
-		$this->isAdmin = $isAdmin;
+    public function setIsAdmin($isadmin)
+    {
+        $this->isadmin = $isadmin;
 	}
 
 

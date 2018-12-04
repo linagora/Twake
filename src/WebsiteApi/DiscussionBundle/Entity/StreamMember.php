@@ -15,13 +15,19 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class StreamMember
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
-	/**
+    /**
+     * @ORM\Column(type="text", options={"index": true})
+     */
+    protected $user_stream_id;
+
+
+    /**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
 	 */
     private $user;
@@ -37,17 +43,17 @@ class StreamMember
 	private $workspace;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $mute;
 
     /**
-     * @ORM\Column(type="datetime", options={"default" : "1970-01-02"})
+     * @ORM\Column(type="cassandra_datetime", options={"default" : "1970-01-02"})
      */
     private $last_read;
 
     /**
-     * @ORM\Column(type="datetime", options={"default" : "1970-01-02"})
+     * @ORM\Column(type="cassandra_datetime", options={"default" : "1970-01-02"})
      */
     private $last_update;
 
@@ -67,6 +73,9 @@ class StreamMember
     	$this->workspace = $stream->getWorkspace();
 	    $this->setStream($stream);
 	    $this->setUser($user);
+
+        $this->user_stream_id = $user->getId() . "_" . $stream->getId();
+
 	    $this->setMute(false);
 	    $this->setLastRead();
         $this->setLastUpdate();

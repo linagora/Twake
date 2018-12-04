@@ -50,6 +50,7 @@
         "onurb/doctrine-yuml-bundle": "~1.0",
       "phpunit/phpunit": ">=5.7",
       "michaeldegroot/doctrine-encrypt-bundle": "^4.0"
+      "m6web/cassandra-bundle": "~1.1.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

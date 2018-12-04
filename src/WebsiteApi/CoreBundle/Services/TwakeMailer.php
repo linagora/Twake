@@ -78,7 +78,7 @@ class TwakeMailer
 
     }
 
-    public function sendHtml($mail, $html, $pdfPathFiles)
+    public function sendHtml($mail, $html, $pdfPathFiles = Array())
     {
         //[REMOVE_ONPREMISE]
 

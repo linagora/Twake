@@ -45,14 +45,14 @@ class Boards implements BoardsInterface
         if(is_int($board))
             $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->findOneBy(Array("id" => $board));
 
-        $listOfTasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
+        $listoftasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
 
         $result = [];
 
-        foreach ($listOfTasks as $listOfTask){
+        foreach ($listoftasks as $listOfTask) {
             $array = $listOfTask->getAsArray();
 
-            $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listOfTasks" => $listOfTask));
+            $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->findBy(Array("listoftasks" => $listOfTask));
             $array["tasks"] = count($tasks);
             $array["tasks_pondered"] = 0;
             foreach ($tasks as $task)
@@ -70,10 +70,10 @@ class Boards implements BoardsInterface
     private function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
-            $var = intval($var);
+            $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var)) {
+        if (is_int($var) || is_string($var)) {
             return $this->doctrine->getRepository($repository)->find($var);
         } else if (is_object($var)) {
             return $var;
@@ -103,7 +103,7 @@ class Boards implements BoardsInterface
 
     public function getBoards($workspaceId, $currentUserId=null)
     {
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
         $result = Array();
 
         if ($workspace == null) {
@@ -156,7 +156,7 @@ class Boards implements BoardsInterface
      */
     public function getBoardById($workspaceId, $boardId){
         if($workspaceId!=0)
-            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
         else
             $workspace = $this->getWorkspaceFromBoard($boardId);
 
@@ -189,7 +189,7 @@ class Boards implements BoardsInterface
             $userIdParticipants[] = $currentUserId;
         }
 
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:manage")) {
             return null;
@@ -294,7 +294,7 @@ class Boards implements BoardsInterface
     public function removeBoard($workspaceId, $boardId, $currentUserId = null)
     {
         if($workspaceId!=0)
-            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
         else
             $workspace = $this->getWorkspaceFromBoard($boardId);
 
@@ -338,7 +338,7 @@ class Boards implements BoardsInterface
         }
 
         if($workspaceId!=0)
-            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
         else
             $workspace = $this->getWorkspaceFromBoard($boardId);
 
@@ -355,7 +355,7 @@ class Boards implements BoardsInterface
             return null;
         }
 
-        $other_workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $other_workspaceId, "isDeleted" => false));
+        $other_workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $other_workspaceId, "is_deleted" => false));
 
         $otherBoardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("board" => $board, "workspace" => $other_workspace));
         if ($otherBoardLink) {
@@ -381,7 +381,7 @@ class Boards implements BoardsInterface
     public function unshareBoard($workspaceId, $boardId, $other_workspaceId, $currentUserId = null)
     {
         if($workspaceId!=0)
-            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
         else
             $workspace = $this->getWorkspaceFromBoard($boardId);
 
@@ -396,7 +396,7 @@ class Boards implements BoardsInterface
             return null;
         }
 
-        $other_workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $other_workspaceId, "isDeleted" => false));
+        $other_workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $other_workspaceId, "is_deleted" => false));
         $boardLink = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findOneBy(Array("board"=>$board, "workspace"=>$other_workspace));
 
         $board->setWorkspacesNumber($board->getWorkspacesNumber()-1);
@@ -423,7 +423,7 @@ class Boards implements BoardsInterface
     public function getBoardShare($workspaceId, $boardId, $currentUserId = null)
     {
         if($workspaceId!=0)
-            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
         else
             $workspace = $this->getWorkspaceFromBoard($boardId);
 

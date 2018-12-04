@@ -77,7 +77,7 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
-    public function setWorkspaceDefault($groupId, $appId, $boolean, $currentUserId = null)
+    public function setWorkspaceDefault($groupId, $appid, $boolean, $currentUserId = null)
     {
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
         $group = $groupRepository->find($groupId);
@@ -98,7 +98,7 @@ class GroupApps implements GroupAppsInterface
 
 
             foreach ($groupapps as $ga) {
-                if ($ga->getApp()->getId() == $appId) {
+                if ($ga->getApp()->getId() == $appid) {
                     $ga->setWorkspaceDefault($boolean);
                     $this->doctrine->persist($ga);
                 }
@@ -110,13 +110,13 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
-    public function removeApplication($groupId, $appId, $currentUserId = null)
+    public function removeApplication($groupId, $appid, $currentUserId = null)
     {
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
         $group = $groupRepository->find($groupId);
 
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $application = $applicationRepository->find($appId);
+        $application = $applicationRepository->find($appid);
 
         if ($group == null || $application == null) {
             return false;
@@ -151,20 +151,20 @@ class GroupApps implements GroupAppsInterface
         return false;
     }
 
-    public function useApp($groupId, $workspaceId, $userId, $appId)
+    public function useApp($groupId, $workspaceId, $userId, $appid)
     {
         $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
-        $groupUser = $groupUserRepository->findOneBy(Array("group" => $groupId , "user" => $userId));
+        $groupuser = $groupUserRepository->findOneBy(Array("user_group_id" => $userId . "_" . $groupId));
 
         $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-        $groupApp = $groupAppRepository->findOneBy(Array("group" => $groupId , "app" => $appId));
+        $groupApp = $groupAppRepository->findOneBy(Array("group" => $groupId, "app" => $appid));
 
-        if ($groupUser == null || $groupApp == null || $groupId == null) {//if no user or app not in group app's list or private workspace
+        if ($groupuser == null || $groupApp == null || $groupId == null) {//if no user or app not in group app's list or private workspace
             return false;
         }else{
 
-            $appUsed = $groupUser->getUsedAppsToday();
-            if ( in_array($appId,$appUsed) ){
+            $appUsed = $groupuser->getUsedAppsToday();
+            if (in_array($appid, $appUsed)) {
                 return true;
             }else{
 
@@ -175,14 +175,14 @@ class GroupApps implements GroupAppsInterface
                     $this->doctrine->persist($workspaceUser);
                 }
 
-                if (!$groupUser->getDidConnectToday()) {
-                    $groupUser->setDidConnectToday(true);
+                if (!$groupuser->getDidConnectToday()) {
+                    $groupuser->setDidConnectToday(true);
                 }
 
-                $appUsed[] = $appId;
-                $groupUser->setUsedAppsToday($appUsed);
+                $appUsed[] = $appid;
+                $groupuser->setUsedAppsToday($appUsed);
 
-                $this->doctrine->persist($groupUser);
+                $this->doctrine->persist($groupuser);
                 $this->doctrine->flush();
                 return true;
             }

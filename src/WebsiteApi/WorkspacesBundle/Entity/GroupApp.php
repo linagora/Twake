@@ -20,11 +20,16 @@ class GroupApp
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
+
+    /**
+     * @ORM\Column(type="text", options={"index": true})
+     */
+    protected $app_group_id;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
@@ -37,21 +42,24 @@ class GroupApp
 	private $app;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
 	private $date_added;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
-    private $workspaceDefault;
+    private $workspacedefault;
 
 
 	public function __construct($group, $app) {
 		$this->group = $group;
 		$this->app = $app;
+
+        $this->app_group_id = $app->getId() . "_" . $group->getId();
+
 		$this->date_added = new \DateTime();
-		$this->workspaceDefault = false;
+        $this->workspacedefault = false;
 	}
 
 
@@ -102,15 +110,15 @@ class GroupApp
      */
     public function getWorkspaceDefault()
     {
-        return $this->workspaceDefault;
+        return $this->workspacedefault;
     }
 
     /**
-     * @param mixed $workspaceDefault
+     * @param mixed $workspacedefault
      */
-    public function setWorkspaceDefault($workspaceDefault)
+    public function setWorkspaceDefault($workspacedefault)
     {
-        $this->workspaceDefault = $workspaceDefault;
+        $this->workspacedefault = $workspacedefault;
     }
 
 }

@@ -79,7 +79,7 @@ class TaskController extends Controller
             'data' => Array()
         );
         $taskId = $request->request->get("taskId");
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
         $task = $this->get("app.board_tasks")->getTask($taskId, $this->getUser()->getId());
 

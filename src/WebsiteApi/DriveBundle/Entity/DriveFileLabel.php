@@ -9,16 +9,16 @@ use Symfony\Component\Validator\Constraints\DateTime;
 /**
  * DriveFileLabel
  *
- * @ORM\Table(name="drive_file_label",options={"engine":"MyISAM"})
+ * @ORM\Table(name="drive_file_label",options={"engine":"myisam"})
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileLabelRepository")
  */
 class DriveFileLabel
 {
 
 	/**
-	 * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
 	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
 	 */
 	private $id;
 

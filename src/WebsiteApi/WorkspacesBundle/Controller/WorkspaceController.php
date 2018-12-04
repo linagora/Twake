@@ -23,7 +23,7 @@ class WorkspaceController extends Controller
 
 		$response = Array("errors"=>Array(), "data"=>Array());
 
-		$workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
 
 		$ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
@@ -57,9 +57,9 @@ class WorkspaceController extends Controller
 
             $response["data"]["currentUser"]["level"] = $level;
 
-            $groupRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:Group");
-            $workspaceRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:Workspace");
-            $groupUserRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:Group");
+            $workspaceRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace");
+            $groupUserRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             $wp = $workspaceRepository->find($workspaceId);
             if($wp->getGroup() != null){
@@ -73,7 +73,13 @@ class WorkspaceController extends Controller
 
                 $limit =  $this->get("app.pricing_plan")->getLimitation($group->getId(),"maxWorkspace",PHP_INT_MAX);
 
-                $nbWorkspace = $workspaceRepository->findBy(Array("group"=>$group,"isDeleted"=>0));
+                $nbWorkspace = [];
+                $_nbWorkspace = $workspaceRepository->findBy(Array("group" => $group));
+                foreach ($_nbWorkspace as $ws) {
+                    if (!$ws->getis_deleted()) {
+                        $nbWorkspace[] = $ws;
+                    }
+                }
 
                 $nbuserGroup = $groupUserRepository->findBy(Array("group"=>$wp->getGroup()));
                 $limitUser = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(), "maxUser", PHP_INT_MAX);
@@ -103,7 +109,7 @@ class WorkspaceController extends Controller
             $name = "Untitled";
         }
 
-		$groupId = $request->request->getInt("groupId", 0);
+        $groupId = $request->request->get("groupId", 0);
 
 		if(!$groupId){
             $group_name = $request->request->get("group_name", "");
@@ -183,7 +189,7 @@ class WorkspaceController extends Controller
 		);
 
 		if($this->getUser()){
-			$workspaceId = $request->request->getInt("workspaceId");
+            $workspaceId = $request->request->get("workspaceId");
 			$ok = $this->get("app.workspaces")->remove(0, $workspaceId);
 			if($ok){
 				$data["data"] = "success";
@@ -202,7 +208,7 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
         $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
         if(!$ws){
@@ -226,7 +232,7 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
         $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
         if(!$ws){
@@ -250,10 +256,10 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
-        $appId = $request->request->getInt("appId");
+        $workspaceId = $request->request->get("workspaceId");
+        $appid = $request->request->get("appid");
 
-        $res = $this->get("app.workspaces_apps")->disableApp($workspaceId,$appId);
+        $res = $this->get("app.workspaces_apps")->disableApp($workspaceId, $appid);
         if(!$res){
             $response["errors"][] = "notauthorized";
         }else{
@@ -270,10 +276,10 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
-        $appId = $request->request->getInt("appId");
+        $workspaceId = $request->request->get("workspaceId");
+        $appid = $request->request->get("appid");
 
-        $res = $this->get("app.workspaces_apps")->enableApp($workspaceId,$appId);
+        $res = $this->get("app.workspaces_apps")->enableApp($workspaceId, $appid);
         if(!$res){
             $response["errors"][] = "notauthorized";
         }else{
@@ -382,7 +388,7 @@ class WorkspaceController extends Controller
         $res = $this->get("app.workspaces")->favoriteOrUnfavoriteWorkspace($workspaceId, $this->getUser()->getId());
 
         if ($res["answer"]){
-            $response["data"] = $res["isFavorite"];
+            $response["data"] = $res["isfavorite"];
         }else{
             $response["errors"] = "impossible to put as favorite a workspace";
         }

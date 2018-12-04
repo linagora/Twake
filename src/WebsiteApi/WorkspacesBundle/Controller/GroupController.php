@@ -17,7 +17,7 @@ class GroupController extends Controller
     public function changeNameAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("groupId");
         $name = $request->request->get("name");
 
         $res = $this->get("app.groups")->changeData($groupId,$name,$this->getUser()->getId());
@@ -34,7 +34,7 @@ class GroupController extends Controller
     public function getUsersAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("groupId");
         $limit = $request->request->get("limit");
         $offset = $request->request->get("offset");
         $onlyExterne = $request->request->getBoolean("onlyExterne");
@@ -63,7 +63,7 @@ class GroupController extends Controller
     public function removeUserAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("groupId");
         $userId = $request->request->get("userId");
 
         $users = $this->get("app.groups")->removeUserFromGroup($groupId,$userId,$this->getUser()->getId());
@@ -80,7 +80,7 @@ class GroupController extends Controller
     public function editUserAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("groupId");
         $userId = $request->request->get("userId");
         $externe = $request->request->getBoolean("editExterne");
 
@@ -101,14 +101,14 @@ class GroupController extends Controller
             "data"=>Array()
         );
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("groupId");
 
         $workspaces =  $this->get("app.groups")->getWorkspaces($groupId, $this->getUser()->getId());
 
         foreach ($workspaces as $workspace){
-            $isDeleted = $workspace->getisDeleted();
+            $is_deleted = $workspace->getis_deleted();
 
-            if (!$isDeleted){
+            if (!$is_deleted) {
                 $response["data"][] = Array(
                     "workspace" => $workspace->getAsArray()
                 );
@@ -130,7 +130,7 @@ class GroupController extends Controller
             "data" => Array()
         );
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("groupId");
 
         $res = $this->get("app.groups")->runFreeOffer($groupId, $this->getUser()->getId());
 

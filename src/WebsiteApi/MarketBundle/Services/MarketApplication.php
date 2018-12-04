@@ -23,10 +23,10 @@ class MarketApplication implements MarketApplicationInterface
     private function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
-            $var = intval($var);
+            $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var)) {
+        if (is_int($var) || is_string($var)) {
             return $this->doctrine->getRepository($repository)->find($var);
         } else if (is_object($var)) {
             return $var;
@@ -91,22 +91,22 @@ class MarketApplication implements MarketApplicationInterface
         return $applications;
     }
 
-    public function addFreeApplication($groupId, $appId, $currentUserId = null, $init = null)
+    public function addFreeApplication($groupId, $appid, $currentUserId = null, $init = null)
     {
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
         /** @var Application $application */
-        $application = $applicationRepository->find($appId);
+        $application = $applicationRepository->find($appid);
 
         if ($application->getPriceMonthly() == 0 && $application->getPriceUser() == 0) {
-            $this->addApplication($groupId, $appId);
+            $this->addApplication($groupId, $appid);
         }
 
     }
 
-    public function addApplication($groupId, $appId, $currentUserId = null, $init = null)
+    public function addApplication($groupId, $appid, $currentUserId = null, $init = null)
     {
 
-        if($groupId == null || $appId == null){
+        if ($groupId == null || $appid == null) {
             return false;
         }
 
@@ -114,7 +114,7 @@ class MarketApplication implements MarketApplicationInterface
         $group = $groupRepository->find($groupId);
 
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $application = $applicationRepository->find($appId);
+        $application = $applicationRepository->find($appid);
 
         $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
         $groupApplication = $groupAppRepository->findOneBy(Array("group" => $group, "app" => $application));

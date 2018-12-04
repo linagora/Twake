@@ -27,16 +27,16 @@ class ServerUsersStats
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
     /**
-     * @ORM\Column(name="dateSave", type="datetime")
+     * @ORM\Column(name="date_save", type="cassandra_datetime")
      */
-    private $dateSave;
+    private $datesave;
 
     /**
      * @var integer
@@ -101,15 +101,15 @@ class ServerUsersStats
      */
     public function getDateSave()
     {
-        return $this->dateSave;
+        return $this->datesave;
     }
 
     /**
-     * @param mixed $dateSave
+     * @param mixed $datesave
      */
-    public function setDateSave($dateSave)
+    public function setDateSave($datesave)
     {
-        $this->dateSave = $dateSave;
+        $this->datesave = $datesave;
     }
 
 	/**

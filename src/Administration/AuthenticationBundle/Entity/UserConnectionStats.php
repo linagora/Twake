@@ -27,9 +27,9 @@ class UserConnectionStats
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -40,16 +40,16 @@ class UserConnectionStats
     protected $user;
 
     /**
-    * @ORM\Column(name="date_connection", type="datetime")
+     * @ORM\Column(name="date_connection", type="cassandra_datetime")
     */
-    protected $dateConnection;
+    protected $dateconnection;
 
 
     /**
      * @var int
      * @ORM\Column(name="duree_connection", type="integer",nullable = true)
      */
-    protected $dureeConnection;
+    protected $dureeconnection;
 
 
     public function setUser($user)
@@ -64,22 +64,22 @@ class UserConnectionStats
 
     public function setDateConnection($date)
     {
-        $this->dateConnection = $date;
+        $this->dateconnection = $date;
     }
 
     public function getDateConnection()
     {
-        return $this->dateConnection;
+        return $this->dateconnection;
     }
 
     public function setDureeConnection($duree)
     {
-        $this->dureeConnection = $duree;
+        $this->dureeconnection = $duree;
     }
 
     public function getDureeConnection()
     {
-        return $this->dureeConnection;
+        return $this->dureeconnection;
     }
 
 }

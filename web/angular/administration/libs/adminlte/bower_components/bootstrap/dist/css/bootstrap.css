@@ -2601,27 +2601,29 @@ input[type="search"] {
   -webkit-appearance: none;
 }
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
-  input[type="date"].form-control,
+    input[type="cassandra_datetime"].form-control,
   input[type="time"].form-control,
   input[type="datetime-local"].form-control,
   input[type="month"].form-control {
     line-height: 34px;
   }
-  input[type="date"].input-sm,
+
+    input[type="cassandra_datetime"].input-sm,
   input[type="time"].input-sm,
   input[type="datetime-local"].input-sm,
   input[type="month"].input-sm,
-  .input-group-sm input[type="date"],
+    .input-group-sm input[type="cassandra_datetime"],
   .input-group-sm input[type="time"],
   .input-group-sm input[type="datetime-local"],
   .input-group-sm input[type="month"] {
     line-height: 30px;
   }
-  input[type="date"].input-lg,
+
+    input[type="cassandra_datetime"].input-lg,
   input[type="time"].input-lg,
   input[type="datetime-local"].input-lg,
   input[type="month"].input-lg,
-  .input-group-lg input[type="date"],
+    .input-group-lg input[type="cassandra_datetime"],
   .input-group-lg input[type="time"],
   .input-group-lg input[type="datetime-local"],
   .input-group-lg input[type="month"] {

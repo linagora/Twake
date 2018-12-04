@@ -19,7 +19,7 @@ class Contacts implements ContactsInterface
 	public function searchByUsername($username)
 	{
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		return $userRepository->findOneBy(Array("username"=>$username));
+        return $userRepository->findOneBy(Array("usernameCanonical" => $username));
 	}
     public function searchUsersByUsername($username,$restrictions,$groupId,$workspaceId)
     {
@@ -37,8 +37,8 @@ class Contacts implements ContactsInterface
             $groupUserRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             foreach($users as $user){
-                $groupUser = $groupUserRepository->findOneBy(Array("group" => $groupId, "user" => $user));
-                if ($groupUser) {
+                $groupuser = $groupUserRepository->findOneBy(Array("user_group_id" => $user->getId() . "_" . $groupId));
+                if ($groupuser) {
                     $res[] = $user;
                 }
             }

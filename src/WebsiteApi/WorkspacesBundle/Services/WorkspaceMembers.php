@@ -86,7 +86,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $username = $this->string_cleaner->simplifyUsername($username);
 
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-            $user = $userRepository->findOneBy(Array("username" => $username));
+            $user = $userRepository->findOneBy(Array("usernameCanonical" => $username));
 
             if ($user) {
                 return $this->addMember($workspaceId, $user->getId(), $asExterne);
@@ -113,7 +113,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             if ($currentUserId) {
                 $currentUser = $userRepository->find($currentUserId);
             }
-            $user = $userRepository->findOneBy(Array("email" => $mail));
+            $user = $userRepository->findOneBy(Array("emailCanonical" => $mail));
 
             if ($user) {
                 return $this->addMember($workspaceId, $user->getId(), $asExterne);
@@ -164,7 +164,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $mail = $this->string_cleaner->simplifyMail($mail);
 
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-            $user = $userRepository->findOneBy(Array("email" => $mail));
+            $user = $userRepository->findOneBy(Array("emailCanonical" => $mail));
 
             if ($user) {
                 return $this->removeMember($workspaceId, $user->getId());
@@ -511,9 +511,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $workspaces[] = Array(
                     "last_access" => $workspace->getLastAccess(),
                     "workspace" => $workspace->getWorkspace(),
-                    "isHidden" => $workspace->getisHidden(),
-                    "isFavorite" => $workspace->getisFavorite(),
-                    "hasNotifications" => $workspace->getHasNotifications(),
+                    "ishidden" => $workspace->getisHidden(),
+                    "isfavorite" => $workspace->getisFavorite(),
+                    "hasnotifications" => $workspace->getHasNotifications(),
                     "isArchived" => $workspace->getWorkspace()->getisArchived()
                 );
             }

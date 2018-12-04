@@ -15,37 +15,37 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class OnlyofficeFile
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
     /**
      * @ORM\Column(name="workspace_id", type="integer")
      */
-    private $workspaceId;
+    private $workspaceid;
 
     /**
      * @ORM\Column(name="file_id", type="integer")
      */
-    private $fileId;
+    private $fileid;
 
     /**
-     * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="cassandra_datetime")
      */
     private $date;
 
     /**
-     * @ORM\Column(name="token", type="string", length=256)
+     * @ORM\Column(name="token_column", type="string", length=256)
      */
     private $token;
 
 
-    public function __construct($workspaceId, $fileId)
+    public function __construct($workspaceid, $fileid)
     {
-        $this->fileId = $fileId;
-        $this->workspaceId = $workspaceId;
+        $this->fileid = $fileid;
+        $this->workspaceid = $workspaceid;
         $this->token = base64_encode(bin2hex(random_bytes(20)));
         $this->resetDate();
     }
@@ -63,15 +63,15 @@ class OnlyofficeFile
      */
     public function getWorkspaceId()
     {
-        return $this->workspaceId;
+        return $this->workspaceid;
     }
 
     /**
-     * @param mixed $workspaceId
+     * @param mixed $workspaceid
      */
-    public function setWorkspaceId($workspaceId)
+    public function setWorkspaceId($workspaceid)
     {
-        $this->workspaceId = $workspaceId;
+        $this->workspaceid = $workspaceid;
     }
 
     /**
@@ -79,15 +79,15 @@ class OnlyofficeFile
      */
     public function getFileId()
     {
-        return $this->fileId;
+        return $this->fileid;
     }
 
     /**
-     * @param mixed $fileId
+     * @param mixed $fileid
      */
-    public function setFileId($fileId)
+    public function setFileId($fileid)
     {
-        $this->fileId = $fileId;
+        $this->fileid = $fileid;
     }
 
     /**

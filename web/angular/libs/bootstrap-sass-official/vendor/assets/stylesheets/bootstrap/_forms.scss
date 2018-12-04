@@ -98,9 +98,9 @@ output {
 // textarea
 // input[type="text"]
 // input[type="password"]
-// input[type="datetime"]
+// input[type="cassandra_datetime"]
 // input[type="datetime-local"]
-// input[type="date"]
+// input[type="cassandra_datetime"]
 // input[type="month"]
 // input[type="time"]
 // input[type="week"]
@@ -186,7 +186,7 @@ input[type="search"] {
 // Note that as of 9.3, iOS doesn't support `week`.
 
 @media screen and (-webkit-min-device-pixel-ratio: 0) {
-  input[type="date"],
+  input[type="cassandra_datetime"],
   input[type="time"],
   input[type="datetime-local"],
   input[type="month"] {

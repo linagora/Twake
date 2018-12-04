@@ -8,7 +8,11 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 /**
  * Mail
  *
- * @ORM\Table(name="mail",options={"engine":"MyISAM"})
+ * @ORM\Table(name="mail",options={"engine":"MyISAM"},
+ *     indexes={
+ *     @ORM\Index(columns={"user_id"}),
+ *     @ORM\Index(columns={"mail"})
+ * })
  * @ORM\Entity(repositoryClass="WebsiteApi\UsersBundle\Repository\MailRepository")
  */
 class Mail
@@ -16,9 +20,9 @@ class Mail
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 

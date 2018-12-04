@@ -22,9 +22,9 @@ class ListOfTasks
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -51,7 +51,7 @@ class ListOfTasks
     /**
      * @ORM\Column(type="text")
      */
-    private $userIdToNotify;
+    private $useridtonotify;
 
 
     public function __construct($board, $title, $color, $participants = Array())
@@ -109,15 +109,15 @@ class ListOfTasks
      */
     public function getUserIdToNotify()
     {
-        return json_decode($this->userIdToNotify,1);
+        return json_decode($this->useridtonotify, 1);
     }
 
     /**
      * @param mixed $participant
      */
-    public function setUserIdToNotify($userIdToNotify)
+    public function setUserIdToNotify($useridtonotify)
     {
-        $this->userIdToNotify = json_encode($userIdToNotify);
+        $this->useridtonotify = json_encode($useridtonotify);
     }
 
     /**

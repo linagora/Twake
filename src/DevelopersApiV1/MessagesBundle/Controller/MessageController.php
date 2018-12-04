@@ -51,7 +51,7 @@ class MessageController extends Controller
 
         $subjectId = isset($data["subject_id"]) ? $data["subject_id"] : 0;
         $userId = isset($data["user_id"]) ? $data["user_id"] : 0;
-        $appId = $app->getId();
+        $appid = $app->getId();
         $url = null;
         if(isset($data["iframe"]) ){
             $url = Array("iframe" => $data["iframe"]["url"]);
@@ -60,7 +60,7 @@ class MessageController extends Controller
         $content = isset($data["content"]) ? $data["content"] : null;
 
         //sendMessage($senderId, $key, $isApplicationMessage, $applicationId, $isSystemMessage, $content, $workspace, $subjectId = null, $messageData = null, $notify = true, $front_id = "")
-        $message = $this->get("app.messages")->sendMessage($userId, "s-".$stream_id, true, $appId, false, $content, $workspace_id, $subjectId, $url);
+        $message = $this->get("app.messages")->sendMessage($userId, "s-" . $stream_id, true, $appid, false, $content, $workspace_id, $subjectId, $url);
 
 
         $data = Array(

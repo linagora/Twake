@@ -46,10 +46,10 @@ class StreamSystem implements StreamSystemInterface
     private function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
-            $var = intval($var);
+            $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var)) {
+        if (is_int($var) || is_string($var)) {
             return $this->doctrine->getRepository($repository)->find($var);
         } else if (is_object($var)) {
             return $var;
@@ -70,7 +70,7 @@ class StreamSystem implements StreamSystemInterface
             $members[] = $currentUserId;
         }
 
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
 
         $stream = new Stream($workspace, $streamName, $streamIsPrivate,$streamDescription);
         $stream->setType($type);
@@ -115,7 +115,7 @@ class StreamSystem implements StreamSystemInterface
             $members[] = $currentUserId;
         }
 
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
         if ($workspace == null) {
             return false;
         }
@@ -236,7 +236,7 @@ class StreamSystem implements StreamSystemInterface
 
         if($stream != null) {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")
-                ->findOneBy(Array("id" => $stream->getWorkspace()->getId(), "isDeleted" => false));
+                ->findOneBy(Array("id" => $stream->getWorkspace()->getId(), "is_deleted" => false));
             if ($workspace == null) {
                 return false;
             }
@@ -284,7 +284,7 @@ class StreamSystem implements StreamSystemInterface
 
         if($stream != null) {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")
-                ->findOneBy(Array("id" => $stream->getWorkspace()->getId(), "isDeleted" => false));
+                ->findOneBy(Array("id" => $stream->getWorkspace()->getId(), "is_deleted" => false));
             if ($workspace == null) {
                 return false;
             }
@@ -371,7 +371,7 @@ class StreamSystem implements StreamSystemInterface
     }
 	public function getAllStreamList($workspaceId){
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")
-            ->findOneBy(Array("id"=>$workspaceId,"isDeleted"=>false));
+            ->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
         if($workspace == null){
             return false;
         }
@@ -391,7 +391,7 @@ class StreamSystem implements StreamSystemInterface
 
     public function getStreamList($workspaceId, $user){
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")
-	        ->findOneBy(Array("id"=>$workspaceId,"isDeleted"=>false));
+            ->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
         if($workspace == null){
             return false;
         }

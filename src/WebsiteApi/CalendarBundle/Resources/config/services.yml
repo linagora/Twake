@@ -2,11 +2,11 @@ services:
 
     app.calendar_events:
         class: WebsiteApi\CalendarBundle\Services\CalendarEvents
-        arguments: ["@app.doctrine_adapter", '@app.pusher', '@app.workspace_levels', '@app.notifications','@app.calendarActivity' ,'@app.workspaces_activities', '@app.objectLinks']
+        arguments: ["@app.cassandra_doctrine", '@app.pusher', '@app.workspace_levels', '@app.notifications','@app.calendarActivity' ,'@app.workspaces_activities', '@app.objectLinks']
 
     app.calendars:
         class: WebsiteApi\CalendarBundle\Services\Calendars
-        arguments: ["@app.doctrine_adapter", '@app.pusher', '@app.workspace_levels']
+        arguments: ["@app.cassandra_doctrine", '@app.pusher', '@app.workspace_levels']
 
     calendar.topic:
         class: WebsiteApi\CalendarBundle\Topic\CalendarTopic
@@ -22,8 +22,8 @@ services:
 
     app.export_import:
         class: WebsiteApi\CalendarBundle\Services\exportImport
-        arguments: ["@app.calendar_events","@api.v1.api_status","@app.doctrine_adapter","@app.calendars"]
+        arguments: ["@app.calendar_events","@api.v1.api_status","@app.cassandra_doctrine","@app.calendars"]
 
     app.calendarActivity:
         class: WebsiteApi\CalendarBundle\Services\CalendarActivities
-        arguments: ["@app.doctrine_adapter", "@app.pusher", "@app.notifications"]
+        arguments: ["@app.cassandra_doctrine", "@app.pusher", "@app.notifications"]

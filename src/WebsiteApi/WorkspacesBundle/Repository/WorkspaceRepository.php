@@ -10,59 +10,19 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  */
 class WorkspaceRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
-    public function search($pageNumber,$nbGroupByPage, $filter=null,&$total){
-        $offset = ($pageNumber - 1) * $nbGroupByPage;
-        $limit = $nbGroupByPage;
 
-        $req = $this->createQueryBuilder('U')
-            ->select('count(U.id)');
-        $req = $req->where('U.user is null');
-        $req = $this->searchMiddleQueryBuilder($req,$filter);
-        $total = $req->getQuery()->getSingleScalarResult();
+    public function findOneBy(array $array)
+    {
+        if (isset($array["is_deleted"])) {
+            unset($array["is_deleted"]);
 
-        $req1 = $this->createQueryBuilder('U');
-        $req1 = $req1->where('U.user is null');
-        $req1 = $this->searchMiddleQueryBuilder($req1,$filter);
-        $req1 = $req1->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->getQuery()->getResult();
-        return $req1;
-    }
-
-    private function searchMiddleQueryBuilder($req,$filter){
-        if ($filter != null) {
-                $req->andWhere('U.name LIKE \'%' . $filter.'%\'');
+            $ws = parent::findOneBy($array);
+            if (($ws->getis_deleted() && !$array["is_deleted"]) || (!$ws->getis_deleted() && $array["is_deleted"])) {
+                return null;
+            }
+            return $ws;
         }
-        return $req;
+        return parent::findOneBy($array);
     }
 
-
-
-    public function findWorspaceByFilter($pageNumber,$nbWorkspaceByPage,$name=null,$memberCount=null,&$total=null){
-        $offset = ($pageNumber - 1) * $nbWorkspaceByPage;
-        $limit = $nbWorkspaceByPage;
-
-        $req = $this->createQueryBuilder('U')
-            ->select('count(U.id)');
-        $req = $this->middleFindWorspaceQueryBuilder($req,$name,$memberCount);
-        $total = $req->getQuery()->getSingleScalarResult();
-
-        $req1 = $this->createQueryBuilder('U');
-        $req1->where('1=1');
-        $req1 = $this->middleFindWorspaceQueryBuilder($req1,$name,$memberCount);
-        $req1 = $req1->setFirstResult($offset)
-            ->setMaxResults($limit)
-            ->getQuery()->getResult();
-        return $req1;
-    }
-
-    public function middleFindWorspaceQueryBuilder($req,$name,$memberCount){
-        if($name != null){
-            $req->andWhere('U.name LIKE \'%' . $name.'%\'');
-        }
-        if($memberCount != null){
-            $req->andWhere('U.memberCount LIKE \'%' . $memberCount.'%\'');
-        }
-        return $req;
-    }
 }

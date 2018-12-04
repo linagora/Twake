@@ -15,9 +15,9 @@ class WorkspaceUserByMail
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
 	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
 	 */
 	protected $id;
 
@@ -27,12 +27,12 @@ class WorkspaceUserByMail
 	private $workspace;
 
 	/**
-	 * @ORM\Column(name="mail", type="string", length=255)
+     * @ORM\Column(name="mail", type="string", length=255, options={"index": true})
 	 */
 	private $mail;
 
     /**
-     * @ORM\Column(name="is_externe", type="boolean")
+     * @ORM\Column(name="is_externe", type="cassandra_boolean")
      */
     private $externe;
 
@@ -73,7 +73,7 @@ class WorkspaceUserByMail
     }
 
     /**
-     * @param mixed $isClient
+     * @param mixed $isclient
      */
     public function setExterne($externe)
     {

@@ -62,8 +62,17 @@ class PricingPlan implements PricingPlanInterface
 
     public function getMinimalPricing()
     {
+        error_log("**HELLO**");
         $planRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan");
-        $plan = $planRepository->findOneBy(Array("id" => 1));
+        $plans = $planRepository->findBy(Array());
+        error_log("total = " . count($plans));
+        $plan = null;
+        foreach ($plans as $_plan) {
+            error_log($_plan->getId());
+            if (!$plan || $plan->getMonthPrice() > $_plan->getMonthPrice()) {
+                $plan = $_plan;
+            }
+        }
         return $plan;
     }
 
@@ -359,10 +368,10 @@ class PricingPlan implements PricingPlanInterface
     public function checkEnded($gp)
     {
         $group = $gp->getGroup();
-        $groupPricingInstance = $gp->getGroupPricingInstance();
-        if ($groupPricingInstance != null) {
-            $billingtype = $groupPricingInstance->getBilledType();
-            $pricingId = $groupPricingInstance->getOriginalPricingReference();
+        $grouppricinginstance = $gp->getGroupPricingInstance();
+        if ($grouppricinginstance != null) {
+            $billingtype = $grouppricinginstance->getBilledType();
+            $pricingId = $grouppricinginstance->getOriginalPricingReference();
             $this->groupPeriod->changePlanOrRenew($group, $billingtype, $pricingId);
         }
     }

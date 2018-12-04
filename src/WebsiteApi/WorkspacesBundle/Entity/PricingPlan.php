@@ -19,24 +19,24 @@ class PricingPlan
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
 	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
 	 */
 	protected $id;
 
 	/**
-	 * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, options={"index"=true})
 	 */
 	protected $label = "";
 
 	/**
-	 * @ORM\Column(name="month_price", type="float")
+     * @ORM\Column(name="month_price", type="cassandra_float")
 	 */
 	protected $month_price = 0;
 
 	/**
-	 * @ORM\Column(name="year_price", type="float")
+     * @ORM\Column(name="year_price", type="cassandra_float")
 	 */
 	protected $year_price = 0;
 

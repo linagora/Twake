@@ -17,9 +17,9 @@ class Call implements ObjectLinksInterface
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
 	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
 	 */
 	private $id;
 
@@ -77,22 +77,23 @@ class Call implements ObjectLinksInterface
         );
     }
 
-    public function synchroniseField($fieldName, $value)
+    public function synchroniseField($fieldname, $value)
     {
-        if(!property_exists($this, $fieldName))
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $setter = "set".ucfirst($fieldName);
+        $setter = "set" . ucfirst($fieldname);
         $this->$setter($value);
 
         return true;
     }
 
-    public function get($fieldName){
-        if(!property_exists($this, $fieldName))
+    public function get($fieldname)
+    {
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $getter = "get".ucfirst($fieldName);
+        $getter = "get" . ucfirst($fieldname);
 
         return $this->$getter();
     }

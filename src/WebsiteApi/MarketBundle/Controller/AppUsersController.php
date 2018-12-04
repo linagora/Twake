@@ -19,7 +19,7 @@ class AppUsersController extends Controller
   public function acquireAction(Request $request){
 
 
-      $manager = $this->get("app.doctrine_adapter")->getManager();
+      $manager = $this->get("app.cassandra_doctrine")->getManager();
     $data = array(
       "data" => Array(),
       "errors" => Array()
@@ -33,15 +33,15 @@ class AppUsersController extends Controller
     } else {
       // Vérifier que le groupe existe
       $groupId = $request->request->get('groupId');
-      $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+        $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id" => $groupId, "is_deleted" => false));
       if ($group == null){
         $data['errors'][] = "nosuchgroup";
       } else {
 	      if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:apps:acquire")) {
           $response["errors"][] = "notallowed";
         } else {
-          $appId = $request->request->get('appId');
-          $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appId);
+              $appid = $request->request->get('appId');
+              $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appid);
           if ($app == null) {
             $data['errors'][] = "nosuchapp";
           } else {
@@ -69,7 +69,7 @@ class AppUsersController extends Controller
 
     public function removeAction(Request $request)
     {
-        $manager = $this->get("app.doctrine_adapter")->getManager();
+        $manager = $this->get("app.cassandra_doctrine")->getManager();
         $data = array(
             "data" => Array(),
             "errors" => Array()
@@ -83,15 +83,15 @@ class AppUsersController extends Controller
         } else {
             // Vérifier que le groupe existe
             $groupId = $request->request->get('groupId');
-            $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id" => $groupId, "isDeleted" => false));
+            $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id" => $groupId, "is_deleted" => false));
             if ($group == null) {
                 $data['errors'][] = "nosuchgroup";
             } else {
                 if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:apps:acquire")) {
                     $response["errors"][] = "notallowed";
                 } else {
-                    $appId = $request->request->get('appId');
-                    $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appId);
+                    $appid = $request->request->get('appId');
+                    $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appid);
                     if ($app == null) {
                         $data['errors'][] = "nosuchapp";
                     } else {
@@ -115,7 +115,7 @@ class AppUsersController extends Controller
     }
 
   public function voteAction(Request $request){
-      $manager = $this->get("app.doctrine_adapter")->getManager();
+      $manager = $this->get("app.cassandra_doctrine")->getManager();
     $data = array(
       "data" => Array(),
       "errors" => Array()
@@ -132,12 +132,12 @@ class AppUsersController extends Controller
         $data['errors'][] = "invalidvote";
       } else {
         $groupId = $request->request->get('groupId');
-        $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id"=>$groupId,"isDeleted"=>false));
+          $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->findOneBy(Array("id" => $groupId, "is_deleted" => false));
         if ($group == null){
           $data['errors'][] = "nosuchgroup";
         } else {
-          $appId = $request->request->get('appId');
-          $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appId);
+            $appid = $request->request->get('appId');
+            $app = $manager->getRepository('TwakeMarketBundle:Application')->find($appid);
           if ($app == null){
             $data['errors'][] = "nosuchapp";
           } else {

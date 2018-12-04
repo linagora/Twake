@@ -27,7 +27,6 @@ class Workspaces implements WorkspacesInterface
     private $gms;
     private $gas;
     private $gs;
-    private $ws;
     private $doctrine;
     private $pricing;
     private $string_cleaner;
@@ -40,7 +39,7 @@ class Workspaces implements WorkspacesInterface
     var $calendarService;
     var $driveAdapteService;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $workspace_stats, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $taskService, $calendarService, $calendarEventService, $driveAdapteService)
+    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $taskService, $calendarService, $calendarEventService, $driveAdapteService)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -48,7 +47,6 @@ class Workspaces implements WorkspacesInterface
         $this->gms = $groups_managers_service;
         $this->gas = $groups_apps_service;
         $this->gs = $groups_service;
-        $this->ws = $workspace_stats;
         $this->pricing = $priceService;
         $this->string_cleaner = $cleaner;
         $this->pusher = $pusher;
@@ -114,9 +112,8 @@ class Workspaces implements WorkspacesInterface
 
         $workspace = new Workspace($name);
 
-        $increment = 0;
         $uniquename = $this->string_cleaner->simplify($name);
-        $uniquenameIncremented = $uniquename;
+        $uniquenameIncremented = $uniquename . "-" . substr(md5(date("U") . rand()), 0, 10);
 
         $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->find($userId);
@@ -133,16 +130,6 @@ class Workspaces implements WorkspacesInterface
                 return false;
             }
 
-            //Find a name
-            $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquename, "group" => $group));
-
-            while ($WorkspaceUsingThisName != null) {
-                $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented, "group" => $group));
-                $increment += 1;
-                if ($WorkspaceUsingThisName != null) {
-                    $uniquenameIncremented = $uniquename . "-" . $increment;
-                }
-            }
         }
 
         $workspace->setUniqueName($uniquenameIncremented);
@@ -150,7 +137,13 @@ class Workspaces implements WorkspacesInterface
         if ($groupId != null) {
             $limit = $this->pricing->getLimitation($groupId, "maxWorkspace", PHP_INT_MAX);
 
-            $nbWorkspace = $workspaceRepository->findBy(Array("group" => $group, "isDeleted" => 0));
+            $_nbWorkspace = $workspaceRepository->findBy(Array("group" => $group));
+            $nbWorkspace = [];
+            foreach ($_nbWorkspace as $ws) {
+                if (!$ws->getis_deleted()) {
+                    $nbWorkspace[] = $ws;
+                }
+            }
 
             if (count($nbWorkspace) >= $limit) {
                 return false;
@@ -161,7 +154,7 @@ class Workspaces implements WorkspacesInterface
         $this->doctrine->persist($workspace);
         $this->doctrine->flush();
 
-        $twakebot = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "twake_bot"));
+        $twakebot = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernameCanonical" => "twake_bot"));
         $twakebotId = $twakebot->getId();
 
 
@@ -301,8 +294,6 @@ class Workspaces implements WorkspacesInterface
 
         //Add twake_bot
         $this->wms->addMember($workspace->getId(), $twakebotId, false, $level->getId());
-
-        $this->ws->create($workspace); //Create workspace stat element
 
         //init default apps
         $this->init($workspace);
@@ -511,7 +502,7 @@ class Workspaces implements WorkspacesInterface
 
             $this->wms->removeAllMember($workspaceId);
 
-            $workspace->setIsDeleted(true);
+            $workspace->setis_deleted(true);
 
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
@@ -533,24 +524,7 @@ class Workspaces implements WorkspacesInterface
             $workspace->setName($name);
 
             $uniquename = $this->string_cleaner->simplify($name);
-            $uniquenameIncremented = $uniquename;
-
-            //Find a name
-            if ($workspace->getGroup() != null) {
-                $increment = 0;
-
-                $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-                $group = $groupRepository->find($workspace->getGroup()->getId());
-                $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $name, "group" => $group));
-
-                while ($WorkspaceUsingThisName != null) {
-                    $WorkspaceUsingThisName = $workspaceRepository->findOneBy(Array("uniqueName" => $uniquenameIncremented, "group" => $group));
-                    $increment += 1;
-                    if ($WorkspaceUsingThisName != null) {
-                        $uniquenameIncremented = $uniquename . "-" . $increment;
-                    }
-                }
-            }
+            $uniquenameIncremented = $uniquename . "-" . substr(md5(date("U") . rand()), 0, 10);
 
             $workspace->setUniqueName($uniquenameIncremented);
             $this->doctrine->persist($workspace);
@@ -660,8 +634,6 @@ class Workspaces implements WorkspacesInterface
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $workspace = $workspaceRepository->find($workspaceId);
 
-            $this->ws->create($workspace); //Create workspace stat element
-
             return $workspace;
         }
 
@@ -689,7 +661,7 @@ class Workspaces implements WorkspacesInterface
         }
 
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-        $workspace = $workspaceRepository->findOneBy(Array("uniqueName" => $workspaceName, "group" => $group, "isDeleted" => 0));
+        $workspace = $workspaceRepository->findOneBy(Array("uniqueName" => $workspaceName, "group" => $group, "is_deleted" => 0));
 
         if($workspace != null){
             return $workspace->getAsArray();
@@ -745,9 +717,9 @@ class Workspaces implements WorkspacesInterface
             $workspace = $workspaceRepository->find($workspaceId);
 
             $isArchived = $workspace->getisArchived();
-            $isDeleted = $workspace->getisDeleted();
+            $is_deleted = $workspace->getis_deleted();
 
-            if ($isDeleted == false && $isArchived == false){
+            if ($is_deleted == false && $isArchived == false) {
                 $workspace->setIsArchived(true);
                 $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.archive","TwakeWorkspacesBundle:Workspace", $workspaceId);
             }
@@ -781,9 +753,9 @@ class Workspaces implements WorkspacesInterface
             $workspace = $workspaceRepository->find($workspaceId);
 
             $isArchived = $workspace->getisArchived();
-            $isDeleted = $workspace->getisDeleted();
+            $is_deleted = $workspace->getis_deleted();
 
-            if ($isDeleted == false && $isArchived == true){
+            if ($is_deleted == false && $isArchived == true) {
                 $workspace->setIsArchived(false);
                 $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.unarchive","TwakeWorkspacesBundle:Workspace", $workspaceId);
             }
@@ -819,8 +791,8 @@ class Workspaces implements WorkspacesInterface
             $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
             if($wanted_value === null) {
-                $isHidden = $workspaceUser->getisHidden();
-                $workspaceUser->setisHidden(!$isHidden);
+                $ishidden = $workspaceUser->getisHidden();
+                $workspaceUser->setisHidden(!$ishidden);
             }
             $workspaceUser->setisHidden($wanted_value);
 
@@ -854,8 +826,8 @@ class Workspaces implements WorkspacesInterface
             $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
             if($wanted_value === null) {
-                $hasNotifications = $workspaceUser->getHasNotifications();
-                $workspaceUser->setHasNotifications(!$hasNotifications);
+                $hasnotifications = $workspaceUser->getHasNotifications();
+                $workspaceUser->setHasNotifications(!$hasnotifications);
             }
             $workspaceUser->setHasNotifications($wanted_value);
 
@@ -890,8 +862,8 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
-            $isFavorite = $workspaceUser->getisFavorite();
-            $workspaceUser->setisFavorite(!$isFavorite);
+            $isfavorite = $workspaceUser->getisFavorite();
+            $workspaceUser->setisFavorite(!$isfavorite);
             $this->doctrine->persist($workspaceUser);
 
             $this->doctrine->flush();
@@ -908,7 +880,7 @@ class Workspaces implements WorkspacesInterface
             }
 
             $result["answer"] = true;
-            $result["isFavorite"] = $workspaceUser->getisFavorite();
+            $result["isfavorite"] = $workspaceUser->getisFavorite();
 
             return $result;
         }

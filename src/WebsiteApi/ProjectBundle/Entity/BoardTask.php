@@ -18,9 +18,9 @@ class BoardTask implements ObjectLinksInterface {
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -49,13 +49,13 @@ class BoardTask implements ObjectLinksInterface {
      * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\ListOfTasks")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $listOfTasks;
+    private $listoftasks;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\ProjectBundle\Entity\BoardTask")
      * @ORM\JoinColumn(nullable=true)
      */
-    private $dependingTask;
+    private $dependingtask;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
@@ -87,7 +87,7 @@ class BoardTask implements ObjectLinksInterface {
     /**
      * @ORM\Column( type="text")
      */
-    private $userIdToNotify;
+    private $useridtonotify;
 
 
     /**
@@ -103,12 +103,12 @@ class BoardTask implements ObjectLinksInterface {
     /**
      * @ORM\Column( type="text")
      */
-    private $userWhoLiked;
+    private $userwholiked;
 
     /**
      * @ORM\Column( type="text")
      */
-    private $userWhoDisliked;
+    private $userwhodisliked;
 
     /**
      * @ORM\Column(type="string", length=264)
@@ -130,14 +130,14 @@ class BoardTask implements ObjectLinksInterface {
      */
     private $status = "todo"; //"current" "done" "cancelled"
 
-    public function __construct($from, $to, $name, $description, $dependingTask, $participants, $user, $weight = 0.5)
+    public function __construct($from, $to, $name, $description, $dependingtask, $participants, $user, $weight = 0.5)
     {
         $this->setFrom($from);
         $this->setTo($to);
         $this->setReminder();
         $this->setName($name);
         $this->setDescription($description);
-        $this->setDependingTask($dependingTask);
+        $this->setDependingTask($dependingtask);
         $this->setWeight($weight);
         $this->setParticipants($participants);
         $this->setUser($user);
@@ -146,33 +146,34 @@ class BoardTask implements ObjectLinksInterface {
         $this->setUserWhoDisliked(Array());
     }
 
-    public function likeOne($userId){
-        $userWhoLike = $this->getUserWhoLiked();
-        $userWhoDislike = $this->getUserWhoDisliked();
+    public function likeOne($userid)
+    {
+        $userwholike = $this->getUserWhoLiked();
+        $userwhodislike = $this->getUserWhoDisliked();
 
-        if(!in_array($userId,$userWhoLike)) {
+        if (!in_array($userid, $userwholike)) {
             $this->like++;
-            if(!in_array($userId,$userWhoDislike))
-                $userWhoLike[] = $userId;
+            if (!in_array($userid, $userwhodislike))
+                $userWhoLike[] = $userid;
 
-            $userWhoDislike = array_diff($userWhoDislike, [$userId]);
-            $this->setUserWhoLiked($userWhoLike);
-            $this->setUserWhoDisliked($userWhoDislike);
+            $userwhodislike = array_diff($userwhodislike, [$userId]);
+            $this->setUserWhoLiked($userwholike);
+            $this->setUserWhoDisliked($userwhodislike);
         }
     }
 
-    public function dislikeOne($userId)
+    public function dislikeOne($userid)
     {
-        $userWhoLike = $this->getUserWhoLiked();
-        $userWhoDislike = $this->getUserWhoDisliked();
+        $userwholike = $this->getUserWhoLiked();
+        $userwhodislike = $this->getUserWhoDisliked();
 
-        if(!in_array($userId,$userWhoDislike)) {
+        if (!in_array($userid, $userwhodislike)) {
             $this->like--;
-            if(!in_array($userId,$userWhoLike))
-                $userWhoDislike[] = $userId;
-            $userWhoLike = array_diff($userWhoLike, [$userId]);
-            $this->setUserWhoLiked($userWhoLike);
-            $this->setUserWhoDisliked($userWhoDislike);
+            if (!in_array($userid, $userwholike))
+                $userWhoDislike[] = $userid;
+            $userwholike = array_diff($userwholike, [$userId]);
+            $this->setUserWhoLiked($userwholike);
+            $this->setUserWhoDisliked($userwhodislike);
         }
     }
 
@@ -253,7 +254,7 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function getUserIdToNotify()
     {
-        return json_decode($this->userIdToNotify, 1);
+        return json_decode($this->useridtonotify, 1);
     }
 
     /**
@@ -261,15 +262,15 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function setUserIdToNotify($task)
     {
-        $this->userIdToNotify = json_encode($task);
+        $this->useridtonotify = json_encode($task);
     }
 
     /**
-     * @param mixed $nextReminder
+     * @param mixed $nextreminder
      */
-    public function setNextReminder($nextReminder)
+    public function setNextReminder($nextreminder)
     {
-        $this->nextReminder = $nextReminder;
+        $this->nextreminder = $nextreminder;
     }
 
     public function setReminder($delay = 1800)
@@ -288,7 +289,7 @@ class BoardTask implements ObjectLinksInterface {
             "id" => $this->getId(),
             "board" => $this->getBoard()->getId(),
             "list" => $this->getListOfTasks()->getId(),
-            "dependingTask" => $this->getDependingTask()!=null ? $this->dependingTask->getId() : null,
+            "dependingtask" => $this->getDependingTask() != null ? $this->dependingtask->getId() : null,
             "name" => $this->getName(),
             "description" => $this->getDescription(),
             "watch_members" => $this->getUserIdToNotify(),
@@ -356,15 +357,15 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function getDependingTask()
     {
-        return $this->dependingTask;
+        return $this->dependingtask;
     }
 
     /**
-     * @param mixed $dependingTask
+     * @param mixed $dependingtask
      */
-    public function setDependingTask($dependingTask)
+    public function setDependingTask($dependingtask)
     {
-        $this->dependingTask = $dependingTask;
+        $this->dependingtask = $dependingtask;
     }
 
     /**
@@ -372,15 +373,15 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function getListOfTasks()
     {
-        return $this->listOfTasks;
+        return $this->listoftasks;
     }
 
     /**
-     * @param mixed $listOfTasks
+     * @param mixed $listoftasks
      */
-    public function setListOfTasks($listOfTasks)
+    public function setListOfTasks($listoftasks)
     {
-        $this->listOfTasks = $listOfTasks;
+        $this->listoftasks = $listoftasks;
     }
 
     /**
@@ -507,15 +508,15 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function getUserWhoLiked()
     {
-        return json_decode($this->userWhoLiked,1);
+        return json_decode($this->userwholiked, 1);
     }
 
     /**
-     * @param mixed $userWhoLiked
+     * @param mixed $userwholiked
      */
-    public function setUserWhoLiked($userWhoLiked)
+    public function setUserWhoLiked($userwholiked)
     {
-        $this->userWhoLiked = json_encode($userWhoLiked);
+        $this->userwholiked = json_encode($userwholiked);
     }
 
 
@@ -524,15 +525,15 @@ class BoardTask implements ObjectLinksInterface {
      */
     public function getUserWhoDisliked()
     {
-        return json_decode($this->userWhoDisliked,1);
+        return json_decode($this->userwhodisliked, 1);
     }
 
     /**
-     * @param mixed $userWhoDisliked
+     * @param mixed $userwhodisliked
      */
-    public function setUserWhoDisliked($userWhoDisliked)
+    public function setUserWhoDisliked($userwhodisliked)
     {
-        $this->userWhoDisliked = json_encode($userWhoDisliked);
+        $this->userwhodisliked = json_encode($userwhodisliked);
     }
     public function getRepository()
     {
@@ -550,21 +551,22 @@ class BoardTask implements ObjectLinksInterface {
         );
     }
 
-    public function synchroniseField($fieldName, $value)
+    public function synchroniseField($fieldname, $value)
     {
-        if(!property_exists($this, $fieldName))
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $setter = "set".ucfirst($fieldName);
+        $setter = "set" . ucfirst($fieldname);
         $this->$setter($value);
         return true;
     }
 
-    public function get($fieldName){
-        if(!property_exists($this, $fieldName))
+    public function get($fieldname)
+    {
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $getter = "get".ucfirst($fieldName);
+        $getter = "get" . ucfirst($fieldname);
 
         return $this->$getter();
     }

@@ -16,23 +16,23 @@ class ExternalDrive
 {
 
 	/**
-	 * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
 	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
 	 */
 	private $id;
 
 	/**
 	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\Token")
 	 */
-	private $externalToken;
+    private $externaltoken;
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=350)
      */
-    private $fileId;
+    private $fileid;
 
 
     /**
@@ -41,14 +41,15 @@ class ExternalDrive
     private $workspace;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="cassandra_boolean")
      */
     private $completed;
 
 
-	public function __construct($fileId, $token, $workspace){
+    public function __construct($fileid, $token, $workspace)
+    {
 	    $this->setExternalToken($token);
-	    $this->setFileId($fileId);
+        $this->setFileId($fileid);
 	    $this->setWorkspace($workspace);
 	    $this->setCompleted(false);
 	}
@@ -58,15 +59,15 @@ class ExternalDrive
      */
     public function getExternalToken()
     {
-        return $this->externalToken;
+        return $this->externaltoken;
     }
 
     /**
-     * @param mixed $externalToken
+     * @param mixed $externaltoken
      */
-    public function setExternalToken($externalToken)
+    public function setExternalToken($externaltoken)
     {
-        $this->externalToken = $externalToken;
+        $this->externaltoken = $externaltoken;
     }
 
     /**
@@ -74,15 +75,15 @@ class ExternalDrive
      */
     public function getFileId()
     {
-        return $this->fileId;
+        return $this->fileid;
     }
 
     /**
-     * @param string $fileId
+     * @param string $fileid
      */
-    public function setFileId($fileId)
+    public function setFileId($fileid)
     {
-        $this->fileId = $fileId;
+        $this->fileid = $fileid;
     }
 
     /**

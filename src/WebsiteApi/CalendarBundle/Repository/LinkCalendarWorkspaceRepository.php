@@ -10,4 +10,21 @@ namespace WebsiteApi\CalendarBundle\Repository;
  */
 class LinkCalendarWorkspaceRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
+
+    public function findOneBy(array $array)
+    {
+        if (isset($array["workspace"]) && isset($array["calendar"])) {
+            if (!is_integer($array["workspace"])) {
+                $array["workspace"] = $array["workspace"]->getId();
+            }
+            if (!is_integer($array["calendar"])) {
+                $array["calendar"] = $array["calendar"]->getId();
+            }
+            $array["calendar_workspace_id"] = $array["calendar"] . "_" . $array["workspace"];
+            unset($array["calendar"]);
+            unset($array["workspace"]);
+        }
+        return parent::findOneBy($array);
+    }
+
 }

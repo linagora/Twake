@@ -220,8 +220,6 @@ class UsersConnectionsController extends Controller
 
 			$data["data"]["status"] = "connected";
 
-			$this->get("app.user_stats")->create($this->getUser());
-
 			$private = $this->get("app.workspaces")->getPrivate($this->getUser()->getId());
             $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
 
@@ -229,9 +227,9 @@ class UsersConnectionsController extends Controller
 			foreach ($workspaces_obj as $workspace_obj){
                 $value = $workspace_obj["workspace"]->getAsArray();
                 $value["last_access"] = $workspace_obj["last_access"]->getTimestamp();
-                $value["isHidden"] = $workspace_obj["isHidden"];
-                $value["hasNotifications"] = $workspace_obj["hasNotifications"];
-                $value["isFavorite"] = $workspace_obj["isFavorite"];
+                $value["ishidden"] = $workspace_obj["ishidden"];
+                $value["hasnotifications"] = $workspace_obj["hasnotifications"];
+                $value["isfavorite"] = $workspace_obj["isfavorite"];
 
                 $workspaces[] = $value;
 

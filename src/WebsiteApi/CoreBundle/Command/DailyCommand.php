@@ -87,7 +87,7 @@ class DailyCommand extends ContainerAwareCommand
                     "usage" => Array()
                 );
 
-                $workspaces = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array("group" => $group, "isDeleted" => 0));
+                $workspaces = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array("group" => $group, "is_deleted" => 0));
                 $report["groups"][$group->getId()]["workspaces"] = count($workspaces);
 
                 /** @var GroupPeriod $group_period */

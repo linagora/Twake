@@ -16,9 +16,9 @@ class Token
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -37,9 +37,9 @@ class Token
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=350)
+     * @ORM\Column(name="external_service_name", type="string", length=350)
      */
-    private $externalServiceName;
+    private $externalservicename;
 
     /**
      * @return int
@@ -62,15 +62,15 @@ class Token
      */
     public function getExternalServiceName()
     {
-        return $this->externalServiceName;
+        return $this->externalservicename;
     }
 
     /**
-     * @param string $externalServiceName
+     * @param string $externalservicename
      */
-    public function setExternalServiceName($externalServiceName)
+    public function setExternalServiceName($externalservicename)
     {
-        $this->externalServiceName = $externalServiceName;
+        $this->externalservicename = $externalservicename;
     }
 
     /**
@@ -94,6 +94,8 @@ class Token
      */
     public function getToken()
     {
+        var_dump($this->token);
+        var_dump(json_decode("" . $this->token));
         if($this->token==null)
             return null;
         return json_decode($this->token);
@@ -110,11 +112,11 @@ class Token
             $this->token = json_encode($token);
     }
 
-    public function __construct($tokenString, $user, $externalService)
+    public function __construct($tokenstring, $user, $externalservice)
     {
-        $this->setToken($tokenString);
+        $this->setToken($tokenstring);
         $this->setUser($user);
-        $this->setExternalServiceName($externalService);
+        $this->setExternalServiceName($externalservice);
     }
 }
 

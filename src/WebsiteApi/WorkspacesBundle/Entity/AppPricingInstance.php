@@ -18,9 +18,9 @@ class AppPricingInstance
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -37,25 +37,25 @@ class AppPricingInstance
     /**
      * @ORM\Column(name="cost_monthly", type="integer")
      */
-    protected $costMonthly;
+    protected $costmonthly;
 
     /**
      * @ORM\Column(name="cost_per_user", type="integer")
      */
-    protected $costUser;
+    protected $costuser;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
-	private $startedAt;
+    private $startedat;
 
 
 	public function __construct($groupapp) {
 	    $this->group = $groupapp->getGroup();
 		$this->groupapp = $groupapp;
-        $this->costMonthly = $groupapp->getApp()->getPriceMonthly();
-        $this->costUser = $groupapp->getApp()->getPriceUser();
-		$this->startedAt = new \DateTime();
+        $this->costmonthly = $groupapp->getApp()->getPriceMonthly();
+        $this->costuser = $groupapp->getApp()->getPriceUser();
+        $this->startedat = new \DateTime();
 	}
 
     /**
@@ -95,15 +95,15 @@ class AppPricingInstance
      */
     public function getCostMonthly()
     {
-        return $this->costMonthly;
+        return $this->costmonthly;
     }
 
     /**
-     * @param mixed $costMonthly
+     * @param mixed $costmonthly
      */
-    public function setCostMonthly($costMonthly)
+    public function setCostMonthly($costmonthly)
     {
-        $this->costMonthly = $costMonthly;
+        $this->costmonthly = $costmonthly;
     }
 
     /**
@@ -111,15 +111,15 @@ class AppPricingInstance
      */
     public function getCostUser()
     {
-        return $this->costUser;
+        return $this->costuser;
     }
 
     /**
-     * @param mixed $costUser
+     * @param mixed $costuser
      */
-    public function setCostUser($costUser)
+    public function setCostUser($costuser)
     {
-        $this->costUser = $costUser;
+        $this->costuser = $costuser;
     }
 
     /**
@@ -127,15 +127,15 @@ class AppPricingInstance
      */
     public function getStartedAt()
     {
-        return $this->startedAt;
+        return $this->startedat;
     }
 
     /**
-     * @param mixed $startedAt
+     * @param mixed $startedat
      */
-    public function setStartedAt($startedAt)
+    public function setStartedAt($startedat)
     {
-        $this->startedAt = $startedAt;
+        $this->startedat = $startedat;
     }
 
     /**

@@ -8,7 +8,7 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 /**
  * Call
  *
- * @ORM\Table(name="calls",options={"engine":"MyISAM"})
+ * @ORM\Table(name="calls",options={"engine":"myisam"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CallsBundle\Repository\CallRepository")
  */
 class Call
@@ -16,16 +16,16 @@ class Call
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
 	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
 	 */
 	private $id;
 
 	/**
-	 * @ORM\Column(name="discussionKey", type="string", length=24)
+     * @ORM\Column(name="discussion_key", type="string", length=24)
 	 */
-	private $discussionKey;
+    private $discussionkey;
 
 
 	/**
@@ -40,7 +40,7 @@ class Call
 	 *
 	 * Date of start
 	 *
-	 * @ORM\Column(name="since", type="datetime")
+     * @ORM\Column(name="since", type="cassandra_datetime")
 	 */
 	private $since;
 
@@ -48,7 +48,7 @@ class Call
 	 *
 	 * Access token for meet.twakeapp
 	 *
-	 * @ORM\Column(name="token", type="string", length=256)
+     * @ORM\Column(name="token_column", type="string", length=256)
 	 */
 	private $token;
 
@@ -62,7 +62,7 @@ class Call
     public function __construct($key,$message){
 		$this->since = new \DateTime();
 		$this->nbclients = 0;
-		$this->discussionKey = $key;
+        $this->discussionkey = $key;
 		$this->setMessage($message);
 		$this->token = sha1(bin2hex(random_bytes(20)));
 	}
@@ -85,7 +85,7 @@ class Call
 
 
 	public function getDiscussionKey(){
-		return $this->discussionKey;
+        return $this->discussionkey;
 	}
 
 	/**

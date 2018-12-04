@@ -56,10 +56,10 @@ class BoardTasks implements BoardTasksInterface
     private function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
-            $var = intval($var);
+            $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var)) {
+        if (is_int($var) || is_string($var)) {
             return $this->doctrine->getRepository($repository)->find($var);
         } else if (is_object($var)) {
             return $var;
@@ -82,13 +82,13 @@ class BoardTasks implements BoardTasksInterface
 
         $board = $list->getBoard();
 
-        //$from, $to, $name, $description, $dependingTask, $weight
+        //$from, $to, $name, $description, $dependingtask, $weight
         if($dependingTaskId!=0)
-            $dependingTask = $this->convertToEntity($dependingTaskId,"TwakeProjectBundle:BoardTask");
+            $dependingtask = $this->convertToEntity($dependingTaskId, "TwakeProjectBundle:BoardTask");
         else
-            $dependingTask = null;
+            $dependingtask = null;
 
-        $task = new BoardTask($startDate, $endDate, $name, $description, $dependingTask,$participants,$user, $weight);
+        $task = new BoardTask($startDate, $endDate, $name, $description, $dependingtask, $participants, $user, $weight);
 
         $task->setUserIdToNotify($userIdsToNotify);
         $task->setParticipants($participants);
@@ -356,7 +356,7 @@ class BoardTasks implements BoardTasksInterface
             $currentUserId = null; //Give root rights for ourselves
         }
 
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:read")) {
             return null;
@@ -453,7 +453,7 @@ class BoardTasks implements BoardTasksInterface
     }
 
     public function getTasksByBoard($workspaceId, $boardsId, $currentUserId = null){
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
         var_dump($workspaceId);
         var_dump($boardsId);
         if($workspace == null || ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:read"))){
@@ -472,7 +472,7 @@ class BoardTasks implements BoardTasksInterface
 
     public function getTaskById($workspaceId, $taskId, $currentUserId = null)
     {
-        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "isDeleted" => false));
+        $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
 
         if ($currentUserId && !$this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:read")) {
             return null;
@@ -570,11 +570,11 @@ class BoardTasks implements BoardTasksInterface
 
         /* @var \WebsiteApi\ProjectBundle\Entity\BoardTask $task */
         $task = $boardTaskRepository->findOneBy(Array("id" => $taskId));
-        /* @var \WebsiteApi\ProjectBundle\Entity\ListOfTasks $listofTasks */
-        $listOfTasks = $listOfTasksRepository->findOneBy(Array("id" => $listOfTasksId));
+        /* @var \WebsiteApi\ProjectBundle\Entity\ListOfTasks $listoftasks */
+        $listoftasks = $listOfTasksRepository->findOneBy(Array("id" => $listOfTasksId));
 
         $board = $task->getBoard();
-        $task->setListOfTasks($listOfTasks);
+        $task->setListOfTasks($listoftasks);
 
         $this->doctrine->persist($task);
         $this->doctrine->flush();

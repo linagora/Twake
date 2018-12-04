@@ -20,9 +20,9 @@ class Workspace
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -34,7 +34,7 @@ class Workspace
     /**
      * @ORM\Column(name="uniquename", type="string", length=50, nullable=true)
      */
-    private $uniqueName;
+    private $uniquename;
 
 
     /**
@@ -73,24 +73,24 @@ class Workspace
     private $member_count = 0;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
 	private $date_added;
 
 	/**
-	 * @ORM\Column(type="boolean")
+     * @ORM\Column(name="isdeleted", type="cassandra_boolean")
 	 */
-	private $isDeleted = false;
+    private $is_deleted = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="isarchived", type="cassandra_boolean")
      */
-    private $isArchived = false;
+    private $isarchived = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="isnew", type="cassandra_boolean")
      */
-    private $isNew = true;
+    private $isnew = true;
 
     /**
      * @ORM\Column(type="integer")
@@ -143,7 +143,7 @@ class Workspace
      */
     public function getUniqueName()
     {
-        return $this->uniqueName;
+        return $this->uniquename;
     }
 
     /**
@@ -151,7 +151,7 @@ class Workspace
      */
     public function setUniqueName($name)
     {
-        $this->uniqueName = $name;
+        $this->uniquename = $name;
     }
 
 	/**
@@ -221,17 +221,17 @@ class Workspace
 	/**
 	 * @return mixed
 	 */
-	public function getisDeleted()
-	{
-		return $this->isDeleted;
+    public function getis_deleted()
+    {
+        return $this->is_deleted;
 	}
 
 	/**
-	 * @param mixed $isDeleted
+     * @param mixed $is_deleted
 	 */
-	public function setIsDeleted($isDeleted)
-	{
-		$this->isDeleted = $isDeleted;
+    public function setis_deleted($is_deleted)
+    {
+        $this->is_deleted = $is_deleted;
 	}
 
 	/**
@@ -282,15 +282,15 @@ class Workspace
      */
     public function getisArchived()
     {
-        return $this->isArchived;
+        return $this->isarchived;
     }
 
     /**
-     * @param mixed $isArchived
+     * @param mixed $isarchived
      */
-    public function setIsArchived($isArchived)
+    public function setIsArchived($isarchived)
     {
-        $this->isArchived = $isArchived;
+        $this->isarchived = $isarchived;
     }
 
     /**
@@ -298,15 +298,15 @@ class Workspace
      */
     public function getisNew()
     {
-        return $this->getGroup() != null && $this->isNew;
+        return $this->getGroup() != null && $this->isnew;
     }
 
     /**
-     * @param mixed $isNew
+     * @param mixed $isnew
      */
-    public function setIsNew($isNew)
+    public function setIsNew($isnew)
     {
-        $this->isNew = $isNew;
+        $this->isnew = $isnew;
     }
 
     /**

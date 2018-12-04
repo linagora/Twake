@@ -31,7 +31,6 @@ class BillingUserList
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-     * @ORM\Id
      */
     private $user;
 

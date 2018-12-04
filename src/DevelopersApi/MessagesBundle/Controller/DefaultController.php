@@ -22,7 +22,7 @@ class DefaultController extends Controller
         $subjectId = isset($requestData["subjectId"]) ? intval($requestData["subjectId"]) : 0;
         $userId = isset($requestData["userId"]) ? $requestData["userId"] : 0;
         $url = isset($requestData["url"]) ? $requestData["url"] : "";
-        $appId = $request["application"]->getId();
+        $appid = $request["application"]->getId();
         $responseTo = isset($requestData["respondTo"]) ? intval($requestData["respondTo"]) : 0;
 
         $data = Array(
@@ -30,7 +30,7 @@ class DefaultController extends Controller
             "errors" => Array()
         );
 
-        $message = $this->get("app.messages")->sendMessage($userId, "s-" . $streamId, true, $appId, false, null, $workspaceId, $subjectId, Array("iframe" => $url), true, "", $responseTo);
+        $message = $this->get("app.messages")->sendMessage($userId, "s-" . $streamId, true, $appid, false, null, $workspaceId, $subjectId, Array("iframe" => $url), true, "", $responseTo);
 
         if (!$message) {
             $data["errors"][] = 3001;

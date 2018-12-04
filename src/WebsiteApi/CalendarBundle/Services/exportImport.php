@@ -264,7 +264,7 @@ class exportImport implements exportImportInterface{
         if($calendar->getIcsLink()!=null)
             return $calendar->getIcsLink();
 
-        $calendarExportToken = new CalendarExportToken(intval($workspaceId),$calendarId,intval($useMine),$from,$to, $user_id);
+        $calendarExportToken = new CalendarExportToken($workspaceId, $calendarId, intval($useMine), $from, $to, $user_id);
         $token = $calendarExportToken->getToken();
         $this->doctrine->persist($calendarExportToken);
         $this->doctrine->flush();

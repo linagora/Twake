@@ -8,7 +8,7 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 /**
  * CallMembers
  *
- * @ORM\Table(name="call_members",options={"engine":"MyISAM"})
+ * @ORM\Table(name="call_members",options={"engine":"myisam"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CallsBundle\Repository\CallMemberRepository")
  */
 class CallMember
@@ -16,9 +16,9 @@ class CallMember
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -36,7 +36,7 @@ class CallMember
 	 *
 	 * Date of start
 	 *
-	 * @ORM\Column(name="since", type="date")
+     * @ORM\Column(name="since", type="cassandra_datetime")
 	 */
 	private $since;
 

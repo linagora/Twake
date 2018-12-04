@@ -44,4 +44,20 @@ class GroupUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
         $criteria->andWhere(Criteria::expr()->eq('externe', true));
         return  $this->matching( $criteria);
     }
+
+    public function findOneBy(array $array)
+    {
+        if (isset($array["group"]) && isset($array["user"])) {
+            if (!is_integer($array["group"])) {
+                $array["group"] = $array["group"]->getId();
+            }
+            if (!is_integer($array["user"])) {
+                $array["user"] = $array["user"]->getId();
+            }
+            $array["user_group_id"] = $array["user"] . "_" . $array["group"];
+            unset($array["user"]);
+            unset($array["group"]);
+        }
+        return parent::findOneBy($array);
+    }
 }

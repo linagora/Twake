@@ -15,57 +15,57 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 /**
  * Class ObjectLinks
  * @package WebsiteApi\ObjectLinksBundle\Entity
- * @ORM\Table(name="objectLinks", options={"engine":"MyISAM"})
+ * @ORM\Table(name="object_links", options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\ObjectLinksBundle\Repository\ObjectLinksRepository")
  */
 class ObjectLinks
 {
 
     /**
-     * @ORM\Column(name="id",type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
     /**
      * @ORM\Column(type="string")
      */
-    private $typeA;
+    private $typea;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $idA;
+    private $ida;
     /**
      * @ORM\Column(type="string")
      */
-    private $typeB;
+    private $typeb;
     /**
      * @ORM\Column(type="integer")
      */
-    private $idB;
+    private $idb;
 
     /**
      * @ORM\Column(type="text")
      */
-    private $fieldsToSynchronised;
+    private $fieldstosynchronised;
 
 
     /**
      * ObjectLinks constructor.
      * @param $id
-     * @param $typeA
-     * @param $idA
-     * @param $typeB
-     * @param $idB
+     * @param $typea
+     * @param $ida
+     * @param $typeb
+     * @param $idb
      */
-    public function __construct($typeA, $idA, $typeB, $idB)
+    public function __construct($typea, $ida, $typeb, $idb)
     {
-        $this->typeA = $typeA;
-        $this->idA = $idA;
-        $this->typeB = $typeB;
-        $this->idB = $idB;
+        $this->typea = $typea;
+        $this->ida = $ida;
+        $this->typeb = $typeb;
+        $this->idb = $idb;
         $this->setFieldsToSynchronised(Array("from", "to", "participants"));
     }
 
@@ -90,15 +90,15 @@ class ObjectLinks
      */
     public function getTypeA()
     {
-        return $this->typeA;
+        return $this->typea;
     }
 
     /**
-     * @param mixed $typeA
+     * @param mixed $typea
      */
-    public function setTypeA($typeA)
+    public function setTypeA($typea)
     {
-        $this->typeA = $typeA;
+        $this->typea = $typea;
     }
 
     /**
@@ -106,15 +106,15 @@ class ObjectLinks
      */
     public function getIdA()
     {
-        return $this->idA;
+        return $this->ida;
     }
 
     /**
-     * @param mixed $idA
+     * @param mixed $ida
      */
-    public function setIdA($idA)
+    public function setIdA($ida)
     {
-        $this->idA = $idA;
+        $this->ida = $ida;
     }
 
     /**
@@ -122,15 +122,15 @@ class ObjectLinks
      */
     public function getTypeB()
     {
-        return $this->typeB;
+        return $this->typeb;
     }
 
     /**
-     * @param mixed $typeB
+     * @param mixed $typeb
      */
-    public function setTypeB($typeB)
+    public function setTypeB($typeb)
     {
-        $this->typeB = $typeB;
+        $this->typeb = $typeb;
     }
 
     /**
@@ -138,15 +138,15 @@ class ObjectLinks
      */
     public function getIdB()
     {
-        return $this->idB;
+        return $this->idb;
     }
 
     /**
-     * @param mixed $idB
+     * @param mixed $idb
      */
-    public function setIdB($idB)
+    public function setIdB($idb)
     {
-        $this->idB = $idB;
+        $this->idb = $idb;
     }
 
     public function getAsArray(){
@@ -165,14 +165,14 @@ class ObjectLinks
      */
     public function getFieldsToSynchronised()
     {
-        return json_decode($this->fieldsToSynchronised,1);
+        return json_decode($this->fieldstosynchronised, 1);
     }
 
     /**
-     * @param mixed $fieldsToSynchronised
+     * @param mixed $fieldstosynchronised
      */
-    public function setFieldsToSynchronised($fieldsToSynchronised)
+    public function setFieldsToSynchronised($fieldstosynchronised)
     {
-        $this->fieldsToSynchronised = json_encode($fieldsToSynchronised);
+        $this->fieldstosynchronised = json_encode($fieldstosynchronised);
     }
 }

@@ -60,14 +60,11 @@ class InitCommand extends ContainerAwareCommand
          * Doctrine Schema Update
          */
 
-        $command = $this->getApplication()->find('doctrine:schema:update');
+        $command = $this->getApplication()->find('twake:cassandra:schema:update');
 
         $arguments = array(
-            'command' => 'doctrine:schema:update',
-            '--force' => true,
-            '--complete' => true,
+            'command' => 'twake:cassandra:schema:update'
         );
-
         $greetInput = new ArrayInput($arguments);
         $returnCode = $command->run($greetInput, $output);
 
@@ -78,8 +75,7 @@ class InitCommand extends ContainerAwareCommand
             $output->writeln('WARNING : doctrine schema update failed, error was ignored');
         }
 
-        $doctrine = $this->getContainer()->get('doctrine');
-        $manager = $doctrine->getManager();
+        $manager = $this->getContainer()->get('app.cassandra_doctrine');
 
 
         /**
@@ -108,7 +104,7 @@ class InitCommand extends ContainerAwareCommand
         }
 
         //Création de l'user twake_bot
-        $twake_bot = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username"=>"twake_bot"));
+        $twake_bot = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernameCanonical" => "twake_bot"));
         if($twake_bot==null){
             $twake_bot = new User();
         }

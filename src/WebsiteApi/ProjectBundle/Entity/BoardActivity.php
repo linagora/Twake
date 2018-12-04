@@ -18,15 +18,15 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
  * Class BoardActivity
  * @package WebsiteApi\ProjectBundle\Entity
  *
- * @ORM\Table(name="BoardActivity", options={"engine":"MyISAM"})
+ * @ORM\Table(name="board_activity", options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\ProjectBundle\Repository\BoardActivityRepository")
  */
 class BoardActivity
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -56,7 +56,7 @@ class BoardActivity
     private $text;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $date;
 
@@ -66,7 +66,7 @@ class BoardActivity
     private $data;
 
     /**
-     * @ORM\Column(name="isRead", type="boolean")
+     * @ORM\Column(name="is_read", type="cassandra_boolean")
      */
     private $read = false;
 

@@ -18,15 +18,15 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
  * Class CalendarActivity
  * @package WebsiteApi\CalendarBundle\Entity
  *
- * @ORM\Table(name="CalendarActivity", options={"engine":"MyISAM"})
+ * @ORM\Table(name="calendar_activity", options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\CalendarActivityRepository")
  */
 class CalendarActivity
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -56,7 +56,7 @@ class CalendarActivity
     private $text;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
      */
     private $date;
 
@@ -66,7 +66,7 @@ class CalendarActivity
     private $data;
 
     /**
-     * @ORM\Column(name="isRead", type="boolean")
+     * @ORM\Column(name="is_read", type="cassandra_boolean")
      */
     private $read = false;
 

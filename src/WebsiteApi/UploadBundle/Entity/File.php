@@ -18,9 +18,9 @@ class File
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -41,9 +41,9 @@ class File
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="realName", type="string", length=255)
+     * @ORM\Column(name="real_name", type="string", length=255)
 	 */
-	private $realName; //Original name of the files on user computer
+    private $realname; //Original name of the files on user computer
 
 	/**
 	 * @var int
@@ -74,7 +74,7 @@ class File
 
     /**
      *
-     * @ORM\Column(name="aws_pubblic_link", type="string", length=1024)
+     * @ORM\Column(name="aws_public_link", type="string", length=1024)
      */
     private $aws_public_link = false;
 
@@ -222,15 +222,15 @@ class File
 	 */
 	public function getRealName()
 	{
-		return $this->realName;
+        return $this->realname;
 	}
 
 	/**
-	 * @param string $realName
+     * @param string $realname
 	 */
-	public function setRealName($realName)
-	{
-		$this->realName = $realName;
+    public function setRealName($realname)
+    {
+        $this->realname = $realname;
 	}
 
     /**

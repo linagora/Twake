@@ -28,10 +28,8 @@ class MessageSystem implements MessagesSystemInterface
     var $levelManager;
     var $fileSystemAdapter;
     var $messagesNotificationCenter;
-    var $user_stats;
-    var $workspace_stats;
 
-    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager, $fileSystemAdapter, $messagesNotificationCenter, $user_stats, $workspace_stats)
+    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $commandExecutorService, $pusher, $levelManager, $fileSystemAdapter, $messagesNotificationCenter)
     {
         $this->string_cleaner = $string_cleaner;
         $this->doctrine = $doctrine;
@@ -41,17 +39,15 @@ class MessageSystem implements MessagesSystemInterface
         $this->levelManager = $levelManager;
         $this->fileSystemAdapter = $fileSystemAdapter;
         $this->messagesNotificationCenter = $messagesNotificationCenter;
-        $this->user_stats = $user_stats;
-        $this->workspace_stats = $workspace_stats;
     }
 
     private function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
-            $var = intval($var);
+            $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var)) {
+        if (is_int($var) || is_string($var)) {
             return $this->doctrine->getRepository($repository)->find($var);
         } else if (is_object($var)) {
             return $var;
@@ -240,13 +236,6 @@ class MessageSystem implements MessagesSystemInterface
             return false;
         }
 
-        if ($sender != null && $stream != null) { // select only user message and not system or application message without user
-            $this->user_stats->sendMessage($sender, false);
-            if ($workspace != null) {
-                $this->workspace_stats->sendMessage($workspace, false, $stream->getIsPrivate());
-            }
-        }
-
         if (($isApplicationMessage || $isSystemMessage || $sender != null) && $stream != null) {
             $subject = null;
             if ($subjectId != null) {
@@ -408,7 +397,7 @@ class MessageSystem implements MessagesSystemInterface
         $recieverId = $vals["id"];
         $recieverType = $vals["type"];
 
-        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverId, intval($maxId), $subjectId, $maxResult);
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverId, $maxId, $subjectId, $maxResult);
 
         $headIds = [];
         foreach ($messages as $message) {

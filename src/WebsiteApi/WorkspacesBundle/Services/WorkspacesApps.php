@@ -69,13 +69,13 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
     }
 
-    public function forceApplication($groupId, $appId, $currentUserId = null)
+    public function forceApplication($groupId, $appid, $currentUserId = null)
     {
         $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
         $group = $groupRepository->find($groupId);
 
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $application = $applicationRepository->find($appId);
+        $application = $applicationRepository->find($appid);
 
         if ($group == null || $application == null) {
             return false;
@@ -90,7 +90,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $workspaces = $group->getWorkspaces();
             foreach ($workspaces as $workspace){
 
-                $this->enableApp($workspace->getId(),$appId,$currentUserId);
+                $this->enableApp($workspace->getId(), $appid, $currentUserId);
 
                 $datatopush = Array(
                     "type" => "CHANGE_WORKSPACE_APPS",

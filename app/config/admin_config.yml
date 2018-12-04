@@ -84,14 +84,14 @@ easy_admin:
             label: 'Workspaces'
             list:
                 title: "Twake workspaces"
-                fields: ['id', 'isDeleted', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', {property: 'dateAdded', type: 'date'}, 'group', 'members', 'member_count', 'total_activity']
-                dql_filter: 'entity.isDeleted = 0 AND entity.user IS NULL'
+                fields: ['id', 'is_deleted', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', {property: 'dateAdded', type: 'date'}, 'group', 'members', 'member_count', 'total_activity']
+                dql_filter: 'entity.is_deleted = 0 AND entity.user IS NULL'
                 actions:
                     - { name: 'easy_admin_bundle_workspace_data', label: 'Details', type: 'route' }
             show:
                 fields: ['id', {property: 'logo.publicURL', label: 'Image', type: 'image'}, 'name', {property: 'dateAdded', type: 'date'}, 'group', 'members']
             edit:
-                fields: ['isDeleted']
+                fields: ['is_deleted']
             disabled_actions: ['new', 'delete']
         Group:
             class: WebsiteApi\WorkspacesBundle\Entity\Group

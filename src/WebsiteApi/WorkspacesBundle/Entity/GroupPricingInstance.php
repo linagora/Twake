@@ -18,9 +18,9 @@ class GroupPricingInstance
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -37,31 +37,31 @@ class GroupPricingInstance
     /**
      * @ORM\Column(name="billed_type", type="string", length=25)
      */
-    protected $billedType;
+    protected $billedtype;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\PricingPlan")
      */
-    private $originalPricingReference;
+    private $originalpricingreference;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="cassandra_datetime")
 	 */
-	private $startedAt;
+    private $startedat;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="cassandra_datetime", nullable=true)
      */
-    private $endAt;
+    private $endat;
 
 
 	public function __construct($group,$billtype,$pricing) {
 		$this->group = $group;
         $this->cost = $billtype == "monthly" ? $pricing->getMonthPrice() : $pricing->getYearPrice();
-		$this->billedType = $billtype;
-        $this->originalPricingReference = $pricing;
-		$this->startedAt = new \DateTime();
-        $this->endAt = new \DateTime();
+        $this->billedtype = $billtype;
+        $this->originalpricingreference = $pricing;
+        $this->startedat = new \DateTime();
+        $this->endat = new \DateTime();
 	}
 
     /**
@@ -101,15 +101,15 @@ class GroupPricingInstance
      */
     public function getBilledType()
     {
-        return $this->billedType;
+        return $this->billedtype;
     }
 
     /**
-     * @param mixed $billedType
+     * @param mixed $billedtype
      */
-    public function setBilledType($billedType)
+    public function setBilledType($billedtype)
     {
-        $this->billedType = $billedType;
+        $this->billedtype = $billedtype;
     }
 
     /**
@@ -117,15 +117,15 @@ class GroupPricingInstance
      */
     public function getOriginalPricingReference()
     {
-        return $this->originalPricingReference;
+        return $this->originalpricingreference;
     }
 
     /**
-     * @param mixed $originalPricingReference
+     * @param mixed $originalpricingreference
      */
-    public function setOriginalPricingReference($originalPricingReference)
+    public function setOriginalPricingReference($originalpricingreference)
     {
-        $this->originalPricingReference = $originalPricingReference;
+        $this->originalpricingreference = $originalpricingreference;
     }
 
     /**
@@ -133,15 +133,15 @@ class GroupPricingInstance
      */
     public function getStartedAt()
     {
-        return $this->startedAt;
+        return $this->startedat;
     }
 
     /**
-     * @param mixed $startedAt
+     * @param mixed $startedat
      */
-    public function setStartedAt($startedAt)
+    public function setStartedAt($startedat)
     {
-        $this->startedAt = $startedAt;
+        $this->startedat = $startedat;
     }
 
     /**
@@ -149,15 +149,15 @@ class GroupPricingInstance
      */
     public function getEndAt()
     {
-        return $this->endAt;
+        return $this->endat;
     }
 
     /**
-     * @param mixed $endAt
+     * @param mixed $endat
      */
-    public function setEndAt($endAt)
+    public function setEndAt($endat)
     {
-        $this->endAt = $endAt;
+        $this->endat = $endat;
     }
 
     /**

@@ -8,7 +8,7 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 /**
  * linkBoardWorkspace
  *
- * @ORM\Table(name="linkBoardWorkspace",options={"engine":"MyISAM"})
+ * @ORM\Table(name="link_board_workspace",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\ProjectBundle\Repository\LinkBoardWorkspaceRepository")
  */
 
@@ -17,9 +17,9 @@ class LinkBoardWorkspace{
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="cassandra_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
@@ -29,12 +29,12 @@ class LinkBoardWorkspace{
     private $workspace;
 
     /**
-     * @ORM\Column(name="boardright", type="boolean")
+     * @ORM\Column(name="boardright", type="cassandra_boolean")
      */
-    private $boardRight;
+    private $boardright;
 
     /**
-     * @ORM\Column(name="owner", type="boolean")
+     * @ORM\Column(name="owner", type="cassandra_boolean")
      */
     private $owner;
 
@@ -43,12 +43,12 @@ class LinkBoardWorkspace{
      */
     private $board;
 
-    public  function __construct($workspace,$board,$owner,$boardRight = true)
+    public function __construct($workspace, $board, $owner, $boardright = true)
     {
         $this->setWorkspace($workspace);
         $this->setBoard($board);
         $this->setOwner($owner);
-        $this->setBoardRight($boardRight);
+        $this->setBoardRight($boardright);
     }
 
     /**
@@ -104,15 +104,15 @@ class LinkBoardWorkspace{
      */
     public function getBoardRight()
     {
-        return $this->boardRight;
+        return $this->boardright;
     }
 
     /**
      * @param mixed $right
      */
-    public function setBoardRight($boardRight)
+    public function setBoardRight($boardright)
     {
-        $this->boardRight = $boardRight;
+        $this->boardright = $boardright;
     }
 
     /**

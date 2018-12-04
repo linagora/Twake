@@ -225,10 +225,27 @@ class AdministrationServerStats
         $free = shell_exec('free');
         $free = (string)trim($free);
         $free_arr = explode("\n", $free);
-        $mem = explode(" ", $free_arr[1]);
-        $mem = array_filter($mem);
-        $mem = array_merge($mem);
-        $memory_usage = $mem[2] / $mem[1] * 100;
+        $used = 0;
+        $total = 1;
+        foreach ($free_arr as $line) {
+            $line = explode(":", $line);
+            if (isset($line[1])) {
+                if (strpos($line[0], "Mem") !== false) {
+                    $_total = explode(" ", $line[1]);
+                    $_total = array_filter($_total);
+                    $_total = array_merge($_total);
+                    $total = $_total[0];
+                    $used = $total[1];
+                }
+                if (strpos($line[0], "buffers") !== false) {
+                    $_total = explode(" ", $line[1]);
+                    $_total = array_filter($_total);
+                    $_total = array_merge($_total);
+                    $used = $_total[0];
+                }
+            }
+        }
+        $memory_usage = $used / $total * 100;
 
         return $memory_usage;
     }
