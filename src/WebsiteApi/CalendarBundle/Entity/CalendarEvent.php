@@ -4,6 +4,7 @@ namespace WebsiteApi\CalendarBundle\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**

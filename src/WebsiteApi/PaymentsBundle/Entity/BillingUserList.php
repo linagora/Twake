@@ -11,6 +11,7 @@ namespace WebsiteApi\PaymentsBundle\Entity;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping as ORM;
+use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\UsersBundle\Entity\User;
 

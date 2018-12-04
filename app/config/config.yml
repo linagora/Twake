@@ -83,7 +83,7 @@ doctrine:
 
 ambta_doctrine_encrypt:
     encryptor_class: Halite
-    secret_directory_path: '%kernel.project_dir%'   # Path where to store the keyfiles
+    secret_directory_path: '%kernel.root_dir%/Ressources/DatabaseEncryption'   # Path where to store the keyfiles
 
 # Swiftmailer Configuration
 swiftmailer:

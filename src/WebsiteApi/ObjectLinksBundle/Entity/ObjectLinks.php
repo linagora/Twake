@@ -10,6 +10,7 @@ namespace WebsiteApi\ObjectLinksBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 
 /**
  * Class ObjectLinks

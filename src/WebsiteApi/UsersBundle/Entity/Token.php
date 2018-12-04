@@ -3,6 +3,7 @@
 namespace WebsiteApi\UsersBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 
 /**
  * Token
