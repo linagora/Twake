@@ -25,7 +25,7 @@ class ExternalDriveSystem
             $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var) || is_string($var)) {
+        if (is_int($var) || is_string($var) || get_class($var) == "Ramsey\Uuid\Uuid") {
             return $this->doctrine->getRepository($repository)->find($var);
         } else if (is_object($var)) {
             return $var;

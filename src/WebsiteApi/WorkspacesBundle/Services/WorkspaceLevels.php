@@ -18,6 +18,23 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
         $this->pusher = $pusher;
 	}
 
+
+    private function convertToEntity($var, $repository)
+    {
+        if (is_string($var)) {
+            $var = $var; // Cassandra id do nothing
+        }
+
+        if (is_int($var) || is_string($var) || get_class($var) == "Ramsey\Uuid\Uuid") {
+            return $this->doctrine->getRepository($repository)->find($var);
+        } else if (is_object($var)) {
+            return $var;
+        } else {
+            return null;
+        }
+
+    }
+
 	public function can($workspaceId, $userId, $action)
 	{
 
@@ -27,15 +44,10 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 		//Load rights for this users
 
-		$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
 		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 		$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
-        if (is_integer($userId) || is_string($userId)) {
-            $user = $userRepository->find($userId);
-        } else {
-            $user = $userId;
-        }
+        $user = $this->convertToEntity($userId, "TwakeUsersBundle:User");
 		$workspace = $workspaceRepository->find($workspaceId);
 
 		if(!$user || !$workspace){

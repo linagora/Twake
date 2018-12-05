@@ -32,7 +32,7 @@ class WorkspacesActivities
             $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var) || is_string($var)) {
+        if (is_int($var) || is_string($var) || get_class($var) == "Ramsey\Uuid\Uuid") {
             try {
                 $r = $this->doctrine->getRepository($repository)->find($var);
             } catch (ORMException $e) {
