@@ -11,7 +11,7 @@ class DefaultController extends Controller
     public function initAction()
     {
 
-        $messages = $this->get("app.twake_doctrine")->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "messages"));
+        $messages = $this->get("app.twake_doctrine")->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "messages"));
 
         $notifs = $this->get("app.notifications")->getAll($this->getUser());
     	$data = Array();
@@ -55,8 +55,8 @@ class DefaultController extends Controller
 
         $application_id = isset($application_tmp["id"]) ? $application_tmp["id"] : $application_tmp;
 
-        $workspace_id = $this->get("app.twake_doctrine")->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id_tmp));
-        $application = $this->get("app.twake_doctrine")->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("id" => $application_id));
+        $workspace_id = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id_tmp));
+        $application = $this->get("app.twake_doctrine")->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("id" => $application_id));
 
         $user = $this->getUser();
         $delete = $this->get('app.notifications')->deleteAll($application, $workspace_id, $user, null, false);
@@ -98,8 +98,8 @@ class DefaultController extends Controller
 
         $application_id = isset($application_tmp["id"]) ? $application_tmp["id"] : $application_tmp;
 
-        $workspace_id = $this->get("app.twake_doctrine")->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id_tmp));
-        $application = $this->get("app.twake_doctrine")->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("id" => $application_id));
+        $workspace_id = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id_tmp));
+        $application = $this->get("app.twake_doctrine")->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("id" => $application_id));
 
         $user = $this->getUser();
         $delete = $this->get('app.notifications')->readAll($application, $workspace_id, $user, null, false);

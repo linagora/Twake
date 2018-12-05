@@ -378,7 +378,7 @@ class MessageSystem implements MessagesSystemInterface
     }
 
     public function getMessagesFromStream($streamId){
-        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("streamReciever" => $streamId));
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("streamreciever" => $streamId));
 
         return $messages;
     }

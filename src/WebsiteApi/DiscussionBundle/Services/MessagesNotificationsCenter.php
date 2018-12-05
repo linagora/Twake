@@ -177,8 +177,8 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
         $data = Array("app" => $application->getId(), "shortcut" => $message->getId() . "_" . $stream->getId());
         $code = $stream->getId();
 
-		if ($message->getStreamReciever()->getType() != "user") {
-			$channelName = $message->getStreamReciever()->getName();
+        if ($message->getstreamreciever()->getType() != "user") {
+            $channelName = $message->getstreamreciever()->getName();
 			if($channelName[0]==":"){
 				$channelName = substr($channelName, 1);
 			}

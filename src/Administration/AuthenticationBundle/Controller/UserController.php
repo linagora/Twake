@@ -17,7 +17,7 @@ class UserController extends Controller
 
         $id = $request->query->get('id');
 
-        $em = $this->get("app.twake_doctrine")->getManager();
+        $em = $this->get("app.twake_doctrine");
         $repository = $em->getRepository("TwakeUsersBundle:User");
 
         $user = $repository->find($id);

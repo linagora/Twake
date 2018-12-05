@@ -14,8 +14,8 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
 	public function removeStream($stream){
 		$qb = $this->createQueryBuilder('s');
 		$qb->delete();
-		$qb->where('s.streamReciever = :streamReciever');
-		$qb->setParameter('streamReciever', $stream);
+        $qb->where('s.streamreciever = :streamreciever');
+        $qb->setParameter('streamreciever', $stream);
         $qb->getQuery()->execute();
 	}
 
@@ -36,7 +36,7 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
 		$qb = $this->createQueryBuilder("e");
 
 		if(isset($param["idDiscussion"]) && $param["idDiscussion"]!=null){
-            $qb->where('e.streamReciever = :id')
+            $qb->where('e.streamreciever = :id')
             ->setParameter('id', $param["idDiscussion"]);
         }
 
@@ -72,7 +72,7 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
 	public function getMessageNotOwner($userId,$streamId,$limit){
         $qb = $this->createQueryBuilder("m");
         $qb->where('m.userSender != :idUser');
-        $qb->andWhere("m.streamReciever=:idStream");
+        $qb->andWhere("m.streamreciever=:idStream");
         $qb->setParameter("idUser",$userId);
         $qb->setParameter("idStream",$streamId);
         $qb->orderBy("m.date","DESC");
@@ -85,7 +85,7 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
     {
 
         $qb = $this->createQueryBuilder("m");
-        $qb->andWhere("m.streamReciever = :streamId")
+        $qb->andWhere("m.streamreciever = :streamId")
             ->setParameter("streamId", $streamId);
 
         $qb->andWhere("m.responseTo IS NULL");
@@ -117,7 +117,7 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
         }
 
         $qb = $this->createQueryBuilder("m");
-        $qb->andWhere("m.streamReciever = :streamId")
+        $qb->andWhere("m.streamreciever = :streamId")
             ->setParameter("streamId", $streamId);
 
         $qb->andWhere("m.responseTo IN (" . join(",", $headIds) . ")");
@@ -143,7 +143,7 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
 //            $qb->setParameter('idUser2', $ids[1]);
 //        }
 //        else{ // stream
-//            $qb->where('m.streamReciever = idStream');
+//            $qb->where('m.streamreciever = idStream');
 //            $qb->setParameter("idStream",$ids[0]);
 //        }
 //        $qb->orderBy("m.date","DESC");

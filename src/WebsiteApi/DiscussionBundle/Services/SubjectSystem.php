@@ -108,7 +108,7 @@ class SubjectSystem
         	$name = strlen($message->getContent()) > 100 ? substr($message->getContent(),0,100)."..." : $message->getContent();
 	        $name = ucfirst($name);
 
-            $subject = $this->createSubject($name, $message->getStreamReciever()->getAsArray()["key"],($message->getUserSender()?$message->getUserSender():$user) );
+            $subject = $this->createSubject($name, $message->getstreamreciever()->getAsArray()["key"], ($message->getUserSender() ? $message->getUserSender() : $user));
 
             if(!$subject){
             	return false;

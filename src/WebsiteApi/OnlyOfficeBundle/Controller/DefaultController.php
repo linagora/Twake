@@ -97,7 +97,7 @@ class DefaultController extends Controller
             $key = $request["key"];
             $document = $request["url"];
 
-            $em = $this->get("app.twake_doctrine")->getManager();
+            $em = $this->get("app.twake_doctrine");
 
             $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFileKeys");
             $fileKey = $repo->findOneBy(Array("key" => $key));
@@ -166,7 +166,7 @@ class DefaultController extends Controller
 
             $fId = $request->request->get("fileId", 0);
             $filename = $request->request->get("filename", 0);
-            $em = $this->get("app.twake_doctrine")->getManager();
+            $em = $this->get("app.twake_doctrine");
 
             $file = new OnlyofficeFile($workspaceId, $fId);
             $em->persist($file);
@@ -201,7 +201,7 @@ class DefaultController extends Controller
         $fToken = $request->query->get("fileToken", null);
         $fId = $request->query->get("fileId", 0);
 
-        $em = $this->get("app.twake_doctrine")->getManager();
+        $em = $this->get("app.twake_doctrine");
         $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFile");
 
         /** @var OnlyofficeFile $file */

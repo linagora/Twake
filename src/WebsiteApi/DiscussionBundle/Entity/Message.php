@@ -133,7 +133,7 @@ class Message
 
         $this->setTypeReciever($typereciever);
         if ($typereciever == "S") {
-            $this->setStreamReciever($reciever);
+            $this->setstreamreciever($reciever);
         } elseif ($typereciever == "U") {
             $this->setUserReciever($reciever);
         }
@@ -213,7 +213,7 @@ class Message
     /**
      * @return mixed
      */
-    public function getStreamReciever()
+    public function getstreamreciever()
     {
         return $this->streamreciever;
     }
@@ -221,7 +221,7 @@ class Message
     /**
      * @param mixed $streamreciever
      */
-    public function setStreamReciever($streamreciever)
+    public function setstreamreciever($streamreciever)
     {
         $this->streamreciever = $streamreciever;
     }
@@ -445,8 +445,8 @@ class Message
 
     public function getDiscussionKey(){
         $key = "";
-        if($this->getTypeReciever()=="S" && $this->getStreamReciever()!=null){
-            $key = $this->getStreamReciever()->getId();
+        if ($this->getTypeReciever() == "S" && $this->getstreamreciever() != null) {
+            $key = $this->getstreamreciever()->getId();
         }
         else{
             if($this->getUserSender()!=null && $this->getUserReciever()!=null){
@@ -478,7 +478,7 @@ class Message
             "front_id" => $this->getFrontId(),
             "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getId():null,
             "recieverType" => $this->getTypeReciever(),
-            "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getId()  :null,
+            "streamreciever" => ($this->getstreamreciever() != null) ? $this->getstreamreciever()->getId() : null,
             "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
             "isApplicationMessage" => $this->getIsApplicationMessage(),
             "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getAsArray():null,
@@ -499,7 +499,7 @@ class Message
         return Array(
             "id" => $this->getId(),
             "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getId():null,
-            "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getId()  :null,
+            "streamreciever" => ($this->getstreamreciever() != null) ? $this->getstreamreciever()->getId() : null,
             "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
             "htmlContent" => $this->getHtmlContent(),
             "content" => $this->getContent(),

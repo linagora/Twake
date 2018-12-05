@@ -21,7 +21,7 @@ class MessageController extends Controller
         if($message==null)
             return false;
 
-        return ($message->getStreamReciever()!=null)?$this->checkIfStreamInWorksapce($message->getStreamReciever()->getId(),$workspaceId)  :false;
+        return ($message->getstreamreciever() != null) ? $this->checkIfStreamInWorksapce($message->getstreamreciever()->getId(), $workspaceId) : false;
     }
     private function checkIfStreamInWorksapce($streamId, $workspaceId){
         $stream = $this->get("app.streamsystem")->getStreamEntity($streamId);
