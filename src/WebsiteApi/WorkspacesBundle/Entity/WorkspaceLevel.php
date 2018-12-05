@@ -16,23 +16,24 @@ class WorkspaceLevel
 	 * @var int
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
-	 * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
 	 */
 	protected $id;
 
 	/**
-	 * @ORM\Column(name="label", type="string", length=255)
+     * @ORM\Column(name="label", type="string", length=255)
 	 */
 	protected $label;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
 	protected $workspace;
 
 	/**
-	 * @ORM\Column(name="rights", type="string", length=100000)
+     * @ORM\Column(name="rights", type="string", length=100000)
 	 */
 	protected $rights;
 

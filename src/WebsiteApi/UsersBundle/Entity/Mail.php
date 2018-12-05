@@ -8,11 +8,11 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 /**
  * Mail
  *
- * @ORM\Table(name="mail",options={"engine":"MyISAM"},
- *     indexes={
+ * @ORM\Table(name="mail",options={"engine":"MyISAM",
+ *     "indexes":{
  *     @ORM\Index(columns={"user_id"}),
  *     @ORM\Index(columns={"mail"})
- * })
+ * }})
  * @ORM\Entity(repositoryClass="WebsiteApi\UsersBundle\Repository\MailRepository")
  */
 class Mail
@@ -22,12 +22,13 @@ class Mail
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="secondary_mails")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="secondary_mails")
 	 */
     private $user;
 

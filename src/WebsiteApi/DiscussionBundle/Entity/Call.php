@@ -18,8 +18,9 @@ class Call implements ObjectLinksInterface
 	 * @var int
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
-	 * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
 	 */
 	private $id;
 

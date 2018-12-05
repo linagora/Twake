@@ -17,8 +17,9 @@ class Call
 	 * @var int
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
-	 * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
 	 */
 	private $id;
 
@@ -32,7 +33,7 @@ class Call
 	 *
 	 * Number of clients
 	 *
-	 * @ORM\Column(name="clients", type="integer")
+     * @ORM\Column(name="clients", type="integer")
 	 */
 	private $nbclients;
 

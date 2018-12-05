@@ -17,13 +17,14 @@ class Application
 {
 	/**
      * @ORM\Column(name="id", type="twake_timeuuid")
-	 * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
 	 */
 	private $id;
 
 	/**
-	 * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
 	 */
 	private $name;
 
@@ -38,12 +39,12 @@ class Application
     private $order;
 
 	/**
-	 * @ORM\Column(type="string", length=6)
+     * @ORM\Column(type="string", length=6)
 	 */
 	private $color; //Header color
 
 	/**
-	 * @ORM\Column(type="string", length=512, nullable = true)
+     * @ORM\Column(type="string", length=512, nullable = true)
 	 */
 	private $url = "";
 
@@ -69,7 +70,7 @@ class Application
     private $shortdescription = "";
 
 	/**
-	 * @ORM\Column(name="description", type="text")
+     * @ORM\Column(name="description", type="text")
 	 */
 	private $description = "";
 
@@ -84,7 +85,7 @@ class Application
     private $priceuser = 0;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
 	private $workspace;
 
@@ -114,7 +115,7 @@ class Application
     protected $cover = "";
 
 	/**
-	 * @ORM\Column(name="screenshot", type="text")
+     * @ORM\Column(name="screenshot", type="text")
 	 */
 	protected $screenshot = "[]";
 
@@ -146,7 +147,7 @@ class Application
 	/**
      * @ORM\Column(name="publickey", type="text",nullable=true, options={"index"=true})
 	 */
-    protected $publickey;
+    protected $publicKey;
 
 	/**
      * @ORM\Column(type="twake_boolean" )
@@ -307,12 +308,12 @@ class Application
 
 	public function getPublicKey()
 	{
-        return $this->publickey;
+        return $this->publicKey;
 	}
 
 	public function setPublicKey($x)
 	{
-        $this->publickey = $x;
+        $this->publicKey = $x;
 	}
 
 	public function newVote($score)
@@ -391,7 +392,7 @@ class Application
 	public function setName($name)
 	{
 		$this->name = $name;
-		if($this->searchWords=="")
+        if ($this->searchwords == "")
 		    $this->setSearchWords(strtolower($name));
 	}
 

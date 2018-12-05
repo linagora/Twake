@@ -18,8 +18,9 @@ class Contact
 	 * @var int
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
-	 * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
 	 */
 	protected $id;
 
@@ -36,7 +37,7 @@ class Contact
 	private $to;
 
 	/**
-	 * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer")
 	 */
 	private $status = 0;
 

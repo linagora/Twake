@@ -20,7 +20,8 @@ class WorkspaceDailyStats
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
     private $id;
 
@@ -31,19 +32,19 @@ class WorkspaceDailyStats
 
 	/**
 	 * @var int
-	 * @ORM\Column(name="public_msg_count", type="integer")
+     * @ORM\Column(name="public_msg_count", type="integer")
 	 */
     protected $publicmsgcount;
 
 	/**
 	 * @var int
-	 * @ORM\Column(name="private_msg_count", type="integer")
+     * @ORM\Column(name="private_msg_count", type="integer")
 	 */
     protected $privatemsgcount;
 
 	/**
 	 * @var int
-	 * @ORM\Column(name="private_channel_msg_count", type="integer")
+     * @ORM\Column(name="private_channel_msg_count", type="integer")
 	 */
     protected $privatechannelmsgcount;
     /**

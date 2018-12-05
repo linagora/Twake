@@ -18,13 +18,14 @@ class DriveFileVersion
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false)
 	 */
 	private $file;
 
@@ -35,22 +36,22 @@ class DriveFileVersion
     private $user;
 
 	/**
-	 * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
 	 */
     private $realname;
 
 	/**
-	 * @ORM\Column(name="aes_key", type="string", length=1024)
+     * @ORM\Column(name="aes_key", type="string", length=1024)
 	 */
 	private $key;
 
 	/**
-	 * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255)
 	 */
 	private $mode = "OpenSSL-2";
 
 	/**
-	 * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer")
 	 */
 	private $size;
 

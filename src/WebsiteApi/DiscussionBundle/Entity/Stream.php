@@ -16,23 +16,24 @@ class Stream
 {
 	/**
      * @ORM\Column(name="id", type="twake_timeuuid")
-	 * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
 	 */
 	private $id;
 
 	/**
-	 * @ORM\Column(name="stream_type", type="string", length=255)
+     * @ORM\Column(name="stream_type", type="string", length=255)
 	 */
 	private $type = "stream";
 
 	/**
-	 * @ORM\Column(name="stream_key", type="string", length=255, nullable=true)
+     * @ORM\Column(name="stream_key", type="string", length=255, nullable=true)
 	 */
 	private $key;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
     private $workspace;
 
@@ -57,12 +58,12 @@ class Stream
     private $ishide;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\StreamMember", mappedBy="stream")
+     * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\StreamMember", mappedBy="stream")
 	 */
     private $memberslinks;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message", mappedBy="streamReceiver")
+     * @ORM\OneToMany(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message", mappedBy="streamReceiver")
 	 */
 	private $messages;
 

@@ -10,7 +10,7 @@ use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 /**
  * DriveFile
  *
- * @ORM\Table(name="drive_file",options={"engine":"MyISAM"}, indexes={@ORM\Index(columns={"parent_id"}), @ORM\Index(columns={"root_group_folder_id"})})
+ * @ORM\Table(name="drive_file",options={"engine":"MyISAM", "indexes":{@ORM\Index(columns={"parent_id"}), @ORM\Index(columns={"root_group_folder_id"})}})
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileRepository")
  */
 class DriveFile implements ObjectLinksInterface
@@ -18,7 +18,8 @@ class DriveFile implements ObjectLinksInterface
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
     private $id;
 
@@ -116,7 +117,7 @@ class DriveFile implements ObjectLinksInterface
     private $previewhasbeengenerated = false;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
 	 */
     private $copyof;
 

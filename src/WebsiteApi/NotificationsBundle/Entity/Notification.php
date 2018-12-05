@@ -17,38 +17,39 @@ class Notification
 	 * @var int
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
-	 * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
 	 */
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
 	 */
 	private $application;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
 	private $workspace;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
 	 */
 	private $user;
 
 	/**
-	 * @ORM\Column(type="text", length=64, nullable=true)
+     * @ORM\Column(type="text", length=64, nullable=true)
 	 */
 	private $code;
 
 	/**
-	 * @ORM\Column(type="text", length=64,  nullable=true)
+     * @ORM\Column(type="text", length=64,  nullable=true)
 	 */
 	private $title;
 
 	/**
-	 * @ORM\Column(type="text", length=512,  nullable=true)
+     * @ORM\Column(type="text", length=512,  nullable=true)
 	 */
 	private $text;
 

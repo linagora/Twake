@@ -18,7 +18,8 @@ class Device
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
     private $id;
 
@@ -31,14 +32,14 @@ class Device
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="type", type="string", length=16)
+     * @ORM\Column(name="type", type="string", length=16)
 	 */
 	private $type;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="version", type="string", length=16)
+     * @ORM\Column(name="version", type="string", length=16)
 	 */
 	private $version;
 

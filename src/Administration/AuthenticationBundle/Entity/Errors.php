@@ -18,7 +18,8 @@ class Errors
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
     private $id;
 
@@ -33,17 +34,17 @@ class Errors
     private $lastdate;
 
 	/**
-	 * @ORM\Column(name="number", type="integer")
+     * @ORM\Column(name="number", type="integer")
 	 */
 	private $number;
 
 	/**
-	 * @ORM\Column(name="file", type="text", length=500)
+     * @ORM\Column(name="file", type="text", length=500)
 	 */
 	private $file;
 
 	/**
-	 * @ORM\Column(name="data", type="text")
+     * @ORM\Column(name="data", type="text")
 	 */
 	private $data;
 

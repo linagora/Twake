@@ -24,6 +24,7 @@ class ManagerAdapter
             return $this->manager;
         }
 
+        $driver_type = "Mysql";
         $paths = array(__DIR__ . "/../../../");
         $isDevMode = true;
         $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, null, null, false);
@@ -35,10 +36,10 @@ class ManagerAdapter
             'user' => "root", //$this->database_configuration["user"],
             'password' => "root", //$this->database_configuration["password"],
             'twake_types' => Array(
-                'twake_float' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraFloatType',
-                'twake_datetime' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraDateTimeType',
-                'twake_timeuuid' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraTimeUUIDType',
-                'twake_boolean' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraBooleanType'
+                'twake_float' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'FloatType',
+                'twake_datetime' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'DateTimeType',
+                'twake_timeuuid' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'TimeUUIDType',
+                'twake_boolean' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'BooleanType'
             )
         ), $config);
 

@@ -18,17 +18,18 @@ class CallMember
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
 	 */
 	private $user;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\CallsBundle\Entity\Call",cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\CallsBundle\Entity\Call",cascade={"persist"})
 	 */
 	private $call;
 

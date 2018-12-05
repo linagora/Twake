@@ -17,22 +17,23 @@ class VerificationNumberMail
 	 * @var int
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")  //TO ADD FOR CASSANDRA
-	 * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")  //TO ADD FOR CASSANDRA
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")  //TO ADD FOR CASSANDRA
 	 */
 	private $id;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="mail", type="string", length=256)
+     * @ORM\Column(name="mail", type="string", length=256)
 	 */
 	private $mail;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="hash_code", type="string", length=256)
+     * @ORM\Column(name="hash_code", type="string", length=256)
 	 */
     private $hashcode;
 
@@ -51,13 +52,13 @@ class VerificationNumberMail
 	private $date = "";
 
 	/**
-	 * @ORM\Column(name="validity_time", type="integer")
+     * @ORM\Column(name="validity_time", type="integer")
 	 */
     private $validitytime;
 
 
 	/**
-	 * @ORM\Column(name="clean_code", type="string")
+     * @ORM\Column(name="clean_code", type="string")
 	 */
 	private $clean_code;
 

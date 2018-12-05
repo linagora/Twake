@@ -54,7 +54,9 @@ class TwakeSessionHandler implements \SessionHandlerInterface
 
     public function read($sessionId)
     {
-        return $this->sessionHandler->read($sessionId, $data);
+        $value = $this->sessionHandler->read($sessionId);
+        error_log($value);
+        return $value;
     }
 
     public function prepare()

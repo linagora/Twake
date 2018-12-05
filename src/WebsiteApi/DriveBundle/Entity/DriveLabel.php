@@ -18,24 +18,25 @@ class DriveLabel
 
 	/**
      * @ORM\Column(name="id", type="twake_timeuuid")
-	 * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
 	 */
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false)
 	 */
 	private $workspace;
 
 	/**
-	 * @ORM\Column(type="string", length=32)
+     * @ORM\Column(type="string", length=32)
 	 */
 	private $name;
 
 	/**
-	 * @ORM\Column(type="string", length=6)
+     * @ORM\Column(type="string", length=6)
 	 */
 	private $color;
 

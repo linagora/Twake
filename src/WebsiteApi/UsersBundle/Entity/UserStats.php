@@ -20,7 +20,7 @@ use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 class UserStats
 {
 	/**
-	 * @ORM\Id/**
+     * @ORM\Id/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="stat")
      */
 	protected $user;
@@ -33,7 +33,7 @@ class UserStats
 
 	/**
 	 * @var int
-	 * @ORM\Column(name="private_msg_count", type="integer")
+     * @ORM\Column(name="private_msg_count", type="integer")
 	 */
     protected $privatemsgcount = 0;
 

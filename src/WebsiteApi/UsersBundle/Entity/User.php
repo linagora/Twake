@@ -22,7 +22,8 @@ class User implements UserInterface
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
     protected $id;
 
@@ -54,18 +55,18 @@ class User implements UserInterface
     protected $lastname = "";
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
 	 */
 	protected $thumbnail;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser", mappedBy="User")
+     * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser", mappedBy="User")
 	 */
 	protected $workspaces;
 
 	/**
 	 * @var int
-	 * @ORM\Column(name="connections", type="integer")
+     * @ORM\Column(name="connections", type="integer")
 	 */
 	protected $connections;
 
@@ -77,7 +78,7 @@ class User implements UserInterface
 
 	/**
 	 * @var int
-	 * @ORM\Column(name="last_activity", type="bigint")
+     * @ORM\Column(name="last_activity", type="bigint")
 	 */
     protected $lastactivity = 0;
 
@@ -88,17 +89,19 @@ class User implements UserInterface
     protected $creationdate;
 
 	/**
-	 * @ORM\Column(name="language", type="string", length=64)
+     * @ORM\Column(name="language", type="string", length=64)
 	 */
 	protected $language = "en";
 
     /**
-     * @ORM\Column(name="notification_preference", type="string", length=2048)
+     * @ORM\Column(name="notification_preference", type="text")
+     * @Encrypted
      */
     protected $notification_preference = "{}";
 
     /**
-     * @ORM\Column(name="phone", type="string", length=64)
+     * @ORM\Column(name="phone", type="text")
+     * @Encrypted
      */
     protected $phone = "";
 
@@ -118,14 +121,14 @@ class User implements UserInterface
     /**
      * @ORM\Column(name="username_canonical", type="string", length=64, options={"index": true})
      */
-    protected $usernamecanonical;
+    protected $usernameCanonical;
 
     protected $email;
 
     /**
      * @ORM\Column(name="email_canonical", type="string", length=512, options={"index": true})
      */
-    protected $emailcanonical;
+    protected $emailCanonical;
 
     /**
      * @ORM\Column(type="twake_boolean")
@@ -133,7 +136,7 @@ class User implements UserInterface
     protected $enabled;
 
     /**
-     * @ORM\Column(type="string", length=512)
+     * @ORM\Column(type="string", length=512, nullable=true)
      */
     protected $salt;
 
@@ -171,6 +174,8 @@ class User implements UserInterface
 		$this->connected = 1;
         $this->isrobot = false;
         $this->roles = array();
+        $this->lastlogin = new \DateTime();
+        $this->passwordrequestedat = new \DateTime();
 	}
 
 	/**
@@ -510,12 +515,12 @@ class User implements UserInterface
         return serialize(array(
             $this->password,
             $this->salt,
-            $this->usernamecanonical,
+            $this->usernameCanonical,
             $this->username,
             $this->enabled,
             $this->id,
             $this->email,
-            $this->emailcanonical,
+            $this->emailCanonical,
         ));
     }
 
@@ -539,12 +544,12 @@ class User implements UserInterface
         list(
             $this->password,
             $this->salt,
-            $this->usernamecanonical,
+            $this->usernameCanonical,
             $this->username,
             $this->enabled,
             $this->id,
             $this->email,
-            $this->emailcanonical
+            $this->emailCanonical
             ) = $data;
     }
 
@@ -567,9 +572,9 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function getUsernameCanonical()
+    public function getusernameCanonical()
     {
-        return $this->usernamecanonical;
+        return $this->usernameCanonical;
     }
 
     /**
@@ -591,9 +596,9 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function getEmailCanonical()
+    public function getemailCanonical()
     {
-        return $this->emailcanonical;
+        return $this->emailCanonical;
     }
 
     /**
@@ -697,7 +702,7 @@ class User implements UserInterface
     public function setUsername($username)
     {
         $this->username = $username;
-        $this->usernamecanonical = $username;
+        $this->usernameCanonical = $username;
 
         return $this;
     }
@@ -705,9 +710,9 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function setUsernameCanonical($usernamecanonical)
+    public function setusernameCanonical($usernameCanonical)
     {
-        $this->usernamecanonical = $usernamecanonical;
+        $this->usernameCanonical = $usernameCanonical;
 
         return $this;
     }
@@ -728,7 +733,7 @@ class User implements UserInterface
     public function setEmail($email)
     {
         $this->email = $email;
-        $this->emailcanonical = $email;
+        $this->emailCanonical = $email;
 
         return $this;
     }
@@ -736,9 +741,9 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function setEmailCanonical($emailcanonical)
+    public function setemailCanonical($emailCanonical)
     {
-        $this->emailcanonical = $emailcanonical;
+        $this->emailCanonical = $emailCanonical;
 
         return $this;
     }

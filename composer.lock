@@ -4,7 +4,7 @@
       "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-  "content-hash": "7c30bb4464a136f62cb5440d98d75d05",
+  "content-hash": "29ccff10303026c20fab40c955d8c196",
     "packages": [
         {
           "name": "aws/aws-sdk-php",
@@ -1394,91 +1394,6 @@
             "description": "DOMPDF is a CSS 2.1 compliant HTML to PDF converter",
             "homepage": "https://github.com/dompdf/dompdf",
             "time": "2017-11-26T14:49:08+00:00"
-        },
-        {
-            "name": "easycorp/easyadmin-bundle",
-          "version": "v1.17.17",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/EasyCorp/EasyAdminBundle.git",
-              "reference": "8151a185e5783b464847d539c715d29182ef0569"
-            },
-            "dist": {
-                "type": "zip",
-              "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/8151a185e5783b464847d539c715d29182ef0569",
-              "reference": "8151a185e5783b464847d539c715d29182ef0569",
-                "shasum": ""
-            },
-            "require": {
-                "doctrine/cache": "~1.5",
-              "doctrine/dbal": "~2.3",
-                "doctrine/doctrine-bundle": "~1.2",
-                "doctrine/orm": "~2.3",
-              "pagerfanta/pagerfanta": "~1.0,>=1.0.1|~2.0",
-                "php": ">=5.3.0",
-              "psr/log": "^1.0",
-                "symfony/asset": "~2.3|~3.0|^4.0",
-                "symfony/config": "~2.3|~3.0|^4.0",
-                "symfony/dependency-injection": "~2.3|~3.0|^4.0",
-                "symfony/doctrine-bridge": "~2.3|~3.0|^4.0",
-                "symfony/event-dispatcher": "~2.3|~3.0|^4.0",
-                "symfony/finder": "~2.3|~3.0|^4.0",
-                "symfony/form": "~2.3|~3.0|^4.0",
-                "symfony/framework-bundle": "~2.3|~3.0|^4.0",
-                "symfony/http-foundation": "~2.3|~3.0|^4.0",
-                "symfony/http-kernel": "~2.3|~3.0|^4.0",
-                "symfony/polyfill-mbstring": "^1.0",
-                "symfony/property-access": "~2.3|~3.0|^4.0",
-              "symfony/routing": "~2.3|~3.0|^4.0",
-                "symfony/security-bundle": "~2.3|~3.0|^4.0",
-                "symfony/translation": "~2.3|~3.0|^4.0",
-                "symfony/twig-bridge": "^2.3.4|~3.0|^4.0",
-                "symfony/twig-bundle": "~2.3|~3.0|^4.0",
-                "symfony/validator": "~2.3|~3.0|^4.0",
-                "twig/extensions": "~1.0",
-                "twig/twig": "~1.26|~2.0"
-            },
-            "require-dev": {
-                "doctrine/doctrine-fixtures-bundle": "~2.2",
-                "psr/log": "~1.0",
-                "symfony/browser-kit": "~2.3|~3.0|^4.0",
-                "symfony/console": "~2.3|~3.0|^4.0",
-                "symfony/css-selector": "~2.3|~3.0|^4.0",
-                "symfony/dom-crawler": "~2.3|~3.0|^4.0",
-                "symfony/phpunit-bridge": "^3.2|^4.0",
-                "symfony/var-dumper": "~2.3|~3.0|^4.0",
-                "symfony/yaml": "~2.3|~3.0|^4.0"
-            },
-            "type": "symfony-bundle",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.17.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-4": {
-                    "EasyCorp\\Bundle\\EasyAdminBundle\\": "src/",
-                    "JavierEguiluz\\Bundle\\EasyAdminBundle\\": "legacy/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Project Contributors",
-                    "homepage": "http://github.com/EasyCorp/easyadmin/blob/master/CONTRIBUTORS.md"
-                }
-            ],
-            "description": "Admin generator for Symfony applications",
-            "homepage": "https://github.com/EasyCorp/EasyAdminBundle",
-            "keywords": [
-                "admin",
-                "backend",
-                "generator"
-            ],
-          "time": "2018-11-29T19:23:25+00:00"
         },
         {
             "name": "eluceo/ical",
@@ -3508,135 +3423,66 @@
         "time": "2018-02-13T19:58:42+00:00"
       },
       {
-            "name": "pagerfanta/pagerfanta",
-        "version": "v2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/whiteoctober/Pagerfanta.git",
-              "reference": "15770d9d7f6e8e07af568aed104a51f869591e73"
-            },
-            "dist": {
-                "type": "zip",
-              "url": "https://api.github.com/repos/whiteoctober/Pagerfanta/zipball/15770d9d7f6e8e07af568aed104a51f869591e73",
-              "reference": "15770d9d7f6e8e07af568aed104a51f869591e73",
-                "shasum": ""
-            },
-            "require": {
-              "php": ">=7.0"
-            },
-            "require-dev": {
-                "doctrine/orm": "~2.3",
-                "doctrine/phpcr-odm": "1.*",
-                "jackalope/jackalope-doctrine-dbal": "1.*",
-                "jmikola/geojson": "~1.0",
-                "mandango/mandango": "~1.0@dev",
-                "mandango/mondator": "~1.0@dev",
-              "phpunit/phpunit": "^5.7|^6",
-                "propel/propel": "~2.0@dev",
-                "propel/propel1": "~1.6",
-                "ruflin/elastica": "~1.3",
-                "solarium/solarium": "~3.1"
-            },
-            "suggest": {
-                "doctrine/mongodb-odm": "To use the DoctrineODMMongoDBAdapter.",
-                "doctrine/orm": "To use the DoctrineORMAdapter.",
-                "doctrine/phpcr-odm": "To use the DoctrineODMPhpcrAdapter. >= 1.1.0",
-                "mandango/mandango": "To use the MandangoAdapter.",
-                "propel/propel": "To use the Propel2Adapter",
-                "propel/propel1": "To use the PropelAdapter",
-                "solarium/solarium": "To use the SolariumAdapter."
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.0.x-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Pagerfanta\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Pablo Díez",
-                    "email": "pablodip@gmail.com"
-                }
-            ],
-            "description": "Pagination for PHP 5.3",
-            "keywords": [
-                "page",
-                "pagination",
-                "paginator",
-                "paging"
-            ],
-        "time": "2018-05-17T09:23:52+00:00"
+        "name": "paragonie/constant_time_encoding",
+        "version": "v2.2.2",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/paragonie/constant_time_encoding.git",
+          "reference": "eccf915f45f911bfb189d1d1638d940ec6ee6e33"
         },
-        {
-          "name": "paragonie/constant_time_encoding",
-          "version": "v2.2.2",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/paragonie/constant_time_encoding.git",
-            "reference": "eccf915f45f911bfb189d1d1638d940ec6ee6e33"
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/eccf915f45f911bfb189d1d1638d940ec6ee6e33",
+          "reference": "eccf915f45f911bfb189d1d1638d940ec6ee6e33",
+          "shasum": ""
+        },
+        "require": {
+          "php": "^7"
+        },
+        "require-dev": {
+          "phpunit/phpunit": "^6|^7",
+          "vimeo/psalm": "^1"
+        },
+        "type": "library",
+        "autoload": {
+          "psr-4": {
+            "ParagonIE\\ConstantTime\\": "src/"
+          }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+          "MIT"
+        ],
+        "authors": [
+          {
+            "name": "Paragon Initiative Enterprises",
+            "email": "security@paragonie.com",
+            "homepage": "https://paragonie.com",
+            "role": "Maintainer"
           },
-          "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/paragonie/constant_time_encoding/zipball/eccf915f45f911bfb189d1d1638d940ec6ee6e33",
-            "reference": "eccf915f45f911bfb189d1d1638d940ec6ee6e33",
-            "shasum": ""
-          },
-          "require": {
-            "php": "^7"
-          },
-          "require-dev": {
-            "phpunit/phpunit": "^6|^7",
-            "vimeo/psalm": "^1"
-          },
-          "type": "library",
-          "autoload": {
-            "psr-4": {
-              "ParagonIE\\ConstantTime\\": "src/"
-            }
-          },
-          "notification-url": "https://packagist.org/downloads/",
-          "license": [
-            "MIT"
-          ],
-          "authors": [
-            {
-              "name": "Paragon Initiative Enterprises",
-              "email": "security@paragonie.com",
-              "homepage": "https://paragonie.com",
-              "role": "Maintainer"
-            },
-            {
-              "name": "Steve 'Sc00bz' Thomas",
-              "email": "steve@tobtu.com",
-              "homepage": "https://www.tobtu.com",
-              "role": "Original Developer"
-            }
-          ],
-          "description": "Constant-time Implementations of RFC 4648 Encoding (Base-64, Base-32, Base-16)",
-          "keywords": [
-            "base16",
-            "base32",
-            "base32_decode",
-            "base32_encode",
-            "base64",
-            "base64_decode",
-            "base64_encode",
-            "bin2hex",
-            "encoding",
-            "hex",
-            "hex2bin",
-            "rfc4648"
-          ],
-          "time": "2018-03-10T19:47:49+00:00"
+          {
+            "name": "Steve 'Sc00bz' Thomas",
+            "email": "steve@tobtu.com",
+            "homepage": "https://www.tobtu.com",
+            "role": "Original Developer"
+          }
+        ],
+        "description": "Constant-time Implementations of RFC 4648 Encoding (Base-64, Base-32, Base-16)",
+        "keywords": [
+          "base16",
+          "base32",
+          "base32_decode",
+          "base32_encode",
+          "base64",
+          "base64_decode",
+          "base64_encode",
+          "bin2hex",
+          "encoding",
+          "hex",
+          "hex2bin",
+          "rfc4648"
+        ],
+        "time": "2018-03-10T19:47:49+00:00"
         },
       {
         "name": "paragonie/halite",
@@ -4903,6 +4749,145 @@
           "description": "A polyfill for getallheaders.",
           "time": "2016-02-11T07:05:27+00:00"
         },
+      {
+        "name": "ramsey/uuid",
+        "version": "3.8.0",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/ramsey/uuid.git",
+          "reference": "d09ea80159c1929d75b3f9c60504d613aeb4a1e3"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/ramsey/uuid/zipball/d09ea80159c1929d75b3f9c60504d613aeb4a1e3",
+          "reference": "d09ea80159c1929d75b3f9c60504d613aeb4a1e3",
+          "shasum": ""
+        },
+        "require": {
+          "paragonie/random_compat": "^1.0|^2.0|9.99.99",
+          "php": "^5.4 || ^7.0",
+          "symfony/polyfill-ctype": "^1.8"
+        },
+        "replace": {
+          "rhumsaa/uuid": "self.version"
+        },
+        "require-dev": {
+          "codeception/aspect-mock": "^1.0 | ~2.0.0",
+          "doctrine/annotations": "~1.2.0",
+          "goaop/framework": "1.0.0-alpha.2 | ^1.0 | ~2.1.0",
+          "ircmaxell/random-lib": "^1.1",
+          "jakub-onderka/php-parallel-lint": "^0.9.0",
+          "mockery/mockery": "^0.9.9",
+          "moontoast/math": "^1.1",
+          "php-mock/php-mock-phpunit": "^0.3|^1.1",
+          "phpunit/phpunit": "^4.7|^5.0|^6.5",
+          "squizlabs/php_codesniffer": "^2.3"
+        },
+        "suggest": {
+          "ext-ctype": "Provides support for PHP Ctype functions",
+          "ext-libsodium": "Provides the PECL libsodium extension for use with the SodiumRandomGenerator",
+          "ext-uuid": "Provides the PECL UUID extension for use with the PeclUuidTimeGenerator and PeclUuidRandomGenerator",
+          "ircmaxell/random-lib": "Provides RandomLib for use with the RandomLibAdapter",
+          "moontoast/math": "Provides support for converting UUID to 128-bit integer (in string form).",
+          "ramsey/uuid-console": "A console application for generating UUIDs with ramsey/uuid",
+          "ramsey/uuid-doctrine": "Allows the use of Ramsey\\Uuid\\Uuid as Doctrine field type."
+        },
+        "type": "library",
+        "extra": {
+          "branch-alias": {
+            "dev-master": "3.x-dev"
+          }
+        },
+        "autoload": {
+          "psr-4": {
+            "Ramsey\\Uuid\\": "src/"
+          }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+          "MIT"
+        ],
+        "authors": [
+          {
+            "name": "Marijn Huizendveld",
+            "email": "marijn.huizendveld@gmail.com"
+          },
+          {
+            "name": "Thibaud Fabre",
+            "email": "thibaud@aztech.io"
+          },
+          {
+            "name": "Ben Ramsey",
+            "email": "ben@benramsey.com",
+            "homepage": "https://benramsey.com"
+          }
+        ],
+        "description": "Formerly rhumsaa/uuid. A PHP 5.4+ library for generating RFC 4122 version 1, 3, 4, and 5 universally unique identifiers (UUID).",
+        "homepage": "https://github.com/ramsey/uuid",
+        "keywords": [
+          "guid",
+          "identifier",
+          "uuid"
+        ],
+        "time": "2018-07-19T23:38:55+00:00"
+      },
+      {
+        "name": "ramsey/uuid-doctrine",
+        "version": "1.5.0",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/ramsey/uuid-doctrine.git",
+          "reference": "2a56db8e68bff487508244f5a2008075279d0255"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/ramsey/uuid-doctrine/zipball/2a56db8e68bff487508244f5a2008075279d0255",
+          "reference": "2a56db8e68bff487508244f5a2008075279d0255",
+          "shasum": ""
+        },
+        "require": {
+          "doctrine/orm": "^2.5",
+          "php": "^5.4 || ^7.0",
+          "ramsey/uuid": "^3.0"
+        },
+        "require-dev": {
+          "jakub-onderka/php-parallel-lint": "^1.0",
+          "mockery/mockery": "^0.9 || ^1.1",
+          "php-coveralls/php-coveralls": "^1.1 || ^2.1",
+          "phpunit/phpunit": "^4.8 || ^5.7 || ^6.5",
+          "squizlabs/php_codesniffer": "^3.3"
+        },
+        "type": "library",
+        "autoload": {
+          "psr-4": {
+            "Ramsey\\Uuid\\Doctrine\\": "src/"
+          }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+          "MIT"
+        ],
+        "authors": [
+          {
+            "name": "Marijn Huizendveld",
+            "email": "marijn.huizendveld@gmail.com"
+          },
+          {
+            "name": "Ben Ramsey",
+            "email": "ben@benramsey.com",
+            "homepage": "http://benramsey.com"
+          }
+        ],
+        "description": "Allow the use of a ramsey/uuid UUID as Doctrine field type.",
+        "homepage": "https://github.com/ramsey/uuid-doctrine",
+        "keywords": [
+          "doctrine",
+          "guid",
+          "identifier",
+          "uuid"
+        ],
+        "time": "2018-08-11T21:01:22+00:00"
+      },
       {
             "name": "ratchet/rfc6455",
             "version": "0.2.4",
@@ -7028,61 +7013,6 @@
           "description": "A small library for converting tokenized PHP source code into XML and potentially other formats",
           "time": "2017-04-07T12:08:54+00:00"
         },
-      {
-            "name": "twig/extensions",
-        "version": "v1.5.3",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/twigphp/Twig-extensions.git",
-              "reference": "e187386bea539a2cc2726689d6b4d468672a8ab4"
-            },
-            "dist": {
-                "type": "zip",
-              "url": "https://api.github.com/repos/twigphp/Twig-extensions/zipball/e187386bea539a2cc2726689d6b4d468672a8ab4",
-              "reference": "e187386bea539a2cc2726689d6b4d468672a8ab4",
-                "shasum": ""
-            },
-            "require": {
-              "twig/twig": "^1.27|^2.0"
-            },
-            "require-dev": {
-              "symfony/phpunit-bridge": "^3.4",
-              "symfony/translation": "^2.7|^3.4"
-            },
-            "suggest": {
-                "symfony/translation": "Allow the time_diff output to be translated"
-            },
-            "type": "library",
-            "extra": {
-                "branch-alias": {
-                    "dev-master": "1.5-dev"
-                }
-            },
-            "autoload": {
-                "psr-0": {
-                    "Twig_Extensions_": "lib/"
-                },
-                "psr-4": {
-                    "Twig\\Extensions\\": "src/"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Fabien Potencier",
-                    "email": "fabien@symfony.com"
-                }
-            ],
-            "description": "Common additional features for Twig that do not directly belong in core",
-            "keywords": [
-                "i18n",
-                "text"
-            ],
-        "time": "2018-11-16T03:34:09+00:00"
-        },
         {
             "name": "twig/twig",
           "version": "v2.5.0",
@@ -7360,6 +7290,160 @@
             "time": "2016-08-28T09:01:46+00:00"
         },
         {
+          "name": "easycorp/easyadmin-bundle",
+          "version": "v1.17.17",
+          "source": {
+            "type": "git",
+            "url": "https://github.com/EasyCorp/EasyAdminBundle.git",
+            "reference": "8151a185e5783b464847d539c715d29182ef0569"
+          },
+          "dist": {
+            "type": "zip",
+            "url": "https://api.github.com/repos/EasyCorp/EasyAdminBundle/zipball/8151a185e5783b464847d539c715d29182ef0569",
+            "reference": "8151a185e5783b464847d539c715d29182ef0569",
+            "shasum": ""
+          },
+          "require": {
+            "doctrine/cache": "~1.5",
+            "doctrine/dbal": "~2.3",
+            "doctrine/doctrine-bundle": "~1.2",
+            "doctrine/orm": "~2.3",
+            "pagerfanta/pagerfanta": "~1.0,>=1.0.1|~2.0",
+            "php": ">=5.3.0",
+            "psr/log": "^1.0",
+            "symfony/asset": "~2.3|~3.0|^4.0",
+            "symfony/config": "~2.3|~3.0|^4.0",
+            "symfony/dependency-injection": "~2.3|~3.0|^4.0",
+            "symfony/doctrine-bridge": "~2.3|~3.0|^4.0",
+            "symfony/event-dispatcher": "~2.3|~3.0|^4.0",
+            "symfony/finder": "~2.3|~3.0|^4.0",
+            "symfony/form": "~2.3|~3.0|^4.0",
+            "symfony/framework-bundle": "~2.3|~3.0|^4.0",
+            "symfony/http-foundation": "~2.3|~3.0|^4.0",
+            "symfony/http-kernel": "~2.3|~3.0|^4.0",
+            "symfony/polyfill-mbstring": "^1.0",
+            "symfony/property-access": "~2.3|~3.0|^4.0",
+            "symfony/routing": "~2.3|~3.0|^4.0",
+            "symfony/security-bundle": "~2.3|~3.0|^4.0",
+            "symfony/translation": "~2.3|~3.0|^4.0",
+            "symfony/twig-bridge": "^2.3.4|~3.0|^4.0",
+            "symfony/twig-bundle": "~2.3|~3.0|^4.0",
+            "symfony/validator": "~2.3|~3.0|^4.0",
+            "twig/extensions": "~1.0",
+            "twig/twig": "~1.26|~2.0"
+          },
+          "require-dev": {
+            "doctrine/doctrine-fixtures-bundle": "~2.2",
+            "psr/log": "~1.0",
+            "symfony/browser-kit": "~2.3|~3.0|^4.0",
+            "symfony/console": "~2.3|~3.0|^4.0",
+            "symfony/css-selector": "~2.3|~3.0|^4.0",
+            "symfony/dom-crawler": "~2.3|~3.0|^4.0",
+            "symfony/phpunit-bridge": "^3.2|^4.0",
+            "symfony/var-dumper": "~2.3|~3.0|^4.0",
+            "symfony/yaml": "~2.3|~3.0|^4.0"
+          },
+          "type": "symfony-bundle",
+          "extra": {
+            "branch-alias": {
+              "dev-master": "1.17.x-dev"
+            }
+          },
+          "autoload": {
+            "psr-4": {
+              "EasyCorp\\Bundle\\EasyAdminBundle\\": "src/",
+              "JavierEguiluz\\Bundle\\EasyAdminBundle\\": "legacy/"
+            }
+          },
+          "notification-url": "https://packagist.org/downloads/",
+          "license": [
+            "MIT"
+          ],
+          "authors": [
+            {
+              "name": "Project Contributors",
+              "homepage": "http://github.com/EasyCorp/easyadmin/blob/master/CONTRIBUTORS.md"
+            }
+          ],
+          "description": "Admin generator for Symfony applications",
+          "homepage": "https://github.com/EasyCorp/EasyAdminBundle",
+          "keywords": [
+            "admin",
+            "backend",
+            "generator"
+          ],
+          "time": "2018-11-29T19:23:25+00:00"
+        },
+      {
+        "name": "pagerfanta/pagerfanta",
+        "version": "v2.0.1",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/whiteoctober/Pagerfanta.git",
+          "reference": "15770d9d7f6e8e07af568aed104a51f869591e73"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/whiteoctober/Pagerfanta/zipball/15770d9d7f6e8e07af568aed104a51f869591e73",
+          "reference": "15770d9d7f6e8e07af568aed104a51f869591e73",
+          "shasum": ""
+        },
+        "require": {
+          "php": ">=7.0"
+        },
+        "require-dev": {
+          "doctrine/orm": "~2.3",
+          "doctrine/phpcr-odm": "1.*",
+          "jackalope/jackalope-doctrine-dbal": "1.*",
+          "jmikola/geojson": "~1.0",
+          "mandango/mandango": "~1.0@dev",
+          "mandango/mondator": "~1.0@dev",
+          "phpunit/phpunit": "^5.7|^6",
+          "propel/propel": "~2.0@dev",
+          "propel/propel1": "~1.6",
+          "ruflin/elastica": "~1.3",
+          "solarium/solarium": "~3.1"
+        },
+        "suggest": {
+          "doctrine/mongodb-odm": "To use the DoctrineODMMongoDBAdapter.",
+          "doctrine/orm": "To use the DoctrineORMAdapter.",
+          "doctrine/phpcr-odm": "To use the DoctrineODMPhpcrAdapter. >= 1.1.0",
+          "mandango/mandango": "To use the MandangoAdapter.",
+          "propel/propel": "To use the Propel2Adapter",
+          "propel/propel1": "To use the PropelAdapter",
+          "solarium/solarium": "To use the SolariumAdapter."
+        },
+        "type": "library",
+        "extra": {
+          "branch-alias": {
+            "dev-master": "1.0.x-dev"
+          }
+        },
+        "autoload": {
+          "psr-0": {
+            "Pagerfanta\\": "src/"
+          }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+          "MIT"
+        ],
+        "authors": [
+          {
+            "name": "Pablo Díez",
+            "email": "pablodip@gmail.com"
+          }
+        ],
+        "description": "Pagination for PHP 5.3",
+        "keywords": [
+          "page",
+          "pagination",
+          "paginator",
+          "paging"
+        ],
+        "time": "2018-05-17T09:23:52+00:00"
+      },
+      {
             "name": "sensio/generator-bundle",
             "version": "v3.1.7",
             "source": {
@@ -7478,6 +7562,61 @@
             "description": "Symfony PHPUnit Bridge",
             "homepage": "https://symfony.com",
           "time": "2018-11-26T10:55:26+00:00"
+        },
+      {
+        "name": "twig/extensions",
+        "version": "v1.5.3",
+        "source": {
+          "type": "git",
+          "url": "https://github.com/twigphp/Twig-extensions.git",
+          "reference": "e187386bea539a2cc2726689d6b4d468672a8ab4"
+        },
+        "dist": {
+          "type": "zip",
+          "url": "https://api.github.com/repos/twigphp/Twig-extensions/zipball/e187386bea539a2cc2726689d6b4d468672a8ab4",
+          "reference": "e187386bea539a2cc2726689d6b4d468672a8ab4",
+          "shasum": ""
+        },
+        "require": {
+          "twig/twig": "^1.27|^2.0"
+        },
+        "require-dev": {
+          "symfony/phpunit-bridge": "^3.4",
+          "symfony/translation": "^2.7|^3.4"
+        },
+        "suggest": {
+          "symfony/translation": "Allow the time_diff output to be translated"
+        },
+        "type": "library",
+        "extra": {
+          "branch-alias": {
+            "dev-master": "1.5-dev"
+          }
+        },
+        "autoload": {
+          "psr-0": {
+            "Twig_Extensions_": "lib/"
+          },
+          "psr-4": {
+            "Twig\\Extensions\\": "src/"
+          }
+        },
+        "notification-url": "https://packagist.org/downloads/",
+        "license": [
+          "MIT"
+        ],
+        "authors": [
+          {
+            "name": "Fabien Potencier",
+            "email": "fabien@symfony.com"
+          }
+        ],
+        "description": "Common additional features for Twig that do not directly belong in core",
+        "keywords": [
+          "i18n",
+          "text"
+        ],
+        "time": "2018-11-16T03:34:09+00:00"
         }
     ],
     "aliases": [],

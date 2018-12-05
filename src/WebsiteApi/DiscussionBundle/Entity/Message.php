@@ -16,13 +16,14 @@ class Message
 {
 	/**
      * @ORM\Column(name="id", type="twake_timeuuid")
-	 * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
 	 */
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
 	 */
     private $usersender;
@@ -33,14 +34,14 @@ class Message
     private $typereciever;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=true)
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
 	 */
     private $userreciever;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Stream",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=true)
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Stream",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
 	 */
     private $streamreciever;
 
@@ -74,12 +75,12 @@ class Message
     private $htmlcontent = "";
 
 	/**
-	 * @ORM\Column(type="text", length=20000)
+     * @ORM\Column(type="text", length=20000)
 	 */
 	private $content;
 
 	/**
-	 * @ORM\Column(type="text", length=10000)
+     * @ORM\Column(type="text", length=10000)
 	 */
     private $cleancontent;
 
@@ -95,8 +96,8 @@ class Message
 	private $pinned = false;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=true)
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
 	 */
     private $responseto = null;
 
@@ -106,8 +107,8 @@ class Message
     private $hasresponses = false;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Subject",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=true)
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Subject",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=true)
 	 */
 	private $subject = null;
 

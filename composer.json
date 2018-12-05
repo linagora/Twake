@@ -40,8 +40,6 @@
         "krlove/async-service-call-bundle": "^1.0",
         "richsage/rms-push-notifications-bundle": "^0.2.3",
         "cmen/google-charts-bundle": "^3.0",
-        %
-        y
         "google/apiclient": "^2.0",
         "eluceo/ical": "^0.14.0",
         "johngrogg/ics-parser": "^2",
@@ -51,7 +49,8 @@
         "onurb/doctrine-yuml-bundle": "~1.0",
       "phpunit/phpunit": ">=5.7",
         "michaeldegroot/doctrine-encrypt-bundle": "^4.0",
-      "m6web/cassandra-bundle": "~1.1.0"
+      "m6web/cassandra-bundle": "~1.1.0",
+      "ramsey/uuid-doctrine": "^1.5"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

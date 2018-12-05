@@ -60,10 +60,11 @@ class InitCommand extends ContainerAwareCommand
          * Doctrine Schema Update
          */
 
-        $command = $this->getApplication()->find('twake:cassandra:schema:update');
+        $command = $this->getApplication()->find('twake:schema:update');
 
         $arguments = array(
-            'command' => 'twake:cassandra:schema:update'
+            'command' => 'twake:schema:update',
+            '--force' => true
         );
         $greetInput = new ArrayInput($arguments);
         $returnCode = $command->run($greetInput, $output);

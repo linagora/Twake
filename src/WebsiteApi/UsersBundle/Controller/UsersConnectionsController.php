@@ -205,7 +205,6 @@ class UsersConnectionsController extends Controller
 			"data" => Array()
 		);
 
-
 		$ok = $this->get("app.user")->current();
 		if(!$ok){
 			$data["errors"][] = "disconnected";

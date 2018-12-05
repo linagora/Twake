@@ -20,21 +20,22 @@ class File
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
     private $id;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="type", type="string", length=8)
+     * @ORM\Column(name="type", type="string", length=8)
 	 */
 	private $type; //Define where this file is used
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255)
 	 */
 	private $name; //Name of the file in server (md5)
 
@@ -48,7 +49,7 @@ class File
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="sizes", type="integer")
+     * @ORM\Column(name="sizes", type="integer")
 	 */
 	private $sizes; //Size (binary position) : 0 = original
 				    //		1 = 512
@@ -61,7 +62,7 @@ class File
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="date", type="bigint")
+     * @ORM\Column(name="date", type="bigint")
 	 */
 	private $date; //Creation date
 
@@ -129,7 +130,7 @@ class File
 
 
 	/**
-	 * @ORM\PostRemove()
+     * @ORM\PostRemove()
 	 */
 	public function deleteFromDisk(){ //Delete files from disk
 		for($i=0;$i<=4;$i++){

@@ -17,13 +17,14 @@ class PushNotificationQueue
 	 * @var int
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
-	 * @ORM\Id
-     * @ORM\GeneratedValue(strategy="UUID")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="CUSTOM")
+     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
 	 */
 	private $id;
 
 	/**
-	 * @ORM\Column(type="text", length=512,  nullable=true)
+     * @ORM\Column(type="text", length=512,  nullable=true)
 	 */
 	private $text;
 

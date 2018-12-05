@@ -16,7 +16,7 @@ class Sessions
 {
 
     /**
-     * @ORM\Column(name="sess_id", type="blob", length=128, nullable=false)
+     * @ORM\Column(name="sess_id", type="string", length=128, nullable=false)
      * @ORM\Id
      */
     private $sess_id;
@@ -27,7 +27,7 @@ class Sessions
     private $sess_data;
 
     /**
-     * @ORM\Column(name="sess_time", type="twake_datetime", nullable=false, options={"unsigned"=true})
+     * @ORM\Column(name="sess_time", type="bigint", nullable=false, options={"unsigned"=true})
      */
     private $sess_time;
 

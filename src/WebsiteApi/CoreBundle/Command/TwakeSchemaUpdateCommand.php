@@ -231,8 +231,8 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
 
             $index_base_command = "CREATE CUSTOM INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
-            if (isset($entity->table["indexes"])) {
-                foreach ($entity->table["indexes"] as $index_name => $data) {
+            if (isset($entity->table["options"]["indexes"])) {
+                foreach ($entity->table["options"]["indexes"] as $index_name => $data) {
                     $columns = $data["columns"];
                     if (count($columns) == 1) {
                         $indexed_fields[$columns[0]] = true;
