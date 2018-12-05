@@ -12,11 +12,12 @@ parameters:
     websocket_pusher_remote_host: 127.0.0.1
     websocket_pusher_host: 127.0.0.1
     websocket_pusher_port: 8081
-    database_host: 127.0.0.1
+    database_driver: pdo_mysql
+    database_host: mysql
     database_port: 3306
-    database_name: Twake
+    database_dbname: Twake
     database_user: root
-    database_password: azerty123
+    database_password: root
     mailer_transport: smtp
     mailer_host: -
     mailer_username: -

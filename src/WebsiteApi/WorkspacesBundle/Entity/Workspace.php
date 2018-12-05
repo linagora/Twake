@@ -20,7 +20,7 @@ class Workspace
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -73,22 +73,22 @@ class Workspace
     private $member_count = 0;
 
 	/**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date_added;
 
 	/**
-     * @ORM\Column(name="isdeleted", type="cassandra_boolean")
+     * @ORM\Column(name="isdeleted", type="twake_boolean")
 	 */
     private $is_deleted = false;
 
     /**
-     * @ORM\Column(name="isarchived", type="cassandra_boolean")
+     * @ORM\Column(name="isarchived", type="twake_boolean")
      */
     private $isarchived = false;
 
     /**
-     * @ORM\Column(name="isnew", type="cassandra_boolean")
+     * @ORM\Column(name="isnew", type="twake_boolean")
      */
     private $isnew = true;
 

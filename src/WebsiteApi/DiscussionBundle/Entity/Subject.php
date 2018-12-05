@@ -16,7 +16,7 @@ use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 class Subject implements ObjectLinksInterface
 {
     /**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -34,17 +34,17 @@ class Subject implements ObjectLinksInterface
 
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $datecreate;
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $dateupdate;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $isopen = true;
 

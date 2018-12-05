@@ -18,7 +18,7 @@ class WorkspaceUser
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -50,27 +50,27 @@ class WorkspaceUser
 	private $level;
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $date_added;
 
     /**
-     * @ORM\Column(type="cassandra_datetime", options={"default" : "1970-01-02"})
+     * @ORM\Column(type="twake_datetime", options={"default" : "1970-01-02"})
      */
     private $last_access;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $ishidden = false;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $isfavorite = false;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $hasnotifications = true;
 

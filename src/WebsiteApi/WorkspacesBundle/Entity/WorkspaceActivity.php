@@ -20,7 +20,7 @@ class WorkspaceActivity
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -42,7 +42,7 @@ class WorkspaceActivity
     private $app;
 
 	/**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date_added;
 
@@ -57,7 +57,7 @@ class WorkspaceActivity
     private $objectrepository;
 
     /**
-     * @ORM\Column(type="cassandra_timeuuid", nullable=true)
+     * @ORM\Column(type="twake_timeuuid", nullable=true)
      */
     private $objectid = 0;
 

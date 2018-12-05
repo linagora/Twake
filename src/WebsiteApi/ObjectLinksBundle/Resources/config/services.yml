@@ -2,4 +2,4 @@ services:
 
   app.objectLinks:
     class : WebsiteApi\ObjectLinksBundle\Services\ObjectLinksSystem
-    arguments: ["@app.cassandra_doctrine", '@app.pusher']
+    arguments: ["@app.twake_doctrine", '@app.pusher']

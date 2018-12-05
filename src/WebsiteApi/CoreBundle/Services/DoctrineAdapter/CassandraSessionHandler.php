@@ -49,6 +49,24 @@ class CassandraSessionHandler implements \SessionHandlerInterface
     public function __construct($doctrineAdapter = null, array $options = array())
     {
 
+        $this->options = $options;
+        $this->doctrineAdapter = $doctrineAdapter;
+        $this->didInit = false;
+
+    }
+
+    public function init()
+    {
+
+        if ($this->didInit) {
+            return;
+        }
+
+        $this->didInit = true;
+
+        $options = $this->options;
+        $doctrineAdapter = $this->doctrineAdapter;
+
         $options["session_lifetime"] = 3600;
         $options["column_family"] = "sessions";
 
@@ -67,6 +85,7 @@ class CassandraSessionHandler implements \SessionHandlerInterface
         $this->session = $this->connection->session;
 
         $this->options["keyspace"] = $this->connection->keyspace;
+
     }
 
     /**
@@ -151,6 +170,7 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     protected function getSession()
     {
+        $this->init();
         return $this->session;
     }
 
@@ -160,6 +180,7 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     protected function prepareStatements()
     {
+        $this->init();
 
         if (isset($this->preparedStatements['read'])) {
             return;

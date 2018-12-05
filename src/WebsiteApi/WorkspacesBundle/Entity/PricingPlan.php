@@ -19,7 +19,7 @@ class PricingPlan
 	/**
 	 * @var int
 	 *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
 	 * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
 	 */
@@ -31,12 +31,12 @@ class PricingPlan
 	protected $label = "";
 
 	/**
-     * @ORM\Column(name="month_price", type="cassandra_float")
+     * @ORM\Column(name="month_price", type="twake_float")
 	 */
 	protected $month_price = 0;
 
 	/**
-     * @ORM\Column(name="year_price", type="cassandra_float")
+     * @ORM\Column(name="year_price", type="twake_float")
 	 */
 	protected $year_price = 0;
 

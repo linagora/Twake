@@ -41,6 +41,6 @@ class CassandraBooleanType extends BooleanType
      */
     public function getBindingType()
     {
-        return "cassandra_boolean";
+        return "twake_boolean";
     }
 }

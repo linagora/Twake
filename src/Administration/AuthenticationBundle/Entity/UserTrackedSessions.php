@@ -17,7 +17,7 @@ class UserTrackedSessions
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -31,7 +31,7 @@ class UserTrackedSessions
     private $user;
 
     /**
-     * @ORM\Column(name="date", type="cassandra_datetime")
+     * @ORM\Column(name="date", type="twake_datetime")
      */
     private $date;
 

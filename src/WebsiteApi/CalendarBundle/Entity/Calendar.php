@@ -18,7 +18,7 @@ class Calendar {
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -51,7 +51,7 @@ class Calendar {
     private $icslink;
 
     /**
-     * @ORM\Column(type="cassandra_datetime" , options={"default" : "2018-07-27 14:00:58"})
+     * @ORM\Column(type="twake_datetime" , options={"default" : "2018-07-27 14:00:58"})
      */
     private $lastupdatedate;
 

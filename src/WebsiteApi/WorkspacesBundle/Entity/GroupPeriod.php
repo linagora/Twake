@@ -18,7 +18,7 @@ class GroupPeriod
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -40,17 +40,17 @@ class GroupPeriod
     protected $appsusage;
 
 	/**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
     private $periodstartedat;
 
     /**
-     * @ORM\Column(type="cassandra_datetime", nullable=true)
+     * @ORM\Column(type="twake_datetime", nullable=true)
      */
     private $periodendedat;
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $periodexpectedtoendat;
 

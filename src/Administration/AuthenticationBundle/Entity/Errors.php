@@ -16,19 +16,19 @@ class Errors
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
 	/**
-     * @ORM\Column(name="first_date", type="cassandra_datetime")
+     * @ORM\Column(name="first_date", type="twake_datetime")
 	 */
     private $firstdate;
 
 	/**
-     * @ORM\Column(name="last_date", type="cassandra_datetime")
+     * @ORM\Column(name="last_date", type="twake_datetime")
 	 */
     private $lastdate;
 

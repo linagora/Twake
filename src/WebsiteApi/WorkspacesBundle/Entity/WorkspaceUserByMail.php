@@ -15,7 +15,7 @@ class WorkspaceUserByMail
 	/**
 	 * @var int
 	 *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
 	 * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
 	 */
@@ -32,7 +32,7 @@ class WorkspaceUserByMail
 	private $mail;
 
     /**
-     * @ORM\Column(name="is_externe", type="cassandra_boolean")
+     * @ORM\Column(name="is_externe", type="twake_boolean")
      */
     private $externe;
 

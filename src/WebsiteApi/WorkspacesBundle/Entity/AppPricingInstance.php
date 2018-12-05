@@ -18,7 +18,7 @@ class AppPricingInstance
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -45,7 +45,7 @@ class AppPricingInstance
     protected $costuser;
 
 	/**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
     private $startedat;
 

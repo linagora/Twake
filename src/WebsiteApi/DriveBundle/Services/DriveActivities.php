@@ -43,7 +43,7 @@ class DriveActivities implements DriveActivityInterface
         }
         error_log("WORKSPACE");
         $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'drive'));
-        // $application = $this->get("app.cassandra_doctrine")->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'drive'));
+        // $application = $this->get("app.twake_doctrine")->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'drive'));
 
         error_log("APPLICATION");
         $driveActivity = new DriveActivity($application, $workspace, $user);

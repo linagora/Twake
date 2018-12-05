@@ -24,7 +24,7 @@ use WebsiteApi\UsersBundle\Entity\User;
 class GroupIdentity
 {
     /**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -55,22 +55,22 @@ class GroupIdentity
     private $phonenumber;
 
     /**
-     * @ORM\Column(type="cassandra_datetime", nullable=true)
+     * @ORM\Column(type="twake_datetime", nullable=true)
      */
     private $lockdate;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $havealreadysendisoverusingalotmail;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $havealreadysendisoverusingalittlemail;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $havealreadysendwillbeoverusingmail;
 

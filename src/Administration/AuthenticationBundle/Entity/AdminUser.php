@@ -16,7 +16,7 @@ class AdminUser
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -41,7 +41,7 @@ class AdminUser
     private $accesstoken;
 
     /**
-     * @ORM\Column(name="date_reset", type="cassandra_datetime")
+     * @ORM\Column(name="date_reset", type="twake_datetime")
      */
     private $datereset;
 

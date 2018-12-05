@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class Stream
 {
 	/**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
 	 * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
 	 */
@@ -47,12 +47,12 @@ class Stream
     private $description = "";
 
 	/**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
 	 */
     private $isprivate;
 
     /**
-     * @ORM\Column(type="cassandra_boolean", options={"default" : false })
+     * @ORM\Column(type="twake_boolean", options={"default" : false })
      */
     private $ishide;
 

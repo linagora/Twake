@@ -16,7 +16,7 @@ class ExternalDrive
 {
 
 	/**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
 	 * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
 	 */
@@ -41,7 +41,7 @@ class ExternalDrive
     private $workspace;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $completed;
 

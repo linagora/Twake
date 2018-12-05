@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class OnlyofficeFile
 {
     /**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -32,7 +32,7 @@ class OnlyofficeFile
     private $fileid;
 
     /**
-     * @ORM\Column(name="date", type="cassandra_datetime")
+     * @ORM\Column(name="date", type="twake_datetime")
      */
     private $date;
 

@@ -16,7 +16,7 @@ class VerificationNumberMail
 	/**
 	 * @var int
 	 *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")  //TO ADD FOR CASSANDRA
+     * @ORM\Column(name="id", type="twake_timeuuid")  //TO ADD FOR CASSANDRA
 	 * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")  //TO ADD FOR CASSANDRA
 	 */
@@ -46,7 +46,7 @@ class VerificationNumberMail
 	/**
 	 * @var \DateTime
 	 *
-     * @ORM\Column(name="date", type="cassandra_datetime")  //TO ADD FOR CASSANDRA (replace datetime)
+     * @ORM\Column(name="date", type="twake_datetime")  //TO ADD FOR CASSANDRA (replace datetime)
 	 */
 	private $date = "";
 

@@ -7,49 +7,74 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
-use WebsiteApi\UsersBundle\Entity\VerificationNumberMail;
-use WebsiteApi\UsersBundle\Entity\Token;
+use Doctrine\DBAL\Tools\Console\Helper\ConnectionHelper;
+use Doctrine\ORM\Tools\Console\Helper\EntityManagerHelper;
 use WebsiteApi\WorkspacesBundle\Entity\Level;
+use Doctrine\ORM\Tools\Console\Command\SchemaTool\UpdateCommand;
+use Symfony\Component\Console\Helper\HelperSet;
+use Symfony\Component\Console\Input\InputOption;
 use Cassandra;
 
-class CassandraSchemaUpdateCommand extends ContainerAwareCommand
+class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 {
 
     protected function configure()
     {
         $this
-            ->setName("twake:cassandra:schema:update")
-            ->setDescription("Update cassandra table schemas");
+            ->setName("twake:schema:update")
+            ->setDescription("Update table schemas using configured database system (cassandra or mysql")
+            ->addOption('complete', null, InputOption::VALUE_NONE, 'If defined, all assets of the database which are not relevant to the current metadata will be dropped.')
+            ->addOption('dump-sql', null, InputOption::VALUE_NONE, 'Dumps the generated SQL statements to the screen (does not execute them).')
+            ->addOption('force', 'f', InputOption::VALUE_NONE, 'Causes the generated SQL statements to be physically executed against your database.');
     }
 
     private function convertType($type)
     {
         $conversionFor = Array(
             "string" => "text",
-            "cassandra_timeuuid" => "timeuuid",
+            "twake_timeuuid" => "timeuuid",
             "array" => "text",
-            "cassandra_boolean" => "tinyint",
+            "twake_boolean" => "tinyint",
             "boolean" => "tinyint",
             "text" => "text",
-            "cassandra_float" => "float",
+            "twake_float" => "float",
             "integer" => "int",
             "bigint" => "bigint",
             "decimal" => "decimal",
-            "cassandra_datetime" => "timestamp",
+            "twake_datetime" => "timestamp",
             "blob" => "blob"
         );
         return isset($conversionFor[$type]) ? $conversionFor[$type] : "ERROR";
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $mysql_doctrine = $this->getContainer()->get('doctrine');
         $mysql_em = $mysql_doctrine->getManager();
 
-        $doctrine = $this->getContainer()->get('app.cassandra_doctrine');
+        $doctrine = $this->getContainer()->get('app.twake_doctrine');
         $em = $doctrine->getManager();
         $connection = $em->getConnection();
         $connection = $connection->getWrappedConnection();
+
+
+        if ($this->getContainer()->getParameter("database_driver") == "pdo_mysql") {
+
+            $updateCommand = new UpdateCommand();
+            $updateCommand->setHelperSet(new HelperSet());
+            $helperSet = $updateCommand->getHelperSet();
+            $helperSet->set(new ConnectionHelper($mysql_em->getConnection()), 'db');
+            $helperSet->set(new EntityManagerHelper($mysql_em), 'em');
+
+            $updateCommand->execute($input, $output);
+
+            return;
+        }
 
         $entities = array();
         $meta = $mysql_em->getMetadataFactory()->getAllMetadata();
@@ -144,13 +169,13 @@ class CassandraSchemaUpdateCommand extends ContainerAwareCommand
                 $mapping = Array();
                 if (!$entity->hasAssociation($identifier)) {
                     $mapping = $entity->getFieldMapping($identifier);
-                    if (!in_array($mapping["type"], Array("cassandra_timeuuid", "string", "blob"))) {
-                        error_log("ERROR (IGNORING TABLE) ! Tables index MUST be of type cassandra_timeuuid or string or blob ! (in " . $entity->getName() . ")");
+                    if (!in_array($mapping["type"], Array("twake_timeuuid", "string", "blob"))) {
+                        error_log("ERROR (IGNORING TABLE) ! Tables index MUST be of type twake_timeuuid or string or blob ! (in " . $entity->getName() . ")");
                         continue;
                     }
                 } else {
                     $mapping["columnName"] = $identifier . "_id";
-                    $mapping["type"] = "cassandra_timeuuid";
+                    $mapping["type"] = "twake_timeuuid";
                 }
 
                 $identifier = $mapping["columnName"];

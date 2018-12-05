@@ -57,9 +57,9 @@ class WorkspaceController extends Controller
 
             $response["data"]["currentUser"]["level"] = $level;
 
-            $groupRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:Group");
-            $workspaceRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace");
-            $groupUserRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Group");
+            $workspaceRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace");
+            $groupUserRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             $wp = $workspaceRepository->find($workspaceId);
             if($wp->getGroup() != null){

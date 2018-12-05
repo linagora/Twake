@@ -16,7 +16,7 @@ class CallMember
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -36,7 +36,7 @@ class CallMember
 	 *
 	 * Date of start
 	 *
-     * @ORM\Column(name="since", type="cassandra_datetime")
+     * @ORM\Column(name="since", type="twake_datetime")
 	 */
 	private $since;
 

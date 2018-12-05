@@ -58,9 +58,9 @@ class DiscussionController extends Controller
             if($request->request->get("discussionKey")!=null){
                 $discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
                 if($discussionInfos["type"] == "S"){
-                    $stream = $this->get("app.cassandra_doctrine")->getRepository("TwakeDiscussionBundle:Stream")->find($discussionInfos["id"]);
+                    $stream = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Stream")->find($discussionInfos["id"]);
                     if($stream != null){
-                        $link = $this->get("app.cassandra_doctrine")->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user" => $this->getUser(), "stream" => $stream));
+                        $link = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user" => $this->getUser(), "stream" => $stream));
                         if( !$stream->getIsPrivate() || $link != null ){
                             $subjects = $this->get("app.subjectSystem")->getSubject($stream);
                             $data["data"] = $subjects;
@@ -99,12 +99,12 @@ class DiscussionController extends Controller
         }
         else {
             if($request->request->get("subject") != null){
-                $subject = $this->get("app.cassandra_doctrine")->getRepository("TwakeDiscussionBundle:Subject")->find($request->request->get("subject"));
+                $subject = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Subject")->find($request->request->get("subject"));
                 if($subject == null){
                     $data["errors"][] = "subjectnotfound";
                 }
                 else{
-                    $link = $this->get("app.cassandra_doctrine")->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("stream" => $subject->getStream(), "user" => $this->getUser()));
+                    $link = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("stream" => $subject->getStream(), "user" => $this->getUser()));
                     if($subject->getStream()->getIsPrivate() && $link == null){
                         $data["errors"][] = "notallowed";
                     }

@@ -164,6 +164,8 @@ final class DriverManager
             $className = self::$_driverMap[$params['driver']];
         }
 
+        error_log($className);
+
         $driver = new $className();
 
         $wrapperClass = 'Doctrine\DBAL\Connection';
@@ -176,11 +178,10 @@ final class DriverManager
         }
         if (self::$instance === null) {
             self::$instance = 1;
-            //add new Cassandra types
-            Type::addType('cassandra_float', 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraFloatType');
-            Type::addType('cassandra_datetime', 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraDateTimeType');
-            Type::addType('cassandra_timeuuid', 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraTimeUUIDType');
-            Type::addType('cassandra_boolean', 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\CassandraBooleanType');
+            //add new types
+            foreach ($params["twake_types"] as $name => $class) {
+                Type::addType($name, $class);
+            }
         }
 
         return new $wrapperClass($params, $driver, $config, $eventManager);

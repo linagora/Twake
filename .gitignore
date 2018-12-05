@@ -119,6 +119,7 @@ fabric.properties
 /build/
 /vendor/
 /app/Ressources/DatabaseEncryption/.HaliteEncryptor.key
+/app/Ressources/DatabaseEncryption/.Halite.key
 
 ### AWS ###
 /app/config/aws_config.yml

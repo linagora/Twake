@@ -19,7 +19,7 @@ class UserDailyStats
 {
 
     /**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -40,7 +40,7 @@ class UserDailyStats
      */
     protected $privatemsgcount;
     /**
-     * @ORM\Column(name="date", type="cassandra_datetime")
+     * @ORM\Column(name="date", type="twake_datetime")
      */
     protected $date;
 

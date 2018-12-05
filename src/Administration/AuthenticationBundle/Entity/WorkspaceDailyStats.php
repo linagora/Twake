@@ -18,7 +18,7 @@ use FOS\UserBundle\Model\User as BaseUser;
 class WorkspaceDailyStats
 {
     /**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -47,7 +47,7 @@ class WorkspaceDailyStats
 	 */
     protected $privatechannelmsgcount;
     /**
-     * @ORM\Column(name="date", type="cassandra_datetime")
+     * @ORM\Column(name="date", type="twake_datetime")
      */
     protected $date;
 

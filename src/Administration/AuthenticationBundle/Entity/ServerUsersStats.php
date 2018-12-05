@@ -27,14 +27,14 @@ class ServerUsersStats
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
     private $id;
 
     /**
-     * @ORM\Column(name="date_save", type="cassandra_datetime")
+     * @ORM\Column(name="date_save", type="twake_datetime")
      */
     private $datesave;
 

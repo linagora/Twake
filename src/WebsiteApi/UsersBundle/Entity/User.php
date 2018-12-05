@@ -2,14 +2,11 @@
 
 namespace WebsiteApi\UsersBundle\Entity;
 
-use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Component\Security\Core\User\UserInterface;
-
-use Doctrine\ORM\Mapping as ORM;
-use FOS\UserBundle\Model\User as BaseUser;
 use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceParent;
-use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
+use Doctrine\ORM\Mapping as ORM;
+use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 
 /**
  * User
@@ -23,7 +20,7 @@ class User implements UserInterface
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -35,22 +32,24 @@ class User implements UserInterface
     public $id_as_string_for_session_handler;
 
 	/**
-     * @ORM\Column(name="banned", type="cassandra_boolean")
+     * @ORM\Column(name="banned", type="twake_boolean")
 	 */
 	protected $banned = false;
 
     /**
-     * @ORM\Column(name="is_robot", type="cassandra_boolean", options={"default" : false } )
+     * @ORM\Column(name="is_robot", type="twake_boolean", options={"default" : false } )
      */
     protected $isrobot;
 
 	/**
-	 * @ORM\Column(name="first_name", type="string", length=64)
+     * @ORM\Column(name="first_name", type="text")
+     * @Encrypted
 	 */
     protected $firstname = "";
 
 	/**
-	 * @ORM\Column(name="last_name", type="string", length=64)
+     * @ORM\Column(name="last_name", type="text")
+     * @Encrypted
 	 */
     protected $lastname = "";
 
@@ -72,7 +71,7 @@ class User implements UserInterface
 
 	/**
 	 * @var int
-     * @ORM\Column(name="connected", type="cassandra_boolean")
+     * @ORM\Column(name="connected", type="twake_boolean")
 	 */
 	protected $connected;
 
@@ -84,7 +83,7 @@ class User implements UserInterface
 
     /**
      * @var int
-     * @ORM\Column(name="creation_date", type="cassandra_datetime",nullable=true, options={"default" : "1970-01-02"})
+     * @ORM\Column(name="creation_date", type="twake_datetime",nullable=true, options={"default" : "1970-01-02"})
      */
     protected $creationdate;
 
@@ -109,7 +108,7 @@ class User implements UserInterface
     protected $origin = "";
 
     /**
-     * @ORM\Column(name="is_new", type="cassandra_boolean")
+     * @ORM\Column(name="is_new", type="twake_boolean")
      */
     protected $isnew = true;
 
@@ -129,7 +128,7 @@ class User implements UserInterface
     protected $emailcanonical;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     protected $enabled;
 
@@ -144,7 +143,7 @@ class User implements UserInterface
     protected $password;
 
     /**
-     * @ORM\Column(name="last_login", type="cassandra_datetime")
+     * @ORM\Column(name="last_login", type="twake_datetime")
      */
     protected $lastlogin;
 
@@ -154,7 +153,7 @@ class User implements UserInterface
     protected $confirmationtoken;
 
     /**
-     * @ORM\Column(name="password_requested_at", type="cassandra_datetime")
+     * @ORM\Column(name="password_requested_at", type="twake_datetime")
      */
     protected $passwordrequestedat;
 

@@ -27,7 +27,7 @@ class Sessions
     private $sess_data;
 
     /**
-     * @ORM\Column(name="sess_time", type="cassandra_datetime", nullable=false, options={"unsigned"=true})
+     * @ORM\Column(name="sess_time", type="twake_datetime", nullable=false, options={"unsigned"=true})
      */
     private $sess_time;
 

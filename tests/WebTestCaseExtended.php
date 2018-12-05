@@ -56,11 +56,11 @@ class WebTestCaseExtended extends WebTestCase
         $user = $this->get("app.user")->subscribe($userToken,null, "phpunit","phpunit",true);
 
         if (!$user) {
-            return $this->get("app.cassandra_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "phpunit"));
+            return $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "phpunit"));
         }
 
-        $this->get("app.cassandra_doctrine")->persist($user);
-        $this->get("app.cassandra_doctrine")->flush();
+        $this->get("app.twake_doctrine")->persist($user);
+        $this->get("app.twake_doctrine")->flush();
 
         return $user;
     }
@@ -70,29 +70,29 @@ class WebTestCaseExtended extends WebTestCase
         $user = $this->get("app.user")->subscribe($userToken,null, $name,$name,true);
 
         if (!$user) {
-            return $this->get("app.cassandra_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => $name));
+            return $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => $name));
         }
 
-        $this->get("app.cassandra_doctrine")->persist($user);
-        $this->get("app.cassandra_doctrine")->flush();
+        $this->get("app.twake_doctrine")->persist($user);
+        $this->get("app.twake_doctrine")->flush();
 
         return $user;
     }
 
     public function newGroup($userId){
         $group = $this->get("app.groups")->create($userId,"phpunit","phpunit",1);
-        $this->get("app.cassandra_doctrine")->persist($group);
-        $this->get("app.cassandra_doctrine")->flush();
+        $this->get("app.twake_doctrine")->persist($group);
+        $this->get("app.twake_doctrine")->flush();
 
         $groupIdentity = $this->get("app.group_identitys")->create($group, "fake","fake","fake",0);
-        $this->get("app.cassandra_doctrine")->persist($groupIdentity);
-        $this->get("app.cassandra_doctrine")->flush();
+        $this->get("app.twake_doctrine")->persist($groupIdentity);
+        $this->get("app.twake_doctrine")->flush();
 
         return $group;
     }
 
     public function newWorkspace($groupId){
-        $userRepository = $this->get("app.cassandra_doctrine")->getRepository("TwakeUsersBundle:User");
+        $userRepository = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User");
        // $user = $userRepository->findByName("phpunit");
         $user = $userRepository->findOneBy(Array("usernameCanonical" => "phpunit"));
         if (count($user) == 0) {
@@ -102,8 +102,8 @@ class WebTestCaseExtended extends WebTestCase
 
         $userId = $user->getId(); //TODO
         $work = $this->get("app.workspaces")->create("phpunit", $groupId, $userId); // Get a service and run function
-        $this->get("app.cassandra_doctrine")->persist($work);
-        $this->get("app.cassandra_doctrine")->flush();
+        $this->get("app.twake_doctrine")->persist($work);
+        $this->get("app.twake_doctrine")->flush();
 
         return $work;
     }

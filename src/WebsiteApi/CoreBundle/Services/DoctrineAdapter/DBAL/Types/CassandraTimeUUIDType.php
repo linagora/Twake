@@ -29,7 +29,7 @@ class CassandraTimeUUIDType extends StringType
      */
     public function getBindingType()
     {
-        return "cassandra_timeuuid";
+        return "twake_timeuuid";
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform)

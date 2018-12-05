@@ -17,7 +17,7 @@ class LinkCalendarWorkspace{
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -40,12 +40,12 @@ class LinkCalendarWorkspace{
     private $application = null;
 
     /**
-     * @ORM\Column(name="calendarright", type="cassandra_boolean")
+     * @ORM\Column(name="calendarright", type="twake_boolean")
      */
     private $calendarright;
 
     /**
-     * @ORM\Column(name="owner", type="cassandra_boolean")
+     * @ORM\Column(name="owner", type="twake_boolean")
      */
     private $owner;
 

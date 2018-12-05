@@ -16,7 +16,7 @@ use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 class Application
 {
 	/**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
 	 * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
 	 */
@@ -28,7 +28,7 @@ class Application
 	private $name;
 
     /**
-     * @ORM\Column(name="isdefault", type="cassandra_boolean", options={"index": true})
+     * @ORM\Column(name="isdefault", type="twake_boolean", options={"index": true})
      */
     private $default;
 
@@ -48,7 +48,7 @@ class Application
 	private $url = "";
 
 	/**
-     * @ORM\Column(name="cancreatefile", type="cassandra_boolean")
+     * @ORM\Column(name="cancreatefile", type="twake_boolean")
 	 */
     private $cancreatefile; //Will be visible in the list of new files in Drive
 
@@ -58,7 +58,7 @@ class Application
     private $createfiledata = "{}"; //Will be visible in the list of new files in Drive
 
 	/**
-     * @ORM\Column(name="iscapable", type="cassandra_boolean")
+     * @ORM\Column(name="iscapable", type="twake_boolean")
 	 */
     private $iscapable; //Can be opened as app in window (displayed in the left bar of apps)
 
@@ -74,12 +74,12 @@ class Application
 	private $description = "";
 
 	/**
-     * @ORM\Column(name="price_monthly", type="cassandra_float")
+     * @ORM\Column(name="price_monthly", type="twake_float")
 	 */
     private $pricemonthly = 0;
 
     /**
-     * @ORM\Column(name="price_user", type="cassandra_float")
+     * @ORM\Column(name="price_user", type="twake_float")
      */
     private $priceuser = 0;
 
@@ -99,7 +99,7 @@ class Application
     private $votecount = 0;
 
 	/**
-     * @ORM\Column(name="score", type="cassandra_float")
+     * @ORM\Column(name="score", type="twake_float")
 	 */
 	private $score = 0;
 
@@ -119,7 +119,7 @@ class Application
 	protected $screenshot = "[]";
 
 	/**
-     * @ORM\Column(name="message_module" , type="cassandra_boolean")
+     * @ORM\Column(name="message_module" , type="twake_boolean")
 	 */
     protected $messagemodule;
 
@@ -129,12 +129,12 @@ class Application
     private $messagemoduleurl = "";
 
     /**
-     * @ORM\Column(name="editable_rights" , type="cassandra_boolean")
+     * @ORM\Column(name="editable_rights" , type="twake_boolean")
      */
     protected $editablerights = 0;
 
 	/**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	protected $date;
 
@@ -149,7 +149,7 @@ class Application
     protected $publickey;
 
 	/**
-     * @ORM\Column(type="cassandra_boolean" )
+     * @ORM\Column(type="twake_boolean" )
 	 */
     protected $enabled = 0;
 
@@ -179,7 +179,7 @@ class Application
     private $cgu = "";
 
     /**
-     * @ORM\Column(name="urlapp", type="cassandra_boolean")
+     * @ORM\Column(name="urlapp", type="twake_boolean")
      */
     private $urlapp = false;
 

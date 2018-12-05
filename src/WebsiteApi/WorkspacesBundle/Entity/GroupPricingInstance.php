@@ -18,7 +18,7 @@ class GroupPricingInstance
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -45,12 +45,12 @@ class GroupPricingInstance
     private $originalpricingreference;
 
 	/**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
     private $startedat;
 
     /**
-     * @ORM\Column(type="cassandra_datetime", nullable=true)
+     * @ORM\Column(type="twake_datetime", nullable=true)
      */
     private $endat;
 

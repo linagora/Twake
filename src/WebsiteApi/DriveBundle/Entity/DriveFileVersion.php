@@ -16,7 +16,7 @@ use WebsiteApi\UsersBundle\Entity\User;
 class DriveFileVersion
 {
     /**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -55,7 +55,7 @@ class DriveFileVersion
 	private $size;
 
 	/**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date_added;
 

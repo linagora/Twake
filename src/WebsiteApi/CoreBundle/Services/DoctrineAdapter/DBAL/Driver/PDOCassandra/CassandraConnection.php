@@ -121,7 +121,7 @@ class PDOStatementAdapter
 
                 if ($value == NULL) {
                     $value = "NULL";
-                } else if ($this->types[$position + 1] == \PDO::PARAM_INT || $this->types[$position + 1] == "cassandra_timeuuid") {
+                } else if ($this->types[$position + 1] == \PDO::PARAM_INT || $this->types[$position + 1] == "twake_timeuuid") {
                     $value = $value;
                 } else if (is_string($value) || (is_object($value) && method_exists($value, 'toCqlString'))) {
                     $value = addslashes($value);

@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class StreamMember
 {
     /**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -43,17 +43,17 @@ class StreamMember
 	private $workspace;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $mute;
 
     /**
-     * @ORM\Column(type="cassandra_datetime", options={"default" : "1970-01-02"})
+     * @ORM\Column(type="twake_datetime", options={"default" : "1970-01-02"})
      */
     private $last_read;
 
     /**
-     * @ORM\Column(type="cassandra_datetime", options={"default" : "1970-01-02"})
+     * @ORM\Column(type="twake_datetime", options={"default" : "1970-01-02"})
      */
     private $last_update;
 

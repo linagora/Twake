@@ -27,7 +27,7 @@ class ServerCpuStats
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -35,7 +35,7 @@ class ServerCpuStats
 
 
     /**
-     * @ORM\Column(name="date_save", type="cassandra_datetime")
+     * @ORM\Column(name="date_save", type="twake_datetime")
      */
     private $datesave;
 
@@ -49,70 +49,70 @@ class ServerCpuStats
     /**
      * @var float
      *
-     * @ORM\Column(name="usr", type="cassandra_float")
+     * @ORM\Column(name="usr", type="twake_float")
      */
     private $usr;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="nice", type="cassandra_float")
+     * @ORM\Column(name="nice", type="twake_float")
      */
     private $nice;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="sys", type="cassandra_float")
+     * @ORM\Column(name="sys", type="twake_float")
      */
     private $sys;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="iowait", type="cassandra_float")
+     * @ORM\Column(name="iowait", type="twake_float")
      */
     private $iowait;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="irq", type="cassandra_float")
+     * @ORM\Column(name="irq", type="twake_float")
      */
     private $irq;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="soft", type="cassandra_float")
+     * @ORM\Column(name="soft", type="twake_float")
      */
     private $soft;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="steal", type="cassandra_float")
+     * @ORM\Column(name="steal", type="twake_float")
      */
     private $steal;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="guest", type="cassandra_float")
+     * @ORM\Column(name="guest", type="twake_float")
      */
     private $guest;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="gnice", type="cassandra_float")
+     * @ORM\Column(name="gnice", type="twake_float")
      */
     private $gnice;
 
     /**
      * @var float
      *
-     * @ORM\Column(name="idle", type="cassandra_float")
+     * @ORM\Column(name="idle", type="twake_float")
      */
     private $idle;
 

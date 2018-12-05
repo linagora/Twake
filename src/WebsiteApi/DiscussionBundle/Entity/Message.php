@@ -15,7 +15,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class Message
 {
 	/**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
 	 * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
 	 */
@@ -45,7 +45,7 @@ class Message
     private $streamreciever;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $isapplicationmessage = false;
 
@@ -56,7 +56,7 @@ class Message
     private $applicationsender;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $issystemmessage = false;
 
@@ -64,7 +64,7 @@ class Message
 
 
     /**
-     * @ORM\Column(type="cassandra_datetime",nullable=true)
+     * @ORM\Column(type="twake_datetime",nullable=true)
 	 */
 	private $date;
 
@@ -85,12 +85,12 @@ class Message
 
 
 	/**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
 	 */
 	private $edited = false;
 
 	/**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
 	 */
 	private $pinned = false;
 
@@ -101,7 +101,7 @@ class Message
     private $responseto = null;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $hasresponses = false;
 

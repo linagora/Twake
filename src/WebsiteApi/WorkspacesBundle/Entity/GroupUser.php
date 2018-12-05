@@ -22,7 +22,7 @@ class GroupUser
 	/**
 	 * @var int
 	 *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
 	 * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
 	 */
@@ -49,12 +49,12 @@ class GroupUser
 	protected $level;
 
     /**
-     * @ORM\Column(name="did_connect_today", type="cassandra_boolean")
+     * @ORM\Column(name="did_connect_today", type="twake_boolean")
      */
     private $didconnecttoday;
 
     /**
-     * @ORM\Column(name="is_externe", type="cassandra_boolean")
+     * @ORM\Column(name="is_externe", type="twake_boolean")
      */
     private $externe;
 
@@ -69,7 +69,7 @@ class GroupUser
     protected $nbworkspace;
 
 	/**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date_added;
 

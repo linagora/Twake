@@ -16,7 +16,7 @@ class Notification
 	/**
 	 * @var int
 	 *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
 	 * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
 	 */
@@ -58,7 +58,7 @@ class Notification
     private $data = "{}";
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $date;
 
@@ -68,12 +68,12 @@ class Notification
     private $mail_sent = 0;
 
     /**
-     * @ORM\Column(type="cassandra_datetime", nullable=true)
+     * @ORM\Column(type="twake_datetime", nullable=true)
      */
     private $last_mail = null;
 
     /**
-     * @ORM\Column(type="cassandra_boolean" , options={"default" : true})
+     * @ORM\Column(type="twake_boolean" , options={"default" : true})
      */
     private $isread;
 

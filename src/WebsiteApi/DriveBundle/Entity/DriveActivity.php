@@ -24,7 +24,7 @@ use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
 class DriveActivity
 {
     /**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -56,7 +56,7 @@ class DriveActivity
     private $text;
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $date;
 
@@ -66,7 +66,7 @@ class DriveActivity
     private $data;
 
     /**
-     * @ORM\Column(name="is_read", type="cassandra_boolean")
+     * @ORM\Column(name="is_read", type="twake_boolean")
      */
     private $read = false;
 

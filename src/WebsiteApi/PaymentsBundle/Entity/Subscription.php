@@ -26,7 +26,7 @@ class Subscription
      * Entity : subscription_entity (id,group_id, pricing_plan_id, balance , balance_consumed, start_date, end_date, prével auto, renouvellemnt auto)
      */
     /**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -58,12 +58,12 @@ class Subscription
     private $subscribedbalance = 0;
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $startdate;
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $enddate;
 

@@ -39,7 +39,7 @@ class ExternalDriveDataCache
     private $json;
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $lastupdate;
 

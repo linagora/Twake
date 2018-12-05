@@ -25,7 +25,7 @@ class CurrentUserController extends Controller
 		    "errors" => Array()
 	    );
 
-        $manager = $this->get("app.cassandra_doctrine")->getManager();
+        $manager = $this->get("app.twake_doctrine")->getManager();
 
         /** @var DataToken $t */
         $t = $this->get("website_api_market.data_token")->getDataToken($requestData["token"]);

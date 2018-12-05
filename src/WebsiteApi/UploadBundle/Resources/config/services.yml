@@ -8,9 +8,9 @@ services:
 
     app.uploader:
         class: WebsiteApi\UploadBundle\Services\Uploader
-        arguments: ["@app.cassandra_doctrine", "@app.upload", "@app.images_modifiers"]
+        arguments: ["@app.twake_doctrine", "@app.upload", "@app.images_modifiers"]
 
     #AWS
     app.aws_uploader:
         class: WebsiteApi\UploadBundle\Services\AWS_Uploader
-        arguments: [%aws%, "@app.cassandra_doctrine", "@app.upload", "@app.images_modifiers"]
+        arguments: [%aws%, "@app.twake_doctrine", "@app.upload", "@app.images_modifiers"]

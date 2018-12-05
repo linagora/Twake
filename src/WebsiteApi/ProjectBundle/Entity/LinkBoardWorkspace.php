@@ -17,7 +17,7 @@ class LinkBoardWorkspace{
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -29,12 +29,12 @@ class LinkBoardWorkspace{
     private $workspace;
 
     /**
-     * @ORM\Column(name="boardright", type="cassandra_boolean")
+     * @ORM\Column(name="boardright", type="twake_boolean")
      */
     private $boardright;
 
     /**
-     * @ORM\Column(name="owner", type="cassandra_boolean")
+     * @ORM\Column(name="owner", type="twake_boolean")
      */
     private $owner;
 

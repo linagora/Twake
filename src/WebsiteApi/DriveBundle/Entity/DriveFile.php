@@ -16,7 +16,7 @@ use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 class DriveFile implements ObjectLinksInterface
 {
     /**
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
      */
@@ -28,7 +28,7 @@ class DriveFile implements ObjectLinksInterface
     private $group;
 
     /**
-     * @ORM\Column(name="root_group_folder_id", type="cassandra_timeuuid", nullable=true)
+     * @ORM\Column(name="root_group_folder_id", type="twake_timeuuid", nullable=true)
      */
     private $root_group_folder = NULL;
 
@@ -59,12 +59,12 @@ class DriveFile implements ObjectLinksInterface
     private $description;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $isdirectory;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $isintrash;
 
@@ -80,12 +80,12 @@ class DriveFile implements ObjectLinksInterface
     private $children;
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $added;
 
     /**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $last_modified;
 
@@ -106,12 +106,12 @@ class DriveFile implements ObjectLinksInterface
     private $cache;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $detached_file = false;
 
     /**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $previewhasbeengenerated = false;
 
@@ -121,7 +121,7 @@ class DriveFile implements ObjectLinksInterface
     private $copyof;
 
 	/**
-     * @ORM\Column(type="cassandra_boolean")
+     * @ORM\Column(type="twake_boolean")
     */
     private $shared = false;
 

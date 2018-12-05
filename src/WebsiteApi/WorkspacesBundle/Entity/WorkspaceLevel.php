@@ -15,7 +15,7 @@ class WorkspaceLevel
 	/**
 	 * @var int
 	 *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
 	 * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
 	 */
@@ -37,12 +37,12 @@ class WorkspaceLevel
 	protected $rights;
 
 	/**
-     * @ORM\Column(name="is_default", type="cassandra_boolean", length=1)
+     * @ORM\Column(name="is_default", type="twake_boolean", length=1)
 	 */
     protected $isdefault = false;
 
 	/**
-     * @ORM\Column(name="is_admin", type="cassandra_boolean", length=1)
+     * @ORM\Column(name="is_admin", type="twake_boolean", length=1)
 	 */
     protected $isadmin = false;
 

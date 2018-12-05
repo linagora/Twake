@@ -19,7 +19,7 @@ class Group
 	/**
 	 * @var int
 	 *
-     * @ORM\Column(name="id", type="cassandra_timeuuid")
+     * @ORM\Column(name="id", type="twake_timeuuid")
 	 * @ORM\Id
      * @ORM\GeneratedValue(strategy="UUID")
 	 */
@@ -61,7 +61,7 @@ class Group
 	private $managers;
 
 	/**
-     * @ORM\Column(type="cassandra_datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date_added;
 
@@ -71,11 +71,11 @@ class Group
     protected $on_creation_data = "{}";
 
     /**
-     * @ORM\Column(name="isblocked", type="cassandra_boolean")
+     * @ORM\Column(name="isblocked", type="twake_boolean")
      */
     private $isblocked = false;
     /**
-     * @ORM\Column(name="isprivate", type="cassandra_boolean")
+     * @ORM\Column(name="isprivate", type="twake_boolean")
      */
     private $isprivate = false;
 

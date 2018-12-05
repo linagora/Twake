@@ -3,6 +3,8 @@
 easy_admin:
     #[REMOVE_ONPREMISE]
     site_name: 'Twake administration'
+    formats:
+        dateinterval: "%days"
     list:
         actions: ['show']
     design:

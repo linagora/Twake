@@ -2,39 +2,39 @@ services:
 
     admin.Authentication:
         class: Administration\AuthenticationBundle\Services\AdministrationAuthentication
-        arguments: ["@app.cassandra_doctrine", "@security.encoder_factory"]
+        arguments: ["@app.twake_doctrine", "@security.encoder_factory"]
 
     admin.Management:
         class: Administration\AuthenticationBundle\Services\AdministrationUpdate
-        arguments: ["@app.cassandra_doctrine"]
+        arguments: ["@app.twake_doctrine"]
 
     admin.TwakeUserManagement:
         class: Administration\AuthenticationBundle\Services\AdministrationTwakeUserManagement
-        arguments: ["@app.cassandra_doctrine"]
+        arguments: ["@app.twake_doctrine"]
 
     admin.TwakeGroupManagement:
         class: Administration\AuthenticationBundle\Services\AdministrationTwakeGroupManagement
-        arguments: ["@app.cassandra_doctrine"]
+        arguments: ["@app.twake_doctrine"]
 
     admin.TwakeStatistics:
         class: Administration\AuthenticationBundle\Services\AdministrationStatistics
-        arguments: ["@app.cassandra_doctrine"]
+        arguments: ["@app.twake_doctrine"]
 
     admin.TwakeDailyConnection:
         class: Administration\AuthenticationBundle\Services\AdministrationConnection
-        arguments: ["@app.cassandra_doctrine"]
+        arguments: ["@app.twake_doctrine"]
 
     admin.TwakeDailyMessage:
         class: Administration\AuthenticationBundle\Services\AdministrationMessageStats
-        arguments: ["@app.cassandra_doctrine"]
+        arguments: ["@app.twake_doctrine"]
 
     admin.TwakeServerStats:
         class: Administration\AuthenticationBundle\Services\AdministrationServerStats
-        arguments: ["@app.cassandra_doctrine"]
+        arguments: ["@app.twake_doctrine"]
 
     admin.TwakeErrorsListener:
         class: Administration\AuthenticationBundle\EventSubscriber\ErrorsListener
-        arguments: ["@app.cassandra_doctrine"]
+        arguments: ["@app.twake_doctrine"]
         tags:
             - { name: kernel.event_listener, event: kernel.exception }
 
