@@ -720,9 +720,9 @@ class DriveFileSystem implements DriveFileSystemInterface
     public function getDriveFileVersions($fileId){
         $file = $this->convertToEntity($fileId, "TwakeDriveBundle:DriveFile");
 
-        $driveFileVersions = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file" => $file));
+        $drivefileVersions = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file" => $file));
 
-        return $driveFileVersions;
+        return $drivefileVersions;
     }
 
     public function getInfos($workspace, $fileOrDirectory, $forceAccess = false)

@@ -30,10 +30,10 @@ class DrivePreviewCommand extends ContainerAwareCommand
 
         $services = $this->getApplication()->getKernel()->getContainer();
 
-        /* @var DriveFileSystem $driveFileSystem*/
-        $driveFileSystem = $services->get("app.drive.adapter_selector")->getFileSystem();
+        /* @var DriveFileSystem $drivefileSystem */
+        $drivefileSystem = $services->get("app.drive.adapter_selector")->getFileSystem();
 
-        $driveFileSystem->autoGenPreview();
+        $drivefileSystem->autoGenPreview();
     }
 
 

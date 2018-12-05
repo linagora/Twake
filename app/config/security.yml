@@ -5,7 +5,7 @@ security:
 
     providers:
          main:
-            id: user.provider.cassandra #app.core_user_provider
+            id: user.provider.twake
 
 #    access_control:
 #        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https, host: dev\.citigo\.fr$ }

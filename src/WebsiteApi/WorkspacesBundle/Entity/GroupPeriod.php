@@ -87,7 +87,7 @@ class GroupPeriod
         $this->grouppricinginstance = null;
         $this->currentcost = 0;
         $this->estimatedcost = 0;
-        $this->expectedCost= 0;
+        $this->expectedcost = 0;
 	}
 
 	public function getAsArray(){

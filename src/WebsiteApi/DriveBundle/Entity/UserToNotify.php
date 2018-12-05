@@ -59,7 +59,7 @@ class UserToNotify
         return Array(
             "id" => $this->getId(),
             "user" => $this->getUser(),
-            "driveFile" => $this->getDriveFile(),
+            "drivefile" => $this->getDriveFile(),
             "driveType" => $this->getDriveType(),
             "additionalData" => $this->getAdditionalData()
         );

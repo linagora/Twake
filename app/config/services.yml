@@ -119,7 +119,7 @@ services:
         class:     WebsiteApi\CoreBundle\Services\DoctrineAdapter\CassandraSessionHandler
         arguments: ['@app.twake_doctrine', {lock_mode: 0}]
 
-    user.provider.cassandra:
+    user.provider.twake:
         class: WebsiteApi\UsersBundle\Repository\UserRepository
         factory: ['@app.twake_doctrine', 'getRepository']
         arguments: ['WebsiteApi\UsersBundle\Entity\User']

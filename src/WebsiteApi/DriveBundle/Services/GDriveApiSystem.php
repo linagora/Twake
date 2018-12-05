@@ -160,24 +160,24 @@ class GDriveApiSystem
         $isShared = $file->getShared();
         $size = $file->size;
 
-        $driveFile = new DriveFile($workspace, null, $name, $file->getMimeType()=="application/vnd.google-apps.folder");
-        $driveFile->setCopyOf(false);
-        $driveFile->setDescription($desription);
-        $driveFile->setExtension($extension);
-        $driveFile->setDetachedFile(false);
-        $driveFile->setIsInTrash($isInTrash);
-        $driveFile->setOldParent(null);
-        $driveFile->setShared($isShared);
-        $driveFile->setSize($size);
+        $drivefile = new DriveFile($workspace, null, $name, $file->getMimeType() == "application/vnd.google-apps.folder");
+        $drivefile->setCopyOf(false);
+        $drivefile->setDescription($desription);
+        $drivefile->setExtension($extension);
+        $drivefile->setDetachedFile(false);
+        $drivefile->setIsInTrash($isInTrash);
+        $drivefile->setOldParent(null);
+        $drivefile->setShared($isShared);
+        $drivefile->setSize($size);
         if($file->getWebContentLink()==null)
-            $driveFile->setUrl($file->getWebViewLink());
-        $driveFile->setDefaultWebApp($this->marketApplication->getAppForUrl($file->getWebViewLink()));
-        $lastVersion = new DriveFileVersion($driveFile, null);
-        $driveFile->setLastVersion($lastVersion);
-        $driveFile->setId($file->getId());
-        $driveFile->setAdded(new \DateTime($file->createdTime));
+            $drivefile->setUrl($file->getWebViewLink());
+        $drivefile->setDefaultWebApp($this->marketApplication->getAppForUrl($file->getWebViewLink()));
+        $lastVersion = new DriveFileVersion($drivefile, null);
+        $drivefile->setLastVersion($lastVersion);
+        $drivefile->setId($file->getId());
+        $drivefile->setAdded(new \DateTime($file->createdTime));
 
-        return $driveFile;
+        return $drivefile;
     }
 
     public function getArrayFromGDriveFile($file, $fields){
@@ -412,10 +412,11 @@ class GDriveApiSystem
         return false;
     }
 
-    public function move($gdriveFileId, $gdriveFolderId, Token $userToken){
+    public function move($gdrivefileId, $gdriveFolderId, Token $userToken)
+    {
         $service = new Google_Service_Drive($this->getClient($userToken));
 
-        $fileId = $gdriveFileId;
+        $fileId = $gdrivefileId;
         $folderId = $gdriveFolderId;
         $emptyFileMetadata = new Google_Service_Drive_DriveFile();
         // Retrieve the existing parents to remove

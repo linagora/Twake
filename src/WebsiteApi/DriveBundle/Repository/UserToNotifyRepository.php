@@ -7,13 +7,13 @@ namespace WebsiteApi\DriveBundle\Repository;
  */
 class UserToNotifyRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
-    public function deleteByDriveFile($driveFile)
+    public function deleteByDriveFile($drivefile)
     {
         $qb = $this->createQueryBuilder("t");
 
         $qb = $qb->delete()
-            ->andWhere('t.driveFile = :driveFile')
-            ->setParameter('driveFile', $driveFile);
+            ->andWhere('t.drivefile = :drivefile')
+            ->setParameter('drivefile', $drivefile);
 
         return $qb->getQuery()->getResult();
     }

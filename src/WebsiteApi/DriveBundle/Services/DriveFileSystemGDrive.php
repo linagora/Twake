@@ -541,11 +541,11 @@ class DriveFileSystemGDrive
     public function copyFromExternalDrive($workspace, $directory, $externalDriveFileId)
     {
         //$workspace, $directory, $filename, $content = "";
-        $gdriveFile = $this->gdriveApi->getGDriveFileFromGDriveId($externalDriveFileId, $this->userToken);
+        $gdrivefile = $this->gdriveApi->getGDriveFileFromGDriveId($externalDriveFileId, $this->userToken);
         $content = "";
 
 
-        if($gdriveFile->getWebContentLink()!=null) {
+        if ($gdrivefile->getWebContentLink() != null) {
             $service = new Google_Service_Drive($this->gdriveApi->getClient($this->userToken));
 
             $response = $service->files->get($externalDriveFileId, array(
@@ -553,7 +553,7 @@ class DriveFileSystemGDrive
             $content = $response->getBody()->getContents();
         }
 
-        return $this->driveFileSystem->create($workspace, $directory, $gdriveFile->getName(), $content, false, false, $gdriveFile->getWebViewLink());
+        return $this->drivefileSystem->create($workspace, $directory, $gdrivefile->getName(), $content, false, false, $gdrivefile->getWebViewLink());
     }
 
     public function copyToExternalDrive($workspace, $directory, $file)

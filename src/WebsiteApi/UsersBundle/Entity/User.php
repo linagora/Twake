@@ -188,8 +188,8 @@ class User implements UserInterface
 
     public function setIdAsString()
     {
-        if ($this->id && str_replace(Array("0", "-"), "", $this->id)) {
-            $this->id_as_string_for_session_handler = $this->id;
+        if ($this->id && str_replace(Array("0", "-"), "", $this->id . "")) {
+            $this->id_as_string_for_session_handler = $this->id . "";
         }
     }
 
