@@ -26,7 +26,7 @@ class CallsController extends Controller
 			return new JsonResponse($data);
 		}
 
-		$discussionKey = $request->request->get("discussionKey");
+        $discussionKey = $request->request->get("discussionkey");
 
 		$token = $this->get("app.callSystem")->joinCall($this->getUser(), $discussionKey);
 
@@ -45,7 +45,7 @@ class CallsController extends Controller
 			"members" => []
 		);
 
-        $discussionKey = $request->request->get("discussionKey");
+        $discussionKey = $request->request->get("discussionkey");
 
         $securityContext = $this->get('security.authorization_checker');
         if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {

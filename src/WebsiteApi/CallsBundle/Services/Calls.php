@@ -40,7 +40,7 @@ class Calls implements CallSystemInterface
 		}
 
 		$repoCalls = $this->doctrine->getRepository("TwakeCallsBundle:Call");
-		$call = $repoCalls->findOneBy(Array("discussionKey" => $discussionKey));
+        $call = $repoCalls->findOneBy(Array("discussionkey" => $discussionKey));
 
 		if ($call == null) {
 			return Array("status" => "nocall");
@@ -96,7 +96,7 @@ class Calls implements CallSystemInterface
 
 		$em = $this->doctrine;
 		$repoCalls = $em->getRepository("TwakeCallsBundle:Call");
-		$call = $repoCalls->findOneBy(Array("discussionKey" => $discussionKey));
+        $call = $repoCalls->findOneBy(Array("discussionkey" => $discussionKey));
 
 		if ($call) {
 			return $call;
@@ -156,16 +156,16 @@ class Calls implements CallSystemInterface
                 $em->flush();
                 $this->messageSystem->notify($call->getDiscussionKey(),"E",$message->getAsArray());
                 $em->remove($call);
-				$torefresh[] = Array("discussionKey"=>$call->getDiscussionKey(),"type"=>"close");
+                $torefresh[] = Array("discussionkey" => $call->getDiscussionKey(), "type" => "close");
             }else{
 				$call->setNbclients($call->getNbclients()-1);
-                $torefresh[] = Array("discussionKey" => $call->getDiscussionKey(),"type"=>"join");
+                $torefresh[] = Array("discussionkey" => $call->getDiscussionKey(), "type" => "join");
 				$em->persist($call);
 			}
 		}
 		$em->flush();
 		foreach ($torefresh as $call) {
-			$this->notifyChange($call["discussionKey"],$call["type"]);
+            $this->notifyChange($call["discussionkey"], $call["type"]);
 		}
 	}
 
@@ -178,7 +178,7 @@ class Calls implements CallSystemInterface
 			"type"=>"CALLS",
 			"data"=>Array(
 			    "type" => $type,
-			    "discussionKey" => $discussionKey,
+                "discussionkey" => $discussionKey,
             )
 		);
 		$this->pusher->push($datatopush, "discussion/".$discussionKey);

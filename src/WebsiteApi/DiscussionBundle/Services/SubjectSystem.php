@@ -118,7 +118,7 @@ class SubjectSystem
             $message->setSubject($subject);
             $this->doctrine->persist($message);
 
-            $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseTo"=>$message));
+            $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("responseto" => $message));
             foreach($messages as $mess){
             	$mess->setResponseTo(null);
                 $mess->setSubject($subject);

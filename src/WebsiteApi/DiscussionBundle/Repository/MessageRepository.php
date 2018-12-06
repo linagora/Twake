@@ -88,7 +88,7 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
         $qb->andWhere("m.streamreciever = :streamId")
             ->setParameter("streamId", $streamId);
 
-        $qb->andWhere("m.responseTo IS NULL");
+        $qb->andWhere("m.responseto IS NULL");
 
         if($subjectId){
             $qb->andWhere("m.subject = :subject")
@@ -120,7 +120,7 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
         $qb->andWhere("m.streamreciever = :streamId")
             ->setParameter("streamId", $streamId);
 
-        $qb->andWhere("m.responseTo IN (" . join(",", $headIds) . ")");
+        $qb->andWhere("m.responseto IN (" . join(",", $headIds) . ")");
 
         if ($subjectId) {
             $qb->andWhere("m.subject = :subject")

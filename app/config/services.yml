@@ -65,35 +65,6 @@ services:
         tags:
             - { name: gos_web_socket.topic }
 
-
-    connections.topic:
-        class: WebsiteApi\UsersBundle\Topic\ConnectionsTopic
-        tags:
-            - { name: gos_web_socket.topic }
-
-
-    #################################################################################
-    ###################### Event listener
-    #################################################################################
-
-    gos_web_socket_server.client_event.listener:
-      class: WebsiteApi\UsersBundle\Services\Connections
-      arguments:
-          - "@gos_web_socket.websocket.client_manipulator"
-          - "@app.twake_doctrine"
-          - "@app.pusher"
-          - "@app.callSystem"
-          #[REMOVE_ONPREMISE]
-          - "@admin.TwakeDailyConnection"
-          #[/REMOVE_ONPREMISE]
-      tags:
-          - { name: kernel.event_listener, event: 'gos_web_socket.client_connected', method: onClientConnect }
-          - { name: kernel.event_listener, event: 'gos_web_socket.client_disconnected', method: onClientDisconnect }
-          - { name: kernel.event_listener, event: 'gos_web_socket.client_error', method: onClientError }
-          - { name: kernel.event_listener, event: 'gos_web_socket.client_rejected', method: onClientRejected }
-          - { name: kernel.event_listener, event: 'gos_web_socket.server_launched', method: onServerStart }
-
-
     #################################################################################
     ###################### System
     #################################################################################

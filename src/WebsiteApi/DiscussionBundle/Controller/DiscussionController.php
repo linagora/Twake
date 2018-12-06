@@ -26,7 +26,7 @@ class DiscussionController extends Controller
                 $data["errors"][] = "missingargument";
             }
             else{
-                $offsetId = intval($request->request->get("offsetId"));
+                $offsetId = $request->request->get("offsetId");
                 $messages = $this->get("app.messages")->getMessages(
                     "s-" . $request->request->get("streamId"),
                     $offsetId,
@@ -55,8 +55,8 @@ class DiscussionController extends Controller
             $data['errors'][] = "notconnected";
         }
         else {
-            if($request->request->get("discussionKey")!=null){
-                $discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
+            if ($request->request->get("discussionkey") != null) {
+                $discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionkey"), $this->getUser());
                 if($discussionInfos["type"] == "S"){
                     $stream = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Stream")->find($discussionInfos["id"]);
                     if($stream != null){
@@ -196,7 +196,7 @@ class DiscussionController extends Controller
 			$data['errors'][] = "notconnected";
 		}
 		else {
-			$discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionKey"), $this->getUser());
+            $discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionkey"), $this->getUser());
 			$messages = $this->get("app.messages")->searchMessage($discussionInfos["id"],$request->request->get("content"),intval($request->request->get("from")),$request->request->get("dateStart"),$request->request->get("dateEnd"),null,$this->getUser());
             $retour = Array();
 			foreach ($messages as $message) {
@@ -214,12 +214,12 @@ class DiscussionController extends Controller
         );
         $securityContext = $this->get('security.authorization_checker');
 
-		$stream = $this->get("app.messages")->getStream($request->request->get("discussionKey"), $this->getUser()->getId());
+        $stream = $this->get("app.messages")->getStream($request->request->get("discussionkey"), $this->getUser()->getId());
         if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED') || !$this->get("app.messages")->isAllowed($stream, $this->getUser())) {
             $data['errors'][] = "notconnected";
         }
         else {
-            $messages = $this->get("app.messages")->searchDriveMessage($request->request->get("discussionKey"),$this->getUser());
+            $messages = $this->get("app.messages")->searchDriveMessage($request->request->get("discussionkey"), $this->getUser());
             $data["data"] = $messages;
 
         }
