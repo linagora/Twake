@@ -566,7 +566,7 @@ class User implements UserInterface
      */
     public function getUsername()
     {
-        return $this->username;
+        return $this->getusernameCanonical();
     }
 
     /**
@@ -590,7 +590,7 @@ class User implements UserInterface
      */
     public function getEmail()
     {
-        return $this->email;
+        return $this->getemailCanonical();
     }
 
     /**

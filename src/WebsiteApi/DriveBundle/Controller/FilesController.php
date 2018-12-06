@@ -269,6 +269,9 @@ class FilesController extends Controller
         $genArbo = false;
         $groupId = $request->request->get("groupId", 0);
         $parentId = $request->request->get("parentId", 0);
+        if ($parentId == "undefined") {
+            $parentId = 0;
+        }
         $state = $request->request->get("state", "");
         $offset = $request->request->get("offset", 0);
         $max = $request->request->get("max", 50);

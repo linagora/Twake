@@ -27,6 +27,7 @@ class Connections
 
 	public function onServerStart($event){
 
+        return;
 		$update = $this->doctrine->createQueryBuilder();
 		$update->update("TwakeUsersBundle:User","u");
 		$update->set("u.connections","0");
@@ -66,7 +67,8 @@ class Connections
 	public function onClientConnect(ClientEvent $event)
 	{
 
-		$conn = $event->getConnection();
+        return;
+        $conn = $event->getConnection();
 		$user = $this->clientManipulator->getClient($conn);
 
 
@@ -114,18 +116,24 @@ class Connections
 	 */
 	public function onClientDisconnect(ClientEvent $event)
 	{
-		$this->removeConnection($event);
+        return;
+        $this->removeConnection($event);
 	}
 	public function onClientError(ClientErrorEvent $event)
-	{
+    {
+        return;
+
         $this->removeConnection($event);
 	}
 	public function onClientRejected(ClientRejectedEvent $event)
-	{
-		$this->removeConnection($event);
+    {
+        return;
+
+        $this->removeConnection($event);
 	}
 
 	function removeConnection($event){
+        return;
 
 		$conn = $event->getConnection();
 		$user = $this->clientManipulator->getClient($conn);

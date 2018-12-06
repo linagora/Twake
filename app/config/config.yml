@@ -126,6 +126,7 @@ gos_web_socket:
     client:
         firewall: main #can be an array of firewalls
         session_handler: '@session.handler.twake'
+    shared_config: true
     periodic:
         - '@websocket.pdo.ping'
     pushers:

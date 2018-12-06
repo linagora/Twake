@@ -164,7 +164,7 @@ final class DriverManager
             $className = self::$_driverMap[$params['driver']];
         }
 
-        error_log($className);
+        error_log("DriverManager choose >>> " . $className);
 
         $driver = new $className();
 

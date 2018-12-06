@@ -953,7 +953,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $app = $fileOrDirectory->getDefaultWebApp();
 
         if($app){
-            $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("default_web_app" => $app, "group" => $fileOrDirectory->getGroup(), "isInTrash" => false));
+            $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("default_web_app" => $app, "group" => $fileOrDirectory->getGroup(), "isintrash" => false));
             if(count($files)==0){
                 $this->workspacesApps->disableApp($fileOrDirectory->getGroup(),$app->getId());
             }
