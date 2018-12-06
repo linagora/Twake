@@ -639,4 +639,138 @@ class MessageSystem implements MessagesSystemInterface
 
         return true;
     }
+
+    public function sendMessageUpdate($keyId, $event, $currentUser)
+    {
+
+        $canBroadcast = true;
+        $key = "s-" . $keyId;
+
+        //Verify user is logged in
+        if ($currentUser == null || is_string($currentUser)) {
+            return false; //Cancel operation
+        }
+
+        //Verify that this user is allowed to do this
+        $stream = $this->getStream($key, $currentUser->getId());
+        if ($stream && $this->isAllowed($stream, $currentUser)) {
+
+            //We can speak
+
+            //Ask for an initialization
+            $operation = $event['type'];
+            error_log("==>(1)" . json_encode($event));
+
+            if ($operation == "N") { // Send notification
+                if (isset($event["data"]["except"])) {
+                    $this->notifySendMessage(
+                        $stream["object"],
+                        $event["data"]["except"],
+                        $event["data"]["message_id"]);
+                }
+                $canBroadcast = false;
+            } else if ($operation == "RN") { //Read notifications
+                $this->readStream($stream["object"], $currentUser);
+                $canBroadcast = false;
+            } else if ($operation == "C") {
+
+                if (!isset($event["data"]["front_id"])) {
+                    $event["data"]["front_id"] = "";
+                }
+                if (!isset($event["data"]["responseTo"])) {
+                    $event["data"]["responseTo"] = "";
+                }
+
+                if (isset($event["data"]['fileId']) && $event["data"]['fileId'] != null) {
+                    $this->sendMessageWithFile($currentUser->getId(), $key, $event['data']['content'], $event["data"]['workspace'], $event["data"]['subject'], $event["data"]['fileId'], false);
+                } else {
+                    $this->sendMessage($currentUser->getId(), $key, false, null, false, $event['data']['content'], $event["data"]['workspace'], $event["data"]['subject'], null, false, $event["data"]["front_id"], $event["data"]['responseTo']);
+                }
+                $canBroadcast = false;
+
+
+            } else if ($operation == "E") {
+                $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->find($event["data"]["id"]);
+                if ($message != null && $message->getUserSender() == $currentUser) {
+                    $messageArray = $this->editMessage($event["data"]["id"], $event["data"]["content"], $currentUser);
+                    if ($messageArray) {
+                        $event["data"] = $messageArray;
+                    } else {
+                        $canBroadcast = false;
+                    }
+                }
+            } elseif ($operation == 'user_writing') { // is writing
+                $event["data"]["id"] = $currentUser->getId();
+            } elseif ($operation == 'P') { // pinned message
+                if (isset($event["data"]) && isset($event["data"]["id"]) && isset($event["data"]["pinned"])) {
+                    $messageArray = $this->pinMessage($event["data"]["id"], $event["data"]["pinned"], $currentUser);
+                    if ($messageArray) {
+                        $event["data"] = $messageArray;
+                    } else {
+                        $canBroadcast = false;
+                    }
+                }
+            } elseif ($operation == 'MM') { // move message in other
+                if (isset($event['data']) && isset($event['data']['idDrop']) && isset($event['data']['idDragged']) && $event['data']['idDragged'] != $event['data']['idDrop']) {
+                    $messageDropInfos = $this->moveMessageInMessage($event["data"]["idDrop"], $event["data"]["idDragged"], $currentUser);
+                    if ($messageDropInfos) {
+                        $event["data"] = $messageDropInfos;
+                    } else {
+                        $canBroadcast = false;
+                    }
+                } else {
+                    $canBroadcast = false;
+                }
+            } elseif ($operation == 'MS') { // move message in subject
+                if (isset($event['data']) && isset($event['data']['idDragged']) && isset($event['data']['idSubject'])) {
+                    $messageInfos = $this->moveMessageInSubject($event["data"]["idSubject"], $event["data"]["idDragged"], $currentUser);
+                    if ($messageInfos) {
+                        $event["data"] = $messageInfos;
+                    } else {
+                        $canBroadcast = false;
+                    }
+                } else {
+                    $canBroadcast = false;
+                }
+            } elseif ($operation == 'MMnot') { // remove message from message
+                if (isset($event['data']) && isset($event['data']['idDragged'])) {
+                    $messageInfos = $this->moveMessageOutMessage($event["data"]["idDragged"], $currentUser);
+                    if ($messageInfos) {
+                        $event["data"] = $messageInfos;
+                    } else {
+                        $canBroadcast = false;
+                    }
+                } else {
+                    $canBroadcast = false;
+                }
+            } elseif ($operation == 'D') { // delete message
+                if (isset($event['data']) && isset($event['data']['id'])) {
+                    $messageInfos = $this->deleteMessage($event["data"]["id"], $currentUser);
+                    if ($messageInfos) {
+                        $event["data"] = $messageInfos;
+                    } else {
+                        $canBroadcast = false;
+                    }
+                } else {
+                    $canBroadcast = false;
+                }
+            } else {
+                $canBroadcast = false;
+            }
+
+            if ($canBroadcast) {
+
+                $this->pusher->push($event, "discussion/" . $key);
+
+            } else {
+                error_log("no broadcast");
+            }
+
+            return true;
+
+        } else {
+            return false;
+        }
+
+    }
 }

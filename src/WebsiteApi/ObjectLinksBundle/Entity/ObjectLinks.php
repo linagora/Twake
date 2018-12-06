@@ -30,20 +30,20 @@ class ObjectLinks
     private $id;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(name="typea", type="string")
      */
     private $typea;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="ida", type="twake_timeuuid")
      */
     private $ida;
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(name="typeb", type="string")
      */
     private $typeb;
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(name="idb", type="twake_timeuuid")
      */
     private $idb;
 

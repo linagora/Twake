@@ -10,10 +10,18 @@ use Doctrine\ORM\Tools\Setup;
 class ManagerAdapter
 {
 
-    public function __construct($doctrine_manager)
+    public function __construct($doctrine_manager, $driver, $host, $port, $username, $password, $dbname)
     {
         $this->doctrine_manager = $doctrine_manager;
-        $this->database_configuration = Array();//$doctrine_manager->getConnection();
+        $this->database_configuration = Array(
+            "driver" => $driver,
+            "host" => $host,
+            "port" => $port,
+            "username" => $username,
+            "password" => $password,
+            "dbname" => $dbname
+        );
+        $this->dev_mode = true;
         $this->manager = null;
     }
 
@@ -24,17 +32,22 @@ class ManagerAdapter
             return $this->manager;
         }
 
-        $driver_type = "Mysql";
+        if ($this->database_configuration["driver"] == "pdo_mysql") {
+            $driver_type = "Mysql";
+        } else {
+            $driver_type = "Cassandra";
+        }
+
         $paths = array(__DIR__ . "/../../../");
-        $isDevMode = true;
+        $isDevMode = $this->dev_mode;
         $config = Setup::createAnnotationMetadataConfiguration($paths, $isDevMode, null, null, false);
         $conn = DriverManager::getConnection(Array(
-            'driver' => "pdo_mysql", //$this->database_configuration["driver"],
-            'host' => "mysql", //$this->database_configuration["host"],
-            'port' => "3306", //$this->database_configuration["port"],
-            'dbname' => "Twake", //$this->database_configuration["dbname"],
-            'user' => "root", //$this->database_configuration["user"],
-            'password' => "root", //$this->database_configuration["password"],
+            'driver' => $this->database_configuration["driver"],
+            'host' => $this->database_configuration["host"],
+            'port' => $this->database_configuration["port"],
+            'dbname' => $this->database_configuration["dbname"],
+            'user' => $this->database_configuration["username"],
+            'password' => $this->database_configuration["password"],
             'twake_types' => Array(
                 'twake_float' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'FloatType',
                 'twake_datetime' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'DateTimeType',

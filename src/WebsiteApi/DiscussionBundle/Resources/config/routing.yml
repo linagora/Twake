@@ -1,4 +1,8 @@
 #DiscussionController
+messages_message_update:
+    path:     /messageUpdate
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:sendMessageUpdate}
+
 messages_get_stream:
     path:     /getStream
     defaults: { _controller: TwakeDiscussionBundle:Discussion:getStream}

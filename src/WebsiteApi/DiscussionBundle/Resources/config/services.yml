@@ -29,7 +29,6 @@ services:
           class: WebsiteApi\DiscussionBundle\Topic\NotificationsCenterTopic
           tags:
               - { name: gos_web_socket.topic }
-          arguments: ["@app.streamSystem", "@gos_web_socket.websocket.client_manipulator", "@app.twake_doctrine"]
 
     discussionspace.topic:
           class: WebsiteApi\DiscussionBundle\Topic\DiscussionSpaceTopic

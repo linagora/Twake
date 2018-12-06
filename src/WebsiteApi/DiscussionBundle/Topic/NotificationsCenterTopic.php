@@ -17,16 +17,9 @@ class NotificationsCenterTopic implements TopicInterface, PushableTopicInterface
 		return 'discussion.notifications.topic';
 	}
 
-	private $streamService;
-	private $clientManipulator;
-	private $doctrine;
-
-	public function __construct($streamService, $clientManipulator, $doctrine)
-	{
-		$this->streamService = $streamService;
-		$this->clientManipulator = $clientManipulator;
-		$this->doctrine = $doctrine;
-	}
+    public function __construct()
+    {
+    }
 
 
 	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)

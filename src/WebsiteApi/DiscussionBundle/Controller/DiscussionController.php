@@ -413,4 +413,25 @@ class DiscussionController extends Controller
 
         return new JsonResponse($data);
     }
+
+    public function sendMessageUpdateAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
+
+        $event = $request->request->get("event", 0);
+        $keyId = "s-" . $request->request->get("key_id", 0);
+
+        $res = $this->get("app.messages")->sendMessageUpdate($keyId, $event, $this->getUser());
+
+        if (!$res)
+            $data["errors"][] = "error";
+        else
+            $data["data"] = "success";
+
+        return new JsonResponse($data);
+    }
+
 }
