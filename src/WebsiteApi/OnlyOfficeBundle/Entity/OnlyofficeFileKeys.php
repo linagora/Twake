@@ -3,7 +3,7 @@
 namespace WebsiteApi\OnlyOfficeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
@@ -38,7 +38,7 @@ class OnlyofficeFileKeys
     private $key;
 
     /**
-     * @ORM\Column(name="name", type="text")
+     * @ORM\Column(name="name", type="twake_text")
      * @Encrypted
      */
     private $name;

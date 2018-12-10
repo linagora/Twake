@@ -2,7 +2,7 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * WorkspaceLevel
@@ -23,7 +23,7 @@ class WorkspaceLevel
 	protected $id;
 
 	/**
-     * @ORM\Column(name="label", type="text")
+     * @ORM\Column(name="label", type="twake_text")
      * @Encrypted
 	 */
 	protected $label;

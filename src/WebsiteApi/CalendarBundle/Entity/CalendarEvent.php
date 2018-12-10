@@ -4,7 +4,7 @@ namespace WebsiteApi\CalendarBundle\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
@@ -48,12 +48,12 @@ class CalendarEvent implements ObjectLinksInterface {
     private $to;
 
     /**
-     * @ORM\Column(name="event_json", type="text")
+     * @ORM\Column(name="event_json", type="twake_text")
      */
     private $event;
 
     /**
-     * @ORM\Column(name="participant", type="text")
+     * @ORM\Column(name="participant", type="twake_text")
      */
     private $participants;
 
@@ -64,7 +64,7 @@ class CalendarEvent implements ObjectLinksInterface {
     private $workspace;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      */
     private $object_link_cache;
 

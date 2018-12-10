@@ -10,7 +10,7 @@ namespace WebsiteApi\ObjectLinksBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Class ObjectLinks
@@ -48,7 +48,7 @@ class ObjectLinks
     private $idb;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      */
     private $fieldstosynchronised;
 

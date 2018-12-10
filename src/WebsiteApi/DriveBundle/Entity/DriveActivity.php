@@ -4,7 +4,7 @@ namespace WebsiteApi\DriveBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Created by PhpStorm.
@@ -47,12 +47,12 @@ class DriveActivity
     private $user;
 
     /**
-     * @ORM\Column(type="text", length=64, nullable=true)
+     * @ORM\Column(type="twake_text", length=64, nullable=true)
      */
     private $title;
 
     /**
-     * @ORM\Column(type="text", length=512, nullable=true)
+     * @ORM\Column(type="twake_text", length=512, nullable=true)
      */
     private $text;
 
@@ -62,7 +62,7 @@ class DriveActivity
     private $date;
 
     /**
-     * @ORM\Column(type="text", length=1024, nullable=true)
+     * @ORM\Column(type="twake_text", length=1024, nullable=true)
      */
     private $data;
 

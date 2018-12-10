@@ -11,7 +11,7 @@ namespace WebsiteApi\PaymentsBundle\Entity;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\UsersBundle\Entity\User;
 
@@ -60,12 +60,12 @@ class Receipt
     private $grouppricinginstance;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      */
     private $groupperiods;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      */
     private $discount;
 

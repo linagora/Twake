@@ -3,7 +3,7 @@
 namespace WebsiteApi\DiscussionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
@@ -35,7 +35,7 @@ class Call implements ObjectLinksInterface
     private $token;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      */
     private $object_link_cache;
 

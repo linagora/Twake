@@ -18,6 +18,7 @@ parameters:
     database_dbname: Twake
     database_user: root
     database_password: root
+    database_encrypt_key: c9a17eab88ab63bb3e90c027196a89776651a7c06651a7c0
     mailer_transport: smtp
     mailer_host: -
     mailer_username: -

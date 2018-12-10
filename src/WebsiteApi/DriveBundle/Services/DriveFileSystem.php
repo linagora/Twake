@@ -317,7 +317,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
-        $shared = $driveRepository->findBy(Array("copyOf" => $directory));
+        $shared = $driveRepository->findBy(Array("copyof" => $directory));
 
         return $shared;
 
@@ -332,7 +332,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
-        $res = $driveRepository->findOneBy(Array("id" => $fileId, "group" => $groupId, "copyOf" => null));
+        $res = $driveRepository->findOneBy(Array("id" => $fileId, "group" => $groupId, "copyof" => null));
 
         return isset($res);
 
@@ -353,7 +353,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         }
 
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
-        $copy = $driveRepository->findOneBy(Array("group" => $group, "copyOf" => $directory));
+        $copy = $driveRepository->findOneBy(Array("group" => $group, "copyof" => $directory));
         if ($copy) {
             return false; //already shared
         }
@@ -397,19 +397,19 @@ class DriveFileSystem implements DriveFileSystemInterface
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
 
         if ($removeAll) {
-            $copies = $driveRepository->findBy(Array("copyOf" => $directory));
+            $copies = $driveRepository->findBy(Array("copyof" => $directory));
             foreach ($copies as $copy) {
                 $this->doctrine->remove($copy);
             }
             $fileOrDirectory->setShared(false);
         } else {
             //Set unshared if last
-            $copies = $driveRepository->findBy(Array("copyOf" => $directory));
+            $copies = $driveRepository->findBy(Array("copyof" => $directory));
             if (count($copies) == 1) {
                 $fileOrDirectory->setShared(false);
             }
 
-            $copy = $driveRepository->findOneBy(Array("group" => $targetgroupId, "copyOf" => $directory));
+            $copy = $driveRepository->findOneBy(Array("group" => $targetgroupId, "copyof" => $directory));
             if ($copy == null) {
                 return false;
             }
@@ -995,7 +995,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             $this->deleteFile($fileOrDirectory);
 
         } else {
-            $copies = $driveRepository->findBy(Array("copyOf" => $fileOrDirectory));
+            $copies = $driveRepository->findBy(Array("copyof" => $fileOrDirectory));
             foreach ($copies as $copy) {
                 $this->doctrine->remove($copy);
             }
@@ -1583,7 +1583,7 @@ class DriveFileSystem implements DriveFileSystemInterface
             if ($dir->getShared()) {
 
                 //to me
-                $directoryaccess = $driveRepository->findOneBy(Array("group" => $workspace, "copyOf" => $dir));
+                $directoryaccess = $driveRepository->findOneBy(Array("group" => $workspace, "copyof" => $dir));
                 if ($directoryaccess) {
                     return true;
                 }

@@ -3,7 +3,7 @@
 namespace WebsiteApi\ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Task
@@ -25,7 +25,7 @@ class Board {
     private $id;
 
     /**
-     * @ORM\Column(name="title", type="text", nullable=true)
+     * @ORM\Column(name="title", type="twake_text", nullable=true)
      * @Encrypted
      */
     private $title;
@@ -36,19 +36,19 @@ class Board {
     private $workspacesnumber = 1;
 
     /**
-     * @ORM\Column(name="auto_participate_list", type="text", nullable=false)
+     * @ORM\Column(name="auto_participate_list", type="twake_text", nullable=false)
      * @Encrypted
      */
     private $autoparticipantlist;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
      */
     private $description;
 
     /**
-     * @ORM\Column(name="participant", type="text")
+     * @ORM\Column(name="participant", type="twake_text")
      * @Encrypted
      */
     private $participants;

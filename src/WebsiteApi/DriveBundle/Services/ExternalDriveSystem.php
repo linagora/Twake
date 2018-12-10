@@ -47,7 +47,7 @@ class ExternalDriveSystem
 
     public function getTokenFromFileId($fileId){
         $externalDriveRepository = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive");
-        $externalDrive = $externalDriveRepository->findOneBy(Array("fileId" => $fileId));
+        $externalDrive = $externalDriveRepository->findOneBy(Array("fileid" => $fileId));
 
         if(!$externalDrive)
             return false;
@@ -57,7 +57,7 @@ class ExternalDriveSystem
 
     public function isAValideRootDirectory($directory){
         $externalDriveRepository = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive");
-        $externalDrive = $externalDriveRepository->findOneBy(Array("fileId" => $directory));
+        $externalDrive = $externalDriveRepository->findOneBy(Array("fileid" => $directory));
         return $externalDrive;
     }
 
@@ -104,7 +104,7 @@ class ExternalDriveSystem
 
         var_dump($this->gdriveApi->getHaveAccessTo($fileId,$token));
         if($this->gdriveApi->getHaveAccessTo($fileId,$token))
-            $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findBy(Array("fileId" => $fileId));
+            $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findBy(Array("fileid" => $fileId));
         else
             $externalDrive = true;
 

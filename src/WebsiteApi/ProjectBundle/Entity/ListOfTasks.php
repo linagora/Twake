@@ -9,7 +9,7 @@
 namespace WebsiteApi\ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * ListOfTasks
@@ -40,7 +40,7 @@ class ListOfTasks
     private $order = 0;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
      */
     private $title;
@@ -51,7 +51,7 @@ class ListOfTasks
     private $color;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
      */
     private $useridtonotify;

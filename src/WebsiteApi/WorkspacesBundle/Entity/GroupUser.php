@@ -3,7 +3,7 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 
 
@@ -30,7 +30,7 @@ class GroupUser
 	protected $id;
 
     /**
-     * @ORM\Column(type="text", options={"index": true})
+     * @ORM\Column(type="twake_text", options={"index": true})
      */
     protected $user_group_id;
 

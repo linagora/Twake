@@ -3,7 +3,7 @@
 namespace WebsiteApi\CalendarBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * linkCalendarWorkspace

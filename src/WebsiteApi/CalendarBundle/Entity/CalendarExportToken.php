@@ -3,7 +3,7 @@
 namespace WebsiteApi\CalendarBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Event
@@ -52,7 +52,8 @@ class CalendarExportToken {
     private $user_id;
 
     /**
-     * @ORM\Column(type="string", length=10)
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
      */
     private $calendarsids;
 

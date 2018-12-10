@@ -19,7 +19,7 @@ class UsersToNotifyController extends Controller
     {
         //TODO : check auth
 
-        $drivefileId = $request->request->get("drivefileId", 0);
+        $drivefileId = $request->request->get("driveFileId", 0);
 
         $data = Array(
             "errors" => Array(),
@@ -54,7 +54,7 @@ class UsersToNotifyController extends Controller
 
         //TODO : check auth
 
-        $drivefileId = $request->request->get("drivefileId", 0);
+        $drivefileId = $request->request->get("driveFileId", 0);
         $rootDirectory = $request->request->get("directory", false);
         $usersList = $request->request->get("usersList", 0);
 

@@ -3,7 +3,7 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 
 
@@ -28,13 +28,13 @@ class Workspace
     private $id;
 
 	/**
-     * @ORM\Column(name="name", type="text", nullable=true)
+     * @ORM\Column(name="name", type="twake_text", nullable=true)
      * @Encrypted
 	 */
 	private $name;
 
     /**
-     * @ORM\Column(name="uniquename", type="text", nullable=true)
+     * @ORM\Column(name="uniquename", type="twake_text", nullable=true)
      * @Encrypted
      */
     private $uniquename;

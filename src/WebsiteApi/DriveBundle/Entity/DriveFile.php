@@ -3,7 +3,7 @@
 namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
@@ -45,7 +45,7 @@ class DriveFile implements ObjectLinksInterface
     private $public_access_key = "";
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
      */
     private $name;
@@ -56,7 +56,7 @@ class DriveFile implements ObjectLinksInterface
     private $extension;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
      */
     private $description;
@@ -104,7 +104,7 @@ class DriveFile implements ObjectLinksInterface
     private $size;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
      */
     private $cache;
@@ -130,7 +130,7 @@ class DriveFile implements ObjectLinksInterface
     private $shared = false;
 
     /**
-     * @ORM\Column(type="text", nullable = true)
+     * @ORM\Column(type="twake_text", nullable = true)
      * @Encrypted
      */
     private $url;
@@ -147,13 +147,13 @@ class DriveFile implements ObjectLinksInterface
     private $default_web_app;
 
     /**
-     * @ORM\Column(type="text", nullable = true)
+     * @ORM\Column(type="twake_text", nullable = true)
      * @Encrypted
      */
     private $aws_preview_link = "";
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      * @Encrypted
      */
     private $object_link_cache;

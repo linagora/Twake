@@ -3,7 +3,7 @@
 namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
@@ -31,13 +31,13 @@ class DriveSmartFolder
 	private $group;
 
 	/**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
 	 */
 	private $name;
 
 	/**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
 	 */
 	private $labels;

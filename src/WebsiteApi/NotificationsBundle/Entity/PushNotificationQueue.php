@@ -3,7 +3,7 @@
 namespace WebsiteApi\NotificationsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Mail
@@ -24,7 +24,7 @@ class PushNotificationQueue
 	private $id;
 
 	/**
-     * @ORM\Column(type="text",  nullable=true)
+     * @ORM\Column(type="twake_text",  nullable=true)
      * @Encrypted
 	 */
 	private $text;

@@ -4,7 +4,7 @@ namespace WebsiteApi\ProjectBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Created by PhpStorm.
@@ -47,13 +47,13 @@ class BoardActivity
     private $user;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      * @Encrypted
      */
     private $title;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      * @Encrypted
      */
     private $text;
@@ -64,7 +64,7 @@ class BoardActivity
     private $date;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      * @Encrypted
      */
     private $data;

@@ -3,7 +3,7 @@
 namespace WebsiteApi\UsersBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Mail
@@ -46,7 +46,7 @@ class Device
     /**
      * @var string
      *
-     * @ORM\Column(name="value", type="text", nullable=true)
+     * @ORM\Column(name="value", type="twake_text", nullable=true)
      * @Encrypted
      */
     private $value = "";

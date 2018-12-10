@@ -3,7 +3,7 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 
 
@@ -32,7 +32,7 @@ class Group
 	protected $name;
 
 	/**
-     * @ORM\Column(name="display_name", type="text")
+     * @ORM\Column(name="display_name", type="twake_text")
      * @Encrypted
 	 */
     protected $displayname;
@@ -68,7 +68,7 @@ class Group
 	private $date_added;
 
     /**
-     * @ORM\Column(name="on_creation_data", type="text")
+     * @ORM\Column(name="on_creation_data", type="twake_text")
      * @Encrypted
      */
     protected $on_creation_data = "{}";

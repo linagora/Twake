@@ -4,7 +4,7 @@
 namespace WebsiteApi\MarketBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 /**
@@ -54,7 +54,7 @@ class Application
     private $cancreatefile; //Will be visible in the list of new files in Drive
 
 	/**
-     * @ORM\Column(name="createfiledata", type="text")
+     * @ORM\Column(name="createfiledata", type="twake_text")
      * @Encrypted
 	 */
     private $createfiledata = "{}"; //Will be visible in the list of new files in Drive
@@ -66,13 +66,13 @@ class Application
 
 
 	/**
-     * @ORM\Column(name="short_description", type="text")
+     * @ORM\Column(name="short_description", type="twake_text")
      * @Encrypted
 	 */
     private $shortdescription = "";
 
 	/**
-     * @ORM\Column(name="description", type="text")
+     * @ORM\Column(name="description", type="twake_text")
      * @Encrypted
 	 */
 	private $description = "";
@@ -118,7 +118,7 @@ class Application
     protected $cover = "";
 
 	/**
-     * @ORM\Column(name="screenshot", type="text")
+     * @ORM\Column(name="screenshot", type="twake_text")
      * @Encrypted
 	 */
 	protected $screenshot = "[]";
@@ -129,7 +129,7 @@ class Application
     protected $messagemodule;
 
     /**
-     * @ORM\Column(name="message_module_url", type="text")
+     * @ORM\Column(name="message_module_url", type="twake_text")
      * @Encrypted
      */
     private $messagemoduleurl = "";
@@ -145,7 +145,7 @@ class Application
 	protected $date;
 
 	/**
-     * @ORM\Column(name="privatekey", type="text")
+     * @ORM\Column(name="privatekey", type="twake_text")
      * @Encrypted
 	 */
     protected $privatekey;
@@ -161,19 +161,19 @@ class Application
     protected $enabled = 0;
 
 	/**
-     * @ORM\Column(name="filestypes", type="text" )
+     * @ORM\Column(name="filestypes", type="twake_text" )
      * @Encrypted
 	 */
     protected $filestypes;
 
 	/**
-     * @ORM\Column(name="userrights", type="text" )
+     * @ORM\Column(name="userrights", type="twake_text" )
      * @Encrypted
 	 */
     protected $userrights;
 
 	/**
-     * @ORM\Column(name="applicationrights",type="text")
+     * @ORM\Column(name="applicationrights",type="twake_text")
      * @Encrypted
 	 */
     protected $applicationrights;
@@ -184,7 +184,7 @@ class Application
     private $installcount = 0;
 
     /**
-     * @ORM\Column(name="cgu", type="text")
+     * @ORM\Column(name="cgu", type="twake_text")
      * @Encrypted
      */
     private $cgu = "";

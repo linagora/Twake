@@ -4,7 +4,7 @@ namespace WebsiteApi\CalendarBundle\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Event
@@ -26,7 +26,7 @@ class Calendar {
     private $id;
 
     /**
-     * @ORM\Column(name="title", type="text", nullable=true)
+     * @ORM\Column(name="title", type="twake_text", nullable=true)
      * @Encrypted
      */
     private $title;
@@ -48,7 +48,7 @@ class Calendar {
 
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      * @Encrypted
      */
     private $icslink;

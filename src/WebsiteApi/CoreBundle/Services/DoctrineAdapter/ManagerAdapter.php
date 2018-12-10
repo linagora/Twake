@@ -2,15 +2,17 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter;
 
+use Reprovinci\DoctrineEncrypt\Subscribers\DoctrineEncryptSubscriber;
 use WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\DriverManager;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Tools\Setup;
+use Doctrine\DBAL\Types\Type;
 
 class ManagerAdapter
 {
 
-    public function __construct($doctrine_manager, $driver, $host, $port, $username, $password, $dbname)
+    public function __construct($doctrine_manager, $driver, $host, $port, $username, $password, $dbname, $encryption_key)
     {
         $this->doctrine_manager = $doctrine_manager;
         $this->database_configuration = Array(
@@ -19,9 +21,10 @@ class ManagerAdapter
             "port" => $port,
             "username" => $username,
             "password" => $password,
-            "dbname" => $dbname
+            "dbname" => $dbname,
+            "encryption_key" => $encryption_key
         );
-        $this->dev_mode = true;
+        $this->dev_mode = true; // If false no entity generation
         $this->manager = null;
     }
 
@@ -52,11 +55,23 @@ class ManagerAdapter
                 'twake_float' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'FloatType',
                 'twake_datetime' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'DateTimeType',
                 'twake_timeuuid' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'TimeUUIDType',
-                'twake_boolean' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'BooleanType'
+                'twake_boolean' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'BooleanType',
+                'twake_text' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'TextType'
             )
         ), $config);
 
+        $encryptedStringType = Type::getType('twake_text');
+        $encryptedStringType->setEncryptionKey(pack("H*", $this->database_configuration["encryption_key"]));
+
         $entityManager = EntityManager::create($conn, $config);
+
+        //Database encryption
+        /*$encrypt_subscriber = new TwakeDoctrineEncryptSubscriber(
+            new \Doctrine\Common\Annotations\AnnotationReader,
+            new TwakeEncryptor(pack("H*", $this->database_configuration["encryption_key"]))
+        );
+        $eventManager = $entityManager->getEventManager();
+        $eventManager->addEventSubscriber($encrypt_subscriber);*/
 
         $this->manager = $entityManager;
         return $this->manager;

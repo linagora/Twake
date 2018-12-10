@@ -107,7 +107,7 @@ class DefaultController extends Controller
             if ($fileKey != null) {
 
                 /** @var OnlyofficeFile $file */
-                $file = $repo->findOneBy(Array("fileId" => $fileKey->getFileId(), "token" => $fToken));
+                $file = $repo->findOneBy(Array("fileid" => $fileKey->getFileId(), "token" => $fToken));
 
                 if ($file != null) {
 
@@ -173,7 +173,7 @@ class DefaultController extends Controller
 
 
             $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFileKeys");
-            $fileKey = $repo->findOneBy(Array("fileId" => $fId));
+            $fileKey = $repo->findOneBy(Array("fileid" => $fId));
 
             if (!$fileKey) {
                 $fileKey = new OnlyofficeFileKeys($workspaceId, $fId);
@@ -205,7 +205,7 @@ class DefaultController extends Controller
         $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFile");
 
         /** @var OnlyofficeFile $file */
-        $file = $repo->findOneBy(Array("fileId" => $fId, "token" => $fToken));
+        $file = $repo->findOneBy(Array("fileid" => $fId, "token" => $fToken));
 
         if ($file != null) {
 

@@ -3,7 +3,7 @@
 namespace Administration\AuthenticationBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Errors
@@ -39,12 +39,12 @@ class Errors
 	private $number;
 
 	/**
-     * @ORM\Column(name="file", type="text", length=500)
+     * @ORM\Column(name="file", type="twake_text", length=500)
 	 */
 	private $file;
 
 	/**
-     * @ORM\Column(name="data", type="text")
+     * @ORM\Column(name="data", type="twake_text")
 	 */
 	private $data;
 

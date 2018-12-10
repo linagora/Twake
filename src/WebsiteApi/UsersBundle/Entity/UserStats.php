@@ -6,7 +6,7 @@ use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Component\Security\Core\User\UserInterface;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use FOS\UserBundle\Model\User as BaseUser;
 use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceParent;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;

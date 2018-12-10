@@ -3,7 +3,7 @@
 namespace WebsiteApi\DiscussionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
@@ -29,7 +29,7 @@ class Subject implements ObjectLinksInterface
     private $stream;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
      */
     private $name;
@@ -63,13 +63,13 @@ class Subject implements ObjectLinksInterface
     private $firstmessage;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
      */
     private $description;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      * @Encrypted
      */
     private $object_link_cache;

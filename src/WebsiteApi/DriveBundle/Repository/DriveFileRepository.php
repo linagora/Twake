@@ -100,7 +100,7 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
     public function shared($workspace)
     {
         $criteria = Criteria::create();
-        $criteria->where(Criteria::expr()->neq('copyOf', null));
+        $criteria->where(Criteria::expr()->neq('copyof', null));
         $criteria->orWhere(Criteria::expr()->eq('shared', true));
         $criteria->andWhere(Criteria::expr()->eq('group', $workspace));
         return  $this->matching( $criteria);

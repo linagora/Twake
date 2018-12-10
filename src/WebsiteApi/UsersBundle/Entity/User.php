@@ -6,7 +6,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceParent;
 use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * User
@@ -43,13 +43,13 @@ class User implements UserInterface
     protected $isrobot;
 
 	/**
-     * @ORM\Column(name="first_name", type="text")
+     * @ORM\Column(name="first_name", type="twake_text")
      * @Encrypted
 	 */
     protected $firstname = "";
 
 	/**
-     * @ORM\Column(name="last_name", type="text")
+     * @ORM\Column(name="last_name", type="twake_text")
      * @Encrypted
 	 */
     protected $lastname = "";
@@ -94,13 +94,13 @@ class User implements UserInterface
 	protected $language = "en";
 
     /**
-     * @ORM\Column(name="notification_preference", type="text")
+     * @ORM\Column(name="notification_preference", type="twake_text")
      * @Encrypted
      */
     protected $notification_preference = "{}";
 
     /**
-     * @ORM\Column(name="phone", type="text")
+     * @ORM\Column(name="phone", type="twake_text")
      * @Encrypted
      */
     protected $phone = "";

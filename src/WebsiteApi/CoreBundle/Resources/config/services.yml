@@ -14,7 +14,7 @@ services:
 
     app.twake_doctrine:
         class: WebsiteApi\CoreBundle\Services\DoctrineAdapter\ManagerAdapter
-        arguments: ["@doctrine.orm.entity_manager", "%database_driver%", "%database_host%", "%database_port%", "%database_user%", "%database_password%", "%database_dbname%"]
+        arguments: ["@doctrine.orm.entity_manager", "%database_driver%", "%database_host%", "%database_port%", "%database_user%", "%database_password%", "%database_dbname%", "%database_encrypt_key%"]
 
     websocket.pdo.ping:
         class: WebsiteApi\CoreBundle\Services\PDOPinger

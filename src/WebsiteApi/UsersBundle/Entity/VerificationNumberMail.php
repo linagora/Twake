@@ -3,7 +3,7 @@
 namespace WebsiteApi\UsersBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Mail
@@ -26,7 +26,7 @@ class VerificationNumberMail
 	/**
 	 * @var string
 	 *
-     * @ORM\Column(name="mail", type="text")
+     * @ORM\Column(name="mail", type="twake_text")
      * @Encrypted
 	 */
 	private $mail;
@@ -34,7 +34,7 @@ class VerificationNumberMail
 	/**
 	 * @var string
 	 *
-     * @ORM\Column(name="hash_code", type="text")
+     * @ORM\Column(name="hash_code", type="twake_text")
      * @Encrypted
 	 */
     private $hashcode;
@@ -60,7 +60,7 @@ class VerificationNumberMail
 
 
 	/**
-     * @ORM\Column(name="clean_code", type="text")
+     * @ORM\Column(name="clean_code", type="twake_text")
      * @Encrypted
 	 */
 	private $clean_code;

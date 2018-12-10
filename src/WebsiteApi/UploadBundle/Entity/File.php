@@ -3,7 +3,7 @@
 namespace WebsiteApi\UploadBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * File
@@ -75,7 +75,7 @@ class File
 
     /**
      *
-     * @ORM\Column(name="aws_public_link", type="text")
+     * @ORM\Column(name="aws_public_link", type="twake_text")
      * @Encrypted
      */
     private $aws_public_link = false;

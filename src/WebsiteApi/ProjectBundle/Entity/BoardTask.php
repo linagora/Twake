@@ -3,7 +3,7 @@
 namespace WebsiteApi\ProjectBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
@@ -36,7 +36,8 @@ class BoardTask implements ObjectLinksInterface {
     private $weight;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
      */
     private $checklist = "[]";
 
@@ -86,49 +87,50 @@ class BoardTask implements ObjectLinksInterface {
     private $to;
 
     /**
-     * @ORM\Column( type="text")
+     * @ORM\Column( type="twake_text")
      * @Encrypted
      */
     private $useridtonotify;
 
 
     /**
-     * @ORM\Column( type="text")
+     * @ORM\Column( type="twake_text")
      * @Encrypted
      */
     private $labels;
 
     /**
-     * @ORM\Column( type="text")
+     * @ORM\Column( type="twake_text")
      * @Encrypted
      */
     private $participants;
 
     /**
-     * @ORM\Column( type="text")
+     * @ORM\Column( type="twake_text")
      * @Encrypted
      */
     private $userwholiked;
 
     /**
-     * @ORM\Column( type="text")
+     * @ORM\Column( type="twake_text")
      * @Encrypted
      */
     private $userwhodisliked;
 
     /**
-     * @ORM\Column(type="string", length=264)
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
      */
     private $name;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
      */
     private $description;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      * @Encrypted
      */
     private $object_link_cache;

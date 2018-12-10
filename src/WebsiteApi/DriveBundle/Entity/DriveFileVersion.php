@@ -3,7 +3,7 @@
 namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ambta\DoctrineEncryptBundle\Configuration\Encrypted;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\UsersBundle\Entity\User;
 
@@ -36,19 +36,19 @@ class DriveFileVersion
     private $user;
 
 	/**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
 	 */
     private $realname;
 
 	/**
-     * @ORM\Column(name="aes_key", type="text")
+     * @ORM\Column(name="aes_key", type="twake_text")
      * @Encrypted
 	 */
 	private $key;
 
 	/**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
 	 */
 	private $mode = "OpenSSL-2";
@@ -64,7 +64,7 @@ class DriveFileVersion
 	private $date_added;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      * @Encrypted
      */
     private $filename;
