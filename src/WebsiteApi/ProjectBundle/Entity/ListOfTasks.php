@@ -40,7 +40,8 @@ class ListOfTasks
     private $order = 0;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $title;
 
@@ -51,6 +52,7 @@ class ListOfTasks
 
     /**
      * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $useridtonotify;
 

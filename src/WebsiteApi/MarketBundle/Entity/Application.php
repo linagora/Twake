@@ -55,6 +55,7 @@ class Application
 
 	/**
      * @ORM\Column(name="createfiledata", type="text")
+     * @Encrypted
 	 */
     private $createfiledata = "{}"; //Will be visible in the list of new files in Drive
 
@@ -66,11 +67,13 @@ class Application
 
 	/**
      * @ORM\Column(name="short_description", type="text")
+     * @Encrypted
 	 */
     private $shortdescription = "";
 
 	/**
      * @ORM\Column(name="description", type="text")
+     * @Encrypted
 	 */
 	private $description = "";
 
@@ -116,6 +119,7 @@ class Application
 
 	/**
      * @ORM\Column(name="screenshot", type="text")
+     * @Encrypted
 	 */
 	protected $screenshot = "[]";
 
@@ -126,6 +130,7 @@ class Application
 
     /**
      * @ORM\Column(name="message_module_url", type="text")
+     * @Encrypted
      */
     private $messagemoduleurl = "";
 
@@ -141,6 +146,7 @@ class Application
 
 	/**
      * @ORM\Column(name="privatekey", type="text")
+     * @Encrypted
 	 */
     protected $privatekey;
 
@@ -156,16 +162,19 @@ class Application
 
 	/**
      * @ORM\Column(name="filestypes", type="text" )
+     * @Encrypted
 	 */
     protected $filestypes;
 
 	/**
      * @ORM\Column(name="userrights", type="text" )
+     * @Encrypted
 	 */
     protected $userrights;
 
 	/**
      * @ORM\Column(name="applicationrights",type="text")
+     * @Encrypted
 	 */
     protected $applicationrights;
 
@@ -176,6 +185,7 @@ class Application
 
     /**
      * @ORM\Column(name="cgu", type="text")
+     * @Encrypted
      */
     private $cgu = "";
 

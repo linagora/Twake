@@ -75,7 +75,8 @@ class File
 
     /**
      *
-     * @ORM\Column(name="aws_public_link", type="string", length=1024)
+     * @ORM\Column(name="aws_public_link", type="text")
+     * @Encrypted
      */
     private $aws_public_link = false;
 

@@ -45,7 +45,8 @@ class DriveFile implements ObjectLinksInterface
     private $public_access_key = "";
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $name;
 
@@ -55,7 +56,8 @@ class DriveFile implements ObjectLinksInterface
     private $extension;
 
     /**
-     * @ORM\Column(type="string", length=2048)
+     * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $description;
 
@@ -102,7 +104,8 @@ class DriveFile implements ObjectLinksInterface
     private $size;
 
     /**
-     * @ORM\Column(type="string", length=2048)
+     * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $cache;
 
@@ -127,7 +130,8 @@ class DriveFile implements ObjectLinksInterface
     private $shared = false;
 
     /**
-     * @ORM\Column(type="string", length=2048, nullable = true)
+     * @ORM\Column(type="text", nullable = true)
+     * @Encrypted
      */
     private $url;
 
@@ -143,12 +147,14 @@ class DriveFile implements ObjectLinksInterface
     private $default_web_app;
 
     /**
-     * @ORM\Column(type="string", length=2048, nullable = true)
+     * @ORM\Column(type="text", nullable = true)
+     * @Encrypted
      */
     private $aws_preview_link = "";
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Encrypted
      */
     private $object_link_cache;
 

@@ -71,16 +71,19 @@ class Message
 
     /**
      * @ORM\Column(type="text", length=30000)
+     * @Encrypted
      */
     private $htmlcontent = "";
 
 	/**
-     * @ORM\Column(type="text", length=20000)
+     * @ORM\Column(type="text")
+     * @Encrypted
 	 */
 	private $content;
 
 	/**
-     * @ORM\Column(type="text", length=10000)
+     * @ORM\Column(type="text")
+     * @Encrypted
 	 */
     private $cleancontent;
 
@@ -114,6 +117,7 @@ class Message
 
     /**
      * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $applicationdata = "{}";
 

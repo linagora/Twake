@@ -38,12 +38,14 @@ class Stream
     private $workspace;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $name;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $description = "";
 

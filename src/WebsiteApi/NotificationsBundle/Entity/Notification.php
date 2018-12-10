@@ -39,22 +39,26 @@ class Notification
 	private $user;
 
 	/**
-     * @ORM\Column(type="text", length=64, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
+     * @Encrypted
 	 */
 	private $code;
 
 	/**
-     * @ORM\Column(type="text", length=64,  nullable=true)
+     * @ORM\Column(type="text",  nullable=true)
+     * @Encrypted
 	 */
 	private $title;
 
 	/**
-     * @ORM\Column(type="text", length=512,  nullable=true)
+     * @ORM\Column(type="text",  nullable=true)
+     * @Encrypted
 	 */
 	private $text;
 
     /**
-     * @ORM\Column(type="text", length=1024)
+     * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $data = "{}";
 

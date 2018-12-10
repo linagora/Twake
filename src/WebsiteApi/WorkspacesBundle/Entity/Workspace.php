@@ -28,12 +28,14 @@ class Workspace
     private $id;
 
 	/**
-     * @ORM\Column(name="name", type="string", length=50, nullable=true)
+     * @ORM\Column(name="name", type="text", nullable=true)
+     * @Encrypted
 	 */
 	private $name;
 
     /**
-     * @ORM\Column(name="uniquename", type="string", length=50, nullable=true)
+     * @ORM\Column(name="uniquename", type="text", nullable=true)
+     * @Encrypted
      */
     private $uniquename;
 

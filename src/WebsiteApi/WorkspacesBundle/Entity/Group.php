@@ -32,7 +32,8 @@ class Group
 	protected $name;
 
 	/**
-     * @ORM\Column(name="display_name", type="string", length=255)
+     * @ORM\Column(name="display_name", type="text")
+     * @Encrypted
 	 */
     protected $displayname;
 
@@ -67,7 +68,8 @@ class Group
 	private $date_added;
 
     /**
-     * @ORM\Column(name="on_creation_data", type="string", length=1000)
+     * @ORM\Column(name="on_creation_data", type="text")
+     * @Encrypted
      */
     protected $on_creation_data = "{}";
 

@@ -25,7 +25,8 @@ class Board {
     private $id;
 
     /**
-     * @ORM\Column(name="title", type="string", nullable=true)
+     * @ORM\Column(name="title", type="text", nullable=true)
+     * @Encrypted
      */
     private $title;
 
@@ -35,17 +36,20 @@ class Board {
     private $workspacesnumber = 1;
 
     /**
-     * @ORM\Column(name="auto_participate_list", type="string", length=264, nullable=false)
+     * @ORM\Column(name="auto_participate_list", type="text", nullable=false)
+     * @Encrypted
      */
     private $autoparticipantlist;
 
     /**
      * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $description;
 
     /**
      * @ORM\Column(name="participant", type="text")
+     * @Encrypted
      */
     private $participants;
 

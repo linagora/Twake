@@ -39,6 +39,7 @@ class OnlyofficeFileKeys
 
     /**
      * @ORM\Column(name="name", type="text")
+     * @Encrypted
      */
     private $name;
 

@@ -75,7 +75,7 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
         $qb = $this->createQueryBuilder('f')
             ->select('f')
             ->where('f.group = :group')
-            ->andWhere('f.isInTrash = 0')
+            ->andWhere('f.isintrash = 0')
             ->andWhere('f.detached_file = 0');
 
         foreach ($sorts as $key=>$sort){

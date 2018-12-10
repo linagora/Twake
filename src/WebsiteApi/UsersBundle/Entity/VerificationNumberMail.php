@@ -26,14 +26,16 @@ class VerificationNumberMail
 	/**
 	 * @var string
 	 *
-     * @ORM\Column(name="mail", type="string", length=256)
+     * @ORM\Column(name="mail", type="text")
+     * @Encrypted
 	 */
 	private $mail;
 
 	/**
 	 * @var string
 	 *
-     * @ORM\Column(name="hash_code", type="string", length=256)
+     * @ORM\Column(name="hash_code", type="text")
+     * @Encrypted
 	 */
     private $hashcode;
 
@@ -58,7 +60,8 @@ class VerificationNumberMail
 
 
 	/**
-     * @ORM\Column(name="clean_code", type="string")
+     * @ORM\Column(name="clean_code", type="text")
+     * @Encrypted
 	 */
 	private $clean_code;
 

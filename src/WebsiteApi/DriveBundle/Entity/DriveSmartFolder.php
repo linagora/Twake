@@ -31,12 +31,14 @@ class DriveSmartFolder
 	private $group;
 
 	/**
-     * @ORM\Column(type="string", length=32)
+     * @ORM\Column(type="text")
+     * @Encrypted
 	 */
 	private $name;
 
 	/**
-     * @ORM\Column(type="string", length=512)
+     * @ORM\Column(type="text")
+     * @Encrypted
 	 */
 	private $labels;
 

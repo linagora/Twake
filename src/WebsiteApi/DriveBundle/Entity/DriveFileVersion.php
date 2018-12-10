@@ -36,17 +36,20 @@ class DriveFileVersion
     private $user;
 
 	/**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
+     * @Encrypted
 	 */
     private $realname;
 
 	/**
-     * @ORM\Column(name="aes_key", type="string", length=1024)
+     * @ORM\Column(name="aes_key", type="text")
+     * @Encrypted
 	 */
 	private $key;
 
 	/**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
+     * @Encrypted
 	 */
 	private $mode = "OpenSSL-2";
 
@@ -61,7 +64,8 @@ class DriveFileVersion
 	private $date_added;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $filename;
 

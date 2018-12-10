@@ -24,7 +24,8 @@ class PushNotificationQueue
 	private $id;
 
 	/**
-     * @ORM\Column(type="text", length=512,  nullable=true)
+     * @ORM\Column(type="text",  nullable=true)
+     * @Encrypted
 	 */
 	private $text;
 

@@ -26,7 +26,8 @@ class Calendar {
     private $id;
 
     /**
-     * @ORM\Column(name="title", type="string", nullable=true)
+     * @ORM\Column(name="title", type="text", nullable=true)
+     * @Encrypted
      */
     private $title;
 
@@ -47,7 +48,8 @@ class Calendar {
 
 
     /**
-     * @ORM\Column(type="string", nullable=true)
+     * @ORM\Column(type="text", nullable=true)
+     * @Encrypted
      */
     private $icslink;
 

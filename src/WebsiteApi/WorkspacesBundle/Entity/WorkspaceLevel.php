@@ -23,7 +23,8 @@ class WorkspaceLevel
 	protected $id;
 
 	/**
-     * @ORM\Column(name="label", type="string", length=255)
+     * @ORM\Column(name="label", type="text")
+     * @Encrypted
 	 */
 	protected $label;
 

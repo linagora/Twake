@@ -87,27 +87,32 @@ class BoardTask implements ObjectLinksInterface {
 
     /**
      * @ORM\Column( type="text")
+     * @Encrypted
      */
     private $useridtonotify;
 
 
     /**
      * @ORM\Column( type="text")
+     * @Encrypted
      */
     private $labels;
 
     /**
      * @ORM\Column( type="text")
+     * @Encrypted
      */
     private $participants;
 
     /**
      * @ORM\Column( type="text")
+     * @Encrypted
      */
     private $userwholiked;
 
     /**
      * @ORM\Column( type="text")
+     * @Encrypted
      */
     private $userwhodisliked;
 
@@ -118,11 +123,13 @@ class BoardTask implements ObjectLinksInterface {
 
     /**
      * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $description;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Encrypted
      */
     private $object_link_cache;
 

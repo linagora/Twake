@@ -29,7 +29,8 @@ class Subject implements ObjectLinksInterface
     private $stream;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $name;
 
@@ -62,12 +63,14 @@ class Subject implements ObjectLinksInterface
     private $firstmessage;
 
     /**
-     * @ORM\Column(type="string")
+     * @ORM\Column(type="text")
+     * @Encrypted
      */
     private $description;
 
     /**
      * @ORM\Column(type="text", nullable=true)
+     * @Encrypted
      */
     private $object_link_cache;
 

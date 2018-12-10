@@ -47,12 +47,14 @@ class BoardActivity
     private $user;
 
     /**
-     * @ORM\Column(type="text", length=64, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
+     * @Encrypted
      */
     private $title;
 
     /**
-     * @ORM\Column(type="text", length=512, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
+     * @Encrypted
      */
     private $text;
 
@@ -62,7 +64,8 @@ class BoardActivity
     private $date;
 
     /**
-     * @ORM\Column(type="text", length=1024, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
+     * @Encrypted
      */
     private $data;
 
