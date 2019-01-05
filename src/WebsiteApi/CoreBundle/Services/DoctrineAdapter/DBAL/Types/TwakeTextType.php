@@ -84,4 +84,12 @@ class TwakeTextType extends StringType
 
     }
 
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    {
+        if (!isset($fieldDeclaration['length']) || $fieldDeclaration['length'] > 20000) {
+            return "TEXT";
+        }
+        return parent::getSQLDeclaration($fieldDeclaration, $platform);
+    }
+
 }

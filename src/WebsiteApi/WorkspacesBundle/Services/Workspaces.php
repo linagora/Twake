@@ -267,9 +267,9 @@ class Workspaces implements WorkspacesInterface
                 $event = $this->calendarEventService->createEvent($workspace->getId(), $time["calendar"], $eventJSON);
             }
 
-            $dirTwake = $this->driveAdapteService->getFileSystem()->create($workspace, null, new TranslationObject($this->translate, "drive.twake"), "", true, false, null, $twakebotId, null);
-            $fileRule = $this->driveAdapteService->getFileSystem()->create($workspace, $dirTwake->getId(), new TranslationObject($this->translate, "drive.rules"), new TranslationObject($this->translate, "drive.ruleText"), false, false, null, $twakebotId, null);
-            $fileWelcome = $this->driveAdapteService->getFileSystem()->create($workspace, null, new TranslationObject($this->translate, "drive.welcome"), new TranslationObject($this->translate, "drive.welcomeText"), false, false, null, $twakebotId, null);
+            $dirTwake = $this->driveAdapteService->getFileSystem()->create($workspace, null, (new TranslationObject($this->translate, "drive.twake")) . "", "", true, false, null, $twakebotId, null);
+            $fileRule = $this->driveAdapteService->getFileSystem()->create($workspace, $dirTwake->getId(), (new TranslationObject($this->translate, "drive.rules")) . "", (new TranslationObject($this->translate, "drive.ruleText")) . "", false, false, null, $twakebotId, null);
+            $fileWelcome = $this->driveAdapteService->getFileSystem()->create($workspace, null, (new TranslationObject($this->translate, "drive.welcome")) . "", (new TranslationObject($this->translate, "drive.welcomeText")) . "", false, false, null, $twakebotId, null);
 
 
         }
