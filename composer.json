@@ -51,7 +51,8 @@
         "m6web/cassandra-bundle": "~1.1.0",
         "ramsey/uuid-doctrine": "^1.5",
         "reprovinci/doctrine-encrypt": "~3.0",
-        "easycorp/easyadmin-bundle": ">=1.0"
+        "easycorp/easyadmin-bundle": ">=1.0",
+        "php-opencloud/openstack": "^3.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

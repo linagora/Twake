@@ -9,19 +9,20 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 use ZipStream\ZipStream;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 
-class AWS_DriveFileSystem extends DriveFileSystem
+//TODO add encode and decode before upload to OpenStack !!!!
+
+class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 {
 
-    public function __construct($aws_config, $doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem)
+    public function __construct($openstack_config, $doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem)
     {
         parent::__construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem);
 
-        $s3_config = $aws_config["S3"];
-        $this->aws_version = $s3_config["version"];
-        $this->aws_buckets = $s3_config["buckets"];
-        $this->aws_buckets_prefix = $s3_config["buckets_prefix"];
-        $this->aws_credentials_key = $s3_config["credentials"]["key"];
-        $this->aws_credentials_secret = $s3_config["credentials"]["secret"];
+        $this->openstack_version = $openstack_config["version"];
+        $this->openstack_buckets = $openstack_config["buckets"];
+        $this->openstack_buckets_prefix = $openstack_config["buckets_prefix"];
+        $this->openstack_credentials_key = $openstack_config["user"]["id"];
+        $this->openstack_credentials_secret = $openstack_config["user"]["password"];
 
         $region = false;
         foreach ($this->aws_buckets as $region_code => $aws_region) {
@@ -29,16 +30,18 @@ class AWS_DriveFileSystem extends DriveFileSystem
                 $region = $aws_region;
             }
         }
-        $this->aws_bucket_name = $this->aws_buckets_prefix . 'twake.' . $region;
-        $this->aws_bucket_region = $region;
+        $this->openstack_bucket_name = $this->openstack_buckets_prefix . 'twake.' . $region;
+        $this->openstack_bucket_region = $region;
 
-        $this->aws_s3_client = new S3Client([
-            'version' => $this->aws_version,
-            'region' => $this->aws_bucket_region,
-            'credentials' => [
-                'key' => $this->aws_credentials_key,
-                'secret' => $this->aws_credentials_secret
-            ]
+        //TODO finish connection config
+        $this->openstack = new OpenStack\OpenStack([
+            'authUrl' => '{authUrl}',
+            'region' => '{region}',
+            'user' => [
+                'id' => $this->openstack_credentials_key,
+                'password' => $this->openstack_credentials_secret
+            ],
+            'scope' => ['project' => ['id' => '{projectId}']]
         ]);
 
     }
@@ -54,18 +57,15 @@ class AWS_DriveFileSystem extends DriveFileSystem
 
         try {
 
-            $data = [
-                'Bucket' => $this->aws_bucket_name,
-                'Key' => "drive/" . $key_path,
-                'Body' => fopen($path, 'rb'),
-                'ACL' => 'private',
-                'SSECustomerAlgorithm' => 'AES256',
-                'SSECustomerKey' => $key,
-                'SSECustomerKeyMD5' => md5($key, true)
+            $options = [
+                'name' => "drive/" . $key_path,
+                'stream' => new Stream(fopen($path, 'rb')),
             ];
 
-            // Upload data.
-            $result = $this->aws_s3_client->putObject($data);
+            $this->openstack->objectStoreV1()
+                ->getContainer($this->openstack_bucket_name)
+                ->createObject($options);
+
             @unlink($path);
 
         } catch (S3Exception $e) {
@@ -83,19 +83,16 @@ class AWS_DriveFileSystem extends DriveFileSystem
         $key_path = str_replace($this->getRoot(), "", $key_path);
 
         try {
-
-            $data = [
-                'Bucket' => $this->aws_bucket_name,
-                'Key' => "drive/" . $key_path,
-                'Body' => $content,
-                'ACL' => 'private',
-                'SSECustomerAlgorithm' => 'AES256',
-                'SSECustomerKey' => $key,
-                'SSECustomerKeyMD5' => md5($key, true)
+            $options = [
+                'name' => "drive/" . $key_path,
+                'content' => $content,
             ];
 
+            $this->openstack->objectStoreV1()
+                ->getContainer($this->openstack_bucket_name)
+                ->createObject($options);
+
             // Upload data.
-            $this->aws_s3_client->putObject($data);
             @unlink($path);
 
         } catch (S3Exception $e) {
@@ -114,17 +111,14 @@ class AWS_DriveFileSystem extends DriveFileSystem
 
         try {
 
-            $object = $this->aws_s3_client->getObject([
-                'Bucket' => $this->aws_bucket_name,
-                'Key' => "drive/" . $key_path,
-                'SSECustomerAlgorithm' => 'AES256',
-                'SSECustomerKey' => $key,
-                'SSECustomerKeyMD5' => md5($key, true)
-            ]);
+            $stream = $this->openstack->objectStoreV1()
+                ->getContainer($this->openstack_bucket_name)
+                ->getObject("drive/" . $key_path)
+                ->download();
 
             $tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
             $this->verifyPath($tmpPath);
-            file_put_contents($tmpPath, $object["Body"]);
+            file_put_contents($tmpPath, $stream->getContents());
 
             return $tmpPath;
 
@@ -177,21 +171,11 @@ class AWS_DriveFileSystem extends DriveFileSystem
                 $key = "AWS" . $this->parameter_drive_salt . $key;
                 $key = md5($key);
 
-                $data = [
-                    'Bucket' => $this->aws_bucket_name,
-                    'Key' => "drive/" . $key_path,
-                    'SSECustomerAlgorithm' => 'AES256',
-                    'SSECustomerKey' => $key,
-                    'SSECustomerKeyMD5' => md5($key, true),
-                    'Body' => '',
-                    'ContentMD5' => false,
-                    'ContentType' => 'image/png',
-                    'ResponseContentDisposition' => 'attachment; filename="' . $filename . '"'
-                ];
-
-                $res = $this->aws_s3_client->getObject($data);
-
-                $zip->addFile($prefix . $filename, $res["Body"]);
+                $stream = $this->openstack->objectStoreV1()
+                    ->getContainer($this->openstack_bucket_name)
+                    ->getObject("drive/" . $key_path)
+                    ->download();
+                $zip->addFile($prefix . $filename, $stream->getContents());
 
                 /*$command = $this->aws_s3_client->getCommand('GetObject', $data);
                 $expiry = "+10 minutes";
@@ -280,13 +264,12 @@ class AWS_DriveFileSystem extends DriveFileSystem
 
             try {
                 // Get the object.
-                $result = $this->aws_s3_client->getObject([
-                    'Bucket' => $this->aws_bucket_name,
-                    'Key' => "drive/" . $key_path,
-                    'SSECustomerAlgorithm' => 'AES256',
-                    'SSECustomerKey' => $key,
-                    'SSECustomerKeyMD5' => md5($key, true)
-                ]);
+                $object = $this->openstack->objectStoreV1()
+                    ->getContainer($this->openstack_bucket_name)
+                    ->getObject("drive/" . $key_path);
+                $contentType = $object->contentType;
+                $contentLength = $object->contentLength;
+                $stream = $object->download();
 
                 header('Content-Description: File Transfer');
                 if ($download) {
@@ -306,11 +289,11 @@ class AWS_DriveFileSystem extends DriveFileSystem
                 header('Expires: 0');
                 header('Cache-Control: must-revalidate');
                 header('Pragma: public');
-                header('Content-Length: ' . $result['ContentLength']);
+                header('Content-Length: ' . $contentLength);
 
                 // Display the object in the browser.
-                header("Content-Type: {$result['ContentType']}");
-                echo $result['Body'];
+                header("Content-Type: {$contentType}");
+                echo $stream->getContents();
 
             } catch (S3Exception $e) {
                 echo $e->getMessage() . PHP_EOL;
@@ -326,19 +309,13 @@ class AWS_DriveFileSystem extends DriveFileSystem
     {
         $key_path = $file->getPath();
 
-        $key = $file->getLastVersion()->getKey();
-        $key = "AWS" . $this->parameter_drive_salt . $key;
-        $key = md5($key);
+        $stream = $this->openstack->objectStoreV1()
+            ->getContainer($this->openstack_bucket_name)
+            ->getObject("drive/" . $key_path)
+            ->download();
+        $content = $stream->getContents();
 
-        $result = $this->aws_s3_client->getObject([
-            'Bucket' => $this->aws_bucket_name,
-            'Key' => "drive/" . $key_path,
-            'SSECustomerAlgorithm' => 'AES256',
-            'SSECustomerKey' => $key,
-            'SSECustomerKeyMD5' => md5($key, true)
-        ]);
-
-        return $result['Body'];
+        return $content;
     }
 
     protected function deleteFile($file)
@@ -346,20 +323,20 @@ class AWS_DriveFileSystem extends DriveFileSystem
         // Remove real file
         $key_path = $file->getPath();
         try {
-            $this->aws_s3_client->deleteObject([
-                'Bucket' => $this->aws_bucket_name,
-                'Key' => "drive/" . $key_path,
-            ]);
+            $this->openstack->objectStoreV1()
+                ->getContainer($this->openstack_bucket_name)
+                ->getObject("drive/" . $key_path)
+                ->delete();
         } catch (S3Exception $e) {
             error_log($e->getMessage());
         }
 
         // Remove preview file
         try {
-            $this->aws_s3_client->deleteObject([
-                'Bucket' => $this->aws_bucket_name,
-                'Key' => "public/uploads/previews/" . $file->getPath() . ".png",
-            ]);
+            $this->openstack->objectStoreV1()
+                ->getContainer($this->openstack_bucket_name)
+                ->getObject("public/uploads/previews/" . $file->getPath() . ".png")
+                ->delete();
         } catch (S3Exception $e) {
             error_log($e->getMessage());
         }
@@ -368,7 +345,7 @@ class AWS_DriveFileSystem extends DriveFileSystem
 
     public function rawPreview($file)
     {
-        $link = $file->getAwsPreviewLink();
+        $link = $file->getCloudPreviewLink();
         if (!$link) {
             return false;
         }
@@ -391,10 +368,10 @@ class AWS_DriveFileSystem extends DriveFileSystem
                 try {
 
                     //Remove old preview
-                    if ($file->getAwsPreviewLink()) {
+                    if ($file->getCloudPreviewLink()) {
                         try {
                             $this->aws_s3_client->deleteObject([
-                                'Bucket' => $this->aws_bucket_name,
+                                'Bucket' => $this->openstack_bucket_name,
                                 'Key' => "public/uploads/previews/" . $file->getPath() . ".png",
                             ]);
                         } catch (S3Exception $e) {
@@ -408,14 +385,15 @@ class AWS_DriveFileSystem extends DriveFileSystem
 
                         try {
                             // Upload data.
-                            $result = $this->aws_s3_client->putObject([
-                                'Bucket' => $this->aws_bucket_name,
-                                'Key' => "public/uploads/previews/" . $file->getPath() . ".png",
-                                'Body' => fopen($previewpath . ".png", "rb"),
-                                'ACL' => 'public-read'
-                            ]);
+                            $options = [
+                                'name' => "public/uploads/previews/" . $file->getPath() . ".png",
+                                'stream' => new Stream(fopen($previewpath . ".png", "rb")),
+                            ];
+                            $result = $this->openstack->objectStoreV1()
+                                ->getContainer($this->openstack_bucket_name)
+                                ->createObject($options);
 
-                            $file->setAwsPreviewLink($result['ObjectURL']);
+                            $file->setCloudPreviewLink($result->getPublicUri());
 
                         } catch (S3Exception $e) {
                             $e->getMessage();

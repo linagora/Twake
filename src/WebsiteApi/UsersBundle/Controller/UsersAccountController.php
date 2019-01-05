@@ -99,6 +99,10 @@ class UsersAccountController extends Controller
         if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
             return $this->get("app.aws_uploader");
         }
+        $openstack = $this->getParameter('openstack');
+        if (isset($openstack["use"]) && $openstack["use"]) {
+            return $this->get("app.openstack_uploader");
+        }
         return $this->get("app.uploader");
     }
 

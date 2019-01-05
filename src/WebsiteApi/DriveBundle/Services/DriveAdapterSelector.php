@@ -22,10 +22,12 @@ use WebsiteApi\NotificationsBundle\Services\Notifications;
 class DriveAdapterSelector
 {
 
-    public function __construct($aws, $aws_file_system, $file_system)
+    public function __construct($aws, $openstack, $aws_file_system, $openstack_file_system, $file_system)
     {
         $this->aws = $aws;
+        $this->openstack = $openstack;
         $this->aws_file_system = $aws_file_system;
+        $this->openstack_file_system = $openstack_file_system;
         $this->file_system = $file_system;
     }
 
@@ -34,6 +36,9 @@ class DriveAdapterSelector
 
         if (isset($this->aws["S3"]["use"]) && $this->aws["S3"]["use"]) {
             return $this->aws_file_system;
+        }
+        if (isset($this->openstack["use"]) && $this->openstack["use"]) {
+            return $this->openstack_file_system;
         }
         return $this->file_system;
 

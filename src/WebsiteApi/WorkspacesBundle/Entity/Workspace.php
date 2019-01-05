@@ -317,7 +317,10 @@ class Workspace
      */
     public function getTotalActivity()
     {
-        return intval($this->total_activity);
+        $date_interval = (date("U") - $this->date_added->getTimestamp()) / (60 * 60 * 24) + 1;
+        $val = intval($this->total_activity) / ($date_interval / 2);
+        $by_user = $val / $this->member_count;
+        return $by_user;
     }
 
     /**
@@ -325,7 +328,7 @@ class Workspace
      */
     public function setTotalActivity($total_activity)
     {
-        $this->total_activity = $total_activity;
+        $this->total_activity += 1;
     }
 
 

@@ -564,7 +564,7 @@ class DriveFile implements ObjectLinksInterface
             "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
             "detached" => $this->getDetachedFile(),
             "cache" => $this->getCache(),
-            "direct_preview_link" => $this->getAwsPreviewLink(),
+            "direct_preview_link" => $this->getCloudPreviewLink(),
             "preview" => $this->getPreviewPath(),
             "copyOf" => ($this->getCopyOf()?$this->getCopyOf()->getId():null),
             "shared" => $this->getShared(),
@@ -604,7 +604,7 @@ class DriveFile implements ObjectLinksInterface
             "title" => "File",
             "object_name" => $this->getName(),
             "object_data" => Array(
-                "direct_preview_link" => $this->getAwsPreviewLink(),
+                "direct_preview_link" => $this->getCloudPreviewLink(),
                 "extension" => $this->getExtension(),
                 "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
                 'parent' => (($this->getParent()) ? $this->getParent()->getId() : 0),
@@ -652,7 +652,7 @@ class DriveFile implements ObjectLinksInterface
     /**
      * @return mixed
      */
-    public function getAwsPreviewLink()
+    public function getCloudPreviewLink()
     {
         return $this->aws_preview_link;
     }
@@ -660,7 +660,7 @@ class DriveFile implements ObjectLinksInterface
     /**
      * @param mixed $aws_preview_link
      */
-    public function setAwsPreviewLink($aws_preview_link)
+    public function setCloudPreviewLink($aws_preview_link)
     {
         $this->aws_preview_link = $aws_preview_link;
     }

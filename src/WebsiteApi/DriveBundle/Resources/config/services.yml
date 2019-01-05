@@ -52,9 +52,14 @@ services:
 
     app.drive.adapter_selector:
         class: WebsiteApi\DriveBundle\Services\DriveAdapterSelector
-        arguments: [%aws%, "@app.drive.AWS_FileSystem", "@app.drive.FileSystem"]
+        arguments: [%aws%, %openstack%, "@app.drive.AWS_FileSystem", "@app.drive.OpenStack_FileSystem", "@app.drive.FileSystem"]
+
+    # OpenStack
+    app.drive.OpenStack_FileSystem:
+        class: WebsiteApi\DriveBundle\Services\Adapter_OpenStack_DriveFileSystem
+        arguments: [%openstack%, "@app.twake_doctrine", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@website_api_market.applications','@app.drive.UserToNotifyService', '@app.translate', '@app.workspaces_apps','@app.workspaces_activities', '@app.objectLinks']
 
     # AWS
     app.drive.AWS_FileSystem:
-        class: WebsiteApi\DriveBundle\Services\AWS_DriveFileSystem
+        class: WebsiteApi\DriveBundle\Services\Adapter_AWS_DriveFileSystem
         arguments: [%aws%, "@app.twake_doctrine", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@website_api_market.applications','@app.drive.UserToNotifyService', '@app.translate', '@app.workspaces_apps','@app.workspaces_activities', '@app.objectLinks']
