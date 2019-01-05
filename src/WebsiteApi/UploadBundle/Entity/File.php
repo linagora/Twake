@@ -238,7 +238,7 @@ class File
     /**
      * @return mixed
      */
-    public function getAwsPublicLink()
+    public function getPublicLink()
     {
         return $this->aws_public_link;
     }
@@ -246,7 +246,7 @@ class File
     /**
      * @param mixed $aws_public_link
      */
-    public function setAwsPublicLink($aws_public_link)
+    public function setPublicLink($aws_public_link)
     {
         $this->aws_public_link = $aws_public_link;
     }

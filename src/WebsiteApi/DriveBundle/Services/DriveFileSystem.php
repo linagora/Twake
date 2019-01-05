@@ -1181,6 +1181,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         if ($this->preview->isImage($file->getExtension())) {
             $this->genPreview($file);
             $file->setPreviewHasBeenGenerated(true);
+            $this->doctrine->persist($file);
+            $this->doctrine->flush();
         }
 
         return $file;
@@ -1219,6 +1221,8 @@ class DriveFileSystem implements DriveFileSystemInterface
         if ($this->preview->isImage($newFile->getExtension())) {
             $this->genPreview($newFile);
             $newFile->setPreviewHasBeenGenerated(true);
+            $this->doctrine->persist($newFile);
+            $this->doctrine->flush();
         }
 
         return $newFile;

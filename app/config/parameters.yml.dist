@@ -28,9 +28,21 @@ parameters:
     mailer_auth_mode: plain
     secret: c9a17eab88ab63bb3e90c027196a89776651a7c0
 
-
     cas_base_url: -
     cas_email_key:
     cas_firstname_key:
     cas_lastname_key:
     cas_default_language: fr
+
+    openstack:
+      use: false
+      project_id: 1234567890
+      auth_url: https://auth.cloud.ovh.net/v2.0
+      buckets_prefix: twake_
+      buckets:
+          fr:
+            name: openstack_1
+            region: SBG5
+      user:
+          id: 1234567890
+          password: Udsq134567890

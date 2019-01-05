@@ -400,24 +400,24 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	// @Depreciated
 	public function hasRight($userId, $workspaceId, $rightAsked)
 	{
-		if(!is_int($userId)){
-			$userId = $userId->getId();
-		}
-		if(!is_int($workspaceId)){
-			$workspaceId = $workspaceId->getId();
-		}
+        $userId = $this->convertToEntity($userId, "TwakeUsersBundle:User");
+        $userId = $userId->getId();
+
+        $workspaceId = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
+        $workspaceId = $workspaceId->getId();
+
 		return $this->can($workspaceId, $userId, $rightAsked);
 	}
 
 	// @Depreciated
 	public function errorsAccess($userId, $workspaceId, $right)
 	{
-		if(!is_int($userId)){
-			$userId = $userId->getId();
-		}
-		if(!is_int($workspaceId)){
-			$workspaceId = $workspaceId->getId();
-		}
+        $userId = $this->convertToEntity($userId, "TwakeUsersBundle:User");
+        $userId = $userId->getId();
+
+        $workspaceId = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
+        $workspaceId = $workspaceId->getId();
+
 		if($this->can($workspaceId, $userId, $right)){
 			return [];
 		}

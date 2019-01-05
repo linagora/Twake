@@ -7,6 +7,8 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 use ZipStream\ZipStream;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use OpenStack\OpenStack;
+use GuzzleHttp\Psr7\Stream;
+use GuzzleHttp\Psr7;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use OpenStack\Common\Transport\Utils as TransportUtils;
@@ -78,7 +80,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
             @unlink($path);
 
-        } catch (S3Exception $e) {
+        } catch (Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
         }
 
@@ -86,6 +88,11 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
     protected function writeEncode($path, $key, $content, $mode = null)
     {
+
+        if (!$content) {
+            return;
+        }
+
         $key = "AWS" . $this->parameter_drive_salt . $key;
         $key = md5($key);
 
@@ -93,9 +100,10 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
         $key_path = str_replace($this->getRoot(), "", $key_path);
 
         try {
+
             $options = [
                 'name' => "drive/" . $key_path,
-                'content' => $content,
+                'stream' => Psr7\stream_for($content),
             ];
 
             $this->openstack->objectStoreV1()
@@ -105,7 +113,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
             // Upload data.
             @unlink($path);
 
-        } catch (S3Exception $e) {
+        } catch (Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
         }
     }
@@ -132,7 +140,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
             return $tmpPath;
 
-        } catch (S3Exception $e) {
+        } catch (Exception $e) {
             error_log("Error accessing aws file.");
         }
 
@@ -305,7 +313,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                 header("Content-Type: {$contentType}");
                 echo $stream->getContents();
 
-            } catch (S3Exception $e) {
+            } catch (Exception $e) {
                 echo $e->getMessage() . PHP_EOL;
             }
 
@@ -337,7 +345,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                 ->getContainer($this->openstack_bucket_name)
                 ->getObject("drive/" . $key_path)
                 ->delete();
-        } catch (S3Exception $e) {
+        } catch (Exception $e) {
             error_log($e->getMessage());
         }
 
@@ -347,7 +355,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                 ->getContainer($this->openstack_bucket_name)
                 ->getObject("public/uploads/previews/" . $file->getPath() . ".png")
                 ->delete();
-        } catch (S3Exception $e) {
+        } catch (Exception $e) {
             error_log($e->getMessage());
         }
 
@@ -384,7 +392,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                                 'Bucket' => $this->openstack_bucket_name,
                                 'Key' => "public/uploads/previews/" . $file->getPath() . ".png",
                             ]);
-                        } catch (S3Exception $e) {
+                        } catch (Exception $e) {
                             error_log($e->getMessage());
                         }
                     }
@@ -405,7 +413,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
                             $file->setCloudPreviewLink($result->getPublicUri());
 
-                        } catch (S3Exception $e) {
+                        } catch (Exception $e) {
                             $e->getMessage();
                         }
 

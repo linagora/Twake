@@ -4,6 +4,7 @@
 namespace WebsiteApi\UploadBundle\Services;
 
 use OpenStack\OpenStack;
+use GuzzleHttp\Psr7\Stream;
 use GuzzleHttp\Client;
 use GuzzleHttp\HandlerStack;
 use OpenStack\Common\Transport\Utils as TransportUtils;
@@ -74,7 +75,7 @@ class OpenStack_Uploader extends Uploader
                     ->getContainer($this->openstack_bucket_name)
                     ->createObject($options);
 
-                $file->setAwsPublicLink($result->getPublicUri());
+                $file->setPublicLink($result->getPublicUri());
 
                 return Array(
                     "errors" => [],

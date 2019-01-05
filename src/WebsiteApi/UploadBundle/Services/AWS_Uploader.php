@@ -63,7 +63,7 @@ class AWS_Uploader extends Uploader
                     'ACL' => 'public-read'
                 ]);
 
-                $file->setAwsPublicLink($result['ObjectURL']);
+                $file->setPublicLink($result['ObjectURL']);
 
                 return Array(
                     "errors" => [],
