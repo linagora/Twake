@@ -251,8 +251,6 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
             }
             $archive_name = ($file ? $file->getName() : "Documents");
 
-            $this->aws_s3_client->registerStreamWrapper();
-
             $response = new StreamedResponse(function () use ($archive_name, $workspace, $file) {
                 $zip = new ZipStream($archive_name . '.zip', Array(
                     'content_type' => 'application/octet-stream'
@@ -388,10 +386,10 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                     //Remove old preview
                     if ($file->getCloudPreviewLink()) {
                         try {
-                            $this->aws_s3_client->deleteObject([
-                                'Bucket' => $this->openstack_bucket_name,
-                                'Key' => "public/uploads/previews/" . $file->getPath() . ".png",
-                            ]);
+                            $this->openstack->objectStoreV1()
+                                ->getContainer($this->openstack_bucket_name)
+                                ->getObject("public/uploads/previews/" . $file->getPath() . ".png")
+                                ->delete();
                         } catch (Exception $e) {
                             error_log($e->getMessage());
                         }
