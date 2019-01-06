@@ -20,10 +20,10 @@ class TwakeSessionHandler implements \SessionHandlerInterface
     {
 
         if ($driver == "pdo_cassandra") {
-            error_log("Session handler will be Cassandra");
+//            error_log("Session handler will be Cassandra");
             $this->sessionHandler = $cassandra;
         } else {
-            error_log("Session handler will be PDO");
+//            error_log("Session handler will be PDO");
             $this->sessionHandler = $pdo;
         }
 

@@ -34,11 +34,17 @@ class OpenStack_Uploader extends Uploader
         $region = false;
         foreach ($this->openstack_buckets as $region_code => $openstack_region) {
             if ($region_code == "fr" || !$region) {
-                $region = $openstack_region["name"];
+                if (isset($openstack_region["private"])) {
+                    $region = $openstack_region["private"];
+                    $public_region = $openstack_region["public"];
+                } else {
+                    $region = $openstack_region["public"];
+                }
                 $region_id = $openstack_region["region"];
             }
         }
         $this->openstack_bucket_name = $this->openstack_buckets_prefix . $region;
+        $this->openstack_public_bucket_name = $this->openstack_buckets_prefix . $public_region;
         $this->openstack_bucket_region = $region;
         $this->openstack_region_id = $region_id;
 
@@ -72,7 +78,7 @@ class OpenStack_Uploader extends Uploader
                     'stream' => new Stream(fopen($realfile["tmp_name"], "rb")),
                 ];
                 $result = $this->openstack->objectStoreV1()
-                    ->getContainer($this->openstack_bucket_name)
+                    ->getContainer($this->openstack_public_bucket_name)
                     ->createObject($options);
 
                 $file->setPublicLink($result->getPublicUri());
@@ -101,7 +107,7 @@ class OpenStack_Uploader extends Uploader
         try {
 
             $this->openstack->objectStoreV1()
-                ->getContainer($this->openstack_bucket_name)
+                ->getContainer($this->openstack_public_bucket_name)
                 ->getObject("public/uploads/" . $file->getType() . "/" . $file->getName())
                 ->delete();
 

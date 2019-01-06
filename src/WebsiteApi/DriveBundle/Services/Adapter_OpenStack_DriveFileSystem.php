@@ -14,8 +14,6 @@ use GuzzleHttp\HandlerStack;
 use OpenStack\Common\Transport\Utils as TransportUtils;
 use OpenStack\Identity\v2\Service;
 
-//TODO add encode and decode before upload to OpenStack !!!!
-
 class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 {
 
@@ -39,11 +37,17 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
         $region = false;
         foreach ($this->openstack_buckets as $region_code => $openstack_region) {
             if ($region_code == "fr" || !$region) {
-                $region = $openstack_region["name"];
+                if (isset($openstack_region["private"])) {
+                    $region = $openstack_region["private"];
+                    $public_region = $openstack_region["public"];
+                } else {
+                    $region = $openstack_region["public"];
+                }
                 $region_id = $openstack_region["region"];
             }
         }
         $this->openstack_bucket_name = $this->openstack_buckets_prefix . $region;
+        $this->openstack_public_bucket_name = $this->openstack_buckets_prefix . $public_region;
         $this->openstack_bucket_region = $region;
         $this->openstack_region_id = $region_id;
 
@@ -61,8 +65,10 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
     public function encode($path, $key, $mode = null)
     {
 
-        $key = "AWS" . $this->parameter_drive_salt . $key;
+        $key = "OpenStack" . $this->parameter_drive_salt . $key;
         $key = md5($key);
+
+        parent::encode($path, $key, $mode);
 
         $key_path = str_replace($this->getRoot() . "/", "", $path);
         $key_path = str_replace($this->getRoot(), "", $key_path);
@@ -93,8 +99,11 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
             return;
         }
 
-        $key = "AWS" . $this->parameter_drive_salt . $key;
+        $key = "OpenStack" . $this->parameter_drive_salt . $key;
         $key = md5($key);
+
+        file_put_contents($path, $content);
+        parent::encode($path, $key, $mode);
 
         $key_path = str_replace($this->getRoot() . "/", "", $path);
         $key_path = str_replace($this->getRoot(), "", $key_path);
@@ -103,7 +112,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
             $options = [
                 'name' => "drive/" . $key_path,
-                'stream' => Psr7\stream_for($content),
+                'stream' => new Stream(fopen($path, 'rb')),
             ];
 
             $this->openstack->objectStoreV1()
@@ -121,7 +130,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
     public function decode($path, $key, $mode = null)
     {
 
-        $key = "AWS" . $this->parameter_drive_salt . $key;
+        $key = "OpenStack" . $this->parameter_drive_salt . $key;
         $key = md5($key);
 
         $key_path = str_replace($this->getRoot() . "/", "", $path);
@@ -137,6 +146,9 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
             $tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
             $this->verifyPath($tmpPath);
             file_put_contents($tmpPath, $stream->getContents());
+
+            $decodedPath = parent::decode($tmpPath, $key, $mode);
+            rename($decodedPath, $tmpPath);
 
             return $tmpPath;
 
@@ -186,14 +198,22 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                 $key_path = $child->getPath();
 
                 $key = $child->getLastVersion()->getKey();
-                $key = "AWS" . $this->parameter_drive_salt . $key;
+                $key = "OpenStack" . $this->parameter_drive_salt . $key;
                 $key = md5($key);
 
                 $stream = $this->openstack->objectStoreV1()
                     ->getContainer($this->openstack_bucket_name)
                     ->getObject("drive/" . $key_path)
                     ->download();
-                $zip->addFile($prefix . $filename, $stream->getContents());
+
+                $tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
+                file_put_contents($tmpPath, $stream->getContents());
+                $decodedPath = parent::decode($tmpPath, $key, $child->getLastVersion()->getMode());
+                rename($decodedPath, $tmpPath);
+
+                $zip->addFile($prefix . $filename, file_get_contents($tmpPath));
+
+                unlink($tmpPath);
 
                 /*$command = $this->aws_s3_client->getCommand('GetObject', $data);
                 $expiry = "+10 minutes";
@@ -275,7 +295,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
             $key_path = $file->getPath();
 
             $key = $file->getLastVersion()->getKey();
-            $key = "AWS" . $this->parameter_drive_salt . $key;
+            $key = "OpenStack" . $this->parameter_drive_salt . $key;
             $key = md5($key);
 
             try {
@@ -309,7 +329,17 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
                 // Display the object in the browser.
                 header("Content-Type: {$contentType}");
-                echo $stream->getContents();
+
+                $tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
+                file_put_contents($tmpPath, $stream->getContents());
+
+
+                $decodedPath = parent::decode($tmpPath, $key, $file->getLastVersion()->getMode());
+                rename($decodedPath, $tmpPath);
+
+                echo file_get_contents($tmpPath);
+
+                unlink($tmpPath);
 
             } catch (Exception $e) {
                 echo $e->getMessage() . PHP_EOL;
@@ -350,7 +380,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
         // Remove preview file
         try {
             $this->openstack->objectStoreV1()
-                ->getContainer($this->openstack_bucket_name)
+                ->getContainer($this->openstack_public_bucket_name)
                 ->getObject("public/uploads/previews/" . $file->getPath() . ".png")
                 ->delete();
         } catch (Exception $e) {
@@ -387,7 +417,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                     if ($file->getCloudPreviewLink()) {
                         try {
                             $this->openstack->objectStoreV1()
-                                ->getContainer($this->openstack_bucket_name)
+                                ->getContainer($this->openstack_public_bucket_name)
                                 ->getObject("public/uploads/previews/" . $file->getPath() . ".png")
                                 ->delete();
                         } catch (Exception $e) {
@@ -406,7 +436,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                                 'stream' => new Stream(fopen($previewpath . ".png", "rb")),
                             ];
                             $result = $this->openstack->objectStoreV1()
-                                ->getContainer($this->openstack_bucket_name)
+                                ->getContainer($this->openstack_public_bucket_name)
                                 ->createObject($options);
 
                             $file->setCloudPreviewLink($result->getPublicUri());
