@@ -41,7 +41,8 @@ parameters:
       buckets_prefix: twake_
       buckets:
           fr:
-            name: openstack_1
+            public: openstack
+            private: openstack_private #Optionnal
             region: SBG5
       user:
           id: 1234567890
