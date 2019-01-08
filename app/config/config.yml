@@ -1,5 +1,4 @@
 imports:
-    - { resource: aws_config.yml }
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }

@@ -35,15 +35,27 @@ parameters:
     cas_default_language: fr
 
     openstack:
-      use: false
-      project_id: 1234567890
-      auth_url: https://auth.cloud.ovh.net/v2.0
-      buckets_prefix: twake_
-      buckets:
-          fr:
-            public: openstack
-            private: openstack_private #Optionnal
-            region: SBG5
-      user:
-          id: 1234567890
-          password: Udsq134567890
+        use: false
+        project_id: 1234567890
+        auth_url: https://auth.cloud.ovh.net/v2.0
+        buckets_prefix: twake_
+        buckets:
+            fr:
+                public: openstack
+                private: openstack_private #Optionnal
+                region: SBG5
+        user:
+            id: 1234567890
+            password: Udsq134567890
+
+
+    aws:
+        S3:
+            use: false
+            version: latest
+            buckets_prefix: twake.
+            buckets:
+                fr: eu-west-3
+            credentials:
+                key: 1234567890
+                secret: 1234567890

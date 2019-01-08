@@ -242,7 +242,7 @@ final class DriverManager
         }
 
         // (pdo_)?sqlite3?:///... => (pdo_)?sqlite3?://localhost/... or else the URL will be invalid
-        $url = preg_replace('#^((?:pdo_)?sqlite3?):///#', '$1://localhost/', $params['url']);
+        $url = preg_replace('#^((?:pdo_)?sqlite3?):/' . '/' . '/#', '$1:/' . '/localhost/', $params['url']);
 
         $url = parse_url($url);
 
