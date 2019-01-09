@@ -53,10 +53,10 @@ class WorkspaceUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAd
     public function findOneBy(array $array)
     {
         if (isset($array["workspace"]) && isset($array["user"])) {
-            if (!is_integer($array["workspace"])) {
+            if (!(is_int($array["workspace"]) || is_string($array["workspace"]) || get_class($array["workspace"]) == "Ramsey\Uuid\Uuid")) {
                 $array["workspace"] = $array["workspace"]->getId();
             }
-            if (!is_integer($array["user"])) {
+            if (!(is_int($array["user"]) || is_string($array["user"]) || get_class($array["user"]) == "Ramsey\Uuid\Uuid")) {
                 $array["user"] = $array["user"]->getId();
             }
             $array["user_workspace_id"] = $array["user"] . "_" . $array["workspace"];

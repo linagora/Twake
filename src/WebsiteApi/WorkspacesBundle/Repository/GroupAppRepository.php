@@ -14,10 +14,10 @@ class GroupAppRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter
     public function findOneBy(array $array)
     {
         if (isset($array["group"]) && isset($array["app"])) {
-            if (!is_integer($array["group"])) {
+            if (!(is_int($array["group"]) || is_string($array["group"]) || get_class($array["group"]) == "Ramsey\Uuid\Uuid")) {
                 $array["group"] = $array["group"]->getId();
             }
-            if (!is_integer($array["app"])) {
+            if (!(is_int($array["app"]) || is_string($array["app"]) || get_class($array["app"]) == "Ramsey\Uuid\Uuid")) {
                 $array["app"] = $array["app"]->getId();
             }
             $array["app_group_id"] = $array["app"] . "_" . $array["group"];

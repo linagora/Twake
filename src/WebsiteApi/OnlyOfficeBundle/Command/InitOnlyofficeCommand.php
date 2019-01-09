@@ -43,8 +43,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $doctrine = $this->getContainer()->get('doctrine');
-        $manager = $doctrine->getManager();
+        $manager = $this->getContainer()->get('app.twake_doctrine');
 
         $serverbase = $this->getContainer()->getParameter('SERVER_NAME') . "/";
 

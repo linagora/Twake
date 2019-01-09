@@ -31,10 +31,13 @@ class StreamMemberRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
     public function findOneBy(array $array)
     {
         if (isset($array["user"]) && isset($array["stream"])) {
-            if (!is_integer($array["user"])) {
+            if (!(is_int($array["user"]) || is_string($array["user"]) || get_class($array["user"]) == "Ramsey\Uuid\Uuid")) {
                 $array["user"] = $array["user"]->getId();
             }
-            if (!is_integer($array["stream"])) {
+            if (is_array($array["stream"]) && isset($array["stream"]["object"])) {
+                $array["stream"] = $array["stream"]["object"];
+            }
+            if (!(is_int($array["stream"]) || is_string($array["stream"]) || get_class($array["stream"]) == "Ramsey\Uuid\Uuid")) {
                 $array["stream"] = $array["stream"]->getId();
             }
             $array["user_stream_id"] = $array["user"] . "_" . $array["stream"];

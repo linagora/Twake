@@ -48,10 +48,10 @@ class GroupUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
     public function findOneBy(array $array)
     {
         if (isset($array["group"]) && isset($array["user"])) {
-            if (!is_integer($array["group"])) {
+            if (!(is_int($array["group"]) || is_string($array["group"]) || get_class($array["group"]) == "Ramsey\Uuid\Uuid")) {
                 $array["group"] = $array["group"]->getId();
             }
-            if (!is_integer($array["user"])) {
+            if (!(is_int($array["user"]) || is_string($array["user"]) || get_class($array["user"]) == "Ramsey\Uuid\Uuid")) {
                 $array["user"] = $array["user"]->getId();
             }
             $array["user_group_id"] = $array["user"] . "_" . $array["group"];

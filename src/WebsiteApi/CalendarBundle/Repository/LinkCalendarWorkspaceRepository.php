@@ -14,10 +14,10 @@ class LinkCalendarWorkspaceRepository extends \WebsiteApi\CoreBundle\Services\Do
     public function findOneBy(array $array)
     {
         if (isset($array["workspace"]) && isset($array["calendar"])) {
-            if (!is_integer($array["workspace"])) {
+            if (!(is_int($array["workspace"]) || is_string($array["workspace"]) || get_class($array["workspace"]) == "Ramsey\Uuid\Uuid")) {
                 $array["workspace"] = $array["workspace"]->getId();
             }
-            if (!is_integer($array["calendar"])) {
+            if (!(is_int($array["calendar"]) || is_string($array["calendar"]) || get_class($array["calendar"]) == "Ramsey\Uuid\Uuid")) {
                 $array["calendar"] = $array["calendar"]->getId();
             }
             $array["calendar_workspace_id"] = $array["calendar"] . "_" . $array["workspace"];
