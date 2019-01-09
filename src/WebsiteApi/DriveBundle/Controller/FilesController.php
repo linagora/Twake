@@ -210,12 +210,12 @@ class FilesController extends Controller
         );
 
         $groupId = $request->request->get("groupId", 0);
-        $objectid = $request->request->get("id", 0);
+        $objectId = $request->request->get("id", 0);
         $directory = $request->request->get("directory", false);
         $public_access_key = $request->request->get("public_access_key", false);
         $externalDrive = $directory;
 
-        if($objectId>0) {
+        if ((is_int($objectId) && $objectId > 0) || (is_string($objectId) && strlen($objectId) > 10)) {
 
             $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
 
@@ -224,13 +224,13 @@ class FilesController extends Controller
                 $fileSystem->setRootDirectory($directory);
             }
 
-            $data["data"] = $fileSystem->getInfos($groupId, $objectid, true);
+            $data["data"] = $fileSystem->getInfos($groupId, $objectId, true);
 
             if (isset($data["data"]["id"])) {
 
                 $can = true;
                 if (!$data["data"]["detached"]) {
-                    $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($objectid, $public_access_key);
+                    $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($objectId, $public_access_key);
                 }
 
                 if (!$can) {
@@ -241,16 +241,16 @@ class FilesController extends Controller
 
             if (!$externalDrive)
                 $haveReadAccess = $this->get('app.workspace_levels')->can(
-                        $fileSystem->getWorkspace($objectid),
+                        $fileSystem->getWorkspace($objectId),
                         $this->getUser(), "drive:read")
-                    || $fileSystem->verifyPublicAccess($objectid, $public_access_key);
+                    || $fileSystem->verifyPublicAccess($objectId, $public_access_key);
             else
                 $haveReadAccess = true;
 
             if (!$data["data"] && $haveReadAccess) {
                 $data["data"] = $fileSystem->getInfos(
-                    $fileSystem->getWorkspace($objectid),
-                    $objectid, true);
+                    $fileSystem->getWorkspace($objectId),
+                    $objectId, true);
             }
 
             $data["data"]["drive"] = $directory;
