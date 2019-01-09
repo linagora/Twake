@@ -166,7 +166,7 @@ class BoardTask implements ObjectLinksInterface {
             if (!in_array($userid, $userwhodislike))
                 $userWhoLike[] = $userid;
 
-            $userwhodislike = array_diff($userwhodislike, [$userId]);
+            $userwhodislike = array_diff($userwhodislike, [$userId . ""]);
             $this->setUserWhoLiked($userwholike);
             $this->setUserWhoDisliked($userwhodislike);
         }
@@ -181,7 +181,7 @@ class BoardTask implements ObjectLinksInterface {
             $this->like--;
             if (!in_array($userid, $userwholike))
                 $userWhoDislike[] = $userid;
-            $userwholike = array_diff($userwholike, [$userId]);
+            $userwholike = array_diff($userwholike, [$userId . ""]);
             $this->setUserWhoLiked($userwholike);
             $this->setUserWhoDisliked($userwhodislike);
         }

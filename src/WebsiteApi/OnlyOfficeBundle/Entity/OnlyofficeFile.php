@@ -23,12 +23,12 @@ class OnlyofficeFile
     private $id;
 
     /**
-     * @ORM\Column(name="workspace_id", type="integer")
+     * @ORM\Column(name="workspace_id", type="string", length=256)
      */
     private $workspaceid;
 
     /**
-     * @ORM\Column(name="file_id", type="integer")
+     * @ORM\Column(name="file_id", type="string", length=256)
      */
     private $fileid;
 

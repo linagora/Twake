@@ -521,7 +521,7 @@ class CalendarEvents implements CalendarEventsInterface
             $event = $auth ? $event->getAsArray() : $event->getAsArrayMinimal();
             if (!$auth) {
                 $event["private_content"] = true;
-                $event["participant"] = [$targetUserId];
+                $event["participant"] = [$targetUserId . ""];
             }
             $events[] = $event;
 

@@ -95,6 +95,7 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
                 ->setParameter("subject", $subjectId);
         }
 
+        //TODO WILL NOT WORK
         if($maxId>=0){
             $qb->andWhere("m.id < :max")
                 ->setParameter("max",($maxId-1));

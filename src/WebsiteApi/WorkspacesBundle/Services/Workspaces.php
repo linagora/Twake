@@ -339,7 +339,7 @@ class Workspaces implements WorkspacesInterface
                 $workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $workspace));
                 foreach ($workspacelevels as $level) {
                     if ($level->getisAdmin()) {
-                        $old_levels_id_to_new_levels[$adminLevelId] = $level;
+                        $old_levels_id_to_new_levels[$adminLevelId . ""] = $level;
                     }
                 }
                 if ($config["users"] == "all" || $config["rights"]) {

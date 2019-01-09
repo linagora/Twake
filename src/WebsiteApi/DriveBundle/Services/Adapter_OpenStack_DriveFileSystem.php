@@ -116,7 +116,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
             ];
 
             $this->openstack->objectStoreV1()
-                ->getContainer($this->penstack_bucket_name)
+                ->getContainer($this->openstack_bucket_name)
                 ->createObject($options);
 
             // Upload data.

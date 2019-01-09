@@ -83,8 +83,8 @@ class Notifications implements NotificationsInterface
                     return false;
                 }
                 if($application!=null){
-                    if(isset($notificationPreference["workspace"][$workspace_id])){
-                        if(isset($notificationPreference["workspace"][$workspace_id][$application->getId()])){
+                    if (isset($notificationPreference["workspace"][$workspace_id . ""])) {
+                        if (isset($notificationPreference["workspace"][$workspace_id . ""][$application->getId()])) {
                             $toPush = false;
                         }
                     }

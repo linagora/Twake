@@ -29,12 +29,12 @@ class DataToken
     private $token;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", length=256)
      */
     private $workspaceid;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="string", length=256)
      */
     private $userid;
 

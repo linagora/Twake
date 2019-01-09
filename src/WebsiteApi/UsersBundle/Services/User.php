@@ -861,7 +861,7 @@ class User implements UserInterface
 	    /* @var \WebsiteApi\UsersBundle\Entity\User $user */
 	    $pref = $user->getNotificationPreference();
 
-	    $pref["workspace"][$workspaceId] = $appNotif;
+        $pref["workspace"][$workspaceId . ""] = $appNotif;
 
 	    $user->setNotificationPreference($pref);
 

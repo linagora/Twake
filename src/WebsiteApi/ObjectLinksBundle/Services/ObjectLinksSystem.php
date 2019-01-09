@@ -88,19 +88,19 @@ class ObjectLinksSystem
     public function createObjectLinkFromType($typeA, $typeB, $idA, $idB){
         $link = new ObjectLinks(self::$keyMap[$typeA], $idA, self::$keyMap[$typeB], $idB);
         $exists = $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks')->findBy(array(
-            'idA' => $idA,
-            'idB' => $idB,
-            'typeA' => $link->getTypeA(),
-            'typeB' => $link->getTypeB()
+            'ida' => $idA,
+            'idb' => $idB,
+            'typea' => $link->getTypeA(),
+            'typeb' => $link->getTypeB()
         ));
 
         if (!$exists) {
 
             $exists = $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks')->findBy(array(
-                'idB' => $idA,
-                'idA' => $idB,
-                'typeB' => $link->getTypeA(),
-                'typeA' => $link->getTypeB()
+                'idb' => $idA,
+                'ida' => $idB,
+                'typeb' => $link->getTypeA(),
+                'typea' => $link->getTypeB()
             ));
 
             if (!$exists) {
@@ -131,18 +131,18 @@ class ObjectLinksSystem
         $repo =  $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks');
 
         $exists =$repo->findOneBy(array(
-            'idA' => $idA,
-            'idB' => $idB,
-            'typeA' => self::$keyMap[$typeA],
-            'typeB' => self::$keyMap[$typeB]
+            'ida' => $idA,
+            'idb' => $idB,
+            'typea' => self::$keyMap[$typeA],
+            'typeb' => self::$keyMap[$typeB]
         ));
 
         if(!$exists){ //test inversion param
             $exists =$repo->findOneBy(array(
-                'idA' => $idB,
-                'idB' => $idA,
-                'typeA' => self::$keyMap[$typeB],
-                'typeB' => self::$keyMap[$typeA]
+                'ida' => $idB,
+                'idb' => $idA,
+                'typea' => self::$keyMap[$typeB],
+                'typeb' => self::$keyMap[$typeA]
             ));
         }
 
