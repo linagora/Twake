@@ -163,7 +163,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 		$workspace = $workspaceRepository->find($workspaceId);
 
-		return $levelRepository->findOneBy(Array("workspace"=>$workspace, "isDefault"=>true));
+		return $levelRepository->findOneBy(Array("workspace"=>$workspace, "isdefault"=>true));
 
 	}
 
