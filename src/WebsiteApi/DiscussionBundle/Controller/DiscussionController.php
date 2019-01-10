@@ -26,18 +26,15 @@ class DiscussionController extends Controller
                 $data["errors"][] = "missingargument";
             }
             else{
-                $offsetId = $request->request->get("offsetId");
+                $offsetDate = $request->request->get("offsetDate");
                 $messages = $this->get("app.messages")->getMessages(
                     "s-" . $request->request->get("streamId"),
-                    $offsetId, //Now a timestamp with milliseconds
+                    $offsetDate, //Now a timestamp with milliseconds
                     $request->request->get("subject"),
                     $this->getUser(),
                     $request->request->getInt("max", 50)
                 );
-
-                error_log(count($messages));
                 $data["data"] = $messages;
-                error_log("nb message : ".count($messages));
             }
         }
         return new JsonResponse($data);
