@@ -163,7 +163,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 		$workspace = $workspaceRepository->find($workspaceId);
 
-		return $levelRepository->findOneBy(Array("workspace"=>$workspace, "isDefault"=>true));
+		return $levelRepository->findOneBy(Array("workspace"=>$workspace, "isdefault"=>true));
 
 	}
 
@@ -178,7 +178,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 			$workspace = $workspaceRepository->find($workspaceId);
 
-			$oldLevelDefault = $levelRepository->findOneBy(Array("workspace"=>$workspace, "isDefault"=>true));
+			$oldLevelDefault = $levelRepository->findOneBy(Array("workspace"=>$workspace, "isdefault"=>true));
 
 			if($oldLevelDefault) {
 				$oldLevelDefault->setisDefault(false);
@@ -253,7 +253,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			}
 
 			$workspace = $workspaceRepository->find($workspaceId);
-			$levelDefault = $levelRepository->findOneBy(Array("workspace"=>$workspace, "isDefault"=>true));
+			$levelDefault = $levelRepository->findOneBy(Array("workspace"=>$workspace, "isdefault"=>true));
 
 			if(!$levelDefault){
 				return false;
@@ -328,6 +328,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 				return false;
 			}
 
+			$levels = $levelRepository->findBy(Array("workspace" => $workspace));
 			$levels = $levelRepository->findBy(Array("workspace" => $workspace));
 
 			return $levels;
