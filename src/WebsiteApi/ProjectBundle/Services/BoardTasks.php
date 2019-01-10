@@ -376,7 +376,7 @@ class BoardTasks implements BoardTasksInterface
 
             $auth = !$currentUserId;
 
-            if ($currentUserId && !isset($boards[$board->getId()])) {
+            if ($currentUserId && !isset($boards[$board->getId() . ""])) {
 
                 if ($board->getisPrivate()) {
 
@@ -395,26 +395,26 @@ class BoardTasks implements BoardTasksInterface
                         /* @var Workspace $workspace */
                         $workspace = $workspace_link->getWorkspace();
 
-                        if (!isset($workspacesId[$workspace->getId()])) {
+                        if (!isset($workspacesId[$workspace->getId() . ""])) {
                             if ($this->workspaceLevels->can($workspace->getId(), $currentUserId, "tasks:read")) {
                                 $auth = true;
-                                $workspacesId[$workspace->getId()] = true;
+                                $workspacesId[$workspace->getId() . ""] = true;
                                 break;
                             } else
-                                $workspacesId[$workspace->getId()] = false;
+                                $workspacesId[$workspace->getId() . ""] = false;
                         } else {
-                            $auth = $workspacesId[$workspace->getId()];
+                            $auth = $workspacesId[$workspace->getId() . ""];
                             if ($auth)
                                 break;
                         }
                     }
 
-                    $boards[$board->getId()] = $auth;
+                    $boards[$board->getId() . ""] = $auth;
 
                 }
 
             } else if ($currentUserId) {
-                $auth = $boards[$board->getId()];
+                $auth = $boards[$board->getId() . ""];
             }
 
             if ($auth) {

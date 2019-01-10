@@ -351,7 +351,7 @@ class Workspaces implements WorkspacesInterface
                             $level->setIsAdmin($level->getisAdmin());
                             $level->setIsDefault($level->getisDefault());
                             $this->doctrine->persist($level);
-                            $old_levels_id_to_new_levels[$level->getId()] = $level;
+                            $old_levels_id_to_new_levels[$level->getId() . ""] = $level;
                         }
                     }
                     $this->doctrine->flush();
@@ -364,8 +364,8 @@ class Workspaces implements WorkspacesInterface
                         if ($member->getUser()->getId() != $currentUserId && ($config["users"] == "all" || ($config["users"] == "admins" && $member->getLevel()->getId() == $adminLevelId))) {
 
                             //Add user with good level
-                            if (isset($old_levels_id_to_new_levels[$member->getLevel()->getId()])) {
-                                $level_id = $old_levels_id_to_new_levels[$member->getLevel()->getId()]->getId();
+                            if (isset($old_levels_id_to_new_levels[$member->getLevel()->getId() . ""])) {
+                                $level_id = $old_levels_id_to_new_levels[$member->getLevel()->getId() . ""]->getId();
                                 $this->wms->addMember($workspace->getId(), $member->getUser()->getId(), false, $level_id);
                             }
 

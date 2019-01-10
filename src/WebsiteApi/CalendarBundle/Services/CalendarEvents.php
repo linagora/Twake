@@ -492,30 +492,30 @@ class CalendarEvents implements CalendarEventsInterface
 
             $auth = !$currentUserId;
 
-            if($currentUserId && !isset($calendars[$calendar->getId()])) {
+            if ($currentUserId && !isset($calendars[$calendar->getId() . ""])) {
                 $links = $this->doctrine->getRepository("TwakeCalendarBundle:LinkCalendarWorkspace")->findBy(Array("calendar" => $calendar->getId()));
 
                 foreach ($links as $workspace_link) {
                     /* @var Workspace $workspace */
                     $workspace = $workspace_link->getWorkspace();
 
-                    if(!isset($workspacesId[$workspace->getId()])) {
+                    if (!isset($workspacesId[$workspace->getId() . ""])) {
                         if ($this->workspaceLevels->can($workspace->getId(), $currentUserId, "calendar:read")) {
                             $auth = true;
-                            $workspacesId[$workspace->getId()] = true;
+                            $workspacesId[$workspace->getId() . ""] = true;
                             break;
                         } else
-                            $workspacesId[$workspace->getId()] = false;
+                            $workspacesId[$workspace->getId() . ""] = false;
                     }else {
-                        $auth = $workspacesId[$workspace->getId()];
+                        $auth = $workspacesId[$workspace->getId() . ""];
                         if($auth)
                             break;
                     }
                 }
 
-                $calendars[$calendar->getId()] = $auth;
+                $calendars[$calendar->getId() . ""] = $auth;
             } else if ($currentUserId) {
-                $auth = $calendars[$calendar->getId()];
+                $auth = $calendars[$calendar->getId() . ""];
             }
 
             $event = $auth ? $event->getAsArray() : $event->getAsArrayMinimal();

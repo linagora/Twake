@@ -80,7 +80,7 @@ class DailyCommand extends ContainerAwareCommand
             /** @var Group[] $groups */
             $groups = $manager->getRepository("TwakeWorkspacesBundle:Group")->findBy(Array());
             foreach ($groups as $group) {
-                $report["groups"][$group->getId()] = Array(
+                $report["groups"][$group->getId() . ""] = Array(
                     "name" => $group->getDisplayName(),
                     "unique_name" => $group->getName(),
                     "workspaces" => 0,
@@ -88,12 +88,12 @@ class DailyCommand extends ContainerAwareCommand
                 );
 
                 $workspaces = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array("group" => $group, "is_deleted" => 0));
-                $report["groups"][$group->getId()]["workspaces"] = count($workspaces);
+                $report["groups"][$group->getId() . ""]["workspaces"] = count($workspaces);
 
                 /** @var GroupPeriod $group_period */
                 $group_period = $manager->getRepository("TwakeWorkspacesBundle:GroupPeriod")->findOneBy(Array("group" => $group));
                 if ($group_period) {
-                    $report["groups"][$group->getId()]["usage"] = Array(
+                    $report["groups"][$group->getId() . ""]["usage"] = Array(
                         "apps_usage" => $group_period->getAppsUsagePeriod(),
                         "connexions" => $group_period->getConnexions()
                     );
