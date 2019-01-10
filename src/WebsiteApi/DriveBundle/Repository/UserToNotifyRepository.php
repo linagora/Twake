@@ -13,7 +13,7 @@ class UserToNotifyRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
 
         $qb = $qb->delete()
             ->andWhere('t.drivefile = :drivefile')
-            ->setParameter('drivefile', $drivefile);
+            ->setParameter('drivefile', $this->queryBuilderUuid($drivefile));
 
         return $qb->getQuery()->getResult();
     }

@@ -15,7 +15,7 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
 		$qb = $this->createQueryBuilder('s');
 		$qb->delete();
         $qb->where('s.streamreciever = :streamreciever');
-        $qb->setParameter('streamreciever', $stream);
+        $qb->setParameter('streamreciever', $this->queryBuilderUuid($stream));
         $qb->getQuery()->execute();
 	}
 
@@ -73,8 +73,8 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
         $qb = $this->createQueryBuilder("m");
         $qb->where('m.userSender != :idUser');
         $qb->andWhere("m.streamreciever=:idStream");
-        $qb->setParameter("idUser",$userId);
-        $qb->setParameter("idStream",$streamId);
+        $qb->setParameter("idUser", $this->queryBuilderUuid($userId));
+        $qb->setParameter("idStream", $this->queryBuilderUuid($streamId));
         $qb->orderBy("m.date","DESC");
         $qb->setMaxResults($limit);
         $result = $qb->getQuery()->getResult();
@@ -86,13 +86,13 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
 
         $qb = $this->createQueryBuilder("m");
         $qb->andWhere("m.streamreciever = :streamId")
-            ->setParameter("streamId", $streamId);
+            ->setParameter("streamId", $this->queryBuilderUuid($streamId));
 
         $qb->andWhere("m.responseto IS NULL");
 
         if($subjectId){
             $qb->andWhere("m.subject = :subject")
-                ->setParameter("subject", $subjectId);
+                ->setParameter("subject", $this->queryBuilderUuid($subjectId));
         }
 
         //TODO WILL NOT WORK

@@ -15,14 +15,14 @@ class StreamMemberRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
         $qb = $this->createQueryBuilder('s');
         $qb->delete();
         $qb->where('s.stream = :stream');
-        $qb->setParameter('stream', $stream);
+        $qb->setParameter('stream', $this->queryBuilderUuid($stream));
         $qb->getQuery()->execute();
 	}
 
 	public function findUnreadMessage($user){
         $qb = $this->createQueryBuilder('u');
         $qb->where('u.unread > 0 AND u.user = :user');
-        $qb->setParameter('user', $user);
+        $qb->setParameter('user', $this->queryBuilderUuid($user));
         $result = $qb->getQuery()->getResult();
 
         return $result;

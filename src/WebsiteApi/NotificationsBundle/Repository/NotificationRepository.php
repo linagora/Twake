@@ -36,7 +36,7 @@ class NotificationRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
 
         if ($app) {
             $qb = $qb->andWhere('m.application = :app')
-                ->setParameter("app", $app);
+                ->setParameter("app", $this->queryBuilderUuid($app));
         }
 
         $qb->groupBy("m.user");
@@ -72,7 +72,7 @@ class NotificationRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
 
         if ($app) {
             $qb = $qb->andWhere('m.application = :app')
-                ->setParameter("app", $app);
+                ->setParameter("app", $this->queryBuilderUuid($app));
         }
 
         return $qb->getQuery()->execute();
@@ -86,14 +86,14 @@ class NotificationRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
             ->update()
             ->set('m.mail_sent', $qb->expr()->literal($number_of_mails + 1))
             ->where('m.user = :user')
-            ->setParameter("user", $user);
+            ->setParameter("user", $this->queryBuilderUuid($user));
         return $qb->getQuery()->execute();
     }
 
     public function getAppNoMessages($app){
         $qb = $this->createQueryBuilder('n');
         $qb->where('n.application != :app');
-        $qb->setParameter('app',$app);
+        $qb->setParameter('app', $this->queryBuilderUuid($app));
 
         return $qb->getQuery()->getResult();
     }

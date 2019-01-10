@@ -16,7 +16,7 @@ class WorkspaceLevelRepository extends \WebsiteApi\CoreBundle\Services\DoctrineA
             ->andWhere('p.label like :label')
             ->andWhere('p.workspace = :workspace')
             ->setParameter('label', '%'.$label.'%')
-            ->setParameter('workspace', $workspace)
+            ->setParameter('workspace', $this->queryBuilderUuid($workspace))
             ->setMaxResults(10)
             ->getQuery();
 

@@ -14,7 +14,7 @@ class GroupPeriodRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdap
         $qb = $this->createQueryBuilder('f')
             ->select('max(f.periodStartedAt)')
             ->where('f.group = :group')
-            ->setParameter("group", $group);
+            ->setParameter("group", $this->queryBuilderUuid($group));
 
         $lastDate = $qb->getQuery()->getResult()[0];
 
@@ -23,7 +23,7 @@ class GroupPeriodRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdap
             ->select('f')
             ->where('f.group = :group')
             ->andWhere('f.periodStartedAt = :last_date')
-            ->setParameter("group", $group)
+            ->setParameter("group", $this->queryBuilderUuid($group))
             ->setParameter("last_date", $lastDate);
 
         return $qb->getQuery()->getResult()[0];

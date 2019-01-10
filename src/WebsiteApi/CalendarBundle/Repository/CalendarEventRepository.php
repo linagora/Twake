@@ -15,7 +15,7 @@ class CalendarEventRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAd
         $qb = $this->createQueryBuilder('e');
         $qb->delete();
         $qb->where('e.calendar = :calendar');
-        $qb->setParameter('calendar', $calendar);
+        $qb->setParameter('calendar', $this->queryBuilderUuid($calendar));
         $q = $qb->getQuery();
 
         return $q->getResult();
@@ -48,7 +48,7 @@ class CalendarEventRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAd
     public function getAllCalendarEventsByCalendar($calendarId){
         $qb = $this->createQueryBuilder('e');
         $qb->where($qb->expr()->in('e.calendar', '?1'))
-            ->setParameter(1, $calendarId);
+            ->setParameter(1, $this->queryBuilderUuid($calendarId));
         $q= $qb->getQuery();
 
         return $q->getResult();

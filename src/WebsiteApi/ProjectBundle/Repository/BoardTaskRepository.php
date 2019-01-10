@@ -15,7 +15,7 @@ class BoardTaskRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
         $qb = $this->createQueryBuilder('e');
         $qb->delete();
         $qb->where('e.board = :board');
-        $qb->setParameter('board', $board);
+        $qb->setParameter('board', $this->queryBuilderUuid($board));
         $q = $qb->getQuery();
 
         return $q->getResult();
@@ -48,7 +48,7 @@ class BoardTaskRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
     public function getAllBoardTasksByBoard($boardId){
         $qb = $this->createQueryBuilder(e);
         $qb->where($qb->expr()->in('e.board', '?1'))
-            ->setParameter(1, $boardId);
+            ->setParameter(1, $this->queryBuilderUuid($boardId));
         $q= $qb->getQuery();
 
         return $q->getResult();

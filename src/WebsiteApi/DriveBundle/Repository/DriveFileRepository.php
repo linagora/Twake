@@ -23,7 +23,7 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
                     ->setParameter("group", $this->queryBuilderUuid($group->getId()));
             } else {
                 $qb = $qb->where('f.parent = :directory')
-                    ->setParameter("directory", $directory);
+                    ->setParameter("directory", $this->queryBuilderUuid($directory));
             }
 
             return $qb->getQuery()->getSingleScalarResult();
@@ -89,7 +89,7 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
             $qb = $qb->setParameter("query", "%".$query."%");
         }
 
-        $qb = $qb->setParameter("group", $group);
+        $qb = $qb->setParameter("group", $this->queryBuilderUuid($group));
 
         $qb = $qb->setMaxResults($max);
         $qb = $qb->setFirstResult($offset);

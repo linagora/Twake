@@ -14,7 +14,7 @@ class SubscriptionRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
         $qb = $this->createQueryBuilder('f')
             ->select('max(f.id)')
             ->where('f.group = :group')
-            ->setParameter("group", $group);
+            ->setParameter("group", $this->queryBuilderUuid($group));
 
         $lastId = $qb->getQuery()->getResult()[0];
 
@@ -23,8 +23,8 @@ class SubscriptionRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
             ->select('f')
             ->where('f.group = :group')
             ->andWhere('f.id = :last_id')
-            ->setParameter("group", $group)
-            ->setParameter("last_id", $lastId);
+            ->setParameter("group", $this->queryBuilderUuid($group))
+            ->setParameter("last_id", $this->queryBuilderUuid($lastId));
 
         return $qb->getQuery()->getResult()[0];
     }

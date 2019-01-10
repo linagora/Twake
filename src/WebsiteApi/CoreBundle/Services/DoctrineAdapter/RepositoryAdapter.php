@@ -78,7 +78,10 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
         $return = Array();
         foreach ($list as $el) {
-            if (!is_integer($el)) {
+            if (is_object($el) && method_exists($el, "getId")) {
+                $el = $el->getId();
+            }
+            if (is_string($el) || get_class($el) == "Ramsey\Uuid\Uuid") {
                 $hex = str_replace("-", "", $el);
                 $value = substr($hex, 12, 4) . substr($hex, 8, 4) . substr($hex, 0, 8) . substr($hex, 16, 4) . substr($hex, 20);
                 $return[] = $value;
