@@ -18,7 +18,7 @@ class BoardController extends Controller
         $final = Array();
 
         foreach($list as $item) {
-            if(is_int($item))
+            if (is_string($item) || get_class($item) == "Ramsey\Uuid\Uuid")
                 return $list;
             $final[] = $item["id"];
         }

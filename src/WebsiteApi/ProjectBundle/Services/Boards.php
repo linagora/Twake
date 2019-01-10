@@ -42,7 +42,7 @@ class Boards implements BoardsInterface
     }
 
     public function getBoard($board){
-        if(is_int($board))
+        if (is_string($board) || get_class($board) == "Ramsey\Uuid\Uuid")
             $board = $this->doctrine->getRepository("TwakeProjectBundle:Board")->findOneBy(Array("id" => $board));
 
         $listoftasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findBy(Array("board" => $board));
@@ -137,7 +137,7 @@ class Boards implements BoardsInterface
                     /* @var Board $res */
                     if ($res->getisPrivate()) {
                         $participants = $res->getParticipants();
-                        if(in_array($currentUserId,$participants))
+                        if (in_array($currentUserId . "", $participants))
                             $final[] = $res;
                     } else
                         $final[] = $res;
@@ -185,7 +185,7 @@ class Boards implements BoardsInterface
     public function createBoard($workspaceId, $title, $description, $isPrivate, $currentUserId = null, $userIdParticipants = Array())
     {
 
-        if ($currentUserId && $isPrivate && !in_array($currentUserId, $userIdParticipants)) {
+        if ($currentUserId && $isPrivate && !in_array($currentUserId . "", $userIdParticipants)) {
             $userIdParticipants[] = $currentUserId;
         }
 
@@ -242,7 +242,7 @@ class Boards implements BoardsInterface
     public function updateBoard($boardId, $title, $description, $isPrivate, $currentUserId = null, $autoParticipate = Array(), $userIdParticipants = Array())
     {
 
-        if ($currentUserId && $isPrivate && !in_array($currentUserId, $userIdParticipants)) {
+        if ($currentUserId && $isPrivate && !in_array($currentUserId . "", $userIdParticipants)) {
             $userIdParticipants[] = $currentUserId;
         }
 

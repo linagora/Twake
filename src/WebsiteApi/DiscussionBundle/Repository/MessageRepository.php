@@ -122,7 +122,7 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
         $qb->andWhere("m.streamreciever = :streamId")
             ->setParameter("streamId", $this->queryBuilderUuid($streamId));
 
-        $qb->andWhere("m.responseto IN (" . join(",", $this->queryBuilderUuid($headIds)) . ")");
+        $qb->andWhere($qb->expr()->in("m.responseto", $this->queryBuilderUuid($headIds)));
 
         if ($subjectId) {
             $qb->andWhere("m.subject = :subject")

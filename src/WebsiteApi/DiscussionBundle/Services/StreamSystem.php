@@ -66,7 +66,7 @@ class StreamSystem implements StreamSystemInterface
     public function createStreamFromApp($workspaceId, $streamName, $streamDescription, $streamIsPrivate, $type, $members = Array(), $currentUserId = null)
     {
 
-        if ($currentUserId && $streamIsPrivate && !in_array($currentUserId, $members)) {
+        if ($currentUserId && $streamIsPrivate && !in_array($currentUserId . "", $members)) {
             $members[] = $currentUserId;
         }
 
@@ -111,7 +111,7 @@ class StreamSystem implements StreamSystemInterface
     public function createStream($user, $workspaceId, $streamName, $streamDescription, $streamIsPrivate, $type = "stream", $members = Array(), $currentUserId = null)
     {
 
-        if ($currentUserId && $streamIsPrivate && !in_array($currentUserId, $members)) {
+        if ($currentUserId && $streamIsPrivate && !in_array($currentUserId . "", $members)) {
             $members[] = $currentUserId;
         }
 
@@ -224,7 +224,7 @@ class StreamSystem implements StreamSystemInterface
     public function editStreamFromApp($streamKey, $name, $streamDescription, $isPrivate, $members, $currentUserId = null)
     {
 
-        if ($currentUserId && $isPrivate && !in_array($currentUserId, $members)) {
+        if ($currentUserId && $isPrivate && !in_array($currentUserId . "", $members)) {
             $members[] = $currentUserId;
         }
 
@@ -246,7 +246,7 @@ class StreamSystem implements StreamSystemInterface
             $this->doctrine->persist($stream);
             $membersInStream = $stream->getMembers();
             foreach ($membersInStream as $member) {
-                if (!in_array($member->getId(), $members)) { // user remove
+                if (!in_array($member->getId() . "", $members)) { // user remove
                     $link = $stream->getLinkUser($member);
                     if ($link) {
                         $this->doctrine->remove($link);
@@ -272,7 +272,7 @@ class StreamSystem implements StreamSystemInterface
     public function editStream($user, $streamKey, $name, $streamDescription, $isPrivate, $members, $currentUserId = null)
     {
 
-        if ($currentUserId && $isPrivate && !in_array($currentUserId, $members)) {
+        if ($currentUserId && $isPrivate && !in_array($currentUserId . "", $members)) {
             $members[] = $currentUserId;
         }
 
@@ -300,7 +300,7 @@ class StreamSystem implements StreamSystemInterface
             $this->doctrine->persist($stream);
             $membersInStream = $stream->getMembers();
             foreach ($membersInStream as $member) {
-                if (!in_array($member->getId(), $members)) { // user remove
+                if (!in_array($member->getId() . "", $members)) { // user remove
                     $link = $stream->getLinkUser($member);
                     if ($link) {
                         $this->doctrine->remove($link);

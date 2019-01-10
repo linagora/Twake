@@ -833,12 +833,12 @@ class Workspaces implements WorkspacesInterface
 
             $notificationPreference = $currentUser->getNotificationPreference();
             $disabled_ws = $notificationPreference["disabled_workspaces"];
-            if (in_array($workspaceId, $disabled_ws) && $workspaceUser->getHasNotifications()){
+            if (in_array($workspaceId . "", $disabled_ws) && $workspaceUser->getHasNotifications()) {
                 $position = array_search($workspaceId,$disabled_ws);
                 unset($disabled_ws[$position]);
             }
 
-            if (!in_array($workspaceId, $disabled_ws) && !$workspaceUser->getHasNotifications()){
+            if (!in_array($workspaceId . "", $disabled_ws) && !$workspaceUser->getHasNotifications()) {
                 array_push($disabled_ws, $workspaceId);
             }
 

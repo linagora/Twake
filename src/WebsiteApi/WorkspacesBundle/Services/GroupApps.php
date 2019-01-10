@@ -164,7 +164,7 @@ class GroupApps implements GroupAppsInterface
         }else{
 
             $appUsed = $groupuser->getUsedAppsToday();
-            if (in_array($appid, $appUsed)) {
+            if (in_array($appid . "", $appUsed)) {
                 return true;
             }else{
 

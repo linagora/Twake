@@ -266,7 +266,7 @@ class CalendarEvents implements CalendarEventsInterface
                     $userLinked->setFrom($event->getFrom());
                     $userLinked->setTo($event->getTo());
                     $this->doctrine->persist($userLinked);
-                    if (!in_array($user->getId(), $participantArray)) {
+                    if (!in_array($user->getId() . "", $participantArray)) {
                         $participantArray[] = $user->getId();
                     }
                 }

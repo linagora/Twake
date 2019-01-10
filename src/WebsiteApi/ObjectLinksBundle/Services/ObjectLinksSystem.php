@@ -181,12 +181,12 @@ class ObjectLinksSystem
         foreach ($relations as $relation){
             /* @var ObjectLinks $relation*/
             $toDelete = false;
-            if(in_array($relation->getIdA(),$linkedIdsToDelete)){
+            if (in_array($relation->getIdA() . "", $linkedIdsToDelete)) {
                 if($linkedIdsType[$relation->getIdA()]==$relation->getTypeA()){
                     $toDelete = [$relation->getIdA(), $relation->getTypeA()];
                 }
             }
-            if(in_array($relation->getIdB(),$linkedIdsToDelete)){
+            if (in_array($relation->getIdB() . "", $linkedIdsToDelete)) {
                 if($linkedIdsType[$relation->getIdB()]==$relation->getTypeB()){
                     $toDelete = [$relation->getIdB(), $relation->getTypeB()];
                 }
