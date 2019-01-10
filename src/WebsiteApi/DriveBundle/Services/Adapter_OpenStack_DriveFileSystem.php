@@ -94,7 +94,10 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
     protected function writeEncode($path, $key, $content, $mode = null)
     {
-        $path = tempnam(sys_get_temp_dir(), 'twake_drive_');
+        $path = dirname($path);
+        if (!file_exists($path)) {
+            mkdir($path, 0777, true);
+        }
 
         if (!$content) {
             return;
