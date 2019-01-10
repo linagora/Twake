@@ -38,7 +38,7 @@ $translation = Array(
 
     "drive.twake" => "Twake",
     "drive.rules" => "Règles.docx",
-    "drive.ruleText" => "Ne pas fumez pas l'herbe du jardin",
+    "drive.ruleText" => "Ne pas écouter la musique à fond dans l'openspace",
     "drive.welcome" => "Bienvenue.docx",
     "drive.welcomeText" => "Bienvenue sur Twake ! \nNous sommes très heureux de vous accueillir sur notre plateforme. :D",
 
