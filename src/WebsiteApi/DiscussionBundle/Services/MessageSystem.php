@@ -388,7 +388,7 @@ class MessageSystem implements MessagesSystemInterface
         return $messages;
     }
 
-    public function getMessages($key, $maxId, $subjectId, $user, $maxResult=50)
+    public function getMessages($key, $maxDate, $subjectId, $user, $maxResult = 50)
     {
 
         $stream = $this->getStream($key, $user->getId());
@@ -402,7 +402,7 @@ class MessageSystem implements MessagesSystemInterface
         $recieverId = $vals["id"];
         $recieverType = $vals["type"];
 
-        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverId, $maxId, $subjectId, $maxResult);
+        $messages = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findWithOffsetId($recieverId, $maxDate, $subjectId, $maxResult);
 
         $headIds = [];
         foreach ($messages as $message) {

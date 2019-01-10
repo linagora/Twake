@@ -29,7 +29,7 @@ class DiscussionController extends Controller
                 $offsetId = $request->request->get("offsetId");
                 $messages = $this->get("app.messages")->getMessages(
                     "s-" . $request->request->get("streamId"),
-                    $offsetId,
+                    $offsetId, //Now a timestamp with milliseconds
                     $request->request->get("subject"),
                     $this->getUser(),
                     $request->request->getInt("max", 50)

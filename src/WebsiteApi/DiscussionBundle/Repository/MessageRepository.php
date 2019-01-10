@@ -81,7 +81,7 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
         return $result;
     }
 
-    public function findWithOffsetId($streamId, $maxId, $subjectId, $maxResult = 50)
+    public function findWithOffsetId($streamId, $maxDate, $subjectId, $maxResult = 50)
     {
 
         $qb = $this->createQueryBuilder("m");
@@ -95,10 +95,11 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
                 ->setParameter("subject", $this->queryBuilderUuid($subjectId));
         }
 
-        //TODO WILL NOT WORK
-        if($maxId>=0){
-            $qb->andWhere("m.id < :max")
-                ->setParameter("max",($maxId-1));
+        if ($maxDate >= 0) {
+            $date = new \DateTime();
+            $date->setTimestamp(intval($maxDate) / 1000);
+            $qb->andWhere("m.date < :max")
+                ->setParameter("max", $date);
         }
 
         $qb->orderBy('m.date', 'DESC');
