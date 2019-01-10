@@ -64,4 +64,32 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         return $a;
     }
 
+    public function queryBuilderUuid($list)
+    {
+
+        $not_array = false;
+        if (!is_array($list)) {
+            $not_array = true;
+            $list = [$list];
+        }
+
+        $return = Array();
+        foreach ($list as $el) {
+            if (!is_integer($el)) {
+                $hex = str_replace("-", "", $el);
+                $value = substr($hex, 12, 4) . substr($hex, 8, 4) . substr($hex, 0, 8) . substr($hex, 16, 4) . substr($hex, 20);
+                $return[] = $value;
+            } else {
+                $return[] = $el;
+            }
+        }
+
+        if ($not_array) {
+            $return = $return[0];
+        }
+
+        return $return;
+
+    }
+
 }

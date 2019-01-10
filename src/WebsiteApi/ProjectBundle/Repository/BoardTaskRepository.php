@@ -29,7 +29,7 @@ class BoardTaskRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
         $qb->andWhere($qb->expr()->in('e.board', '?3'));
         $qb->setParameter(1, $from);
         $qb->setParameter(2, $to);
-        $qb->setParameter(3, $boardsId);
+        $qb->setParameter(3, $this->queryBuilderUuid($boardsId));
         $q= $qb->getQuery();
 
         return $q->getResult();

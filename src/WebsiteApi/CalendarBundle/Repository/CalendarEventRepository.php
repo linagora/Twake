@@ -23,18 +23,13 @@ class CalendarEventRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAd
 
     public function getCalendarsEventsBy($from, $to, $calendarsId){
 
-        $_calendarsId = Array();
-        foreach ($calendarsId as $id) {
-            $_calendarsId[] = hex2bin(str_replace("-", "", $id));
-        }
-
         $qb = $this->createQueryBuilder('e');
         $qb->where($qb->expr()->gte('e.to', '?1'));
         $qb->andWhere($qb->expr()->lte('e.from', '?2'));
         $qb->andWhere($qb->expr()->in('e.calendar', '?3'));
         $qb->setParameter(1, $from);
         $qb->setParameter(2, $to);
-        $qb->setParameter(3, $_calendarsId);
+        $qb->setParameter(3, $this->queryBuilderUuid($calendarsId));
         $q= $qb->getQuery();
 
         return $q->getResult();
