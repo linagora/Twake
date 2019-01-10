@@ -155,9 +155,9 @@ class ApplicationController extends Controller
     public function getAppByPublicKeyAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $publicKey = $request->request->get("publicKey");
+        $publickey = $request->request->get("publicKey");
 
-        $apps_obj = $this->get("website_api_market.applications")->getAppByPublicKey($publicKey);
+        $apps_obj = $this->get("website_api_market.applications")->getAppByPublicKey($publickey);
 
         if($apps_obj == null){
             $response["errors"][] = "notallowed";

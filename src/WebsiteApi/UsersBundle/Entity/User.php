@@ -121,14 +121,14 @@ class User implements UserInterface
     /**
      * @ORM\Column(name="username_canonical", type="string", length=64, options={"index": true})
      */
-    protected $usernameCanonical;
+    protected $usernamecanonical;
 
     protected $email;
 
     /**
      * @ORM\Column(name="email_canonical", type="string", length=512, options={"index": true})
      */
-    protected $emailCanonical;
+    protected $emailcanonical;
 
     /**
      * @ORM\Column(type="twake_boolean")
@@ -515,12 +515,12 @@ class User implements UserInterface
         return serialize(array(
             $this->password,
             $this->salt,
-            $this->usernameCanonical,
+            $this->usernamecanonical,
             $this->username,
             $this->enabled,
             $this->id,
             $this->email,
-            $this->emailCanonical,
+            $this->emailcanonical,
         ));
     }
 
@@ -544,12 +544,12 @@ class User implements UserInterface
         list(
             $this->password,
             $this->salt,
-            $this->usernameCanonical,
+            $this->usernamecanonical,
             $this->username,
             $this->enabled,
             $this->id,
             $this->email,
-            $this->emailCanonical
+            $this->emailcanonical
             ) = $data;
     }
 
@@ -574,7 +574,7 @@ class User implements UserInterface
      */
     public function getusernameCanonical()
     {
-        return $this->usernameCanonical;
+        return $this->usernamecanonical;
     }
 
     /**
@@ -598,7 +598,7 @@ class User implements UserInterface
      */
     public function getemailCanonical()
     {
-        return $this->emailCanonical;
+        return $this->emailcanonical;
     }
 
     /**
@@ -702,7 +702,7 @@ class User implements UserInterface
     public function setUsername($username)
     {
         $this->username = $username;
-        $this->usernameCanonical = $username;
+        $this->usernamecanonical = $username;
 
         return $this;
     }
@@ -710,9 +710,9 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function setusernameCanonical($usernameCanonical)
+    public function setusernameCanonical($usernamecanonical)
     {
-        $this->usernameCanonical = $usernameCanonical;
+        $this->usernamecanonical = $usernamecanonical;
 
         return $this;
     }
@@ -733,7 +733,7 @@ class User implements UserInterface
     public function setEmail($email)
     {
         $this->email = $email;
-        $this->emailCanonical = $email;
+        $this->emailcanonical = $email;
 
         return $this;
     }
@@ -741,9 +741,9 @@ class User implements UserInterface
     /**
      * {@inheritdoc}
      */
-    public function setemailCanonical($emailCanonical)
+    public function setemailCanonical($emailcanonical)
     {
-        $this->emailCanonical = $emailCanonical;
+        $this->emailcanonical = $emailcanonical;
 
         return $this;
     }

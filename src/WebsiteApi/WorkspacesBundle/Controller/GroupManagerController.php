@@ -58,7 +58,7 @@ class GroupManagerController extends Controller
         $username = str_replace(Array("@", " "), "", $username);
 
         $userRepository = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("usernameCanonical" => $username));
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => $username));
 
         if(!$user){
             $response["errors"][] = "usernotfound";

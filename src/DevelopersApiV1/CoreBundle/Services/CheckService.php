@@ -29,10 +29,10 @@ class CheckService
             $exploser2 = explode(":",base64_decode($explode1[1]));
 
             if (count($exploser2) == 2){
-                $publicKey = $exploser2[0];
+                $publickey = $exploser2[0];
                 $privateKey = $exploser2[1];
 
-                $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey"=> $publicKey));
+                $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => $publickey));
 
                 if ($application != null){
                     $key = $application->getPrivateKey();

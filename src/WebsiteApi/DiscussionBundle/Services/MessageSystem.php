@@ -620,7 +620,7 @@ class MessageSystem implements MessagesSystemInterface
     {
 
         $token = "twake-" . bin2hex(random_bytes(20));
-        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calls"));
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "calls"));
 
         $url = Array("iframe" => "./calls.html?token=$token");
 

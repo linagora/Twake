@@ -105,7 +105,7 @@ class InitCommand extends ContainerAwareCommand
         }
 
         //Création de l'user twake_bot
-        $twake_bot = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernameCanonical" => "twake_bot"));
+        $twake_bot = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "twake_bot"));
         if($twake_bot==null){
             $twake_bot = new User();
         }
@@ -119,7 +119,7 @@ class InitCommand extends ContainerAwareCommand
         $manager->persist($twake_bot);
 
         // Création des applications de base
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "messages"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "messages"));
         if (!$app) {
             $app = new Application();
         }
@@ -145,7 +145,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setCgu("");
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "drive"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "drive"));
         if (!$app) {
             $app = new Application();
         }
@@ -170,7 +170,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setCgu("");
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calendar"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "calendar"));
         if (!$app) {
             $app = new Application();
         }
@@ -195,7 +195,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setCgu("");
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "tasks"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "tasks"));
         if (!$app) {
             $app = new Application();
         }
@@ -220,7 +220,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setCgu("");
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "imageviewer"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "imageviewer"));
         if (!$app) {
             $app = new Application();
         }
@@ -246,7 +246,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setFilesTypes(Array("main" => Array("png","jpg","jpeg","gif","bmp","tiff"), "other" => Array()));
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "pdfviewer"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "pdfviewer"));
         if (!$app) {
             $app = new Application();
         }
@@ -272,7 +272,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setFilesTypes(Array("main" => Array("pdf"), "other" => Array()));
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "note"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "note"));
         if (!$app) {
             $app = new Application();
         }
@@ -298,7 +298,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setFilesTypes(Array("main" => Array("php", "c", "cpp", "py", "html", "yml", "json", "txt", "md", "js", "xml", "php"), "other" => Array()));
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calls"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "calls"));
         if (!$app) {
             $app = new Application();
         }
@@ -908,7 +908,7 @@ class InitCommand extends ContainerAwareCommand
         ];
 
         foreach ($apps as $application){
-            $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => $application[3]));
+            $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => $application[3]));
             if (!$app) {
                 $app = new Application();
             }

@@ -40,7 +40,7 @@ class CheckRight
 		}
 
 		if (isset($requestGlobal["publicKey"])) {
-			$publicKey = $requestGlobal["publicKey"];
+            $publickey = $requestGlobal["publicKey"];
 		} else {
 			return Array("errors" => [1011]);
 		}
@@ -60,7 +60,7 @@ class CheckRight
 		}
 
 		$application = $this->doctrine->getRepository("TwakeMarketBundle:Application")
-			->findOneBy(Array("publicKey" => $publicKey));
+            ->findOneBy(Array("publickey" => $publickey));
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
 
 

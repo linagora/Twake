@@ -26,7 +26,7 @@ class AdministrationAuthentication implements AdministrationAuthenticationInterf
 	    $adminUserRepo  = $em->getRepository("AdministrationAuthenticationBundle:AdminUser"); //Entity Repository
         $repo  = $em->getRepository("TwakeUsersBundle:User"); //Entity Repository
 
-        $twakeUser = $repo->findOneBy(Array("usernameCanonical" => $username));
+        $twakeUser = $repo->findOneBy(Array("usernamecanonical" => $username));
 	    if($twakeUser == null){
 			return null;
 	    }

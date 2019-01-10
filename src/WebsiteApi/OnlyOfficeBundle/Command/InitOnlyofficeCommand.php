@@ -48,7 +48,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $serverbase = $this->getContainer()->getParameter('SERVER_NAME') . "/";
 
         // Création des applications
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "onlyoffice_presentation"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "onlyoffice_presentation"));
         if (!$app) {
             $app = new Application();
         }
@@ -75,7 +75,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $manager->persist($app);
 
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "onlyoffice_document"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "onlyoffice_document"));
         if (!$app) {
             $app = new Application();
         }
@@ -102,7 +102,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $manager->persist($app);
 
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "onlyoffice_spreadsheet"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "onlyoffice_spreadsheet"));
         if (!$app) {
             $app = new Application();
         }

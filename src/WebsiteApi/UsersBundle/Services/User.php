@@ -93,9 +93,9 @@ class User implements UserInterface
     {
 
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("usernameCanonical" => $this->string_cleaner->simplifyUsername($usernameOrMail)));
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => $this->string_cleaner->simplifyUsername($usernameOrMail)));
         if ($user == null) {
-            $user = $userRepository->findOneBy(Array("emailCanonical" => $this->string_cleaner->simplifyMail($usernameOrMail)));
+            $user = $userRepository->findOneBy(Array("emailcanonical" => $this->string_cleaner->simplifyMail($usernameOrMail)));
         }
 
         if ($user == null) {
@@ -125,9 +125,9 @@ class User implements UserInterface
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-        $user = $userRepository->findOneBy(Array("usernameCanonical" => $this->string_cleaner->simplifyUsername($usernameOrMail)));
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => $this->string_cleaner->simplifyUsername($usernameOrMail)));
 		if($user==null){
-            $user = $userRepository->findOneBy(Array("emailCanonical" => $this->string_cleaner->simplifyMail($usernameOrMail)));
+            $user = $userRepository->findOneBy(Array("emailcanonical" => $this->string_cleaner->simplifyMail($usernameOrMail)));
 		}
 
 		if($user==null){
@@ -204,7 +204,7 @@ class User implements UserInterface
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		/* @var \WebsiteApi\UsersBundle\Entity\User $user */
-        $user = $userRepository->findOneBy(Array("emailCanonical" => $mail));
+        $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
 
 		if($user != null) {
 			$verificationNumberMail = new VerificationNumberMail($mail);
@@ -247,7 +247,7 @@ class User implements UserInterface
 
 		if($ticket != null) {
 			if($ticket->verifyCode($code)){
-                $user = $userRepository->findOneBy(Array("emailCanonical" => $ticket->getMail()));
+                $user = $userRepository->findOneBy(Array("emailcanonical" => $ticket->getMail()));
 				if($user != null){
 
 					$encoder = $factory->getEncoder($user);
@@ -279,7 +279,7 @@ class User implements UserInterface
 
         //Check user doesn't exists
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("emailCanonical" => $mail));
+        $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
         //Check mail doesn't exists
         $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
         $mailExists = $mailsRepository->findOneBy(Array("mail"=>$mail));
@@ -290,7 +290,7 @@ class User implements UserInterface
 
         //Check pseudo doesn't exists
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("usernameCanonical" => $pseudo));
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
         if($user != null){
             $retour[] = -2;
         }
@@ -393,7 +393,7 @@ class User implements UserInterface
 
 		//Check mail doesn't exists
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("emailCanonical" => $mail));
+        $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
 		if($user != null){
 			return false;
 		}
@@ -435,7 +435,7 @@ class User implements UserInterface
 
 		//Check pseudo doesn't exists
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("usernameCanonical" => $pseudo));
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
 		if($user != null){
             error_log("*** HELLO A ***");
 			return false;
@@ -560,7 +560,7 @@ class User implements UserInterface
 		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
 		$user = $userRepository->find($userId);
 
-        $userWithThisMailAsMainMail = $userRepository->findOneBy(Array("emailCanonical" => $mail));
+        $userWithThisMailAsMainMail = $userRepository->findOneBy(Array("emailcanonical" => $mail));
 
         $res = false;
 
@@ -620,7 +620,7 @@ class User implements UserInterface
 
 		if($ticket != null && $user!=null) {
 			if($ticket->verifyCode($code)){
-                $userWithMail = $userRepository->findOneBy(Array("emailCanonical" => $ticket->getMail()));
+                $userWithMail = $userRepository->findOneBy(Array("emailcanonical" => $ticket->getMail()));
 
 				if($userWithMail == null){
 					$mailExists = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$ticket->getMail()));
@@ -695,7 +695,7 @@ class User implements UserInterface
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$user = $userRepository->find($userId);
 
-        $otherUser = $userRepository->findOneBy(Array("usernameCanonical" => $pseudo));
+        $otherUser = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
 		if($otherUser != null && $otherUser->getId()!=$userId){
 			return false;
 		}
@@ -883,7 +883,7 @@ class User implements UserInterface
     public function removeUserByUsername($username)
     {
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("usernameCanonical" => $username));
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => $username));
 
         if (!$user) {
             return false;

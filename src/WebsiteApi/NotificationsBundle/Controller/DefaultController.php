@@ -11,7 +11,7 @@ class DefaultController extends Controller
     public function initAction()
     {
 
-        $messages = $this->get("app.twake_doctrine")->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "messages"));
+        $messages = $this->get("app.twake_doctrine")->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "messages"));
 
         $notifs = $this->get("app.notifications")->getAll($this->getUser());
     	$data = Array();

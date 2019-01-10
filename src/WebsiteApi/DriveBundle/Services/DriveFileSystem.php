@@ -1501,7 +1501,7 @@ class DriveFileSystem implements DriveFileSystemInterface
 
         while ($time_elapsed_secs < 60) {
             /* @var DriveFile $file */
-            $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("previewHasBeenGenerated" => false));
+            $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("previewhasbeengenerated" => false));
             if (!$file) {
                 sleep(1);
             }else {

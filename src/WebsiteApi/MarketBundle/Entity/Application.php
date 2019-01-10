@@ -153,7 +153,7 @@ class Application
 	/**
      * @ORM\Column(name="publickey", type="text",nullable=true, options={"index"=true})
 	 */
-    protected $publicKey;
+    protected $publickey;
 
 	/**
      * @ORM\Column(type="twake_boolean" )
@@ -318,12 +318,12 @@ class Application
 
 	public function getPublicKey()
 	{
-        return $this->publicKey;
+        return $this->publickey;
 	}
 
 	public function setPublicKey($x)
 	{
-        $this->publicKey = $x;
+        $this->publickey = $x;
 	}
 
 	public function newVote($score)

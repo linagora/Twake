@@ -94,7 +94,7 @@ class WebTestCaseExtended extends WebTestCase
     public function newWorkspace($groupId){
         $userRepository = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User");
        // $user = $userRepository->findByName("phpunit");
-        $user = $userRepository->findOneBy(Array("usernameCanonical" => "phpunit"));
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => "phpunit"));
         if (count($user) == 0) {
             $user = $this->newUser();
         }

@@ -154,7 +154,7 @@ class Workspaces implements WorkspacesInterface
         $this->doctrine->persist($workspace);
         $this->doctrine->flush();
 
-        $twakebot = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernameCanonical" => "twake_bot"));
+        $twakebot = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "twake_bot"));
         $twakebotId = $twakebot->getId();
 
 
@@ -661,7 +661,7 @@ class Workspaces implements WorkspacesInterface
         }
 
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-        $workspace = $workspaceRepository->findOneBy(Array("uniqueName" => $workspaceName, "group" => $group, "is_deleted" => 0));
+        $workspace = $workspaceRepository->findOneBy(Array("uniquename" => $workspaceName, "group" => $group, "is_deleted" => 0));
 
         if($workspace != null){
             return $workspace->getAsArray();

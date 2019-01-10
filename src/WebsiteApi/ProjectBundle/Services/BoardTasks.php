@@ -523,7 +523,7 @@ class BoardTasks implements BoardTasksInterface
         $tasks = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")->toRemind();
         $linkRepo = $this->doctrine->getRepository("TwakeProjectBundle:LinkTaskUser");
 
-        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "board"));
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "board"));
 
         foreach ($tasks as $task) {
 

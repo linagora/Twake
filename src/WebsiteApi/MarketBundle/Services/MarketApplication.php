@@ -65,7 +65,7 @@ class MarketApplication implements MarketApplicationInterface
     }
 
     public function getDefaultUrlOpener(){
-        return $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "default_url_opener"));
+        return $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "default_url_opener"));
     }
 
     public function addSearchWord($app, $searchWork){
@@ -84,9 +84,10 @@ class MarketApplication implements MarketApplicationInterface
         return $applications;
     }
 
-    public function getAppByPublicKey($publicKey){
+    public function getAppByPublicKey($publickey)
+    {
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $applications = $applicationRepository->findOneBy(Array("publicKey" => $publicKey));
+        $applications = $applicationRepository->findOneBy(Array("publickey" => $publickey));
 
         return $applications;
     }
