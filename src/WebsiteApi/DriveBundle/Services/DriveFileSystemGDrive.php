@@ -258,7 +258,7 @@ class DriveFileSystemGDrive
 
     public function create($workspace, $directoryId, $filename, $content = "", $isDirectory)
     {
-        if ($directoryId == 0) {
+        if ($directoryId . "" == "0") {
             $directoryId = null;
         }
 
@@ -338,7 +338,7 @@ class DriveFileSystemGDrive
     public function listDirectory($workspaceId, $directory)
     {
         $workspace = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
-        if($directory===0)
+        if ($directory . "" == "0")
             $directory = "sharedWithMe or 'root'";//
         else{
             $directory = "'".$directory."'";

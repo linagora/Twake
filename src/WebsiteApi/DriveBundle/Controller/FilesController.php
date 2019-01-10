@@ -368,7 +368,7 @@ class FilesController extends Controller
 
                 $genArbo = true;
 
-                if ($isInTrash && $parentId == 0) {
+                if ($isInTrash && $parentId . "" == "0") {
                     $files = $fileSystem->listTrash($groupId, $parentId);
                 } else {
                     $files = $fileSystem->listDirectory($groupId, $parentId);

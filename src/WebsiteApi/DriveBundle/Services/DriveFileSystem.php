@@ -513,7 +513,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false, $url =null, $userId = 0, $userApp = null)
     {
 
-        if ($directory == 0 || $detached_file) {
+        if ($directory . "" == "0" || $detached_file) {
             $directory = null;
         }
 
@@ -1133,7 +1133,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         /* @var DriveFile $file */
         $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $newVersion));
         $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $userId));
-        if($userId==0)
+        if ($userId . "" == "0")
             $user = null;
         $file->setName($fileData["name"]);
         $file->setPreviewHasBeenGenerated(false);
@@ -1193,7 +1193,7 @@ class DriveFileSystem implements DriveFileSystemInterface
     {
         $newFile = $this->create($workspace, $directory, $file["name"], "", false, $detached, null,$userId,$userApp);
         $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $userId));
-        if($userId==0)
+        if ($userId . "" == "0")
             $user = null;
         if (!$file) {
             return false;

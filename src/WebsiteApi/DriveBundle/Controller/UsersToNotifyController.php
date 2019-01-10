@@ -26,7 +26,7 @@ class UsersToNotifyController extends Controller
             "data" => Array()
         );
 
-        if ($drivefileId == 0) {
+        if ($drivefileId . "" == "0") {
             $data["errors"][] = "Error file not found";
             return new JsonResponse($data);
         }
