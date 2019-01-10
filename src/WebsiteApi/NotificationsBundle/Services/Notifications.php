@@ -307,14 +307,10 @@ class Notifications implements NotificationsInterface
 
     public function countAll($user)
     {
-        $qb = $this->doctrine->createQueryBuilder();
-        $qb = $qb->select('count(n.id)')
-            ->where('n.user = :user')
-            ->andWhere('n.isRead = false')
-            ->setParameter('user', $user)
-            ->from('TwakeNotificationsBundle:Notification','n');
+        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+        $notifs = $nRepo->findBy(Array("user" => $user, "isread" => false), Array("id" => "DESC"), 30); //Limit number of results
 
-        return $qb->getQuery()->getSingleScalarResult();
+        return count($notifs);
     }
 
     public function getAll($user)

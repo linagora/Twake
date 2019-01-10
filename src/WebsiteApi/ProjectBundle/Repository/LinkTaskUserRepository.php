@@ -12,7 +12,6 @@ class LinkTaskUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAda
 {
 
     public function getForUser($from, $to, $userId){
-
         $qb = $this->createQueryBuilder('e');
         $qb->where($qb->expr()->gte('e.to', '?1'));
         $qb->andWhere($qb->expr()->lte('e.from', '?2'));

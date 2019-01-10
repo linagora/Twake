@@ -4,7 +4,7 @@ board_topic:
         callback: 'board.topic'
     requirements:
         id:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"
 
 board_workspace_topic:
     channel: board/workspace/{id}
@@ -12,4 +12,4 @@ board_workspace_topic:
         callback: 'board_workspace.topic'
     requirements:
         id:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"

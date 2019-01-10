@@ -94,6 +94,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
     protected function writeEncode($path, $key, $content, $mode = null)
     {
+        $path = tempnam(sys_get_temp_dir(), 'twake_drive_');
 
         if (!$content) {
             return;
@@ -427,6 +428,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
                     $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext);
                     $previewpath = dirname($tmppath) . "/" . basename($file->getPath());
+
                     if (file_exists($previewpath . ".png")) {
 
                         try {

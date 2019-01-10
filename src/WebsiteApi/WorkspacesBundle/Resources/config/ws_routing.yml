@@ -4,4 +4,4 @@ group_topic:
         callback: 'group.topic'
     requirements:
         id:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"

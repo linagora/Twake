@@ -4,7 +4,7 @@ connections_topic:
         callback: 'connections.topic' #related to the getName() of your topic
     requirements:
          id_user:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"
 
 sharing_view_topic:
     channel: sharing_view/{appname}

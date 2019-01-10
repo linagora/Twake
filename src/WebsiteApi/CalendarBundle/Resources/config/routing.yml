@@ -52,22 +52,22 @@ calendar_do_export:
     path:     /calendars/export/{workspaceId}/{calendarsIds}/{useMine}/{from}/{to}
     defaults: { _controller: TwakeCalendarBundle:Calendar:exportCalendar }
     requirements:
-              workspaceId: "[0-9]+"
+              workspaceId: "[a-zA-Z0-9-]+"
               calendarsIds: "[0-9]+(,[0-9]+)*"
               useMine: "[0-1]"
-              from: "[0-9]+"
-              to: "[0-9]+"
+              from: "[a-zA-Z0-9-]+"
+              to: "[a-zA-Z0-9-]+"
     methods: [GET]
 
 calendar_get_export_token:
     path:     /calendars/getExportToken/{workspaceId}/{calendarId}/{useMine}/{from}/{to}
     defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendarExportToken }
     requirements:
-              workspaceId: "[0-9]+"
-              calendarsIds: "[0-9]+"
+              workspaceId: "[a-zA-Z0-9-]+"
+              calendarsIds: "[a-zA-Z0-9-]+"
               useMine: "[0-1]"
-              from: "[0-9]+"
-              to: "[0-9]+"
+              from: "[a-zA-Z0-9-]+"
+              to: "[a-zA-Z0-9-]+"
     methods: [GET]
 
 calendar_do_export_token:
