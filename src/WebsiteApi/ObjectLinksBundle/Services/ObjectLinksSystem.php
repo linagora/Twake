@@ -34,6 +34,9 @@ class ObjectLinksSystem
 
     public function getObjectLinks($id, $type)
     {
+        if($type == ""){
+            return [];
+        }
         $resA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("ida" => $id, "typea" => self::$keyMap[$type]));
         $resB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idb" => $id, "typeb" => self::$keyMap[$type]));
 

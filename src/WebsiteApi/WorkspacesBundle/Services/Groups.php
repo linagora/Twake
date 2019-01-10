@@ -336,7 +336,7 @@ class Groups implements GroupsInterface
                     "user" => $managerLink->getUser(),
                     "externe" => $managerLink->getExterne(),
                     "level" => $managerLink->getLevel(),
-                    "nbWorkspace" => $managerLink->getNbWorkspace()
+                    "nbworkspace" => $managerLink->getNbWorkspace()
                 );
             }
             return $users;
