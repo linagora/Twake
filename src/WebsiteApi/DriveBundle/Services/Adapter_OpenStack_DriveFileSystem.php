@@ -94,9 +94,9 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
     protected function writeEncode($path, $key, $content, $mode = null)
     {
-        $path = dirname($path);
-        if (!file_exists($path)) {
-            mkdir($path, 0777, true);
+        $dirpath = dirname($path);
+        if (!file_exists($dirpath)) {
+            mkdir($dirpath, 0777, true);
         }
 
         if (!$content) {
