@@ -119,13 +119,13 @@ class MessageRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\
 
         $qb = $this->createQueryBuilder("m");
         $qb->andWhere("m.streamreciever = :streamId")
-            ->setParameter("streamId", $streamId);
+            ->setParameter("streamId", $this->queryBuilderUuid($streamId));
 
-        $qb->andWhere("m.responseto IN (" . join(",", $headIds) . ")");
+        $qb->andWhere("m.responseto IN (" . join(",", $this->queryBuilderUuid($headIds)) . ")");
 
         if ($subjectId) {
             $qb->andWhere("m.subject = :subject")
-                ->setParameter("subject", $subjectId);
+                ->setParameter("subject", $this->queryBuilderUuid($subjectId));
         }
 
         $qb->orderBy('m.date', 'ASC');

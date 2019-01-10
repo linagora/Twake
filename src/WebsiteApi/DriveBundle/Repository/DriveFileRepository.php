@@ -20,7 +20,7 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
                 ->select('sum(f.size)');
             if ($directory == null) {
                 $qb = $qb->where('f.root_group_folder = :group')
-                    ->setParameter("group", $group->getId());
+                    ->setParameter("group", $this->queryBuilderUuid($group->getId()));
             } else {
                 $qb = $qb->where('f.parent = :directory')
                     ->setParameter("directory", $directory);

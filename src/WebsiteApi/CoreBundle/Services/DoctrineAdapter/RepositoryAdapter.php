@@ -69,6 +69,9 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
         $not_array = false;
         if (!is_array($list)) {
+            if ($list === null) {
+                return null;
+            }
             $not_array = true;
             $list = [$list];
         }

@@ -19,7 +19,7 @@ class LinkEventUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAd
         $qb->andWhere($qb->expr()->eq('e.user', '?3'));
         $qb->setParameter(1, $from);
         $qb->setParameter(2, $to);
-        $qb->setParameter(3, $userId);
+        $qb->setParameter(3, $this->queryBuilderUuid($userId));
         $q= $qb->getQuery();
         return $q->getResult();
     }

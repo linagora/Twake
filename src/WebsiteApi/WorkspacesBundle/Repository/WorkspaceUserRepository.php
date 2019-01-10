@@ -34,7 +34,7 @@ class WorkspaceUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAd
 			->andWhere('l.user = :user')
 			->andWhere('l.workspace_id IN (:ids)')
 			->setParameter('user', $user)
-			->setParameter('ids', $workspaces_ids);
+            ->setParameter('ids', $this->queryBuilderUuid($workspaces_ids));
 
 		return $qb->getQuery()->getResult();
 	}
@@ -45,7 +45,7 @@ class WorkspaceUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAd
 
 		$qb = $qb->select('l')
 			->andWhere('l.workspace_id IN (:ids)')
-			->setParameter('ids', $workspaces_ids);
+            ->setParameter('ids', $this->queryBuilderUuid($workspaces_ids));
 
 		return $qb->getQuery()->getResult();
 	}
