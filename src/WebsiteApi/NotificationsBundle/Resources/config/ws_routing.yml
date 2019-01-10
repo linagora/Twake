@@ -4,7 +4,7 @@ notifications_topic:
         callback: 'notifications.topic' #related to the getName() of your topic
     requirements:
          id_user:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"
 
 drive_activity_topic:
     channel: drive/activity

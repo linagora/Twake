@@ -4,7 +4,7 @@ discussion_topic:
         callback: 'discussion.topic'
     requirements:
         id:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"
 
 discussion_notifications_topic:
     channel: discussion_notifications/{user_id}/{workspace_id}
@@ -12,9 +12,9 @@ discussion_notifications_topic:
         callback: 'discussion.notifications.topic'
     requirements:
         user_id:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"
         workspace_id:
-            pattern: "[0-9]*"
+            pattern: "[a-zA-Z0-9-]*"
 
 discussionspace_topic:
     channel: discussionspace/{key}
@@ -22,4 +22,4 @@ discussionspace_topic:
         callback: 'discussionspace.topic'
     requirements:
         key:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"

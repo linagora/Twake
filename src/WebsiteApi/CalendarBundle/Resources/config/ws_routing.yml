@@ -4,7 +4,7 @@ calendar_topic:
         callback: 'calendar.topic'
     requirements:
         id:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"
 
 calendar_workspace_topic:
     channel: calendar/workspace/{id}
@@ -12,7 +12,7 @@ calendar_workspace_topic:
         callback: 'calendar_workspace.topic'
     requirements:
         id:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"
 
 
 calendar_activity_topic:
@@ -21,4 +21,4 @@ calendar_activity_topic:
         callback: 'calendar_activity.topic'
     requirements:
              id:
-                pattern: "[0-9]+"
+                pattern: "[a-zA-Z0-9-]+"

@@ -16,6 +16,11 @@ services:
         class: WebsiteApi\UsersBundle\Services\TokenService
         arguments: ["@app.twake_doctrine"]
 
+    connections.topic:
+        class: WebsiteApi\UsersBundle\Topic\ConnectionsTopic
+        tags:
+            - { name: gos_web_socket.topic }
+
     ping.rpc:
         class: WebsiteApi\UsersBundle\Topic\PingTopic
         tags:
