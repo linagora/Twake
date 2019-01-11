@@ -8,7 +8,6 @@ framework:
     profiler: { only_exceptions: false }
     session:
         cookie_lifetime: 3600000 #1 000h
-        lifetime: 3600000 #1 000h
 
 web_profiler:
     toolbar: false
