@@ -39,7 +39,7 @@ class CalendarActivities implements CalendarActivityInterface
         if ($workspace != null) {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }
-        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'calendar'));
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publickey' => 'calendar'));
         // $application = $this->get("app.twake_doctrine")->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'calendar'));
 
         $calendarActivity = new CalendarActivity($application, $workspace, $user);

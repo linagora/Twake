@@ -42,7 +42,7 @@ class DriveActivities implements DriveActivityInterface
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }
         error_log("WORKSPACE");
-        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'drive'));
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publickey' => 'drive'));
         // $application = $this->get("app.twake_doctrine")->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'drive'));
 
         error_log("APPLICATION");

@@ -40,7 +40,7 @@ class BoardActivities implements BoardActivityInterface
         if ($workspace != null) {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }
-        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'tasks'));
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publickey' => 'tasks'));
 
         $boardActivity = new BoardActivity($application, $workspace, $user);
 
