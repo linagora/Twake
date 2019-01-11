@@ -764,6 +764,7 @@ class MessageSystem implements MessagesSystemInterface
 
             if ($canBroadcast) {
                 $this->pusher->push($event, "discussion/" . substr($key, 2));
+                return $event;
             } else {
                 error_log("no broadcast");
             }

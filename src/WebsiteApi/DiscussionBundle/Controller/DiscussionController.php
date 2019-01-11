@@ -41,10 +41,10 @@ class DiscussionController extends Controller
     }
 
     public function getSubjectAction(Request $request){
-    	$data = Array(
-    		'errors' => Array(),
-    		'data' => Array()
-    	);
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
 
         $securityContext = $this->get('security.authorization_checker');
 
@@ -84,10 +84,10 @@ class DiscussionController extends Controller
 
 
     public function getSubjectMessageAction(Request $request){
-		$data = Array(
-		    		'errors' => Array(),
-		    		'data' => Array()
-		    	);
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
 
         $securityContext = $this->get('security.authorization_checker');
 
@@ -125,86 +125,86 @@ class DiscussionController extends Controller
         return new JsonResponse($data);
     }
 
-	public function getStreamsAction(Request $request){
-		$data = Array(
-			'errors' => Array(),
-			'data' => Array()
-		);
+    public function getStreamsAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
 
-		$securityContext = $this->get('security.authorization_checker');
+        $securityContext = $this->get('security.authorization_checker');
 
-		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-			$data['errors'][] = "notconnected";
-		}
-		else {
+        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $data['errors'][] = "notconnected";
+        } else {
             if($request->request->get("gid")==null ){
                 $data["errors"] = "missingarguments";
             }
             else{
-            	$streams = $this->get("app.streamSystem")->getStreamList($request->request->get("gid"),$this->getUser());
-            	if($streams){
+                $streams = $this->get("app.streamSystem")->getStreamList($request->request->get("gid"), $this->getUser());
+                if ($streams) {
                     $data["data"] = $streams;
                 }
             }
 
         }
-		return new JsonResponse($data);
-	}
+        return new JsonResponse($data);
+    }
 
-	public function getStreamAction(Request $request){
-		$data = Array(
-			'errors' => Array(),
-			'data' => Array()
-		);
+    public function getStreamAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
 
-		$securityContext = $this->get('security.authorization_checker');
+        $securityContext = $this->get('security.authorization_checker');
 
-		$key = "s-".$request->request->get("id", 0);
+        $key = "s-" . $request->request->get("id", 0);
 
-		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-			$data['errors'][] = "notconnected";
-		}
-		else {
-			if($key==null ){
-				$data["errors"] = "missingarguments";
-			}
-			else{
-				$stream = $this->get("app.messages")->getStream($key,$this->getUser());
-				if($this->get("app.messages")->isAllowed($stream, $this->getUser())){
-					$stream = $stream["object"]->getAsArray();
-					$data["data"] = $stream;
-				}
-			}
+        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $data['errors'][] = "notconnected";
+        } else {
+            if ($key == null) {
+                $data["errors"] = "missingarguments";
+            } else {
+                $stream = $this->get("app.messages")->getStream($key, $this->getUser());
+                if ($this->get("app.messages")->isAllowed($stream, $this->getUser())) {
+                    $stream = $stream["object"]->getAsArray();
+                    $data["data"] = $stream;
+                }
+            }
 
-		}
-		return new JsonResponse($data);
-	}
+        }
+        return new JsonResponse($data);
+    }
 
 
-	public function searchMessageAction(Request $request){
-		$data = Array(
-			'errors' => Array(),
-			'data' => Array()
-		);
+    public function searchMessageAction(Request $request)
+    {
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
 
-		$securityContext = $this->get('security.authorization_checker');
+        $securityContext = $this->get('security.authorization_checker');
 
-		if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-			$data['errors'][] = "notconnected";
-		}
-		else {
+        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $data['errors'][] = "notconnected";
+        } else {
             $discussionInfos = $this->get("app.messages")->convertKey($request->request->get("discussionkey"), $this->getUser());
-			$messages = $this->get("app.messages")->searchMessage($discussionInfos["id"],$request->request->get("content"),intval($request->request->get("from")),$request->request->get("dateStart"),$request->request->get("dateEnd"),null,$this->getUser());
+            $messages = $this->get("app.messages")->searchMessage($discussionInfos["id"], $request->request->get("content"), intval($request->request->get("from")), $request->request->get("dateStart"), $request->request->get("dateEnd"), null, $this->getUser());
             $retour = Array();
-			foreach ($messages as $message) {
-				$retour[] = $message->getAsArray();
-			}
-			$data["data"] = $retour;
-		}
-		return new JsonResponse($data);
-	}
+            foreach ($messages as $message) {
+                $retour[] = $message->getAsArray();
+            }
+            $data["data"] = $retour;
+        }
+        return new JsonResponse($data);
+    }
 
-	public function getDriveMessageAction(Request $request){
+    public function getDriveMessageAction(Request $request)
+    {
         $data = Array(
             'errors' => Array(),
             'data' => Array()
@@ -224,23 +224,22 @@ class DiscussionController extends Controller
     }
 
     public function muteAction(Request $request){
-	    $data = Array(
-		    'errors' => Array(),
-		    'data' => Array()
-	    );
+        $data = Array(
+            'errors' => Array(),
+            'data' => Array()
+        );
 
-	    $securityContext = $this->get('security.authorization_checker');
-	    if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-		    $data['errors'][] = "notconnected";
-	    }
-	    else {
+        $securityContext = $this->get('security.authorization_checker');
+        if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            $data['errors'][] = "notconnected";
+        } else {
             $streamId = $request->request->get("id");
-		    $muteValue = $request->request->getBoolean("mute");
-		    $result = $this->get("app.streamSystem")->mute($this->getUser(), $streamId, $muteValue);
-		    $data["data"]["mute"] = ($result?$muteValue:false);
-	    }
+            $muteValue = $request->request->getBoolean("mute");
+            $result = $this->get("app.streamSystem")->mute($this->getUser(), $streamId, $muteValue);
+            $data["data"]["mute"] = ($result ? $muteValue : false);
+        }
 
-	    return new JsonResponse($data);
+        return new JsonResponse($data);
     }
 
     public function getLastMessagesAction(Request $request){
@@ -425,8 +424,10 @@ class DiscussionController extends Controller
 
         if (!$res)
             $data["errors"][] = "error";
-        else
+        else if ($res === true)
             $data["data"] = "success";
+        else
+            $data["data"] = $res;
 
         return new JsonResponse($data);
     }
