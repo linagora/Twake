@@ -32,7 +32,7 @@ class CheckService
                 $publickey = $exploser2[0];
                 $privateKey = $exploser2[1];
 
-                $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => $publickey));
+                $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => $publickey));
 
                 if ($application != null){
                     $key = $application->getPrivateKey();
