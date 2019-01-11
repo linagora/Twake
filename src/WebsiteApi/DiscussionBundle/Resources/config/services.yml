@@ -23,7 +23,6 @@ services:
           class: WebsiteApi\DiscussionBundle\Topic\DiscussionTopic
           tags:
               - { name: gos_web_socket.topic }
-          arguments: ["@app.messages","@app.subjectSystem" , "@gos_web_socket.websocket.client_manipulator", "@app.twake_doctrine", "@app.notifications"]
 
     discussion.notifications.topic:
           class: WebsiteApi\DiscussionBundle\Topic\NotificationsCenterTopic

@@ -640,11 +640,10 @@ class MessageSystem implements MessagesSystemInterface
         return true;
     }
 
-    public function sendMessageUpdate($keyId, $event, $currentUser)
+    public function sendMessageUpdate($key, $event, $currentUser)
     {
 
         $canBroadcast = true;
-        $key = "s-" . $keyId;
 
         //Verify user is logged in
         if ($currentUser == null || is_string($currentUser)) {
@@ -759,9 +758,7 @@ class MessageSystem implements MessagesSystemInterface
             }
 
             if ($canBroadcast) {
-
                 $this->pusher->push($event, "discussion/" . $key);
-
             } else {
                 error_log("no broadcast");
             }

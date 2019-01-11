@@ -377,7 +377,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                 ->getContainer($this->openstack_bucket_name)
                 ->getObject("drive/" . $key_path)
                 ->delete();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log($e->getMessage());
         }
 
@@ -387,7 +387,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                 ->getContainer($this->openstack_public_bucket_name)
                 ->getObject("public/uploads/previews/" . $file->getPath() . ".png")
                 ->delete();
-        } catch (Exception $e) {
+        } catch (\Exception $e) {
             error_log($e->getMessage());
         }
 

@@ -83,7 +83,7 @@ class ListOfTasksService
         /* @var ListOfTasks $listoftasks */
         $listoftasks = new ListOfTasks($board, $newTitle, $newColor, $useridtonotify);
 
-        if($listOfTasks==null){
+        if ($listoftasks == null) {
             return false;
         }
 
@@ -102,13 +102,13 @@ class ListOfTasksService
         return $listoftasks;
     }
 
-    public function updateListOfTasks($listOfTasksId, $newTitle, $newColor, $useridtonotify)
+    public function updateListOfTasks($listoftasksId, $newTitle, $newColor, $useridtonotify)
     {
         /* @var ListOfTasks $listoftasks */
-        $listoftasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listOfTasksId));
+        $listoftasks = $this->doctrine->getRepository("TwakeProjectBundle:ListOfTasks")->findOneBy(Array("id" => $listoftasksId));
         $workspace = $this->getWorkspaceFromBoard($listoftasks->getBoard());
 
-        if($listOfTasks==null){
+        if ($listoftasks == null) {
             return false;
         }
 
