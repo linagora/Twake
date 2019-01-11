@@ -613,6 +613,7 @@ class MessageSystem implements MessagesSystemInterface
             "type" => $type,
             "data" => $messageArray,
         );
+        $data = json_decode(json_encode($data), 1);
         $this->pusher->push($data, "discussion/" . $streamId);
     }
 
@@ -658,7 +659,6 @@ class MessageSystem implements MessagesSystemInterface
 
             //Ask for an initialization
             $operation = $event['type'];
-            error_log("==>(1)" . json_encode($event));
 
             if ($operation == "N") { // Send notification
                 if (isset($event["data"]["except"])) {
@@ -681,11 +681,16 @@ class MessageSystem implements MessagesSystemInterface
                 }
 
                 if (isset($event["data"]['fileId']) && $event["data"]['fileId'] != null) {
-                    $this->sendMessageWithFile($currentUser->getId(), $key, $event['data']['content'], $event["data"]['workspace'], $event["data"]['subject'], $event["data"]['fileId'], false);
+                    $message = $this->sendMessageWithFile($currentUser->getId(), $key, $event['data']['content'], $event["data"]['workspace'], $event["data"]['subject'], $event["data"]['fileId'], false);
                 } else {
-                    $this->sendMessage($currentUser->getId(), $key, false, null, false, $event['data']['content'], $event["data"]['workspace'], $event["data"]['subject'], null, false, $event["data"]["front_id"], $event["data"]['responseTo']);
+                    $message = $this->sendMessage($currentUser->getId(), $key, false, null, false, $event['data']['content'], $event["data"]['workspace'], $event["data"]['subject'], null, false, $event["data"]["front_id"], $event["data"]['responseTo']);
                 }
-                $canBroadcast = false;
+
+                if ($message) {
+                    $event["data"] = $message->getAsArray();
+                } else {
+                    $canBroadcast = false;
+                }
 
 
             } else if ($operation == "E") {
@@ -758,7 +763,7 @@ class MessageSystem implements MessagesSystemInterface
             }
 
             if ($canBroadcast) {
-                $this->pusher->push($event, "discussion/" . $key);
+                $this->pusher->push($event, "discussion/" . substr($key, 2));
             } else {
                 error_log("no broadcast");
             }
