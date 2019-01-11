@@ -512,7 +512,6 @@ class DriveFileSystem implements DriveFileSystemInterface
 
     public function create($workspace, $directory, $filename, $content = "", $isDirectory = false, $detached_file = false, $url =null, $userId = 0, $userApp = null)
     {
-
         if ($directory . "" == "0" || $detached_file) {
             $directory = null;
         }
@@ -1152,7 +1151,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $file->setSize($size);
 
         $context = Array(
-            "max_size" => 100000000 // 100Mo
+            "max_size" => 5000000000 // 5Go
         );
         $errors = $uploader->upload($fileData, $real, $context);
 
@@ -1203,7 +1202,7 @@ class DriveFileSystem implements DriveFileSystemInterface
         $size = filesize($file["tmp_name"]);
 
         $context = Array(
-            "max_size" => 100000000 // 100Mo
+            "max_size" => 5000000000 // 5Go
         );
         $errors = $uploader->upload($file, $real, $context);
 
