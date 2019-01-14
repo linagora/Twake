@@ -21,7 +21,7 @@ services:
         arguments: ["@app.twake_doctrine", "@app.pusher"]
 
     app.websockets.collections.topic:
-        class: WebsiteApi\CoreBundle\Topic\Collections
+        class: WebsiteApi\CoreBundle\Topic\CollectionsTopic
         tags:
             - { name: gos_web_socket.topic }
 

@@ -16,11 +16,14 @@ class WebsocketsController extends Controller
     public function initAction(Request $request)
     {
 
-        $result = $this->get("app.websockets")->init();
+        $route = $request->request->get("route", "");
+        $data = $request->request->get("data", "");
+
+        $result = $this->get("app.websockets")->init($route, $data);
         if ($result) {
             return new JsonResponse(Array(
                 "data" => Array(
-                    "room_id" => $result["route"],
+                    "room_id" => $result["route_id"],
                     "key" => $result["key"],
                     "key_version" => $result["key_version"]
                 )

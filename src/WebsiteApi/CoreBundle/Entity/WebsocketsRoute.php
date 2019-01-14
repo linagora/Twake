@@ -39,7 +39,7 @@ class WebsocketsRoute
     private $route_random_endpoint;
 
     /**
-     * @ORM\Column(name="key", type="twake_text", length=2000)
+     * @ORM\Column(name="route_key", type="twake_text", length=2000)
      */
     private $key;
 
@@ -49,7 +49,7 @@ class WebsocketsRoute
     private $key_version = 0;
 
     /**
-     * @ORM\Column(name="date", type="twake_text", length=2000)
+     * @ORM\Column(name="data", type="twake_text", length=2000)
      */
     private $data;
 
@@ -139,5 +139,23 @@ class WebsocketsRoute
         $this->key_version++;
         $this->key = $key;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getKeyVersion()
+    {
+        return $this->key_version;
+    }
+
+    /**
+     * @param mixed $key_version
+     */
+    public function setKeyVersion($key_version)
+    {
+        $this->key_version = $key_version;
+    }
+
+
 
 }

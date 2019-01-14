@@ -1,4 +1,4 @@
-collections:
+collections_topic:
     channel: collections/{id}
     handler:
         callback: 'collections.topic'

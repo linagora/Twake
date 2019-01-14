@@ -1,8 +1,7 @@
 <?php
-namespace WebsiteApi\DiscussionBundle\Topic;
+namespace WebsiteApi\CoreBundle\Topic;
 
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
-use WebsiteApi\DiscussionBundle\Services\Messages;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
 use Gos\Bundle\WebSocketBundle\Router\WampRequest;
@@ -18,11 +17,13 @@ class CollectionsTopic implements TopicInterface, PushableTopicInterface
 
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event = Array(), array $exclude = Array(), array $eligible = Array())
     {
+        error_log(json_encode($event));
         $topic->broadcast($event);
     }
 
     public function onPush(Topic $topic, WampRequest $request, $data, $provider)
     {
+        error_log(json_encode($data));
         $topic->broadcast($data);
     }
 
