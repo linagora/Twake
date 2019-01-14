@@ -31,3 +31,8 @@ twake_quote:
     path:     /quote
     defaults: { _controller: TwakeCoreBundle:Version:quote }
     methods:  [GET]
+
+twake_websocket_init:
+    path:     /collections/init
+    defaults: { _controller: TwakeCoreBundle:Websockets:init }
+    methods:  [POST]

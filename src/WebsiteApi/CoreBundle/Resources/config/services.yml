@@ -16,6 +16,15 @@ services:
         class: WebsiteApi\CoreBundle\Services\DoctrineAdapter\ManagerAdapter
         arguments: ["@doctrine.orm.entity_manager", "%database_driver%", "%database_host%", "%database_port%", "%database_user%", "%database_password%", "%database_dbname%", "%database_encrypt_key%"]
 
+    app.websockets:
+        class: WebsiteApi\CoreBundle\Services\Websockets
+        arguments: ["@app.twake_doctrine", "@app.pusher"]
+
+    app.websockets.collections.topic:
+        class: WebsiteApi\CoreBundle\Topic\Collections
+        tags:
+            - { name: gos_web_socket.topic }
+
     websocket.pdo.ping:
         class: WebsiteApi\CoreBundle\Services\PDOPinger
 

@@ -9,3 +9,4 @@ gos_web_socket:
                 - '@TwakeDriveBundle/Resources/config/ws_routing.yml'
                 - '@TwakeUsersBundle/Resources/config/ws_routing.yml'
                 - '@TwakeNotificationsBundle/Resources/config/ws_routing.yml'
+                - '@TwakeCoreBundle/Resources/config/ws_routing.yml'
