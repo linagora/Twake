@@ -36,25 +36,41 @@ class Websockets
             $route_entity->setData($data);
         }
 
-        $route_entity->setLastAccessDate();
-
-        //TODO verify user has access
-
-        $new_key_part = bin2hex(random_bytes(30));
-        $new_key = hash('sha256', $route_entity->getKey() . $new_key_part);
-
-        $route_endpoint = $route_entity->getRouteRandomEndpoint();
-        $key_version = $route_entity->getKeyVersion() + 1;
-
-        $this->push($route_endpoint, Array(
-            "new_key" => $new_key_part,
-            "key_version" => $key_version
-        ), $route_entity);
-
-
-        $route_entity->setKey($new_key);
+        $last_modified_date = $route_entity->getLastModifiedDate();
+        $route_entity->setLastModifiedDate();
+        //Be fast here (add lock ?)
         $this->doctrine->persist($route_entity);
         $this->doctrine->flush();
+
+        $route_endpoint = $route_entity->getRouteRandomEndpoint();
+
+        if ((new \DateTime())->getTimestamp() - $last_modified_date->getTimestamp() > 60) {
+
+            $new_key_part = bin2hex(random_bytes(30));
+            $new_key = hash('sha256', $route_entity->getKey() . $new_key_part);
+
+            $tmp = explode("-", $route_entity->getKeyVersion());
+            $key_version = ((intval($tmp[0]) + 1) % 1000) . "-" . date("U") . "-" . random_int(0, 10000);
+
+            $this->push($route_endpoint, Array(
+                "new_key" => $new_key_part,
+                "key_version" => $key_version
+            ), $route_entity);
+
+
+            $route_entity->setKey($new_key);
+            $route_entity->setKeyVersion($key_version);
+            $this->doctrine->persist($route_entity);
+            $this->doctrine->flush();
+
+        } else {
+            $new_key = $route_entity->getKey();
+            $key_version = $route_entity->getKeyVersion();
+        }
+
+        //TODO verify user has access
+        //TODO remove too old route entity and replace by new
+        //TODO lock access to database to avoid concurrence error : PHP side ? JS autorecovery ?
 
         return Array(
             "route_id" => $route_endpoint,

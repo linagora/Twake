@@ -26,7 +26,7 @@ class WebsocketsRoute
     /**
      * @ORM\Column(type="twake_datetime", options={"default" : "1970-01-02"})
      */
-    private $last_access_date;
+    private $last_modified_date;
 
     /**
      * @ORM\Column(name="route", type="string", length=512)
@@ -44,9 +44,9 @@ class WebsocketsRoute
     private $key;
 
     /**
-     * @ORM\Column(name="key_version", type="integer")
+     * @ORM\Column(name="key_version", type="string", length=64)
      */
-    private $key_version = 0;
+    private $key_version = "0";
 
     /**
      * @ORM\Column(name="data", type="twake_text", length=2000)
@@ -110,17 +110,17 @@ class WebsocketsRoute
     /**
      * @return mixed
      */
-    public function getLastAccessDate()
+    public function getLastModifiedDate()
     {
-        return $this->last_access_date;
+        return $this->last_modified_date;
     }
 
     /**
-     * @param mixed $last_access_date
+     * @param mixed $last_modified_date
      */
-    public function setLastAccessDate()
+    public function setLastModifiedDate()
     {
-        $this->last_access_date = new \DateTime();
+        $this->last_modified_date = new \DateTime();
     }
 
     /**

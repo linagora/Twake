@@ -36,3 +36,18 @@ twake_websocket_init:
     path:     /collections/init
     defaults: { _controller: TwakeCoreBundle:Websockets:init }
     methods:  [POST]
+
+twake_websocket_save_test:
+    path:     /collections/save
+    defaults: { _controller: TwakeCoreBundle:Websockets:save }
+    methods:  [POST]
+
+twake_websocket_get_test:
+    path:     /collections/get
+    defaults: { _controller: TwakeCoreBundle:Websockets:get }
+    methods:  [POST]
+
+twake_websocket_remove_test:
+    path:     /collections/remove
+    defaults: { _controller: TwakeCoreBundle:Websockets:remove }
+    methods:  [POST]

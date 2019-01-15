@@ -17,13 +17,11 @@ class CollectionsTopic implements TopicInterface, PushableTopicInterface
 
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event = Array(), array $exclude = Array(), array $eligible = Array())
     {
-        error_log(json_encode($event));
         $topic->broadcast($event);
     }
 
     public function onPush(Topic $topic, WampRequest $request, $data, $provider)
     {
-        error_log(json_encode($data));
         $topic->broadcast($data);
     }
 
