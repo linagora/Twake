@@ -41,7 +41,7 @@ class WebsocketsRoute
     /**
      * @ORM\Column(name="route_key", type="twake_text", length=2000)
      */
-    private $key;
+    private $key = "";
 
     /**
      * @ORM\Column(name="key_version", type="string", length=64)
@@ -136,7 +136,6 @@ class WebsocketsRoute
      */
     public function setKey($key)
     {
-        $this->key_version++;
         $this->key = $key;
     }
 

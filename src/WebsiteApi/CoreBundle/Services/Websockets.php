@@ -30,10 +30,12 @@ class Websockets
         $routes = $this->doctrine->getRepository("TwakeCoreBundle:WebsocketsRoute");
         $route_entity = $routes->findOneBy(Array("route" => $route));
 
+        $new = false;
         if (!$route_entity) {
             $route_entity = new WebsocketsRoute();
             $route_entity->setRoute($route);
             $route_entity->setData($data);
+            $new = true;
         }
 
         $last_modified_date = $route_entity->getLastModifiedDate();
@@ -44,7 +46,7 @@ class Websockets
 
         $route_endpoint = $route_entity->getRouteRandomEndpoint();
 
-        if ((new \DateTime())->getTimestamp() - $last_modified_date->getTimestamp() > 60) {
+        if ($new || (new \DateTime())->getTimestamp() - $last_modified_date->getTimestamp() > 60) {
 
             $new_key_part = bin2hex(random_bytes(30));
             $new_key = hash('sha256', $route_entity->getKey() . $new_key_part);
@@ -70,7 +72,6 @@ class Websockets
 
         //TODO verify user has access
         //TODO remove too old route entity and replace by new
-        //TODO lock access to database to avoid concurrence error : PHP side ? JS autorecovery ?
 
         return Array(
             "route_id" => $route_endpoint,

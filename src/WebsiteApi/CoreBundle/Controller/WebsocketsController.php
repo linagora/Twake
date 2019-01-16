@@ -52,7 +52,7 @@ class WebsocketsController extends Controller
 
     public function getAction(Request $request)
     {
-        $objects = Array(/*Array(
+        $objects = Array(Array(
                 "test" => 1,
                 "front_id" => "805d856a-54bb-5bc5-3e94-042b2a5977cc",
                 "id" => "a-1234-1"
@@ -74,7 +74,7 @@ class WebsocketsController extends Controller
                 "test" => 4,
                 "front_id" => "805d856a-54bb-5bc5-3e94-042b2a5977cg",
                 "id" => "a-1234-4"
-            )*/
+            )
         );
 
 

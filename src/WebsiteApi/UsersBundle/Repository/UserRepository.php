@@ -24,7 +24,7 @@ class UserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\Rep
 
         $q = $this->createQueryBuilder('u')
             ->select('u')
-            ->where('u.username = :username')
+            ->where('u.usernamecanonical = :username')
             ->setParameter('username', $username)
             ->getQuery();
 
