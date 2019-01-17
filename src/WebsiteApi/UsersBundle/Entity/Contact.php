@@ -26,13 +26,11 @@ class Contact
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",)
-     * @ORM\Column(options={"index": true})
 	 */
 	private $from;
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-     * @ORM\Column(options={"index": true})
      */
 	private $to;
 

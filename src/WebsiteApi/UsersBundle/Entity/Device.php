@@ -25,7 +25,6 @@ class Device
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-     * @ORM\Column(options={"index": true})
 	 */
     private $user;
 

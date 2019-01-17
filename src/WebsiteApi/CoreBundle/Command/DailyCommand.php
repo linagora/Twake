@@ -30,15 +30,13 @@ class DailyCommand extends ContainerAwareCommand
 
         $this->output = $output;
 
-        $doctrine = $this->getContainer()->get('doctrine');
-        $manager = $doctrine->getManager();
-
 
         /**
          * Récupération des repository, de Twake et des applis de base
          */
 
         $services = $this->getApplication()->getKernel()->getContainer();
+        $manager = $services->get('app.twake_doctrine');
 
         $services->get("app.pricing_plan")->dailyDataGroupUser();
         $services->get("app.pricing_plan")->groupPeriodUsage();

@@ -18,8 +18,8 @@ class NotificationMailCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $doctrine = $this->getContainer()->get('doctrine');
-        $em = $doctrine->getManager();
+        $services = $this->getApplication()->getKernel()->getContainer();
+        $em = $services->get('app.twake_doctrine');
 
         //Daily send an email with a summary of unread notifications for all apps after 12 hours without mails sent (including messages)
         $number_of_mails = 1;
@@ -49,8 +49,7 @@ class NotificationMailCommand extends ContainerAwareCommand
     {
 
         $services = $this->getApplication()->getKernel()->getContainer();
-        $doctrine = $this->getContainer()->get('doctrine');
-        $em = $doctrine->getManager();
+        $em = $services->get('app.twake_doctrine');
 
         foreach ($users_id_count as $user_id_count) {
             $user_id = $user_id_count[1];

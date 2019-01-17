@@ -18,9 +18,8 @@ class NotificationQueueCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $doctrine = $this->getContainer()->get('doctrine');
-        $em = $doctrine->getManager();
         $services = $this->getApplication()->getKernel()->getContainer();
+        $em = $services->get('app.twake_doctrine');
         $circle = $services->get("circle.restclient");
         $key = $this->getContainer()->getParameter('LICENCE_KEY');
         $server = $this->getContainer()->getParameter('PUSH_NOTIFICATION_SERVER');
