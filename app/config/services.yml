@@ -83,8 +83,8 @@ services:
             - [ setAttribute, [3, 2] ] # \PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION
 
     session.handler.pdo:
-        class:     Symfony\Component\HttpFoundation\Session\Storage\Handler\PdoSessionHandler
-        arguments: ['@pdo', {lock_mode: 0}]
+        class:     WebsiteApi\CoreBundle\Services\DoctrineAdapter\PdoSessionHandler
+        arguments: ['@app.twake_doctrine', {lock_mode: 0}]
 
     session.handler.cassandra:
         class:     WebsiteApi\CoreBundle\Services\DoctrineAdapter\CassandraSessionHandler

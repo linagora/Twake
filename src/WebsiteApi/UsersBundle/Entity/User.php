@@ -28,6 +28,11 @@ class User implements UserInterface
     protected $id;
 
     /**
+     * @ORM\Column(name="front_id", type="string", length=80)
+     */
+    protected $front_id = "";
+
+    /**
      * Used for cassandra session handler because timeuuid cannot be unserialized
      */
     public $id_as_string_for_session_handler;
@@ -176,6 +181,7 @@ class User implements UserInterface
         $this->roles = array();
         $this->lastlogin = new \DateTime();
         $this->passwordrequestedat = new \DateTime();
+        $this->front_id = bin2hex(random_bytes(20));
 	}
 
 	/**
@@ -185,6 +191,17 @@ class User implements UserInterface
 	{
 		return $this->id;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getFrontId()
+    {
+        if (!$this->front_id) {
+            $this->front_id = bin2hex(random_bytes(20));
+        }
+        return $this->front_id;
+    }
 
     public function setIdAsString()
     {
@@ -444,7 +461,8 @@ class User implements UserInterface
             "connected" => $this->isConnected(),
 			"language" => $this->getLanguage(),
             "isNew" => $this->getisNew(),
-            "isRobot" => $this->getisRobot()
+            "isRobot" => $this->getisRobot(),
+            "front_id" => $this->getFrontId()
 		);
 		return $return;
 	}

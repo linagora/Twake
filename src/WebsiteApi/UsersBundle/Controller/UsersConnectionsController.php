@@ -125,10 +125,20 @@ class UsersConnectionsController extends Controller
 
         srand($seed1);
 
-        $colors = ["#FEF380", "#4581F0", "#F1656F", "#0C1F43", "#FDB64C", "#86CE53", "#B001E5", "#23430C", "#47300D"];
+        $colors = [
+            ["#ad5389", "#63225b", "#3c1053"],
+            ["#daeab5", "#e1907a", "#e93842"],
+            ["#12c2e9", "#c471ed", "#f64f59"],
+            ["#800080", "#B24E95", "#ffc0cb"],
+            ["#1c92d2", "#62abdb", "#f2fcfe"]
+        ];
+
+        //#3b5490 0%, #9e85ab 6%, #8d8ecc 11%, #108ee9 16%, #2359d1 53%, #4c6b9c 58%, #434c74 62%, #34446c 70%, #1a2a52 88%, #34446c 96%, #3b5490
+
+        $colors = $colors[rand(0, count($colors) - 1)];
 
         $choosenColors = Array();
-        for ($i = 0; $i < 2; $i++) {
+        for ($i = 0; $i < 4; $i++) {
             $choosenColors[] = $colors[rand(0, count($colors) - 1)];
         }
 
@@ -139,12 +149,12 @@ class UsersConnectionsController extends Controller
         srand($seed2);
         $colored = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0);
         for ($i = 0; $i < 36; $i++) {
-            if ($username != "admin") {
-                $colored[$i] = rand(0, 1 + $colored[$i] * 3);
-            }
+            $colored[$i] = rand(0, 1 + $colored[$i] * 3);
         }
 
         $draw = new \ImagickDraw();
+
+        $background = $choosenColors[rand(0, count($choosenColors) - 1)];
 
         srand($seed3);
         for ($i = 0; $i < 36; $i++) {
@@ -164,7 +174,7 @@ class UsersConnectionsController extends Controller
                     ['x' => $offsetX, 'y' => $offsetY + $triangleSize]
                 ];
             }
-            $draw->setFillColor("#FFF");
+            $draw->setFillColor($background);
             if ($colored[$i]) {
                 $draw->setFillColor($choosenColors[rand(0, count($choosenColors) - 1)]);
             }

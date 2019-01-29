@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 /**
  * Sessions
  *
- * @ORM\Table(name="sessions",options={"collation":"utf8_bin","engine":"InnoDB"})
+ * @ORM\Table(name="twake_sessions",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CoreBundle\Repository\SessionsRepository")
  */
 class Sessions
@@ -22,7 +22,7 @@ class Sessions
     private $sess_id;
 
     /**
-     * @ORM\Column(name="sess_data", type="blob", nullable=false)
+     * @ORM\Column(name="sess_data", type="twake_text", nullable=false)
      */
     private $sess_data;
 
@@ -75,5 +75,39 @@ class Sessions
     {
         return $this->sess_lifetime;
     }
+
+    /**
+     * @param mixed $sess_id
+     */
+    public function setSessId($sess_id)
+    {
+        $this->sess_id = $sess_id;
+    }
+
+    /**
+     * @param mixed $sess_data
+     */
+    public function setSessData($sess_data)
+    {
+        $this->sess_data = $sess_data;
+    }
+
+    /**
+     * @param mixed $sess_time
+     */
+    public function setSessTime($sess_time)
+    {
+        $this->sess_time = $sess_time;
+    }
+
+    /**
+     * @param mixed $sess_lifetime
+     */
+    public function setSessLifetime($sess_lifetime)
+    {
+        $this->sess_lifetime = $sess_lifetime;
+    }
+
+
 
 }

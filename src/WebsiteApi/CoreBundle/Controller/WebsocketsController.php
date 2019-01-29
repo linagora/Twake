@@ -57,24 +57,24 @@ class WebsocketsController extends Controller
                 "front_id" => "805d856a-54bb-5bc5-3e94-042b2a5977cc",
                 "id" => "a-1234-1"
             ),
+            /*
+                        Array(
+                            "test" => 2,
+                            "front_id" => "805d856a-54bb-5bc5-3e94-042b2a5977ca",
+                            "id" => "a-1234-2"
+                        ),
 
-            Array(
-                "test" => 2,
-                "front_id" => "805d856a-54bb-5bc5-3e94-042b2a5977ca",
-                "id" => "a-1234-2"
-            ),
+                        Array(
+                            "test" => 3,
+                            "front_id" => "805d856a-54bb-5bc5-3e94-042b2a5977cd",
+                            "id" => "a-1234-3"
+                        ),
 
-            Array(
-                "test" => 3,
-                "front_id" => "805d856a-54bb-5bc5-3e94-042b2a5977cd",
-                "id" => "a-1234-3"
-            ),
-
-            Array(
-                "test" => 4,
-                "front_id" => "805d856a-54bb-5bc5-3e94-042b2a5977cg",
-                "id" => "a-1234-4"
-            )
+                        Array(
+                            "test" => 4,
+                            "front_id" => "805d856a-54bb-5bc5-3e94-042b2a5977cg",
+                            "id" => "a-1234-4"
+                        )*/
         );
 
 
