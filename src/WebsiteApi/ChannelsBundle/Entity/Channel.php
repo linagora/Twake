@@ -114,7 +114,7 @@ class Channel
             "original_workspace" => ($this->getOriginalWorkspace()) ? $this->getOriginalWorkspace()->getId() : null,
             "original_group" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
             "members_count" => $this->getMembersCount(),
-            "last_activity" => $this->getLastActivity(),
+            "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
             "members" => $this->getMembers()
         );
     }
