@@ -1,7 +1,23 @@
-group_topic:
+groups_topic:
     channel: group/{id}
     handler:
-        callback: 'group.topic'
+        callback: 'groups.topic'
+    requirements:
+        id:
+            pattern: "[a-zA-Z0-9-]+"
+
+workspaces_topic:
+    channel: workspace/{id}
+    handler:
+        callback: 'workspaces.topic'
+    requirements:
+        id:
+            pattern: "[a-zA-Z0-9-]+"
+
+workspaces_of_user_topic:
+    channel: workspaces_of_user/{id}
+    handler:
+        callback: 'workspaces_of_user.topic'
     requirements:
         id:
             pattern: "[a-zA-Z0-9-]+"

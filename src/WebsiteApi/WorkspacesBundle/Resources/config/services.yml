@@ -39,3 +39,18 @@ services:
     app.workspaces_apps:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesApps
         arguments: ["@app.twake_doctrine", "@app.workspace_levels", "@app.group_apps","@app.group_managers","@app.pusher"]
+
+    groups.topic:
+        class: WebsiteApi\WorkspacesBundle\Topic\GroupsTopic
+        tags:
+            - { name: gos_web_socket.topic }
+
+    workspaces.topic:
+        class: WebsiteApi\WorkspacesBundle\Topic\WorkspacesTopic
+        tags:
+            - { name: gos_web_socket.topic }
+
+    workspaces_of_user.topic:
+        class: WebsiteApi\WorkspacesBundle\Topic\WorkspacesOfUserTopic
+        tags:
+            - { name: gos_web_socket.topic }

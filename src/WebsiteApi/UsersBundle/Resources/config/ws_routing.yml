@@ -1,7 +1,7 @@
-connections_topic:
-    channel: connections/{id_user}
+users_topic:
+    channel: users/{id_user}
     handler:
-        callback: 'connections.topic' #related to the getName() of your topic
+        callback: 'users.topic' #related to the getName() of your topic
     requirements:
          id_user:
             pattern: "[a-zA-Z0-9-]+"

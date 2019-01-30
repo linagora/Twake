@@ -79,9 +79,6 @@ class User implements UserInterface
 		$user = $userRepository->find($userId);
 
 		if($user != null){
-
-			$this->pusher->push(true, 'connections/'.$user->getId());
-
 			$user->isActive();
 			$this->em->persist($user);
 			$this->em->flush();

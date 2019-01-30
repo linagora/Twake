@@ -16,8 +16,8 @@ services:
         class: WebsiteApi\UsersBundle\Services\TokenService
         arguments: ["@app.twake_doctrine"]
 
-    connections.topic:
-        class: WebsiteApi\UsersBundle\Topic\ConnectionsTopic
+    users.topic:
+        class: WebsiteApi\UsersBundle\Topic\UsersTopic
         tags:
             - { name: gos_web_socket.topic }
 
