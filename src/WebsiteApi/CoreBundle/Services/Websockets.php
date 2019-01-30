@@ -19,12 +19,17 @@ class Websockets
 
     public function __construct($doctrine, $pusher)
     {
+
+        //Register services to call for init websocekts and verify user has access
+        $this->services_for_type = Array(
+            "channels/direct_messages" => "app.channels.direct_messages_system"
+        );
+
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
-
     }
 
-    public function init($route, $data)
+    public function init($route, $data, $controller = null)
     {
 
         $routes = $this->doctrine->getRepository("TwakeCoreBundle:WebsocketsRoute");
@@ -70,8 +75,20 @@ class Websockets
             $key_version = $route_entity->getKeyVersion();
         }
 
-        //TODO verify user has access
         //TODO remove too old route entity and replace by new
+
+        //Verify user has access
+        if ($controller) {
+            $type = $data["type"];
+            if (isset($this->services_for_type[$type])) {
+                $has_access = $controller->getService($this->services_for_type[$type])->init($route, $data, $controller->getUser());
+                if (!$has_access) {
+                    return Array();
+                }
+            } else {
+                return Array();
+            }
+        }
 
         return Array(
             "route_id" => $route_endpoint,

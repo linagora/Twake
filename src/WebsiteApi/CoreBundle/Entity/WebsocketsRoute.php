@@ -59,7 +59,7 @@ class WebsocketsRoute
      */
     public function __construct()
     {
-        $this->route_random_endpoint = bin2hex(random_bytes(30));
+        $this->route_random_endpoint = date("U") . "-" . bin2hex(random_bytes(30));
     }
 
     public function getId()

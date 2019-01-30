@@ -1,1 +1,10 @@
-#DiscussionController
+#Direct messages
+channels_direct_messages_get:
+    path:     /direct_messages/get
+    defaults: { _controller: TwakeChannelsBundle:DirectMessages:get}
+channels_direct_messages_save:
+    path:     /direct_messages/save
+    defaults: { _controller: TwakeChannelsBundle:DirectMessages:save}
+channels_direct_messages_remove:
+    path:     /direct_messages/remove
+    defaults: { _controller: TwakeChannelsBundle:DirectMessages:remove}

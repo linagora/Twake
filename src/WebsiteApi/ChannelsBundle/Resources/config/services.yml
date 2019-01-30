@@ -1,4 +1,4 @@
 services:
-    app.channels_system:
-            class: WebsiteApi\ChannelsBundle\Services\ChannelsSystem
-            arguments: []
+    app.channels.direct_messages_system:
+            class: WebsiteApi\ChannelsBundle\Services\DirectMessagesSystem
+            arguments: ["@app.twake_doctrine"]

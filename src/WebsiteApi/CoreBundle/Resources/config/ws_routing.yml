@@ -4,4 +4,4 @@ collections_topic:
         callback: 'collections.topic'
     requirements:
         id:
-            pattern: "[a-zA-Z0-9]+"
+            pattern: "[a-zA-Z0-9-]+"

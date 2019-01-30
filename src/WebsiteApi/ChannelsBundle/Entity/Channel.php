@@ -23,6 +23,16 @@ class Channel
     private $id;
 
     /**
+     * @ORM\Column(type="string", length=80)
+     */
+    private $front_id;
+
+    /**
+     * @ORM\Column(type="string", length=400)
+     */
+    private $identifier; //Max 10 users
+
+    /**
      * @ORM\Column(name="icon", type="twake_text")
      */
     private $icon = "";
@@ -53,7 +63,7 @@ class Channel
     private $private = 0;
 
     /**
-     * @ORM\Column(name="private", type="boolean")
+     * @ORM\Column(name="direct", type="boolean")
      */
     private $direct = 0;
 
@@ -73,6 +83,11 @@ class Channel
     private $members_count = 0; //0 for public workspaces
 
     /**
+     * @ORM\Column(name="members", type="twake_text")
+     */
+    private $members = "[]";
+
+    /**
      * @ORM\Column(name="last_activity", type="twake_datetime" , options={"default" : "2018-07-27 14:00:58"})
      */
     private $last_activity = 0;
@@ -80,12 +95,14 @@ class Channel
 
     public function __construct()
     {
-
+        $this->front_id = sha1(random_bytes(40));
     }
 
     public function getAsArray()
     {
         return Array(
+            "id" => $this->getId(),
+            "front_id" => $this->getFrontId(),
             "icon" => $this->getIcon(),
             "name" => $this->getName(),
             "description" => $this->getDescription(),
@@ -95,7 +112,8 @@ class Channel
             "original_workspace" => ($this->getOriginalWorkspace()) ? $this->getOriginalWorkspace()->getId() : null,
             "original_group" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
             "members_count" => $this->getMembersCount(),
-            "last_activity" => $this->getLastActivity()
+            "last_activity" => $this->getLastActivity(),
+            "members" => $this->getMembers()
         );
     }
 
@@ -106,6 +124,24 @@ class Channel
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getFrontId()
+    {
+        return $this->front_id;
+    }
+
+    /**
+     * @param mixed $front_id
+     */
+    public function setFrontId($front_id)
+    {
+        if ($front_id) {
+            $this->front_id = $front_id;
+        }
     }
 
     /**
@@ -283,6 +319,39 @@ class Channel
     {
         $this->last_activity = $last_activity;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getIdentifier()
+    {
+        return $this->identifier;
+    }
+
+    /**
+     * @param mixed $identifier
+     */
+    public function setIdentifier($identifier)
+    {
+        $this->identifier = $identifier;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMembers()
+    {
+        return json_decode($this->members, 1);
+    }
+
+    /**
+     * @param mixed $members
+     */
+    public function setMembers($members)
+    {
+        $this->members = json_encode($members);
+    }
+
 
 
 }

@@ -57,44 +57,49 @@ project:
     resource: "@TwakeProjectBundle/Resources/config/routing.yml"
     prefix:   /ajax/project/
 
-citi_go_discussion:
+twake_discussion:
     resource: "@TwakeDiscussionBundle/Resources/config/routing.yml"
     prefix:   /ajax/discussion/
     methods: [POST]
 
-citi_go_calls:
+twake_channels:
+    resource: "@TwakeChannelsBundle/Resources/config/routing.yml"
+    prefix:   /ajax/channels/
+    methods: [POST]
+
+twake_calls:
     resource: "@TwakeCallsBundle/Resources/config/routing.yml"
     prefix:   /ajax/calls/
     methods: [POST]
 
-citi_go_upload:
+twake_upload:
     resource: "@TwakeUploadBundle/Resources/config/routing.yml"
     prefix:   /ajax/upload/
     methods: [POST]
 
-citi_go_payments:
+twake_payments:
     resource: "@TwakePaymentsBundle/Resources/config/routing.yml"
     prefix:   /ajax/payments/
     methods: [POST]
 
-citi_go_workspaces:
+twake_workspaces:
     resource: "@TwakeWorkspacesBundle/Resources/config/routing.yml"
     prefix:   /ajax/workspace/
     methods: [POST]
 
-citi_go_users:
+twake_users:
     resource: "@TwakeUsersBundle/Resources/config/routing.yml"
     prefix:   /ajax/users/
 
-citi_go_core:
+twake_core:
     resource: "@TwakeCoreBundle/Resources/config/routing.yml"
     prefix:   /ajax/core/
 
-citi_go_core_remote:
+twake_core_remote:
     resource: "@TwakeCoreBundle/Resources/config/routing_remote.yml"
     prefix:   /api/remote/
 
-citi_go_marketplace:
+twake_marketplace:
     resource: "@TwakeMarketBundle/Resources/config/routing.yml"
     prefix:   /ajax/market/
     methods: [POST]
