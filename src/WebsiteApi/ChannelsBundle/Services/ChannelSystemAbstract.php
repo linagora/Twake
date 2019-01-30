@@ -30,6 +30,8 @@ class ChannelSystemAbstract
             $this->entity_manager->flush();
         }
 
+        return $object;
+
     }
 
     public function updateChannelMembers($channel_entity, $members_ids)

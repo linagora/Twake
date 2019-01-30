@@ -51,6 +51,8 @@ class ChannelMember
     {
         $this->user = $user;
         $this->channel = $channel;
+        $this->last_activity = new \DateTime();
+        $this->last_access = new \DateTime();
     }
 
     /**

@@ -50,7 +50,9 @@ class DirectMessagesSystem extends ChannelSystemAbstract
 
         $result = [];
         foreach ($member as $link) {
-            $result->push($link->getChannel());
+            if ($link->getChannel()) {
+                $result[] = $link->getChannel()->getAsArray();
+            }
         }
 
         return $result;
@@ -86,6 +88,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
             if (!$channel) {
                 $channel = new \WebsiteApi\ChannelsBundle\Entity\Channel();
                 $channel->setDirect(true);
+                $channel->setFrontId($object["front_id"]);
             }
         } else {
             $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find($object["id"]);
@@ -100,7 +103,6 @@ class DirectMessagesSystem extends ChannelSystemAbstract
         }
 
         //Modifiy $channel
-        $channel->setFrontId($object["front_id"]);
         $channel->setIdentifier($direct_identifier);
         $channel->setMembersCount(count($members));
 
@@ -109,7 +111,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
 
         $this->updateChannelMembers($channel, $members);
 
-        return true;
+        return $channel->getAsArray();
     }
 
 }

@@ -4,6 +4,7 @@ namespace WebsiteApi\ChannelsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
+use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
@@ -90,12 +91,13 @@ class Channel
     /**
      * @ORM\Column(name="last_activity", type="twake_datetime" , options={"default" : "2018-07-27 14:00:58"})
      */
-    private $last_activity = 0;
+    private $last_activity;
 
 
     public function __construct()
     {
         $this->front_id = sha1(random_bytes(40));
+        $this->last_activity = new \DateTime();
     }
 
     public function getAsArray()
