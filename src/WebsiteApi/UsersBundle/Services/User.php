@@ -425,7 +425,7 @@ class User implements UserInterface
 		return false;
 	}
 
-	public function subscribe($token, $code, $pseudo, $password, $force=false)
+	public function subscribe($token, $code, $pseudo, $password,$name,$firstname,$phone, $force=false)
 	{
 
 		$pseudo = $this->string_cleaner->simplifyUsername($pseudo);
@@ -453,6 +453,9 @@ class User implements UserInterface
 				$user->setPassword($encoder->encodePassword($password, $user->getSalt()));
 				$user->setUsername($pseudo);
 				$user->setEmail($mail);
+                $user->setFirstName($firstname);
+                $user->setLastName($name);
+                $user->setPhone($phone);
 
                 $this->twake_mailer->send($mail, "newMember", Array("_language" => $user ? $user->getLanguage() : "en", "username" => $user->getUsername()));
 

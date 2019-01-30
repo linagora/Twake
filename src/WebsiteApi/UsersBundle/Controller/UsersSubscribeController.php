@@ -79,9 +79,12 @@ class UsersSubscribeController extends Controller
 		$code = $request->request->get("code", "");
 		$token = $request->request->get("token", "");
 		$username = $request->request->get("username", "");
-		$password = $request->request->get("password", "");
+        $password = $request->request->get("password", "");
+        $name = $request->request->get("name", "");
+        $firstname = $request->request->get("firstname", "");
+        $phone = $request->request->get("phone", "");
 
-		$res = $this->get("app.user")->subscribe($token, $code, $username, $password);
+		$res = $this->get("app.user")->subscribe($token, $code, $username, $password,$name,$firstname,$phone);
 
 		if ($res || $this->get("app.user")->current()) {
 
