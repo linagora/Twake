@@ -74,6 +74,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
         }
 
         $members = $object["members"];
+        $members = array_unique($members);
         sort($members);
         $direct_identifier = join("+", $members);
 
