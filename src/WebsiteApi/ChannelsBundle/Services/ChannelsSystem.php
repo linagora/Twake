@@ -1,20 +1,14 @@
 <?php
 
 
-
-namespace WebsiteApi\DiscussionBundle\Services;
+namespace WebsiteApi\ChannelsBundle\Services;
 
 use Exception;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
-use WebsiteApi\DiscussionBundle\Entity\StreamMember;
-use WebsiteApi\DiscussionBundle\Model\StreamSystemInterface;
 
-/**
- * Manage contacts
- */
-class StreamSystem implements StreamSystemInterface
+class ChannelsSystem
 {
 
     var $string_cleaner;
@@ -28,18 +22,18 @@ class StreamSystem implements StreamSystemInterface
     var $app_workspace_members;
     var $app_contacts;
 
-    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $app_contacts, $levelManager, $app_workspace_members, $messageReadSystem,$callSystem,$messageSystem)
+    function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker, $pusher, $app_contacts, $levelManager, $app_workspace_members, $messageReadSystem, $callSystem, $messageSystem)
     {
-	    $this->string_cleaner = $string_cleaner;
-	    $this->doctrine = $doctrine;
-	    $this->security = $authorizationChecker;
-	    $this->pusher = $pusher;
-	    $this->app_contacts = $app_contacts;
-	    $this->levelManager = $levelManager;
-	    $this->app_workspace_members = $app_workspace_members;
-	    $this->messageReadSystem = $messageReadSystem;
-	    $this->callSystem = $callSystem;
-	    $this->messageSystem = $messageSystem;
+        $this->string_cleaner = $string_cleaner;
+        $this->doctrine = $doctrine;
+        $this->security = $authorizationChecker;
+        $this->pusher = $pusher;
+        $this->app_contacts = $app_contacts;
+        $this->levelManager = $levelManager;
+        $this->app_workspace_members = $app_workspace_members;
+        $this->messageReadSystem = $messageReadSystem;
+        $this->callSystem = $callSystem;
+        $this->messageSystem = $messageSystem;
     }
 
 
@@ -59,8 +53,9 @@ class StreamSystem implements StreamSystemInterface
 
     }
 
-    public function getStreamEntity($streamId){
-        return$this->convertToEntity($streamId,"TwakeDiscussionBundle:Stream");
+    public function getStreamEntity($streamId)
+    {
+        return $this->convertToEntity($streamId, "TwakeDiscussionBundle:Stream");
     }
 
     public function createStreamFromApp($workspaceId, $streamName, $streamDescription, $streamIsPrivate, $type, $members = Array(), $currentUserId = null)
@@ -89,16 +84,15 @@ class StreamSystem implements StreamSystemInterface
                     $this->doctrine->persist($link);
                 }
             }
-        }
-        else{
-            foreach($members as $memberid){
+        } else {
+            foreach ($members as $memberid) {
                 $member = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($memberid);
                 if ($user != null) {
                     $link = $stream->addMember($member);
                     $this->doctrine->persist($link);
                 }
             }
-            if(count($stream->getMembers())<=0){
+            if (count($stream->getMembers()) <= 0) {
                 $link = $stream->addMember($user);
                 $this->doctrine->persist($link);
             }
@@ -119,13 +113,12 @@ class StreamSystem implements StreamSystemInterface
         if ($workspace == null) {
             return false;
         }
-        if(!$this->levelManager->can($workspace, $user, "messages:read")){
+        if (!$this->levelManager->can($workspace, $user, "messages:read")) {
             return false;
         }
         if (!$this->levelManager->hasRight($user, $workspace, "messages:manage")) {
             return false;
-        }
-        else {
+        } else {
             $stream = new Channel($workspace, $streamName, $streamIsPrivate, $streamDescription);
             $stream->setType($type);
             $this->doctrine->persist($stream);
@@ -145,16 +138,16 @@ class StreamSystem implements StreamSystemInterface
                 }
             } else {
                 error_log("stream is private");
-                error_log("stream has members : ".count($members));
-                foreach($members as $memberid){
+                error_log("stream has members : " . count($members));
+                foreach ($members as $memberid) {
                     $member = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($memberid);
                     if ($user != null) {
-                        error_log("members ".$memberid." added to stream");
+                        error_log("members " . $memberid . " added to stream");
                         $link = $stream->addMember($member);
                         $this->doctrine->persist($link);
                     }
                 }
-                if(count($stream->getMembers())<=0){
+                if (count($stream->getMembers()) <= 0) {
                     error_log("no user added...");
                     $link = $stream->addMember($user);
                     $this->doctrine->persist($link);
@@ -162,24 +155,25 @@ class StreamSystem implements StreamSystemInterface
             }
             $this->doctrine->flush();
 
-            $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
-            $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
+            $notifications = $this->messageReadSystem->streamNotifications($stream, $user);
+            $callInfos = $this->callSystem->getCallInfo($user, $stream->getId());
 
-            $retour = array_merge($stream->getAsArray(),Array("notifications"=>$notifications["notifications"], "subject_notifications"=>$notifications["subject_notifications"], "lastread"=>$notifications["lastread"],"call"=>$callInfos));
+            $retour = array_merge($stream->getAsArray(), Array("notifications" => $notifications["notifications"], "subject_notifications" => $notifications["subject_notifications"], "lastread" => $notifications["lastread"], "call" => $callInfos));
 
             return $retour;
         }
 
     }
 
-    public function deleteStreamFromApp($stream_id){
-        if($stream_id != null){
+    public function deleteStreamFromApp($stream_id)
+    {
+        if ($stream_id != null) {
             $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($stream_id);
-            if(!$stream || $stream->getType()!="stream"){
+            if (!$stream || $stream->getType() != "stream") {
                 return false;
             }
 
-            if($stream){
+            if ($stream) {
                 $this->doctrine->getRepository("TwakeDiscussionBundle:Message")
                     ->removeStream($stream);
                 $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
@@ -193,25 +187,26 @@ class StreamSystem implements StreamSystemInterface
         return false;
     }
 
-    public function deleteStream($user,$stream_id){
-        if($stream_id != null){
-	        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($stream_id);
-            if(!$stream || $stream->getType()!="stream"){
-            	return false;
+    public function deleteStream($user, $stream_id)
+    {
+        if ($stream_id != null) {
+            $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($stream_id);
+            if (!$stream || $stream->getType() != "stream") {
+                return false;
             }
 
-            if(!$this->levelManager->can($stream->getWorkspace(), $user, "messages:read")){
+            if (!$this->levelManager->can($stream->getWorkspace(), $user, "messages:read")) {
                 return false;
             }
             if (!$this->levelManager->hasRight($user, $stream->getWorkspace(), "messages:manage")) {
                 return false;
             }
 
-            if($stream){
-	            $this->doctrine->getRepository("TwakeDiscussionBundle:Message")
-		            ->removeStream($stream);
-	            $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
-		            ->removeStream($stream);
+            if ($stream) {
+                $this->doctrine->getRepository("TwakeDiscussionBundle:Message")
+                    ->removeStream($stream);
+                $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
+                    ->removeStream($stream);
                 $this->doctrine->remove($stream);
                 $this->doctrine->flush();
                 $this->doctrine->clear();
@@ -229,12 +224,12 @@ class StreamSystem implements StreamSystemInterface
         }
 
         $stream = $this->messageSystem->getStream($streamKey);
-        if(!$stream || $stream["type"]!="stream"){
+        if (!$stream || $stream["type"] != "stream") {
             return false;
         }
         $stream = $stream["object"];
 
-        if($stream != null) {
+        if ($stream != null) {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")
                 ->findOneBy(Array("id" => $stream->getWorkspace()->getId(), "is_deleted" => false));
             if ($workspace == null) {
@@ -277,18 +272,18 @@ class StreamSystem implements StreamSystemInterface
         }
 
         $stream = $this->messageSystem->getStream($streamKey);
-	    if(!$stream || $stream["type"]!="stream"){
-		    return false;
-	    }
-	    $stream = $stream["object"];
+        if (!$stream || $stream["type"] != "stream") {
+            return false;
+        }
+        $stream = $stream["object"];
 
-        if($stream != null) {
+        if ($stream != null) {
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")
                 ->findOneBy(Array("id" => $stream->getWorkspace()->getId(), "is_deleted" => false));
             if ($workspace == null) {
                 return false;
             }
-            if(!$this->levelManager->can($workspace, $user, "messages:read")){
+            if (!$this->levelManager->can($workspace, $user, "messages:read")) {
                 return false;
             }
             if (!$this->levelManager->hasRight($user, $workspace, "messages:manage")) {
@@ -318,64 +313,67 @@ class StreamSystem implements StreamSystemInterface
                 }
             }
             $this->doctrine->flush();
-            $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
-            $callInfos = $this->callSystem->getCallInfo($user,$stream->getId());
-            $retour = array_merge($stream->getAsArray(),Array("notifications"=>$notifications["notifications"], "subject_notifications"=>$notifications["subject_notifications"], "lastread"=>$notifications["lastread"],"call"=>$callInfos));
+            $notifications = $this->messageReadSystem->streamNotifications($stream, $user);
+            $callInfos = $this->callSystem->getCallInfo($user, $stream->getId());
+            $retour = array_merge($stream->getAsArray(), Array("notifications" => $notifications["notifications"], "subject_notifications" => $notifications["subject_notifications"], "lastread" => $notifications["lastread"], "call" => $callInfos));
             return $retour;
         }
     }
 
-	public function getAllPrivateStreamList($user){
-		$linkStreams = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user"=>$user,"workspace"=>null));
-		$list = Array();
-		foreach($linkStreams as $linkStream){
-			try {
-				$stream = $linkStream->getStream();
-				if (!$stream->getWorkspace()) {
-					$notifications = $this->messageReadSystem->streamNotifications($stream, $user);
-					$callInfos = $this->callSystem->getCallInfo($user, $stream->getAsArray()["key"]);
+    public function getAllPrivateStreamList($user)
+    {
+        $linkStreams = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findBy(Array("user" => $user, "workspace" => null));
+        $list = Array();
+        foreach ($linkStreams as $linkStream) {
+            try {
+                $stream = $linkStream->getStream();
+                if (!$stream->getWorkspace()) {
+                    $notifications = $this->messageReadSystem->streamNotifications($stream, $user);
+                    $callInfos = $this->callSystem->getCallInfo($user, $stream->getAsArray()["key"]);
 
-					$stream_array = $stream->getAsArray();
-					$contact = $stream_array["members"][0];
-					if($contact["id"] == $user->getId()){
-						$contact = $stream_array["members"][1];
-					}
-					if($contact["id"] != $user->getId()) {
-						$list[] = array_merge($stream_array, Array(
-							"contact" => $contact,
-							"notifications" => $notifications["notifications"],
-                            "subject_notifications"=>$notifications["subject_notifications"],
-                            "lastread"=>$notifications["lastread"],
-							"call" => $callInfos,
-							"mute" => $linkStream->getMute()
-						));
-					}
-				}
-			} catch (Exception $err){
+                    $stream_array = $stream->getAsArray();
+                    $contact = $stream_array["members"][0];
+                    if ($contact["id"] == $user->getId()) {
+                        $contact = $stream_array["members"][1];
+                    }
+                    if ($contact["id"] != $user->getId()) {
+                        $list[] = array_merge($stream_array, Array(
+                            "contact" => $contact,
+                            "notifications" => $notifications["notifications"],
+                            "subject_notifications" => $notifications["subject_notifications"],
+                            "lastread" => $notifications["lastread"],
+                            "call" => $callInfos,
+                            "mute" => $linkStream->getMute()
+                        ));
+                    }
+                }
+            } catch (Exception $err) {
 
-			}
-		}
-		return $list;
-	}
+            }
+        }
+        return $list;
+    }
 
-    public function getAllPublicStreamList($workspaceId){
+    public function getAllPublicStreamList($workspaceId)
+    {
         $streams = $this->getAllStreamList($workspaceId);
         $to_return = Array();
 
-        foreach ($streams as $stream){
-            if(!$stream->getIsPrivate())
-                array_push($to_return,$stream);
+        foreach ($streams as $stream) {
+            if (!$stream->getIsPrivate())
+                array_push($to_return, $stream);
         }
 
         return $to_return;
     }
-	public function getAllStreamList($workspaceId){
+
+    public function getAllStreamList($workspaceId)
+    {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")
             ->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
-        if($workspace == null){
+        if ($workspace == null) {
             return false;
-        }
-        else {
+        } else {
             //Workspace streams
             $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace" => $workspace));
 
@@ -383,67 +381,67 @@ class StreamSystem implements StreamSystemInterface
         }
     }
 
-    public function getStreamForUser($user_id, $current_user){
+    public function getStreamForUser($user_id, $current_user)
+    {
         $key = "u-" . min($current_user->getId(), $user_id) . "_" . max($current_user->getId(), $user_id);
         $stream = $this->messageSystem->getStream($key, $current_user);
-        return $stream?$stream["object"]:false;
+        return $stream ? $stream["object"] : false;
     }
 
-    public function getStreamList($workspaceId, $user){
+    public function getStreamList($workspaceId, $user)
+    {
         $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")
             ->findOneBy(Array("id" => $workspaceId, "is_deleted" => false));
-        if($workspace == null){
+        if ($workspace == null) {
             return false;
-        }
-        else{
+        } else {
 
-            if(!$this->levelManager->can($workspace, $user, "messages:read")){
+            if (!$this->levelManager->can($workspace, $user, "messages:read")) {
                 return false;
             }
 
-	        //Workspace streams
-	        $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace"=>$workspace));
-	        $retour = Array("stream"=>Array(), "user"=>Array());
-	        foreach($streams as $stream){
-	            if($stream->getIsHide())
-	                continue;
-		        $linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream));
-	        	if($linkStream == null && !$stream->getIsPrivate()){
-			        $linkStream = $stream->addMember($user);
-	        		$this->doctrine->persist($linkStream);
-		        }
-		        if($linkStream!=null){ //public stream
+            //Workspace streams
+            $streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace" => $workspace));
+            $retour = Array("stream" => Array(), "user" => Array());
+            foreach ($streams as $stream) {
+                if ($stream->getIsHide())
+                    continue;
+                $linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user" => $user, "stream" => $stream));
+                if ($linkStream == null && !$stream->getIsPrivate()) {
+                    $linkStream = $stream->addMember($user);
+                    $this->doctrine->persist($linkStream);
+                }
+                if ($linkStream != null) { //public stream
 
-			        $notifications = $this->messageReadSystem->streamNotifications($stream,$user);
-			        $callInfos = $this->callSystem->getCallInfo($user,$stream->getAsArray()["key"]);
-			        $retour["stream"][] = array_merge($stream->getAsArray(),Array(
-			        	"notifications"=>$notifications["notifications"],
-                        "subject_notifications"=>$notifications["subject_notifications"],
-                        "lastread"=>$notifications["lastread"],
-				        "call"=>$callInfos,
-				        "mute"=>$linkStream->getMute()
-			        ));
-		        }
-	        }
-	        $this->doctrine->flush();
-
-	        //Member streams
-	        $members = Array();
-            if($workspace->getUser()!=null){ // this is private ws
-                //$retour["stream"] = array_merge($retour["stream"], $this->getAllPrivateStreamList($user));
+                    $notifications = $this->messageReadSystem->streamNotifications($stream, $user);
+                    $callInfos = $this->callSystem->getCallInfo($user, $stream->getAsArray()["key"]);
+                    $retour["stream"][] = array_merge($stream->getAsArray(), Array(
+                        "notifications" => $notifications["notifications"],
+                        "subject_notifications" => $notifications["subject_notifications"],
+                        "lastread" => $notifications["lastread"],
+                        "call" => $callInfos,
+                        "mute" => $linkStream->getMute()
+                    ));
+                }
             }
-            else {
-	            $members_array = $this->app_workspace_members->getMembers($workspaceId);
-	            foreach ($members_array as $member) {
-		            $members[] = $member["user"];
-	            }
+            $this->doctrine->flush();
 
-	            foreach ($members as $member) {
-		            if ($member->getId() != $user->getId()) {
-			            $key = "u-" . min($user->getId(), $member->getId()) . "_" . max($user->getId(), $member->getId());
-			            $stream = $this->messageSystem->getStream($key, $user);
-			            if ($stream) {
-				            $linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user" => $user, "stream" => $stream));
+            //Member streams
+            $members = Array();
+            if ($workspace->getUser() != null) { // this is private ws
+                //$retour["stream"] = array_merge($retour["stream"], $this->getAllPrivateStreamList($user));
+            } else {
+                $members_array = $this->app_workspace_members->getMembers($workspaceId);
+                foreach ($members_array as $member) {
+                    $members[] = $member["user"];
+                }
+
+                foreach ($members as $member) {
+                    if ($member->getId() != $user->getId()) {
+                        $key = "u-" . min($user->getId(), $member->getId()) . "_" . max($user->getId(), $member->getId());
+                        $stream = $this->messageSystem->getStream($key, $user);
+                        if ($stream) {
+                            $linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user" => $user, "stream" => $stream));
 
                             if ($linkStream) {
                                 $stream = $stream["object"];
@@ -458,29 +456,30 @@ class StreamSystem implements StreamSystemInterface
                                     "mute" => $linkStream->getMute()
                                 ));
                             }
-			            }
-		            }
-	            }
+                        }
+                    }
+                }
             }
 
             return $retour;
         }
     }
 
-    public function mute($user, $streamId, $mute = true){
+    public function mute($user, $streamId, $mute = true)
+    {
 
-	    $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
-	    $member = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user"=>$user,"stream"=>$stream));
+        $stream = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->find($streamId);
+        $member = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")->findOneBy(Array("user" => $user, "stream" => $stream));
 
-	    if($stream==null || $member==null){
-		    return false;
-	    }
+        if ($stream == null || $member == null) {
+            return false;
+        }
 
-	    $member->setMute($mute);
-	    $this->doctrine->persist($member);
-	    $this->doctrine->flush();
+        $member->setMute($mute);
+        $this->doctrine->persist($member);
+        $this->doctrine->flush();
 
-	    return true;
+        return true;
 
     }
 

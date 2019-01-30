@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\CalendarBundle\Entity\Calendar;
 use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
 use WebsiteApi\DiscussionBundle\Entity\Message;
-use WebsiteApi\DiscussionBundle\Entity\Stream;
+use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\DriveBundle\Entity\DriveLabel;
 use WebsiteApi\ProjectBundle\Entity\Board;
 use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
@@ -161,7 +161,7 @@ class Workspaces implements WorkspacesInterface
         $this->translate->setDefaultLanguage($user->getLanguage());
 
         // Create stream
-        $streamGeneral = new Stream($workspace, new TranslationObject($this->translate,"general"), false, "This is the general stream");
+        $streamGeneral = new Channel($workspace, new TranslationObject($this->translate, "general"), false, "This is the general stream");
         $streamGeneral->setType("stream");
         //$streamRandom = new Stream($workspace, "Random", false, "This is the random stream");
         //$streamRandom->setType("stream");
@@ -431,7 +431,7 @@ class Workspaces implements WorkspacesInterface
                     }
                     $old_streams = $this->doctrine->getRepository("TwakeDiscussionBundle:Stream")->findBy(Array("workspace" => $original_workspace));
                     foreach ($old_streams as $stream) {
-                        $new_stream = new Stream($workspace, $stream->getName(), $stream->getIsPrivate(), $stream->getDescription());
+                        $new_stream = new Channel($workspace, $stream->getName(), $stream->getIsPrivate(), $stream->getDescription());
                         $new_stream->setType("stream");
                         $this->doctrine->persist($new_stream);
 

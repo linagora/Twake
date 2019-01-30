@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\DiscussionBundle\Entity\MessageLike;
-use WebsiteApi\DiscussionBundle\Entity\Stream;
+use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Entity\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;

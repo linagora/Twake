@@ -4,7 +4,7 @@
 
 namespace WebsiteApi\DiscussionBundle\Services;
 
-use WebsiteApi\DiscussionBundle\Entity\Stream;
+use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use WebsiteApi\DiscussionBundle\Entity\Subject;
@@ -59,7 +59,7 @@ class SubjectSystem
 
     public function createSubjectWithObjectLink($name,$streamKey,$user, $objectLinkId, $objectLinkType, $workspace)
     {
-        /* @var Stream $stream*/
+        /* @var Channel $stream */
         $stream = $this->messageSystem->getStream($streamKey, $user->getId());
         /* @var ObjectLinksInterface $objectLink */
         $objectLink = $this->doctrine->getRepository(ObjectLinkSystem::$keyMap[$objectLinkType])->findOneBy(Array("id" => $objectLinkId));
@@ -67,7 +67,7 @@ class SubjectSystem
         $workspace = $this->doctrine->getRepository("TwakeWorkspaceBundle:Workspace")->findOneBy(Array("id" => $workspace));
 
         if ($stream == null) {
-            $streamObj = new Stream($workspace, $objectLink->getAsArrayFormated()["object_name"], false, "");
+            $streamObj = new Channel($workspace, $objectLink->getAsArrayFormated()["object_name"], false, "");
             $streamObj->setIsHide(true);
             $stream = Array("object" => $streamObj);
             $streamKey = $stream->getKey();

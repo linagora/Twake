@@ -1,0 +1,4 @@
+services:
+    app.channels_system:
+            class: WebsiteApi\ChannelsBundle\Services\ChannelsSystem
+            arguments: []

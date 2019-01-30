@@ -3,7 +3,7 @@
 namespace WebsiteApi\WorkspacesBundle\Services;
 
 
-use WebsiteApi\DiscussionBundle\Entity\Stream;
+use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceApp;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;

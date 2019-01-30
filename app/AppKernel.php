@@ -29,6 +29,7 @@ class AppKernel extends Kernel
 			new WebsiteApi\PaymentsBundle\TwakePaymentsBundle(),
 			new WebsiteApi\UploadBundle\TwakeUploadBundle(),
 			new WebsiteApi\DiscussionBundle\TwakeDiscussionBundle(),
+            new WebsiteApi\ChannelsBundle\TwakeChannelsBundle(),
 	        new WebsiteApi\CallsBundle\TwakeCallsBundle(),
             new WebsiteApi\ObjectLinksBundle\TwakeObjectLinksBundle(),
 			new Administration\GeneralBundle\AdministrationGeneralBundle(),

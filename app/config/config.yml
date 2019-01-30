@@ -9,6 +9,7 @@ imports:
     - { resource: "@TwakeUsersBundle/Resources/config/services.yml" }
     - { resource: "@TwakeCoreBundle/Resources/config/services.yml" }
     - { resource: "@TwakeDiscussionBundle/Resources/config/services.yml" }
+    - { resource: "@TwakeChannelsBundle/Resources/config/services.yml" }
     - { resource: "@TwakeObjectLinksBundle/Resources/config/services.yml" }
     - { resource: "@TwakeMarketBundle/Resources/config/services.yml" }
     - { resource: "@TwakePaymentsBundle/Resources/config/services.yml" }

@@ -8,7 +8,7 @@ use WebsiteApi\DiscussionBundle\Entity\Call;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\DiscussionBundle\Entity\MessageLike;
-use WebsiteApi\DiscussionBundle\Entity\Stream;
+use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Entity\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -94,7 +94,7 @@ class MessageSystem implements MessagesSystemInterface
 
             if (!$s) {
                 //create channel between two users
-                $s = new Stream(null, "", false, "");
+                $s = new Channel(null, "", false, "");
                 $s->setType("user");
                 $s->setKey($key);
                 $this->doctrine->persist($s);
