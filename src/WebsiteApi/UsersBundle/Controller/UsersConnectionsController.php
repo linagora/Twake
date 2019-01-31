@@ -229,7 +229,7 @@ class UsersConnectionsController extends Controller
 
 			$data["data"]["status"] = "connected";
 
-			$private = $this->get("app.workspaces")->getPrivate($this->getUser()->getId());
+			//$private = $this->get("app.workspaces")->getPrivate($this->getUser()->getId());
             $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
 
 			$workspaces = Array();
@@ -245,7 +245,7 @@ class UsersConnectionsController extends Controller
             }
 
 			$data["data"]["workspaces"] = $workspaces;
-			$data["data"]["privateworkspace"] = $private->getAsArray();
+            //$data["data"]["privateworkspace"] = $private->getAsArray();
 
 		}
 

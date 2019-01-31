@@ -140,7 +140,8 @@ class WorkspaceController extends Controller
 		}else{
             $ws_id = $ws->getId();
 			$response["data"]["status"] = "success";
-			$response["data"]["workspace_id"] = $ws_id;
+            //$response["data"]["workspace_id"] = $ws_id;
+			$response["data"]["workspace_id"] = $ws->getAsArray();
 		}
 
 		return new JsonResponse($response);
