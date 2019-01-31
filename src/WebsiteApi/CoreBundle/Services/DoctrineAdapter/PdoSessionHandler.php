@@ -135,9 +135,10 @@ class PdoSessionHandler implements \SessionHandlerInterface
      */
     public function write($sessionId, $data)
     {
-
-
-        $session = new Sessions();
+        $session = $this->doctrineAdapter->getRepository("TwakeCoreBundle:Sessions")->find($sessionId);
+        if(!$session){
+            $session = new Sessions();
+        }
         $session->setSessId($sessionId);
         $session->setSessData($data);
         $session->setSessLifetime($this->lifetime);
@@ -157,7 +158,7 @@ class PdoSessionHandler implements \SessionHandlerInterface
         $result = $repo->find($sessionId);
 
         if ($result) {
-            $data = $result->getSessData;
+            $data = $result->getSessData();
             return $data;
         }
         return '';
