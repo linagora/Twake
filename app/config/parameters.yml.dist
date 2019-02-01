@@ -7,6 +7,7 @@ parameters:
     SERVER_NAME: https://twakeapp.com
     DRIVE_SALT: SecretPassword
     PUSH_NOTIFICATION_SERVER: http://localhost:8009/server.php
+    ELASTIC_SERVER: elasticsearch_twake:9200
     websocket_host: 127.0.0.1
     websocket_port: 8080
     websocket_pusher_remote_host: 127.0.0.1

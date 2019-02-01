@@ -198,6 +198,16 @@ twake_user_recover_password:
     methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersRecover:newPassword }
 
+# Get and search
+twake_users_get:
+    path:     /all/get
+    methods: [POST]
+    defaults: { _controller: TwakeUsersBundle:Users:getById }
+
+twake_users_search:
+    path:     /all/search
+    methods: [POST]
+    defaults: { _controller: TwakeUsersBundle:Users:search }
 
 # CAS
 

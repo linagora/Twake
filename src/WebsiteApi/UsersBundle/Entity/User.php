@@ -3,6 +3,7 @@
 namespace WebsiteApi\UsersBundle\Entity;
 
 use Symfony\Component\Security\Core\User\UserInterface;
+use WebsiteApi\CoreBundle\Entity\SearchableObject;
 use WebsiteApi\WorkspacesBundle\Entity\LinkWorkspaceParent;
 use Symfony\Component\Security\Core\User\UserInterface as BaseUserInterface;
 use Doctrine\ORM\Mapping as ORM;
@@ -14,8 +15,11 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
  * @ORM\Table(name="user",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\UsersBundle\Repository\UserRepository")
  */
-class User implements UserInterface
+class User extends SearchableObject implements UserInterface
 {
+
+
+    protected $es_type = "users";
 
     /**
      * @var int
@@ -26,11 +30,6 @@ class User implements UserInterface
      * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
     protected $id;
-
-    /**
-     * @ORM\Column(name="front_id", type="string", length=80)
-     */
-    protected $front_id = "";
 
     /**
      * Used for cassandra session handler because timeuuid cannot be unserialized
@@ -191,17 +190,6 @@ class User implements UserInterface
 	{
 		return $this->id;
 	}
-
-    /**
-     * @return mixed
-     */
-    public function getFrontId()
-    {
-        if (!$this->front_id) {
-            $this->front_id = bin2hex(random_bytes(20));
-        }
-        return $this->front_id;
-    }
 
     public function setIdAsString()
     {
@@ -466,6 +454,18 @@ class User implements UserInterface
 		);
 		return $return;
 	}
+
+    public function getIndexationArray()
+    {
+        $return = Array(
+            "username" => $this->getUsername(),
+            "firstname" => $this->getFirstName(),
+            "lastname" => $this->getLastName(),
+            "banned" => $this->getBanned(),
+            "language" => $this->getLanguage()
+        );
+        return $return;
+    }
 
     /**
      * @return mixed

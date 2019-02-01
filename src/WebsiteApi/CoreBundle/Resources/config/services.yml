@@ -14,7 +14,7 @@ services:
 
     app.twake_doctrine:
         class: WebsiteApi\CoreBundle\Services\DoctrineAdapter\ManagerAdapter
-        arguments: ["@doctrine.orm.entity_manager", "%database_driver%", "%database_host%", "%database_port%", "%database_user%", "%database_password%", "%database_dbname%", "%database_encrypt_key%"]
+        arguments: ["@doctrine.orm.entity_manager", "@app.twake_elastic_search", "%database_driver%", "%database_host%", "%database_port%", "%database_user%", "%database_password%", "%database_dbname%", "%database_encrypt_key%"]
 
     app.websockets:
         class: WebsiteApi\CoreBundle\Services\Websockets
@@ -24,6 +24,10 @@ services:
         class: WebsiteApi\CoreBundle\Topic\CollectionsTopic
         tags:
             - { name: gos_web_socket.topic }
+
+    app.twake_elastic_search:
+        class: WebsiteApi\CoreBundle\Services\ElasticSearch
+        arguments: ["%ELASTIC_SERVER%", "@circle.restclient"]
 
     websocket.pdo.ping:
         class: WebsiteApi\CoreBundle\Services\PDOPinger

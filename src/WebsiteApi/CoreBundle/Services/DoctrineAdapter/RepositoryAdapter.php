@@ -32,6 +32,13 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
         try {
             $a = parent::find($id);
+
+            if ($a) {
+                if (method_exists($a, "getEsIndexed")) {
+                    $a->updatePreviousIndexationArray();
+                }
+            }
+
         } catch (\Exception $e) {
             error_log($e);
             var_dump($e->getTraceAsString());
@@ -44,6 +51,13 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
     {
         try {
             $a = parent::findOneBy($filter, $sort);
+
+            if ($a) {
+                if (method_exists($a, "getEsIndexed")) {
+                    $a->updatePreviousIndexationArray();
+                }
+            }
+
         } catch (\Exception $e) {
             error_log($e);
             var_dump($e->getTraceAsString());
@@ -55,7 +69,15 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
     public function findBy(Array $filter, ?array $sort = null, $limit = null, $offset = null)
     {
         try {
+
             $a = parent::findBy($filter, $sort, $limit, $offset);
+
+            foreach ($a as $e) {
+                if (method_exists($e, "getEsIndexed")) {
+                    $e->updatePreviousIndexationArray();
+                }
+            }
+
         } catch (\Exception $e) {
             error_log($e);
             var_dump($e->getTraceAsString());

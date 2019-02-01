@@ -12,9 +12,10 @@ use Doctrine\DBAL\Types\Type;
 class ManagerAdapter
 {
 
-    public function __construct($doctrine_manager, $driver, $host, $port, $username, $password, $dbname, $encryption_key)
+    public function __construct($doctrine_manager, $es, $driver, $host, $port, $username, $password, $dbname, $encryption_key)
     {
         $this->doctrine_manager = $doctrine_manager;
+        $this->es = $es;
         $this->database_configuration = Array(
             "driver" => $driver,
             "host" => $host,
@@ -26,6 +27,9 @@ class ManagerAdapter
         );
         $this->dev_mode = true; // If false no entity generation
         $this->manager = null;
+
+        $this->es_updates = Array();
+        $this->es_removes = Array();
     }
 
     public function getEntityManager()
@@ -90,6 +94,17 @@ class ManagerAdapter
     public function flush()
     {
 
+        //ElasticSearch
+        foreach ($this->es_removes as $es_remove) {
+            $this->es->remove($es_remove, $es_remove->getEsType(), $es_remove->getEsIndex());
+        }
+        $this->es_removes = Array();
+        foreach ($this->es_updates as $es_update) {
+            $this->es->put($es_update, $es_update->getEsType(), $es_update->getEsIndex());
+            $es_update->updatePreviousIndexationArray();
+        }
+        $this->es_updates = Array();
+
         try {
             $a = $this->manager->flush();
         } catch (\Exception $e) {
@@ -101,11 +116,25 @@ class ManagerAdapter
 
     public function remove($object)
     {
+        if (method_exists($object, "getEsIndexed")) {
+            //This is a searchable object
+            $this->es_removes[$object->getId() . ""] = $object;
+            unset($this->es_updates[$object->getId() . ""]);
+        }
         return $this->getEntityManager()->remove($object);
     }
 
     public function persist($object)
     {
+        if (method_exists($object, "getEsIndexed")) {
+            //This is a searchable object
+            if (!$object->getEsIndexed() || $object->changesInIndexationArray()) {
+                $this->es_updates[$object->getId() . ""] = $object;
+                unset($this->es_removes[$object->getId() . ""]);
+                $object->setEsIndexed(true);
+            }
+        }
+
         return $this->getEntityManager()->persist($object);
     }
 
