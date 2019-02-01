@@ -21,6 +21,11 @@ class UsersController extends Controller
 
         $query = $request->request->get("query");
         $options = $request->request->get("options");
+
+        if ($this->getUser()) {
+            $options["language_preference"] = $this->getUser()->getLanguage();
+        }
+
         $users = $this->get("app.users")->search($query, $options);
 
         if ($users) {

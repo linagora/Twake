@@ -12,10 +12,9 @@ use Doctrine\DBAL\Types\Type;
 class ManagerAdapter
 {
 
-    public function __construct($doctrine_manager, $es, $driver, $host, $port, $username, $password, $dbname, $encryption_key)
+    public function __construct($doctrine_manager, $es_server, $circle, $driver, $host, $port, $username, $password, $dbname, $encryption_key)
     {
         $this->doctrine_manager = $doctrine_manager;
-        $this->es = $es;
         $this->database_configuration = Array(
             "driver" => $driver,
             "host" => $host,
@@ -28,6 +27,8 @@ class ManagerAdapter
         $this->dev_mode = true; // If false no entity generation
         $this->manager = null;
 
+        $this->circle = $circle;
+        $this->es_server = $es_server;
         $this->es_updates = Array();
         $this->es_removes = Array();
     }
@@ -96,11 +97,11 @@ class ManagerAdapter
 
         //ElasticSearch
         foreach ($this->es_removes as $es_remove) {
-            $this->es->remove($es_remove, $es_remove->getEsType(), $es_remove->getEsIndex());
+            $this->es_remove($es_remove, $es_remove->getEsType(), $es_remove->getEsIndex());
         }
         $this->es_removes = Array();
         foreach ($this->es_updates as $es_update) {
-            $this->es->put($es_update, $es_update->getEsType(), $es_update->getEsIndex());
+            $this->es_put($es_update, $es_update->getEsType(), $es_update->getEsIndex());
             $es_update->updatePreviousIndexationArray();
         }
         $this->es_updates = Array();
@@ -150,6 +151,98 @@ class ManagerAdapter
     public function createQueryBuilder($qb = null)
     {
         return $this->getEntityManager()->createQueryBuilder($qb);
+    }
+
+
+    /* Elastic Search */
+
+
+    public function es_put($entity, $type, $index = "twake")
+    {
+
+        if (is_array($entity)) {
+            $id = $entity["id"];
+            $data = $entity["data"];
+
+            if (!is_array($data)) {
+                $data = Array("content" => $data);
+            }
+        } else {
+            $id = $entity->getId();
+
+            if (method_exists($entity, "getIndexationArray")) {
+                $data = $entity->getIndexationArray();
+            } else {
+                $data = $entity->getAsArray();
+            }
+        }
+
+        $route = "http://" . $this->es_server . "/" . $index . "/" . $type . "/" . $id;
+
+        $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+
+    }
+
+    public function es_remove($entity, $type, $index = "twake")
+    {
+
+        if (is_array($entity)) {
+            $id = $entity["id"];
+        } else {
+            $id = $entity->getId();
+        }
+
+        $route = "http://" . $this->es_server . "/" . $index . "/" . $type . "/" . $id;
+
+        $this->circle->delete($route);
+    }
+
+    public function es_search($options = Array(), $type = null, $index = "twake")
+    {
+
+        if (isset($options["type"]) && !$type) {
+            $type = $options["type"];
+        }
+
+        $repository = null;
+        if (isset($options["repository"])) {
+            $repository = $this->getRepository($options["repository"]);
+        }
+
+        $route = "http://" . $this->es_server . "/" . $index . "/";
+        if ($type) {
+            $route .= $type . "/";
+        }
+        $route .= "_search";
+
+        $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+
+
+        $res = $res->getContent();
+
+        $result = [];
+        if ($res) {
+            $res = json_decode($res, 1);
+
+            if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
+                $res = $res["hits"]["hits"];
+
+                foreach ($res as $object_json) {
+                    if ($repository) {
+                        $obj = $repository->find($object_json["_id"]);
+                    } else {
+                        $obj = $object_json["_id"];
+                    }
+                    if ($obj) {
+                        $result[] = $obj;
+                    }
+                }
+            }
+
+        }
+
+        return $result;
+
     }
 
 }

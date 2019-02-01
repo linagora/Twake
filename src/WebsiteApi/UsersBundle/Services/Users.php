@@ -19,26 +19,41 @@ class Users
 {
 
     private $em;
-    private $es;
 
-    public function __construct($em, $es)
+    public function __construct($em)
     {
         $this->em = $em;
-        $this->es = $es;
     }
 
     public function search($query, $options = Array())
     {
 
-        //TODO make a true search with elastic search
-        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $users = $userRepository->findBy(Array("username" => $query));
+        $language_preference = isset($options["language_preference"]) ? $options["language_preference"] : false;
 
         $options = Array(
-            "query" => Array()
+            "repository" => "TwakeUsersBundle:User",
+            "type" => "users",
+            "query" => Array(
+                "bool" => Array(
+                    "should" => Array(
+                        Array("match" => Array("firstname" => $query)),
+                        Array("match" => Array("lastname" => $query)),
+                        Array("prefix" => Array("username" => $query))
+                    ),
+                    "filter" => Array(
+                        "term" => Array(
+                            "banned" => false
+                        )
+                    )
+                )
+            )
         );
 
-        $this->get("app.twake_elastic_search")->search($options, "users");
+        if ($language_preference) {
+            $options["query"]["bool"]["should"][] = Array("match" => Array("language" => $language_preference));
+        }
+
+        $users = $this->em->es_search($options);
 
         $result = [];
         foreach ($users as $user) {
@@ -53,8 +68,6 @@ class Users
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->find($id);
         if ($user) {
-            $this->em->persist($user);
-            $this->em->flush();
             return $user->getAsArray();
         }
         return false;

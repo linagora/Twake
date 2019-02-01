@@ -6,7 +6,7 @@ services:
 
     app.users:
         class: WebsiteApi\UsersBundle\Services\Users
-        arguments: ["@app.twake_doctrine", "@app.twake_elastic_search"]
+        arguments: ["@app.twake_doctrine"]
 
     app.user:
         class: WebsiteApi\UsersBundle\Services\User
