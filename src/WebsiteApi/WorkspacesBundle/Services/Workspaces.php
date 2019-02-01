@@ -7,7 +7,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\CalendarBundle\Entity\Calendar;
 use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
 use WebsiteApi\DiscussionBundle\Entity\Message;
-use WebsiteApi\DiscussionBundle\Entity\Channel;
+use WebsiteApi\ChannelsBundle\Entity\Channel;
 use WebsiteApi\DriveBundle\Entity\DriveLabel;
 use WebsiteApi\ProjectBundle\Entity\Board;
 use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
@@ -161,17 +161,17 @@ class Workspaces implements WorkspacesInterface
         $this->translate->setDefaultLanguage($user->getLanguage());
 
         // Create stream
-        $streamGeneral = new Channel($workspace, new TranslationObject($this->translate, "general"), false, "This is the general stream");
-        $streamGeneral->setType("stream");
+        //$streamGeneral = new Channel($workspace, new TranslationObject($this->translate, "general"), false, "This is the general stream");
+        //$streamGeneral->setType("stream");
         //$streamRandom = new Stream($workspace, "Random", false, "This is the random stream");
         //$streamRandom->setType("stream");
-        $this->doctrine->persist($streamGeneral);
+        //$this->doctrine->persist($streamGeneral);
         //$this->doctrine->persist($streamRandom);
 
         $this->doctrine->flush();
 
         $links = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("user"=>$user));
-        if(count($links)<=1){
+       /* if(count($links)<=1){
             $t = microtime(true);
             $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
             $content = new TranslationObject($this->translate,"message.hello1",$user->getUsername());
@@ -273,7 +273,7 @@ class Workspaces implements WorkspacesInterface
 
 
         }
-
+        */
 
 
         //Create admin level
@@ -287,16 +287,22 @@ class Workspaces implements WorkspacesInterface
         $this->doctrine->flush();
 
 
-        //Add user in workspace
-        if ($userId != null) {
-            $this->wms->addMember($workspace->getId(), $userId, false, $level->getId());
-        }
 
         //Add twake_bot
         $this->wms->addMember($workspace->getId(), $twakebotId, false, $level->getId());
 
         //init default apps
         $this->init($workspace);
+
+        //Add user in workspace
+        if ($userId != null) {
+            $this->wms->addMember($workspace->getId(), $userId, false, $level->getId());
+            $dataToPush = Array(
+                "type"=>"add",
+                "workspace"=>$workspace->getAsArray()
+            );
+            $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
+        }
 
         return $workspace;
 

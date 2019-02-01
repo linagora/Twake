@@ -18,7 +18,7 @@ class WorkspacesOfUserTopic implements TopicInterface, PushableTopicInterface
     {
     }
 
-    public function onPush(Topic $topic, WampRequest $request, $connected, $provider)
+    public function onPush(Topic $topic, WampRequest $request, $event, $provider)
     {
         $topic->broadcast($event);
     }
