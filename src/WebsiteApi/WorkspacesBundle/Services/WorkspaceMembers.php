@@ -439,7 +439,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
     }
 
-    public function getMembers($workspaceId, $currentUserId = null, $twake_bot = true)
+    public function getMembers($workspaceId, $currentUserId = null, $twake_bot = true, $order = Array(), $max = 0, $offset = 0)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "")
@@ -453,7 +453,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 return false;
             }
 
-            $link = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
+            $link = $workspaceUserRepository->findBy(Array("workspace" => $workspace), $order, $max, $offset);
 
             $users = Array();
             foreach ($link as $user) {
@@ -472,6 +472,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 } else {
                     $users[] = Array(
                         "user" => $user->getUser(),
+                        "last_access" => $user->getLastAccess(),
                         "level" => $user->getLevel(),
                     );
                 }
