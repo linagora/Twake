@@ -44,13 +44,6 @@ class WorkspaceController extends Controller
 			}
             $response["data"]["apps"] = $apps;
 
-			$users_obj = $this->get("app.workspace_members")->getMembers($workspaceId,$this->getUser()->getId());
-			$users = Array();
-			foreach($users_obj as $user_obj){
-                $users[] = $user_obj["user"]->getId();
-            }
-			$response["data"]["members"] = $users;
-
             $response["data"]["currentUser"] = $this->getUser()->getAsArray();
             $level = $this->get("app.workspace_levels")->getLevel($workspaceId, $this->getUser()->getId());
             $level = $this->get("app.workspace_levels")->fixLevels(Array($level),$workspaceApps)["levels"][0];

@@ -38,6 +38,7 @@ class WorkspaceMembersController extends Controller
             }
             $list[] = Array(
                 "user" => $user,
+                "last_access" => $member["last_access"],
                 "level" => $member["level"]->getAsArray(),
                 "externe" => $member["externe"]
             );
