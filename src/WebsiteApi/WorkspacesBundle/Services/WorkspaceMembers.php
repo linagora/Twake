@@ -271,23 +271,30 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $this->doctrine->persist($groupmember);
             $this->doctrine->flush();
 
-            $datatopush = Array(
-                "type" => "CHANGE_MEMBERS",
-                "data" => Array(
-                    "id" => $userId,
-                    "workspaceId" => $workspace->getId(),
-                )
-            );
-            $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
-            $datatopush = Array(
-                "type" => "GROUP",
-                "action" => "addWorkspace",
-                "data" => Array(
-                    "workspaceId" => $workspace->getId(),
-                )
+            $dataToPush = Array(
+                "type" => "add",
+                "workspace" => $workspace->getAsArray()
             );
-            $this->pusher->push($datatopush, "notifications/" . $user->getId());
+            $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
+
+            /*            $datatopush = Array(
+                            "type" => "CHANGE_MEMBERS",
+                            "data" => Array(
+                                "id" => $userId,
+                                "workspaceId" => $workspace->getId(),
+                            )
+                        );
+                        $this->pusher->push($datatopush, "group/" . $workspace->getId());
+
+                        $datatopush = Array(
+                            "type" => "GROUP",
+                            "action" => "addWorkspace",
+                            "data" => Array(
+                                "workspaceId" => $workspace->getId(),
+                            )
+                        );
+                        $this->pusher->push($datatopush, "notifications/" . $user->getId());*/
 
             if ($workspace->getGroup() != null && $userId != $currentUserId) {
                 $this->twake_mailer->send($user->getEmail(), "addedToWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
@@ -370,7 +377,13 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $this->doctrine->remove($groupmember);
             }
 
-            $datatopush = Array(
+            $dataToPush = Array(
+                "type" => "remove",
+                "workspace" => $workspace->getAsArray()
+            );
+            $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
+
+            /*$datatopush = Array(
                 "type" => "CHANGE_MEMBERS",
                 "data" => Array(
                     "id" => $userId,
@@ -386,7 +399,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                     "workspaceId" => $workspace->getId(),
                 )
             );
-            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+            $this->pusher->push($datatopush, "group/" . $workspace->getId());*/
 
             $workspace->setMemberCount($workspace->getMemberCount() - 1);
 
