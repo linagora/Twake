@@ -227,6 +227,7 @@ class UsersConnectionsController extends Controller
 
 			$data["data"] = $this->getUser()->getAsArray();
 
+
 			$data["data"]["status"] = "connected";
 
             $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
@@ -240,6 +241,21 @@ class UsersConnectionsController extends Controller
                 $value["isfavorite"] = $workspace_obj["isfavorite"];
 
                 $workspaces[] = $value;
+            }
+
+            $mails = $this->get("app.user")->getSecondaryMails($this->getUser());
+
+            $data["data"]["mails"][] = Array(
+                "id" => -1,
+                "main" => true,
+                "email" => $this->getUser()->getEmail()
+            );
+            foreach ($mails as $mail){
+                $data["data"]["mails"][] = Array(
+                    "id" => $mail->getId(),
+                    "main" => false,
+                    "email" => $mail->getMail()
+                );
             }
 
 			$data["data"]["workspaces"] = $workspaces;
