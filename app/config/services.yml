@@ -63,6 +63,10 @@ services:
     ###################### System
     #################################################################################
 
+    session.handler.no_sessions:
+        class:     WebsiteApi\CoreBundle\Services\DoctrineAdapter\TwakeNoSessionHandler
+        arguments: []
+
     session.handler.twake:
         class:     WebsiteApi\CoreBundle\Services\DoctrineAdapter\TwakeSessionHandler
         arguments: ['@session.handler.pdo', '@session.handler.cassandra', '%database_driver%']

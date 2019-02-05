@@ -121,7 +121,7 @@ gos_web_socket:
         host: "%websocket_host%"   #The host ip to bind to
     client:
         firewall: main #can be an array of firewalls
-        session_handler: '@session.handler.twake'
+        session_handler: '@session.handler.no_sessions'
     shared_config: true
     periodic:
         - '@websocket.pdo.ping'

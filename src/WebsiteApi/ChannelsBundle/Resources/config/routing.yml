@@ -8,3 +8,14 @@ channels_direct_messages_save:
 channels_direct_messages_remove:
     path:     /direct_messages/remove
     defaults: { _controller: TwakeChannelsBundle:DirectMessages:remove}
+
+#Channels
+channels_get:
+    path:     /get
+    defaults: { _controller: TwakeChannelsBundle:Channels:get}
+channels_save:
+    path:     /save
+    defaults: { _controller: TwakeChannelsBundle:Channels:save}
+channels_remove:
+    path:     /remove
+    defaults: { _controller: TwakeChannelsBundle:Channels:remove}

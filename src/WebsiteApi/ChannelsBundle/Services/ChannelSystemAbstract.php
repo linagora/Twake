@@ -34,8 +34,12 @@ class ChannelSystemAbstract
 
     }
 
-    public function updateChannelMembers($channel_entity, $members_ids)
+    public function updateChannelMembers($channel_entity, $members_ids, $current_user_id = null)
     {
+
+        if ($current_user_id && !in_array($current_user_id, $members_ids)) {
+            $members_ids[] = $current_user_id;
+        }
 
         $current_members = $channel_entity->getMembers();
 

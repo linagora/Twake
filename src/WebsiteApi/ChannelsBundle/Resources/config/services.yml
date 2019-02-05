@@ -2,3 +2,7 @@ services:
     app.channels.direct_messages_system:
             class: WebsiteApi\ChannelsBundle\Services\DirectMessagesSystem
             arguments: ["@app.twake_doctrine"]
+
+    app.channels.channels_system:
+            class: WebsiteApi\ChannelsBundle\Services\ChannelsSystem
+            arguments: ["@app.twake_doctrine"]

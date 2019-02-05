@@ -33,6 +33,11 @@ class ChannelMember
     private $channel;
 
     /**
+     * @ORM\Column(name="direct", type="boolean")
+     */
+    private $direct = 0;
+
+    /**
      * @ORM\Column(name="last_activity", type="twake_datetime" , options={"default" : "2018-07-27 14:00:58"})
      */
     private $last_activity = 0;
@@ -53,6 +58,7 @@ class ChannelMember
         $this->channel = $channel;
         $this->last_activity = new \DateTime();
         $this->last_access = new \DateTime();
+        $this->direct = $channel->getDirect();
     }
 
     /**
@@ -110,6 +116,23 @@ class ChannelMember
     {
         $this->last_access = $last_access;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDirect()
+    {
+        return $this->direct;
+    }
+
+    /**
+     * @param mixed $direct
+     */
+    public function setDirect($direct)
+    {
+        $this->direct = $direct;
+    }
+
 
 
 }
