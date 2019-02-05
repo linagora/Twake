@@ -29,27 +29,27 @@ class Channel
     private $front_id;
 
     /**
-     * @ORM\Column(type="string", length=400)
+     * @ORM\Column(type="string", length=400, nullable=true)
      */
     private $identifier; //Max 10 users
 
     /**
-     * @ORM\Column(name="icon", type="twake_text")
+     * @ORM\Column(name="icon", type="twake_text", nullable=true)
      */
     private $icon = "";
 
     /**
-     * @ORM\Column(name="name", type="twake_text")
+     * @ORM\Column(name="name", type="twake_text", nullable=true)
      */
     private $name = "";
 
     /**
-     * @ORM\Column(name="channel_group_name", type="twake_text")
+     * @ORM\Column(name="channel_group_name", type="twake_text", nullable=true)
      */
     private $channel_group_name = "";
 
     /**
-     * @ORM\Column(name="description", type="twake_text")
+     * @ORM\Column(name="description", type="twake_text", nullable=true)
      */
     private $description = "";
 
@@ -239,7 +239,7 @@ class Channel
      */
     public function setPrivate($private)
     {
-        $this->private = $private;
+        $this->private = ($private == true);
     }
 
     /**
@@ -255,7 +255,7 @@ class Channel
      */
     public function setDirect($direct)
     {
-        $this->direct = $direct;
+        $this->direct = ($direct == true);
     }
 
     /**

@@ -42,7 +42,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
         }
 
         $member = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(
-            Array("user" => $current_user),
+            Array("user" => $current_user, "direct" => true),
             Array("last_activity" => "DESC"),
             isset($options["max"]) ? $options["max"] : 20,
             isset($options["offset"]) ? $options["offset"] : 0
@@ -60,6 +60,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
 
     public function remove($object, $options, $current_user)
     {
+        //TODO verify this channel is ours
         if (!$this->hasAccess($options, $current_user)) {
             return false;
         }
@@ -110,7 +111,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
         $this->entity_manager->persist($channel);
         $this->entity_manager->flush($channel);
 
-        $this->updateChannelMembers($channel, $members);
+        $this->updateChannelMembers($channel, $members, $current_user->getId());
 
         return $channel->getAsArray();
     }

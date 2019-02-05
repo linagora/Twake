@@ -22,7 +22,9 @@ class Websockets
 
         //Register services to call for init websocekts and verify user has access
         $this->services_for_type = Array(
-            "channels/direct_messages" => "app.channels.direct_messages_system"
+            "channels/direct_messages" => "app.channels.direct_messages_system",
+            "channels/workspace" => "app.channels.channels_system",
+            "channels/workspace_private" => "app.channels.channels_system"
         );
 
         $this->doctrine = $doctrine;

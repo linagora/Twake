@@ -31,14 +31,19 @@ class AWS_Uploader extends Uploader
         $this->aws_bucket_name = $this->aws_buckets_prefix . 'twake.' . $region;
         $this->aws_bucket_region = $region;
 
-        $this->aws_s3_client = new S3Client([
+        $options = [
             'version' => $this->aws_version,
             'region' => $this->aws_bucket_region,
             'credentials' => [
                 'key' => $this->aws_credentials_key,
                 'secret' => $this->aws_credentials_secret
             ]
-        ]);
+        ];
+        if ($s3_config["base_url"]) {
+            $options["endpoint"] = $s3_config["base_url"];
+        }
+
+        $this->aws_s3_client = new S3Client($options);
 
     }
 
