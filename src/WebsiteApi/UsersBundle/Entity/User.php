@@ -915,7 +915,15 @@ class User extends SearchableObject implements UserInterface
      */
     public function getStatusIcon()
     {
-        return $this->status_icon;
+        try {
+            $status_icon = json_decode($this->status_icon, 1);
+        } catch (\Exception $e) {
+            $status_icon = Array("", "");
+        }
+        if (!$status_icon) {
+            $status_icon = Array("", "");
+        }
+        return $status_icon;
     }
 
     /**
@@ -923,7 +931,11 @@ class User extends SearchableObject implements UserInterface
      */
     public function setStatusIcon($status_icon)
     {
-        $this->status_icon = $status_icon;
+        try {
+            $this->status_icon = json_encode($status_icon);
+        } catch (\Exception $e) {
+            $this->status_icon = '["", ""]';
+        }
     }
 
     /**
@@ -950,7 +962,7 @@ class User extends SearchableObject implements UserInterface
         try {
             $this->workspaces_preference = json_encode($workspaces_preference);
         } catch (\Exception $e) {
-            $this->workspaces_preference = $workspaces_preference = "{}";
+            $this->workspaces_preference = "{}";
         }
     }
 
