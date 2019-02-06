@@ -52,26 +52,26 @@ class UsersAccountController extends Controller
 
 	}
 
-	public function setNotificationPreferencesAction(Request $request)
-	{
+    public function setNotificationPreferencesAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
+        if ($this->getUser()) {
 
-			$notification = $request->request->get("preferences", Array());
-			$this->get("app.user")->setNotificationPreferences($this->getUser()->getId(), $notification);
+            $notification = $request->request->get("preferences", Array());
+            $this->get("app.user")->setNotificationPreferences($this->getUser()->getId(), $notification);
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
 	public function updateNotificationPreferenceByWorkspaceAction(Request $request){
         $data = Array(
@@ -91,6 +91,48 @@ class UsersAccountController extends Controller
         }
 
         return new JsonResponse($data);
+    }
+
+    public function setWorkspacesPreferencesAction(Request $request)
+    {
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        if ($this->getUser()) {
+
+            $preferences = $request->request->get("preferences", Array());
+            $this->get("app.user")->setWorkspacesPreferences($this->getUser()->getId(), $preferences);
+
+        } else {
+            $data["errors"][] = "unknown";
+        }
+
+        return new JsonResponse($data);
+
+    }
+
+    public function updateStatusAction(Request $request)
+    {
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        if ($this->getUser()) {
+
+            $status = $request->request->get("status", Array());
+            $this->get("app.user")->updateStatus($this->getUser()->getId(), $status);
+
+        } else {
+            $data["errors"][] = "unknown";
+        }
+
+        return new JsonResponse($data);
+
     }
 
     public function getUploader()

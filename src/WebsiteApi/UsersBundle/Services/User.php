@@ -822,6 +822,28 @@ class User implements UserInterface
 
 	}
 
+    public function setWorkspacesPreferences($userId, $preferences)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($userId);
+        if ($user != null) {
+            $user->setWorkspacesPreference($preferences);
+            $this->em->persist($user);
+            $this->em->flush();
+        }
+    }
+
+    public function updateStatus($userId, $status)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($userId);
+        if ($user != null) {
+            $user->setStatusIcon($status);
+            $this->em->persist($user);
+            $this->em->flush();
+        }
+    }
+
 	public function updateLanguage($userId, $language)
 	{
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");

@@ -74,11 +74,17 @@ class User extends SearchableObject implements UserInterface
 	 */
 	protected $connections;
 
-	/**
-	 * @var int
+    /**
+     * @var int
      * @ORM\Column(name="connected", type="twake_boolean")
-	 */
-	protected $connected;
+     */
+    protected $connected;
+
+    /**
+     * @var int
+     * @ORM\Column(name="status_icon", type="string", length=64)
+     */
+    protected $status_icon;
 
 	/**
 	 * @var int
@@ -102,6 +108,12 @@ class User extends SearchableObject implements UserInterface
      * @Encrypted
      */
     protected $notification_preference = "{}";
+
+    /**
+     * @ORM\Column(name="workspaces_preference", type="twake_text")
+     * @Encrypted
+     */
+    protected $workspaces_preference = "{}";
 
     /**
      * @ORM\Column(name="phone", type="twake_text")
@@ -450,6 +462,7 @@ class User extends SearchableObject implements UserInterface
 			"language" => $this->getLanguage(),
             "isNew" => $this->getisNew(),
             "isRobot" => $this->getisRobot(),
+            "status_icon" => $this->getStatusIcon(),
             "front_id" => $this->getFrontId()
 		);
 		return $return;
@@ -896,5 +909,51 @@ class User extends SearchableObject implements UserInterface
 
         return true;
     }
+
+    /**
+     * @return int
+     */
+    public function getStatusIcon()
+    {
+        return $this->status_icon;
+    }
+
+    /**
+     * @param int $status_icon
+     */
+    public function setStatusIcon($status_icon)
+    {
+        $this->status_icon = $status_icon;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspacesPreference()
+    {
+        try {
+            $preferences = json_decode($this->workspaces_preference, 1);
+        } catch (\Exception $e) {
+            $preferences = Array();
+        }
+        if (!$preferences) {
+            $preferences = Array();
+        }
+        return $preferences;
+    }
+
+    /**
+     * @param mixed $workspaces_preference
+     */
+    public function setWorkspacesPreference($workspaces_preference)
+    {
+        try {
+            $this->workspaces_preference = json_encode($workspaces_preference);
+        } catch (\Exception $e) {
+            $this->workspaces_preference = $workspaces_preference = "{}";
+        }
+    }
+
+
 
 }

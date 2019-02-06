@@ -17,7 +17,7 @@ use Symfony\Component\HttpFoundation\Request;
 class WorkspaceController extends Controller
 {
 	/**
-	 * Récupère les informations de base d'un groupe
+     * Récupère les informations de base d'un workspace
 	 */
 	public function getAction(Request $request){
 
