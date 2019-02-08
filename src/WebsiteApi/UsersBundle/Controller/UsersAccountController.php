@@ -170,6 +170,7 @@ class UsersAccountController extends Controller
 					$data["errors"][] = "badimage";
 				} else {
                     $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail["file"], $this->getUploader());
+                    $data["data"]["thumbnail"] = $this->getUser()->getThumbnail()!=null?$this->getUser()->getThumbnail()->getPublicURL(2):"";
 				}
 			}else{
                 $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail, $this->getUploader());
