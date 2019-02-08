@@ -126,21 +126,34 @@ class UsersConnectionsController extends Controller
         srand($seed1);
 
         $colors = [
-            ["#ad5389", "#63225b", "#3c1053"],
-            ["#daeab5", "#e1907a", "#e93842"],
-            ["#12c2e9", "#c471ed", "#f64f59"],
-            ["#800080", "#B24E95", "#ffc0cb"],
-            ["#1c92d2", "#62abdb", "#f2fcfe"]
+            ["#FFD300", "#A90DFF", "#1A60FF", "#531DFF"],
+            ["#FF0000", "#00FFFF", "#AAFF00", "#00FF00"],
+            ["#00FF00", "#FF7400", "#FF0090", "#FF0000"],
+            ["#531DFF", "#FFFF00", "#FFAA00", "#FFD300"],
+            ["#FCFF00", "#FF008B", "#551CFF", "#AD0DFF"],
+            ["#1A60FF", "#FFD300", "#FF7400", "#FFAA00"],
+            ["#FF7400", "#1A60FF", "#00FF00", "#00FFFF"],
+            ["#BA0BFF", "#9EFF00", "#FFD900", "#F2FF00"]
+        ];
+
+        $colors = [
+            ["#FF0000", "#FF7400", "#DD0000"],
+            ["#FFAA00", "#FFD300", "#FF7400"],
+            ["#531DFF", "#A90DFF", "#FF0090"],
+            ["#1A60FF", "#531DFF", "#00FFFF"]
         ];
 
         //#3b5490 0%, #9e85ab 6%, #8d8ecc 11%, #108ee9 16%, #2359d1 53%, #4c6b9c 58%, #434c74 62%, #34446c 70%, #1a2a52 88%, #34446c 96%, #3b5490
 
         $colors = $colors[rand(0, count($colors) - 1)];
 
-        $choosenColors = Array();
+        error_log(json_encode($colors));
+
+        /*$choosenColors = Array();
         for ($i = 0; $i < 4; $i++) {
             $choosenColors[] = $colors[rand(0, count($colors) - 1)];
-        }
+        }*/
+        $choosenColors = $colors;
 
         $equilateralMultiplicator = 0.86602540378;
         $triangleSize = 140;

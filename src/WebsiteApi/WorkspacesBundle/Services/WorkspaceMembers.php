@@ -439,7 +439,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
     }
 
-    public function getMembers($workspaceId, $currentUserId = null, $twake_bot = true, $order = Array(), $max = 0, $offset = 0)
+    public function getMembers($workspaceId, $currentUserId = null, $twake_bot = true, $order = Array("last_access" => "DESC"), $max = 0, $offset = 0)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "")
@@ -465,14 +465,14 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 if ($user->getGroupUser()) { //Private workspaces does not have a group user assiociated
                     $users[] = Array(
                         "user" => $user->getUser(),
-                        "last_access" => $user->getLastAccess(),
+                        "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
                         "level" => $user->getLevel(),
                         "externe" => $user->getGroupUser()->getExterne()
                     );
                 } else {
                     $users[] = Array(
                         "user" => $user->getUser(),
-                        "last_access" => $user->getLastAccess(),
+                        "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
                         "level" => $user->getLevel(),
                     );
                 }

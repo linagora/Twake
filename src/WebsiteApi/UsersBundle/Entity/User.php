@@ -84,7 +84,7 @@ class User extends SearchableObject implements UserInterface
      * @var int
      * @ORM\Column(name="status_icon", type="string", length=64)
      */
-    protected $status_icon;
+    protected $status_icon = '["", ""]';
 
 	/**
 	 * @var int
