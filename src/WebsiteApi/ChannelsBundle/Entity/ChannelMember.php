@@ -33,7 +33,7 @@ class ChannelMember
     private $channel;
 
     /**
-     * @ORM\Column(name="direct", type="boolean")
+     * @ORM\Column(name="direct", type="twake_boolean")
      */
     private $direct = 0;
 

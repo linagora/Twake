@@ -121,9 +121,9 @@ class PDOStatementAdapter
 
                 if ($value == NULL) {
                     $value = "NULL";
-                } else if ($this->types[$position + 1] == \PDO::PARAM_INT || $this->types[$position + 1] == "twake_timeuuid") {
+                } else if ($this->types[$position + 1] == \PDO::PARAM_INT || $this->types[$position + 1] == "twake_timeuuid" || $this->types[$position + 1] == "twake_bigint") {
                     $value = $value;
-                } else if (is_string($value) || (is_object($value) && method_exists($value, 'toCqlString'))) {
+                } else if (is_string($value) || (is_object($value) && method_exists($value, 'toCqlString')) || $this->types[$position + 1] == "twake_string") {
                     $value = addslashes($value);
                     $value = str_replace("'", "''", $value);
                     $value = "'" . $value . "'";

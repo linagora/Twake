@@ -88,7 +88,7 @@ class User extends SearchableObject implements UserInterface
 
 	/**
 	 * @var int
-     * @ORM\Column(name="last_activity", type="bigint")
+     * @ORM\Column(name="last_activity", type="twake_bigint")
 	 */
     protected $lastactivity = 0;
 

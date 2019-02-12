@@ -599,9 +599,11 @@ class User implements UserInterface
 		$res = false;
 
 		if($user != null) {
-			$mail = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
-			$this->em->remove($mail);
-			$this->em->flush();
+            $mail = $mailRepository->findOneBy(Array("mail" => $mail));
+            if ($mail && $mail->getUser()->getId() == $userId) {
+                $this->em->remove($mail);
+                $this->em->flush();
+            }
 
 			$res = true;
 		}
@@ -622,8 +624,8 @@ class User implements UserInterface
 			if($ticket->verifyCode($code)){
                 $userWithMail = $userRepository->findOneBy(Array("emailcanonical" => $ticket->getMail()));
 
-				if($userWithMail == null){
-					$mailExists = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$ticket->getMail()));
+                if ($userWithMail == null || $userWithMail->getUser()->getId() != $userId) {
+                    $mailExists = $mailRepository->findOneBy(Array("mail" => $ticket->getMail()));
 
 					if($mailExists == null) {
 

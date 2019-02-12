@@ -33,17 +33,17 @@ class CalendarEvent implements ObjectLinksInterface {
     private $calendar;
 
     /**
-     * @ORM\Column(name="next_reminder", type="bigint")
+     * @ORM\Column(name="next_reminder", type="twake_bigint")
      */
     private $nextreminder = 0;
 
     /**
-     * @ORM\Column(name="from_ts", type="bigint", nullable=true)
+     * @ORM\Column(name="from_ts", type="twake_bigint", nullable=true)
      */
     private $from;
 
     /**
-     * @ORM\Column(name="to_ts", type="bigint", nullable=true)
+     * @ORM\Column(name="to_ts", type="twake_bigint", nullable=true)
      */
     private $to;
 

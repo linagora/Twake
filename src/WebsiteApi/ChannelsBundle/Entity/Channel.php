@@ -59,12 +59,12 @@ class Channel
     private $external_access_token = null;
 
     /**
-     * @ORM\Column(name="private", type="boolean")
+     * @ORM\Column(name="private", type="twake_boolean")
      */
     private $private = 0;
 
     /**
-     * @ORM\Column(name="direct", type="boolean")
+     * @ORM\Column(name="direct", type="twake_boolean")
      */
     private $direct = 0;
 

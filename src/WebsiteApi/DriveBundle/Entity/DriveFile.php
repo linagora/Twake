@@ -99,7 +99,7 @@ class DriveFile implements ObjectLinksInterface
     private $last_version;
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(type="twake_bigint")
      */
     private $size;
 

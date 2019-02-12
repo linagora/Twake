@@ -32,6 +32,8 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
     {
         $conversionFor = Array(
             "string" => "text",
+            "twake_text" => "text",
+            "twake_string" => "text",
             "twake_timeuuid" => "timeuuid",
             "array" => "text",
             "twake_boolean" => "tinyint",
@@ -40,6 +42,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
             "twake_float" => "float",
             "integer" => "int",
             "bigint" => "bigint",
+            "twake_bigint" => "bigint",
             "decimal" => "decimal",
             "twake_datetime" => "timestamp",
             "blob" => "blob"
@@ -142,7 +145,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
                 $fieldname = $fieldname . "_id";
 
-                if (isset($mapping["options"]) && isset($mapping["options"]["index"]) && $mapping["options"]["index"]) {
+                if (!(isset($mapping["id"]) && $mapping["id"])) { //isset($mapping["options"]) && isset($mapping["options"]["index"]) && $mapping["options"]["index"]) {
                     $indexed_fields[$fieldname] = true;
                 }
 
@@ -169,8 +172,8 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                 $mapping = Array();
                 if (!$entity->hasAssociation($identifier)) {
                     $mapping = $entity->getFieldMapping($identifier);
-                    if (!in_array($mapping["type"], Array("twake_timeuuid", "string", "blob"))) {
-                        error_log("ERROR (IGNORING TABLE) ! Tables index MUST be of type twake_timeuuid or string or blob ! (in " . $entity->getName() . ")");
+                    if (!in_array($mapping["type"], Array("twake_timeuuid", "string", "blob", "twake_string"))) {
+                        error_log("ERROR (IGNORING TABLE) ! Tables index MUST be of type twake_timeuuid or string, or twake_string or blob ! (in " . $entity->getName() . ")");
                         continue;
                     }
                 } else {
@@ -233,7 +236,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
             $index_base_command = "CREATE CUSTOM INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
             if (isset($entity->table["options"]["indexes"])) {
                 foreach ($entity->table["options"]["indexes"] as $index_name => $data) {
-                    $columns = $data["columns"];
+                    $columns = $data->columns;
                     if (count($columns) == 1) {
                         $indexed_fields[$columns[0]] = true;
                     } else {

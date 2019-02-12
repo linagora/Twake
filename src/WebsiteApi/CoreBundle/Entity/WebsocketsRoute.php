@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 /**
  * WebsocketsRoutes
  *
- * @ORM\Table(name="websockets_route",options={"engine":"MyISAM"})
+ * @ORM\Table(name="websockets_route",options={"engine":"MyISAM", "indexes":{@ORM\Index(columns={"route"})}})
  * @ORM\Entity(repositoryClass="WebsiteApi\CoreBundle\Repository\WebsocketsRouteRepository")
  */
 class WebsocketsRoute

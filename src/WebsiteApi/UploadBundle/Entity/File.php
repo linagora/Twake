@@ -62,7 +62,7 @@ class File
 	/**
 	 * @var int
 	 *
-     * @ORM\Column(name="date", type="bigint")
+     * @ORM\Column(name="date", type="twake_bigint")
 	 */
 	private $date; //Creation date
 
