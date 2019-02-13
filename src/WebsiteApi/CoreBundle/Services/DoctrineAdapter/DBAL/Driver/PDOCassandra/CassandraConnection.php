@@ -312,6 +312,7 @@ class CassandraConnection
         }
 
         $vals = explode("FROM ", $sql);
+
         if (isset($vals[1])) {
             error_log($vals[0]);
             error_log("FROM " . $vals[1]);

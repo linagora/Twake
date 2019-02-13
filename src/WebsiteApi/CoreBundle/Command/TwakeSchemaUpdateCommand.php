@@ -200,7 +200,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
                 //Add Primary key
                 $identifiers = $entity->getIdentifier();
-                if (count($identifiers) != 1) {
+                if (!$custom_keys && count($identifiers) != 1) {
                     error_log("ERROR (IGNORING TABLE) ! Tables MUST have exactly one identifier for this implementation with Cassandra ! (in " . $entity->getName() . " " . json_encode($identifiers) . ")");
                     continue;
                 }

@@ -35,11 +35,6 @@ class WorkspaceUser
 	 */
 	private $user;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupUser")
-     */
-    protected $groupuser;
-
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel")
 	 */
@@ -131,22 +126,6 @@ class WorkspaceUser
 	{
 		return $this->date_added;
 	}
-
-    /**
-     * @return mixed
-     */
-    public function getGroupUser()
-    {
-        return $this->groupuser;
-    }
-
-    /**
-     * @param mixed $groupuser
-     */
-    public function setGroupUser($groupuser)
-    {
-        $this->groupuser = $groupuser;
-    }
 
     /**
      * @return mixed

@@ -244,6 +244,7 @@ class UsersConnectionsController extends Controller
 
 			$data["data"]["status"] = "connected";
 
+
             $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
 
 			$workspaces = Array();

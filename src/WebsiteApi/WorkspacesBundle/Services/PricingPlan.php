@@ -66,9 +66,10 @@ class PricingPlan implements PricingPlanInterface
         $plans = $planRepository->findBy(Array());
         $plan = null;
         foreach ($plans as $_plan) {
-            error_log($_plan->getId());
-            if (!$plan || $plan->getMonthPrice() > $_plan->getMonthPrice()) {
-                $plan = $_plan;
+            if ($_plan->getLabel() != "private") {
+                if (!$plan || $plan->getMonthPrice() > $_plan->getMonthPrice()) {
+                    $plan = $_plan;
+                }
             }
         }
         return $plan;

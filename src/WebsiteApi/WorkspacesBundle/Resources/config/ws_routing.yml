@@ -14,6 +14,14 @@ workspaces_topic:
         id:
             pattern: "[a-zA-Z0-9-]+"
 
+workspaces_users_topic:
+    channel: workspace_users/{id}
+    handler:
+        callback: 'workspaces_users.topic'
+    requirements:
+        id:
+            pattern: "[a-zA-Z0-9-]+"
+
 workspaces_of_user_topic:
     channel: workspaces_of_user/{id}
     handler:

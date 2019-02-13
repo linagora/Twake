@@ -264,7 +264,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 }
                 $groupmember->increaseNbWorkspace();
             }
-            $member->setGroupUser($groupmember);
 
             $this->doctrine->persist($workspace);
             $this->doctrine->persist($member);
@@ -446,6 +445,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         ) {
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             $workspace = $workspaceRepository->find($workspaceId);
 
@@ -453,7 +453,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 return false;
             }
 
-            $link = $workspaceUserRepository->findBy(Array("workspace" => $workspace), $order, $max, $offset);
+            $link = $workspaceUserRepository->findBy(Array("workspace" => $workspace), $order, $max, $offset, "user");
 
             $users = Array();
             foreach ($link as $user) {
@@ -462,20 +462,14 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                     continue;
                 }
 
-                if ($user->getGroupUser()) { //Private workspaces does not have a group user assiociated
-                    $users[] = Array(
-                        "user" => $user->getUser(),
-                        "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
-                        "level" => $user->getLevel(),
-                        "externe" => $user->getGroupUser()->getExterne()
-                    );
-                } else {
-                    $users[] = Array(
-                        "user" => $user->getUser(),
-                        "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
-                        "level" => $user->getLevel(),
-                    );
-                }
+                $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUser(), "group" => $workspace->getGroup()));
+
+                $users[] = Array(
+                    "user" => $user->getUser(),
+                    "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
+                    "level" => $user->getLevel(),
+                    "externe" => $group_user->getExterne()
+                );
 
             }
 
@@ -537,16 +531,4 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         return $workspaces;
     }
 
-
-    public function init($workspaceUser)
-    {
-        $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
-        $groupmember = $groupUserRepository->findOneBy(Array("group" => $workspaceUser->getWorkspace()->getGroup(), "user" => $workspaceUser->getUser()));
-
-        if ($groupmember) {
-            $workspaceUser->setGroupUser($groupmember);
-            $this->doctrine->persist($workspaceUser);
-            $this->doctrine->flush();
-        }
-    }
 }
