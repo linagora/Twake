@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 /**
  * ChannelMember
  *
- * @ORM\Table(name="channel_member",options={"engine":"MyISAM"})
+ * @ORM\Table(name="channel_member",options={"engine":"MyISAM", "scylladb_keys": {{"direct", "user_id", "id"}, {"channel_id"}, {"user_id"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\ChannelsBundle\Repository\ChannelMemberRepository")
  */
 class ChannelMember

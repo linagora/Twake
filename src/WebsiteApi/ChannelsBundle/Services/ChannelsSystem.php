@@ -40,7 +40,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         $workspace_id = $options["workspace_id"];
 
         $channels = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findBy(
-            Array("original_workspace" => $workspace_id)
+            Array("original_workspace" => $workspace_id, "direct" => false)
         );
 
         $result = [];
