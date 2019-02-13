@@ -18,8 +18,8 @@ class VerificationNumberMail
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")  //TO ADD FOR CASSANDRA
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")  //TO ADD FOR CASSANDRA
+     *
+     * //TO ADD FOR CASSANDRA
 	 */
 	private $id;
 
@@ -112,8 +112,13 @@ class VerificationNumberMail
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
 		return $this->id;
 	}
 

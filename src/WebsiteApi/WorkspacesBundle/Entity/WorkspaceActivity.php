@@ -22,9 +22,7 @@ class WorkspaceActivity
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-     */
+ */
     private $id;
 
 	/**
@@ -76,9 +74,14 @@ class WorkspaceActivity
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	/**

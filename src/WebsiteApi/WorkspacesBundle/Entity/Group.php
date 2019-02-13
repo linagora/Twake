@@ -4,6 +4,7 @@ namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
+use Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator;
 
 
 
@@ -21,8 +22,6 @@ class Group
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
 	 */
 	protected $id;
 
@@ -88,7 +87,13 @@ class Group
 		$this->date_added = new \DateTime();
 	}
 
-	public function getId(){
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
 		return $this->id;
 	}
 

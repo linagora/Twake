@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\DBAL\Types\Type;
+use Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator;
 
 class ManagerAdapter
 {
@@ -108,12 +109,16 @@ class ManagerAdapter
         }
         $this->es_updates = Array();
 
+        error_log("WILL LFUSH");
+
         try {
             $a = $this->manager->flush();
         } catch (\Exception $e) {
             error_log($e);
+            error_log("ERROR LFUSH");
             die("ERROR with flush");
         }
+        error_log("DID LFUSH");
         return $a;
     }
 
@@ -129,6 +134,19 @@ class ManagerAdapter
 
     public function persist($object)
     {
+
+        error_log("WILL persist");
+
+        if (!$this->generator) {
+            $this->generator = new UuidOrderedTimeGenerator();
+        }
+
+        if (method_exists($object, "getId") && !$object->getId()) {
+            $object->setId($this->generator->generate($this->getEntityManager(), $object));
+            error_log($object->getId());
+        }
+
+
         if (method_exists($object, "getEsIndexed")) {
             //This is a searchable object
             if (!$object->getEsIndexed() || $object->changesInIndexationArray()) {
@@ -138,7 +156,17 @@ class ManagerAdapter
             }
         }
 
-        return $this->getEntityManager()->persist($object);
+
+        $res = null;
+        try {
+            $res = $this->getEntityManager()->persist($object);
+        } catch (\Exception $e) {
+            error_log($e);
+            die("ERROR with persist");
+        }
+        error_log("DID persist");
+
+        return $res;
     }
 
     public function getRepository($name)

@@ -367,7 +367,7 @@ class User implements UserInterface
         }
 
         $token = $this->subscribeMail($mail,false);
-        $user = $this->subscribe($token,"",$pseudo,$password,true);
+        $user = $this->subscribe($token, "", $pseudo, $password, $lastName, $firstName, $phone, true);
         if($user==null || $user== false){
             return false;
         }
@@ -380,7 +380,7 @@ class User implements UserInterface
         $this->em->persist($user);
         $this->em->flush();
 
-        return true;
+        return $user;
     }
 
 	public function subscribeMail($mail,$sendEmail = true)

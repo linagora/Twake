@@ -95,6 +95,43 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
             $table_name = $entity->getTableName();
             $fields = Array();
             $indexed_fields = Array();
+
+            $custom_keys = false;
+            $custom_keys_order = false;
+            if (isset($entity->table["options"]) && isset($entity->table["options"]["scylladb_keys"])) {
+                if (isset($entity->table["options"]["scylladb_keys"][0]) && count($entity->table["options"]["scylladb_keys"][0]) > 0) {
+                    $_custom_keys = $entity->table["options"]["scylladb_keys"];
+
+                    $_custom_keys_order = Array();
+                    if (isset($entity->table["options"]["scylladb_order"])) {
+                        $_custom_keys_order = $entity->table["options"]["scylladb_order"];
+                    }
+
+                    $custom_keys = Array();
+                    $j = 0;
+                    $custom_keys_order = Array();
+                    foreach ($_custom_keys as $_custom_key) {
+                        $keys = [];
+                        $i = 0;
+                        foreach ($_custom_key as $key) {
+                            if (is_array($key)) {
+                                $keys[] = "(" . join(", ", $key) . ")";
+                            } else {
+                                $keys[] = $key;
+                            }
+                            if ($j == 0 && $i > 0) {
+                                $custom_keys_order[] = $key . " " . (isset($_custom_keys_order[$key]) ? $_custom_keys_order[$key] : "ASC");
+                            }
+                            $i++;
+                        }
+                        $custom_keys[] = join(", ", $keys);
+                        $j++;
+                    }
+
+                    $custom_keys_order = join(", ", $custom_keys_order);
+                }
+            }
+
             foreach ($entity->getFieldNames() as $_fieldname) {
 
                 $mapping = Array();
@@ -186,7 +223,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                 $create_table .= "(";
                 $columns = Array();
 
-                $columns[] = "\"" . $identifier . "\" " . $this->convertType($mapping["type"]) . " PRIMARY KEY";
+                $columns[] = "\"" . $identifier . "\" " . $this->convertType($mapping["type"]) . ($custom_keys ? "" : " PRIMARY KEY");
                 foreach ($fields as $fieldname => $type) {
                     if ($fieldname != $identifier) {
                         $columns[] = "\"" . $fieldname . "\" " . $type . "";
@@ -194,9 +231,22 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                 }
                 $columns = join(", ", $columns);
 
-                $create_table .= $columns . " )";
+                $create_table .= $columns;
+
+                if ($custom_keys) {
+                    $create_table .= ", PRIMARY KEY (" . $custom_keys[0] . ")";
+                }
+
+                $create_table .= ")";
+
+                if ($custom_keys_order) {
+                    $create_table .= " WITH CLUSTERING ORDER BY (" . $custom_keys_order . ")";
+                }
 
                 $connection->exec($create_table);
+
+                $schema = $connection->getSchema();
+                $keyspace = $schema->keyspace(strtolower($connection->getKeyspace()));
             }
 
             $cassandra_table = $keyspace->table($table_name);
@@ -225,31 +275,43 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
             }
 
-            /* MULTIPLE ADD COLUMN NOT SUPORTED FOR CURRENT SCYLLADB VERSION
-            if(count($columns_to_add) > 0){
-                $columns_to_add = join(", ", $columns_to_add);
-                $command = $alter_command . " ADD ".$columns_to_add."";
-                $connection->exec($command);
-            }*/
+            if ($custom_keys) {
 
+                //Cannot update main primary key
+                array_shift($custom_keys);
 
-            $index_base_command = "CREATE CUSTOM INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
-            if (isset($entity->table["options"]["indexes"])) {
-                foreach ($entity->table["options"]["indexes"] as $index_name => $data) {
-                    $columns = $data->columns;
-                    if (count($columns) == 1) {
-                        $indexed_fields[$columns[0]] = true;
-                    } else {
-                        $command = $index_base_command . "(" . join(",", $columns) . ") USING ";
-                        //$connection->exec($command);
+                if (count($custom_keys) > 0) {
+
+                    $index_base_command = "CREATE INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
+                    foreach ($custom_keys as $key) {
+                        $command = $index_base_command . "(" . $key . ")";
+                        error_log($command);
+                        $connection->exec($command);
+                    }
+
+                }
+
+            } else {
+
+                $index_base_command = "CREATE CUSTOM INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
+                if (isset($entity->table["options"]["indexes"])) {
+                    foreach ($entity->table["options"]["indexes"] as $index_name => $data) {
+                        $columns = $data->columns;
+                        if (count($columns) == 1) {
+                            $indexed_fields[$columns[0]] = true;
+                        } else {
+                            $command = $index_base_command . "(" . join(",", $columns) . ") USING ";
+                            //$connection->exec($command);
+                        }
                     }
                 }
-            }
 
-            $index_base_command = "CREATE INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
-            foreach ($indexed_fields as $indexed_field => $dummy) {
-                $command = $index_base_command . "(" . $indexed_field . ")";
-                $connection->exec($command);
+                $index_base_command = "CREATE INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
+                foreach ($indexed_fields as $indexed_field => $dummy) {
+                    $command = $index_base_command . "(" . $indexed_field . ")";
+                    $connection->exec($command);
+                }
+
             }
 
         }

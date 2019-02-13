@@ -48,7 +48,8 @@ class Groups implements GroupsInterface
 			}
 		}
 
-		$group = new Group($uniquenameIncremented);
+
+        $group = new Group($uniquenameIncremented);
 		$group->setDisplayName($name);
 		$group->setPricingPlan($plan);
         $group->setOnCreationData($group_data_on_create);

@@ -22,9 +22,7 @@ class ClosedGroupPeriod
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-     */
+ */
     private $id;
 
 	/**
@@ -239,17 +237,14 @@ class ClosedGroupPeriod
     /**
      * @return int
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
