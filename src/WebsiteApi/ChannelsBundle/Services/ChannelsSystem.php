@@ -101,7 +101,7 @@ class ChannelsSystem extends ChannelSystemAbstract
             $channel->setOriginalWorkspace($workspace);
 
         } else {
-            $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find($object["id"]);
+            $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find(Array("id" => $object["id"], "direct" => $object["direct"], "original_workspace" => $object["original_workspace"]));
             if (!$channel) {
                 return false;
             }

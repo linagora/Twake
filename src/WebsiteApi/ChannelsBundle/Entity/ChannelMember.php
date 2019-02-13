@@ -9,7 +9,7 @@ use Symfony\Component\Validator\Constraints\DateTime;
 /**
  * ChannelMember
  *
- * @ORM\Table(name="channel_member",options={"engine":"MyISAM", "scylladb_keys": {{"direct", "user_id", "id"}, {"channel_id"}, {"user_id"}} })
+ * @ORM\Table(name="channel_member",options={"engine":"MyISAM", "scylladb_keys": {{"direct", "user_id", "channel_id", "id"}, {"channel_id"}, {"user_id"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\ChannelsBundle\Repository\ChannelMemberRepository")
  */
 class ChannelMember
@@ -17,11 +17,12 @@ class ChannelMember
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\Id
      */
     private $user;
 
@@ -32,6 +33,7 @@ class ChannelMember
 
     /**
      * @ORM\Column(name="direct", type="twake_boolean")
+     * @ORM\Id
      */
     private $direct = 0;
 

@@ -63,11 +63,13 @@ class Channel
 
     /**
      * @ORM\Column(name="direct", type="twake_boolean")
+     * @ORM\Id
      */
     private $direct = 0;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\Id
      */
     private $original_workspace;
 
