@@ -101,7 +101,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
                 $channel->setFrontId($object["front_id"]);
             }
         } else {
-            $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find(Array("id" => $object["id"], "direct" => $object["direct"], "original_workspace_id" => $object["original_workspace"]));
+            $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find(Array("id" => $object["id"], "direct" => $object["direct"], "original_workspace_id" => $object["original_workspace"] ? $object["original_workspace"] : ""));
             if (!$channel) {
                 return false;
             }
