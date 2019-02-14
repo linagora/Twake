@@ -89,6 +89,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
         $keyspace = $schema->keyspace(strtolower($connection->getKeyspace()));
 
         $ignored_cols = 0;
+        $viable_indexes = [];
 
         foreach ($entities as $entity) {
 
@@ -98,37 +99,43 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
             $custom_keys = false;
             $custom_keys_order = false;
+            $custom_keys_where = false;
             if (isset($entity->table["options"]) && isset($entity->table["options"]["scylladb_keys"])) {
                 if (isset($entity->table["options"]["scylladb_keys"][0]) && count($entity->table["options"]["scylladb_keys"][0]) > 0) {
                     $_custom_keys = $entity->table["options"]["scylladb_keys"];
 
-                    $_custom_keys_order = Array();
-                    if (isset($entity->table["options"]["scylladb_order"])) {
-                        $_custom_keys_order = $entity->table["options"]["scylladb_order"];
-                    }
-
                     $custom_keys = Array();
                     $j = 0;
-                    $custom_keys_order = Array();
                     foreach ($_custom_keys as $_custom_key) {
                         $keys = [];
                         $i = 0;
-                        foreach ($_custom_key as $key) {
+                        $custom_keys_order_tmp = Array();
+                        $custom_keys_where_tmp = Array();
+                        foreach ($_custom_key as $key => $order) {
+                            $value = false;
+                            if ($order != "ASC" and $order != "DESC") {
+                                $value = $order;
+                                $order = "ASC";
+                            }
+
                             if (is_array($key)) {
                                 $keys[] = "(" . join(", ", $key) . ")";
                             } else {
                                 $keys[] = $key;
                             }
-                            if ($j == 0 && $i > 0) {
-                                $custom_keys_order[] = $key . " " . (isset($_custom_keys_order[$key]) ? $_custom_keys_order[$key] : "ASC");
+
+                            $custom_keys_where_tmp[] = $key . (($value === false) ? " IS NOT NULL" : " = " . $value);
+                            if ($i > 0) {
+                                $custom_keys_order_tmp[] = $key . " " . $order;
                             }
                             $i++;
+
                         }
                         $custom_keys[] = join(", ", $keys);
-                        $j++;
+                        $custom_keys_order[] = join(", ", $custom_keys_order_tmp);
+                        $custom_keys_where[] = join(" AND ", $custom_keys_where_tmp);
                     }
 
-                    $custom_keys_order = join(", ", $custom_keys_order);
                 }
             }
 
@@ -240,7 +247,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                 $create_table .= ")";
 
                 if ($custom_keys_order) {
-                    $create_table .= " WITH CLUSTERING ORDER BY (" . $custom_keys_order . ")";
+                    $create_table .= " WITH CLUSTERING ORDER BY (" . $custom_keys_order[0] . ")";
                 }
 
                 $connection->exec($create_table);
@@ -279,42 +286,64 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
                 //Cannot update main primary key
                 array_shift($custom_keys);
+                array_shift($custom_keys_order);
+                array_shift($custom_keys_where);
 
                 if (count($custom_keys) > 0) {
 
-                    $index_base_command = "CREATE INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
-                    foreach ($custom_keys as $key) {
-                        $command = $index_base_command . "(" . $key . ")";
-                        error_log($command);
+                    foreach ($custom_keys as $i => $key) {
+
+                        $index_name = $table_name . "_index_" . str_replace([",", " "], ["_", ""], $key);
+
+                        if (strpos($key, ",") !== false) {
+                            $index_name .= "_composite";
+                            $command = "CREATE MATERIALIZED VIEW IF NOT EXISTS " . strtolower($connection->getKeyspace()) . ".\"";
+                            $command .= $index_name . "\" AS ";
+                            $command .= " SELECT " . $key;
+                            $command .= " FROM " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
+                            $command .= " WHERE " . $custom_keys_where[$i];
+                            $command .= " PRIMARY KEY (" . $key . ")";
+                            $command .= " WITH CLUSTERING ORDER BY (" . $custom_keys_order[$i] . ")";
+                        } else {
+                            $index_name .= "_simple";
+                            $command = "CREATE INDEX IF NOT EXISTS \"";
+                            $command .= $index_name . "\" ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
+                            $command .= "(" . $key . ")";
+                        }
                         $connection->exec($command);
+                        $viable_indexes[] = $index_name;
                     }
 
                 }
 
             } else {
 
-                $index_base_command = "CREATE CUSTOM INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
                 if (isset($entity->table["options"]["indexes"])) {
                     foreach ($entity->table["options"]["indexes"] as $index_name => $data) {
                         $columns = $data->columns;
                         if (count($columns) == 1) {
                             $indexed_fields[$columns[0]] = true;
-                        } else {
-                            $command = $index_base_command . "(" . join(",", $columns) . ") USING ";
-                            //$connection->exec($command);
                         }
                     }
                 }
 
-                $index_base_command = "CREATE INDEX IF NOT EXISTS ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
                 foreach ($indexed_fields as $indexed_field => $dummy) {
+
+                    $index_name = $table_name . "_index_" . str_replace([",", " "], ["_", ""], $indexed_field) . "_simple_2";
+
+                    $index_base_command = "CREATE INDEX IF NOT EXISTS \"" . $index_name . "\" ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
+
                     $command = $index_base_command . "(" . $indexed_field . ")";
                     $connection->exec($command);
+
+                    $viable_indexes[] = $index_name;
                 }
 
             }
 
         }
+
+        error_log("Indexes = " . count($viable_indexes));
         error_log("Ignored cols = " . $ignored_cols);
 
     }

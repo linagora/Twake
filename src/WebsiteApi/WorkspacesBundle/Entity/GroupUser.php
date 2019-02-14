@@ -11,7 +11,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * GroupUser
  *
- * @ORM\Table(name="group_user",options={"engine":"MyISAM", "scylladb_keys": {{"group_id", "user_id", "id"}, {"user_id"}}, "scylladb_order": {"user_id": "DESC"}})
+ * @ORM\Table(name="group_user",options={"engine":"MyISAM", "scylladb_keys": {{"group_id":"ASC", "user_id":"DESC", "id":"ASC"}, {"user_id":"DESC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupUserRepository")
  */
 class GroupUser
