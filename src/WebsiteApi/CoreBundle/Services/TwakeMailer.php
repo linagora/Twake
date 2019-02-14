@@ -68,7 +68,6 @@ class TwakeMailer
 
     public function sendHtmlViaRemote($mail, $html)
     {
-        return;//TODO remove this line !!!
         $masterServer = "https://app.twakeapp.com/api/remote";
         $data = Array(
             "licenceKey" => $this->licenceKey,

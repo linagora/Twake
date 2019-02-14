@@ -32,6 +32,7 @@ class ManagerAdapter
         $this->es_server = $es_server;
         $this->es_updates = Array();
         $this->es_removes = Array();
+        $this->generator = null;
     }
 
     public function getEntityManager()

@@ -24,6 +24,8 @@ class DbStressTestCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        return;
+
         $services = $this->getApplication()->getKernel()->getContainer();
         $manager = $services->get('app.twake_doctrine');
 
