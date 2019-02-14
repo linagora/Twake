@@ -33,13 +33,14 @@ class User implements UserInterface
 	private $workspace_service;
     private $pricing_plan;
     private $restClient;
+    private $circle;
     /* @var Translate $translate*/
     var $translate;
     private $standalone;
     private $licenceKey;
 
 
-    public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $twake_mailer, $string_cleaner, $workspace_members_service, $group_service, $workspace_service, $pricing_plan, $restClient, $translate, $standalone, $licenceKey)
+    public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $twake_mailer, $string_cleaner, $workspace_members_service, $group_service, $workspace_service, $pricing_plan, $restClient, $translate, $standalone, $licenceKey,$circle)
     {
 		$this->em = $em;
 		$this->pusher = $pusher;
@@ -59,6 +60,7 @@ class User implements UserInterface
         $this->translate = $translate;
         $this->standalone = $standalone;
         $this->licenceKey = $licenceKey;
+        $this->circle = $circle;
 	}
 
 	public function current()
@@ -380,6 +382,17 @@ class User implements UserInterface
         $this->em->persist($user);
         $this->em->flush();
 
+        $data = Array(
+            "Email" => $mail,
+            "Properties" => Array(
+                "first_name" => $firstName,
+                "last_name" => $lastName,
+                "language" => $language,
+            ),
+            "Action" => "addforce"
+        );
+        $result = $this->circle->post("https://api.mailjet.com/v3/REST/contactslist/2017737/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+
         return true;
     }
 
@@ -424,7 +437,6 @@ class User implements UserInterface
 
 		return false;
 	}
-
 	public function subscribe($token, $code, $pseudo, $password,$name,$firstname,$phone, $force=false)
 	{
 
@@ -457,7 +469,7 @@ class User implements UserInterface
                 $user->setLastName($name);
                 $user->setPhone($phone);
 
-                $this->twake_mailer->send($mail, "newMember", Array("_language" => $user ? $user->getLanguage() : "en", "username" => $user->getUsername()));
+                //$this->twake_mailer->send($mail, "newMember", Array("_language" => $user ? $user->getLanguage() : "en", "username" => $user->getUsername()));
 
 				$this->em->remove($ticket);
 				$this->em->persist($user);
