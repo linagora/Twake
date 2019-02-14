@@ -40,14 +40,16 @@ class ChannelsSystem extends ChannelSystemAbstract
         $workspace_id = $options["workspace_id"];
 
         $channels = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findBy(
-            Array("original_workspace" => $workspace_id)
+            Array("original_workspace_id" => $workspace_id, "direct" => false)
         );
 
         $result = [];
         foreach ($channels as $channel) {
             $ok = true;
             if ($channel->getPrivate()) {
-                $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("user" => $current_user, "channel" => $channel));
+
+                $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("user" => $current_user, "channel_id" => $channel->getId()));
+
                 if (!$res) {
                     $ok = false;
                 }
@@ -98,10 +100,10 @@ class ChannelsSystem extends ChannelSystemAbstract
             $channel->setFrontId($object["front_id"]);
 
             $channel->setOriginalGroup($group);
-            $channel->setOriginalWorkspace($workspace);
+            $channel->setOriginalWorkspaceId($workspace->getId());
 
         } else {
-            $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find($object["id"]);
+            $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find(Array("id" => $object["id"], "direct" => $object["direct"], "original_workspace_id" => $object["original_workspace"]));
             if (!$channel) {
                 return false;
             }

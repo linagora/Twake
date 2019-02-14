@@ -11,6 +11,8 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter;
 
+use WebsiteApi\CoreBundle\Entity\Sessions;
+
 class CassandraSessionHandler implements \SessionHandlerInterface
 {
     /**
@@ -52,39 +54,7 @@ class CassandraSessionHandler implements \SessionHandlerInterface
         $this->options = $options;
         $this->doctrineAdapter = $doctrineAdapter;
         $this->didInit = false;
-
-    }
-
-    public function init()
-    {
-
-        if ($this->didInit) {
-            return;
-        }
-
-        $this->didInit = true;
-
-        $options = $this->options;
-        $doctrineAdapter = $this->doctrineAdapter;
-
-        $options["session_lifetime"] = 3600;
-        $options["column_family"] = "sessions";
-
-        $this->options = $options;
-
-        $this->options['session_lifetime'] = intval($this->options['session_lifetime'], 10);
-        $this->options = array_merge(array(
-            'id_field' => 'sess_id',
-            'data_field' => 'sess_data',
-            'time_field' => 'sess_time',
-        ), $options);
-
-        $this->manager = $doctrineAdapter->getEntityManager();
-        $connection = $this->manager->getConnection();
-        $this->connection = $connection->getWrappedConnection();
-        $this->session = $this->connection->session;
-
-        $this->options["keyspace"] = $this->connection->keyspace;
+        $this->lifetime = 3600;
 
     }
 
@@ -109,12 +79,13 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     public function destroy($sessionId)
     {
-        $this->prepareStatements();
+        $repo = $this->doctrineAdapter->getRepository("TwakeCoreBundle:Sessions");
+        $result = $repo->find($sessionId);
 
-        $blobSessionId = $sessionId;
-        $result = $this->getSession()->execute($this->preparedStatements['destroy'],
-            new \Cassandra\ExecutionOptions(array('arguments' => array($blobSessionId)))
-        );
+        if ($result) {
+            $this->doctrineAdapter->remove($result);
+            $this->doctrineAdapter->flush();
+        }
         return true;
     }
 
@@ -131,16 +102,16 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     public function write($sessionId, $data)
     {
-        $this->prepareStatements();
-
-        $blobData = new \Cassandra\Blob($data);
-        $nowTimestamp = date("U");
-        $blobSessionId = $sessionId;
-        $result = $this->getSession()->execute($this->preparedStatements['write'],
-            new \Cassandra\ExecutionOptions(array('arguments' => array(
-                $blobData, $nowTimestamp, $blobSessionId
-            )))
-        );
+        $session = $this->doctrineAdapter->getRepository("TwakeCoreBundle:Sessions")->find($sessionId);
+        if (!$session) {
+            $session = new Sessions();
+        }
+        $session->setSessId($sessionId);
+        $session->setSessData($data);
+        $session->setSessLifetime($this->lifetime);
+        $session->setSessTime(date("U"));
+        $this->doctrineAdapter->persist($session);
+        $this->doctrineAdapter->flush();
 
         return true;
     }
@@ -150,15 +121,12 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     public function read($sessionId)
     {
-        $this->prepareStatements();
+        $repo = $this->doctrineAdapter->getRepository("TwakeCoreBundle:Sessions");
+        $result = $repo->find($sessionId);
 
-        $blobSessionId = $sessionId;
-        $result = $this->getSession()->execute($this->preparedStatements['read'],
-            new \Cassandra\ExecutionOptions(array('arguments' => array($blobSessionId)))
-        );
-        if (null !== ($sessionData = $result->first())) {
-            $data = $sessionData[$this->options['data_field']];
-            return ($data instanceof \Cassandra\Blob ? $data->toBinaryString() : '');
+        if ($result) {
+            $data = $result->getSessData();
+            return $data;
         }
         return '';
     }
@@ -170,7 +138,6 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     protected function getSession()
     {
-        $this->init();
         return $this->session;
     }
 
@@ -180,26 +147,7 @@ class CassandraSessionHandler implements \SessionHandlerInterface
      */
     protected function prepareStatements()
     {
-        $this->init();
-
-        if (isset($this->preparedStatements['read'])) {
-            return;
-        }
-
-        $this->preparedStatements['read'] = $this->getSession()->prepare(
-            "SELECT {$this->options['data_field']}
-             FROM {$this->options['keyspace']}.{$this->options['column_family']}
-             WHERE {$this->options['id_field']} = ?"
-        );
-        $this->preparedStatements['write'] = $this->getSession()->prepare(
-            "UPDATE {$this->options['keyspace']}.{$this->options['column_family']} USING TTL {$this->options['session_lifetime']}
-             SET {$this->options['data_field']} = ?, {$this->options['time_field']} = ?
-             WHERE {$this->options['id_field']} = ?"
-        );
-        $this->preparedStatements['destroy'] = $this->getSession()->prepare(
-            "DELETE FROM {$this->options['keyspace']}.{$this->options['column_family']}
-             WHERE {$this->options['id_field']} = ?"
-        );
+        return true;
     }
 
 }

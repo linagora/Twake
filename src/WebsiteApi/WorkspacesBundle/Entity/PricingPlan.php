@@ -21,9 +21,7 @@ class PricingPlan
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-	 */
+ */
 	protected $id;
 
 	/**
@@ -41,11 +39,6 @@ class PricingPlan
 	 */
 	protected $year_price = 0;
 
-	/**
-     * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group", mappedBy="pricingPlan")
-	 */
-	private $groups;
-
     /**
      * @ORM\Column(type="text")
      */
@@ -59,8 +52,14 @@ class PricingPlan
         ]);
 	}
 
-	public function getId(){
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	/**
@@ -111,14 +110,6 @@ class PricingPlan
 		$this->label = $label;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getGroups()
-	{
-		return $this->groups;
-	}
-
     public function setLimitation($limit)
     {
         $this->limitation = json_encode($limit);
@@ -138,7 +129,6 @@ class PricingPlan
             "label" => $this->getLabel(),
             "month_price" => $this->getMonthPrice(),
             "year_price" => $this->getYearPrice(),
-            "groups" => $this->getGroups(),
             "limitation" => $this->getLimitation()
         );
     }

@@ -17,9 +17,7 @@ class StreamMember
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-     */
+ */
     private $id;
 
     /**
@@ -82,7 +80,13 @@ class StreamMember
         $this->setLastUpdate();
 	}
 
-    public function getId() {
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
         return $this->id;
     }
 
@@ -96,10 +100,6 @@ class StreamMember
 
 	public function getMute() {
     	return $this->mute;
-	}
-
-	public function setId($id) {
-		$this->id = $id;
 	}
 
 	public function setStream($stream) {

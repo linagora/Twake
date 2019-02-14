@@ -58,7 +58,7 @@ twig:
 # Doctrine Configuration
 doctrine:
     dbal:
-        driver: "%database_driver%"
+        driver: "pdo_mysql"
 #        driver_class:  WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Driver\PDOCassandra\Driver
         host:     "%database_host%"
         port:     "%database_port%"

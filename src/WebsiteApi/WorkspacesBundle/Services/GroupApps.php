@@ -154,7 +154,7 @@ class GroupApps implements GroupAppsInterface
     public function useApp($groupId, $workspaceId, $userId, $appid)
     {
         $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
-        $groupuser = $groupUserRepository->findOneBy(Array("user_group_id" => $userId . "_" . $groupId));
+        $groupuser = $groupUserRepository->findOneBy(Array("user" => $userId, "group" => $groupId));
 
         $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
         $groupApp = $groupAppRepository->findOneBy(Array("group" => $groupId, "app" => $appid));

@@ -60,20 +60,23 @@ class InitCommand extends ContainerAwareCommand
          * Doctrine Schema Update
          */
 
-        $command = $this->getApplication()->find('twake:schema:update');
+        //Do it 2 time to be sure
+        for ($i = 0; $i < 2; $i++) {
+            $command = $this->getApplication()->find('twake:schema:update');
 
-        $arguments = array(
-            'command' => 'twake:schema:update',
-            '--force' => true
-        );
-        $greetInput = new ArrayInput($arguments);
-        $returnCode = $command->run($greetInput, $output);
+            $arguments = array(
+                'command' => 'twake:schema:update',
+                '--force' => true
+            );
+            $greetInput = new ArrayInput($arguments);
+            $returnCode = $command->run($greetInput, $output);
 
-        if ($returnCode != 0 && !$ignore) {
-            $output->writeln('ERROR (FATAL) : doctrine schema update failed, add option --ignore to execute this command without controlling the error codes');
-            return 1;
-        } else if ($returnCode != 0 && !$ignore) {
-            $output->writeln('WARNING : doctrine schema update failed, error was ignored');
+            if ($returnCode != 0 && !$ignore) {
+                $output->writeln('ERROR (FATAL) : doctrine schema update failed, add option --ignore to execute this command without controlling the error codes');
+                return 1;
+            } else if ($returnCode != 0 && !$ignore) {
+                $output->writeln('WARNING : doctrine schema update failed, error was ignored');
+            }
         }
 
         $manager = $this->getContainer()->get('app.twake_doctrine');

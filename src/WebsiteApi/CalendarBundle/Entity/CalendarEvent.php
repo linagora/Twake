@@ -21,9 +21,7 @@ class CalendarEvent implements ObjectLinksInterface {
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-     */
+ */
     private $id;
 
     /**
@@ -33,17 +31,17 @@ class CalendarEvent implements ObjectLinksInterface {
     private $calendar;
 
     /**
-     * @ORM\Column(name="next_reminder", type="bigint")
+     * @ORM\Column(name="next_reminder", type="twake_bigint")
      */
     private $nextreminder = 0;
 
     /**
-     * @ORM\Column(name="from_ts", type="bigint", nullable=true)
+     * @ORM\Column(name="from_ts", type="twake_bigint", nullable=true)
      */
     private $from;
 
     /**
-     * @ORM\Column(name="to_ts", type="bigint", nullable=true)
+     * @ORM\Column(name="to_ts", type="twake_bigint", nullable=true)
      */
     private $to;
 
@@ -79,17 +77,14 @@ class CalendarEvent implements ObjectLinksInterface {
     /**
      * @return int
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**

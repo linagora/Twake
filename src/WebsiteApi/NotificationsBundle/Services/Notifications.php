@@ -26,7 +26,7 @@ class Notifications implements NotificationsInterface
     {
         $this->doctrine = $doctrine;
         $this->pusher = $pusher;
-        $this->mailer = $mPushNotificationQueueailer;
+        $this->mailer = $mailer;
         $this->circle = $circle;
         $this->pushNotificationServer = $pushNotificationServer;
         $this->standalone = $standalone;

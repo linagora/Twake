@@ -20,9 +20,7 @@ class BoardTask implements ObjectLinksInterface {
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-     */
+ */
     private $id;
 
     /**
@@ -72,17 +70,17 @@ class BoardTask implements ObjectLinksInterface {
     private $workspace;
 
     /**
-     * @ORM\Column(name="like_ts",type="bigint")
+     * @ORM\Column(name="like_ts",type="twake_bigint")
      */
     private $like;
 
     /**
-     * @ORM\Column(name="from_ts", type="bigint", nullable=true)
+     * @ORM\Column(name="from_ts", type="twake_bigint", nullable=true)
      */
     private $from;
 
     /**
-     * @ORM\Column(name="to_ts", type="bigint", nullable=true)
+     * @ORM\Column(name="to_ts", type="twake_bigint", nullable=true)
      */
     private $to;
 
@@ -190,17 +188,14 @@ class BoardTask implements ObjectLinksInterface {
     /**
      * @return int
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**

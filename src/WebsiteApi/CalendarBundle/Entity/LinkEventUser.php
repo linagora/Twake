@@ -19,9 +19,7 @@ class LinkEventUser{
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-     */
+ */
     private $id;
 
     /**
@@ -39,12 +37,12 @@ class LinkEventUser{
     private $event;
 
     /**
-     * @ORM\Column(name="from_ts", type="bigint")
+     * @ORM\Column(name="from_ts", type="twake_bigint")
      */
     private $from;
 
     /**
-     * @ORM\Column(name="to_ts", type="bigint")
+     * @ORM\Column(name="to_ts", type="twake_bigint")
      */
     private $to;
 
@@ -57,17 +55,14 @@ class LinkEventUser{
     /**
      * @return int
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param int $id
-     */
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**

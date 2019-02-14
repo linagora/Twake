@@ -89,7 +89,7 @@ class GroupManagers implements GroupManagersInterface
 
             $user = $userRepository->find($userId);
             $group = $groupRepository->find($groupId);
-            $manager = $groupManagerRepository->findOneBy(Array("user_group_id" => $user->getId() . "_" . $group->getId()));
+            $manager = $groupManagerRepository->findOneBy(Array("user" => $user, "group" => $group));
 
             if (!$manager || $manager->getExterne()) {
                 return null; //No rights
@@ -148,7 +148,7 @@ class GroupManagers implements GroupManagersInterface
 
             $user = $userRepository->find($userId);
             $group = $groupRepository->find($groupId);
-            $manager = $groupManagerRepository->findOneBy(Array("user_group_id" => $user->getId() . "_" . $group->getId()));
+            $manager = $groupManagerRepository->findOneBy(Array("user" => $user, "group" => $group));
 
 
             if (!$manager) { // si on a crée un workspace et qu'on s'y ajoute soi même en admin
@@ -198,7 +198,7 @@ class GroupManagers implements GroupManagersInterface
 
             $user = $userRepository->find($userId);
             $group = $groupRepository->find($groupId);
-            $manager = $groupManagerRepository->findOneBy(Array("user_group_id" => $user->getId() . "_" . $group->getId()));
+            $manager = $groupManagerRepository->findOneBy(Array("user" => $user, "group" => $group));
 
             if(!$manager){
                 return true;
@@ -276,7 +276,7 @@ class GroupManagers implements GroupManagersInterface
 
             foreach ($members as $member){
                 $userEntity = $member->getUser();
-                $manager = $groupManagerRepository->findBy(Array("user_group_id" => $userEntity->getId() . "_" . $group->getId()));
+                $manager = $groupManagerRepository->findBy(Array("user" => $userEntity, "group" => $group));
 
                 if ($manager == null){ //si user n'est pas repertorié on l'ajoute au rang super-admin
 

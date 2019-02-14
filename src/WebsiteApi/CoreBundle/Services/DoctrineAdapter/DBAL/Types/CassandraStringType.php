@@ -19,33 +19,14 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
-use Doctrine\DBAL\Platforms\AbstractPlatform;
-use \Doctrine\DBAL\Types\BooleanType;
+use \Doctrine\DBAL\Types\StringType;
 
-class CassandraBooleanType extends BooleanType
+class CassandraStringType extends StringType
 {
 
-    public function convertToPHPValue($value, AbstractPlatform $platform)
-    {
-
-        if (is_object($value) && method_exists($value, "value")) {
-            $value = $value->value();
-        }
-
-        $res = false;
-        try {
-            $res = ((!$value) ? false : true);
-        } catch (\Exception $e) {
-        }
-
-        return $res;
-    }
-
-    /**
-     * It's best to let PDO driver guess the binding type rather than forcing to string
-     */
     public function getBindingType()
     {
-        return "twake_boolean";
+        return "twake_string";
     }
+
 }

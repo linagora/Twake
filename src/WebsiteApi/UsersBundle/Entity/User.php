@@ -26,9 +26,7 @@ class User extends SearchableObject implements UserInterface
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-     */
+ */
     protected $id;
 
     /**
@@ -84,11 +82,11 @@ class User extends SearchableObject implements UserInterface
      * @var int
      * @ORM\Column(name="status_icon", type="string", length=64)
      */
-    protected $status_icon;
+    protected $status_icon = '["", ""]';
 
 	/**
 	 * @var int
-     * @ORM\Column(name="last_activity", type="bigint")
+     * @ORM\Column(name="last_activity", type="twake_bigint")
 	 */
     protected $lastactivity = 0;
 
@@ -198,9 +196,14 @@ class User extends SearchableObject implements UserInterface
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
     public function setIdAsString()

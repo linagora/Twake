@@ -120,7 +120,7 @@ class Websockets
         //Encrypt event
         $salt = openssl_random_pseudo_bytes(256);
         $iv = openssl_random_pseudo_bytes(16);
-        $iterations = 99;
+        $iterations = 9;
         $prepared_key = hash_pbkdf2("sha512", $key, $salt, $iterations, 64);
         $string = json_encode($event);
         $encrypted = trim(

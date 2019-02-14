@@ -9,7 +9,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * WorkspaceUser
  *
- * @ORM\Table(name="workspace_user",options={"engine":"MyISAM"})
+ * @ORM\Table(name="workspace_user",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "user_id": "DESC", "id":"ASC"}, {"level_id":"ASC"}, {"user_id": "DESC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceUserRepository")
  */
 class WorkspaceUser
@@ -20,30 +20,20 @@ class WorkspaceUser
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
      */
     private $id;
 
-    /**
-     * @ORM\Column(type="text", options={"index": true})
-     */
-    protected $user_workspace_id;
-
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\Id
 	 */
 	private $workspace;
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\Id
 	 */
 	private $user;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupUser")
-     */
-    protected $groupuser;
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel")
@@ -79,8 +69,6 @@ class WorkspaceUser
 		$this->workspace = $workspace;
 		$this->user = $user;
 
-        $this->user_workspace_id = $user->getId() . "_" . $workspace->getId();
-
 		$this->level = $level;
 		$this->date_added = new \DateTime();
         $this->last_access = new \DateTime();
@@ -89,7 +77,12 @@ class WorkspaceUser
 	/**
 	 * @return int
 	 */
-	public function getId()
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
 	{
 		return $this->id;
 	}
@@ -133,22 +126,6 @@ class WorkspaceUser
 	{
 		return $this->date_added;
 	}
-
-    /**
-     * @return mixed
-     */
-    public function getGroupUser()
-    {
-        return $this->groupuser;
-    }
-
-    /**
-     * @param mixed $groupuser
-     */
-    public function setGroupUser($groupuser)
-    {
-        $this->groupuser = $groupuser;
-    }
 
     /**
      * @return mixed

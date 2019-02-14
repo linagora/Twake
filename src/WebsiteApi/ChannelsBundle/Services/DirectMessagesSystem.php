@@ -41,17 +41,25 @@ class DirectMessagesSystem extends ChannelSystemAbstract
             return false;
         }
 
+        $channelRepo = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel");
+
         $member = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(
             Array("user" => $current_user, "direct" => true),
             Array("last_activity" => "DESC"),
             isset($options["max"]) ? $options["max"] : 20,
-            isset($options["offset"]) ? $options["offset"] : 0
+            isset($options["offset"]) ? $options["offset"] : 0,
+            "last_activity_least_updated",
+            0,
+            "last_modified_channels"
         );
 
         $result = [];
         foreach ($member as $link) {
-            if ($link->getChannel()) {
-                $result[] = $link->getChannel()->getAsArray();
+            if ($link->getChannelId()) {
+                $channel = $channelRepo->find(Array("direct" => 1, "original_workspace_id" => "", "id" => $link->getChannelId()));
+                if ($channel) {
+                    $result[] = $channel->getAsArray();
+                }
             }
         }
 
@@ -93,7 +101,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
                 $channel->setFrontId($object["front_id"]);
             }
         } else {
-            $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find($object["id"]);
+            $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find(Array("id" => $object["id"], "direct" => $object["direct"], "original_workspace_id" => $object["original_workspace"] ? $object["original_workspace"] : ""));
             if (!$channel) {
                 return false;
             }

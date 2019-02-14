@@ -19,9 +19,7 @@ class Board {
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-     */
+ */
     private $id;
 
     /**
@@ -70,6 +68,11 @@ class Board {
     /**
      * @return int
      */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -93,14 +96,6 @@ class Board {
     public function setAutoParticipantList($autoparticipantlist)
     {
         $this->autoparticipantlist = json_encode($autoparticipantlist);
-    }
-
-    /**
-     * @param int $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
     }
 
     /**

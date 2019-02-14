@@ -24,6 +24,7 @@ use \Doctrine\DBAL\Types\StringType;
 
 class CassandraTimeUUIDType extends StringType
 {
+
     /**
      * It's best to let PDO driver guess the binding type rather than forcing to string
      */

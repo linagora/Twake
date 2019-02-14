@@ -49,9 +49,9 @@ class Users
             )
         );
 
-        if ($language_preference) {
+        /*if ($language_preference) {
             $options["query"]["bool"]["should"][] = Array("match" => Array("language" => $language_preference));
-        }
+        }*/
 
         $users = $this->em->es_search($options);
 

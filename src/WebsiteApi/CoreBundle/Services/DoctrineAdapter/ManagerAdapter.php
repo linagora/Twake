@@ -8,6 +8,7 @@ use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\DBAL\Types\Type;
+use Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator;
 
 class ManagerAdapter
 {
@@ -61,7 +62,9 @@ class ManagerAdapter
                 'twake_datetime' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'DateTimeType',
                 'twake_timeuuid' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'TimeUUIDType',
                 'twake_boolean' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'BooleanType',
-                'twake_text' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'TextType'
+                'twake_text' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'TextType',
+                'twake_string' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'StringType',
+                'twake_bigint' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'BigIntType'
             )
         ), $config);
 
@@ -110,8 +113,10 @@ class ManagerAdapter
             $a = $this->manager->flush();
         } catch (\Exception $e) {
             error_log($e);
+            error_log("ERROR FLUSH");
             die("ERROR with flush");
         }
+
         return $a;
     }
 
@@ -127,6 +132,18 @@ class ManagerAdapter
 
     public function persist($object)
     {
+
+
+        if (!$this->generator) {
+            $this->generator = new UuidOrderedTimeGenerator();
+        }
+
+        if (method_exists($object, "getId") && (!$object->getId() || (is_object($object->getId()) && method_exists($object->getId(), "isNull") && $object->getId()->isNull()))) {
+            $object->setId($this->generator->generate($this->getEntityManager(), $object));
+            error_log($object->getId());
+        }
+
+
         if (method_exists($object, "getEsIndexed")) {
             //This is a searchable object
             if (!$object->getEsIndexed() || $object->changesInIndexationArray()) {
@@ -136,7 +153,16 @@ class ManagerAdapter
             }
         }
 
-        return $this->getEntityManager()->persist($object);
+
+        $res = null;
+        try {
+            $res = $this->getEntityManager()->persist($object);
+        } catch (\Exception $e) {
+            error_log($e);
+            die("ERROR with persist");
+        }
+
+        return $res;
     }
 
     public function getRepository($name)

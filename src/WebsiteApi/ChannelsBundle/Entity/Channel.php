@@ -6,11 +6,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\CoreBundle\Services\DoctrineAdapter\FakeCassandraTimeuuid;
 
 /**
  * Channel
  *
- * @ORM\Table(name="channel",options={"engine":"MyISAM"})
+ * @ORM\Table(name="channel",options={"engine":"MyISAM", "scylladb_keys": {{"direct":"ASC", "original_workspace_id":"ASC", "id":"ASC"}, {"id":"ASC"}, {"identifier":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\ChannelsBundle\Repository\ChannelRepository")
  */
 class Channel
@@ -18,9 +19,7 @@ class Channel
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-     */
+ */
     private $id;
 
     /**
@@ -59,19 +58,21 @@ class Channel
     private $external_access_token = null;
 
     /**
-     * @ORM\Column(name="private", type="boolean")
+     * @ORM\Column(name="private", type="twake_boolean")
      */
     private $private = 0;
 
     /**
-     * @ORM\Column(name="direct", type="boolean")
+     * @ORM\Column(name="direct", type="twake_boolean")
+     * @ORM\Id
      */
     private $direct = 0;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\Column(name="original_workspace_id", type="twake_text")
+     * @ORM\Id
      */
-    private $original_workspace;
+    private $original_workspace_id = "";
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
@@ -111,7 +112,7 @@ class Channel
             "channel_group_name" => $this->getChannelGroupName(),
             "private" => $this->getPrivate(),
             "direct" => $this->getDirect(),
-            "original_workspace" => ($this->getOriginalWorkspace()) ? $this->getOriginalWorkspace()->getId() : null,
+            "original_workspace" => ($this->getOriginalWorkspaceId()) ? $this->getOriginalWorkspaceId() : null,
             "original_group" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
             "members_count" => $this->getMembersCount(),
             "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
@@ -123,6 +124,11 @@ class Channel
     /**
      * @return mixed
      */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -261,17 +267,17 @@ class Channel
     /**
      * @return mixed
      */
-    public function getOriginalWorkspace()
+    public function getOriginalWorkspaceId()
     {
-        return $this->original_workspace;
+        return $this->original_workspace_id;
     }
 
     /**
      * @param mixed $original_workspace
      */
-    public function setOriginalWorkspace($original_workspace)
+    public function setOriginalWorkspaceId($original_workspace_id)
     {
-        $this->original_workspace = $original_workspace;
+        $this->original_workspace_id = $original_workspace_id;
     }
 
     /**

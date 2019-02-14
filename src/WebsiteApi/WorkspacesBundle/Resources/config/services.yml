@@ -50,6 +50,11 @@ services:
         tags:
             - { name: gos_web_socket.topic }
 
+    workspaces_users.topic:
+        class: WebsiteApi\WorkspacesBundle\Topic\WorkspacesUsersTopic
+        tags:
+            - { name: gos_web_socket.topic }
+
     workspaces_of_user.topic:
         class: WebsiteApi\WorkspacesBundle\Topic\WorkspacesOfUserTopic
         tags:

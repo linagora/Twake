@@ -11,10 +11,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * GroupUser
  *
- * @ORM\Table(name="group_user",options={"engine":"MyISAM"},
- *     indexes={
- *     @ORM\Index(columns={"user_id", "group_id"})
- * })
+ * @ORM\Table(name="group_user",options={"engine":"MyISAM", "scylladb_keys": {{"group_id":"ASC", "user_id":"DESC", "id":"ASC"}, {"user_id":"DESC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupUserRepository")
  */
 class GroupUser
@@ -24,23 +21,18 @@ class GroupUser
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="CUSTOM")
-     * @ORM\CustomIdGenerator(class="Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator")
-	 */
-	protected $id;
-
-    /**
-     * @ORM\Column(type="twake_text", options={"index": true})
      */
-    protected $user_group_id;
+	protected $id;
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\Id
 	 */
 	protected $user;
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
+     * @ORM\Id
 	 */
 	protected $group;
 
@@ -92,7 +84,6 @@ class GroupUser
 	public function __construct($group, $user) {
 		$this->group = $group;
 		$this->user = $user;
-        $this->user_group_id = $user->getId() . "_" . $group->getId();
 
 		$this->level = 0;
 		$this->date_added = new \DateTime();
@@ -105,8 +96,14 @@ class GroupUser
         $this->externe = false;
 	}
 
-	public function getId(){
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	/**
