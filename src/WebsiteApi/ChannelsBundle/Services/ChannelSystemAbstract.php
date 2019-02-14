@@ -22,7 +22,7 @@ class ChannelSystemAbstract
         if ($object) {
             $this->entity_manager->remove($object);
 
-            $members = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("channel" => $object));
+            $members = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("channel_id" => $object->getId()));
             foreach ($members as $member) {
                 $this->entity_manager->remove($member);
             }

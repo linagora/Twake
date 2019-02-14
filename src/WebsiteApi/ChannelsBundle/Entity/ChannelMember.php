@@ -9,7 +9,13 @@ use Symfony\Component\Validator\Constraints\DateTime;
 /**
  * ChannelMember
  *
- * @ORM\Table(name="channel_member",options={"engine":"MyISAM", "scylladb_keys": {{"direct":"ASC", "user_id":"ASC", "channel_id":"ASC", "id":"ASC"}, {"channel_id":"ASC"}, {"user_id":"ASC"}, {"direct": "1", "user_id":"ASC", "last_activity": "DESC", "channel_id":"ASC", "id":"ASC"}} })
+ * @ORM\Table(name="channel_member",options={"engine":"MyISAM", "scylladb_keys": {
+ *     {"direct":"ASC", "user_id":"ASC", "channel_id":"ASC", "id":"ASC"},
+ *     {"channel_id":"ASC"},
+ *     {"user_id":"ASC"},
+ *     {"id":"ASC"},
+ *     {"direct": "1", "user_id":"ASC", "last_activity_least_updated": "DESC", "channel_id":"ASC", "id":"ASC", "__name": "last_modified_channels"}
+ *     } })
  * @ORM\Entity(repositoryClass="WebsiteApi\ChannelsBundle\Repository\ChannelMemberRepository")
  */
 class ChannelMember
@@ -27,9 +33,9 @@ class ChannelMember
     private $user;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\ChannelsBundle\Entity\Channel")
+     * @ORM\Column(name="channel_id", type="twake_timeuuid")
      */
-    private $channel;
+    private $channel_id;
 
     /**
      * @ORM\Column(name="direct", type="twake_boolean")
@@ -60,7 +66,8 @@ class ChannelMember
     public function __construct($user, $channel)
     {
         $this->user = $user;
-        $this->channel = $channel;
+        $this->channel_id = $channel->getId();
+        $this->last_activity_least_updated = new \DateTime();
         $this->last_activity = new \DateTime();
         $this->last_access = new \DateTime();
         $this->direct = $channel->getDirect();
@@ -90,9 +97,9 @@ class ChannelMember
     /**
      * @return mixed
      */
-    public function getChannel()
+    public function getChannelId()
     {
-        return $this->channel;
+        return $this->channel_id;
     }
 
     /**

@@ -2,20 +2,6 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter;
 
-/** Used to generate a false ID from string ID */
-class FakeCassandraTimeuuid
-{
-    public function __construct($timeuuid)
-    {
-        $this->timeuuid = $timeuuid;
-    }
-
-    public function __toString()
-    {
-        return $this->timeuuid;
-    }
-}
-
 class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 {
 
@@ -66,12 +52,13 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         return $a;
     }
 
-    public function findBy(Array $filters, ?array $sort = null, $limit = null, $offset = null, $order_field = null, $order_direction = "ASC")
+    public function findBy(Array $filters, ?array $sort = null, $limit = null, $offset = null, $order_field = null, $order_direction = "ASC", $view_to_use = null)
     {
         $cassandra = strpos(get_class($this->_em->getConnection()->getDriver()), "PDOCassandra") >= 0;
 
         if ($offset && is_array($offset)) {
             if ($cassandra) {
+                $sort = Array();
                 $offset = $offset[1];
             } else {
                 $offset = $offset[0];
@@ -80,7 +67,8 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
         try {
 
-            if ($offset && $order_field && $cassandra) {
+            if (($view_to_use || $offset && $order_field) && $cassandra) {
+
 
                 $mapping = Array();
                 if (isset($this->getClassMetadata()->associationMappings)) {
@@ -123,6 +111,10 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
                 if ($limit) {
                     $qb = $qb->setMaxResults($limit);
+                }
+
+                if ($view_to_use) {
+                    $this->_em->getConnection()->getWrappedConnection()->changeTableToView($view_to_use);
                 }
 
                 $qb = $qb->getQuery();

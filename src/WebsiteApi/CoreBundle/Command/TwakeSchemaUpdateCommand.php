@@ -97,6 +97,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
             $fields = Array();
             $indexed_fields = Array();
 
+            $custom_keys_names = false;
             $custom_keys = false;
             $custom_keys_order = false;
             $custom_keys_where = false;
@@ -105,13 +106,24 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                     $_custom_keys = $entity->table["options"]["scylladb_keys"];
 
                     $custom_keys = Array();
+                    $custom_keys_names = Array();
+                    $custom_keys_order = Array();
+                    $custom_keys_where = Array();
+
                     $j = 0;
                     foreach ($_custom_keys as $_custom_key) {
                         $keys = [];
                         $i = 0;
                         $custom_keys_order_tmp = Array();
                         $custom_keys_where_tmp = Array();
+                        $custom_name = null;
                         foreach ($_custom_key as $key => $order) {
+
+                            if ($key == "__name") {
+                                $custom_name = $order;
+                                continue;
+                            }
+
                             $value = false;
                             if ($order != "ASC" and $order != "DESC") {
                                 $value = $order;
@@ -134,6 +146,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                         $custom_keys[] = join(", ", $keys);
                         $custom_keys_order[] = join(", ", $custom_keys_order_tmp);
                         $custom_keys_where[] = join(" AND ", $custom_keys_where_tmp);
+                        $custom_keys_names[] = $custom_name;
                     }
 
                 }
@@ -288,6 +301,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                 array_shift($custom_keys);
                 array_shift($custom_keys_order);
                 array_shift($custom_keys_where);
+                array_shift($custom_keys_names);
 
                 if (count($custom_keys) > 0) {
 
@@ -296,7 +310,12 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                         $index_name = $table_name . "_index_" . str_replace([",", " "], ["_", ""], $key);
 
                         if (strpos($key, ",") !== false) {
-                            $index_name .= "_composite";
+                            if ($custom_keys_names[$i]) {
+                                $index_name = $custom_keys_names[$i] . "_custom_index";
+                            } else {
+                                $index_name .= "_composite";
+                            }
+
                             $command = "CREATE MATERIALIZED VIEW IF NOT EXISTS " . strtolower($connection->getKeyspace()) . ".\"";
                             $command .= $index_name . "\" AS ";
                             $command .= " SELECT " . $key;
@@ -305,7 +324,13 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
                             $command .= " PRIMARY KEY (" . $key . ")";
                             $command .= " WITH CLUSTERING ORDER BY (" . $custom_keys_order[$i] . ")";
                         } else {
-                            $index_name .= "_simple";
+
+                            if ($custom_keys_names[$i]) {
+                                $index_name = $custom_keys_names[$i] . "_custom_index";
+                            } else {
+                                $index_name .= "_simple";
+                            }
+
                             $command = "CREATE INDEX IF NOT EXISTS \"";
                             $command .= $index_name . "\" ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
                             $command .= "(" . $key . ")";

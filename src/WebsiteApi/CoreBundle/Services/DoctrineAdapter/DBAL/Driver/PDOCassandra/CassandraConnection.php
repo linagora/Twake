@@ -4,6 +4,39 @@ namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Driver\PDOCassandr
 
 use Cassandra;
 
+class FakeCassandraRows extends PDOStatementAdapter
+{
+    public function __construct($list)
+    {
+        $this->list = $list;
+        $this->pointer = 0;
+    }
+
+    public function next()
+    {
+        $this->pointer++;
+    }
+
+    public function rewind()
+    {
+        $this->pointer = 0;
+    }
+
+    public function current()
+    {
+        if (!$this->list) {
+            return null;
+        }
+        return $this->list[$this->pointer];
+    }
+
+    public function count()
+    {
+        return count($this->list);
+    }
+
+}
+
 class PDOStatementAdapter
 {
 
@@ -28,7 +61,7 @@ class PDOStatementAdapter
     {
     }
 
-    private function stripslashesCell($obj = "")
+    protected function stripslashesCell($obj = "")
     {
         if (is_string($obj)) {
             $obj = stripslashes($obj);
@@ -36,7 +69,7 @@ class PDOStatementAdapter
         return $obj;
     }
 
-    private function stripslashesRow($obj = Array())
+    protected function stripslashesRow($obj = Array())
     {
         if (!is_array($obj)) {
             return $obj;
@@ -121,7 +154,7 @@ class PDOStatementAdapter
 
                 if ($this->types[$position + 1] == "twake_boolean") {
                     $value = (!$value) ? "0" : "1"; //Cassandra booleans are tiny ints
-                } else if ($value == NULL) {
+                } else if ($value == NULL && !is_string($value)) {
                     $value = "NULL";
                 } else if ($this->types[$position + 1] == \PDO::PARAM_INT || $this->types[$position + 1] == "twake_timeuuid" || $this->types[$position + 1] == "twake_bigint") {
                     $value = $value;
@@ -138,7 +171,12 @@ class PDOStatementAdapter
 
         $query = preg_replace("/ +IS +NULL( |$)/", " = NULL ", $query);
 
-        $this->executor->exec($query, $this);
+        try {
+            $this->executor->exec($query, $this);
+        } catch (\Exception $e) {
+            error_log("SCYLLADB > AN ERROR OCCURED WITH THIS QUERY : " . $query);
+            error_log($e);
+        }
 
     }
 
@@ -163,6 +201,12 @@ class CassandraConnection
         $this->session = $this->cluster->connect(strtolower($keyspace));
 
         $this->keyspace = $keyspace;
+        $this->view_to_use = null;
+    }
+
+    public function changeTableToView($view_to_use)
+    {
+        $this->view_to_use = $view_to_use;
     }
 
     public function getSchema()
@@ -213,22 +257,65 @@ class CassandraConnection
      */
     public function query($cql = null, $pdoStatement = null)
     {
-        $sql = $this->removeTableAlias($cql);
-        $sql = $this->normalizeCount($sql);
-        $sql = $this->removeCQLUnallowedKeys($sql);
-
-        if ($sql == "SELECT uuid()") {
-            $sql = "select now() from system.local";
+        $view_to_user = false;
+        if ($this->view_to_use) {
+            $view_to_user = $this->view_to_use . "_custom_index";
         }
+        $this->view_to_use = null;
 
-        $future = $this->session->executeAsync($sql);
-        if (!$pdoStatement) {
-            $pdo = new PDOStatementAdapter();
+        if ($view_to_user) {
+            $_cql = preg_replace("/ FROM [a-z_\-0-9]+ /", " FROM " . $view_to_user . " ", $cql);
+            $_cql = preg_replace("/ *SELECT .* FROM /", "SELECT * FROM ", $_cql);
+
+            $results = $this->query($_cql, $pdoStatement);
+            $row = true;
+            $ids = [];
+            $list = [];
+            while ($row) {
+                $row = $results->fetch(\PDO::FETCH_ASSOC);
+                if ($row && isset($row["id"])) {
+                    $ids[] = $row["id"]->uuid();
+                }
+            }
+            foreach ($ids as $id) {
+                $__cql = preg_replace("/ WHERE .*$/", " WHERE id = " . $id, $cql);
+                $result = $this->query($__cql, $pdoStatement)->fetch(\PDO::FETCH_ASSOC);
+                $list[] = $result;
+            }
+
+            if (!$pdoStatement) {
+                $pdo = new PDOStatementAdapter();
+            } else {
+                $pdo = $pdoStatement;
+            }
+
+
+            $pdo->setData(new FakeCassandraRows($list));
+
+            return $pdo;
+
         } else {
-            $pdo = $pdoStatement;
+
+            $sql = $this->removeTableAlias($cql);
+            $sql = $this->normalizeCount($sql);
+            $sql = $this->removeCQLUnallowedKeys($sql);
+
+            if ($sql == "SELECT uuid()") {
+                $sql = "select now() from system.local";
+            }
+
+            $future = $this->session->executeAsync($sql);
+            if (!$pdoStatement) {
+                $pdo = new PDOStatementAdapter();
+            } else {
+                $pdo = $pdoStatement;
+            }
+            $tmp = $future->get();
+            $pdo->setData($tmp);
+
+            return $pdo;
+
         }
-        $pdo->setData($future->get());
-        return $pdo;
     }
 
     public function exec($cql, $pdoStatement = null)
@@ -314,13 +401,6 @@ class CassandraConnection
         }
 
         $vals = explode("FROM ", $sql);
-
-        if (isset($vals[1])) {
-            error_log($vals[0]);
-            error_log("FROM " . $vals[1]);
-        } else {
-            error_log($sql);
-        }
 
         return $sql;
     }

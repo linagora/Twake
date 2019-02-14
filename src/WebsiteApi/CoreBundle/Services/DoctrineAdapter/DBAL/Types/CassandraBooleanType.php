@@ -27,9 +27,14 @@ class CassandraBooleanType extends BooleanType
 
     public function convertToPHPValue($value, AbstractPlatform $platform)
     {
+
+        if (is_object($value) && method_exists($value, "value")) {
+            $value = $value->value();
+        }
+
         $res = false;
         try {
-            $res = ((!$value || $value->value() == 0) ? false : true);
+            $res = ((!$value) ? false : true);
         } catch (\Exception $e) {
         }
 

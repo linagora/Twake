@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\CoreBundle\Services\DoctrineAdapter\FakeCassandraTimeuuid;
 
 /**
  * Channel
@@ -68,10 +69,10 @@ class Channel
     private $direct = 0;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\Column(name="original_workspace_id", type="twake_text")
      * @ORM\Id
      */
-    private $original_workspace;
+    private $original_workspace_id = "";
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
@@ -111,7 +112,7 @@ class Channel
             "channel_group_name" => $this->getChannelGroupName(),
             "private" => $this->getPrivate(),
             "direct" => $this->getDirect(),
-            "original_workspace" => ($this->getOriginalWorkspace()) ? $this->getOriginalWorkspace()->getId() : null,
+            "original_workspace" => ($this->getOriginalWorkspaceId()) ? $this->getOriginalWorkspaceId() : null,
             "original_group" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
             "members_count" => $this->getMembersCount(),
             "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
@@ -266,17 +267,17 @@ class Channel
     /**
      * @return mixed
      */
-    public function getOriginalWorkspace()
+    public function getOriginalWorkspaceId()
     {
-        return $this->original_workspace;
+        return $this->original_workspace_id;
     }
 
     /**
      * @param mixed $original_workspace
      */
-    public function setOriginalWorkspace($original_workspace)
+    public function setOriginalWorkspaceId($original_workspace_id)
     {
-        $this->original_workspace = $original_workspace;
+        $this->original_workspace_id = $original_workspace_id;
     }
 
     /**
