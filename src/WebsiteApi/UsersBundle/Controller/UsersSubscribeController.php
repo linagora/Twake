@@ -174,5 +174,21 @@ class UsersSubscribeController extends Controller
         return new JsonResponse($data);
     }
 
+    public function testMailAction(Request $request){
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $mail = $request->request->get("mail", "");
+
+        $res = $this->get("app.user")->testMail($mail);
+
+        $data["data"] = $res;
+
+        return new JsonResponse($data);
+    }
+
 
 }

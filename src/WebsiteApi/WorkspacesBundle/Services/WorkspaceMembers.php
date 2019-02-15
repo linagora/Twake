@@ -43,7 +43,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
 
-            $level = $levelRepository->find($levelId);
+            $level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"level"=>$levelId));
             $user = $userRepository->find($userId);
             $workspace = $workspaceRepository->find($workspaceId);
 
@@ -141,6 +141,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             }
 
             //Send mail
+            error_log("send mail");
             $this->twake_mailer->send($mail, "inviteToWorkspaceMail", Array(
                 "_language" => $currentUser ? $currentUser->getLanguage() : "en",
                 "mail" => $mail,
@@ -244,7 +245,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $level = $this->wls->getDefaultLevel($workspaceId);
             } else {
                 $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
-                $level = $levelRepository->find($levelId);
+                $level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"level"=>$levelId));
             }
             $member = new WorkspaceUser($workspace, $user, $level);
 
@@ -350,7 +351,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             if ($total_membres_not_bot > 1) {
 
                 //Test if other workspace administrators are present
-                if ($currentUserId != null && $member->getLevel()->getisAdmin()) {
+                $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findBy(Array("workspace"=>$workspace->getId(),"id"=>$member->getLevel()));
+
+                if ($currentUserId != null && $level->getisAdmin()) {
                     $other_workspace_admins = $workspaceUserRepository->findBy(Array("workspace" => $workspace, "level" => $member->getLevel()));
                     if (count($other_workspace_admins) <= 2) {
                         foreach ($other_workspace_admins as $other_workspace_admin) {
@@ -380,7 +383,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 "type" => "remove",
                 "workspace" => $workspace->getAsArray()
             );
-            $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
+            $this->pusher->push($dataToPush, "workspace_users/" . $workspace->getId());
 
             /*$datatopush = Array(
                 "type" => "CHANGE_MEMBERS",

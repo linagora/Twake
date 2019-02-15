@@ -36,9 +36,9 @@ class WorkspaceUser
 	private $user;
 
 	/**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel")
+     * @ORM\Column(name="level_id", type="twake_timeuuid")
 	 */
-	private $level;
+	private $level_id;
 
     /**
      * @ORM\Column(type="twake_datetime")
@@ -69,7 +69,7 @@ class WorkspaceUser
 		$this->workspace = $workspace;
 		$this->user = $user;
 
-		$this->level = $level;
+		$this->level_id = $level->getId();
 		$this->date_added = new \DateTime();
         $this->last_access = new \DateTime();
 	}
@@ -108,7 +108,7 @@ class WorkspaceUser
 	 */
 	public function getLevel()
 	{
-		return $this->level;
+		return $this->level_id;
 	}
 
 	/**

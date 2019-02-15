@@ -362,11 +362,11 @@ class Workspaces implements WorkspacesInterface
                 if ($config["users"] == "all" || $config["users"] == "admins") {
                     $members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $original_workspace));
                     foreach ($members as $member) {
-                        if ($member->getUser()->getId() != $currentUserId && ($config["users"] == "all" || ($config["users"] == "admins" && $member->getLevel()->getId() == $adminLevelId))) {
+                        if ($member->getUser()->getId() != $currentUserId && ($config["users"] == "all" || ($config["users"] == "admins" && $member->getLevel() == $adminLevelId))) {
 
                             //Add user with good level
-                            if (isset($old_levels_id_to_new_levels[$member->getLevel()->getId() . ""])) {
-                                $level_id = $old_levels_id_to_new_levels[$member->getLevel()->getId() . ""]->getId();
+                            if (isset($old_levels_id_to_new_levels[$member->getLevel() . ""])) {
+                                $level_id = $old_levels_id_to_new_levels[$member->getLevel(). ""]->getId();
                                 $this->wms->addMember($workspace->getId(), $member->getUser()->getId(), false, $level_id);
                             }
 
