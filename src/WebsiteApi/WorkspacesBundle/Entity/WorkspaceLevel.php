@@ -7,7 +7,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * WorkspaceLevel
  *
- * @ORM\Table(name="workspace_level",options={"engine":"MyISAM"})
+ * @ORM\Table(name="workspace_level",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC","id":"ASC"}} } )
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceLevelRepository")
  */
 class WorkspaceLevel
@@ -28,6 +28,7 @@ class WorkspaceLevel
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+	 * @ORM\Id
 	 */
 	protected $workspace;
 

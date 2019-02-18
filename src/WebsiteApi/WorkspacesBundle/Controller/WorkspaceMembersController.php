@@ -33,7 +33,6 @@ class WorkspaceMembersController extends Controller
         $offset = $request->request->get("offset", null);
 
         $members = $this->get("app.workspace_members")->getMembers($workspaceId, $this->getUser()->getId(), $twake_bot, $order, $max, $offset);
-
         $list = Array();
         foreach ($members as $member) {
             $user = $member["user"]->getAsArray();
@@ -43,7 +42,7 @@ class WorkspaceMembersController extends Controller
             $list[] = Array(
                 "user" => $user,
                 "last_access" => $member["last_access"],
-                "level" => $member["level"]->getAsArray(),
+                "level" => $member["level"],
                 "externe" => $member["externe"]
             );
         }
@@ -84,6 +83,7 @@ class WorkspaceMembersController extends Controller
         $added = Array();
         $not_added = Array();
         foreach ($list as $element) {
+            error_log("save ".$element);
             $element = trim($element);
             if (strrpos($element, "@") <= 0) { //No mail or "@username"
                 $res = $this->get("app.workspace_members")

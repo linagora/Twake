@@ -185,6 +185,12 @@ twake_user_subscribe:
     methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersSubscribe:subscribeTotaly }
 
+
+twake_test_mail:
+    path:     /test/mail
+    methods: [POST]
+    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:testMail }
+
 twake_user_subscribe_mailavaible:
     path:     /subscribe/availability
     methods: [POST]

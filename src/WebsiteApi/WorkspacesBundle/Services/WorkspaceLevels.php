@@ -60,8 +60,8 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 		}
 
 		$link = $workspaceUserRepository->findOneBy(Array("user"=>$user, "workspace"=>$workspace));
-
-		if(!$link || !$link->getLevel()){
+        $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace"=>$workspace->getId(),"id"=>$link->getLevel()));
+		if(!$link || !$level){
 			return false;
 		}
 
@@ -69,7 +69,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
         $this->doctrine->persist($workspace);
         //No flush, if this is just a read we don't count the activity
 
-		if($link->getLevel()->getisAdmin()){
+		if($level->getIsAdmin()){
 			return true; //Admin can do everything
 		}
 
@@ -77,7 +77,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			return true;
 		}
 
-		$rights = $link->getLevel()->getRights();
+		$rights = $level->getRights();
 
 		//Compare with action asked
 		$actions = explode(":", $action);
@@ -110,8 +110,9 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			if(!$link){
 				return null; //No level because no member
 			}
+            $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array("workspace"=>$workspace->getId(),"id"=>$link->getLevel()));
 
-			return $link->getLevel();
+			return $level;
 
 		}
 
@@ -126,7 +127,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
 
-			$level = $levelRepository->find($levelId);
+			$level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"level"=>$levelId));
 			if(!$level){
 				return false;
 			}
@@ -162,8 +163,13 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 
 		$workspace = $workspaceRepository->find($workspaceId);
-
-		return $levelRepository->findOneBy(Array("workspace"=>$workspace, "isdefault"=>true));
+        $levels = $levelRepository->findOneBy(Array("workspace"=>$workspace));
+        foreach($levels as $level){
+            if($level->getisDefault()){
+                return $level;
+            }
+        }
+		return false;
 
 	}
 
@@ -239,7 +245,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
-			$level = $levelRepository->find($levelId);
+			$level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"level"=>$levelId));
 			if($level->getWorkspace()->getId() != $workspaceId){
 				return false;
 			}
@@ -293,7 +299,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
-			$level = $levelRepository->find($levelId);
+			$level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"level"=>$levelId));
 			$workspace = $workspaceRepository->find($workspaceId);
 
 			if (!$level || !$workspace) {
@@ -328,7 +334,6 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 				return false;
 			}
 
-			$levels = $levelRepository->findBy(Array("workspace" => $workspace));
 			$levels = $levelRepository->findBy(Array("workspace" => $workspace));
 
 			return $levels;
