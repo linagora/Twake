@@ -1,7 +1,7 @@
 services:
     app.messages:
             class: WebsiteApi\DiscussionBundle\Services\MessageSystem
-            arguments: ["@app.string_cleaner", "@app.twake_doctrine", '@security.authorization_checker', "@app.command_executor", '@app.pusher','@app.workspace_levels','@app.drive.adapter_selector', '@app.messagesNotificationsCenter']
+            arguments: ["@app.twake_doctrine"]
 
     app.messages_master:
             class: WebsiteApi\DiscussionBundle\Services\MessagesMasterService

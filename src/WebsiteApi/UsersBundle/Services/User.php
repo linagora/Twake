@@ -40,7 +40,7 @@ class User implements UserInterface
     private $licenceKey;
 
 
-    public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $twake_mailer, $string_cleaner, $workspace_members_service, $group_service, $workspace_service, $pricing_plan, $restClient, $translate, $standalone, $licenceKey,$circle)
+    public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $twake_mailer, $string_cleaner, $workspace_members_service, $group_service, $workspace_service, $pricing_plan, $restClient, $translate, $standalone, $licenceKey)
     {
 		$this->em = $em;
 		$this->pusher = $pusher;

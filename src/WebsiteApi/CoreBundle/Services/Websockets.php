@@ -24,7 +24,8 @@ class Websockets
         $this->services_for_type = Array(
             "channels/direct_messages" => "app.channels.direct_messages_system",
             "channels/workspace" => "app.channels.channels_system",
-            "channels/workspace_private" => "app.channels.channels_system"
+            "channels/workspace_private" => "app.channels.channels_system",
+            "messages" => "app.messages"
         );
 
         $this->doctrine = $doctrine;

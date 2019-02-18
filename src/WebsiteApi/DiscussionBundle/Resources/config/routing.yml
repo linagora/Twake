@@ -1,3 +1,15 @@
+#Direct messages
+messages_get:
+    path:     /get
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:get}
+messages_save:
+    path:     /save
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:save}
+messages_remove:
+    path:     /remove
+    defaults: { _controller: TwakeDiscussionBundle:Discussion:remove}
+
+
 #DiscussionController
 messages_message_update:
     path:     /messageUpdate

@@ -48,7 +48,7 @@ class ChannelsSystem extends ChannelSystemAbstract
             $ok = true;
             if ($channel->getPrivate()) {
 
-                $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("user" => $current_user, "channel_id" => $channel->getId()));
+                $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => 0, "user" => $current_user, "channel_id" => $channel->getId()));
 
                 if (!$res) {
                     $ok = false;

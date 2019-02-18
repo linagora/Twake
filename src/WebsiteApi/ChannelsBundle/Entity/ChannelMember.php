@@ -116,6 +116,9 @@ class ChannelMember
     public function setLastActivity($last_activity)
     {
         $this->last_activity = $last_activity;
+        if ($this->last_activity_least_updated->getTimestamp() < $last_activity->getTimestamp() - 60 * 60 * 24 * 7) {
+            $this->last_activity_least_updated = $last_activity;
+        }
     }
 
     /**
