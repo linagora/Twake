@@ -171,6 +171,8 @@ class PDOStatementAdapter
 
         $query = preg_replace("/ +IS +NULL( |$)/", " = NULL ", $query);
 
+        error_log($query);
+
         try {
             $this->executor->exec($query, $this);
         } catch (\Exception $e) {

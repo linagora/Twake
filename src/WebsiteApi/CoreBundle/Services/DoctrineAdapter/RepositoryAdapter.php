@@ -101,7 +101,11 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                 }
 
                 if ($offset) {
-                    $qb = $qb->andWhere($qb->expr()->lt('e.' . $order_field, ":offset"));
+                    if ($limit > 0) {
+                        $qb = $qb->andWhere($qb->expr()->lt('e.' . $order_field, ":offset"));
+                    } else {
+                        $qb = $qb->andWhere($qb->expr()->gt('e.' . $order_field, ":offset"));
+                    }
                     if (is_object($offset)) {
                         $qb = $qb->setParameter("offset", new FakeCassandraTimeuuid($offset->getId()));
                     } else {
@@ -110,7 +114,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                 }
 
                 if ($limit) {
-                    $qb = $qb->setMaxResults($limit);
+                    $qb = $qb->setMaxResults(abs($limit));
                 }
 
                 if ($view_to_use) {
@@ -133,7 +137,7 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         } catch (\Exception $e) {
             error_log($e);
             var_dump($e->getTraceAsString());
-            die("ERROR with findOneBy");
+            die("ERROR with findBy");
         }
         return $a;
     }
