@@ -60,14 +60,22 @@ class MessageSystem
 
         $offset = isset($options["offset"]) ? $options["offset"] : null;
         $limit = isset($options["limit"]) ? $options["limit"] : 100;
+        $parent_message_id = isset($options["parent_message_id"]) ? $options["parent_message_id"] : "";
 
-        $messages_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => ""), Array(), $limit, $offset, "id", "DESC");
+        $messages_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => $parent_message_id), Array(), $limit, $offset, "id", "DESC");
 
         $messages_ent = array_reverse($messages_ent);
 
         $messages = [];
         foreach ($messages_ent as $message) {
             $messages[] = $message->getAsArray();
+
+            if ($parent_message_id != "" && $message->getResponsesCount() > 0) {
+                $messages_responses_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => $message->getId()), Array(), 10, null, "id", "DESC");
+                foreach ($messages_responses_ent as $message_response) {
+                    $messages[] = $message_response->getAsArray();
+                }
+            }
         }
 
         return $messages;
@@ -92,10 +100,16 @@ class MessageSystem
         }
 
         if ($message->getParentMessageId()) {
-            //TODO decrement parent message count
+            $parent_message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $message->getParentMessageId()));
+            $parent_message->setResponsesCount($parent_message->getResponsesCount() - 1);
+            $this->em->persist($parent_message);
         }
 
-        //TODO decrement channel count
+        $channel_repo = $this->em->getRepository("TwakeChannelsBundle:Channel");
+        $channel = $channel_repo->findOneBy(Array("id" => $object["channel_id"]));
+        $channel->setMessagesCount($channel->getMessagesCount() - 1);
+
+        $this->em->persist($channel);
 
         $this->em->remove($message);
         $this->em->flush();
@@ -134,10 +148,16 @@ class MessageSystem
             $message->setFrontId($object["front_id"]);
 
             if ($object["parent_message_id"]) {
-                //TODO increment parent message count
+                $parent_message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $object["parent_message_id"]));
+                $parent_message->setResponsesCount($parent_message->getResponsesCount() + 1);
+                $this->em->persist($parent_message);
             }
 
-            //TODO increment channel count
+            $channel_repo = $this->em->getRepository("TwakeChannelsBundle:Channel");
+            $channel = $channel_repo->findOneBy(Array("id" => $object["channel_id"]));
+            $channel->setMessagesCount($channel->getMessagesCount() + 1);
+
+            $this->em->persist($channel);
             //TODO update channel last id and last activity etc
 
         } else {
@@ -148,13 +168,11 @@ class MessageSystem
         if ($application) {
             $message->setMessageType(1);
             $message->setApplication($application);
-        } else
-            if (!$current_user && !$application) {
-                $message->setMessageType(2);
-            } else
-                if ($current_user && !$application) {
-                    $message->setMessageType(0);
-                }
+        } else if (!$current_user && !$application) {
+            $message->setMessageType(2);
+        } else if ($current_user && !$application) {
+            $message->setMessageType(0);
+        }
         $message->setSender($user);
         $message->setHiddenData($object["hidden_data"]);
 

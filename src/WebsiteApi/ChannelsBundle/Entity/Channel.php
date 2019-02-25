@@ -85,6 +85,11 @@ class Channel
     private $members_count = 0; //0 for public workspaces
 
     /**
+     * @ORM\Column(name="messages_count", type="integer")
+     */
+    private $messages_count = 0; //0 for public workspaces
+
+    /**
      * @ORM\Column(name="members", type="twake_text")
      */
     private $members = "[]";
@@ -360,6 +365,20 @@ class Channel
         $this->members = json_encode($members);
     }
 
+    /**
+     * @return mixed
+     */
+    public function getMessagesCount()
+    {
+        return $this->messages_count;
+    }
 
+    /**
+     * @param mixed $messages_count
+     */
+    public function setMessagesCount($messages_count)
+    {
+        $this->messages_count = $messages_count;
+    }
 
 }
