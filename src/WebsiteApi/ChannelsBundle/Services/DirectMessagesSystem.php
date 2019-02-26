@@ -11,8 +11,9 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 class DirectMessagesSystem extends ChannelSystemAbstract
 {
 
-    function __construct($entity_manager)
+    function __construct($entity_manager, $messages_service)
     {
+        $this->messages_service = $messages_service;
         parent::__construct($entity_manager);
     }
 
