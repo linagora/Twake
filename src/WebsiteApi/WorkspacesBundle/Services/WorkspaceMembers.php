@@ -245,9 +245,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $level = $this->wls->getDefaultLevel($workspaceId);
             } else {
                 $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
-                $level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"level"=>$levelId));
+                $level = $levelRepository->findOneBy(Array("workspace" => $workspaceId, "level" => $levelId));
             }
-            $member = new WorkspaceUser($workspace, $user, $level);
+            $member = new WorkspaceUser($workspace, $user, $level->getId());
 
             $workspace->setMemberCount($workspace->getMemberCount() + 1);
 
@@ -301,9 +301,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             }
 
 
-            $this->workspacesActivities->recordActivity($workspace, $user->getId(), "workspace", "workspace.activity.workspace.add_member");
-            $this->messages->addWorkspaceMember($workspace, $user);
-            $this->calendar->addWorkspaceMember($workspace, $user);
+//            $this->workspacesActivities->recordActivity($workspace, $user->getId(), "workspace", "workspace.activity.workspace.add_member");
+//            $this->messages->addWorkspaceMember($workspace, $user);
+//            $this->calendar->addWorkspaceMember($workspace, $user);
 
             return true;
         }

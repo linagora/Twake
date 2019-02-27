@@ -7,7 +7,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * WorkspaceUserByMail
  *
- * @ORM\Table(name="workspace_user_by_mail",options={"engine":"MyISAM"})
+ * @ORM\Table(name="workspace_user_by_mail",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "mail": "DESC", "id":"ASC"}, {"id":"ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceUserByMailRepository")
  */
 class WorkspaceUserByMail
@@ -17,7 +17,7 @@ class WorkspaceUserByMail
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
 	protected $id;
 
 	/**

@@ -41,7 +41,7 @@ class DbStressTestCommand extends ContainerAwareCommand
 
             $levelRepository = $manager->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
             $level = $levelRepository->findOneBy(Array("workspace" => $workspace));
-            $member = new WorkspaceUser($workspace, $user, $level);
+            $member = new WorkspaceUser($workspace, $user, $level->getId());
             $manager->persist($member);
             $manager->flush();
 

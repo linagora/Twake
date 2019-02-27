@@ -163,13 +163,14 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 
 		$workspace = $workspaceRepository->find($workspaceId);
-        $levels = $levelRepository->findOneBy(Array("workspace"=>$workspace));
+        $levels = $levelRepository->findBy(Array("workspace" => $workspace));
         foreach($levels as $level){
             if($level->getisDefault()){
                 return $level;
             }
         }
-		return false;
+
+        return false;
 
 	}
 

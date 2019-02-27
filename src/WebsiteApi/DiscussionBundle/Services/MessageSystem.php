@@ -70,11 +70,11 @@ class MessageSystem
         foreach ($messages_ent as $message) {
             if ($parent_message_id == "" && $message->getResponsesCount() > 0) {
                 $messages_responses_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => $message->getId()), Array(), 10, null, "id", "DESC");
-                /*if(count($messages_responses_ent) == 0){
+                if (count($messages_responses_ent) == 0) {
                     $message->setResponsesCount(0);
                     $this->em->persist($message);
                     $this->em->flush();
-                }*/
+                }
                 foreach ($messages_responses_ent as $message_response) {
                     $messages[] = $message_response->getAsArray();
                 }
@@ -116,8 +116,12 @@ class MessageSystem
 
         $this->em->persist($channel);
 
+        $array_before_delete = $message->getAsArray();
+
         $this->em->remove($message);
         $this->em->flush();
+
+        return $array_before_delete;
 
     }
 
@@ -163,6 +167,7 @@ class MessageSystem
                 $cd->setTimestamp($object["creation_date"]);
                 $message->setCreationDate($cd);
                 $message->setEdited($object["edited"]);
+                $message->setSender($replacement->getSender());
                 $message->setId($object["replace_message"]);
             }
             $message->setFrontId($object["front_id"]);
@@ -199,7 +204,9 @@ class MessageSystem
         } else if ($user && !$application) {
             $message->setMessageType(0);
         }
-        $message->setSender($user);
+        if (!$message->getSender()) {
+            $message->setSender($user);
+        }
         $message->setHiddenData($object["hidden_data"]);
 
         $message->setContent($object["content"]);

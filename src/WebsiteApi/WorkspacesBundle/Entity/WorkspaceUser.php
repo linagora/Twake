@@ -65,11 +65,12 @@ class WorkspaceUser
      */
     private $hasnotifications = true;
 
-	public function __construct($workspace, $user, $level) {
+    public function __construct($workspace, $user, $level_id)
+    {
 		$this->workspace = $workspace;
 		$this->user = $user;
 
-		$this->level_id = $level->getId();
+        $this->level_id = $level_id;
 		$this->date_added = new \DateTime();
         $this->last_access = new \DateTime();
 	}

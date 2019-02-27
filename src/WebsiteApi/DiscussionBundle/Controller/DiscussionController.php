@@ -13,7 +13,13 @@ class DiscussionController extends Controller
 
     public function removeAction(Request $request)
     {
-        return new JsonResponse(Array("status" => "error"));
+        $options = $request->request->get("options");
+        $object = $request->request->get("object");
+        $res = $this->get("app.messages")->remove($object, $options, $this->getUser());
+        if (!$res) {
+            return new JsonResponse(Array("status" => "error"));
+        }
+        return new JsonResponse(Array("data" => Array("object" => $res)));
     }
 
     public function saveAction(Request $request)
