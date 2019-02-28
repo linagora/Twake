@@ -89,7 +89,9 @@ class MessageSystem
             if ($current_user && count($message["reactions"]) > 0) {
                 $message_reaction_repo = $this->em->getRepository("TwakeDiscussionBundle:MessageReaction");
                 $message_reaction = $message_reaction_repo->findOneBy(Array("user_id" => $current_user->getId(), "message_id" => $message["id"]));
-                $message["_user_reaction"] = $message_reaction->getReaction();
+                if ($message_reaction) {
+                    $message["_user_reaction"] = $message_reaction->getReaction();
+                }
             }
         }
 

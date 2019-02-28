@@ -30,7 +30,6 @@ class MessageReaction
 
     /**
      * @ORM\Column(name="reaction", type="twake_text")
-     * @ORM\Id
      */
     private $reaction = "";
 
