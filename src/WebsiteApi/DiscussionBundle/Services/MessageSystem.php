@@ -189,16 +189,21 @@ class MessageSystem
                     $old_parent_message_id = $replacement->getParentMessageId();
                     $this->em->remove($replacement);
                     $this->em->flush();
+                } else {
+                    return;
                 }
+                $message->setId($object["replace_message"]);
+
                 $cd = new \DateTime();
                 $cd->setTimestamp($object["creation_date"]);
                 $message->setCreationDate($cd);
                 $cd = new \DateTime();
                 $cd->setTimestamp($object["modification_date"]);
                 $message->setModificationDate($cd);
-                $message->setEdited($object["edited"]);
+
+                $message->setEdited($replacement->getEdited());
                 $message->setSender($replacement->getSender());
-                $message->setId($object["replace_message"]);
+                $message->setReactions($replacement->getReactions());
             }
             $message->setFrontId($object["front_id"]);
 
@@ -261,7 +266,9 @@ class MessageSystem
 
             if ($message_reaction) {
 
-                if ($user_reaction == $message_reaction->getReaction() || !$user_reaction) {
+                if ($user_reaction == $message_reaction->getReaction()) {
+                    //Noop
+                } else if (!$user_reaction) {
                     $this->em->remove($message_reaction);
                     $reaction["remove"] = $message_reaction->getReaction();
                 } else {

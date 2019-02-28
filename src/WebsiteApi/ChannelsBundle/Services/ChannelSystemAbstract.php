@@ -18,7 +18,7 @@ class ChannelSystemAbstract
     public function removeGeneralChannel($object)
     {
 
-        $object = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find($object["id"]);
+        $object = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find(Array("id" => $object["id"], "direct" => $object["direct"], "original_workspace_id" => $object["original_workspace"]));
         if ($object) {
             $this->entity_manager->remove($object);
 
