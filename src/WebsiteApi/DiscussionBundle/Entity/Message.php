@@ -83,6 +83,11 @@ class Message extends FrontObject
     private $hidden_data = "{}";
 
     /**
+     * @ORM\Column(name="reactions", type="twake_text")
+     */
+    private $reactions = "{}";
+
+    /**
      * @ORM\Column(name="content", type="twake_text")
      */
     private $content = "[]";
@@ -341,6 +346,9 @@ class Message extends FrontObject
      */
     public function getHiddenData()
     {
+        if (!$this->hidden_data) {
+            return Array();
+        }
         return json_decode($this->hidden_data, 1);
     }
 
@@ -354,6 +362,33 @@ class Message extends FrontObject
     public function setHiddenData($hidden_data)
     {
         $this->hidden_data = json_encode($hidden_data);
+
+        return $this;
+    }
+
+    /**
+     * Get the value of Hidden Data
+     *
+     * @return mixed
+     */
+    public function getReactions()
+    {
+        if (!$this->reactions) {
+            return Array();
+        }
+        return json_decode($this->reactions, 1);
+    }
+
+    /**
+     * Set the value of Hidden Data
+     *
+     * @param mixed hidden_data
+     *
+     * @return self
+     */
+    public function setReactions($reactions)
+    {
+        $this->reactions = json_encode($reactions);
 
         return $this;
     }
@@ -396,6 +431,7 @@ class Message extends FrontObject
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),
             "hidden_data" => $this->getHiddenData(),
+            "reactions" => $this->getReactions(),
             "modification_date" => ($this->getModificationDate() ? $this->getModificationDate()->getTimestamp() : null),
             "creation_date" => ($this->getCreationDate() ? $this->getCreationDate()->getTimestamp() : null),
             "content" => $this->getContent()
