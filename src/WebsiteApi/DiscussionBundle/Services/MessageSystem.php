@@ -154,14 +154,8 @@ class MessageSystem
 
         $message = null;
 
-        /* A note about creation of new messages entity
-           - when messages are moved from a parent to another, we remove the old message and create a new one with the same old id
-           - This case is covered when "replace_message" is defined (a new message will be created to replace "replace_message")
-        */
-
-        //This case is when we want to modify existing message (no deplacement)
-        if (isset($object["id"]) && !isset($object["replace_message"])) {
-            $message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => $object["parent_message_id"], "id" => $object["id"]));
+        if (isset($object["id"])) {
+            $message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => isset($object["_once_replace_message_parent_message"]) ? $object["_once_replace_message_parent_message"] : $object["parent_message_id"], "id" => $object["id"]));
 
             //Verify can modify this message
             if ($message && !$this->hasAccess($object, $current_user, $message)) {
@@ -169,8 +163,7 @@ class MessageSystem
             }
         }
 
-        //This case is when we want to modify existing message WITH DEPLACEMENT or just create a new message
-        if ($message == null || (isset($object["replace_message"]) && $object["replace_message"])) {
+        if ($message == null) {
 
             //Verify can create in channel
             if (!$this->hasAccess($object, $current_user)) {
@@ -181,44 +174,7 @@ class MessageSystem
             $message = new Message($object["channel_id"], $object["parent_message_id"]);
             $message->setModificationDate(new \DateTime());
 
-            //If we are in replacement, copy old message keys and remove old one :
-            $old_parent_message_id = null;
-            if (isset($object["replace_message"])) {
-                $replacement = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => $object["replace_message_parent_message"], "id" => $object["replace_message"]));
-                if ($replacement && $this->hasAccess($replacement->getAsArray(), $current_user)) {
-                    $old_parent_message_id = $replacement->getParentMessageId();
-                    $this->em->remove($replacement);
-                    $this->em->flush();
-                } else {
-                    return;
-                }
-                $message->setId($object["replace_message"]);
-
-                $cd = new \DateTime();
-                $cd->setTimestamp($object["creation_date"]);
-                $message->setCreationDate($cd);
-                $cd = new \DateTime();
-                $cd->setTimestamp($object["modification_date"]);
-                $message->setModificationDate($cd);
-
-                $message->setEdited($replacement->getEdited());
-                $message->setSender($replacement->getSender());
-                $message->setReactions($replacement->getReactions());
-            }
             $message->setFrontId($object["front_id"]);
-
-            if ($old_parent_message_id) {
-                $old_parent_message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $old_parent_message_id));
-                $old_parent_message->setResponsesCount($old_parent_message->getResponsesCount() - 1);
-                $this->em->persist($old_parent_message);
-            }
-
-            if ($object["parent_message_id"]) {
-                $parent_message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $object["parent_message_id"]));
-                $parent_message->setResponsesCount($parent_message->getResponsesCount() + 1);
-                $this->em->persist($parent_message);
-            }
-            // End of message replacement //
 
             $channel_repo = $this->em->getRepository("TwakeChannelsBundle:Channel");
             $channel = $channel_repo->findOneBy(Array("id" => $object["channel_id"]));
@@ -230,6 +186,15 @@ class MessageSystem
         } else if ($message->getContent() != $object["content"]) {
             $message->setEdited(true);
             $message->setModificationDate(new \DateTime());
+        }
+
+        //Move message
+        if (isset($object["_once_replace_message_parent_message"])) {
+            $new_parent = null;
+            if ($object["parent_message_id"]) {
+                $new_parent = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $object["parent_message_id"]));
+            }
+            $this->moveMessageToNewParent($message, $new_parent);
         }
 
         //Set message type
@@ -310,6 +275,47 @@ class MessageSystem
         $this->em->flush();
 
         return $message->getAsArray();
+
+    }
+
+    private function moveMessageToNewParent(Message $messageA, $messageB, $flush = true)
+    {
+
+        if (!$messageA->getParentMessageId() && !$messageB || $messageB && $messageA->getParentMessageId() == $messageB->getId()) {
+            return;
+        }
+
+        $this->em->remove($messageA);
+        $this->em->flush();
+
+        $new_parent_message_id = $messageB ? $messageB->getId() : "";
+
+        $messageA->setParentMessageId($new_parent_message_id);
+
+        if ($messageA->getResponsesCount() > 0) {
+            $message_repo = $this->em->getRepository("TwakeDiscussionBundle:Message");
+
+            //Move all children to the same parent message id
+            $others = $message_repo->findBy(Array("channel_id" => $messageA->getChannelId(), "parent_message_id" => $messageA->getId()));
+
+            foreach ($others as $message) {
+                $this->moveMessageToNewParent($message, $messageB, false);
+            }
+
+        }
+
+        if ($messageB) {
+            $messageB->setResponsesCount($messageB->getResponsesCount() + 1);
+        }
+
+        $messageA->setResponsesCount(0);
+        $this->em->persist($messageA);
+
+        if ($flush) {
+            $this->em->flush();
+        }
+
+        return $messageA;
 
     }
 

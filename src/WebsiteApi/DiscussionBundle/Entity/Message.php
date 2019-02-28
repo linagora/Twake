@@ -147,6 +147,11 @@ class Message extends FrontObject
         return $this->parent_message_id;
     }
 
+    public function setParentMessageId($id)
+    {
+        $this->parent_message_id = $id;
+    }
+
     /**
      * Get the value of Responses Count
      *
