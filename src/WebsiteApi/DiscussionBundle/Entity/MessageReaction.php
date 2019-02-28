@@ -29,7 +29,7 @@ class MessageReaction
     private $user_id;
 
     /**
-     * @ORM\Column(name="reaction", typetwake_text")
+     * @ORM\Column(name="reaction", type="twake_text")
      */
     private $reaction = "";
 
