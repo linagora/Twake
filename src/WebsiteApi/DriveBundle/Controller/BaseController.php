@@ -29,7 +29,12 @@ class BaseController extends Controller
     {
         $options = $request->request->get("options");
         $object = $request->request->get("object");
-        $res = $this->get("app.drive")->save($object, $options, $this->getUser());
+        $file_uploaded = null;
+        if (isset($_FILES["file"])) {
+            $object = json_decode($object, true);
+            $file_uploaded = $_FILES["file"];
+        }
+        $res = $this->get("app.drive")->save($object, $options, $this->getUser(), $file_uploaded);
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }

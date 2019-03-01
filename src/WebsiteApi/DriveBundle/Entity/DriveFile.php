@@ -551,6 +551,7 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
             'front_id' => $this->getFrontId(),
             "workspace_id" => $this->getWorkspaceId(),
             'parent_id' => $this->getParentId(),
+            "detached" => $this->getDetachedFile(),
 
             'is_directory' => $this->getIsDirectory(),
 
@@ -561,7 +562,6 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
             'added' => $this->getAdded()->getTimestamp(),
             'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
             "extension" => $this->getExtension(),
-            "detached" => $this->getDetachedFile(),
             "cache" => $this->getCache(),
             "direct_preview_link" => $this->getCloudPreviewLink(),
             "preview" => $this->getPreviewPath(),

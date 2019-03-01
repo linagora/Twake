@@ -9,10 +9,11 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 class DriveSystem
 {
 
-    function __construct($entity_manager, $drive_file_system_selector)
+    function __construct($entity_manager, $drive_file_system_selector, $uploader)
     {
         $this->em = $entity_manager;
         $this->dfs = $drive_file_system_selector->getFileSystem();
+        $this->uploader = $uploader;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -59,7 +60,7 @@ class DriveSystem
 
     }
 
-    public function save($object, $options, $user = null, $application = null)
+    public function save($object, $options, $user = null, $application = null, $file_uploaded = null)
     {
 
         if (!$object["workspace_id"]) {
@@ -72,39 +73,15 @@ class DriveSystem
             //TODO check parent correspond to a folder of workspace_id
         }
 
-        $drive_files_repo = $this->em->getRepository("TwakeDriveBundle:DriveFile");
-
-
-        $drive_element = null;
-
-        if (isset($object["id"])) {
-            $drive_element = $drive_files_repo->findOneBy(Array("workspace_id" => $object["workspace_id"], "parent_id" => $object["parent_id"], "id" => $object["id"]));
-
-            //Verify can modify this message
-            if ($drive_element && !$this->hasAccess($object, $current_user, $drive_element)) {
-                return false;
-            }
+        if ($file_uploaded) {
+            $drive_element = $this->dfs->upload($object, $file_uploaded, $this->uploader, $user, $application);
+        } else {
+            $drive_element = $this->dfs->save($object, $user, $application);
         }
 
-        if ($drive_element == null) {
-
-            //Verify can create in workspace
-            if (!$this->hasAccess($object, $current_user)) {
-                return false;
-            }
-
-            //Create a new drive element
-            $drive_element = new DriveFile($object["workspace_id"], $object["parent_id"], $object["is_directory"]);
-            $drive_element->setFrontId($object["front_id"]);
-
-            //TODO update workspace number of files
-
+        if (!$drive_element) {
+            return false;
         }
-
-        $drive_element->setName($object["name"]);
-
-        $this->em->persist($drive_element);
-        $this->em->flush();
 
         return $drive_element->getAsArray();
 
