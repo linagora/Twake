@@ -5,37 +5,44 @@ namespace WebsiteApi\DriveBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\CoreBundle\Entity\FrontObject;
 use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
  * DriveFile
  *
- * @ORM\Table(name="drive_file",options={"engine":"MyISAM", "indexes":{@ORM\Index(columns={"parent_id"}), @ORM\Index(columns={"root_group_folder_id"})}})
+ * @ORM\Table(name="drive_file",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "parent_id":"ASC", "isintrash": "ASC", "id":"DESC"}, {"id": "DESC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileRepository")
  */
-class DriveFile implements ObjectLinksInterface
+class DriveFile extends FrontObject implements ObjectLinksInterface
 {
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
+     * @ORM\Column(name="workspace_id", type="text")
+     * @ORM\Id
      */
-    private $group;
+    private $workspace_id;
+
+    /**
+     * @ORM\Column(name="parent_id", type="text")
+     * @ORM\Id
+     */
+    private $parent_id;
+
+    /**
+     * @ORM\Column(type="twake_boolean")
+     */
+    private $isintrash = false;
 
     /**
      * @ORM\Column(name="root_group_folder_id", type="twake_timeuuid", nullable=true)
      */
     private $root_group_folder = NULL;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $parent;
 
     /**
      * @ORM\Column(type="string", length=512)
@@ -63,11 +70,6 @@ class DriveFile implements ObjectLinksInterface
      * @ORM\Column(type="twake_boolean")
      */
     private $isdirectory;
-
-    /**
-     * @ORM\Column(type="twake_boolean")
-     */
-    private $isintrash;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
@@ -157,24 +159,19 @@ class DriveFile implements ObjectLinksInterface
     private $object_link_cache;
 
 
-    public function __construct($group, $parent, $name, $isdirectory = false, $directorytocopy = null, $url = null)
+    public function __construct($workspace_id, $parent_id, $isdirectory = false)
     {
-        $this->group = $group;
-        $this->setParent($parent);
-        $this->setName($name);
+        $this->workspace_id = $workspace_id;
+        $this->setParentId($parent_id);
+        $this->isdirectory = $isdirectory;
+
+        $this->setName("");
         $this->setDescription("");
         $this->setSize(0);
-        $this->isdirectory = $isdirectory;
         $this->setIsInTrash(false);
         $this->added = new \DateTime();
         $this->cache = "{}";
         $this->setLastModified();
-        if ($directorytocopy) {
-            $this->copyof = $directorytocopy;
-        }
-        if ($url != null){
-            $this->setUrl($url);
-        }
         $this->opening_rate = 0;
         $this->default_web_app = null;
         $this->setPreviewHasBeenGenerated(false);
@@ -193,29 +190,29 @@ class DriveFile implements ObjectLinksInterface
     /**
      * @return mixed
      */
-    public function getGroup()
+    public function getWorkspaceId()
     {
-        return $this->group;
+        return $this->workspace_id;
     }
 
     /**
      * @return mixed
      */
-    public function getParent()
+    public function getParentId()
     {
-        return $this->parent;
+        return $this->parent_id;
     }
 
     /**
      * @param mixed $parent
      */
-    public function setParent($parent)
+    public function setParentId($parent_id)
     {
-        $this->parent = $parent;
+        $this->parent_id = $parent_id;
         if ($parent) {
             $this->root_group_folder = NULL;
         } else {
-            $this->root_group_folder = $this->getGroup()->getId();
+            $this->root_group_folder = $this->getWorkspaceId();
         }
     }
 
@@ -551,25 +548,29 @@ class DriveFile implements ObjectLinksInterface
     {
         return Array(
             'id' => $this->getId(),
+            'front_id' => $this->getFrontId(),
+            "workspace_id" => $this->getWorkspaceId(),
+            'parent_id' => $this->getParentId(),
+
+            'is_directory' => $this->getIsDirectory(),
+
             'name' => $this->getName(),
             'description' => $this->getDescription(),
+
             'size' => $this->getSize(),
             'added' => $this->getAdded()->getTimestamp(),
-            'parent' => (($this->getParent())?$this->getParent()->getId():0),
             'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
-            'isDirectory' => $this->getIsDirectory(),
             "extension" => $this->getExtension(),
-            "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
             "detached" => $this->getDetachedFile(),
             "cache" => $this->getCache(),
             "direct_preview_link" => $this->getCloudPreviewLink(),
             "preview" => $this->getPreviewPath(),
-            "copyOf" => ($this->getCopyOf()?$this->getCopyOf()->getId():null),
+            "copy_of" => ($this->getCopyOf() ? $this->getCopyOf()->getId() : null),
             "shared" => $this->getShared(),
             "url" => $this->getUrl(),
             "opening_rate" => $this->getOpeningRate(),
             "public_access_key" => $this->getPublicAccessKey(),
-            "previewHasBeenGenerated" => $this->getPreviewHasBeenGenerated(),
+            "preview_has_been_generated" => $this->getPreviewHasBeenGenerated(),
             "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null,
             "object_link_cache" => $this->getObjectLinkCache()
         );

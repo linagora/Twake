@@ -117,6 +117,10 @@ class MessageSystem
             return false;
         }
 
+        if ($message->getResponsesCount() > 0) {
+            return false;
+        }
+
         if ($message->getParentMessageId()) {
             $parent_message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $message->getParentMessageId()));
             $parent_message->setResponsesCount($parent_message->getResponsesCount() - 1);
@@ -170,10 +174,20 @@ class MessageSystem
                 return false;
             }
 
+
+            if ($object["parent_message_id"]) {
+                //Increment parent
+                $new_parent = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $object["parent_message_id"]));
+                if (!$new_parent) {
+                    $object["parent_message_id"] = "";
+                }
+                $new_parent->setResponsesCount($new_parent->getResponsesCount() + 1);
+                $this->em->persist($new_parent);
+            }
+
             //Create a new message
             $message = new Message($object["channel_id"], $object["parent_message_id"]);
             $message->setModificationDate(new \DateTime());
-
             $message->setFrontId($object["front_id"]);
 
             $channel_repo = $this->em->getRepository("TwakeChannelsBundle:Channel");
@@ -181,6 +195,7 @@ class MessageSystem
             $channel->setMessagesCount($channel->getMessagesCount() + 1);
 
             $this->em->persist($channel);
+
             //TODO update channel last id and last activity etc
 
         } else if ($message->getContent() != $object["content"]) {

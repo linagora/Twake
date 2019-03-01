@@ -146,7 +146,7 @@ class DriveFileSystemGDrive
             return false; //already shared
         }
 
-        $parent = $fileOrDirectory->getParent();
+        $parent = $fileOrDirectory->getParentId();
 
         $newFile = new DriveFile(
             $group,
@@ -165,8 +165,8 @@ class DriveFileSystemGDrive
         $this->doctrine->persist($newFile);
         $this->doctrine->flush();
 
-        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
-        $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
+        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getWorkspaceId());
+        $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getWorkspaceId());
 
         return true;
     }
@@ -202,7 +202,7 @@ class DriveFileSystemGDrive
         }
         $this->doctrine->flush();
 
-        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
+        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getWorkspaceId());
         $this->pusher->push(Array("action" => "update"), "drive/" . $targetgroupId);
 
         return false;
@@ -250,7 +250,7 @@ class DriveFileSystemGDrive
         $this->gdriveApi->rename($fileOrDirectory,$filename,$description, $this->userToken);
 
 
-        $this->pusher->push(Array("action" => "update"), "drive/0");// . $fileOrDirectory->getGroup()->getId());
+        $this->pusher->push(Array("action" => "update"), "drive/0");// . $fileOrDirectory->getWorkspaceId());
 
         return true;
 
@@ -331,7 +331,7 @@ class DriveFileSystemGDrive
         if (!$fileOrDirectory) {
             return null;
         }
-        return $fileOrDirectory->getGroup();
+        return $fileOrDirectory->getWorkspaceId();
     }
 
 

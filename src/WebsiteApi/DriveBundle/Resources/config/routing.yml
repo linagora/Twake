@@ -1,3 +1,16 @@
+# Drive base
+
+#Direct messages
+drive_get:
+    path:     /get
+    defaults: { _controller: TwakeDriveBundle:Base:get}
+drive_save:
+    path:     /save
+    defaults: { _controller: TwakeDriveBundle:Base:save}
+drive_remove:
+    path:     /remove
+    defaults: { _controller: TwakeDriveBundle:Base:remove}
+
 # Labels
 
 twake_drive_labels_get:

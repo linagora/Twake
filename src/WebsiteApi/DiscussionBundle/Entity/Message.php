@@ -171,7 +171,7 @@ class Message extends FrontObject
      */
     public function setResponsesCount($responses_count)
     {
-        $this->responses_count = $responses_count;
+        $this->responses_count = max(0, $responses_count);
 
         return $this;
     }

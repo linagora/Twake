@@ -25,7 +25,8 @@ class Websockets
             "channels/direct_messages" => "app.channels.direct_messages_system",
             "channels/workspace" => "app.channels.channels_system",
             "channels/workspace_private" => "app.channels.channels_system",
-            "messages" => "app.messages"
+            "messages" => "app.messages",
+            "drive" => "app.drive"
         );
 
         $this->doctrine = $doctrine;
