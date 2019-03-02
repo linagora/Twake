@@ -316,7 +316,7 @@ class DriveFileSystemGDrive
             return null;
         }
 
-        return $this->readDecode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());*/
+        return $this->readDecode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());*/
     }
 
     public function getInfos($workspace, $fileOrDirectory)

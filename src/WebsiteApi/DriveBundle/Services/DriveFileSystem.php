@@ -61,7 +61,7 @@ class DriveFileSystem
         }
 
         if (is_int($var) || is_string($var) || get_class($var) == "Ramsey\Uuid\Uuid") {
-            return $this->doctrine->getRepository($repository)->find($var);
+            return $this->doctrine->getRepository($repository)->findOneBy(Array("id" => $var));
         } else if (is_object($var)) {
             return $var;
         } else {
@@ -552,7 +552,10 @@ class DriveFileSystem
                 $this->doctrine->flush();
 
                 $fileVersion = new DriveFileVersion($drive_element, $user);
-                $drive_element->setLastVersion($fileVersion);
+                $this->doctrine->persist($fileVersion);
+                $this->doctrine->flush();
+
+                $drive_element->setLastVersionId($fileVersion->getId());
 
                 $path = $this->getRoot() . $drive_element->getPath();
                 $this->verifyPath($path);
@@ -560,6 +563,7 @@ class DriveFileSystem
                 $this->writeEncode($path, $fileVersion->getKey(), $content, $fileVersion->getMode());
 
                 $fileVersion->setSize($size);
+
                 $this->doctrine->persist($fileVersion);
 
             } else {
@@ -714,7 +718,7 @@ class DriveFileSystem
     public function rawPreview($file)
     {
 
-        $path = $this->getRoot() . $file->getPreviewPath();
+        $path = $this->getRoot() . $file->getPath();
 
         $this->verifyPath($path);
 
@@ -752,7 +756,7 @@ class DriveFileSystem
             return null;
         }
 
-        return $this->readDecode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+        return $this->readDecode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
     }
 
     public function setRawContent($file, $content = null, $newVersion = false, User $user=null)
@@ -772,18 +776,19 @@ class DriveFileSystem
 
             if ($newVersion) {
                 $newVersion = new DriveFileVersion($file, $user);
-                $file->setLastVersion($newVersion);
+                $file->setLastVersionId($newVersion->getId());
                 $this->doctrine->persist($newVersion);
             }
 
             if ($content != null) {
                 $this->verifyPath($path);
                 $file->setSize(strlen($content));
-                $this->writeEncode($path, $file->getLastVersion()->getKey(), $content, $file->getLastVersion()->getMode());
+                $this->writeEncode($path, $file->getLastVersion($this->doctrine)->getKey(), $content, $file->getLastVersion($this->doctrine)->getMode());
             }
 
             $file->setLastModified();
-            $this->updateSize($file->getParentId(), $file->getSize());
+            $parent = $this->convertToEntity($file->getParentId(), "TwakeDriveBundle:DriveFile");
+            $this->updateSize($parent, $file->getSize());
 
         } else {
             $this->delete($file);
@@ -1073,7 +1078,7 @@ class DriveFileSystem
             unlink($real);
         }
         // Remove preview file
-        $real = $this->getRoot() . $file->getPreviewPath();
+        $real = $this->getRoot() . $file->getPath();
         if ($this->file_exists($real, $file)) {
             unlink($real);
         }
@@ -1242,7 +1247,7 @@ class DriveFileSystem
 
         $lastVersion = new DriveFileVersion($file,$user);
         $this->doctrine->persist($lastVersion);
-        $file->setLastVersion($lastVersion);
+        $file->setLastVersionId($lastVersion->getId());
 
         if (!$fileData || !$file) {
             return false;
@@ -1258,7 +1263,7 @@ class DriveFileSystem
         );
         $errors = $uploader->upload($fileData, $real, $context);
 
-        $this->encode($this->getRoot() . $file->getPath(), $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+        $this->encode($this->getRoot() . $file->getPath(), $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
 
         $this->setRawContent($file, null, false, $user);
 
@@ -1310,7 +1315,7 @@ class DriveFileSystem
 
         $newFile->setSize($size);
 
-        $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion()->getKey(), $newFile->getLastVersion()->getMode());
+        $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion($this->doctrine)->getKey(), $newFile->getLastVersion($this->doctrine)->getMode());
 
         $this->setRawContent($newFile, null, false, $user);
 
@@ -1359,7 +1364,7 @@ class DriveFileSystem
                 }
 
                 $completePath = $this->getRoot() . $child->getPath();
-                $realFile = $this->decode($completePath, $child->getLastVersion()->getKey(), $child->getLastVersion()->getMode());
+                $realFile = $this->decode($completePath, $child->getLastVersion($this->doctrine)->getKey(), $child->getLastVersion($this->doctrine)->getMode());
 
                 rename($realFile, $working_dir . "/" . basename($realFile));
 
@@ -1463,7 +1468,7 @@ class DriveFileSystem
             /* @var DriveFile $file*/
             if($versionId!=0){
                 $version = $this->convertToEntity($versionId,"TwakeDriveBundle:DriveFileVersion");
-                $file->setLastVersion($version);
+                $file->setLastVersionId($version->getId());
                 $file->setName(date("Y-m-d_h:i", $version->getDateAdded()->getTimestamp()) . "_" . $version->getFileName());
             }
 
@@ -1471,7 +1476,7 @@ class DriveFileSystem
 
             ini_set('memory_limit', '10M');
 
-            $completePath = $this->decode($completePath, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+            $completePath = $this->decode($completePath, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
 
 
             $ext = $this->getInfos(null, $file, true)['extension'];
@@ -1626,7 +1631,7 @@ class DriveFileSystem
     {
         $res = false;
 
-        if (!$file->getIsDirectory() && $file->getLastVersion()) {
+        if (!$file->getIsDirectory() && $file->getLastVersion($this->doctrine)) {
 
             $path = $this->getRoot() . "/" . $file->getPath();
             $previewPath = $this->getRoot() . "/" . $file->getPreviewPath();
@@ -1634,7 +1639,7 @@ class DriveFileSystem
             $this->verifyPath($previewPath);
 
             $ext = $file->getExtension();
-            $tmppath = $this->decode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+            $tmppath = $this->decode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
 
             if ($tmppath) {
                 rename($tmppath, $tmppath . ".tw");

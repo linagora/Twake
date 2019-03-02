@@ -36,6 +36,7 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
 
     /**
      * @ORM\Column(type="twake_boolean")
+     * @ORM\Id
      */
     private $isintrash = false;
 
@@ -93,10 +94,9 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
     private $last_modified;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFileVersion")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\Column(name="last_version_id", type="text")
      */
-    private $last_version;
+    private $last_version_id;
 
     /**
      * @ORM\Column(type="twake_bigint")
@@ -307,13 +307,13 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
      */
     public function getPath()
     {
-        if($this->getLastVersion() == null){
+        if ($this->getLastVersionId() == null) {
             return null;
         }
         if($this->getDetachedFile()){
-            return "detached/".$this->group->getId() . "/" . $this->getLastVersion()->getRealName();
+            return "detached/" . $this->workspace_id . "/" . $this->getLastVersionId();
         }
-        return $this->group->getId() . "/" . $this->getLastVersion()->getRealName();
+        return $this->workspace_id . "/" . $this->getLastVersionId();
     }
 
     /**
@@ -321,13 +321,13 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
      */
     public function getPreviewPath()
     {
-        if($this->getLastVersion() == null){
+        if ($this->getLastVersionId() == null) {
             return null;
         }
         if($this->getDetachedFile()){
-            return "detached/".$this->group->getId() . "/preview/" . $this->getLastVersion()->getRealName().".png";
+            return "detached/" . $this->workspace_id . "/preview/" . $this->getLastVersionId() . ".png";
         }
-        return $this->group->getId() . "/preview/" . $this->getLastVersion()->getRealName().".png";
+        return $this->workspace_id . "/preview/" . $this->getLastVersionId() . ".png";
     }
 
     /**
@@ -381,17 +381,24 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
     /**
      * @return mixed
      */
-    public function getLastVersion()
+    public function getLastVersionId()
     {
-        return $this->last_version;
+        return $this->last_version_id;
     }
 
     /**
      * @param mixed $last_version
      */
-    public function setLastVersion($last_version)
+    public function setLastVersionId($last_version_id)
     {
-        $this->last_version = $last_version;
+        $this->last_version_id = $last_version_id . "";
+    }
+
+    //TODO Very very bad to pass doctrine as parameter here...
+    public function getLastVersion($doctrine)
+    {
+        $repo = $doctrine->getRepository("TwakeDriveBundle:DriveFileVersion");
+        return $repo->find($this->getLastVersionId());
     }
 
     /**
@@ -563,8 +570,7 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
             'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
             "extension" => $this->getExtension(),
             "cache" => $this->getCache(),
-            "direct_preview_link" => $this->getCloudPreviewLink(),
-            "preview" => $this->getPreviewPath(),
+            "preview_link" => $this->getCloudPreviewLink(),
             "copy_of" => ($this->getCopyOf() ? $this->getCopyOf()->getId() : null),
             "shared" => $this->getShared(),
             "url" => $this->getUrl(),

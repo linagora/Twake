@@ -177,7 +177,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
 
                 $key_path = $child->getPath();
 
-                $key = $child->getLastVersion()->getKey();
+                $key = $child->getLastVersion($this->doctrine)->getKey();
                 $key = "AWS" . $this->parameter_drive_salt . $key;
                 $key = md5($key);
 
@@ -273,12 +273,12 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
             /* @var DriveFile $file */
             if ($versionId != 0) {
                 $version = $this->convertToEntity($versionId, "TwakeDriveBundle:DriveFileVersion");
-                $file->setLastVersion($version);
+                $file->setLastVersionId($version->getId());
                 $file->setName(date("Y-m-d_h:i", $version->getDateAdded()->getTimestamp()) . "_" . $version->getFileName());
             }
             $key_path = $file->getPath();
 
-            $key = $file->getLastVersion()->getKey();
+            $key = $file->getLastVersion($this->doctrine)->getKey();
             $key = "AWS" . $this->parameter_drive_salt . $key;
             $key = md5($key);
 
@@ -330,7 +330,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
     {
         $key_path = $file->getPath();
 
-        $key = $file->getLastVersion()->getKey();
+        $key = $file->getLastVersion($this->doctrine)->getKey();
         $key = "AWS" . $this->parameter_drive_salt . $key;
         $key = md5($key);
 
@@ -382,10 +382,10 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
     public function genPreview(DriveFile $file)
     {
 
-        if (!$file->getIsDirectory() && $file->getLastVersion()) {
+        if (!$file->getIsDirectory() && $file->getLastVersion($this->doctrine)) {
 
             $ext = $file->getExtension();
-            $tmppath = $this->decode($file->getPath(), $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+            $tmppath = $this->decode($file->getPath(), $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
 
             if ($tmppath) {
 

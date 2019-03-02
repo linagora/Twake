@@ -201,7 +201,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
                 $key_path = $child->getPath();
 
-                $key = $child->getLastVersion()->getKey();
+                $key = $child->getLastVersion($this->doctrine)->getKey();
                 $key = "OpenStack" . $this->parameter_drive_salt . $key;
                 $key = md5($key);
 
@@ -212,7 +212,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
                 $tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
                 file_put_contents($tmpPath, $stream->getContents());
-                $decodedPath = parent::decode($tmpPath, $key, $child->getLastVersion()->getMode());
+                $decodedPath = parent::decode($tmpPath, $key, $child->getLastVersion($this->doctrine)->getMode());
                 rename($decodedPath, $tmpPath);
 
                 $zip->addFile($prefix . $filename, file_get_contents($tmpPath));
@@ -293,12 +293,12 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
             /* @var DriveFile $file */
             if ($versionId != 0) {
                 $version = $this->convertToEntity($versionId, "TwakeDriveBundle:DriveFileVersion");
-                $file->setLastVersion($version);
+                $file->setLastVersionId($version->getId());
                 $file->setName(date("Y-m-d_h:i", $version->getDateAdded()->getTimestamp()) . "_" . $version->getFileName());
             }
             $key_path = $file->getPath();
 
-            $key = $file->getLastVersion()->getKey();
+            $key = $file->getLastVersion($this->doctrine)->getKey();
             $key = "OpenStack" . $this->parameter_drive_salt . $key;
             $key = md5($key);
 
@@ -338,7 +338,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                 file_put_contents($tmpPath, $stream->getContents());
 
 
-                $decodedPath = parent::decode($tmpPath, $key, $file->getLastVersion()->getMode());
+                $decodedPath = parent::decode($tmpPath, $key, $file->getLastVersion($this->doctrine)->getMode());
                 rename($decodedPath, $tmpPath);
 
                 echo file_get_contents($tmpPath);
@@ -406,10 +406,10 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
     {
         try {
 
-            if (!$file->getIsDirectory() && $file->getLastVersion()) {
+            if (!$file->getIsDirectory() && $file->getLastVersion($this->doctrine)) {
 
                 $ext = $file->getExtension();
-                $tmppath = $this->decode($file->getPath(), $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());
+                $tmppath = $this->decode($file->getPath(), $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
 
                 if ($tmppath) {
 
@@ -431,14 +431,14 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                         }
 
                         $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext);
-                        $previewpath = dirname($tmppath) . "/" . basename($file->getPath());
+                        $previewpath = dirname($tmppath) . "/" . basename($file->getPreviewPath());
 
                         if (file_exists($previewpath . ".png")) {
 
                             try {
                                 // Upload data.
                                 $options = [
-                                    'name' => "public/uploads/previews/" . $file->getPath() . ".png",
+                                    'name' => "public/uploads/previews/" . $file->getPreviewPath() . ".png",
                                     'stream' => new Stream(fopen($previewpath . ".png", "rb")),
                                 ];
                                 $result = $this->openstack->objectStoreV1()

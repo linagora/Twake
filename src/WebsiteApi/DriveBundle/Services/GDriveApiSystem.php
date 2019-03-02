@@ -173,7 +173,7 @@ class GDriveApiSystem
             $drivefile->setUrl($file->getWebViewLink());
         $drivefile->setDefaultWebApp($this->marketApplication->getAppForUrl($file->getWebViewLink()));
         $lastVersion = new DriveFileVersion($drivefile, null);
-        $drivefile->setLastVersion($lastVersion);
+        $drivefile->setLastVersionId($lastVersion->getId());
         $drivefile->setId($file->getId());
         $drivefile->setAdded(new \DateTime($file->createdTime));
 

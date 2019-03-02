@@ -1,7 +1,7 @@
 services:
     app.drive:
-            class: WebsiteApi\DriveBundle\Services\DriveSystem
-            arguments: ["@app.twake_doctrine", "@app.drive.adapter_selector", "@app.uploader"]
+        class: WebsiteApi\DriveBundle\Services\DriveSystem
+        arguments: ["@app.twake_doctrine", "@app.drive.adapter_selector", "@app.upload"]
 
     app.drive.FileSystem:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystem

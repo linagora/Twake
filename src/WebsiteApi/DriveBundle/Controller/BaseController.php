@@ -34,7 +34,7 @@ class BaseController extends Controller
             $object = json_decode($object, true);
             $file_uploaded = $_FILES["file"];
         }
-        $res = $this->get("app.drive")->save($object, $options, $this->getUser(), $file_uploaded);
+        $res = $this->get("app.drive")->save($object, $options, $this->getUser(), null, $file_uploaded);
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }
