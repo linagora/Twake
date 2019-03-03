@@ -150,7 +150,7 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
      * @ORM\Column(type="twake_text", nullable = true)
      * @Encrypted
      */
-    private $aws_preview_link = "";
+    private $preview_link = "";
 
     /**
      * @ORM\Column(type="twake_text", nullable=true)
@@ -570,7 +570,7 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
             'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
             "extension" => $this->getExtension(),
             "cache" => $this->getCache(),
-            "preview_link" => $this->getCloudPreviewLink(),
+            "preview_link" => $this->getPreviewLink(),
             "copy_of" => ($this->getCopyOf() ? $this->getCopyOf()->getId() : null),
             "shared" => $this->getShared(),
             "url" => $this->getUrl(),
@@ -609,7 +609,7 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
             "title" => "File",
             "object_name" => $this->getName(),
             "object_data" => Array(
-                "direct_preview_link" => $this->getCloudPreviewLink(),
+                "preview_link" => $this->getPreviewLink(),
                 "extension" => $this->getExtension(),
                 "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
                 'parent' => (($this->getParent()) ? $this->getParent()->getId() : 0),
@@ -657,17 +657,20 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
     /**
      * @return mixed
      */
-    public function getCloudPreviewLink()
+    public function getPreviewLink()
     {
-        return $this->aws_preview_link;
+        if (!$this->preview_link) {
+            return "/ajax/drive/preview?f=" . $this->getLastVersionId() . "&w=" . $this->getWorkspaceId() . "&d=" . $this->getParentId() . "&t=" . $this->getIsInTrash();
+        }
+        return $this->preview_link;
     }
 
     /**
-     * @param mixed $aws_preview_link
+     * @param mixed $preview_link
      */
-    public function setCloudPreviewLink($aws_preview_link)
+    public function setPreviewLink($preview_link)
     {
-        $this->aws_preview_link = $aws_preview_link;
+        $this->preview_link = $preview_link;
     }
 
 

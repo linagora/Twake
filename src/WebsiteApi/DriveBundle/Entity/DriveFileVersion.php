@@ -18,14 +18,13 @@ class DriveFileVersion
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+    s*/
     private $id;
 
 	/**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile",cascade={"persist"})
-     * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(name="file_id", type="twake_timeuuid")
 	 */
-	private $file;
+    private $file_id;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
@@ -70,7 +69,7 @@ class DriveFileVersion
 
 	public function __construct(DriveFile $file, User $user)
 	{
-		$this->file = $file;
+        $this->file_id = $file->getId();
 		$this->setKey(base64_encode(random_bytes(256)));
 		$this->setSize(0);
 		$this->resetRealName();
@@ -208,6 +207,23 @@ class DriveFileVersion
     {
         $this->date_added = $date_added;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getFileId()
+    {
+        return $this->file_id;
+    }
+
+    /**
+     * @param mixed $file_id
+     */
+    public function setFileId($file_id)
+    {
+        $this->file_id = $file_id;
+    }
+
 
 
 

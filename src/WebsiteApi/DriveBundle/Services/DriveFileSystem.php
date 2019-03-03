@@ -700,18 +700,26 @@ class DriveFileSystem
          return $newFile;*/
     }
 
-    public function getPreview($workspace, $file)
+    public function getPreview($workspace, $file_version)
     {
-        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
+        $file_version = $this->convertToEntity($file_version, "TwakeDriveBundle:DriveFileVersion");
 
-        if ($file == null) {
+        if ($file_version == null) {
             return false;
         }
-        if (!$this->isWorkspaceAllowed($workspace, $file)) {
+        if (!$this->isWorkspaceAllowed($workspace, $file_version->getFileId())) {
             return false;
         }
 
-        return $this->rawPreview($file);
+        $file = $this->convertToEntity($file_version->getFileId(), "TwakeDriveBundle:DriveFile");
+
+        $preview_path = $this->getRoot() . "/" . $file->getPreviewPath();
+
+        if (!$this->file_exists($preview_path, $file)) {
+            return null;
+        }
+
+        return $this->read($preview_path);
 
     }
 
@@ -1677,6 +1685,9 @@ class DriveFileSystem
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
         $workspace = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
 
+        if (!$workspace) {
+            return false;
+        }
 
         $dir = $this->convertToEntity($directoryId, "TwakeDriveBundle:DriveFile");
 

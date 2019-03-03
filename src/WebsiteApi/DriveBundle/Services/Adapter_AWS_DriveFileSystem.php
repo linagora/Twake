@@ -372,7 +372,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
 
     public function rawPreview($file)
     {
-        $link = $file->getCloudPreviewLink();
+        $link = $file->getPreviewLink();
         if (!$link) {
             return false;
         }
@@ -395,7 +395,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
                 try {
 
                     //Remove old preview
-                    if ($file->getCloudPreviewLink()) {
+                    if ($file->getPreviewLink()) {
                         try {
                             $this->aws_s3_client->deleteObject([
                                 'Bucket' => $this->aws_bucket_name,
@@ -419,7 +419,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
                                 'ACL' => 'public-read'
                             ]);
 
-                            $file->setCloudPreviewLink($result['ObjectURL']);
+                            $file->setPreviewLink($result['ObjectURL']);
 
                         } catch (S3Exception $e) {
                             $e->getMessage();

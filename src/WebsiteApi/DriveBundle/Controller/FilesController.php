@@ -707,31 +707,17 @@ class FilesController extends Controller
 
     public function previewAction(Request $request){
 
-        $groupId = $request->query->get("groupId", 0);
-        $fileId = $request->query->get("fileId", 0);
-        $original = $request->query->get("original", 0);
-        $directory = $request->query->get("directory", false);
-        $public_access_key = $request->query->get("public_access_key", false);
-        $externalDrive = $directory;
-
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
 
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
+        $file_version_id = $request->query->get("f", false);
+        if ($file_version_id) {
+            $workspace_id = $request->query->get("w", "");
 
+            $data = $fileSystem->getPreview($workspace_id, $file_version_id);
 
-        if ($this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($fileId, $public_access_key)) {
-
-            if ($original && !$externalDrive) {
-                $data = $fileSystem->getRawContent($groupId,$fileId);
-            } else {
-                $data = $fileSystem->getPreview($groupId,$fileId);
-            }
-            if($data)
+            if ($data) {
                 return new Response($data, 200);
-
+            }
         }
 
         return new Response(json_encode("not found"), 404);

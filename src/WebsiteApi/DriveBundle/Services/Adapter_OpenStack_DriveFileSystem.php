@@ -395,7 +395,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
     public function rawPreview($file)
     {
-        $link = $file->getCloudPreviewLink();
+        $link = $file->getPreviewLink();
         if (!$link) {
             return false;
         }
@@ -419,7 +419,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                     try {
 
                         //Remove old preview
-                        if ($file->getCloudPreviewLink()) {
+                        if ($file->getPreviewLink()) {
                             try {
                                 $this->openstack->objectStoreV1()
                                     ->getContainer($this->openstack_public_bucket_name)
@@ -445,7 +445,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                                     ->getContainer($this->openstack_public_bucket_name)
                                     ->createObject($options);
 
-                                $file->setCloudPreviewLink($result->getPublicUri());
+                                $file->setPreviewLink($result->getPublicUri());
 
                             } catch (Exception $e) {
                                 $e->getMessage();
