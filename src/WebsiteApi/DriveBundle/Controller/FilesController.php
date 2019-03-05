@@ -558,6 +558,10 @@ class FilesController extends Controller
             $directory = $request->query->get("parent_id", "");
             $versionId = $request->query->get("version_id", 0);
             $public_access_key = $request->query->get("public_access_key", false);
+
+            if ($request->query->has("elements_id")) {
+                $fileId = explode(",", $request->query->get("elements_id", ""));
+            }
         }
         else {
             $workspace_id = $request->request->get("workspace_id", 0);
@@ -565,7 +569,11 @@ class FilesController extends Controller
             $download = $request->request->get("download", 1);
             $directory = $request->request->get("parent_id", "");
             $versionId = $request->request->get("version_id", 0);
-            $public_access_key = $request->query->get("public_access_key", false);
+            $public_access_key = $request->request->get("public_access_key", false);
+
+            if ($request->request->has("elements_id")) {
+                $fileId = explode(",", $request->request->get("elements_id", ""));
+            }
         }
 
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();

@@ -1383,11 +1383,14 @@ class DriveFileSystem
         if ($prefix != "") {
             $zip->addEmptyDir($prefix);
         }
-        if ($directory == null) {
-            $children = $this->listDirectory($workspace->getId(), null, false);
-        } else {
-            $children = $this->listDirectory($workspace->getId(), $directory->getId(), false);
-        }
+        if (is_array($directory)) {
+            $children = $directory;
+        } else
+            if ($directory == null) {
+                $children = $this->listDirectory($workspace->getId(), null, false);
+            } else {
+                $children = $this->listDirectory($workspace->getId(), $directory->getId(), false);
+            }
         foreach ($children as $child) {
             if ($child->getIsDirectory()) {
                 $dirname = $child->getName();
@@ -1415,41 +1418,53 @@ class DriveFileSystem
         }
     }
 
-    public function generateZip($workspace, $directory)
+    public function generateZip($workspace, $elements)
     {
-        if ($directory == null || $directory->getIsDirectory()) {
-            if (!$this->isWorkspaceAllowed($workspace, $directory)) {
+        ignore_user_abort(true);
+
+        $zip = new ZipArchive;
+        $name = bin2hex(random_bytes(16));
+        $tmpPath = $this->getRoot() . "/tmp/" . $name . ".zip";
+
+        foreach ($elements as $element) {
+
+            if (!$this->isWorkspaceAllowed($workspace, $element)) {
+                @unlink($tmpPath);
                 return false;
             }
 
-            $zip = new ZipArchive;
-            $name = bin2hex(random_bytes(16));
-            $tmpPath = $this->getRoot() . "/tmp/" . $name . ".zip";
-            if ($zip->open($tmpPath, ZipArchive::CREATE) === TRUE) {
+        }
 
-                $working_dir = $this->getRoot() . "/tmp/" . $name;
-                mkdir($working_dir);
-                $this->recursZip($workspace, $zip, $directory, "", $working_dir);
-                $zip->close();
 
-                $cdir = scandir($working_dir);
-                foreach ($cdir as $key => $value) {
-                    if (!in_array($value, array(".", ".."))) {
-                        @unlink($working_dir . "/" . $value);
-                    }
+        if ($zip->open($tmpPath, ZipArchive::CREATE) === TRUE) {
+
+            $working_dir = $this->getRoot() . "/tmp/" . $name;
+            mkdir($working_dir);
+
+            $this->recursZip($workspace, $zip, $elements, "", $working_dir);
+            $zip->close();
+
+            $cdir = scandir($working_dir);
+            foreach ($cdir as $key => $value) {
+                if (!in_array($value, array(".", ".."))) {
+                    @unlink($working_dir . "/" . $value);
                 }
-                @rmdir($working_dir);
+            }
+            @rmdir($working_dir);
 
-                return $tmpPath;
+            if (connection_aborted()) {
+                @unlink($tmpPath);
+                return;
             }
         }
-        return false;
+
+        return $tmpPath;
+
     }
 
     public function download($workspace, $file, $download, $versionId=0)
     {
 
-        error_log("A");
 
         if (isset($_SERVER['HTTP_ORIGIN'])) {
             header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
@@ -1457,33 +1472,75 @@ class DriveFileSystem
         header('Access-Control-Allow-Credentials: true');
 
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
-        $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
 
-        if (!$this->isWorkspaceAllowed($workspace, $file)) {
-            return false;
+        if (!$workspace) {
+            return;
         }
-        //Directory : download as zip
-        if ($file == null || $file->getIsDirectory()) { //Directory or root
 
+        $files = false;
+        if (is_array($file)) {
+            $files = [];
+            foreach ($file as $file_id) {
+                if ($file_id) {
+                    $a_file = $this->convertToEntity($file_id, "TwakeDriveBundle:DriveFile");
 
-            if ($file == null) {
-                $totalSize = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize($workspace);
-                if ($totalSize > 1000000000) //1Go is too large
-                {
-                    return false;
+                    if ($a_file) {
+
+                        if (!$this->isWorkspaceAllowed($workspace, $a_file)) {
+                            return false;
+                        }
+
+                        $files[] = $a_file;
+
+                    }
                 }
-            } else if ($file->getSize() > 1000000000) //1Go is too large
-            {
+            }
+
+            if (count($files) == 1) {
+                $file = $files[0];
+                $files = false;
+            }
+        } else {
+
+            if (!$file || $file == "root") {
+                $file = $this->getRootEntity($workspace->getId());
+            } else {
+                $file = $this->convertToEntity($file, "TwakeDriveBundle:DriveFile");
+            }
+
+            if (!$file) {
                 return false;
             }
 
-            $zip_path = $this->generateZip($workspace, $file);
+            if (!$this->isWorkspaceAllowed($workspace, $file)) {
+                return false;
+            }
+        }
+
+        //Directory : download as zip
+        if ($files || $file == null || $file->getIsDirectory()) { //Directory or root
+
+
+            if ($files) {
+
+                $zip_path = $this->generateZip($workspace, $files);
+
+                $archive_name = count($files) . " files from " . $workspace->getName();
+
+            } else {
+                if ($file->getSize() > 1000000000) //1Go is too large
+                {
+                    return false;
+                }
+
+                $zip_path = $this->generateZip($workspace, [$file]);
+
+                $archive_name = ($file ? $file->getName() : "Documents");
+            }
 
             if (!$zip_path) {
                 return false;
             }
-
-            $archive_name = ($file ? $file->getName() : "Documents");
 
             header('Content-Type: application/octet-stream');
             header("Content-type: application/force-download");

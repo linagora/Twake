@@ -148,11 +148,14 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
 
         }
 
-        if ($directory == null) {
-            $children = $this->listDirectory($workspace->getId(), null, false);
-        } else {
-            $children = $this->listDirectory($workspace->getId(), $directory->getId(), false);
-        }
+        if (is_array($directory)) {
+            $children = $directory;
+        } else
+            if ($directory == null) {
+                $children = $this->listDirectory($workspace->getId(), null, false);
+            } else {
+                $children = $this->listDirectory($workspace->getId(), $directory->getId(), false);
+            }
 
         foreach ($children as $child) {
             if ($child->getIsDirectory()) {
