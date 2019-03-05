@@ -70,6 +70,18 @@ class DriveFileSystem
 
     }
 
+    public function getRootEntity($workspace_id)
+    {
+        $root = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
+            ->findOneBy(Array("workspace_id" => $workspace_id, "isintrash" => false, "parent_id" => ""));
+        if (!$root) {
+            $root = new DriveFile($workspace_id, "", true);
+            $this->doctrine->persist($root);
+            $this->doctrine->flush();
+        }
+        return $root;
+    }
+
     public function getUsedSpace($workspace)
     {
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
@@ -204,11 +216,26 @@ class DriveFileSystem
 
     protected function updateSize($directory, $delta)
     {
+        if (!$directory || is_string($directory)) {
+            $directory = null;
+        }
+
         while ($directory != null) {
-            $currentSize = $directory->getSize();
-            $directory->setSize($currentSize + $delta);
-            $this->doctrine->persist($directory);
-            $directory = $directory->getParentId();
+
+            if ($directory == "root") {
+                $directory = $this->getRootEntity();
+            }
+
+            if (!$directory || is_string($directory)) {
+                $directory = null;
+            } else {
+
+                $currentSize = $directory->getSize();
+                $directory->setSize($currentSize + $delta);
+                $this->doctrine->persist($directory);
+                $directory = $directory->getParentId();
+
+            }
         }
     }
 
@@ -515,6 +542,12 @@ class DriveFileSystem
 
         $workspace = $object["workspace_id"];
         $directory = $object["parent_id"];
+
+        if ($directory == "root") {
+            $directory = $this->getRootEntity($workspace);
+            $directory = $directory->getId();
+        }
+
         $detached_file = $object["detached"];
         if ($detached_file && !$directory) {
             $directory = "detached";
@@ -583,8 +616,12 @@ class DriveFileSystem
         $drive_element->setName($filename);
 
         if (!$detached_file) {
-            if ($directory != "root" && $directory != "detached") {
-                $directory_ent = $drive_files_repo->findOneBy(Array("id" => $directory));
+            if ($directory != "detached") {
+                if ($directory != "root") {
+                    $directory_ent = $drive_files_repo->findOneBy(Array("id" => $directory));
+                } else {
+                    $directory_ent = $this->getRootEntity($object["workspace_id"]);
+                }
                 $this->updateSize($directory_ent, $size);
             }
             $this->improveName($drive_element);
@@ -818,31 +855,20 @@ class DriveFileSystem
         return $drivefileVersions;
     }
 
-    public function getInfos($workspace, $fileOrDirectory, $forceAccess = false)
+    public function getInfos($workspace_id, $element_id)
     {
-        $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
-        if (!$forceAccess) {
-            if (!$this->isWorkspaceAllowed($workspace, $fileOrDirectory->getParentId())) {
-                return false;
-            }
-        }
-        if ($fileOrDirectory == null) {
-            return false;
+
+        if ($element_id == "root") {
+            $element = $this->getRootEntity($workspace_id);
+        } else {
+            $element = $this->convertToEntity($element_id, "TwakeDriveBundle:DriveFile");
         }
 
-        $data = $fileOrDirectory->getAsArray();
+        if (!$element || $element->getWorkspaceId() != $workspace_id) {
+            return null;
+        }
 
-
-        $path = $this->getRoot() . $fileOrDirectory->getPath();
-        $this->verifyPath($path);
-
-        // return mime type ala mimetype extension
-        $finfo = finfo_open(FILEINFO_MIME);
-
-        //check to see if the mime-type starts with 'text'
-        //$data["binary"] = substr(finfo_file($finfo, $path), 0, 4) != 'text';
-
-        return $data;
+        return $element;
     }
 
     public function updatePublicAccessKey($fileOrDirectory, $publicAccessKey)
@@ -866,12 +892,17 @@ class DriveFileSystem
         return $fileOrDirectory->getWorkspaceId();
     }
 
-    public function getPath($directoryId)
+    public function getPath($workspace_id, $directory_id)
     {
 
         $repo = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
 
-        $child = $repo->findOneBy(Array("id" => $directoryId));
+        if ($directory_id == "root") {
+            $child = $this->getRootEntity($workspace_id);
+            return [$child->getAsArray()];
+        } else {
+            $child = $repo->findOneBy(Array("id" => $directory_id));
+        }
 
         if (!$child) {
             return [];
@@ -906,6 +937,11 @@ class DriveFileSystem
         }*/
 
         $repo = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+
+        if ($directoryId == "root") {
+            $directoryId = $this->getRootEntity($workspaceId);
+            $directoryId = $directoryId->getId();
+        }
 
         $list = $repo->findBy(Array("workspace_id" => $workspaceId, "parent_id" => $directoryId, "isintrash" => $trash));
 
@@ -1007,8 +1043,7 @@ class DriveFileSystem
             return false;
         }
 
-        $list = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-            ->listDirectory($workspace, null, true);
+        $list = $this->listDirectory($workspace->getId(), null, true);
         return $list;
     }
 
@@ -1349,10 +1384,9 @@ class DriveFileSystem
             $zip->addEmptyDir($prefix);
         }
         if ($directory == null) {
-            $children = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-                ->listDirectory($workspace, null, false);
+            $children = $this->listDirectory($workspace->getId(), null, false);
         } else {
-            $children = $directory->getChildren();
+            $children = $this->listDirectory($workspace->getId(), $directory->getId(), false);
         }
         foreach ($children as $child) {
             if ($child->getIsDirectory()) {
@@ -1415,6 +1449,8 @@ class DriveFileSystem
     public function download($workspace, $file, $download, $versionId=0)
     {
 
+        error_log("A");
+
         if (isset($_SERVER['HTTP_ORIGIN'])) {
             header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
         }
@@ -1428,6 +1464,7 @@ class DriveFileSystem
         }
         //Directory : download as zip
         if ($file == null || $file->getIsDirectory()) { //Directory or root
+
 
             if ($file == null) {
                 $totalSize = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->sumSize($workspace);
@@ -1473,6 +1510,7 @@ class DriveFileSystem
             die();
 
         } else {
+
             /* @var DriveFile $file*/
             if($versionId!=0){
                 $version = $this->convertToEntity($versionId,"TwakeDriveBundle:DriveFileVersion");
@@ -1487,7 +1525,8 @@ class DriveFileSystem
             $completePath = $this->decode($completePath, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
 
 
-            $ext = $this->getInfos(null, $file, true)['extension'];
+            //TODO
+            //$ext = $this->getInfos(null, $file, true)['extension'];
 
             header('Content-Description: File Transfer');
 

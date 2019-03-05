@@ -42,7 +42,7 @@ class DriveSystem
         }
 
         $elements = $this->dfs->listDirectory($workspace_id, $directory_id);
-        $path = $this->dfs->getPath($directory_id);
+        $path = $this->dfs->getPath($workspace_id, $directory_id);
 
         $list = Array();
         foreach ($elements as $element) {
@@ -52,6 +52,34 @@ class DriveSystem
         }
 
         return $list;
+
+    }
+
+    public function find($options, $current_user)
+    {
+        $directory_id = $options["directory_id"];
+        $workspace_id = $options["workspace_id"];
+
+        if (!$directory_id) {
+            $directory_id = "root";
+        }
+
+        if (!$this->hasAccess($options, $current_user)) {
+            return false;
+        }
+
+        $data = $this->dfs->getInfos($workspace_id, $directory_id);
+
+        if (!$data) {
+            return null;
+        }
+
+        $path = $this->dfs->getPath($workspace_id, $directory_id);
+
+        $data = $data->getAsArray();
+        $data["path"] = $path;
+
+        return $data;
 
     }
 

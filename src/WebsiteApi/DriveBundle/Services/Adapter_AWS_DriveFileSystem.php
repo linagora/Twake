@@ -149,10 +149,9 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
         }
 
         if ($directory == null) {
-            $children = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-                ->listDirectory($workspace, null, false);
+            $children = $this->listDirectory($workspace->getId(), null, false);
         } else {
-            $children = $directory->getChildren();
+            $children = $this->listDirectory($workspace->getId(), $directory->getId(), false);
         }
 
         foreach ($children as $child) {

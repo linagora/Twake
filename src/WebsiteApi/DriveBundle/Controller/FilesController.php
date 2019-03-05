@@ -551,36 +551,30 @@ class FilesController extends Controller
             "errors" => Array()
         );
 
-        if ($request->query->has("groupId")) {
-            $groupId = $request->query->get("groupId", 0);
-            $fileId = $request->query->get("fileId", 0);
+        if ($request->query->has("workspace_id")) {
+            $workspace_id = $request->query->get("workspace_id", 0);
+            $fileId = $request->query->get("element_id", 0);
             $download = $request->query->get("download", 1);
-            $directory = $request->query->get("directory", false);
-            $versionId = $request->query->get("versionId", 0);
+            $directory = $request->query->get("parent_id", "");
+            $versionId = $request->query->get("version_id", 0);
             $public_access_key = $request->query->get("public_access_key", false);
         }
         else {
-            $groupId = $request->request->get("groupId", 0);
-            $fileId = $request->request->get("fileId", 0);
+            $workspace_id = $request->request->get("workspace_id", 0);
+            $fileId = $request->request->get("element_id", 0);
             $download = $request->request->get("download", 1);
-            $directory = $request->request->get("directory", false);
-            $versionId = $request->request->get("versionId", 0);
+            $directory = $request->request->get("parent_id", "");
+            $versionId = $request->request->get("version_id", 0);
             $public_access_key = $request->query->get("public_access_key", false);
         }
-        $externalDrive = $directory;
 
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
 
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
+        //$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($fileId, $public_access_key);
 
-        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($fileId, $public_access_key);
+        if (true || $can) {
 
-        if ($can) {
-
-            return $fileSystem->download($groupId, $fileId, $download, $versionId);
+            return $fileSystem->download($workspace_id, $fileId, $download, $versionId);
 
         }
 
