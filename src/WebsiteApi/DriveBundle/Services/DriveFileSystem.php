@@ -1053,16 +1053,6 @@ class DriveFileSystem
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");;
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
 
-        if ($fileOrDirectory->getDefaultWebApp()) {
-            $datatopush = Array(
-                "type" => "CHANGE_WORKSPACE_EXTERNAL_FILES",
-                "data" => Array(
-                    "workspaceId" => $workspace->getId(),
-                )
-            );
-            $this->pusher->push($datatopush, "group/" . $workspace->getId());
-        }
-
         if ($fileOrDirectory == null) {
             return false;
         }
@@ -1091,8 +1081,12 @@ class DriveFileSystem
         if(!$fileOrDirectory){
             return false;
         }
+
+        $this->doctrine->remove($fileOrDirectory);
+        $this->doctrine->flush();
+
         $fileOrDirectory->setOldParent($fileOrDirectory->getParentId());
-        $fileOrDirectory->setParentId(null); //On le met dans le root de la corbeille
+        $fileOrDirectory->setParentId($this->getRootEntity($fileOrDirectory->getWorkspaceId())->getId()); //On le met dans le root de la corbeille
         $fileOrDirectory->setIsInTrash(true);
 
         $this->updateSize($fileOrDirectory->getOldParent(), -$fileOrDirectory->getSize());
@@ -1131,8 +1125,8 @@ class DriveFileSystem
     {
 
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
-        $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
-        $userToNotifyRepo->deleteByDriveFile($fileOrDirectory);
+//        $userToNotifyRepo = $this->doctrine->getRepository("TwakeDriveBundle:UserToNotify");
+//        $userToNotifyRepo->deleteByDriveFile($fileOrDirectory);
 
         if ($fileOrDirectory == null) {
             return false;
@@ -1156,8 +1150,8 @@ class DriveFileSystem
             }
         }
 
-        $this->objectLinkSystem->deleteObject($fileOrDirectory);
-        $this->removeLabels($fileOrDirectory, false);
+//        $this->objectLinkSystem->deleteObject($fileOrDirectory);
+//        $this->removeLabels($fileOrDirectory, false);
         $this->doctrine->remove($fileOrDirectory);
 
         return true;
@@ -1203,6 +1197,9 @@ class DriveFileSystem
         if ($fileOrDirectory == null) {
             return false;
         }
+
+        $this->doctrine->remove($fileOrDirectory);
+        $this->doctrine->flush();
 
         $fileOrDirectory->setParentId($fileOrDirectory->getOldParent()); //On le met dans le root de la corbeille
         $fileOrDirectory->setIsInTrash(false);

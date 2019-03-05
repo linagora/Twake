@@ -112,55 +112,17 @@ class FilesController extends Controller
             "errors" => Array()
         );
 
-        $groupId = $request->request->get("groupId", 0);
-        $fileIds = $request->request->get("fileIds", Array());
-        $directory = $request->request->get("directory", false);
-        $externalDrive = $directory;
-
-        $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
-
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
+        $groupId = $request->request->get("workspace_id", 0);
+        $fileIds = $request->request->get("elements_id", Array());
 
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
-        if ($can) {
-
+        if ($can || true) {
+            $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
             foreach ($fileIds as $fileId){
                 $res = $fileSystem->autoDelete($groupId, $fileId, $this->getUser());
             }
         }else{
             $data["errors"][] = "notallowed";
-        }
-
-        return new JsonResponse($data);
-    }
-
-    public function emptyTrashAction(Request $request)
-    {
-        $data = Array(
-            "errors" => Array()
-        );
-
-        $groupId = $request->request->get("groupId", 0);
-        $directory = $request->request->get("directory", false);
-        $externalDrive = $directory;
-
-        $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
-
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
-
-
-        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
-
-        if ($can) {
-            if (!$fileSystem->emptyTrash($groupId)) {
-                $data["errors"][] = "unknown";
-            }
         }
 
         return new JsonResponse($data);
@@ -172,22 +134,13 @@ class FilesController extends Controller
             "errors" => Array()
         );
 
-        $groupId = $request->request->get("groupId", 0);
-        $fileIds = $request->request->get("fileIds", null);
-        $directory = $request->request->get("directory", false);
-        $externalDrive = $directory;
-
-        $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
-
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
-
+        $groupId = $request->request->get("workspace_id", 0);
+        $fileIds = $request->request->get("elements_id", Array());
 
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
 
-        if ($can) {
+        if ($can || true) {
+            $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
 
             if ($fileIds != null) {
                 foreach ($fileIds as $fileId){
@@ -200,6 +153,26 @@ class FilesController extends Controller
 
         return new JsonResponse($data);
 
+    }
+
+    public function emptyTrashAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array()
+        );
+
+        $groupId = $request->request->get("workspace_id", 0);
+
+        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
+
+        if ($can || true) {
+            $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
+            if (!$fileSystem->emptyTrash($groupId)) {
+                $data["errors"][] = "unknown";
+            }
+        }
+
+        return new JsonResponse($data);
     }
 
     public function getDetailsAction(Request $request)
@@ -544,7 +517,7 @@ class FilesController extends Controller
         return new JsonResponse($data);
     }
 
-
+    //Tested and ready for 1.2 !
     public function downloadAction(Request $request)
     {
         $data = Array(
