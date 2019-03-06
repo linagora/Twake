@@ -166,7 +166,7 @@ class GDriveApiSystem
         $drivefile->setExtension($extension);
         $drivefile->setDetachedFile(false);
         $drivefile->setIsInTrash($isInTrash);
-        $drivefile->setOldParent(null);
+        $drivefile->setOldParent("");
         $drivefile->setShared($isShared);
         $drivefile->setSize($size);
         if($file->getWebContentLink()==null)

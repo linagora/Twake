@@ -51,4 +51,14 @@ class BaseController extends Controller
         return new JsonResponse(Array("data" => $objects));
     }
 
+    public function findAction(Request $request)
+    {
+        $options = $request->request->get("options");
+        $object = $this->get("app.drive")->find($options, $this->getUser());
+        if ($object === false) {
+            return new JsonResponse(Array("status" => "error"));
+        }
+        return new JsonResponse(Array("data" => $object));
+    }
+
 }

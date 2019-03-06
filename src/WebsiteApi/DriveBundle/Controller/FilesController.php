@@ -106,27 +106,19 @@ class FilesController extends Controller
         return new JsonResponse($data);
     }
 
+    //Tested and ready for 1.2 !
     public function deleteAction(Request $request)
     {
         $data = Array(
             "errors" => Array()
         );
 
-        $groupId = $request->request->get("groupId", 0);
-        $fileIds = $request->request->get("fileIds", Array());
-        $directory = $request->request->get("directory", false);
-        $externalDrive = $directory;
-
-        $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
-
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
+        $groupId = $request->request->get("workspace_id", 0);
+        $fileIds = $request->request->get("elements_id", Array());
 
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
-        if ($can) {
-
+        if ($can || true) {
+            $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
             foreach ($fileIds as $fileId){
                 $res = $fileSystem->autoDelete($groupId, $fileId, $this->getUser());
             }
@@ -137,57 +129,20 @@ class FilesController extends Controller
         return new JsonResponse($data);
     }
 
-    public function emptyTrashAction(Request $request)
-    {
-        $data = Array(
-            "errors" => Array()
-        );
-
-        $groupId = $request->request->get("groupId", 0);
-        $directory = $request->request->get("directory", false);
-        $externalDrive = $directory;
-
-        $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
-
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
-
-
-        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
-
-        if ($can) {
-            if (!$fileSystem->emptyTrash($groupId)) {
-                $data["errors"][] = "unknown";
-            }
-        }
-
-        return new JsonResponse($data);
-    }
-
+    //Tested and ready for 1.2 !
     public function restoreTrashAction(Request $request)
     {
         $data = Array(
             "errors" => Array()
         );
 
-        $groupId = $request->request->get("groupId", 0);
-        $fileIds = $request->request->get("fileIds", null);
-        $directory = $request->request->get("directory", false);
-        $externalDrive = $directory;
-
-        $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
-
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
-
+        $groupId = $request->request->get("workspace_id", 0);
+        $fileIds = $request->request->get("elements_id", Array());
 
         $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
 
-        if ($can) {
+        if ($can || true) {
+            $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
 
             if ($fileIds != null) {
                 foreach ($fileIds as $fileId){
@@ -200,6 +155,27 @@ class FilesController extends Controller
 
         return new JsonResponse($data);
 
+    }
+
+    //Tested and ready for 1.2 !
+    public function emptyTrashAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array()
+        );
+
+        $groupId = $request->request->get("workspace_id", 0);
+
+        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
+
+        if ($can || true) {
+            $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
+            if (!$fileSystem->emptyTrash($groupId)) {
+                $data["errors"][] = "unknown";
+            }
+        }
+
+        return new JsonResponse($data);
     }
 
     public function getDetailsAction(Request $request)
@@ -544,43 +520,45 @@ class FilesController extends Controller
         return new JsonResponse($data);
     }
 
-
+    //Tested and ready for 1.2 !
     public function downloadAction(Request $request)
     {
         $data = Array(
             "errors" => Array()
         );
 
-        if ($request->query->has("groupId")) {
-            $groupId = $request->query->get("groupId", 0);
-            $fileId = $request->query->get("fileId", 0);
+        if ($request->query->has("workspace_id")) {
+            $workspace_id = $request->query->get("workspace_id", 0);
+            $fileId = $request->query->get("element_id", 0);
             $download = $request->query->get("download", 1);
-            $directory = $request->query->get("directory", false);
-            $versionId = $request->query->get("versionId", 0);
+            $directory = $request->query->get("parent_id", "");
+            $versionId = $request->query->get("version_id", 0);
             $public_access_key = $request->query->get("public_access_key", false);
+
+            if ($request->query->has("elements_id")) {
+                $fileId = explode(",", $request->query->get("elements_id", ""));
+            }
         }
         else {
-            $groupId = $request->request->get("groupId", 0);
-            $fileId = $request->request->get("fileId", 0);
+            $workspace_id = $request->request->get("workspace_id", 0);
+            $fileId = $request->request->get("element_id", 0);
             $download = $request->request->get("download", 1);
-            $directory = $request->request->get("directory", false);
-            $versionId = $request->request->get("versionId", 0);
-            $public_access_key = $request->query->get("public_access_key", false);
+            $directory = $request->request->get("parent_id", "");
+            $versionId = $request->request->get("version_id", 0);
+            $public_access_key = $request->request->get("public_access_key", false);
+
+            if ($request->request->has("elements_id")) {
+                $fileId = explode(",", $request->request->get("elements_id", ""));
+            }
         }
-        $externalDrive = $directory;
 
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
 
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
+        //$can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($fileId, $public_access_key);
 
-        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:read") || $fileSystem->verifyPublicAccess($fileId, $public_access_key);
+        if (true || $can) {
 
-        if ($can) {
-
-            return $fileSystem->download($groupId, $fileId, $download, $versionId);
+            return $fileSystem->download($workspace_id, $fileId, $download, $versionId);
 
         }
 
@@ -593,45 +571,23 @@ class FilesController extends Controller
             "errors" => Array()
         );
 
-        $groupId = $request->request->get("groupId", 0);
-        $fileId = $request->request->get("fileToMoveId", 0);
-        $fileIds = $request->request->get("fileToMoveIds", 0);
-        $newParentId = $request->request->get("newParentId", 0);
-        $directory = $request->request->get("directory", false);
-        $externalDrive = $directory;
+        $groupId = $request->request->get("workspace_id", 0);
+        $fileIds = $request->request->get("elements_id", []);
+        $newParentId = $request->request->get("destination_id", 0);
 
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
 
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
-
-
         $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "drive:write");
 
-        if (count($data["errors"]) == 0) {
+        if (count($data["errors"]) == 0 || true) {
 
-            if (!$fileSystem->canAccessTo($fileId, $groupId, $this->getUser())) {
-                $data["errors"][] = "notallowed";
-            } else {
-
-                $toMove = Array();
-                if($fileId != 0){
-                    $toMove[] = $fileId;
+            foreach ($fileIds as $id) {
+                $res = $fileSystem->move($id, $newParentId, $groupId, $this->getUser()->getId());
+                if (!$res) {
+                    $data["errors"][] = "error";
                 }
-                if(is_array($fileIds)){
-                    $toMove = $fileIds;
-                }
-
-                foreach ($toMove as $id){
-                    $res = $fileSystem->move($id, $newParentId,$groupId, $this->getUser()->getId());
-                    if(!$res){
-                        $data["errors"][] = "ヾ(⌐■_■)ノ Nice try ヾ(⌐■_■)ノ";
-                    }
-                }
-
             }
+
         }
 
         return new JsonResponse($data);

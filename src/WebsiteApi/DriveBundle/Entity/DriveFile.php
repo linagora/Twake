@@ -73,10 +73,9 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
     private $isdirectory;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\Column(name="old_parent", type="text")
      */
-    private $oldparent;
+    private $old_parent;
 
     /**
      * @ORM\OneToMany(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile", mappedBy="parent")
@@ -283,15 +282,15 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
      */
     public function getOldParent()
     {
-        return $this->oldparent;
+        return $this->old_parent;
     }
 
     /**
-     * @param mixed $oldparent
+     * @param mixed $old_parent
      */
-    public function setOldParent($oldparent)
+    public function setOldParent($old_parent)
     {
-        $this->oldparent = $oldparent;
+        $this->old_parent = $old_parent;
     }
 
     /**
@@ -559,6 +558,7 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
             "workspace_id" => $this->getWorkspaceId(),
             'parent_id' => $this->getParentId(),
             "detached" => $this->getDetachedFile(),
+            "trash" => $this->getIsInTrash(),
 
             'is_directory' => $this->getIsDirectory(),
 

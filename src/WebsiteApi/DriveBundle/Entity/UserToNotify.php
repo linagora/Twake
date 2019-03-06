@@ -10,7 +10,7 @@ use WebsiteApi\UsersBundle\Entity\User;
 /**
  * UserToNotify
  *
- * @ORM\Table(name="user_to_notify_drive",options={"engine":"MyISAM"})
+ * @ORM\Table(name="user_to_notify_drive",options={"engine":"MyISAM", "scylladb_keys": {{ "id": "ASC", "user_id":"ASC" }, { "user_id": "ASC" }, { "drivefile": "ASC" }} })
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\UserToNotifyRepository")
  */
 class UserToNotify
@@ -18,7 +18,7 @@ class UserToNotify
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
     /**
@@ -27,7 +27,7 @@ class UserToNotify
     private $user;
 
     /**
-     * @ORM\Column(type="string", length=512, options={"index":true})
+     * @ORM\Column(name="drivefile", type="string", length=512)
      */
     private $drivefile;
 

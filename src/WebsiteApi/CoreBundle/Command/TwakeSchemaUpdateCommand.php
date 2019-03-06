@@ -94,6 +94,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
         foreach ($entities as $entity) {
 
             $table_name = $entity->getTableName();
+            error_log($table_name);
             $fields = Array();
             $indexed_fields = Array();
 
