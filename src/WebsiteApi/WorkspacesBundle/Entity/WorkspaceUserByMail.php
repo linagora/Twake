@@ -22,11 +22,13 @@ class WorkspaceUserByMail
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+	 * @ORM\Id
 	 */
 	private $workspace;
 
 	/**
-     * @ORM\Column(name="mail", type="string", length=255, options={"index": true})
+     * @ORM\Column(name="mail", type="string", length=255)
+	 * @ORM\Id
 	 */
 	private $mail;
 

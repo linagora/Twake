@@ -96,6 +96,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         return false;
     }
 
+    // return false if error, user if user already have an account, mail if invitation mail sent
     public function addMemberByMail($workspaceId, $mail, $asExterne, $currentUserId = null)
     {
         if ($currentUserId == null
@@ -116,21 +117,30 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
 
             if ($user) {
-                return $this->addMember($workspaceId, $user->getId(), $asExterne);
+                $uOk = $this->addMember($workspaceId, $user->getId(), $asExterne);
+                if($uOk){
+                    return "user";
+                }
+                return false;
             }
 
             $mailsRepository = $this->doctrine->getRepository("TwakeUsersBundle:Mail");
             $userMail = $mailsRepository->findOneBy(Array("mail" => $mail));
 
             if ($userMail) {
-                return $this->addMember($workspaceId, $userMail->getUser()->getId(), $asExterne);
+                $mOk = $this->addMember($workspaceId, $userMail->getUser(), $asExterne);
+                if($mOk){
+                    return "user";
+                }
+                return false;
             }
 
+            $retour = false;
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $workspace = $workspaceRepository->find($workspaceId);
 
             $workspaceUserByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
-            $mailObj = $workspaceUserByMailRepository->findOneBy(Array("workspace" => $workspace, "mail" => $mail));
+            $mailObj = $workspaceUserByMailRepository->findOneBy(Array("workspace" => $workspaceId, "mail" => $mail));
 
             if ($mailObj == null) {
                 //Mail not in tables
@@ -138,10 +148,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $userByMail->setExterne($asExterne);
                 $this->doctrine->persist($userByMail);
                 $this->doctrine->flush();
+                $retour = "mail";
             }
 
             //Send mail
-            error_log("send mail");
             $this->twake_mailer->send($mail, "inviteToWorkspaceMail", Array(
                 "_language" => $currentUser ? $currentUser->getLanguage() : "en",
                 "mail" => $mail,
@@ -151,6 +161,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 "group" => $workspace->getGroup()->getDisplayName()
             ));
 
+            return $retour;
         }
 
         return false;
@@ -161,34 +172,32 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
         ) {
-
             $mail = $this->string_cleaner->simplifyMail($mail);
 
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
             $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
 
             if ($user) {
-                return $this->removeMember($workspaceId, $user->getId());
+                return "user ".$this->removeMember($workspaceId, $user->getId());
             }
 
             $mailsRepository = $this->doctrine->getRepository("TwakeUsersBundle:Mail");
             $userMail = $mailsRepository->findOneBy(Array("mail" => $mail));
 
             if ($userMail) {
-                return $this->removeMember($workspaceId, $userMail->getUser()->getId());
+                return "mail ".$this->removeMember($workspaceId, $userMail->getUser()->getId());
             }
 
             $workspaceUserByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
-            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-            $workspace = $workspaceRepository->find($workspaceId);
-            $userByMail = $workspaceUserByMailRepository->findOneBy(Array("workspace" => $workspace, "mail" => $mail));
-
-            $this->doctrine->remove($userByMail);
+            $userByMail = $workspaceUserByMailRepository->findOneBy(Array("workspace" => $workspaceId, "mail" => $mail));
+            if($userByMail){
+                $this->doctrine->remove($userByMail);
+                return true;
+            }
             $this->doctrine->flush();
-
         }
 
-        return false;
+        return "not allowed //";
     }
 
     public function autoAddMemberByNewMail($mail, $userId)
@@ -245,7 +254,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $level = $this->wls->getDefaultLevel($workspaceId);
             } else {
                 $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
-                $level = $levelRepository->findOneBy(Array("workspace" => $workspaceId, "level" => $levelId));
+                $level = $levelRepository->findOneBy(Array("workspace" => $workspaceId, "id" => $levelId));
             }
             $member = new WorkspaceUser($workspace, $user, $level->getId());
 
@@ -274,9 +283,16 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $dataToPush = Array(
                 "type" => "add",
+                "workspace_user" => $member->getAsArray()
+            );
+            $this->pusher->push($dataToPush, "workspace_users/" . $workspace->getId());
+            $dataToPush = Array(
+                "type" => "add",
                 "workspace" => $workspace->getAsArray()
             );
             $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
+
+            error_log("push on "."workspaces_of_user/" . $userId);
 
             /*            $datatopush = Array(
                             "type" => "CHANGE_MEMBERS",
@@ -317,7 +333,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
         ) {
 
-            $total_membres_not_bot = count($this->getMembers($workspaceId, null, false));
+            $total_membres_not_bot = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$workspaceId))->getMemberCount();
 
             if ($userId == $currentUserId) {
                 if ($total_membres_not_bot == 1) {
@@ -351,10 +367,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             if ($total_membres_not_bot > 1) {
 
                 //Test if other workspace administrators are present
-                $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findBy(Array("workspace"=>$workspace->getId(),"id"=>$member->getLevel()));
+                $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace"=>$workspace->getId(),"id"=>$member->getLevel()));
 
                 if ($currentUserId != null && $level->getisAdmin()) {
-                    $other_workspace_admins = $workspaceUserRepository->findBy(Array("workspace" => $workspace, "level" => $member->getLevel()));
+                    $other_workspace_admins = $workspaceUserRepository->findBy(Array("level_id" => $member->getLevel()));
                     if (count($other_workspace_admins) <= 2) {
                         foreach ($other_workspace_admins as $other_workspace_admin) {
                             if ($other_workspace_admin->getUser()->getUsername() == "twake_bot") {
@@ -364,7 +380,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                         }
                     }
                 }
-
             }
 
             //Test if other group administrators are present in case this is the last workspace of the user
@@ -379,11 +394,20 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $this->doctrine->remove($groupmember);
             }
 
+
+
+            $dataToPush = Array(
+                "type" => "remove",
+                "workspace_user" => $member->getAsArray()
+            );
+            $this->pusher->push($dataToPush, "workspace_users/" . $workspace->getId());
+            error_log("push on "."workspaces_of_user/" . $userId);
             $dataToPush = Array(
                 "type" => "remove",
                 "workspace" => $workspace->getAsArray()
             );
-            $this->pusher->push($dataToPush, "workspace_users/" . $workspace->getId());
+
+            $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
 
             /*$datatopush = Array(
                 "type" => "CHANGE_MEMBERS",
@@ -411,8 +435,8 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));
 
-            $this->messages->delWorkspaceMember($workspace, $user);
-            $this->calendar->delWorkspaceMember($workspace, $user);
+           /* $this->messages->delWorkspaceMember($workspace, $user);
+            $this->calendar->delWorkspaceMember($workspace, $user);*/
 
             return true;
         }
@@ -464,15 +488,20 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 if ($user->getUser()->getUsername() == "twake_bot" && !$twake_bot) {
                     continue;
                 }
-
                 $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUser(), "group" => $workspace->getGroup()));
+                error_log("search ".$user->getUser()->getId());
+                if($group_user){
+                    $users[] = Array(
+                        "user" => $user->getUser(),
+                        "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
+                        "level" => $user->getLevel(),
+                        "externe" => $group_user->getExterne()
+                    );
 
-                $users[] = Array(
-                    "user" => $user->getUser(),
-                    "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
-                    "level" => $user->getLevel(),
-                    "externe" => $group_user->getExterne()
-                );
+                }
+                else{
+                    error_log("error group user, ".$user->getUser().",".$workspace->getGroup()->getId());
+                }
 
             }
 

@@ -3,6 +3,7 @@ namespace WebsiteApi\WorkspacesBundle\Topic;
 
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
 use Gos\Bundle\WebSocketBundle\Topic\PushableTopicInterface;
+use mageekguy\atoum\tests\units\asserters\error;
 use Ratchet\ConnectionInterface;
 use Ratchet\Wamp\Topic;
 use Gos\Bundle\WebSocketBundle\Router\WampRequest;
@@ -20,6 +21,7 @@ class WorkspacesOfUserTopic implements TopicInterface, PushableTopicInterface
 
     public function onPush(Topic $topic, WampRequest $request, $event, $provider)
     {
+        error_log(print_r($event));
         $topic->broadcast($event);
     }
 

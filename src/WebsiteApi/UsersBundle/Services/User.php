@@ -469,10 +469,15 @@ class User implements UserInterface
                 $user->setLastName($name);
                 $user->setPhone($phone);
 
+                $mailObj = new Mail();
+                $mailObj->setMail($ticket->getMail());
+                $mailObj->setUser($user);
+
                 //$this->twake_mailer->send($mail, "newMember", Array("_language" => $user ? $user->getLanguage() : "en", "username" => $user->getUsername()));
 
 				$this->em->remove($ticket);
 				$this->em->persist($user);
+                $this->em->persist($mailObj);
 				$this->em->flush();
 
 				$this->workspace_members_service->autoAddMemberByNewMail($mail, $user->getId());
@@ -599,10 +604,9 @@ class User implements UserInterface
 		return $res;
 	}
 
-	public function removeSecondaryMail($userId, $mail)
+	public function removeSecondaryMail($userId, $mailId)
 	{
 
-		$mail = $this->string_cleaner->simplifyMail($mail);
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
@@ -611,13 +615,13 @@ class User implements UserInterface
 		$res = false;
 
 		if($user != null) {
-            $mail = $mailRepository->findOneBy(Array("mail" => $mail));
+            $mail = $mailRepository->findOneBy(Array("id" => $mailId));
             if ($mail && $mail->getUser()->getId() == $userId) {
                 $this->em->remove($mail);
                 $this->em->flush();
+                $res = true;
             }
 
-			$res = true;
 		}
 
 		return $res;
@@ -651,7 +655,7 @@ class User implements UserInterface
 
 						$this->workspace_members_service->autoAddMemberByNewMail($ticket->getMail(), $user->getId());
 
-						return true;
+						return $mail->getId();
 
 					}
 				}
@@ -739,10 +743,9 @@ class User implements UserInterface
 	 * @param $mail
 	 * @return bool
 	 */
-	public function changeMainMail($userId, $mail)
+	public function changeMainMail($userId, $mailId)
 	{
 
-		$mail = $this->string_cleaner->simplifyMail($mail);
 
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
@@ -750,13 +753,12 @@ class User implements UserInterface
 		$user = $userRepository->find($userId);
 
 		if($user != null){
+			$mailObj = $mailRepository->findOneBy(Array("id"=>$mailId));
 
-			$mailObj = $mailRepository->findOneBy(Array("user"=>$user, "mail"=>$mail));
 
 			if($mailObj != null){
 
-				$mailObj->setMail($user->getEmail());
-				$user->setEmail($mail);
+				$user->setEmail($mailObj->getMail());
 
 				$this->em->persist($user);
 				$this->em->persist($mailObj);

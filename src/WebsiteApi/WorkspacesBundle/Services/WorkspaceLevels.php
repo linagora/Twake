@@ -60,32 +60,35 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 		}
 
 		$link = $workspaceUserRepository->findOneBy(Array("user"=>$user, "workspace"=>$workspace));
-        $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace"=>$workspace->getId(),"id"=>$link->getLevel()));
-		if(!$link || !$level){
-			return false;
-		}
+		if($link){
+            $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace"=>$workspace->getId(),"id"=>$link->getLevel()));
+            if(!$link || !$level){
+                return false;
+            }
 
-        $workspace->setTotalActivity($workspace->getTotalActivity() + 1);
-        $this->doctrine->persist($workspace);
-        //No flush, if this is just a read we don't count the activity
+            $workspace->setTotalActivity($workspace->getTotalActivity() + 1);
+            $this->doctrine->persist($workspace);
+            //No flush, if this is just a read we don't count the activity
 
-		if($level->getIsAdmin()){
-			return true; //Admin can do everything
-		}
+            if($level->getIsAdmin()){
+                return true; //Admin can do everything
+            }
 
-		if($action=="" || $action==null){
-			return true;
-		}
+            if($action=="" || $action==null){
+                return true;
+            }
 
-		$rights = $level->getRights();
+            $rights = $level->getRights();
 
-		//Compare with action asked
-		$actions = explode(":", $action);
-		$object = $actions[0];
-		$value = intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$actions[1]));
+            //Compare with action asked
+            $actions = explode(":", $action);
+            $object = $actions[0];
+            $value = intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$actions[1]));
 
-		if(!isset($rights[$object]) || intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$rights[$object])) < $value){
-            return false;
+            if(!isset($rights[$object]) || intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$rights[$object])) < $value){
+                return false;
+            }
+
         }
 
         return true;
@@ -110,7 +113,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			if(!$link){
 				return null; //No level because no member
 			}
-            $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array("workspace"=>$workspace->getId(),"id"=>$link->getLevel()));
+            $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace"=>$workspace->getId(),"id"=>$link->getLevel()));
 
 			return $level;
 

@@ -192,5 +192,18 @@ class WorkspaceUser
         $this->hasnotifications = $hasnotifications;
     }
 
+    public function getAsArray(){
+        return Array(
+            "id" => $this->getId(),
+            "user" => $this->getUser()->getAsArray(),
+            "workspace" => $this->getWorkspace()->getAsArray(),
+            "level_id" => $this->getLevel(),
+            "date_added" => $this->getDateAdded(),
+            "last_access" => $this->getLastAccess(),
+            "ishidden" => $this->getisHidden(),
+            "isfavorite" => $this->getisFavorite(),
+            "hasnotifications" => $this->getHasNotifications()
+        );
+    }
 
 }

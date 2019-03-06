@@ -268,10 +268,11 @@ class UsersAccountController extends Controller
 		if($this->getUser()){
 
 			$mail = $request->request->get("mail", "");
-
-			if(!$this->get("app.user")->removeSecondaryMail($this->getUser()->getId(), $mail)){
+            $result = $this->get("app.user")->removeSecondaryMail($this->getUser()->getId(), $mail);
+			if(!$result){
 				$data["errors"][] = "badmail";
 			}
+			$data["statuts"] = $result;
 
 		}else{
 			$data["errors"][] = "unknown";
@@ -322,11 +323,13 @@ class UsersAccountController extends Controller
 			$token = $request->request->get("token", "");
 			$number = $request->request->get("code", "");
 
-			$ok = $this->get("app.user")->checkNumberForAddNewMail($this->getUser()->getId(), $token, $number);
+			$idMail = $this->get("app.user")->checkNumberForAddNewMail($this->getUser()->getId(), $token, $number);
 
-			if($ok) {
+			if($idMail) {
 				$data["data"]["status"] = "success";
-			}else{
+                $data["data"]["idMail"] = $idMail;
+
+            }else{
 				$data["errors"][] = "badcode";
 			}
 
@@ -349,16 +352,10 @@ class UsersAccountController extends Controller
 		if($this->getUser()){
 
 			$mails = $this->get("app.user")->getSecondaryMails($this->getUser());
-
-			$data["data"][] = Array(
-				"id" => -1,
-				"main" => true,
-				"email" => $this->getUser()->getEmail()
-			);
 			foreach ($mails as $mail){
 				$data["data"][] = Array(
 					"id" => $mail->getId(),
-					"main" => false,
+					"main" => $mail->getMail()==$this->getUser()->getEmail(),
 					"email" => $mail->getMail()
 				);
 			}

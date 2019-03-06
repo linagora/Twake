@@ -80,23 +80,29 @@ class WorkspaceMembersController extends Controller
         $list = preg_replace('!\s+!', ' ', $list);
         $list = explode(" ", $list);
 
-        $added = Array();
+        $added = Array("user"=>Array(),"pending"=>Array());
         $not_added = Array();
         foreach ($list as $element) {
             error_log("save ".$element);
             $element = trim($element);
             if (strrpos($element, "@") <= 0) { //No mail or "@username"
-                $res = $this->get("app.workspace_members")
-                    ->addMemberByUsername($workspaceId, $element, $asExterne, $this->getUser()->getId());
+                $res = $this->get("app.workspace_members")->addMemberByUsername($workspaceId, $element, $asExterne, $this->getUser()->getId());
                 if ($res) {
-                    $added[] = $element;
+                    $added["user"][] = $element;
                 } else {
                     $not_added[] = $element;
                 }
             } else {
-                $this->get("app.workspace_members")
-                    ->addMemberByMail($workspaceId, $element, $asExterne, $this->getUser()->getId());
-                $added[] = $element;
+                $res = $this->get("app.workspace_members")->addMemberByMail($workspaceId, $element, $asExterne, $this->getUser()->getId());
+                if($res == "user"){
+                    $added["user"][] = $element;
+                }
+                elseif ($res == "mail"){
+                    $added["pending"][] = $element;
+                }
+                else{
+                    $not_added[] = $element;
+                }
             }
         }
 

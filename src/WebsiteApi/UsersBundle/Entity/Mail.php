@@ -9,10 +9,9 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
  * Mail
  *
  * @ORM\Table(name="mail",options={"engine":"MyISAM",
- *     "indexes":{
- *     @ORM\Index(columns={"user_id"}),
- *     @ORM\Index(columns={"mail"})
- * }})
+ *
+ *     "scylladb_keys": {{"id":"ASC"}, {"user_id":"ASC"},{"mail":"ASC"}}
+ * })
  * @ORM\Entity(repositoryClass="WebsiteApi\UsersBundle\Repository\MailRepository")
  */
 class Mail
