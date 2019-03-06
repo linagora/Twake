@@ -286,13 +286,12 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 "workspace_user" => $member->getAsArray()
             );
             $this->pusher->push($dataToPush, "workspace_users/" . $workspace->getId());
+
             $dataToPush = Array(
                 "type" => "add",
                 "workspace" => $workspace->getAsArray()
             );
             $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
-
-            error_log("push on "."workspaces_of_user/" . $userId);
 
             /*            $datatopush = Array(
                             "type" => "CHANGE_MEMBERS",
