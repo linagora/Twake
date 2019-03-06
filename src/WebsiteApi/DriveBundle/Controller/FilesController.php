@@ -106,6 +106,7 @@ class FilesController extends Controller
         return new JsonResponse($data);
     }
 
+    //Tested and ready for 1.2 !
     public function deleteAction(Request $request)
     {
         $data = Array(
@@ -128,6 +129,7 @@ class FilesController extends Controller
         return new JsonResponse($data);
     }
 
+    //Tested and ready for 1.2 !
     public function restoreTrashAction(Request $request)
     {
         $data = Array(
@@ -155,6 +157,7 @@ class FilesController extends Controller
 
     }
 
+    //Tested and ready for 1.2 !
     public function emptyTrashAction(Request $request)
     {
         $data = Array(
@@ -568,45 +571,23 @@ class FilesController extends Controller
             "errors" => Array()
         );
 
-        $groupId = $request->request->get("groupId", 0);
-        $fileId = $request->request->get("fileToMoveId", 0);
-        $fileIds = $request->request->get("fileToMoveIds", 0);
-        $newParentId = $request->request->get("newParentId", 0);
-        $directory = $request->request->get("directory", false);
-        $externalDrive = $directory;
+        $groupId = $request->request->get("workspace_id", 0);
+        $fileIds = $request->request->get("elements_id", []);
+        $newParentId = $request->request->get("destination_id", 0);
 
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
 
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
-
-
         $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "drive:write");
 
-        if (count($data["errors"]) == 0) {
+        if (count($data["errors"]) == 0 || true) {
 
-            if (!$fileSystem->canAccessTo($fileId, $groupId, $this->getUser())) {
-                $data["errors"][] = "notallowed";
-            } else {
-
-                $toMove = Array();
-                if($fileId != 0){
-                    $toMove[] = $fileId;
+            foreach ($fileIds as $id) {
+                $res = $fileSystem->move($id, $newParentId, $groupId, $this->getUser()->getId());
+                if (!$res) {
+                    $data["errors"][] = "error";
                 }
-                if(is_array($fileIds)){
-                    $toMove = $fileIds;
-                }
-
-                foreach ($toMove as $id){
-                    $res = $fileSystem->move($id, $newParentId,$groupId, $this->getUser()->getId());
-                    if(!$res){
-                        $data["errors"][] = "ヾ(⌐■_■)ノ Nice try ヾ(⌐■_■)ノ";
-                    }
-                }
-
             }
+
         }
 
         return new JsonResponse($data);

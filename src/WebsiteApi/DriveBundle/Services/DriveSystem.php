@@ -32,6 +32,7 @@ class DriveSystem
     {
         $directory_id = $options["directory_id"];
         $workspace_id = $options["workspace_id"];
+        $trash = $options["trash"];
 
         if (!$directory_id) {
             $directory_id = "root";
@@ -41,7 +42,7 @@ class DriveSystem
             return false;
         }
 
-        $elements = $this->dfs->listDirectory($workspace_id, $directory_id);
+        $elements = $this->dfs->listDirectory($workspace_id, $directory_id, $trash);
         $path = $this->dfs->getPath($workspace_id, $directory_id);
 
         $list = Array();

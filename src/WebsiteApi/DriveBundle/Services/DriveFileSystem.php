@@ -246,8 +246,6 @@ class DriveFileSystem
         $fileOrDirectory = $this->convertToEntity($fileOrDirectory, "TwakeDriveBundle:DriveFile");
         $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
 
-        $user = $this->convertToEntity($userId,"TwakeUsersBundle:User");
-
         if ($fileOrDirectory == null) {
             return false;
         }
@@ -267,13 +265,21 @@ class DriveFileSystem
                 return false;
             }
             $dir = $dir->getParentId();
+            if ($dir) {
+                $dir = $this->convertToEntity($dir, "TwakeDriveBundle:DriveFile");
+            } else {
+                $dir = null;
+            }
         }
 
         //Update directories size
         $this->updateSize($fileOrDirectory->getParentId(), -$fileOrDirectory->getSize());
         $this->updateSize($directory, $fileOrDirectory->getSize());
 
-        $fileOrDirectory->setParentId($directory);
+        $this->doctrine->remove($fileOrDirectory);
+        $this->doctrine->flush();
+
+        $fileOrDirectory->setParentId($directory->getId());
 
         $this->improveName($fileOrDirectory);
 
@@ -937,13 +943,17 @@ class DriveFileSystem
         }*/
 
         $repo = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $root = $this->getRootEntity($workspaceId);
 
-        if ($directoryId == "root") {
-            $directoryId = $this->getRootEntity($workspaceId);
-            $directoryId = $directoryId->getId();
+        if (!$directoryId || $directoryId == "root") {
+            $directoryId = $root->getId();
         }
 
-        $list = $repo->findBy(Array("workspace_id" => $workspaceId, "parent_id" => $directoryId, "isintrash" => $trash));
+        if ($root->getId() == $directoryId) {
+            $list = $repo->findBy(Array("workspace_id" => $workspaceId, "parent_id" => $directoryId, "isintrash" => $trash));
+        } else {
+            $list = $repo->findBy(Array("workspace_id" => $workspaceId, "parent_id" => $directoryId));
+        }
 
         return $list;
     }
@@ -1139,14 +1149,12 @@ class DriveFileSystem
             $this->deleteFile($fileOrDirectory);
 
         } else {
-            $copies = $driveRepository->findBy(Array("copyof" => $fileOrDirectory));
-            foreach ($copies as $copy) {
-                $this->doctrine->remove($copy);
-            }
-            foreach ($fileOrDirectory->getChildren() as $child) {
-
+//            $copies = $driveRepository->findBy(Array("copyof" => $fileOrDirectory));
+//            foreach ($copies as $copy) {
+//                $this->doctrine->remove($copy);
+//            }
+            foreach ($this->listDirectory($fileOrDirectory->getWorkspaceId(), $fileOrDirectory->getId(), false) as $child) {
                 $this->recursDelete($child);
-
             }
         }
 
@@ -1169,7 +1177,7 @@ class DriveFileSystem
 
         if ($flush) {
             $this->doctrine->flush();
-            $this->updateLabelsCount($fileOrDirectory->getWorkspaceId());
+//            $this->updateLabelsCount($fileOrDirectory->getWorkspaceId());
         }
 
         return true;
@@ -1220,27 +1228,25 @@ class DriveFileSystem
         return true;
     }
 
-    public function emptyTrash($workspace)
+    public function emptyTrash($workspace_id)
     {
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");;
+        $workspace = $this->convertToEntity($workspace_id, "TwakeWorkspacesBundle:Workspace");;
 
         if ($workspace == null) {
             return false;
         }
 
-        if ($this->listTrash($workspace) == false) {
-            return false;
-        }
+        $list = $this->listDirectory($workspace_id, "", true);
 
-        $list = $this->listTrash($workspace);
+        if (!$list) {
+            return;
+        }
 
         foreach ($list as $child) {
             $this->delete($child, false);
         }
 
-        $this->updateLabelsCount($workspace);
-
-        $this->pusher->push(Array("action" => "update"), "drive/" . $workspace->getId());
+//        $this->updateLabelsCount($workspace);
 
         return true;
     }
