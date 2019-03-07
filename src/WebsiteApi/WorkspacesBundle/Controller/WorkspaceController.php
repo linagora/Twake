@@ -43,12 +43,17 @@ class WorkspaceController extends Controller
 				$apps[] = $app_obj->getAsArray();
 			}
             $response["data"]["apps"] = $apps;
-
             $response["data"]["currentUser"] = $this->getUser()->getAsArray();
             $level = $this->get("app.workspace_levels")->getLevel($workspaceId, $this->getUser()->getId());
             $level = $this->get("app.workspace_levels")->fixLevels(Array($level),$workspaceApps)["levels"][0];
 
             $response["data"]["currentUser"]["level"] = $level;
+
+            $levels = $this->get("app.workspace_levels")->getLevels($workspaceId,$this->getUser()->getId());
+            $response["data"]["levels"] = Array();
+            foreach ($levels as $level){
+                $response["data"]["levels"][] = $level->getAsArray();
+            }
 
             $groupRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Group");
             $workspaceRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace");

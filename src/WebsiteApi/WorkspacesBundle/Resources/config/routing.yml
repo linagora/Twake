@@ -100,6 +100,10 @@ twake_groups_set_name:
     path:     /group/data/name
     defaults: { _controller: TwakeWorkspacesBundle:Group:changeName }
 
+twake_groups_set_logo:
+    path:     /group/data/logo
+    defaults: { _controller: TwakeWorkspacesBundle:Group:setLogo }
+
 twake_groups_get_workspaces:
     path:     /group/getWorkspaces
     defaults: { _controller: TwakeWorkspacesBundle:Group:getWorkspaces }

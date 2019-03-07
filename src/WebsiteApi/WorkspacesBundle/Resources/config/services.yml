@@ -6,7 +6,7 @@ services:
 
     app.groups:
         class: WebsiteApi\WorkspacesBundle\Services\Groups
-        arguments: ["@app.twake_doctrine", "@app.group_managers","@app.applications","@app.string_cleaner","@app.group_period","@app.workspace_members"]
+        arguments: ["@app.twake_doctrine", "@app.group_managers","@website_api_market.applications","@app.string_cleaner","@app.group_period","@app.workspace_members"]
 
     app.group_apps:
         class: WebsiteApi\WorkspacesBundle\Services\GroupApps
@@ -26,7 +26,7 @@ services:
 
     app.workspace_members:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceMembers
-        arguments: ["@app.twake_doctrine", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner","@app.pusher","@app.pricing_plan", "@app.messages_master", "@app.calendars",'@app.workspaces_activities']
+        arguments: ["@app.twake_doctrine", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner","@app.pusher","@app.pricing_plan", "@app.messages_master", "@app.calendars",'@app.workspaces_activities','@app.group_managers']
 
     app.workspaces:
         class: WebsiteApi\WorkspacesBundle\Services\Workspaces

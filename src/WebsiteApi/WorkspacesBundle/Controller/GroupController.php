@@ -14,6 +14,20 @@ use Symfony\Component\HttpFoundation\Request;
 class GroupController extends Controller
 {
 
+
+    public function getUploader()
+    {
+        $aws = $this->getParameter('aws');
+        if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
+            return $this->get("app.aws_uploader");
+        }
+        $openstack = $this->getParameter('openstack');
+        if (isset($openstack["use"]) && $openstack["use"]) {
+            return $this->get("app.openstack_uploader");
+        }
+        return $this->get("app.uploader");
+    }
+
     public function changeNameAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
@@ -29,6 +43,36 @@ class GroupController extends Controller
         }
 
         return new JsonResponse($response);
+    }
+
+    public function setLogoAction(Request $request)
+    {
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $groupId = $request->request->get("groupId");
+
+        if (isset($_FILES["logo"])) {
+            error_log("logo ");
+            $thumbnail = $this->getUploader()->uploadFiles($this->getUser(), $_FILES["logo"], "grouplogo");
+            $thumbnail = $thumbnail[0];
+
+            if (count($thumbnail["errors"]) > 0) {
+                error_log("error ".print_r($thumbnail));
+                $data["errors"][] = "badimage";
+            } else {
+
+                $this->get("app.groups")->changeLogo($groupId, $thumbnail["file"], $this->getUser()->getId(), $this->getUploader());
+            }
+        } else {
+            $this->get("app.groups")->changeLogo($groupId, null, $this->getUser()->getId(), $this->getUploader());
+        }
+
+        return new JsonResponse($data);
+
     }
 
     public function getUsersAction(Request $request){
