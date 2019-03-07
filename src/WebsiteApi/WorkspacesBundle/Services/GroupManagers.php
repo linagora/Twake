@@ -75,31 +75,20 @@ class GroupManagers implements GroupManagersInterface
          * Else we verify that we can look rights
          */
 
-        if($currentUserId == null
-            || $currentUserId == $userId
-            || $this->hasPrivileges(
-                $this->getLevel($groupId, $currentUserId, $currentUserId),
-                "VIEW_MANAGERS"
-            )
-        ){
+        $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
-            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-            $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-            $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+        $user = $userRepository->find($userId);
+        $group = $groupRepository->find($groupId);
+        $manager = $groupManagerRepository->findOneBy(Array("user" => $user, "group" => $group));
 
-            $user = $userRepository->find($userId);
-            $group = $groupRepository->find($groupId);
-            $manager = $groupManagerRepository->findOneBy(Array("user" => $user, "group" => $group));
-
-            if (!$manager || $manager->getExterne()) {
-                return null; //No rights
-            }
-
-            return $manager->getLevel();
-
+        if (!$manager || $manager->getExterne()) {
+            return null; //No rights
         }
 
-        return null; //No rights
+        return $manager->getLevel();
+
 
     }
 

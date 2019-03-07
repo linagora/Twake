@@ -16,8 +16,9 @@ class Groups implements GroupsInterface
     private $string_cleaner;
     private $gps;
     private $wms;
+    private $pusher;
 
-	public function __construct($doctrine, $group_managers_service, $market_service,$clean,$group_period_service,$workspace_member_service)
+	public function __construct($doctrine, $group_managers_service, $market_service,$clean,$group_period_service,$workspace_member_service,$pusher)
 	{
 		$this->doctrine = $doctrine;
 		$this->gms = $group_managers_service;
@@ -25,6 +26,7 @@ class Groups implements GroupsInterface
 		$this->string_cleaner = $clean;
 		$this->gps = $group_period_service;
         $this->wms = $workspace_member_service;
+        $this->pusher = $pusher;
     }
 
     public function create($userId, $name, $uniquename, $planId, $group_data_on_create = Array())
@@ -68,7 +70,7 @@ class Groups implements GroupsInterface
 
 	public function changeData($groupId, $name, $currentUserId = null)
 	{
-		if($currentUserId==null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_DATA")){
+		if($currentUserId!=null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_DATA")){
 
 			$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
 			$group = $groupRepository->find($groupId);
@@ -95,6 +97,9 @@ class Groups implements GroupsInterface
 
 			return true;
 		}
+		else{
+		    error_log("NOT ALLOWED");
+        }
 
 		return false;
 	}
@@ -176,6 +181,44 @@ class Groups implements GroupsInterface
 
 		return false;
 	}
+
+
+
+    public function changeLogo($groupId, $logo, $currentUserId = null, $uploader = null)
+    {
+        if($currentUserId!=null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_DATA")){
+            error_log("1");
+            $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+            $group = $groupRepository->find($groupId);
+
+            if ($group->getLogo()) {
+                if ($uploader) {
+                    $uploader->removeFile($group->getLogo(), false);
+                } else {
+                    $group->getLogo()->deleteFromDisk();
+                }
+                $this->doctrine->remove($group->getLogo());
+            }
+            $group->setLogo($logo);
+
+            $this->doctrine->persist($group);
+            $this->doctrine->flush();
+
+            $datatopush = Array(
+                "type" => "CHANGE_GROUP",
+                "data" => Array(
+                    "group" => $group->getAsArray(),
+                )
+            );
+            $this->pusher->push($datatopush, "group/" . $group->getId());
+            error_log("2");
+
+            return true;
+        }
+        error_log("3");
+
+        return false;
+    }
 
     public function init($group){
         $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");

@@ -43,7 +43,8 @@ class WorkspaceMembersController extends Controller
                 "user" => $user,
                 "last_access" => $member["last_access"],
                 "level" => $member["level"],
-                "externe" => $member["externe"]
+                "externe" => $member["externe"],
+                "groupLevel" => $member["groupLevel"]
             );
         }
 

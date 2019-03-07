@@ -20,8 +20,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
     private $calendar;
     /* @var WorkspacesActivities $workspacesActivities*/
     var $workspacesActivities;
+    var $groupManager;
 
-    public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner, $pusher, $priceService, $messages, $calendar,$workspacesActivities)
+    public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner, $pusher, $priceService, $messages, $calendar,$workspacesActivities,$groupManager)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -32,6 +33,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         $this->messages = $messages;
         $this->calendar = $calendar;
         $this->workspacesActivities = $workspacesActivities;
+        $this->groupManager = $groupManager;
     }
 
     public function changeLevel($workspaceId, $userId, $levelId, $currentUserId = null)
@@ -488,13 +490,14 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                     continue;
                 }
                 $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUser(), "group" => $workspace->getGroup()));
-                error_log("search ".$user->getUser()->getId());
+                $groupId = $workspace->getGroup();
                 if($group_user){
                     $users[] = Array(
                         "user" => $user->getUser(),
                         "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
                         "level" => $user->getLevel(),
-                        "externe" => $group_user->getExterne()
+                        "externe" => $group_user->getExterne(),
+                        "groupLevel" => $this->groupManager->getLevel($groupId,$user->getUser(),$currentUserId)
                     );
 
                 }
