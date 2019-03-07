@@ -11,10 +11,6 @@ services:
             class: WebsiteApi\DiscussionBundle\Services\StreamSystem
             arguments: ["@app.string_cleaner", "@app.twake_doctrine", '@security.authorization_checker','@app.pusher', '@app.contacts', '@app.workspace_levels', '@app.workspace_members','@app.messagesNotificationsCenter','@app.callSystem',"@app.messages"]
 
-    app.subjectSystem:
-            class: WebsiteApi\DiscussionBundle\Services\SubjectSystem
-            arguments: ["@app.string_cleaner", "@app.twake_doctrine", '@security.authorization_checker','@app.pusher','@app.workspace_levels','@app.messages', '@app.objectLinks', '@website_api_market.applications']
-
     app.messagesNotificationsCenter:
             class: WebsiteApi\DiscussionBundle\Services\MessagesNotificationsCenter
             arguments: [ "@app.twake_doctrine","@app.notifications",'@app.pusher', "@app.workspaces"]

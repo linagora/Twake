@@ -3,7 +3,7 @@ services:
 #        class: WebsiteApi\MarketBundle\Example
 #        arguments: ["@service_id", "plain_value", "%parameter%"]
 
-    website_api_market.applications:
+    app.applications:
         class: WebsiteApi\MarketBundle\Services\MarketApplication
         arguments: ["@app.twake_doctrine", "@app.group_managers","@app.pricing_plan"]
 

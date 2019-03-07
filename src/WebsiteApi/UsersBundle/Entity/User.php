@@ -26,7 +26,7 @@ class User extends SearchableObject implements UserInterface
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     protected $id;
 
     /**

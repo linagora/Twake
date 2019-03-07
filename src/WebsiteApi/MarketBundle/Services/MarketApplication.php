@@ -7,7 +7,7 @@ use WebsiteApi\MarketBundle\Model\MarketApplicationInterface;
 use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
 use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
 
-class MarketApplication implements MarketApplicationInterface
+class MarketApplication
 {
     private $doctrine;
     private $gms;
@@ -35,6 +35,83 @@ class MarketApplication implements MarketApplicationInterface
         }
 
     }
+
+    public function createApp($workspace_id, $name, $simple_name, $app_group_name, $current_user_id)
+    {
+
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
+        $group = $workspace->getGroup();
+
+        if ($currentUserId == null
+            || $this->gms->hasPrivileges(
+                $this->gms->getLevel($group->getId(), $current_user_id),
+                "MANAGE_APPS"
+            )
+        ) {
+
+            $application = new Application($group->getId(), $name);
+            $application->setCreationDate(new \DateTime());
+            $application->setAppGroupName($app_group_name);
+
+            $application->setSimpleName($simple_name);
+
+            $this->doctrine->persist($application);
+            $this->doctrine->flush();
+
+            return $application->getAsArray();
+
+        }
+        return false;
+    }
+
+    public function getGroupDevelopedApps($workspace_id, $current_user_id)
+    {
+
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
+        $group = $workspace->getGroup();
+
+        if ($currentUserId == null
+            || $this->gms->hasPrivileges(
+                $this->gms->getLevel($group->getId(), $current_user_id),
+                "MANAGE_APPS"
+            )
+        ) {
+
+            $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+            $apps = $repo->findBy(Array("group_id" => $group->getId()));
+
+            $list = [];
+
+            foreach ($apps as $app) {
+                $list[] = $app->getAsArray();
+            }
+
+            return $list;
+
+        }
+        return [];
+    }
+
+    public function findAppBySimpleName($simple_name, $include_private_apps = false)
+    {
+
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+
+        $app = $repo->findOneBy(Array("simple_name" => $simple_name));
+
+        if (!$app) {
+            return false;
+        }
+
+        if (!$include_private_apps && !$app->getisAvailableToPublic()) {
+            return false;
+        }
+
+        return $app->getAsArray();
+    }
+
     public function getApps()
     {
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");

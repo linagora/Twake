@@ -6,822 +6,506 @@ namespace WebsiteApi\MarketBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
+use WebsiteApi\CoreBundle\Entity\SearchableObject;
 
 /**
- * Message
+ * Application
  *
- * @ORM\Table(name="application",options={"engine":"MyISAM"})
+ * @ORM\Table(name="application",options={"engine":"MyISAM", "scylladb_keys": {{"group_id": "ASC", "app_group_name": "ASC", "id": "ASC"}, {"id": "ASC"}, {"simple_name": "ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\MarketBundle\Repository\ApplicationRepository")
  */
-class Application
+class Application extends SearchableObject
 {
-	/**
+
+    protected $es_type = "applications";
+
+    // General
+
+    /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
-	private $id;
-
-	/**
-     * @ORM\Column(type="string", length=255)
-	 */
-	private $name;
+     */
+    protected $id;
 
     /**
-     * @ORM\Column(name="isdefault", type="twake_boolean", options={"index": true})
+     * @ORM\Column(name="group_id", type="twake_timeuuid")
+     * @ORM\Id
      */
-    private $default;
+    protected $group_id;
 
     /**
-     * @ORM\Column(name="autoorder", type="integer")
+     * @ORM\Column(name="app_group_name", type="twake_text")
+     * @ORM\Id
      */
-    private $order;
+    protected $app_group_name;
 
-	/**
-     * @ORM\Column(type="string", length=6)
-	 */
-	private $color; //Header color
+    /**
+     * @ORM\Column(name="name", type="twake_text")
+     */
+    protected $name;
 
-	/**
-     * @ORM\Column(type="string", length=512, nullable = true)
-	 */
-	private $url = "";
+    /**
+     * @ORM\Column(name="simple_name", type="twake_text")
+     */
+    protected $simple_name;
 
-	/**
-     * @ORM\Column(name="cancreatefile", type="twake_boolean")
-	 */
-    private $cancreatefile; //Will be visible in the list of new files in Drive
-
-	/**
-     * @ORM\Column(name="createfiledata", type="twake_text")
-     * @Encrypted
-	 */
-    private $createfiledata = "{}"; //Will be visible in the list of new files in Drive
-
-	/**
-     * @ORM\Column(name="iscapable", type="twake_boolean")
-	 */
-    private $iscapable; //Can be opened as app in window (displayed in the left bar of apps)
-
-
-	/**
-     * @ORM\Column(name="short_description", type="twake_text")
-     * @Encrypted
-	 */
-    private $shortdescription = "";
-
-	/**
+    /**
      * @ORM\Column(name="description", type="twake_text")
-     * @Encrypted
-	 */
-	private $description = "";
-
-	/**
-     * @ORM\Column(name="price_monthly", type="twake_float")
-	 */
-    private $pricemonthly = 0;
+     */
+    protected $description;
 
     /**
-     * @ORM\Column(name="price_user", type="twake_float")
+     * @ORM\Column(name="website", type="twake_text")
      */
-    private $priceuser = 0;
-
-	/**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
-	 */
-	private $workspace;
-
-	/**
-     * @ORM\Column(name="user_count", type="integer")
-	 */
-    private $usercount = 0;
-
-	/**
-     * @ORM\Column(name="vote_count", type="integer")
-	 */
-    private $votecount = 0;
-
-	/**
-     * @ORM\Column(name="score", type="twake_float")
-	 */
-	private $score = 0;
-
-	/**
-     * @ORM\Column(type="string", length=512)
-	 */
-	protected $thumbnail;
-
-	/**
-     * @ORM\Column(type="string", length=512)
-	 */
-    protected $cover = "";
-
-	/**
-     * @ORM\Column(name="screenshot", type="twake_text")
-     * @Encrypted
-	 */
-	protected $screenshot = "[]";
-
-	/**
-     * @ORM\Column(name="message_module" , type="twake_boolean")
-	 */
-    protected $messagemodule;
+    protected $website;
 
     /**
-     * @ORM\Column(name="message_module_url", type="twake_text")
-     * @Encrypted
+     * @ORM\Column(name="icon_url", type="twake_text")
      */
-    private $messagemoduleurl = "";
+    protected $icon_url; //Doit finir par un format obligatoirement
 
     /**
-     * @ORM\Column(name="editable_rights" , type="twake_boolean")
+     * @ORM\Column(name="public", type="twake_boolean")
      */
-    protected $editablerights = 0;
+    protected $public;
 
-	/**
-     * @ORM\Column(type="twake_datetime")
-	 */
-	protected $date;
+    /**
+     * @ORM\Column(name="twake_team_validation", type="twake_boolean")
+     */
+    protected $twake_team_validation;
 
-	/**
-     * @ORM\Column(name="privatekey", type="twake_text")
-     * @Encrypted
-	 */
-    protected $privatekey;
+    /**
+     * @ORM\Column(name="is_available_to_public", type="twake_boolean")
+     */
+    protected $is_available_to_public; //Vrai si $public ET $twake_team_validation
 
-	/**
-     * @ORM\Column(name="publickey", type="text",nullable=true, options={"index"=true})
-	 */
-    protected $publickey;
 
-	/**
-     * @ORM\Column(type="twake_boolean" )
-	 */
-    protected $enabled = 0;
-
-	/**
-     * @ORM\Column(name="filestypes", type="twake_text" )
-     * @Encrypted
-	 */
-    protected $filestypes;
-
-	/**
-     * @ORM\Column(name="userrights", type="twake_text" )
-     * @Encrypted
-	 */
-    protected $userrights;
-
-	/**
-     * @ORM\Column(name="applicationrights",type="twake_text")
-     * @Encrypted
-	 */
-    protected $applicationrights;
+    // Statistiques
 
     /**
      * @ORM\Column(name="install_count", type="integer")
      */
-    private $installcount = 0;
+    protected $install_count = 0;
 
     /**
-     * @ORM\Column(name="cgu", type="twake_text")
-     * @Encrypted
+     * @ORM\Column(name="creation_date", type="twake_datetime")
      */
-    private $cgu = "";
+    protected $creation_date;
+
+
+    // API configuration
 
     /**
-     * @ORM\Column(name="urlapp", type="twake_boolean")
+     * @ORM\Column(name="api_events_url", type="twake_text")
      */
-    private $urlapp = false;
+    protected $api_events_url;
 
     /**
-     * @ORM\Column(type="string", length = 256, nullable = true)
+     * @ORM\Column(name="api_allowed_ip", type="twake_text")
      */
-    private $domain_name;
+    protected $api_allowed_ip;
 
     /**
-     * @ORM\Column(name="searchwords", type="text")
+     * @ORM\Column(name="api_private_key", type="twake_text")
      */
-    private $searchwords;
+    protected $api_private_key;
 
 
-    public function __construct()
-	{
-		$this->date = new \DateTime();
-        $this->privatekey = Application::generatePrivateKey();
-		$this->setUserRights(Array());
-		$this->setFilesTypes(Array());
-		$this->setApplicationRights(Array());
-		$this->enabled = false;
-        $this->messagemodule = false;
-		$this->domain_name =null;
-	}
+    // Access configuration
 
-	static public function generatePrivateKey()
-	{
-		return sha1("a" . rand(1, 99999999) . "b" . rand(1, 99999999) . "c" . rand(1, 99999999) . "d");
-	}
+    /**
+     * @ORM\Column(name="privileges_capabilities_last_update", type="twake_datetime")
+     */
+    protected $privileges_capabilities_last_update;
 
-	public function generePublicKey()
-	{
-		$x = mb_strtoupper(Workspace::getKeyFromId($this->getId()));
-		$this->setPublicKey($x);
-		return $x;
-	}
+    /**
+     * @ORM\Column(name="privileges", type="twake_text")
+     */
+    protected $privileges = "[]";
 
-	public function generatePublicKey()
-	{
-	}
+    /**
+     * @ORM\Column(name="capabilities", type="twake_text")
+     */
+    protected $capabilities = "[]";
 
-	public function getPrivateKey()
-	{
-        return $this->privatekey;
-	}
 
-	public function setPrivateKey($key)
-	{
-        $this->privatekey = $key;
-	}
+    // Display configuration
 
-	public function getUserRights()
-	{
-        return json_decode($this->userrights, 1);
-	}
+    /**
+     * @ORM\Column(name="display_configuration", type="twake_text")
+     */
+    protected $display_configuration = "{}";
 
-	public function getApplicationRights()
-	{
-        return json_decode($this->applicationrights, 1);
-	}
-
-	public function setUserRights($rights)
-	{
-        $this->userrights = json_encode($rights);
-	}
-
-	public function setApplicationRights($rights)
-	{
-        $this->applicationrights = json_encode($rights);
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getEnabled()
-	{
-		return $this->enabled;
-	}
-
-	/**
-	 * @param mixed $enabled
-	 */
-	public function setEnabled($enabled)
-	{
-		$this->enabled = $enabled;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getFilesTypes()
-	{
-        return json_decode($this->filestypes, true);
-	}
-
-	/**
-     * @param mixed $filestypes
-	 */
-    public function setFilesTypes($filestypes)
+    /**
+     * Application constructor.
+     * @param $group_id
+     * @param $name
+     */
+    public function __construct($group_id, $name)
     {
-        $this->filestypes = json_encode($filestypes);
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getFilesTypesRaw()
-	{
-        return $this->filestypes;
-	}
-
-	/**
-     * @param mixed $filestypes
-	 */
-    public function setFilesTypesRaw($filestypes)
-    {
-        $this->filestypes = $filestypes;
-	}
-
-	public function changePrivateKey()
-	{
-        $this->privatekey = Application::generatePrivateKey();
-	}
-
-	public function getPublicKey()
-	{
-        return $this->publickey;
-	}
-
-	public function setPublicKey($x)
-	{
-        $this->publickey = $x;
-	}
-
-	public function newVote($score)
-	{
-        $scoretotal = $this->score * $this->votecount;
-        $scoretotal += $score;
-		$this->voteCount++;
-        $this->score = $scoretotal / (float)$this->votecount;
+        $this->group_id = $group_id;
+        $this->name = $name;
     }
 
-    public function replaceVote($oldscore, $score)
+
+    /**
+     * @return mixed
+     */
+    public function getId()
     {
-        $scoretotal = $this->score * $this->votecount;
-        $scoretotal += $score - $oldscore;
-        $this->score = $scoretotal / (float)$this->votecount;
-	}
+        return $this->id;
+    }
 
-	/**
-	 * @param mixed $thumbnail
-	 */
-	public function setThumbnail($thumbnail)
-	{
-		$this->thumbnail = $thumbnail;
-	}
-
-	public function removeVote($score)
-	{
-        $scoretotal = $this->score * $this->votecount;
-        $scoretotal -= $score;
-		$this->voteCount--;
-        $this->score = $scoretotal / (float)$this->votecount;
-	}
-
-	public function getCssThumbnail()
-	{
-		if ($this->getThumbnail() == null) {
-			return "";
-		}
-		return "background-image: url('" . "" . $this->getThumbnail() . "');";
-	}
-
-	public function getCssCover()
-	{
-		if ($this->getCover() == null) {
-			return "";
-		}
-		return "background-image: url('" . "" . $this->getCover() . "');";
-	}
-
-	public function getUrlThumbnail()
-	{
-		if ($this->getThumbnail() == null) {
-			return "";
-		}
-		return "" . $this->getThumbnail();
-	}
-
-	public function getUrlCover()
-	{
-		if ($this->getCover() == null) {
-			return "";
-		}
-		return "" . $this->getCover();
-	}
-
-	public function setId($id)
+    /**
+     * @param mixed $id
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
 
-    public function getId()
+    /**
+     * @return mixed
+     */
+    public function getGroupId()
     {
-		return $this->id;
-	}
-
-	public function getName()
-	{
-		return $this->name;
-	}
-
-	public function setName($name)
-	{
-		$this->name = $name;
-        if ($this->searchwords == "")
-		    $this->setSearchWords(strtolower($name));
-	}
-
-	public function getDescription()
-	{
-		return $this->description;
-	}
-
-	public function setDescription($descr)
-	{
-		$this->description = $descr;
-	}
-
-    public function getCgu()
-    {
-        return $this->cgu;
+        return $this->group_id;
     }
 
-    public function setCgu($cgu)
+    /**
+     * @param mixed $group_id
+     */
+    public function setGroupId($group_id)
     {
-        $this->cgu = $cgu;
+        $this->group_id = $group_id;
     }
 
-	public function getShortDescription()
-	{
-		return $this->description;
-	}
+    /**
+     * @return mixed
+     */
+    public function getApiPrivateKey()
+    {
+        return $this->api_private_key;
+    }
 
-	public function setShortDescription($descr)
-	{
-        $this->shortdescription = $descr;
-	}
+    /**
+     * @param mixed $api_private_key
+     */
+    public function setApiPrivateKey($api_private_key)
+    {
+        $this->api_private_key = $api_private_key;
+    }
 
-	public function getGroup()
-	{
-		return $this->workspace;
-	}
+    /**
+     * @return mixed
+     */
+    public function getAppGroupName()
+    {
+        return $this->app_group_name;
+    }
 
-	public function setGroup($workspace)
-	{
-		$this->workspace = $workspace;
-	}
+    /**
+     * @param mixed $app_group_name
+     */
+    public function setAppGroupName($app_group_name)
+    {
+        $this->app_group_name = $app_group_name;
+    }
 
-	public function getUserCount()
-	{
-        return $this->usercount;
-	}
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	public function addUser()
-	{
-		$this->userCount++;
-	}
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-	public function removeUser()
-	{
-		$this->userCount--;
-	}
+    /**
+     * @return mixed
+     */
+    public function getSimpleName()
+    {
+        return $this->simple_name;
+    }
 
-	public function getScore()
-	{
-		return $this->score;
-	}
+    /**
+     * @param mixed $simple_name
+     */
+    public function setSimpleName($simple_name)
+    {
+        $this->simple_name = $simple_name;
+    }
 
-	public function getVoteCount()
-	{
-        return $this->votecount;
-	}
+    /**
+     * @return mixed
+     */
+    public function getDescription()
+    {
+        return $this->description;
+    }
 
+    /**
+     * @param mixed $description
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWebsite()
+    {
+        return $this->website;
+    }
+
+    /**
+     * @param mixed $website
+     */
+    public function setWebsite($website)
+    {
+        $this->website = $website;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getIconUrl()
+    {
+        return $this->icon_url;
+    }
+
+    /**
+     * @param mixed $icon_url
+     */
+    public function setIconUrl($icon_url)
+    {
+        $this->icon_url = $icon_url;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPublic()
+    {
+        return $this->public;
+    }
+
+    /**
+     * @param mixed $public
+     */
+    public function setPublic($public)
+    {
+        $this->public = $public;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTwakeTeamValidation()
+    {
+        return $this->twake_team_validation;
+    }
+
+    /**
+     * @param mixed $twake_team_validation
+     */
+    public function setTwakeTeamValidation($twake_team_validation)
+    {
+        $this->twake_team_validation = $twake_team_validation;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getisAvailableToPublic()
+    {
+        return $this->is_available_to_public;
+    }
+
+    /**
+     * @param mixed $is_available_to_public
+     */
+    public function setIsAvailableToPublic($is_available_to_public)
+    {
+        $this->is_available_to_public = $is_available_to_public;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getInstallCount()
     {
-        return $this->installcount;
-    }
-
-    public function increaseInstall()
-    {
-        return $this->installcount = $this->installCount + 1;
-    }
-
-    public function decreaseInstall()
-    {
-        return $this->installcount = $this->installCount - 1;
-    }
-	public function getThumbnail()
-	{
-		return $this->thumbnail;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getUrl()
-	{
-		return $this->url;
-	}
-
-
-	/**
-	 * @param mixed $url
-	 */
-	public function setUrl($url)
-	{
-		$this->url = $url;
-	}
-
-
-	public function setCover($x)
-	{
-		$this->cover = $x;
-	}
-
-	public function getCover()
-	{
-		return $this->cover;
-	}
-
-	public function setScreenshot($screen)
-	{
-		$this->screenshot = json_encode($screen);
-	}
-
-	public function getScreenshot()
-	{
-		return json_decode($this->screenshot, 1);
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getColor()
-	{
-		return $this->color;
-	}
-
-	/**
-	 * @param mixed $color
-	 */
-	public function setColor($color)
-	{
-		$this->color = $color;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getCanCreateFile()
-	{
-        return $this->cancreatefile;
-	}
-
-	/**
-     * @param mixed $cancreatefile
-	 */
-    public function setCanCreateFile($cancreatefile)
-    {
-        $this->cancreatefile = $cancreatefile;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getCreateFileData()
-	{
-        return json_decode($this->createfiledata, 1);
-	}
-
-	/**
-     * @param mixed $createfiledata
-	 */
-    public function setCreateFileData($createfiledata)
-    {
-        $this->createfiledata = json_encode($createfiledata);
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getCreateFileDataRaw()
-	{
-        return $this->createfiledata;
-	}
-
-	/**
-     * @param mixed $createfiledata
-	 */
-    public function setCreateFileDataRaw($createfiledata)
-    {
-        $this->createfiledata = $createfiledata;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getisCapable()
-	{
-        return $this->iscapable;
-	}
-
-	/**
-     * @param mixed $iscapable
-	 */
-    public function setIsCapable($iscapable)
-    {
-        $this->iscapable = $iscapable;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getDefault()
-	{
-		return $this->default;
-	}
-
-	/**
-	 * @param mixed $default
-	 */
-	public function setDefault($default)
-	{
-		$this->default = $default;
-	}
-
-    /**
-     * @return mixed
-     */
-    public function getMessageModule()
-    {
-        return $this->messagemodule;
+        return $this->install_count;
     }
 
     /**
-     * @param mixed $messagemodule
+     * @param mixed $install_count
      */
-    public function setMessageModule($messagemodule)
+    public function setInstallCount($install_count)
     {
-        $this->messagemodule = $messagemodule;
+        $this->install_count = $install_count;
     }
 
     /**
      * @return mixed
      */
-    public function getMessageModuleUrl()
+    public function getCreationDate()
     {
-        return $this->messagemoduleurl;
+        return $this->creation_date;
     }
 
     /**
-     * @param mixed $messagemodulurl
+     * @param mixed $creation_date
      */
-    public function setMessageModuleUrl($messagemoduleurl)
+    public function setCreationDate($creation_date)
     {
-        $this->messagemoduleurl = $messagemoduleurl;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getEditableRights()
-    {
-        return $this->editablerights;
-    }
-
-    /**
-     * @param mixed $editablerights
-     */
-    public function setEditableRights($editablerights)
-    {
-        $this->editablerights = $editablerights;
+        $this->creation_date = $creation_date;
     }
 
     /**
      * @return mixed
      */
-    public function getOrder()
+    public function getApiEventsUrl()
     {
-        return $this->order;
+        return $this->api_events_url;
     }
 
     /**
-     * @param mixed $order
+     * @param mixed $api_events_url
      */
-    public function setOrder($order)
+    public function setApiEventsUrl($api_events_url)
     {
-        $this->order = $order;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPriceMonthly()
-    {
-        return $this->pricemonthly;
-    }
-
-    /**
-     * @param mixed $pricemonthly
-     */
-    public function setPriceMonthly($pricemonthly)
-    {
-        $this->pricemonthly = $pricemonthly;
+        $this->api_events_url = $api_events_url;
     }
 
     /**
      * @return mixed
      */
-    public function getPriceUser()
+    public function getApiAllowedIp()
     {
-        return $this->priceuser;
+        return json_decode($this->api_allowed_ip, true);
     }
 
     /**
-     * @param mixed $priceuser
+     * @param mixed $api_allowed_ip
      */
-    public function setPriceUser($priceuser)
+    public function setApiAllowedIp($api_allowed_ip)
     {
-        $this->priceuser = $priceuser;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getDomainName(){
-        return $this->domain_name;
-    }
-
-    public function setDomainName($domain_name){
-        $this->domain_name = $domain_name;
+        $this->api_allowed_ip = json_encode($api_allowed_ip);
     }
 
     /**
      * @return mixed
      */
-    public function getUrlApp()
+    public function getPrivilegesCapabilitiesLastUpdate()
     {
-        return $this->urlapp;
+        return $this->privileges_capabilities_last_update;
     }
 
     /**
-     * @param mixed $urlapp
+     * @param mixed $privileges_capabilities_last_update
      */
-    public function setUrlApp($urlapp)
+    public function setPrivilegesCapabilitiesLastUpdate($privileges_capabilities_last_update)
     {
-        $this->urlapp = $urlapp;
+        $this->privileges_capabilities_last_update = $privileges_capabilities_last_update;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getPrivileges()
+    {
+        return json_decode($this->privileges, true);
+    }
+
+    /**
+     * @param mixed $privileges
+     */
+    public function setPrivileges($privileges)
+    {
+        $this->privileges = json_encode($privileges);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCapabilities()
+    {
+        return json_decode($this->capabilities, true);
+    }
+
+    /**
+     * @param mixed $capabilities
+     */
+    public function setCapabilities($capabilities)
+    {
+        $this->capabilities = json_encode($capabilities);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDisplayConfiguration()
+    {
+        return json_decode($this->display_configuration, true);
+    }
+
+    /**
+     * @param mixed $display_configuration
+     */
+    public function setDisplayConfiguration($display_configuration)
+    {
+        $this->display_configuration = json_encode($display_configuration);
+    }
+
+
+    static public function generatePrivateApiKey()
+    {
+        $letters = "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        return str_replace(Array("+", "/", "="), Array($letters[random_int(0, 61)], $letters[random_int(0, 61)], $letters[random_int(0, 61)]),
+            base64_encode(random_bytes(100)));
+    }
 
     public function getAsArray()
-	{
-		return Array(
-			"id" => $this->id,
-			"name" => $this->name,
-			"score" => $this->score,
-            "nbvote" => $this->votecount,
-            "nbInstall" => $this->installcount,
-            "nbUsers" => $this->usercount,
-			"description" => $this->description,
-            "shortDescription" => $this->shortdescription,
-            "priceMonthly" => $this->pricemonthly,
-            "priceUser" => $this->priceuser,
-            "cssthumbnail" => $this->getCssThumbnail(),
-			"thumbnail" => $this->getUrlThumbnail(),
-			"csscover" => $this->getCssCover(),
-			"cover" => $this->getUrlCover(),
-			"screenshots" => $this->getScreenshot(),
-			"url" => $this->getUrl(),
-			"filestypes" => $this->getFilesTypes(),
-			"userRights" => $this->getUserRights(),
-            "applicationRights" => $this->getApplicationRights(),
-			"internal" => ((!(substr( $this->getUrl(), 0, 4 ) === "http"))?true:false),
-			"color" => $this->getColor(),
-			"canCreateFile" => $this->getCanCreateFile(),
-			"createFileData" => $this->getCreateFileData(),
-			"isCapable" => $this->getisCapable(),
-			"default" => $this->getDefault(),
-            "order" => $this->getOrder(),
-            "messageModule" => $this->getMessageModule(),
-            "messageModuleUrl" => $this->getMessageModuleUrl(),
-            "publicKey" => $this->getPublicKey(),
-            "cgu"=> $this->getCgu(),
-            "editableRights" => $this->getEditableRights(),
-            "domain_name" => $this->getDomainName(),
-            "urlapp" => $this->getUrlApp()
+    {
+        $return = Array(
+            "id" => $this->getId(),
+            "group_id" => $this->getGroupId(),
+            "app_group_name" => $this->getAppGroupName(),
+            "name" => $this->getName(),
+            "simple_name" => $this->getSimpleName(),
+            "description" => $this->getDescription(),
+            "icon_url" => $this->getIconUrl(),
+            "website" => $this->getWebsite(),
+            "install_count" => $this->getInstallCount(),
+            "creation_date" => $this->getCreationDate()->getTimestamp(),
+            "privileges" => $this->getPrivileges(),
+            "capabilities" => $this->getCapabilities(),
+            "public" => $this->getPublic(),
+            "is_available_to_public" => $this->getisAvailableToPublic()
         );
-	}
-
-	public function getAsSimpleArray()
-	{
-		return Array(
-			"id" => $this->id,
-			"name" => $this->name,
-			"cssthumbnail" => $this->getCssThumbnail(),
-			"thumbnail" => $this->getUrlThumbnail(),
-			"url" => $this->getUrl(),
-            "publicKey" => $this->getPublicKey(),
-			"filestypes" => $this->getFilesTypes()
-		);
-	}
-
-    /**
-     * @return mixed
-     */
-    public function getSearchWords()
-    {
-        return $this->searchwords;
+        return $return;
     }
 
-    /**
-     * @param mixed $searchwords
-     */
-    public function setSearchWords($searchwords)
+    public function getIndexationArray()
     {
-        $this->searchwords = $searchwords;
-    }
-
-    public function addSearchWord($searchword)
-    {
-        $this->searchwords .= " " . $searchword;
+        $return = Array(
+            "app_group_name" => $this->getAppGroupName(),
+            "name" => $this->getName(),
+            "simple_name" => $this->getSimpleName(),
+            "description" => $this->getDescription()
+        );
+        return $return;
     }
 
 }

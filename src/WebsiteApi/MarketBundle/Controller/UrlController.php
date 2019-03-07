@@ -33,7 +33,7 @@ class UrlController extends Controller
 
         $url = $request->request->get("url", "");
 
-        $res = $this->get("website_api_market.applications")->getAppForUrl($url);
+        $res = $this->get("app.applications")->getAppForUrl($url);
 
         if ($res) {
             $data["data"] = $res->getAsArray();

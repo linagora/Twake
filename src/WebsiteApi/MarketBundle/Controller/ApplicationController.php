@@ -19,6 +19,119 @@ use WebsiteApi\MarketBundle\Entity\Application;
 class ApplicationController extends Controller
 {
 
+    public function createAction(Request $request)
+    {
+
+        $data = array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $workspace_id = $request->request->get("workspace_id");
+        $name = $request->request->get("name");
+        $simple_name = $request->request->get("simple_name");
+        $app_group_name = $request->request->get("app_group_name");
+
+        $app_exists = $this->get("app.applications")->findAppBySimpleName($simple_name, true);
+
+        if ($app_exists) {
+
+            $data["errors"][] = "simple_name_used";
+
+        } else {
+
+            $res = $this->get("app.applications")->createApp($workspace_id, $name, $simple_name, $app_group_name, $this->getUser()->getId());
+
+            if (!$res) {
+                $data["errors"][] = "error";
+            } else {
+                $data["data"] = $res;
+            }
+
+        }
+
+        return new JsonResponse($data);
+
+    }
+
+    public function getGroupDevelopedAppsAction(Request $request)
+    {
+
+        $data = array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $workspace_id = $request->request->get("workspace_id");
+        $res = $this->get("app.applications")->getGroupDevelopedApps($workspace_id, $this->getUser()->getId());
+
+        if (!is_array($res)) {
+            $data["errors"][] = "error";
+        } else {
+            $data["data"] = $res;
+        }
+
+        return new JsonResponse($data);
+
+    }
+
+    public function updateAction(Request $request)
+    {
+
+        $data = array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $application = $request->request->get("application");
+
+        $app_exists = $this->get("app.applications")->findAppBySimpleName($application["simple_name"], true);
+
+        if ($app_exists && $app_exists["id"] != $application["id"]) {
+
+            $data["errors"][] = "simple_name_used";
+
+        } else {
+
+            $res = $this->get("app.applications")->update($application, $this->getUser()->getId());
+
+            if (!is_array($res)) {
+                $data["errors"][] = "error";
+            } else {
+                $data["data"] = $res;
+            }
+
+        }
+
+        return new JsonResponse($data);
+
+    }
+
+    public function removeAction(Request $request)
+    {
+
+        $data = array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $application_id = $request->request->get("application_id");
+
+        $res = $this->get("app.applications")->remove($application_id, $this->getUser()->getId());
+
+        if (!is_array($res)) {
+            $data["errors"][] = "error";
+        } else {
+            $data["data"] = $res;
+        }
+
+        return new JsonResponse($data);
+
+    }
+
+
+    /////////////////// OLD CODE ///////////////////
+
   /*
    *  Retrieves data from an application
    */
@@ -100,9 +213,9 @@ class ApplicationController extends Controller
       $name = $request->request->get("name");
 
       if(isset($name)){
-          $apps_obj = $this->get("website_api_market.applications")->getAppsByName($name);
+          $apps_obj = $this->get("app.applications")->getAppsByName($name);
       }else{
-          $apps_obj = $this->get("website_api_market.applications")->getApps();
+          $apps_obj = $this->get("app.applications")->getApps();
       }
 
       $apps = array();
@@ -121,7 +234,7 @@ class ApplicationController extends Controller
   }
 
   public function getDefaultUrlOpenerAction(){
-      $data["data"] = $this->get("website_api_market.applications")->getDefaultUrlOpener();
+      $data["data"] = $this->get("app.applications")->getDefaultUrlOpener();
 
       return new JsonResponse($data);
   }
@@ -132,9 +245,9 @@ class ApplicationController extends Controller
         $keywords = $request->request->get("keywords", Array());
 
         if(count($keywords)!=0){
-            $apps_obj = $this->get("website_api_market.applications")->getAppsByKeyword($keywords);
+            $apps_obj = $this->get("app.applications")->getAppsByKeyword($keywords);
         }else{
-            $apps_obj = $this->get("website_api_market.applications")->getApps();
+            $apps_obj = $this->get("app.applications")->getApps();
         }
 
         $apps = array();
@@ -157,7 +270,7 @@ class ApplicationController extends Controller
 
         $publickey = $request->request->get("publicKey");
 
-        $apps_obj = $this->get("website_api_market.applications")->getAppByPublicKey($publickey);
+        $apps_obj = $this->get("app.applications")->getAppByPublicKey($publickey);
 
         if($apps_obj == null){
             $response["errors"][] = "notallowed";
@@ -177,7 +290,7 @@ class ApplicationController extends Controller
         $appid = $request->request->get("appid");
 
         if (isset($groupId) && isset($appid)) {
-            $returnVal = $this->get("website_api_market.applications")->addApplication($groupId, $appid, $this->getUser()->getId());
+            $returnVal = $this->get("app.applications")->addApplication($groupId, $appid, $this->getUser()->getId());
         }
 
 
@@ -202,7 +315,7 @@ class ApplicationController extends Controller
         $appid = $request->request->get("appid");
 
         if (isset($groupId) && isset($appid)) {
-            $this->get("website_api_market.applications")->addFreeApplication($groupId, $appid, $this->getUser()->getId());
+            $this->get("app.applications")->addFreeApplication($groupId, $appid, $this->getUser()->getId());
         }
         $res = $this->get("app.workspaces_apps")->enableApp($workspaceId, $appid);
 
@@ -215,73 +328,6 @@ class ApplicationController extends Controller
         return new JsonResponse($response);
     }
 
-  /*
-   *  Create an app
-   */
-
-  public function createAction(Request $request){
-      $manager = $this->get("app.twake_doctrine");
-    $data = array(
-      "data" => Array(),
-      'errors' => Array()
-    );
-
-    $securityContext = $this->get('security.authorization_checker');
-
-    if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-
-      $data['errors'][] = "notconnected";
-    } else {
-
-      $groupId = $request->request->get('groupId');
-      $group = $manager->getRepository('TwakeWorkspacesBundle:Workspace')->find($groupId);
-      if ($group == null){
-        $data['errors'][] = "nosuchgroup";
-      } else {
-	      if (!$this->get('app.workspace_levels')->hasRight($this->getUser(), $group, "base:apps:create")) {
-          $response["errors"][] = "notallowed";
-        } else {
-          $ok = true;
-
-          // Vérifications diverses avant création, à compléter si l'on rajoute des champs forcés
-
-
-          $name = $request->request->get('name');
-          if ($this->get('app.string_cleaner')->simplifyWithoutRemovingSpacesOrUpperCase($name) != $name || $name == "Base" || $name == "base"){
-            $data['errors'][] = "invalidname";
-            $ok = false;
-          }
-
-          $app = $manager->getRepository('TwakeMarketBundle:Application')->findOneBy(Array('name'=>$name));
-          if ($app != null){
-            $data['errors'][] = "namealreadyused";
-            $ok = false;
-          }
-          $descr = $request->request->get('description');
-          $price = floatval($request->request->get('price'));
-          $url = $request->request->get('url');
-          // Création si ok
-          if ($ok){
-            $app = new Application();
-            $app->setName($name);
-            $app->setDescription($descr);
-            $app->setPrice($price);
-            $app->setGroup($group);
-            $app->setUrl($url);
-            $manager->persist($app);
-            $manager->flush();
-
-			$app->generePublicKey();
-			$manager->persist($app);
-			$manager->flush();
-
-            $data['data']['id'] = $app->getId();
-          }
-        }
-      }
-    }
-    return new JsonResponse($data);
-  }
 
   function getRecomended(Request $request){
       $manager = $this->get("app.twake_doctrine");
