@@ -253,7 +253,7 @@ class ManagerAdapter
 
                 foreach ($res as $object_json) {
                     if ($repository) {
-                        $obj = $repository->find($object_json["_id"]);
+                        $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
                     } else {
                         $obj = $object_json["_id"];
                     }

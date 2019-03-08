@@ -20,5 +20,5 @@ twake_applications_update:
 
 twake_applications_get_developed:
     path:     /app/get_developed
-    defaults: { _controller: TwakeMarketBundle:ApplicationDevelopments:getGroupDevelopedApps }
+    defaults: { _controller: TwakeMarketBundle:ApplicationDevelopment:getGroupDevelopedApps }
 

@@ -9,7 +9,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use WebsiteApi\MarketBundle\Entity\Application;
 
-class ApplicationDevelopment extends Controller
+class ApplicationDevelopmentController extends Controller
 {
 
     public function createAction(Request $request)
