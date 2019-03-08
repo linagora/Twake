@@ -142,6 +142,7 @@ class MarketApplication
                 $application_original->setDescription($application["description"]);
                 $application_original->setIconUrl($application["icon_url"]);
                 $application_original->setWebsite($application["website"]);
+                $application_original->setCategories($application["categories"]);
 
                 $application_original->setApiAllowedIp($application["api_allowed_ips"]);
                 $application_original->setApiEventsUrl($application["api_event_url"]);
