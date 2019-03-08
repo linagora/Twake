@@ -123,7 +123,7 @@ class MarketApplication
 
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
         /**
-         * @var Application $application
+         * @var Application $application_original
          */
         $application_original = $applicationRepository->findOneBy(Array('id' => $application["id"]));
 
@@ -162,6 +162,8 @@ class MarketApplication
 
                 if ($changed) {
                     $application_original->setPrivilegesCapabilitiesLastUpdate(new \DateTime());
+                    $application_original->setTwakeTeamValidation(false);
+                    $application_original->setIsAvailableToPublic(false);
                 }
 
                 $application_original->setPrivileges($application["privileges"]);
@@ -170,6 +172,10 @@ class MarketApplication
                 $application_original->setDisplayConfiguration($application["display"]);
 
                 $application_original->setPublic($application["public"]);
+                if (!$application["public"]) {
+                    $application_original->setTwakeTeamValidation(false);
+                    $application_original->setIsAvailableToPublic(false);
+                }
 
                 $this->doctrine->persist($application_original);
                 $this->doctrine->flush();
@@ -219,6 +225,51 @@ class MarketApplication
         return false;
 
     }
+
+
+    public function search($group_id, $query, $current_user_id = null)
+    {
+
+        $allows_unpublished_apps_from_group_id = "null";
+        if ($current_user_id == null
+            || $this->gms->hasPrivileges(
+                $this->gms->getLevel($group_id, $current_user_id),
+                "MANAGE_APPS"
+            )
+        ) {
+            $allows_unpublished_apps_from_group_id = $group_id;
+        }
+
+        $options = Array(
+            "repository" => "TwakeMarketBundle:Application",
+            "index" => "applications",
+            "query" => Array(
+                "bool" => Array(
+                    "filter" => Array(
+                        "query_string" => Array(
+                            "query" => "group_id:" . $allows_unpublished_apps_from_group_id . " OR public:true"
+                        )
+                    ),
+                    "must" => Array(
+                        "query_string" => Array(
+                            "query" => $query
+                        )
+                    )
+                )
+            )
+        );
+
+        $applications = $this->em->es_search($options);
+
+        $result = [];
+        foreach ($applications as $application) {
+            $result[] = $application->getAsArray();
+        }
+
+        return $result;
+    }
+
+    ///////////// OLD CODE ////////////
 
     public function getApps()
     {

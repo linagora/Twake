@@ -1,15 +1,24 @@
+# Apps management
+
+twake_applications_search:
+    path:     /app/search
+    defaults: { _controller: TwakeMarketBundle:Application:search }
+
+# Apps Developers
+
 twake_applications_create:
     path:     /app/create
-    defaults: { _controller: TwakeMarketBundle:Application:create }
+    defaults: { _controller: TwakeMarketBundle:ApplicationDevelopment:create }
 
 twake_applications_remove:
     path:     /app/remove
-    defaults: { _controller: TwakeMarketBundle:Application:remove }
+    defaults: { _controller: TwakeMarketBundle:ApplicationDevelopment:remove }
 
 twake_applications_update:
     path:     /app/update
-    defaults: { _controller: TwakeMarketBundle:Application:update }
+    defaults: { _controller: TwakeMarketBundle:ApplicationDevelopment:update }
 
 twake_applications_get_developed:
     path:     /app/get_developed
-    defaults: { _controller: TwakeMarketBundle:Application:getGroupDevelopedApps }
+    defaults: { _controller: TwakeMarketBundle:ApplicationDevelopments:getGroupDevelopedApps }
+

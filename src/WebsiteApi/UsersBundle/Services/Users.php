@@ -32,7 +32,7 @@ class Users
 
         $options = Array(
             "repository" => "TwakeUsersBundle:User",
-            "type" => "users",
+            "index" => "users",
             "query" => Array(
                 "bool" => Array(
                     "should" => Array(

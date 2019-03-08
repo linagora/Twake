@@ -21,7 +21,7 @@ use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;
 
 /**
  * Created by PhpStorm.
- * User: Syma
+ * User: Romaric Mourgues
  * Date: 20/06/2017
  * Time: 09:45
  */

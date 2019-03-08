@@ -184,7 +184,7 @@ class ManagerAdapter
     /* Elastic Search */
 
 
-    public function es_put($entity, $type, $index = "twake")
+    public function es_put($entity, $index, $server = "twake")
     {
 
         if (is_array($entity)) {
@@ -204,13 +204,13 @@ class ManagerAdapter
             }
         }
 
-        $route = "http://" . $this->es_server . "/" . $index . "/" . $type . "/" . $id;
+        $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
         $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
 
     }
 
-    public function es_remove($entity, $type, $index = "twake")
+    public function es_remove($entity, $index, $server = "twake")
     {
 
         if (is_array($entity)) {
@@ -219,16 +219,16 @@ class ManagerAdapter
             $id = $entity->getId();
         }
 
-        $route = "http://" . $this->es_server . "/" . $index . "/" . $type . "/" . $id;
+        $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
         $this->circle->delete($route);
     }
 
-    public function es_search($options = Array(), $type = null, $index = "twake")
+    public function es_search($options = Array(), $index = null, $server = "twake")
     {
 
-        if (isset($options["type"]) && !$type) {
-            $type = $options["type"];
+        if (isset($options["index"]) && !$type) {
+            $index = $options["index"];
         }
 
         $repository = null;
@@ -236,10 +236,7 @@ class ManagerAdapter
             $repository = $this->getRepository($options["repository"]);
         }
 
-        $route = "http://" . $this->es_server . "/" . $index . "/";
-        if ($type) {
-            $route .= $type . "/";
-        }
+        $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
         $route .= "_search";
 
         $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));

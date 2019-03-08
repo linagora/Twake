@@ -544,7 +544,9 @@ class Application extends SearchableObject
             "app_group_name" => $this->getAppGroupName(),
             "name" => $this->getName(),
             "simple_name" => $this->getSimpleName(),
-            "description" => $this->getDescription()
+            "description" => $this->getDescription(),
+            "group_id" => $this->getGroupId(),
+            "public" => $this->getisAvailableToPublic()
         );
         return $return;
     }
