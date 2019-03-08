@@ -60,6 +60,11 @@ class Application extends SearchableObject
     protected $website;
 
     /**
+     * @ORM\Column(name="categories", type="twake_text")
+     */
+    protected $categories;
+
+    /**
      * @ORM\Column(name="icon_url", type="twake_text")
      */
     protected $icon_url; //Doit finir par un format obligatoirement
@@ -295,6 +300,22 @@ class Application extends SearchableObject
     /**
      * @return mixed
      */
+    public function getCategories()
+    {
+        return json_decode($this->categories, true);
+    }
+
+    /**
+     * @param mixed $categories
+     */
+    public function setCategories($categories)
+    {
+        $this->categories = json_encode($categories);
+    }
+
+    /**
+     * @return mixed
+     */
     public function getPublic()
     {
         return $this->public;
@@ -513,6 +534,30 @@ class Application extends SearchableObject
             "workspace_add", //Ajouter un espace de travail
             "workspace_remove" //Supprimer un espace de travail
         );
+        $return["available_categories"] = Array(
+            "bots",
+            "data_analysis",
+            "communication",
+            "customer_support",
+            "graphism",
+            "developers",
+            "files",
+            "events",
+            "health",
+            "human_resources",
+            "corporate_culture",
+            "marketing",
+            "office",
+            "finances",
+            "productivity",
+            "project_management",
+            "sales",
+            "security_compliance",
+            "entertainment",
+            "trip",
+            "voice_video",
+            "medias_news"
+        );
 
         return $return;
     }
@@ -523,6 +568,7 @@ class Application extends SearchableObject
             "id" => $this->getId(),
             "group_id" => $this->getGroupId(),
             "app_group_name" => $this->getAppGroupName(),
+            "categories" => $this->getCategories(),
             "name" => $this->getName(),
             "simple_name" => $this->getSimpleName(),
             "description" => $this->getDescription(),
@@ -545,6 +591,7 @@ class Application extends SearchableObject
             "name" => $this->getName(),
             "simple_name" => $this->getSimpleName(),
             "description" => $this->getDescription(),
+            "categories" => $this->getCategories(),
             "group_id" => $this->getGroupId(),
             "public" => $this->getisAvailableToPublic()
         );
