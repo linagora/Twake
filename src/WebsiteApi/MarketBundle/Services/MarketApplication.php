@@ -43,7 +43,7 @@ class MarketApplication
         $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
         $group = $workspace->getGroup();
 
-        if ($currentUserId == null
+        if ($current_user_id == null
             || $this->gms->hasPrivileges(
                 $this->gms->getLevel($group->getId(), $current_user_id),
                 "MANAGE_APPS"
@@ -56,10 +56,12 @@ class MarketApplication
 
             $application->setSimpleName($simple_name);
 
+            $application->setApiPrivateKey(Application::generatePrivateApiKey());
+
             $this->doctrine->persist($application);
             $this->doctrine->flush();
 
-            return $application->getAsArray();
+            return $application->getAsArrayForDevelopers();
 
         }
         return false;
@@ -72,7 +74,7 @@ class MarketApplication
         $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
         $group = $workspace->getGroup();
 
-        if ($currentUserId == null
+        if ($current_user_id == null
             || $this->gms->hasPrivileges(
                 $this->gms->getLevel($group->getId(), $current_user_id),
                 "MANAGE_APPS"
@@ -85,7 +87,7 @@ class MarketApplication
             $list = [];
 
             foreach ($apps as $app) {
-                $list[] = $app->getAsArray();
+                $list[] = $app->getAsArrayForDevelopers();
             }
 
             return $list;
@@ -110,6 +112,108 @@ class MarketApplication
         }
 
         return $app->getAsArray();
+    }
+
+    public function update($application, $current_user_id)
+    {
+
+        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        /**
+         * @var Application $application
+         */
+        $application_original = $applicationRepository->findOneBy(Array('id' => $application["id"]));
+
+        if ($application_original) {
+
+            $group_id = $application_original->getGroupId();
+            if ($current_user_id == null
+                || $this->gms->hasPrivileges(
+                    $this->gms->getLevel($group_id, $current_user_id),
+                    "MANAGE_APPS"
+                )
+            ) {
+
+                $application_original->setSimpleName($application["simple_name"]);
+                $application_original->setName($application["name"]);
+                $application_original->setDescription($application["description"]);
+                $application_original->setIconUrl($application["icon_url"]);
+                $application_original->setWebsite($application["website"]);
+
+                $application_original->setApiAllowedIp($application["api_allowed_ips"]);
+                $application_original->setApiEventsUrl($application["api_event_url"]);
+
+                $old_privileges = $application_original->getPrivileges();
+                $old_capabilities = $application_original->getCapabilities();
+                $changed = false;
+                foreach ($application["privileges"] as $pr) {
+                    if (!in_array($pr, $old_privileges)) {
+                        $changed = true;
+                    }
+                }
+                foreach ($application["capabilities"] as $pr) {
+                    if (!in_array($pr, $old_capabilities)) {
+                        $changed = true;
+                    }
+                }
+
+                if ($changed) {
+                    $application_original->setPrivilegesCapabilitiesLastUpdate(new \DateTime());
+                }
+
+                $application_original->setPrivileges($application["privileges"]);
+                $application_original->setCapabilities($application["capabilities"]);
+
+                $application_original->setDisplayConfiguration($application["display"]);
+
+                $application_original->setPublic($application["public"]);
+
+                $this->doctrine->persist($application_original);
+                $this->doctrine->flush();
+
+                return $application_original->getAsArrayForDevelopers();
+
+            }
+
+        }
+
+        return false;
+
+    }
+
+    public function remove($application_id, $current_user_id)
+    {
+
+        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $application = $applicationRepository->findOneBy(Array('id' => $application_id));
+
+        if ($application) {
+
+            $group_id = $application->getGroupId();
+            if ($current_user_id == null
+                || $this->gms->hasPrivileges(
+                    $this->gms->getLevel($group_id, $current_user_id),
+                    "MANAGE_APPS"
+                )
+            ) {
+
+                if (!$application->getisAvailableToPublic()) {
+
+                    $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource")->removeBy(Array("application_id" => $application->getId()));
+                    //TODO REMOVE EVERYWHERE
+
+                    $this->doctrine->remove($application);
+                    $this->doctrine->flush();
+
+                    return true;
+
+                }
+
+            }
+
+        }
+
+        return false;
+
     }
 
     public function getApps()

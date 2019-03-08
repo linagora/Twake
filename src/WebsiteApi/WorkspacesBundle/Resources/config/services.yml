@@ -6,7 +6,7 @@ services:
 
     app.groups:
         class: WebsiteApi\WorkspacesBundle\Services\Groups
-        arguments: ["@app.twake_doctrine", "@app.group_managers","@website_api_market.applications","@app.string_cleaner","@app.group_period","@app.workspace_members"]
+        arguments: ["@app.twake_doctrine", "@app.group_managers","@app.applications","@app.string_cleaner","@app.group_period","@app.workspace_members", "@app.pusher"]
 
     app.group_apps:
         class: WebsiteApi\WorkspacesBundle\Services\GroupApps

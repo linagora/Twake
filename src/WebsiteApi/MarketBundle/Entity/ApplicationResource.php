@@ -11,7 +11,7 @@ use WebsiteApi\CoreBundle\Entity\SearchableObject;
 /**
  * ApplicationResource
  *
- * @ORM\Table(name="application_resource",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id": "ASC", "application_id": "ASC", "id": "ASC"}, {"id": "ASC"}, {"resource_id": "ASC"}}})
+ * @ORM\Table(name="application_resource",options={"engine":"MyISAM", "scylladb_keys": {{"application_id": "ASC", "workspace_id": "ASC", "id": "ASC"}, {"id": "ASC"}, {"resource_id": "ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\MarketBundle\Repository\ApplicationResourceRepository")
  */
 class ApplicationResource

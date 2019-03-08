@@ -476,6 +476,47 @@ class Application extends SearchableObject
             base64_encode(random_bytes(100)));
     }
 
+    public function getAsArrayForDevelopers()
+    {
+        $return = $this->getAsArray();
+
+        $return["api_id"] = $this->getId();
+        $return["api_key"] = $this->getApiPrivateKey();
+        $return["api_event_url"] = $this->getApiEventsUrl();
+        $return["api_allowed_ips"] = $this->getApiAllowedIp();
+
+        $return["privileges"] = $this->getPrivileges();
+        $return["capabilities"] = $this->getCapabilities();
+        $return["display"] = $this->getDisplayConfiguration();
+
+        $return["available_privileges"] = Array(
+            "drive_tree", //Liste des fichiers, noms et autres metadatas
+            "drive_files_content", //Téléchargement des fichiers et preview des fichiers
+            "messages_history", //Récupérer ou rechercher des messages
+            "channels", //Lister les channels et leur configuration (tabulations etc)
+            "members", //Lister les membres d’un espace de travail
+            "group_members", //Lister les membres d’un groupe entier
+            "workspace", //Information sur l’espace de travail
+            "applications", //Liste des applications déployées sur l’espace de travail (sans le détail de leur configuration)
+            "group" //Information sur le groupe
+        );
+        $return["available_capabilities"] = Array(
+            "drive_add", //Ajouter un fichiers
+            "drive_remove", //Supprimer un fichier existant
+            "drive_modify", //Modifier un fichier existant
+            "drive_add_version", //Ajouter une version à un fichier existant
+            "messages_send", //Envoyer des messages
+            "messages_remove", //Supprimer des messages autre que ceux de l’application
+            "messages_modify", //Modifier des messages autre que ceux de l’application
+            "members_add", //Ajouter un membre
+            "members_remove", //Supprimer un membre
+            "workspace_add", //Ajouter un espace de travail
+            "workspace_remove" //Supprimer un espace de travail
+        );
+
+        return $return;
+    }
+
     public function getAsArray()
     {
         $return = Array(
