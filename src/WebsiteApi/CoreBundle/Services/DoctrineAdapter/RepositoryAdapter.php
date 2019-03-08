@@ -142,6 +142,45 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         return $a;
     }
 
+    public function removeBy($filters)
+    {
+
+        $qb = $this->createQueryBuilder("e");
+
+        $qb = $qb->delete();
+
+        $mapping = Array();
+        if (isset($this->getClassMetadata()->associationMappings)) {
+            foreach ($this->getClassMetadata()->associationMappings as $field => $data) {
+                $mapping[] = $field;
+            }
+        }
+        if (isset($this->getClassMetadata()->fieldMappings)) {
+            foreach ($this->getClassMetadata()->fieldMappings as $field => $data) {
+                if ($data["type"] == "twake_timeuuid") {
+                    $mapping[] = $field;
+                }
+            }
+        }
+
+        foreach ($filters as $filter => $value) {
+            $qb = $qb->andWhere($qb->expr()->eq('e.' . $filter, ":" . $filter . "_param"));
+            if (in_array($filter, $mapping)) {
+                if (is_object($value)) {
+                    $qb = $qb->setParameter($filter . "_param", new FakeCassandraTimeuuid($value->getId()));
+                } else {
+                    $qb = $qb->setParameter($filter . "_param", new FakeCassandraTimeuuid($value));
+                }
+            } else {
+                $qb = $qb->setParameter($filter . "_param", $value);
+            }
+        }
+
+        $qb = $qb->getQuery();
+        $qb->execute();
+
+    }
+
     public function queryBuilderUuid($list)
     {
 

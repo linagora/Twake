@@ -50,6 +50,10 @@ class MarketApplication
             )
         ) {
 
+            if (!$name || !$simple_name || !$workspace_id) {
+                return false;
+            }
+
             $application = new Application($group->getId(), $name);
             $application->setCreationDate(new \DateTime());
             $application->setAppGroupName($app_group_name);

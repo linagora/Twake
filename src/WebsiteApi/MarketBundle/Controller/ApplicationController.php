@@ -30,7 +30,7 @@ class ApplicationController extends Controller
         $workspace_id = $request->request->get("workspace_id");
         $name = $request->request->get("name");
         $simple_name = $request->request->get("simple_name");
-        $app_group_name = $request->request->get("app_group_name");
+        $app_group_name = $request->request->get("app_group_name", "");
 
         $app_exists = $this->get("app.applications")->findAppBySimpleName($simple_name, true);
 
@@ -119,10 +119,10 @@ class ApplicationController extends Controller
 
         $res = $this->get("app.applications")->remove($application_id, $this->getUser()->getId());
 
-        if (!is_array($res)) {
+        if (!$res) {
             $data["errors"][] = "error";
         } else {
-            $data["data"] = $res;
+            $data["data"] = Array("success" => true);
         }
 
         return new JsonResponse($data);
