@@ -53,13 +53,23 @@ class WorkspacesApps implements WorkspacesAppsInterface
             foreach ( $workspaceapps as $wa ){
 
                 $app = $applicationRepository->findOneBy(Array("id" => $wa->getAppId()));
-                $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroup(), "app_id" => $app->getId()));
 
-                $workspace_app = $groupapp->getAsArray();
-                $workspace_app["workspace_id"] = $workspace->getId();
-                $workspace_app["app"] = $app->getAsArray();
+                if (!$app) {
 
-                $apps[] = $workspace_app;
+                    $this->disableApp($workspace->getId(), $wa->getAppId());
+
+                } else {
+
+
+                    $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroup(), "app_id" => $app->getId()));
+
+                    $workspace_app = $groupapp->getAsArray();
+                    $workspace_app["workspace_id"] = $workspace->getId();
+                    $workspace_app["app"] = $app->getAsArray();
+
+                    $apps[] = $workspace_app;
+
+                }
             }
             return $apps;
         }
@@ -122,11 +132,17 @@ class WorkspacesApps implements WorkspacesAppsInterface
                 $this->doctrine->persist($groupapp);
             }
 
+            $groupapp->setPrivilegesCapabilitiesLastRead(new \DateTime());
+            $groupapp->setCapabilities($app->getCapabilities());
+            $groupapp->setPrivileges($app->getPrivileges());
+
             //Search if the App is already enabled
             $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
             $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace" => $workspace, "groupapp_id" => $groupapp->getId()));
 
             if($workspaceapp){
+                $this->doctrine->persist($groupapp);
+                $this->doctrine->flush();
                 return true;
             }
 

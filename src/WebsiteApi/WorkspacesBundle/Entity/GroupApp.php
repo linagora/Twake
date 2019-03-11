@@ -52,6 +52,21 @@ class GroupApp
      */
     private $workspaces_count;
 
+    /**
+     * @ORM\Column(name="privileges_capabilities_last_update", type="twake_datetime")
+     */
+    protected $privileges_capabilities_last_update;
+
+    /**
+     * @ORM\Column(name="privileges", type="twake_text")
+     */
+    protected $privileges = "[]";
+
+    /**
+     * @ORM\Column(name="capabilities", type="twake_text")
+     */
+    protected $capabilities = "[]";
+
 
     public function __construct($group, $app_id)
     {
@@ -60,6 +75,8 @@ class GroupApp
 
 		$this->date_added = new \DateTime();
         $this->workspacedefault = false;
+
+        $this->setPrivilegesCapabilitiesLastRead(new \DateTime());
 	}
 
 
@@ -68,7 +85,7 @@ class GroupApp
 	        "id" => $this->getId(),
             "group_id" => $this->getGroup()->getId(),
             "app_id" => $this->getAppId(),
-            "date_added" => $this->getDateAdded(),
+            "date_added" => $this->getDateAdded()->getTimestamp(),
             "workspace_default" => $this->getWorkspaceDefault(),
             "workspace_count" => $this->getWorkspacesCount()
         );
@@ -150,5 +167,55 @@ class GroupApp
     {
         $this->workspaces_count = $workspaces_count;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getPrivilegesCapabilitiesLastRead()
+    {
+        return $this->privileges_capabilities_last_update;
+    }
+
+    /**
+     * @param mixed $privileges_capabilities_last_update
+     */
+    public function setPrivilegesCapabilitiesLastRead($privileges_capabilities_last_update)
+    {
+        $this->privileges_capabilities_last_update = $privileges_capabilities_last_update;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrivileges()
+    {
+        return json_decode($this->privileges, true);
+    }
+
+    /**
+     * @param mixed $privileges
+     */
+    public function setPrivileges($privileges)
+    {
+        $this->privileges = json_encode($privileges);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCapabilities()
+    {
+        return json_decode($this->capabilities, true);
+    }
+
+    /**
+     * @param mixed $capabilities
+     */
+    public function setCapabilities($capabilities)
+    {
+        $this->capabilities = json_encode($capabilities);
+    }
+
+
 
 }
