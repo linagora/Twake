@@ -10,7 +10,7 @@ services:
 
     app.group_apps:
         class: WebsiteApi\WorkspacesBundle\Services\GroupApps
-        arguments: ["@app.twake_doctrine", "@app.group_managers"]
+        arguments: ["@app.twake_doctrine", "@app.group_managers", "@app.workspaces_apps"]
 
     app.group_period:
         class: WebsiteApi\WorkspacesBundle\Services\GroupPeriods
@@ -38,7 +38,7 @@ services:
 
     app.workspaces_apps:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesApps
-        arguments: ["@app.twake_doctrine", "@app.workspace_levels", "@app.group_apps","@app.group_managers","@app.pusher"]
+        arguments: ["@app.twake_doctrine", "@app.workspace_levels","@app.group_managers","@app.pusher"]
 
     groups.topic:
         class: WebsiteApi\WorkspacesBundle\Topic\GroupsTopic
@@ -52,6 +52,11 @@ services:
 
     workspaces_users.topic:
         class: WebsiteApi\WorkspacesBundle\Topic\WorkspacesUsersTopic
+        tags:
+            - { name: gos_web_socket.topic }
+
+    workspaces_apps.topic:
+        class: WebsiteApi\WorkspacesBundle\Topic\WorkspacesAppsTopic
         tags:
             - { name: gos_web_socket.topic }
 

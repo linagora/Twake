@@ -11,7 +11,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * GroupApp
  *
- * @ORM\Table(name="group_app",options={"engine":"MyISAM"})
+ * @ORM\Table(name="group_app",options={"engine":"MyISAM", "scylladb_keys": {{"group_id": "ASC", "app_id": "ASC", "id": "ASC"}, {"id":"ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupAppRepository")
  */
 class GroupApp
@@ -22,23 +22,20 @@ class GroupApp
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
-    private $id;
-
-    /**
-     * @ORM\Column(type="text", options={"index": true})
      */
-    protected $app_group_id;
+    private $id;
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
-	 */
+     * @ORM\Id
+     */
 	private $group;
 
 	/**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
+     * @ORM\Column(name="app_id", type="twake_timeuuid")
+     * @ORM\Id
 	 */
-	private $app;
+    private $app_id;
 
 	/**
      * @ORM\Column(type="twake_datetime")
@@ -50,12 +47,16 @@ class GroupApp
      */
     private $workspacedefault;
 
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $workspaces_count;
 
-	public function __construct($group, $app) {
+
+    public function __construct($group, $app_id)
+    {
 		$this->group = $group;
-		$this->app = $app;
-
-        $this->app_group_id = $app->getId() . "_" . $group->getId();
+        $this->app_id = $app_id;
 
 		$this->date_added = new \DateTime();
         $this->workspacedefault = false;
@@ -65,10 +66,11 @@ class GroupApp
     public function getAsArray(){
 	    return Array(
 	        "id" => $this->getId(),
-            "group" => $this->getGroup(),
-            "app" => $this->getApp(),
+            "group_id" => $this->getGroup()->getId(),
+            "app_id" => $this->getAppId(),
             "date_added" => $this->getDateAdded(),
-            "workspace_default" => $this->getWorkspaceDefault()
+            "workspace_default" => $this->getWorkspaceDefault(),
+            "workspace_count" => $this->getWorkspacesCount()
         );
     }
 
@@ -96,14 +98,6 @@ class GroupApp
 	/**
 	 * @return mixed
 	 */
-	public function getApp()
-	{
-		return $this->app;
-	}
-
-	/**
-	 * @return mixed
-	 */
 	public function getDateAdded()
 	{
 		return $this->date_added;
@@ -123,6 +117,38 @@ class GroupApp
     public function setWorkspaceDefault($workspacedefault)
     {
         $this->workspacedefault = $workspacedefault;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAppId()
+    {
+        return $this->app_id;
+    }
+
+    /**
+     * @param mixed $app_id
+     */
+    public function setAppId($app_id)
+    {
+        $this->app_id = $app_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspacesCount()
+    {
+        return $this->workspaces_count;
+    }
+
+    /**
+     * @param mixed $workspaces_count
+     */
+    public function setWorkspacesCount($workspaces_count)
+    {
+        $this->workspaces_count = $workspaces_count;
     }
 
 }

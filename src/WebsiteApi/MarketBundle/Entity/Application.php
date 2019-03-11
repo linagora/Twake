@@ -374,7 +374,7 @@ class Application extends SearchableObject
      */
     public function setInstallCount($install_count)
     {
-        $this->install_count = $install_count;
+        $this->install_count = max(0, $install_count);
     }
 
     /**

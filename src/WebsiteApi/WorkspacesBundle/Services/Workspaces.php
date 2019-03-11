@@ -386,7 +386,7 @@ class Workspaces implements WorkspacesInterface
                         }
                     }
                     if (!$found) {
-                        $app = new WorkspaceApp($workspace, $old_application->getGroupApp());
+                        $app = new WorkspaceApp($workspace, $old_application->getGroupApp()->getId(), $old_application->getAppId());
                         $this->doctrine->persist($app);
                     }
                 }
@@ -684,7 +684,7 @@ class Workspaces implements WorkspacesInterface
 
             foreach ($grouppaceapps as $ga) {
                 if ($ga->getWorkspaceDefault()) {
-                    $workspaceapp = new WorkspaceApp($workspace, $ga);
+                    $workspaceapp = new WorkspaceApp($workspace, $ga->getId(), $ga->getAppId());
                     $this->doctrine->persist($workspaceapp);
                 }
             }

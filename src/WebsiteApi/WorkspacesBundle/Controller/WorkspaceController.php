@@ -207,42 +207,14 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->get("workspaceId");
+        $workspaceId = $request->request->get("workspace_id");
 
         $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
         if(!$ws){
             $response["errors"][] = "notallowed";
         }else{
-            $apps_obj = $this->get("app.workspaces_apps")->getApps($workspaceId);
-            $apps = Array();
-            foreach ($apps_obj as $app_obj){
-                $apps[] = $app_obj->getAsArray();
-            }
-            $response["data"]["apps"] = $apps;
-        }
-
-        return new JsonResponse($response);
-    }
-
-    /**
-     * Récupère les applications d'un workspace
-     */
-    public function getModuleAppsAction(Request $request){
-
-        $response = Array("errors"=>Array(), "data"=>Array());
-
-        $workspaceId = $request->request->get("workspaceId");
-
-        $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
-        if(!$ws){
-            $response["errors"][] = "notallowed";
-        }else{
-            $apps_obj = $this->get("app.workspaces_apps")->getApps($workspaceId,null,true);
-            $apps = Array();
-            foreach ($apps_obj as $app_obj){
-                $apps[] = $app_obj->getAsArray();
-            }
-            $response["data"]["apps"] = $apps;
+            $apps = $this->get("app.workspaces_apps")->getApps($workspaceId);
+            $response["data"] = $apps;
         }
 
         return new JsonResponse($response);
@@ -255,8 +227,8 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->get("workspaceId");
-        $appid = $request->request->get("appid");
+        $workspaceId = $request->request->get("workspace_id");
+        $appid = $request->request->get("app_id");
 
         $res = $this->get("app.workspaces_apps")->disableApp($workspaceId, $appid);
         if(!$res){
@@ -275,8 +247,8 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->get("workspaceId");
-        $appid = $request->request->get("appid");
+        $workspaceId = $request->request->get("workspace_id");
+        $appid = $request->request->get("app_id");
 
         $res = $this->get("app.workspaces_apps")->enableApp($workspaceId, $appid);
         if(!$res){

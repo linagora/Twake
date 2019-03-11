@@ -8,11 +8,13 @@ class GroupApps implements GroupAppsInterface
 {
     private $doctrine;
     private $gms;
+    private $was;
 
-    public function __construct($doctrine, $group_managers_service)
+    public function __construct($doctrine, $group_managers_service, $workspace_apps_service)
     {
         $this->doctrine = $doctrine;
         $this->gms = $group_managers_service;
+        $this->was = $workspace_apps_service;
     }
 
     public function getApps($groupId, $currentUserId = null)
@@ -36,39 +38,13 @@ class GroupApps implements GroupAppsInterface
 
             $apps = array();
             foreach ($groupapps as $ga) {
-                $apps[] = $ga;
-            }
 
-            return $apps;
-        }
+                $app = $applicationRepository->findOneBy(Array("id" => $ga->getAppId()));
 
-        return false;
-    }
+                $workspace_app = $ga->getAsArray();
+                $workspace_app["app"] = $app->getAsArray();
 
-    public function getAppsForPDF($groupId, $currentUserId = null)
-    {
-        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-        $group = $groupRepository->find($groupId);
-
-        if ($group == null) {
-            return false;
-        }
-
-        if ($currentUserId == null
-            || $this->gms->hasPrivileges(
-                $this->gms->getLevel($groupId, $currentUserId),
-                "MANAGE_APPS"
-            )
-        ) {
-            //Group apps
-            $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-            $groupapps = $groupappsRepository->findBy(Array("group" => $group));
-
-            $apps = array();
-            foreach ($groupapps as $ga) {
-                $gaFormat["id"] = $ga->getId();
-                $gaFormat["name"] = $ga->getName();
-                $apps[] = $gaFormat;
+                $apps[] = $workspace_app;
             }
 
             return $apps;
@@ -94,17 +70,12 @@ class GroupApps implements GroupAppsInterface
         ) {
             //Group apps
             $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-            $groupapps = $groupappsRepository->findBy(Array("group" => $group));
+            $groupapp = $groupappsRepository->findOneBy(Array("group" => $group, "app_id" => $appid));
 
-
-            foreach ($groupapps as $ga) {
-                if ($ga->getApp()->getId() == $appid) {
-                    $ga->setWorkspaceDefault($boolean);
-                    $this->doctrine->persist($ga);
-                }
-            }
-
+            $groupapp->setWorkspaceDefault($boolean);
+            $this->doctrine->persist($groupapp);
             $this->doctrine->flush();
+
             return true;
         }
         return false;
@@ -116,7 +87,7 @@ class GroupApps implements GroupAppsInterface
         $group = $groupRepository->find($groupId);
 
         $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $application = $applicationRepository->find($appid);
+        $application = $applicationRepository->findOneBy(Array("id" => $appid));
 
         if ($group == null || $application == null) {
             return false;
@@ -130,27 +101,21 @@ class GroupApps implements GroupAppsInterface
         ) {
             //Group apps
             $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-            $groupapps = $groupappsRepository->findBy(Array("group" => $group, "app" => $application));
+            $groupapp = $groupappsRepository->findOneBy(Array("group" => $group, "app" => $application));
 
-            //Workspace apps
-            $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
-            $workspaceapps = $workspaceappsRepository->findBy(Array("groupapp" => $groupapps));
+            $workspaceAppsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+            $workspace_apps = $workspaceAppsRepository->findBy(Array("groupapp_id" => $groupapp->getId()));
 
-            foreach ($workspaceapps as $wa) {
-                $this->doctrine->remove($wa);
+            foreach ($workspace_apps as $workspace_app) {
+                $this->was->disableApp($workspace_app->getWorkspace()->getId(), $application->getId());
             }
 
-            foreach ($groupapps as $ga) {
-                $this->doctrine->remove($ga);
-            }
-            $application->decreaseInstall();
-            $this->doctrine->persist($application);
-            $this->doctrine->flush();
             return true;
         }
         return false;
     }
 
+    //OLD CODE ?
     public function useApp($groupId, $workspaceId, $userId, $appid)
     {
         $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");

@@ -23,24 +23,14 @@ class GroupAppsController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->get("groupId");
+        $groupId = $request->request->get("group_id");
 
-        $apps_obj = $this->get("app.group_apps")->getApps($groupId);
+        $apps = $this->get("app.group_apps")->getApps($groupId);
 
-        if(!is_array($apps_obj)){
+        if (!is_array($apps)) {
             $response["errors"][] = "notallowed";
         }else{
-            //Apps
-            $apps = Array();
-            $limit = $this->get("app.pricing_plan")->getLimitation($groupId,"apps",PHP_INT_MAX);
-            foreach ($apps_obj as $app_obj){
-                $tmp = Array(
-                    "app" => $app_obj->getApp()->getAsArray(),
-                    "workspacedefault" => $app_obj->getWorkspaceDefault());
-                $apps[] = $tmp;
-            }
-            $response["data"]["apps"] = $apps;
-            $response["data"]["maxApp"] = $limit;
+            $response["data"] = $apps;
         }
 
         return new JsonResponse($response);
@@ -49,9 +39,9 @@ class GroupAppsController extends Controller
     public function setWorkspaceDefaultAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->get("groupId");
-        $appid = $request->request->get("appid");
-        $boolean = $request->request->getInt("boolean");
+        $groupId = $request->request->get("group_id");
+        $appid = $request->request->get("app_id");
+        $boolean = $request->request->getInt("state");
 
         $apps_obj = $this->get("app.group_apps")->setWorkspaceDefault($groupId, $appid, $boolean, $this->getUser()->getId());
 
@@ -67,8 +57,8 @@ class GroupAppsController extends Controller
     public function removeApplicationAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->get("groupId");
-        $appid = $request->request->get("appid");
+        $groupId = $request->request->get("group_id");
+        $appid = $request->request->get("app_id");
 
         $apps_obj = $this->get("app.group_apps")->removeApplication($groupId, $appid, $this->getUser()->getId());
 
@@ -84,8 +74,8 @@ class GroupAppsController extends Controller
     public function forceApplicationAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->get("groupId");
-        $appid = $request->request->get("appid");
+        $groupId = $request->request->get("group_id");
+        $appid = $request->request->get("app_id");
 
         $apps_obj = $this->get("app.workspaces_apps")->forceApplication($groupId, $appid, $this->getUser()->getId());
 
