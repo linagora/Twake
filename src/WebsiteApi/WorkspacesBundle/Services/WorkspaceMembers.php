@@ -45,7 +45,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
 
-            $level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"id"=>$levelId));
+            $level = $levelRepository->findOneBy(Array("workspace"=>$workspaceId,"id"=>$levelId));
             $user = $userRepository->find($userId);
             $workspace = $workspaceRepository->find($workspaceId);
 
@@ -64,15 +64,19 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             if ($workspace->getUser() != null) {
                 $this->twake_mailer->send($user->getEmail(), "changeLevelWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "group" => $workspace->getGroup()->getDisplayName(), "username" => $user->getUsername(), "level" => $level->getLabel()));
             }
-
-            $datatopush = Array(
-                "type" => "CHANGE_LEVEL",
-                "data" => Array(
-                    "id" => $userId,
-                    "workspaceId" => $workspace->getId(),
-                )
+            $workspaceUser = $member->getAsArray();
+            $workspaceUser["groupLevel"] = $this->groupManager->getLevel($workspace->getGroup(),$userId,$currentUserId);
+            $dataToPush = Array(
+                "type" => "update_workspace_level",
+                "workspace_user" => $workspaceUser
             );
-            $this->pusher->push($datatopush, "group/" . $workspace->getId());
+            $this->pusher->push($dataToPush, "workspace_users/" . $workspace->getId());
+
+            $dataToPush = Array(
+                "type" => "update_workspace_level",
+                "workspace" => $level->getAsArray()
+            );
+            $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
 
             return true;
         }

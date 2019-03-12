@@ -155,7 +155,6 @@ class GroupManagers implements GroupManagersInterface
                 $this->doctrine->persist($manager);
                 $this->doctrine->flush();
 
-                return true;
             }
             else{
                 $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
@@ -173,8 +172,14 @@ class GroupManagers implements GroupManagersInterface
                 $manager->setLevel(null);
                 $this->doctrine->persist($manager);
                 $this->doctrine->flush();
-                return true;
             }
+            $dataToPush = Array(
+                "type" => "update_group_privileges",
+                "group_id" => $groupId,
+                "privileges" => $this->getPrivileges($this->getLevel($groupId, $userId))
+            );
+            $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
+            return true;
 
         }
         return false;

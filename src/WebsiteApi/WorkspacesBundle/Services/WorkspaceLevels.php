@@ -325,10 +325,6 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 	public function getLevels($workspaceId, $currentUserId = null)
 	{
-		if($currentUserId == null
-            || $this->can($workspaceId, $currentUserId, "workspace:read")
-		) {
-
 			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
 			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 
@@ -341,9 +337,6 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			$levels = $levelRepository->findBy(Array("workspace" => $workspace));
 
 			return $levels;
-		}
-
-		return false;
 	}
 
 	public function getByLabel($workspaceId,$label, $currentUserId = null){
