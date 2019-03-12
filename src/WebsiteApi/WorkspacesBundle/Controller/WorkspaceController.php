@@ -37,10 +37,8 @@ class WorkspaceController extends Controller
 
 			$response["data"] = $ws->getAsArray();
 
-            $response["data"]["currentUser"] = $this->getUser()->getAsArray();
             $level = $this->get("app.workspace_levels")->getLevel($workspaceId, $this->getUser()->getId());
-
-            $response["data"]["currentUser"]["level"] = $level;
+            $response["data"]["user_level"] = $level ? $level->getAsArray() : null;
 
             $levels = $this->get("app.workspace_levels")->getLevels($workspaceId,$this->getUser()->getId());
             $response["data"]["levels"] = Array();
