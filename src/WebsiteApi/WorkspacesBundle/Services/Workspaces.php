@@ -277,26 +277,33 @@ class Workspaces implements WorkspacesInterface
 
 
         //Create admin level
-        $level = new WorkspaceLevel();
-        $level->setWorkspace($workspace);
-        $level->setLabel("Administrator");
-        $level->setIsAdmin(true);
-        $level->setIsDefault(true);
+        $levelAdmin = new WorkspaceLevel();
+        $levelAdmin->setWorkspace($workspace);
+        $levelAdmin->setLabel("Administrator");
+        $levelAdmin->setIsAdmin(true);
+        $levelAdmin->setIsDefault(false);
 
-        $this->doctrine->persist($level);
+        $levelUser = new WorkspaceLevel();
+        $levelUser->setWorkspace($workspace);
+        $levelUser->setLabel("User");
+        $levelUser->setIsAdmin(false);
+        $levelUser->setIsDefault(true);
+
+        $this->doctrine->persist($levelAdmin);
+        $this->doctrine->persist($levelUser);
         $this->doctrine->flush();
 
 
 
         //Add twake_bot
-        $this->wms->addMember($workspace->getId(), $twakebotId, false, $level->getId());
+        $this->wms->addMember($workspace->getId(), $twakebotId, false, $levelUser->getId());
 
         //init default apps
         $this->init($workspace);
 
         //Add user in workspace
         if ($userId != null) {
-            $this->wms->addMember($workspace->getId(), $userId, false, $level->getId());
+            $this->wms->addMember($workspace->getId(), $userId, false, $levelAdmin->getId());
         }
 
         return $workspace;

@@ -45,7 +45,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
 
-            $level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"level"=>$levelId));
+            $level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"id"=>$levelId));
             $user = $userRepository->find($userId);
             $workspace = $workspaceRepository->find($workspaceId);
 
@@ -76,7 +76,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             return true;
         }
-
         return false;
     }
 

@@ -148,6 +148,10 @@ twake_groups_manager_edit:
     path:     /group/manager/edit
     defaults: { _controller: TwakeWorkspacesBundle:GroupManager:editManagers }
 
+twake_groups_manager_toggle:
+    path:     /group/manager/toggleManager
+    defaults: { _controller: TwakeWorkspacesBundle:GroupManager:toggleManager }
+
 
 # Edit members
 

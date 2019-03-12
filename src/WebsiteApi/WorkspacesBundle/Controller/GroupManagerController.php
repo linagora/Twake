@@ -47,6 +47,28 @@ class GroupManagerController extends Controller
     }
 
     /**
+     * toggle status d'un utilisateur (manager ou non)
+     */
+    public function toggleManagerAction(Request $request){
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $groupId = $request->request->get("groupId");
+        $userId = $request->request->get("userId");
+        $isManager = $request->request->get("isManager",null);
+        $result = $this->get("app.group_managers")->toggleManager($groupId, $userId, $isManager,$this->getUser()->getId());
+
+
+        if(!$result){
+            $response["errors"][] = "notallowed";
+        }else {
+            $response["data"] = "success";
+        }
+
+        return new JsonResponse($response);
+    }
+
+
+    /**
      * Ajoute un manager au groupe
      */
     public function addManagersAction(Request $request){

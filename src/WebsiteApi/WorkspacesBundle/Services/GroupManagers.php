@@ -122,6 +122,64 @@ class GroupManagers implements GroupManagersInterface
 
     }
 
+    public function toggleManager($groupId, $userId,$isManager=null, $currentUserId = null)
+    {
+        $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+        $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+
+        if($currentUserId == null
+            || $this->hasPrivileges(
+                $this->getLevel($groupId, $currentUserId),
+                "MANAGE_MANAGERS"
+            )
+        ){
+
+            $user = $userRepository->find($userId);
+            $group = $groupRepository->find($groupId);
+            $manager = $groupManagerRepository->findOneBy(Array("group"=>$groupId,"user" => $userId));
+            if(!$manager){ // not in group
+                return false;
+            }
+            if($manager->getLevel()!=null && $isManager!=null && $isManager==true){
+                // is already manager;
+                return true;
+            }
+            if($manager->getLevel()==null && $isManager!=null && $isManager==false){
+                // is already not manager;
+                return true;
+            }
+            if($manager->getLevel()==null){ // si l'utilisateur n'est pas manager
+                $manager->setLevel(3);
+
+                $this->doctrine->persist($manager);
+                $this->doctrine->flush();
+
+                return true;
+            }
+            else{
+                $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+                $otherPotentialGroupAdmin = $groupUserRepository->findBy(Array("group" => $groupId));
+                $hasOtherAdmin = false;
+                foreach ($otherPotentialGroupAdmin as $potentialAdmin){
+                    if($potentialAdmin->getLevel() == 3 && $potentialAdmin->getUser()!=$userId){
+                        $hasOtherAdmin = true;
+                    }
+                }
+                if (!$hasOtherAdmin) {
+                    header("twake-debug: no other group admins");
+                    return false;
+                }
+                $manager->setLevel(null);
+                $this->doctrine->persist($manager);
+                $this->doctrine->flush();
+                return true;
+            }
+
+        }
+        return false;
+    }
+
     public function addManager($groupId, $userId, $level,$createdWorkspace , $currentUserId = null)
     {
         $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
