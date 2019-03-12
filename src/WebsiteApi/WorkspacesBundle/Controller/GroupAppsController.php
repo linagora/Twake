@@ -43,9 +43,9 @@ class GroupAppsController extends Controller
         $appid = $request->request->get("app_id");
         $boolean = $request->request->getInt("state");
 
-        $apps_obj = $this->get("app.group_apps")->setWorkspaceDefault($groupId, $appid, $boolean, $this->getUser()->getId());
+        $res = $this->get("app.group_apps")->setWorkspaceDefault($groupId, $appid, $boolean, $this->getUser()->getId());
 
-        if(!is_array($apps_obj)){
+        if (!$res) {
             $response["errors"][] = "notallowed";
         }else{
             $response["data"][] = true;
@@ -60,9 +60,9 @@ class GroupAppsController extends Controller
         $groupId = $request->request->get("group_id");
         $appid = $request->request->get("app_id");
 
-        $apps_obj = $this->get("app.group_apps")->removeApplication($groupId, $appid, $this->getUser()->getId());
+        $res = $this->get("app.group_apps")->removeApplication($groupId, $appid, $this->getUser()->getId());
 
-        if(!is_array($apps_obj)){
+        if (!$res) {
             $response["errors"][] = "notallowed";
         }else{
             $response["data"][] = true;
@@ -77,9 +77,9 @@ class GroupAppsController extends Controller
         $groupId = $request->request->get("group_id");
         $appid = $request->request->get("app_id");
 
-        $apps_obj = $this->get("app.workspaces_apps")->forceApplication($groupId, $appid, $this->getUser()->getId());
+        $res = $this->get("app.workspaces_apps")->forceApplication($groupId, $appid, $this->getUser()->getId());
 
-        if(!is_array($apps_obj)){
+        if (!$res) {
             $response["errors"][] = "notallowed";
         }else{
             $response["data"][] = true;

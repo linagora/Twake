@@ -83,10 +83,28 @@ class DirectMessagesSystem extends ChannelSystemAbstract
             return false;
         }
 
-        $members = $object["members"];
-        $members = array_unique($members);
-        sort($members);
-        $direct_identifier = join("+", $members);
+        if (isset($object["app_id"])) {
+
+            $members = [$current_user->getId()];
+
+            if (isset($object["group_id"])) {
+                $app_bot_identifier = $object["group_id"] . "_app_" . $object["app_id"];
+            } else if (isset($object["app_bot_identifier"])) {
+                $app_bot_identifier = $object["app_bot_identifier"];
+            } else {
+                return false;
+            }
+            $direct_identifier = $app_bot_identifier . "+" . $current_user->getId();
+
+        } else {
+
+            $members = $object["members"];
+            $members = array_unique($members);
+            sort($members);
+            $direct_identifier = join("+", $members);
+
+        }
+
 
         //No members in direct messages
         if (!$direct_identifier) {
@@ -100,6 +118,11 @@ class DirectMessagesSystem extends ChannelSystemAbstract
                 $channel = new \WebsiteApi\ChannelsBundle\Entity\Channel();
                 $channel->setDirect(true);
                 $channel->setFrontId($object["front_id"]);
+
+                if (isset($object["app_id"])) {
+                    $channel->setAppId($object["app_id"]);
+                    $channel->setAppBotIdentifier($app_bot_identifier);
+                }
             }
         } else {
             $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find(Array("id" => $object["id"], "direct" => $object["direct"], "original_workspace_id" => $object["original_workspace"] ? $object["original_workspace"] : ""));
@@ -115,12 +138,16 @@ class DirectMessagesSystem extends ChannelSystemAbstract
 
         //Modifiy $channel
         $channel->setIdentifier($direct_identifier);
-        $channel->setMembersCount(count($members));
+
+        if (!isset($object["app_id"])) {
+            $channel->setMembersCount(count($members));
+        }
 
         $this->entity_manager->persist($channel);
         $this->entity_manager->flush($channel);
 
         $this->updateChannelMembers($channel, $members, $current_user->getId());
+
 
         return $channel->getAsArray();
     }

@@ -4,6 +4,10 @@ twake_applications_search:
     path:     /app/search
     defaults: { _controller: TwakeMarketBundle:Application:search }
 
+twake_applications_find:
+    path:     /app/find
+    defaults: { _controller: TwakeMarketBundle:Application:find }
+
 # Apps Developers
 
 twake_applications_create:

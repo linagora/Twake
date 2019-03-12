@@ -486,6 +486,14 @@ class Application extends SearchableObject
      */
     public function setDisplayConfiguration($display_configuration)
     {
+        if (is_string($display_configuration)) {
+            try {
+                $_display_configuration = json_decode($display_configuration, true);
+            } catch (\Exception $e) {
+                $_display_configuration = $display_configuration;
+            }
+            $display_configuration = $_display_configuration;
+        }
         $this->display_configuration = json_encode($display_configuration);
     }
 
@@ -508,7 +516,6 @@ class Application extends SearchableObject
 
         $return["privileges"] = $this->getPrivileges();
         $return["capabilities"] = $this->getCapabilities();
-        $return["display"] = $this->getDisplayConfiguration();
 
         $return["available_privileges"] = Array(
             "drive_tree", //Liste des fichiers, noms et autres metadatas
@@ -578,6 +585,7 @@ class Application extends SearchableObject
             "creation_date" => $this->getCreationDate()->getTimestamp(),
             "privileges" => $this->getPrivileges(),
             "capabilities" => $this->getCapabilities(),
+            "display" => $this->getDisplayConfiguration(),
             "public" => $this->getPublic(),
             "is_available_to_public" => $this->getisAvailableToPublic()
         );

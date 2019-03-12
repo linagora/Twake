@@ -109,9 +109,10 @@ class GroupApps implements GroupAppsInterface
                 "MANAGE_APPS"
             )
         ) {
+
             //Group apps
             $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-            $groupapp = $groupappsRepository->findOneBy(Array("group" => $group, "app" => $application));
+            $groupapp = $groupappsRepository->findOneBy(Array("group" => $group, "app_id" => $application->getId()));
 
             $workspaceAppsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
             $workspace_apps = $workspaceAppsRepository->findBy(Array("groupapp_id" => $groupapp->getId()));
@@ -122,6 +123,7 @@ class GroupApps implements GroupAppsInterface
 
             return true;
         }
+
         return false;
     }
 

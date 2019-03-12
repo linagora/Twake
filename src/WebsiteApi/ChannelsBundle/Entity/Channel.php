@@ -11,7 +11,7 @@ use WebsiteApi\CoreBundle\Services\DoctrineAdapter\FakeCassandraTimeuuid;
 /**
  * Channel
  *
- * @ORM\Table(name="channel",options={"engine":"MyISAM", "scylladb_keys": {{"direct":"ASC", "original_workspace_id":"ASC", "id":"ASC"}, {"id":"ASC"}, {"identifier":"ASC"}} })
+ * @ORM\Table(name="channel",options={"engine":"MyISAM", "scylladb_keys": {{"direct":"ASC", "original_workspace_id":"ASC", "id":"ASC"}, {"id":"ASC"}, {"identifier":"ASC"}, {"app_bot_identifier": "ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\ChannelsBundle\Repository\ChannelRepository")
  */
 class Channel
@@ -69,6 +69,16 @@ class Channel
     private $direct = 0;
 
     /**
+     * @ORM\Column(name="app_id", type="twake_text")
+     */
+    private $app_id = "";
+
+    /**
+     * @ORM\Column(name="app_bot_identifier", type="twake_text")
+     */
+    private $app_bot_identifier = "";
+
+    /**
      * @ORM\Column(name="original_workspace_id", type="twake_text")
      * @ORM\Id
      */
@@ -117,6 +127,8 @@ class Channel
             "channel_group_name" => $this->getChannelGroupName(),
             "private" => $this->getPrivate(),
             "direct" => $this->getDirect(),
+            "app_id" => $this->getAppId(),
+            "app_bot_identifier" => $this->getAppBotIdentifier(),
             "original_workspace" => ($this->getOriginalWorkspaceId()) ? $this->getOriginalWorkspaceId() : null,
             "original_group" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
             "members_count" => $this->getMembersCount(),
@@ -267,6 +279,38 @@ class Channel
     public function setDirect($direct)
     {
         $this->direct = ($direct == true);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAppId()
+    {
+        return $this->app_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAppBotIdentifier()
+    {
+        return $this->app_bot_identifier;
+    }
+
+    /**
+     * @param mixed $app_bot_identifier
+     */
+    public function setAppBotIdentifier($app_bot_identifier)
+    {
+        $this->app_bot_identifier = $app_bot_identifier;
+    }
+
+    /**
+     * @param mixed $direct
+     */
+    public function setAppId($app_id)
+    {
+        $this->app_id = $app_id;
     }
 
     /**

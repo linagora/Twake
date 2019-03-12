@@ -20,20 +20,11 @@ class MarketApplication
         $this->pricingPlan = $pricing;
     }
 
-    private function convertToEntity($var, $repository)
+    public function find($id)
     {
-        if (is_string($var)) {
-            $var = $var; // Cassandra id do nothing
-        }
-
-        if (is_int($var) || is_string($var) || get_class($var) == "Ramsey\Uuid\Uuid") {
-            return $this->doctrine->getRepository($repository)->find($var);
-        } else if (is_object($var)) {
-            return $var;
-        } else {
-            return null;
-        }
-
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $app = $repo->findOneBy(Array("id" => $id));
+        return $app ? $app->getAsArray() : $app;
     }
 
     public function createApp($workspace_id, $name, $simple_name, $app_group_name, $current_user_id)
@@ -137,40 +128,43 @@ class MarketApplication
                 )
             ) {
 
-                $application_original->setSimpleName($application["simple_name"]);
-                $application_original->setName($application["name"]);
-                $application_original->setDescription($application["description"]);
-                $application_original->setIconUrl($application["icon_url"]);
-                $application_original->setWebsite($application["website"]);
-                $application_original->setCategories($application["categories"]);
+                if (!$application_original->getPublic()) {
+
+                    $application_original->setSimpleName($application["simple_name"]);
+                    $application_original->setName($application["name"]);
+                    $application_original->setDescription($application["description"]);
+                    $application_original->setIconUrl($application["icon_url"]);
+                    $application_original->setWebsite($application["website"]);
+                    $application_original->setCategories($application["categories"]);
+
+                    $old_privileges = $application_original->getPrivileges();
+                    $old_capabilities = $application_original->getCapabilities();
+                    $changed = false;
+                    foreach ($application["privileges"] as $pr) {
+                        if (!in_array($pr, $old_privileges)) {
+                            $changed = true;
+                        }
+                    }
+                    foreach ($application["capabilities"] as $pr) {
+                        if (!in_array($pr, $old_capabilities)) {
+                            $changed = true;
+                        }
+                    }
+
+                    if ($changed) {
+                        $application_original->setPrivilegesCapabilitiesLastUpdate(new \DateTime());
+                        $application_original->setTwakeTeamValidation(false);
+                        $application_original->setIsAvailableToPublic(false);
+                    }
+
+                    $application_original->setPrivileges($application["privileges"]);
+                    $application_original->setCapabilities($application["capabilities"]);
+
+                    $application_original->setDisplayConfiguration($application["display"]);
+                }
 
                 $application_original->setApiAllowedIp($application["api_allowed_ips"]);
                 $application_original->setApiEventsUrl($application["api_event_url"]);
-
-                $old_privileges = $application_original->getPrivileges();
-                $old_capabilities = $application_original->getCapabilities();
-                $changed = false;
-                foreach ($application["privileges"] as $pr) {
-                    if (!in_array($pr, $old_privileges)) {
-                        $changed = true;
-                    }
-                }
-                foreach ($application["capabilities"] as $pr) {
-                    if (!in_array($pr, $old_capabilities)) {
-                        $changed = true;
-                    }
-                }
-
-                if ($changed) {
-                    $application_original->setPrivilegesCapabilitiesLastUpdate(new \DateTime());
-                    $application_original->setTwakeTeamValidation(false);
-                    $application_original->setIsAvailableToPublic(false);
-                }
-
-                $application_original->setPrivileges($application["privileges"]);
-                $application_original->setCapabilities($application["capabilities"]);
-
-                $application_original->setDisplayConfiguration($application["display"]);
 
                 $application_original->setPublic($application["public"]);
                 if (!$application["public"]) {

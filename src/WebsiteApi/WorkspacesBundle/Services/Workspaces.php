@@ -538,15 +538,6 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
 
-            $datatopush = Array(
-                "type" => "CHANGE_WORKSPACE",
-                "data" => Array(
-                    "workspaceId" => $workspace->getId(),
-                )
-            );
-            $this->pusher->push($datatopush, "group/" . $workspace->getId());
-            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.rename","TwakeWorkspacesBundle:Workspace", $workspaceId);
-
             return true;
         }
 
@@ -574,15 +565,6 @@ class Workspaces implements WorkspacesInterface
 
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
-
-            $datatopush = Array(
-                "type" => "CHANGE_WORKSPACE",
-                "data" => Array(
-                    "workspaceId" => $workspace->getId(),
-                )
-            );
-            $this->pusher->push($datatopush, "group/" . $workspace->getId());
-            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.change_logo","TwakeWorkspacesBundle:Workspace", $workspaceId);
 
             return true;
         }
