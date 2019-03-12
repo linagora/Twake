@@ -37,6 +37,23 @@ class ApplicationController extends Controller
 
     }
 
+    public function findAction(Request $request)
+    {
+
+        $data = array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $id = $request->request->get("id");
+
+        $res = $this->get("app.applications")->find($id);
+        $data["data"] = $res;
+
+        return new JsonResponse($data);
+
+    }
+
 	public function getUserTokenAction(Request $request){
 
         $manager = $this->get("app.twake_doctrine");
