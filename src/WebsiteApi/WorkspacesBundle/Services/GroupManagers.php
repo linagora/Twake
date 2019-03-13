@@ -141,7 +141,7 @@ class GroupManagers implements GroupManagersInterface
             if(!$manager){ // not in group
                 return false;
             }
-            if($manager->getLevel()!=null && $isManager!=null && $isManager==true){
+            if($manager->getLevel()!=null && $manager->getLevel()==3 && $isManager!=null && $isManager==true){
                 // is already manager;
                 return true;
             }
@@ -161,7 +161,7 @@ class GroupManagers implements GroupManagersInterface
                 $otherPotentialGroupAdmin = $groupUserRepository->findBy(Array("group" => $groupId));
                 $hasOtherAdmin = false;
                 foreach ($otherPotentialGroupAdmin as $potentialAdmin){
-                    if($potentialAdmin->getLevel() == 3 && $potentialAdmin->getUser()!=$userId){
+                    if($potentialAdmin->getLevel() == 3 && $potentialAdmin->getUser()->getId()!=$userId){
                         $hasOtherAdmin = true;
                     }
                 }
