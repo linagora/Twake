@@ -92,7 +92,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
             $user = $userRepository->findOneBy(Array("usernamecanonical" => $username));
-
             if ($user) {
                 return $this->addMember($workspaceId, $user->getId(), $asExterne);
             }
@@ -396,19 +395,21 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                     }
                 }
                 $this->doctrine->remove($groupmember);
+                $groupmember = null;
             }
 
 
+            $workspace_user = $member->getAsArray();
+            $workspace_user["nbWorkspace"] = $groupmember!=null?$groupmember->getNbWorkspace():0;
 
             $dataToPush = Array(
                 "type" => "remove",
-                "workspace_user" => $member->getAsArray()
+                "workspace_user" =>$workspace_user,
             );
             $this->pusher->push($dataToPush, "workspace_users/" . $workspace->getId());
-            error_log("push on "."workspaces_of_user/" . $userId);
             $dataToPush = Array(
                 "type" => "remove",
-                "workspace" => $workspace->getAsArray()
+                "workspace" => $workspace->getAsArray(),
             );
 
             $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
@@ -485,14 +486,13 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             }
 
             $link = $workspaceUserRepository->findBy(Array("workspace" => $workspace), $order, $max, $offset, "user");
-
             $users = Array();
             foreach ($link as $user) {
 
                 if ($user->getUser()->getUsername() == "twake_bot" && !$twake_bot) {
                     continue;
                 }
-                $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUser(), "group" => $workspace->getGroup()));
+                $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUser()->getId(), "group" => $workspace->getGroup()));
                 $groupId = $workspace->getGroup();
                 if($group_user){
                     $users[] = Array(
@@ -500,12 +500,12 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                         "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
                         "level" => $user->getLevel(),
                         "externe" => $group_user->getExterne(),
-                        "groupLevel" => $this->groupManager->getLevel($groupId,$user->getUser(),$currentUserId)
+                        "groupLevel" => $this->groupManager->getLevel($groupId,$user->getUser()->getId(),$currentUserId)
                     );
 
                 }
                 else{
-                    error_log("error group user, ".$user->getUser().",".$workspace->getGroup()->getId());
+                    error_log("error group user, ".$user->getUser()->getId().",".$workspace->getGroup()->getId());
                 }
 
             }

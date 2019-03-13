@@ -80,9 +80,7 @@ class WorkspaceController extends Controller
                 $response["data"]["maxApps"] = $limitApps;
                 $response["data"]["currentNbUser"] = count($nbuserGroup);
             }
-
 		}
-
 		return new JsonResponse($response);
 	}
 	/**

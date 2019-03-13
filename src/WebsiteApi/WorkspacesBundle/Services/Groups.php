@@ -355,9 +355,14 @@ class Groups implements GroupsInterface
         $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
         $group = $groupRepository->find($groupId);
-        $managers = $groupManagerRepository->getUsers($group,0,0, false);
-
-        return count($managers);
+        $groupLinks = $groupManagerRepository->findBy(Array("group"=>$group));
+        $count = 0;
+        foreach ($groupLinks as $link){
+            if($link->getNbWorkspace()>0){
+                $count++;
+            }
+        }
+        return $count;
 
     }
 
@@ -369,23 +374,19 @@ class Groups implements GroupsInterface
             $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             $group = $groupRepository->find($groupId);
-            if($onlyExterne){
-                $managerLinks = $groupManagerRepository->getExternalUsers($group,$limit,$offset);
-            }else{
-                $managerLinks = $groupManagerRepository->getUsers($group,$limit,$offset);
-            }
-
+            $groupLinks = $groupManagerRepository->findBy(Array("group"=>$group));
             $users = Array();
-            foreach ($managerLinks as $managerLink){
-                $users[] = Array(
-                    "user" => $managerLink->getUser(),
-                    "externe" => $managerLink->getExterne(),
-                    "level" => $managerLink->getLevel(),
-                    "nbworkspace" => $managerLink->getNbWorkspace()
-                );
+            foreach ($groupLinks as $link){
+                if( $link->getUser()->getUsername()!="twake_bot" && (!$onlyExterne || $link->getExterne())){
+                    $users[] = Array(
+                        "user" => $link->getUser(),
+                        "externe" => $link->getExterne(),
+                        "level" => $link->getLevel(),
+                        "nbWorkspace" => $link->getNbWorkspace()
+                    );
+                }
             }
             return $users;
-
         }
         return false;
 
