@@ -1,3 +1,0 @@
-developers_api_users_token:
-    path:     /current/verify
-    defaults: { _controller: DevelopersApiUsersBundle:CurrentUser:verifyTokenUser }

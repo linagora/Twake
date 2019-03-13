@@ -38,23 +38,14 @@ class AppKernel extends Kernel
 	        new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new WebsiteApi\MarketBundle\TwakeMarketBundle(),
             new WebsiteApi\DriveBundle\TwakeDriveBundle(),
-            new DevelopersApi\CheckBundle\TwakeCheckBundle(),
-            new DevelopersApi\UsersBundle\DevelopersApiUsersBundle(),
-            new DevelopersApi\DriveBundle\DevelopersApiDriveBundle(),
-	        new DevelopersApi\GroupsBundle\DevelopersApiGroupsBundle(),
             new Administration\AuthenticationBundle\AdministrationAuthenticationBundle(),
             new WebsiteApi\CalendarBundle\TwakeCalendarBundle(),
             new WebsiteApi\ProjectBundle\TwakeProjectBundle(),
             new WebsiteApi\NotificationsBundle\TwakeNotificationsBundle(),
             new WebsiteApi\OnlyOfficeBundle\TwakeOnlyOfficeBundle(),
-            new DevelopersApi\MessagesBundle\DevelopersApiMessagesBundle(),
             new Circle\RestClientBundle\CircleRestClientBundle(),
-            new DevelopersApiV1\MessagesBundle\DevelopersApiV1MessagesBundle(),
-            new DevelopersApiV1\DriveBundle\DevelopersApiV1DriveBundle(),
             new DevelopersApiV1\CoreBundle\DevelopersApiV1CoreBundle(),
-            new DevelopersApiV1\CalendarBundle\DevelopersApiV1CalendarBundle(),
-            new DevelopersApiV1\ProjectBundle\DevelopersApiV1ProjectBundle(),
-            new DevelopersApiV1\WorkspacesBundle\DevelopersApiV1WorkspacesBundle()
+            new DevelopersApiV1\MessagesBundle\DevelopersApiV1MessagesBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

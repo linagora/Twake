@@ -135,58 +135,10 @@ twake_api_error:
     requirements:
       req: ".*"
 
-
-#API pour les developpeurs
-#[REMOVE_ONPREMISE]
-developers_api_users:
-    resource: "@DevelopersApiUsersBundle/Resources/config/routing.yml"
-    prefix:   /api/users/
-    methods: [POST]
-
-developers_api_groups:
-    resource: "@DevelopersApiGroupsBundle/Resources/config/routing.yml"
-    prefix:   /api/group/
-    methods: [POST]
-
-developers_api_drive:
-    resource: "@DevelopersApiDriveBundle/Resources/config/routing.yml"
-    prefix:   /api/drive/
-    methods: [POST]
-
-developers_api_messages:
-    resource: "@DevelopersApiMessagesBundle/Resources/config/routing.yml"
-    prefix:   /api/messages/
-    methods: [POST]
-#[/REMOVE_ONPREMISE]
-
 #API V1 pour les developpeurs
 developers_api_v1_messages:
     resource: "@DevelopersApiV1MessagesBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
-
-developers_api_v1_drive:
-    resource: "@DevelopersApiV1DriveBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
-
-developers_api_v1_drive:
-    resource: "@DevelopersApiV1CalendarBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
-
-developers_api_v1_calendar:
-    resource: "@DevelopersApiV1CalendarBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
-
-developers_api_v1_project:
-    resource: "@DevelopersApiV1ProjectBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
-
-developers_api_v1_workspaces:
-    resource: "@DevelopersApiV1WorkspacesBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
-
-developers_api_v1_core:
-    resource: "@DevelopersApiV1CoreBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
+    prefix:   /api/v1/messages/
 
 developers_api_error:
     path:     /api/{req}

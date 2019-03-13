@@ -1,6 +1,6 @@
 <?php
 
-namespace DevelopersApi\MessagesBundle\DependencyInjection;
+namespace DevelopersApiV1\MessagesBundle\DependencyInjection;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
@@ -12,7 +12,7 @@ use Symfony\Component\DependencyInjection\Loader;
  *
  * @link http://symfony.com/doc/current/cookbook/bundles/extension.html
  */
-class DevelopersApiMessagesExtension extends Extension
+class DevelopersApiV1MessagesExtension extends Extension
 {
     /**
      * {@inheritdoc}

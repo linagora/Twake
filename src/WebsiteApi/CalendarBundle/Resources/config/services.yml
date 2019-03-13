@@ -22,7 +22,7 @@ services:
 
     app.export_import:
         class: WebsiteApi\CalendarBundle\Services\exportImport
-        arguments: ["@app.calendar_events","@api.v1.api_status","@app.twake_doctrine","@app.calendars"]
+        arguments: ["@app.calendar_events","@app.twake_doctrine","@app.calendars"]
 
     app.calendarActivity:
         class: WebsiteApi\CalendarBundle\Services\CalendarActivities

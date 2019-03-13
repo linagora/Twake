@@ -18,14 +18,167 @@ class ApplicationApi
         $this->rest_client = $rest_client;
     }
 
-    public function hasResource($app_id, $workspace_id, $resource_type, $resource_id)
+    /**
+     * @param $app_id
+     * @return Application
+     */
+    public function get($app_id)
     {
+        return $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("id" => $app_id));
+    }
+
+    /**
+     * @param $request
+     * @param array $capabilities
+     * @param array $privileges
+     * @return array|Application
+     */
+    public function getAppFromRequest($request, $capabilities = [], $privileges = [])
+    {
+
+        $header = $request->headers->get("Authorization");
+        $explode1 = explode(" ", $header);
+
+        if (count($explode1) == 2 && $explode1[0] == "Basic") {
+
+            $exploser2 = explode(":", base64_decode($explode1[1]));
+
+            if (count($exploser2) == 2) {
+                $id = $exploser2[0];
+                $privateKey = $exploser2[1];
+
+                $application = $this->get($id);
+
+                if ($application != null) {
+                    $key = $application->getApiPrivateKey();
+
+                    if ($key == $privateKey) {
+
+                        $group_id = $request->request->get("group_id", null);
+
+                        $can_do_it = false;
+                        if ($group_id) {
+                            $can_do_it = $this->hasCapability($application->getId(), $group_id, $capabilities);
+                        }
+                        if (!$can_do_it) {
+                            return Array("error" => "you_do_not_have_this_set_of_required_capabilities", "capabilities" => $capabilities);
+                        }
+
+                        if ($group_id) {
+                            $can_do_it = $this->hasPrivilege($application->getId(), $group_id, $privileges);
+                        }
+                        if (!$can_do_it) {
+                            return Array("error" => "you_do_not_have_this_set_of_required_privileges", "privileges" => $privileges);
+                        }
+
+                        return $application;
+                    }
+
+                }
+            }
+
+        }
+
+        return Array("error" => "unknown_application_or_bad_private_key");
 
     }
 
     public function hasPrivilege($app_id, $group_id, $privileges = [])
     {
+        $app = $this->get($app_id);
+        $group_app = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp")->findOneBy(Array("app_id" => $app_id, "group" => $group_id));
 
+        if (!$group_app || !$app) {
+            return false;
+        }
+
+        if (count($privileges) == 0) {
+            return true;
+        }
+
+        $accepted_privileges = $group_app->getPrivileges();
+
+        $ok = true;
+        foreach ($privileges as $privilege) {
+            if (!in_array($privilege, $accepted_privileges)) {
+                $ok = false;
+            }
+        }
+        if ($ok) {
+            return true;
+        }
+
+        $app_privileges = $app->getPrivileges();
+
+        $ok = true;
+        foreach ($privileges as $privilege) {
+            if (!in_array($privilege, $app_privileges)) {
+                $ok = false;
+            }
+        }
+        if (!$ok) {
+            return false;
+        }
+
+        //This app is developed by the group
+        if ($group_id == $app->getGroupId()) {
+            return true;
+        }
+
+        //TODO send an email to the group managers to update the app because it was not updated with latest privileges
+
+        return false;
+    }
+
+    public function hasCapability($app_id, $group_id, $capabilities = [])
+    {
+        $app = $this->get($app_id);
+        $group_app = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp")->findOneBy(Array("app_id" => $app_id, "group" => $group_id));
+
+        if (!$group_app || !$app) {
+            return false;
+        }
+
+        if (count($capabilities) == 0) {
+            return true;
+        }
+
+        $accepted_capabilities = $group_app->getCapabilities();
+
+        $ok = true;
+        foreach ($capabilities as $capability) {
+            if (!in_array($capability, $accepted_capabilities)) {
+                $ok = false;
+            }
+        }
+        if ($ok) {
+            return true;
+        }
+
+        $app_capabilities = $app->getCapabilities();
+
+        $ok = true;
+        foreach ($capabilities as $capability) {
+            if (!in_array($capability, $app_capabilities)) {
+                $ok = false;
+            }
+        }
+        if (!$ok) {
+            return false;
+        }
+
+        //This app is developed by the group
+        if ($group_id == $app->getGroupId()) {
+            return true;
+        }
+
+        //TODO send an email to the group managers to update the app because it was not updated with latest capabilities
+
+        return false;
+    }
+
+    public function hasResource($app_id, $workspace_id, $resource_type, $resource_id)
+    {
     }
 
     public function setAsync()
@@ -41,9 +194,14 @@ class ApplicationApi
         }
     }
 
-    public function notifyApp($app_id, $event)
+    public function notifyApp($app_id, $type, $event, $data)
     {
 
+        $event = Array(
+            "type" => $type,
+            "event" => $event,
+            "data" => $data
+        );
 
         if (!$this->curl_rcx) {
             $this->curl_rcx = new RollingCurlX(10);

@@ -1,10 +1,5 @@
 #Message routing
 developers_api_v1_messages_send_message:
-    path:     /send
-    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:sendMessage }
-    methods: [POST]
-
-developers_api_v1_messages_send_message:
     path:     /workspace/{workspace_id}/messages/stream/{stream_id}/message
     defaults: { _controller: DevelopersApiV1MessagesBundle:Message:sendMessage }
     methods: [POST]

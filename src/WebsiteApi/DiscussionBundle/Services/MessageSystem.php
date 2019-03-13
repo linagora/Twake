@@ -156,6 +156,10 @@ class MessageSystem
 
         $message_repo = $this->em->getRepository("TwakeDiscussionBundle:Message");
 
+        $channel_repo = $this->em->getRepository("TwakeChannelsBundle:Channel");
+        $channel = $channel_repo->findOneBy(Array("id" => $object["channel_id"]));
+
+        $did_create = false;
 
         $message = null;
 
@@ -189,15 +193,13 @@ class MessageSystem
             //Create a new message
             $message = new Message($object["channel_id"], $object["parent_message_id"]);
             $message->setModificationDate(new \DateTime());
-            $message->setFrontId($object["front_id"]);
+            if ($object["front_id"]) {
+                $message->setFrontId($object["front_id"]);
+            }
 
-            $channel_repo = $this->em->getRepository("TwakeChannelsBundle:Channel");
-            $channel = $channel_repo->findOneBy(Array("id" => $object["channel_id"]));
             $channel->setMessagesCount($channel->getMessagesCount() + 1);
 
-            if ($channel->getAppId()) {
-                $this->applications_api->notifyApp($channel->getAppId(), Array("event" => "new_private_message", "message" => $message->getAsArray()));
-            }
+            $did_create = true;
 
             $this->em->persist($channel);
 
@@ -217,18 +219,20 @@ class MessageSystem
             $this->moveMessageToNewParent($message, $new_parent);
         }
 
-        //Set message type
-        if ($application) {
-            $message->setMessageType(1);
-            $message->setApplication($application);
-        } else if (!$user && !$application) {
-            $message->setMessageType(2);
-        } else if ($user && !$application) {
-            $message->setMessageType(0);
+        if ($did_create) {
+            //Set message type
+            if ($application) {
+                $message->setMessageType(1);
+                $message->setApplicationId($application->getId());
+            } else if (!$user && !$application) {
+                $message->setMessageType(2);
+            } else if ($user && !$application) {
+                $message->setMessageType(0);
+            }
         }
 
         //If no sender set, update sender (can be modified after)
-        if (!$message->getSender()) {
+        if (!$message->getSender() && $message->getMessageType() == 0) {
             $message->setSender($user);
         }
 
@@ -290,6 +294,13 @@ class MessageSystem
 
         }
 
+        if ($channel->getAppId()) {
+            if ($did_create) {
+                $this->applications_api->notifyApp($channel->getAppId(), "private_message", "new_message", Array("message" => $message->getAsArray()));
+            } else {
+                $this->applications_api->notifyApp($channel->getAppId(), "private_message", "edit_message", Array("message" => $message->getAsArray()));
+            }
+        }
 
         $this->em->persist($message);
         $this->em->flush();

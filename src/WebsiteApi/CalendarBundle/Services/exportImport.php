@@ -30,11 +30,10 @@ class exportImport implements exportImportInterface{
     /* @var Calendars $calendarsService */
     var $calendarsService;
 
-    public function __construct($calendarEventService, $errorService, $doctrine,$calendarService)
+    public function __construct($calendarEventService, $doctrine, $calendarService)
     {
         $this->calendarEventService = $calendarEventService;
         $this->calendarsService = $calendarService;
-        $this->errorService = $errorService;
         $this->doctrine = $doctrine;
     }
 

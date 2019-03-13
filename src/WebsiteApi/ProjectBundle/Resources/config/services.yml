@@ -22,7 +22,7 @@ services:
 
     app.export_import_project:
         class: WebsiteApi\ProjectBundle\Services\exportImport
-        arguments: ["@app.board_tasks","@api.v1.api_status"]
+        arguments: ["@app.board_tasks"]
 
     app.boardActivity:
         class: WebsiteApi\ProjectBundle\Services\BoardActivities

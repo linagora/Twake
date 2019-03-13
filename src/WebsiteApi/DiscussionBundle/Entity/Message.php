@@ -51,10 +51,9 @@ class Message extends FrontObject
     private $sender = null;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application",cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\Column(name="application_id", type="twake_text", nullable=true)
      */
-    private $application = null;
+    private $application_id = null;
 
 
     /**
@@ -229,9 +228,9 @@ class Message extends FrontObject
      *
      * @return mixed
      */
-    public function getApplication()
+    public function getApplicationId()
     {
-        return $this->application;
+        return $this->application_id;
     }
 
     /**
@@ -241,9 +240,9 @@ class Message extends FrontObject
      *
      * @return self
      */
-    public function setApplication($application)
+    public function setApplicationId($application_id)
     {
-        $this->application = $application;
+        $this->application_id = $application_id;
 
         return $this;
     }
@@ -432,7 +431,7 @@ class Message extends FrontObject
             "responses_count" => $this->getResponsesCount(),
             "message_type" => $this->getMessageType(),
             "sender" => ($this->getSender() ? $this->getSender()->getId() : null),
-            "application" => ($this->getApplication() ? $this->getApplication()->getId() : null),
+            "application_id" => $this->getApplicationId(),
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),
             "hidden_data" => $this->getHiddenData(),
