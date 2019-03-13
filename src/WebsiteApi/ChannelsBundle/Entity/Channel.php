@@ -74,6 +74,11 @@ class Channel
     private $app_id = "";
 
     /**
+     * @ORM\Column(name="app_group_id", type="twake_text")
+     */
+    private $app_group_id = "";
+
+    /**
      * @ORM\Column(name="app_bot_identifier", type="twake_text")
      */
     private $app_bot_identifier = "";
@@ -128,6 +133,7 @@ class Channel
             "private" => $this->getPrivate(),
             "direct" => $this->getDirect(),
             "app_id" => $this->getAppId(),
+            "app_group_id" => $this->getAppGroupId(),
             "app_bot_identifier" => $this->getAppBotIdentifier(),
             "original_workspace" => ($this->getOriginalWorkspaceId()) ? $this->getOriginalWorkspaceId() : null,
             "original_group" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
@@ -311,6 +317,22 @@ class Channel
     public function setAppId($app_id)
     {
         $this->app_id = $app_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAppGroupId()
+    {
+        return $this->app_group_id;
+    }
+
+    /**
+     * @param mixed $app_group_id
+     */
+    public function setAppGroupId($app_group_id)
+    {
+        $this->app_group_id = $app_group_id;
     }
 
     /**

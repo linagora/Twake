@@ -114,6 +114,10 @@ class GroupApps implements GroupAppsInterface
             $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
             $groupapp = $groupappsRepository->findOneBy(Array("group" => $group, "app_id" => $application->getId()));
 
+            if (!$groupapp) {
+                return true;
+            }
+
             $workspaceAppsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
             $workspace_apps = $workspaceAppsRepository->findBy(Array("groupapp_id" => $groupapp->getId()));
 
