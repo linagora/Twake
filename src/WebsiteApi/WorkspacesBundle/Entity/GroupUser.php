@@ -181,7 +181,7 @@ class GroupUser
 
     public function increaseNbWorkspace()
     {
-        return $this->nbworkspace = $this->nbWorkspace + 1;
+        return $this->nbworkspace = $this->nbworkspace + 1;
     }
 
     public function decreaseNbWorkspace()
@@ -189,7 +189,7 @@ class GroupUser
         if ($this->nbworkspace == 0) {
             return $this->nbworkspace;
         }else{
-            return $this->nbworkspace = $this->nbWorkspace - 1;
+            return $this->nbworkspace = $this->nbworkspace - 1;
         }
     }
 

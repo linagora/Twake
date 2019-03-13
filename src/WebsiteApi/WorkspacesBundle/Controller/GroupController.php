@@ -91,7 +91,8 @@ class GroupController extends Controller
         }else {
             $list = Array();
             foreach ($users as $user) {
-                $temp = $user["user"]->getAsArray();
+                $temp = Array();
+                $temp["user"] = $user["user"]->getAsArray();
                 $temp["externe"] = $user["externe"];
                 $temp["level"] = $user["level"];
                 $temp["nbWorkspace"] = $user["nbWorkspace"];

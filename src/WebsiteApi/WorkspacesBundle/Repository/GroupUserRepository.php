@@ -30,7 +30,7 @@ class GroupUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
             $criteria->setFirstResult($offset);
         }
         $criteria->where(Criteria::expr()->eq('group', $group));
-        $criteria->andWhere(Criteria::expr()->neq('nbWorkspace', 0));
+        $criteria->andWhere(Criteria::expr()->neq('nbworkspace', 0));
         return  $this->matching( $criteria);
     }
 
@@ -40,7 +40,7 @@ class GroupUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
         $criteria->setMaxResults($limit);
         $criteria->setFirstResult($offset);
         $criteria->where(Criteria::expr()->eq('group', $group));
-        $criteria->andWhere(Criteria::expr()->neq('nbWorkspace', 0));
+        $criteria->andWhere(Criteria::expr()->neq('nbworkspace', 0));
         $criteria->andWhere(Criteria::expr()->eq('externe', true));
         return  $this->matching( $criteria);
     }
