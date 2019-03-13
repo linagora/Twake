@@ -37,7 +37,6 @@ class MessageController extends Controller
             "object_type" => "",
             "object" => $object
         );
-
         $this->get("app.websockets")->push("messages/" . $chan_id, $event);
 
         return new JsonResponse(Array("result" => $object));

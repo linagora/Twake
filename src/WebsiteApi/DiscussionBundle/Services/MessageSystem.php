@@ -18,10 +18,11 @@ use WebsiteApi\DiscussionBundle\Model\MessagesSystemInterface;
 class MessageSystem
 {
 
-    function __construct($entity_manager, $applications_api)
+    function __construct($entity_manager, $applications_api, $websockets_service)
     {
         $this->em = $entity_manager;
         $this->applications_api = $applications_api;
+        $this->websockets_service = $websockets_service;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -185,13 +186,16 @@ class MessageSystem
                 $new_parent = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $object["parent_message_id"]));
                 if (!$new_parent) {
                     $object["parent_message_id"] = "";
+                } else {
+                    $new_parent->setResponsesCount($new_parent->getResponsesCount() + 1);
+                    $this->em->persist($new_parent);
+                    $this->share($new_parent);
                 }
-                $new_parent->setResponsesCount($new_parent->getResponsesCount() + 1);
-                $this->em->persist($new_parent);
             }
 
             //Create a new message
             $message = new Message($object["channel_id"], $object["parent_message_id"]);
+
             $message->setModificationDate(new \DateTime());
             if ($object["front_id"]) {
                 $message->setFrontId($object["front_id"]);
@@ -294,6 +298,10 @@ class MessageSystem
 
         }
 
+        $this->em->persist($message);
+        $this->em->flush();
+
+
         if ($channel->getAppId()) {
             if ($did_create) {
                 $this->applications_api->notifyApp($channel->getAppId(), "private_message", "new_message", Array("message" => $message->getAsArray()));
@@ -301,9 +309,6 @@ class MessageSystem
                 $this->applications_api->notifyApp($channel->getAppId(), "private_message", "edit_message", Array("message" => $message->getAsArray()));
             }
         }
-
-        $this->em->persist($message);
-        $this->em->flush();
 
         return $message->getAsArray();
 
@@ -342,11 +347,27 @@ class MessageSystem
         $messageA->setResponsesCount(0);
         $this->em->persist($messageA);
 
+        $this->share($messageA);
+
         if ($flush) {
+            $this->share($messageB);
             $this->em->flush();
         }
 
         return $messageA;
+
+    }
+
+    private function share($message)
+    {
+
+        $event = Array(
+            "client_id" => "system",
+            "action" => "save",
+            "object_type" => "",
+            "object" => $message->getAsArray()
+        );
+        $this->websockets_service->push("messages/" . $message->getChannelId(), $event);
 
     }
 
