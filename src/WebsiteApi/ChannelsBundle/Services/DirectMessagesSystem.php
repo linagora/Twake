@@ -122,6 +122,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
                 if (isset($object["app_id"])) {
                     $channel->setAppId($object["app_id"]);
                     $channel->setAppBotIdentifier($app_bot_identifier);
+                    $channel->setAppGroupId($object["group_id"]);
                 }
             }
         } else {

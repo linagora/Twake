@@ -1,7 +1,7 @@
 services:
     app.messages:
             class: WebsiteApi\DiscussionBundle\Services\MessageSystem
-            arguments: ["@app.twake_doctrine"]
+            arguments: ["@app.twake_doctrine", "@app.applications_api"]
 
     app.messages_master:
             class: WebsiteApi\DiscussionBundle\Services\MessagesMasterService

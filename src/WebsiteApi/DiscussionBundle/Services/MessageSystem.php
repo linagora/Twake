@@ -18,9 +18,10 @@ use WebsiteApi\DiscussionBundle\Model\MessagesSystemInterface;
 class MessageSystem
 {
 
-    function __construct($entity_manager)
+    function __construct($entity_manager, $applications_api)
     {
         $this->em = $entity_manager;
+        $this->applications_api = $applications_api;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -193,6 +194,10 @@ class MessageSystem
             $channel_repo = $this->em->getRepository("TwakeChannelsBundle:Channel");
             $channel = $channel_repo->findOneBy(Array("id" => $object["channel_id"]));
             $channel->setMessagesCount($channel->getMessagesCount() + 1);
+
+            if ($channel->getAppId()) {
+                $this->applications_api->notifyApp($channel->getAppId(), Array("event" => "new_private_message", "message" => $message->getAsArray()));
+            }
 
             $this->em->persist($channel);
 
