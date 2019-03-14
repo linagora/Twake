@@ -165,6 +165,8 @@ class MessageSystem
             $object["parent_message_id"] = "";
         }
 
+        $ephemeral = (isset($object["_once_ephemeral_message"]) && $object["_once_ephemeral_message"] || isset($object["ephemeral_id"]) && $object["ephemeral_id"]);
+
         $message_repo = $this->em->getRepository("TwakeDiscussionBundle:Message");
 
         $channel_repo = $this->em->getRepository("TwakeChannelsBundle:Channel");
@@ -215,7 +217,7 @@ class MessageSystem
             }
 
 
-            if ($object["parent_message_id"]) {
+            if (!$ephemeral && $object["parent_message_id"]) {
                 //Increment parent
                 $new_parent = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $object["parent_message_id"]));
                 if (!$new_parent) {
@@ -235,13 +237,22 @@ class MessageSystem
                 $message->setFrontId($object["front_id"]);
             }
 
-            $channel->setMessagesCount($channel->getMessagesCount() + 1);
+            if ($object["ephemeral_id"]) {
+                $message->setId($object["ephemeral_id"]);
+                $message->setFrontId($object["ephemeral_id"]);
+            }
 
             $did_create = true;
 
-            $this->em->persist($channel);
+            if (!$ephemeral) {
 
-            //TODO update channel last id and last activity etc
+                $channel->setMessagesCount($channel->getMessagesCount() + 1);
+
+                $this->em->persist($channel);
+
+                //TODO update channel last id and last activity etc
+
+            }
 
         } else if ($message->getContent() != $object["content"]) {
             $message->setEdited(true);
@@ -249,7 +260,7 @@ class MessageSystem
         }
 
         //Move message
-        if (isset($object["_once_replace_message_parent_message"])) {
+        if (!$ephemeral && isset($object["_once_replace_message_parent_message"])) {
             $new_parent = null;
             if ($object["parent_message_id"]) {
                 $new_parent = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => "", "id" => $object["parent_message_id"]));
@@ -277,8 +288,6 @@ class MessageSystem
 
         //Update message values
         if ($application && isset($object["_once_user_specific_update"])) {
-
-            error_log(json_encode($object));
 
             $specific_data = $message->getUserSpecificContent();
             if (!$specific_data) {
@@ -360,18 +369,31 @@ class MessageSystem
         }
 
         $this->em->persist($message);
-        $this->em->flush();
 
+        if (!$ephemeral) {
+            $this->em->flush();
 
-        if ($channel->getAppId()) {
-            if ($did_create) {
-                $this->applications_api->notifyApp($channel->getAppId(), "private_message", "new_message", Array("message" => $message->getAsArray()));
-            } else {
-                $this->applications_api->notifyApp($channel->getAppId(), "private_message", "edit_message", Array("message" => $message->getAsArray()));
+            if ($channel->getAppId()) {
+                if ($did_create) {
+                    $this->applications_api->notifyApp($channel->getAppId(), "private_message", "new_message", Array("message" => $message->getAsArray()));
+                } else {
+                    $this->applications_api->notifyApp($channel->getAppId(), "private_message", "edit_message", Array("message" => $message->getAsArray()));
+                }
+            }
+
+        }
+
+        $array = $message->getAsArray();
+
+        if ($ephemeral) {
+            $array["ephemeral_id"] = $message->getId();
+            $array["_user_ephemeral"] = true;
+            if (isset($object["ephemeral_message_recipients"])) {
+                $array["ephemeral_message_recipients"] = $object["ephemeral_message_recipients"];
             }
         }
 
-        return $message->getAsArray();
+        return $array;
 
     }
 
