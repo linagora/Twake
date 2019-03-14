@@ -16,7 +16,7 @@ use Symfony\Component\HttpFoundation\Request;
 class MessageController extends Controller
 {
 
-    public function sendMessageAction(Request $request)
+    public function saveMessageAction(Request $request)
     {
 
         $capabilities = ["messages_send"];

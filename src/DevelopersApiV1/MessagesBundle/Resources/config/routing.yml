@@ -1,7 +1,7 @@
 #Message routing
 developers_api_v1_messages_send_message:
-    path:     /send
-    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:sendMessage }
+    path:     /save
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:saveMessage }
     methods: [POST]
 
 developers_api_v1_messages_send_message:

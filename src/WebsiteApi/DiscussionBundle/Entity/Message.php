@@ -10,7 +10,7 @@ use WebsiteApi\CoreBundle\Entity\FrontObject;
 /**
  * Message
  *
- * @ORM\Table(name="message",options={"engine":"MyISAM", "scylladb_keys": {{"channel_id":"ASC", "parent_message_id":"ASC", "id":"DESC"}} })
+ * @ORM\Table(name="message",options={"engine":"MyISAM", "scylladb_keys": {{"channel_id":"ASC", "parent_message_id":"ASC", "id":"DESC"}, {"id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\DiscussionBundle\Repository\MessageRepository")
  */
 class Message extends FrontObject
@@ -90,6 +90,11 @@ class Message extends FrontObject
      * @ORM\Column(name="content", type="twake_text")
      */
     private $content = "[]";
+
+    /**
+     * @ORM\Column(name="user_specific_content", type="twake_text")
+     */
+    private $user_specific_content = "[]";
 
     /**
      * Message constructor.
@@ -397,28 +402,24 @@ class Message extends FrontObject
         return $this;
     }
 
-    /**
-     * Get the value of Content
-     *
-     * @return mixed
-     */
     public function getContent()
     {
-        return $this->content;
+        return json_decode($this->content, true);
     }
 
-    /**
-     * Set the value of Content
-     *
-     * @param mixed content
-     *
-     * @return self
-     */
     public function setContent($content)
     {
-        $this->content = $content;
+        $this->content = json_encode($content);
+    }
 
-        return $this;
+    public function getUserSpecificContent()
+    {
+        return json_decode($this->user_specific_content, true);
+    }
+
+    public function setUserSpecificContent($user_specific_content)
+    {
+        $this->user_specific_content = json_encode($user_specific_content);
     }
 
     public function getAsArray()
@@ -438,7 +439,8 @@ class Message extends FrontObject
             "reactions" => $this->getReactions(),
             "modification_date" => ($this->getModificationDate() ? $this->getModificationDate()->getTimestamp() : null),
             "creation_date" => ($this->getCreationDate() ? $this->getCreationDate()->getTimestamp() : null),
-            "content" => $this->getContent()
+            "content" => $this->getContent(),
+            "user_specific_content" => $this->getUserSpecificContent()
         );
     }
 

@@ -164,7 +164,10 @@ class MarketApplication
                 }
 
                 $application_original->setApiAllowedIp($application["api_allowed_ips"]);
-                $application_original->setApiEventsUrl($application["api_event_url"]);
+
+                if (strpos($application["api_event_url"], "https") === 0 || !$application_original->getisAvailableToPublic()) {
+                    $application_original->setApiEventsUrl($application["api_event_url"]);
+                }
 
                 $application_original->setPublic($application["public"]);
                 if (!$application["public"]) {

@@ -88,6 +88,14 @@ class MessageSystem
 
         //Add my reaction if necessary
         foreach ($messages as $id => $message) {
+
+            //If possible, show only current user content !
+            if ($current_user && isset($message["user_specific_content"][$current_user->getId()])) {
+                $tmp = Array();
+                $tmp[$current_user->getId()] = $message["user_specific_content"][$current_user->getId()];
+                $message["user_specific_content"] = $tmp;
+            }
+
             if ($current_user && count($message["reactions"]) > 0) {
                 $message_reaction_repo = $this->em->getRepository("TwakeDiscussionBundle:MessageReaction");
                 $message_reaction = $message_reaction_repo->findOneBy(Array("user_id" => $current_user->getId(), "message_id" => $message["id"]));
@@ -95,6 +103,7 @@ class MessageSystem
                     $messages[$id]["_user_reaction"] = $message_reaction->getReaction();
                 }
             }
+
         }
 
 
@@ -146,6 +155,7 @@ class MessageSystem
 
     public function save($object, $options, $user = null, $application = null)
     {
+
         $channel_id = $object["channel_id"];
         if (!$channel_id) {
             return false;
@@ -167,10 +177,34 @@ class MessageSystem
         if (isset($object["id"])) {
             $message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => isset($object["_once_replace_message_parent_message"]) ? $object["_once_replace_message_parent_message"] : $object["parent_message_id"], "id" => $object["id"]));
 
+            if (!$message) {
+                $message = $message_repo->findOneBy(Array("id" => $object["id"]));
+                if (isset($object["channel_id"]) && $object["channel_id"] != $message->getChannelId()) {
+                    return false;
+                }
+                if (isset($object["_once_replace_message_parent_message"]) && $object["_once_replace_message_parent_message"] != $message->getParentMessageId()) {
+                    return false;
+                } else
+                    if (isset($object["parent_message_id"]) && $object["parent_message_id"] != $message->getParentMessageId()) {
+                        return false;
+                    }
+            }
+
             //Verify can modify this message
             if ($message && !$this->hasAccess($object, $current_user, $message)) {
                 return false;
             }
+
+            if (!$message) {
+                return false;
+            }
+
+            foreach ($message->getAsArray() as $key => $value) {
+                if (!isset($object[$key])) {
+                    $object[$key] = $value;
+                }
+            }
+
         }
 
         if ($message == null) {
@@ -240,7 +274,34 @@ class MessageSystem
             $message->setSender($user);
         }
 
+
         //Update message values
+        if ($application && isset($object["_once_user_specific_update"])) {
+
+            error_log(json_encode($object));
+
+            $specific_data = $message->getUserSpecificContent();
+            if (!$specific_data) {
+                $specific_data = Array();
+            }
+            $updates = $object["_once_user_specific_update"];
+            if ($updates["user_id"]) {
+                $updates = Array($updates);
+            }
+            foreach ($updates as $update) {
+                $user_id = $update["user_id"];
+                $modifiers = $update["modifiers"];
+                $replace_all_keys = $update["replace_all"];
+                if ($replace_all_keys) {
+                    $specific_data[$user_id] = $modifiers;
+                } else {
+                    foreach ($modifiers as $key => $data) {
+                        $specific_data[$user_id][$key] = $data;
+                    }
+                }
+            }
+            $message->setUserSpecificContent($specific_data);
+        }
 
         $message->setHiddenData($object["hidden_data"]);
         $message->setContent($object["content"]);
