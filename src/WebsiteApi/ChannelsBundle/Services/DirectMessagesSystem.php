@@ -147,6 +147,16 @@ class DirectMessagesSystem extends ChannelSystemAbstract
         $this->entity_manager->persist($channel);
         $this->entity_manager->flush($channel);
 
+        if (!isset($object["id"])) {
+            //Init channel with a first message
+            $init_message = Array(
+                "channel_id" => $channel->getId(),
+                "hidden_data" => Array("type" => "init_channel"),
+                "content" => "[]"
+            );
+            $this->messages_service->save($init_message, Array());
+        }
+
         $this->updateChannelMembers($channel, $members, $current_user->getId());
 
 

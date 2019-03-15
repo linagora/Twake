@@ -205,7 +205,7 @@ class ApplicationApi
 
         if (!$this->curl_rcx) {
             $this->curl_rcx = new RollingCurlX(10);
-            $this->curl_rcx->setTimeout(100);
+            $this->curl_rcx->setTimeout(3000);
             $this->curl_rcx->setHeaders(['Content-Type: application/json']);
         }
 

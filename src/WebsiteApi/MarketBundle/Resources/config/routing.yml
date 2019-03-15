@@ -8,6 +8,12 @@ twake_applications_find:
     path:     /app/find
     defaults: { _controller: TwakeMarketBundle:Application:find }
 
+# Apps API
+
+twake_applications_event:
+    path:     /app/api/event
+    defaults: { _controller: TwakeMarketBundle:ApplicationApi:event }
+
 # Apps Developers
 
 twake_applications_create:
