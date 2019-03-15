@@ -11,7 +11,7 @@ use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 /**
  * DriveFile
  *
- * @ORM\Table(name="drive_file",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "parent_id":"ASC", "isintrash": "ASC", "id":"DESC"}, {"id": "DESC"}} })
+ * @ORM\Table(name="drive_file",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "parent_id":"ASC", "isintrash": "ASC", "id":"DESC"}, {"id": "DESC"}, {"previewhasbeengenerated": "DESC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileRepository")
  */
 class DriveFile extends FrontObject implements ObjectLinksInterface
