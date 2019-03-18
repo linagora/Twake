@@ -260,7 +260,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
                 $create_table .= ")";
 
-                if ($custom_keys_order) {
+                if ($custom_keys_order && $custom_keys_order[0]) {
                     $create_table .= " WITH CLUSTERING ORDER BY (" . $custom_keys_order[0] . ")";
                 }
 

@@ -83,7 +83,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
             return false;
         }
 
-        if (isset($object["app_id"])) {
+        if (isset($object["app_id"]) && $object["app_id"]) {
 
             $members = [$current_user->getId()];
 
@@ -98,7 +98,12 @@ class DirectMessagesSystem extends ChannelSystemAbstract
 
         } else {
 
-            $members = $object["members"];
+            $members = [];
+            foreach ($object["members"] as $member) {
+                if (strlen($member) > 0) {
+                    $members[] = $member;
+                }
+            }
             $members = array_unique($members);
             sort($members);
             $direct_identifier = join("+", $members);
@@ -111,10 +116,12 @@ class DirectMessagesSystem extends ChannelSystemAbstract
             return false;
         }
 
+        $did_create = false;
         if (!isset($object["id"])) {
             //Search if channel exists for this group of users
             $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("identifier" => $direct_identifier));
             if (!$channel) {
+                $did_create = true;
                 $channel = new \WebsiteApi\ChannelsBundle\Entity\Channel();
                 $channel->setDirect(true);
                 $channel->setFrontId($object["front_id"]);
@@ -147,7 +154,7 @@ class DirectMessagesSystem extends ChannelSystemAbstract
         $this->entity_manager->persist($channel);
         $this->entity_manager->flush($channel);
 
-        if (!isset($object["id"])) {
+        if ($did_create) {
             //Init channel with a first message
             $init_message = Array(
                 "channel_id" => $channel->getId(),

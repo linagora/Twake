@@ -206,7 +206,11 @@ class ManagerAdapter
 
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
-        $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+        try {
+            $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+        } catch (\Exception $e) {
+            error_log("Unable to put on ElasticSearch.");
+        }
 
     }
 
@@ -221,7 +225,11 @@ class ManagerAdapter
 
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
-        $this->circle->delete($route);
+        try {
+            $this->circle->delete($route, array(CURLOPT_CONNECTTIMEOUT => 1));
+        } catch (\Exception $e) {
+            error_log("Unable to delete on ElasticSearch.");
+        }
     }
 
     public function es_search($options = Array(), $index = null, $server = "twake")
@@ -239,8 +247,11 @@ class ManagerAdapter
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
         $route .= "_search";
 
-        $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
-
+        try {
+            $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+        } catch (\Exception $e) {
+            error_log("Unable to post on ElasticSearch.");
+        }
 
         $res = $res->getContent();
 

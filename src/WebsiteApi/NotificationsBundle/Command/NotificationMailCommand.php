@@ -32,7 +32,7 @@ class NotificationMailCommand extends ContainerAwareCommand
         $number_of_mails = 0; //Never notified
         $last_mail_before = null; //Never notified
         $delay = 60 * 20; //20 minutes + 10 minutes cron average 25min after message was sent
-        $app = $em->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "messages"));
+        $app = $em->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "messages"));
         $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before, $delay, $app);
         $this->sendMail($users_id_count, "messages_notifications", $app);
         $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before, $delay);

@@ -584,7 +584,7 @@ class CalendarEvents implements CalendarEventsInterface
         $events = $this->doctrine->getRepository("TwakeCalendarBundle:CalendarEvent")->toRemind();
         $linkRepo = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser");
 
-        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publickey" => "calendar"));
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "calendar"));
 
         foreach ($events as $event) {
 
