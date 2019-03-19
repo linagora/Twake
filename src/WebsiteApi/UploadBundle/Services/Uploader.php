@@ -110,7 +110,7 @@ class Uploader extends Controller
 	 */
 	private function uploadTheFile($currentUser, $realfile, $context){
 
-		if($currentUser == null or $currentUser->getId()<=0){
+        if ($currentUser == null || !$currentUser->getId()) {
 			return Array("errors"=>Array("error_not_connected"), "file"=>null, "realfile"=>$realfile);
 		}
 
