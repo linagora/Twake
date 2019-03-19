@@ -41,6 +41,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
         ) {
+
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
@@ -56,7 +57,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $member = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $user));
 
-            $member->setLevel($level);
+            $member->setLevelId($level->getId());
 
             $this->doctrine->persist($member);
             $this->doctrine->flush();
@@ -370,7 +371,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace"=>$workspace->getId(),"id"=>$member->getLevel()));
 
                 if ($currentUserId != null && $level->getisAdmin()) {
-                    $other_workspace_admins = $workspaceUserRepository->findBy(Array("level_id" => $member->getLevel()));
+                    $other_workspace_admins = $workspaceUserRepository->findBy(Array("level_id" => $member->getLevelId()));
                     if (count($other_workspace_admins) <= 2) {
                         foreach ($other_workspace_admins as $other_workspace_admin) {
                             if ($other_workspace_admin->getUser()->getUsername() == "twake_bot") {
@@ -495,7 +496,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                     $users[] = Array(
                         "user" => $user->getUser(),
                         "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
-                        "level" => $user->getLevel(),
+                        "level" => $user->getLevelId(),
                         "externe" => $group_user->getExterne(),
                         "groupLevel" => $this->groupManager->getLevel($groupId,$user->getUser()->getId(),$currentUserId)
                     );

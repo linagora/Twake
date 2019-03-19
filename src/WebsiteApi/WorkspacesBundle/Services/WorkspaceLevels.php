@@ -61,7 +61,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 		$link = $workspaceUserRepository->findOneBy(Array("user"=>$user, "workspace"=>$workspace));
 		if($link){
-            $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace"=>$workspace->getId(),"id"=>$link->getLevel()));
+            $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
             if(!$link || !$level){
                 return false;
             }
@@ -113,7 +113,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 			if(!$link){
 				return null; //No level because no member
 			}
-            $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace"=>$workspace->getId(),"id"=>$link->getLevel()));
+            $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
 
 			return $level;
 

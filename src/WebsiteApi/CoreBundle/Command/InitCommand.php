@@ -122,7 +122,7 @@ class InitCommand extends ContainerAwareCommand
         $manager->flush();
 
         /*
-        // Création des applications de base
+        // Création des applications    de base
         $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "messages"));
         if (!$app) {
             $app = new Application();

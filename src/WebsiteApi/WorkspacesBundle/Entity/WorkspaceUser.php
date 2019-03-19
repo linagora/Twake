@@ -107,7 +107,7 @@ class WorkspaceUser
 	/**
 	 * @return mixed
 	 */
-	public function getLevel()
+    public function getLevelId()
 	{
 		return $this->level_id;
 	}
@@ -115,9 +115,9 @@ class WorkspaceUser
 	/**
 	 * @param mixed $level
 	 */
-	public function setLevel($level)
-	{
-		$this->level = $level;
+    public function setLevelId($level)
+    {
+        $this->level_id = $level;
 	}
 
 	/**
@@ -197,7 +197,7 @@ class WorkspaceUser
             "id" => $this->getId(),
             "user" => $this->getUser()->getAsArray(),
             "workspace" => $this->getWorkspace()->getAsArray(),
-            "level_id" => $this->getLevel(),
+            "level_id" => $this->getLevelId(),
             "date_added" => $this->getDateAdded(),
             "last_access" => $this->getLastAccess(),
             "ishidden" => $this->getisHidden(),
