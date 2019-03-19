@@ -14,7 +14,7 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 class FilesController extends Controller
 {
 
-    public function createAction(Request $request)
+    public function sendAsMessageAction(Request $request)
     {
 
         $data = Array(
@@ -22,56 +22,24 @@ class FilesController extends Controller
             "data" => Array()
         );
 
-        $groupId = $request->request->get("groupId", 0);
-        $parentId = $request->request->get("parentId", 0);
-        $filename = $request->request->get("name", "New");
-        $content = $request->request->get("content", "");
-        $model = $request->request->get("model", null);
-        $isDetached = $request->request->get("isDetached", false);
-        $isDirectory = $request->request->get("isDirectory", true);
-        $url = $request->request->get("url",null);
-        $appid = $request->request->get("appid", null);
-        $directory = $request->request->get("directory", false);
-        $externalDrive = $directory;
+        $application = $this->get("app.applications")->findBySimpleName("twake_drive", true);
 
-        $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
+        $object = $request->request->get("message", null);
+        $chan_id = $object["channel_id"];
 
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
-            $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
-            $fileSystem->setRootDirectory($directory);
-        }
-        $data["errors"] = $this->get('app.workspace_levels')->errorsAccess($this->getUser(), $groupId, "drive:write");
+        $object = $this->get("app.messages")->save($object, Array(), $this->getUser(), $application);
 
-        if (count($data["errors"]) == 0) {
+        $event = Array(
+            "client_id" => "bot",
+            "action" => "save",
+            "object_type" => "",
+            "object" => $object
+        );
+        $this->get("app.websockets")->push("messages/" . $chan_id, $event);
 
-            if (!$fileSystem->canAccessTo($parentId, $groupId, $this->getUser())) {
-                $data["errors"] = "notallowed";
-            } else {
-
-                $file = $fileSystem->create($groupId, $parentId, $filename, $content, $isDirectory, $isDetached, $url, $this->getUser()->getId(), $appid);
-
-                if($model){
-                    //IMPORTANT ! Disable local files !!!
-                    if (strpos($model, "http://") !== false) {
-                        $model = "http://" . str_replace("http://", "", $model);
-                    } else {
-                        $model = "https://" . str_replace("https://", "", $model);
-                    }
-                    $content = file_get_contents($model);
-                    $this->get("app.drive.adapter_selector")->getFileSystem()->setRawContent($file->getId(), $content);
-
-                }
-
-                if (!$file) {
-                    $data["errors"][] = "unknown";
-                } else {
-                    $data["data"]["fileId"] = $file->getId();
-                }
-            }
-        }
+        $data["data"] = $object;
 
         return new JsonResponse($data);
-
     }
 
     public function moveDetachedFileToDriveAction(Request $request){

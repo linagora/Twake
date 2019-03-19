@@ -20,11 +20,18 @@ class MarketApplication
         $this->pricingPlan = $pricing;
     }
 
-    public function find($id)
+    public function findBySimpleName($name, $entity = false)
+    {
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $app = $repo->findOneBy(Array("simple_name" => $name));
+        return ($app && !$entity) ? $app->getAsArray() : $app;
+    }
+
+    public function find($id, $entity = false)
     {
         $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
         $app = $repo->findOneBy(Array("id" => $id));
-        return $app ? $app->getAsArray() : $app;
+        return ($app && !$entity) ? $app->getAsArray() : $app;
     }
 
     public function createApp($workspace_id, $name, $simple_name, $app_group_name, $current_user_id)

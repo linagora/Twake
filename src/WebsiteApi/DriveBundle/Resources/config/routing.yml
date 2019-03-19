@@ -3,18 +3,20 @@
 #Drive v1.2
 drive_get:
     path:     /get
-    defaults: { _controller: TwakeDriveBundle:Base:get}
+    defaults: { _controller: TwakeDriveBundle:Base:get s}
 drive_save:
     path:     /save
-    defaults: { _controller: TwakeDriveBundle:Base:save}
+    defaults: { _controller: TwakeDriveBundle:Base:save }
 drive_remove:
     path:     /remove
-    defaults: { _controller: TwakeDriveBundle:Base:remove}
-
-
+    defaults: { _controller: TwakeDriveBundle:Base:remove }
 drive_get_a_file:
     path:     /find
-    defaults: { _controller: TwakeDriveBundle:Base:find}
+    defaults: { _controller: TwakeDriveBundle:Base:find }
+
+drive_send_as_message:
+    path:     /send_message
+    defaults: { _controller: TwakeDriveBundle:Files:sendAsMessage }
 
 # Labels
 

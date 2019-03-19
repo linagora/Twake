@@ -631,6 +631,8 @@ class DriveFileSystem
                 $this->updateSize($directory_ent, $size);
             }
             $this->improveName($drive_element);
+        } else {
+            $drive_element->setDetachedFile(true);
         }
 
         $this->doctrine->persist($drive_element);
@@ -838,8 +840,11 @@ class DriveFileSystem
             }
 
             $file->setLastModified();
-            $parent = $this->convertToEntity($file->getParentId(), "TwakeDriveBundle:DriveFile");
-            $this->updateSize($parent, $file->getSize());
+
+            if (!$file->getDetachedFile()) {
+                $parent = $this->convertToEntity($file->getParentId(), "TwakeDriveBundle:DriveFile");
+                $this->updateSize($parent, $file->getSize());
+            }
 
         } else {
             $this->delete($file);

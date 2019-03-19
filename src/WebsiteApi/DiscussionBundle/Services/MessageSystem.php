@@ -153,6 +153,13 @@ class MessageSystem
 
     }
 
+    /**
+     * @param $object
+     * @param $options
+     * @param null $user
+     * @param null $application
+     * @return array
+     */
     public function save($object, $options, $user = null, $application = null)
     {
 
@@ -273,6 +280,9 @@ class MessageSystem
             if ($application) {
                 $message->setMessageType(1);
                 $message->setApplicationId($application->getId());
+                if ($user) {
+                    $message->setSender($user);
+                }
             } else if (!$user && !$application) {
                 $message->setMessageType(2);
             } else if ($user && !$application) {
@@ -443,6 +453,10 @@ class MessageSystem
 
     private function share($message)
     {
+
+        if (!$message) {
+            return;
+        }
 
         $event = Array(
             "client_id" => "system",
