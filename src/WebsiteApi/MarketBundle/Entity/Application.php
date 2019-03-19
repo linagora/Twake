@@ -35,7 +35,6 @@ class Application extends SearchableObject
 
     /**
      * @ORM\Column(name="default", type="twake_boolean")
-     * @ORM\Id
      */
     protected $default;
 

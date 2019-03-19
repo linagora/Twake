@@ -133,10 +133,12 @@ class InitCommand extends ContainerAwareCommand
         $app->setWebsite("https://twakeapp.com");
         $app->setDescription("Application de stockage de fichier de Twake.");
         $app->setSimpleName("twake_drive");
+        $app->setAppGroupName("twake");
         $app->setPublic(true);
         $app->setIsAvailableToPublic(true);
         $app->setTwakeTeamValidation(true);
-        $app->setDisplayConfiguration(json_decode('{"messages_module":{"in_plus":true}},"channel_tab":true,"app":true}'));
+        $app->setDisplayConfiguration(json_decode('{"messages_module":{"in_plus":true},"channel_tab":true,"app":true}', true));
+        $app->setDefault(true);
         $manager->persist($app);
 
         $manager->flush();
