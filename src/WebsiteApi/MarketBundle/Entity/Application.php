@@ -11,7 +11,7 @@ use WebsiteApi\CoreBundle\Entity\SearchableObject;
 /**
  * Application
  *
- * @ORM\Table(name="application",options={"engine":"MyISAM", "scylladb_keys": {{"group_id": "ASC", "app_group_name": "ASC", "id": "ASC"}, {"id": "ASC"}, {"simple_name": "ASC"}}})
+ * @ORM\Table(name="application",options={"engine":"MyISAM", "scylladb_keys": {{"group_id": "ASC", "app_group_name": "ASC", "id": "ASC"}, {"id": "ASC"}, {"simple_name": "ASC"}, {"default": "ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\MarketBundle\Repository\ApplicationRepository")
  */
 class Application extends SearchableObject
@@ -32,6 +32,12 @@ class Application extends SearchableObject
      * @ORM\Id
      */
     protected $group_id;
+
+    /**
+     * @ORM\Column(name="default", type="twake_boolean")
+     * @ORM\Id
+     */
+    protected $default;
 
     /**
      * @ORM\Column(name="app_group_name", type="twake_text")
@@ -183,6 +189,22 @@ class Application extends SearchableObject
     public function setGroupId($group_id)
     {
         $this->group_id = $group_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getDefault()
+    {
+        return $this->default;
+    }
+
+    /**
+     * @param mixed $default
+     */
+    public function setDefault($default)
+    {
+        $this->default = $default;
     }
 
     /**

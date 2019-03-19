@@ -187,7 +187,7 @@ class Groups implements GroupsInterface
     public function changeLogo($groupId, $logo, $currentUserId = null, $uploader = null)
     {
         if($currentUserId!=null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_DATA")){
-            error_log("1");
+
             $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
             $group = $groupRepository->find($groupId);
 
@@ -211,11 +211,9 @@ class Groups implements GroupsInterface
                 )
             );
             $this->pusher->push($datatopush, "group/" . $group->getId());
-            error_log("2");
 
             return true;
         }
-        error_log("3");
 
         return false;
     }
@@ -226,17 +224,19 @@ class Groups implements GroupsInterface
 
         $groupApps = $groupAppRepository->findBy(Array("group" => $group));
 
-        /*$listApps = $appRepository->findBy(Array("default"=>true));
+        $listApps = $appRepository->findBy(Array("default" => true));
 
         if(count($groupApps) != 0){
             return false;
         }else{
             foreach ( $listApps as $app ){
-                $this->market->addApplication($group->getId(),$app->getId(),null,true);
+                $groupapp = new GroupApp($group, $app->getId());
+                $groupapp->setWorkspaceDefault(true);
+                $this->doctrine->persist($groupapp);
             }
             $this->doctrine->flush();
             return true;
-        }*/
+        }
         return true;
     }
 

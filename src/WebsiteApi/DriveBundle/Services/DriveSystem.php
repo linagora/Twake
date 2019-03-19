@@ -58,24 +58,24 @@ class DriveSystem
 
     public function find($options, $current_user)
     {
-        $directory_id = $options["directory_id"];
+        $element_id = $options["element_id"];
         $workspace_id = $options["workspace_id"];
 
-        if (!$directory_id) {
-            $directory_id = "root";
+        if (!$element_id) {
+            $element_id = "root";
         }
 
         if (!$this->hasAccess($options, $current_user)) {
             return false;
         }
 
-        $data = $this->dfs->getInfos($workspace_id, $directory_id);
+        $data = $this->dfs->getInfos($workspace_id, $element_id);
 
         if (!$data) {
             return null;
         }
 
-        $path = $this->dfs->getPath($workspace_id, $directory_id);
+        $path = $this->dfs->getPath($workspace_id, $element_id);
 
         $data = $data->getAsArray();
         $data["path"] = $path;

@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
+use WebsiteApi\CoreBundle\Services\DoctrineAdapter\FakeCassandraTimeuuid;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
@@ -121,33 +122,26 @@ class InitCommand extends ContainerAwareCommand
 
         $manager->flush();
 
-        /*
-        // Création des applications    de base
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "messages"));
-        if (!$app) {
-            $app = new Application();
-        }
-        $app->setPublicKey("messages");
-        $app->setName("Messages");
-        $app->setDescription("The powerful Twake messaging app.");
-        $app->setShortDescription("The powerful Twake messaging app.");
-        $app->setUrl("messages-auto");
-        $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "post":true, "pin":true}}', true));
-        $app->setApplicationRights(json_decode('{"messages":"manage"}', true));
-        $app->setEnabled(1);
-        $app->setColor("0992D6");
-        $app->setCanCreateFile(0);
-        $app->setIsCapable(1);
-        $app->setDefault(1);
-        $app->setCreateFileData(json_decode("", true));
-        $app->setMessageModule(0);
-        $app->setOrder(0);
 
-        $app->setThumbnail($serverbase . "/medias/apps/messages.png");
-        $app->setMessageModuleUrl("");
-        $app->setEditableRights(1);
-        $app->setCgu("");
+        // Création des applications    de base
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "twake_drive"));
+        if (!$app) {
+            $app = new Application(new FakeCassandraTimeuuid(), "Documents");
+            $app->setApiPrivateKey($app->generatePrivateApiKey());
+        }
+        $app->setIconUrl("/public/img/twake-emoji/twake-drive.png");
+        $app->setWebsite("https://twakeapp.com");
+        $app->setDescription("Application de stockage de fichier de Twake.");
+        $app->setSimpleName("twake_drive");
+        $app->setPublic(true);
+        $app->setIsAvailableToPublic(true);
+        $app->setTwakeTeamValidation(true);
+        $app->setDisplayConfiguration(json_decode('{"messages_module":{"in_plus":true}},"channel_tab":true,"app":true}'));
         $manager->persist($app);
+
+        $manager->flush();
+
+        /*
 
         $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "drive"));
         if (!$app) {

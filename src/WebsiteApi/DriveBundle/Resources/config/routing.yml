@@ -3,7 +3,7 @@
 #Drive v1.2
 drive_get:
     path:     /get
-    defaults: { _controller: TwakeDriveBundle:Base:get s}
+    defaults: { _controller: TwakeDriveBundle:Base:get}
 drive_save:
     path:     /save
     defaults: { _controller: TwakeDriveBundle:Base:save }
