@@ -21,8 +21,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
     /* @var WorkspacesActivities $workspacesActivities*/
     var $workspacesActivities;
     var $groupManager;
+    var $channels_system;
 
-    public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner, $pusher, $priceService, $messages, $calendar,$workspacesActivities,$groupManager)
+    public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner, $pusher, $priceService, $messages, $calendar, $workspacesActivities, $groupManager, $channels_system)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -34,6 +35,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         $this->calendar = $calendar;
         $this->workspacesActivities = $workspacesActivities;
         $this->groupManager = $groupManager;
+        $this->channels_system = $channels_system;
     }
 
     public function changeLevel($workspaceId, $userId, $levelId, $currentUserId = null)
@@ -321,6 +323,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 //            $this->workspacesActivities->recordActivity($workspace, $user->getId(), "workspace", "workspace.activity.workspace.add_member");
 //            $this->messages->addWorkspaceMember($workspace, $user);
 //            $this->calendar->addWorkspaceMember($workspace, $user);
+            $this->channels_system->addWorkspaceMember($workspace, $user);
 
             return true;
         }
@@ -440,6 +443,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
            /* $this->messages->delWorkspaceMember($workspace, $user);
             $this->calendar->delWorkspaceMember($workspace, $user);*/
+            $this->channels_system->delWorkspaceMember($workspace, $user);
 
             return true;
         }

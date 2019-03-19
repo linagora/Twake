@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 class ChannelsSystem extends ChannelSystemAbstract
 {
 
-    function __construct($entity_manager, $messages_service)
+    function __construct($entity_manager, $messages_service, $workspace_members)
     {
         $this->messages_service = $messages_service;
         parent::__construct($entity_manager);
@@ -49,7 +49,7 @@ class ChannelsSystem extends ChannelSystemAbstract
             $ok = true;
             if ($channel->getPrivate()) {
 
-                $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => 0, "user" => $current_user, "channel_id" => $channel->getId()));
+                $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user" => $current_user, "channel_id" => $channel->getId()));
 
                 if (!$res) {
                     $ok = false;

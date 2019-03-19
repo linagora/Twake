@@ -55,7 +55,7 @@ class ChannelSystemAbstract
 
         foreach ($current_members as $member_id) {
             if (!in_array($member_id, $members_ids)) {
-                $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel" => $object, "user" => $usersRepo->find($member_id)));
+                $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user" => $usersRepo->find($member_id)));
                 $this->entity_manager->remove($member);
             }
         }
@@ -64,6 +64,34 @@ class ChannelSystemAbstract
         $this->entity_manager->persist($channel_entity);
         $this->entity_manager->flush();
 
+    }
+
+    public function delWorkspaceMember($workspace, $user)
+    {
+        $channels = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findBy(
+            Array("original_workspace_id" => $workspace->getId(), "direct" => false)
+        );
+
+        foreach ($channels as $channel_entity) {
+            $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user" => $user));
+            $this->entity_manager->remove($member);
+        }
+        $this->entity_manager->flush();
+    }
+
+    public function addWorkspaceMember($workspace, $user)
+    {
+        $channels = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findBy(
+            Array("original_workspace_id" => $workspace->getId(), "direct" => false)
+        );
+
+        foreach ($channels as $channel_entity) {
+            if (!$channel_entity->getPrivate()) {
+                $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($user, $channel_entity);
+                $this->entity_manager->persist($member);
+            }
+        }
+        $this->entity_manager->flush();
     }
 
 }
