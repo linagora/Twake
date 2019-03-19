@@ -90,23 +90,23 @@ class WorkspaceMembersController extends Controller
             }
             $asExterne = $element[1] == "1" ? true : false;
             $element = $element[0];
-            if (strrpos($element, "@") <= 0) { //No mail or "@username"
-                $res = $this->get("app.workspace_members")->addMemberByUsername($workspaceId, $element, $asExterne, $this->getUser()->getId());
-                if ($res) {
-                    $added["user"][] = $element;
+            if (strlen($element) > 0) {
+                if (strrpos($element, "@") <= 0) { //No mail or "@username"
+                    $res = $this->get("app.workspace_members")->addMemberByUsername($workspaceId, $element, $asExterne, $this->getUser()->getId());
+                    if ($res) {
+                        $added["user"][] = $element;
+                    } else {
+                        $not_added[] = $element;
+                    }
                 } else {
-                    $not_added[] = $element;
-                }
-            } else {
-                $res = $this->get("app.workspace_members")->addMemberByMail($workspaceId, $element, $asExterne, $this->getUser()->getId());
-                if($res == "user"){
-                    $added["user"][] = $element;
-                }
-                elseif ($res == "mail"){
-                    $added["pending"][] = $element;
-                }
-                else{
-                    $not_added[] = $element;
+                    $res = $this->get("app.workspace_members")->addMemberByMail($workspaceId, $element, $asExterne, $this->getUser()->getId());
+                    if ($res == "user") {
+                        $added["user"][] = $element;
+                    } elseif ($res == "mail") {
+                        $added["pending"][] = $element;
+                    } else {
+                        $not_added[] = $element;
+                    }
                 }
             }
         }
