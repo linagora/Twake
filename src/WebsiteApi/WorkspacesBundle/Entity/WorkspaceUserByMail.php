@@ -7,7 +7,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * WorkspaceUserByMail
  *
- * @ORM\Table(name="workspace_user_by_mail",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "mail": "DESC", "id":"ASC"}, {"id":"ASC"}}})
+ * @ORM\Table(name="workspace_user_by_mail",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "mail": "DESC", "id":"ASC"}, {"id":"ASC"}, {"mail":"ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceUserByMailRepository")
  */
 class WorkspaceUserByMail

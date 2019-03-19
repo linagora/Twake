@@ -75,7 +75,6 @@ class WorkspaceMembersController extends Controller
 
         $workspaceId = $request->request->get("workspaceId");
         $list = $request->request->get("list", "");
-        $asExterne = $request->request->getBoolean("asExterne");
 
         $list = str_replace(Array(",", ";"), " ", $list);
         $list = preg_replace('!\s+!', ' ', $list);
@@ -84,8 +83,13 @@ class WorkspaceMembersController extends Controller
         $added = Array("user"=>Array(),"pending"=>Array());
         $not_added = Array();
         foreach ($list as $element) {
-            error_log("save ".$element);
             $element = trim($element);
+            $element = explode("|", $element);
+            if (!isset($element[1])) {
+                $element[1] = "0";
+            }
+            $asExterne = $element[1] == "1" ? true : false;
+            $element = $element[0];
             if (strrpos($element, "@") <= 0) { //No mail or "@username"
                 $res = $this->get("app.workspace_members")->addMemberByUsername($workspaceId, $element, $asExterne, $this->getUser()->getId());
                 if ($res) {

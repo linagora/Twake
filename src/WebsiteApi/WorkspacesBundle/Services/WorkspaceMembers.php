@@ -178,6 +178,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         ) {
             $mail = $this->string_cleaner->simplifyMail($mail);
 
+            $workspaceUserByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
+            $workspaceUserByMailRepository->removeBy(Array("workspace" => $workspaceId, "mail" => $mail));
+
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
             $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
 
@@ -192,12 +195,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 return "mail ".$this->removeMember($workspaceId, $userMail->getUser()->getId());
             }
 
-            $workspaceUserByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
-            $userByMail = $workspaceUserByMailRepository->findOneBy(Array("workspace" => $workspaceId, "mail" => $mail));
-            if($userByMail){
-                $this->doctrine->remove($userByMail);
-                return true;
-            }
             $this->doctrine->flush();
         }
 
