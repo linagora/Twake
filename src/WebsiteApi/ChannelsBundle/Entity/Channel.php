@@ -114,6 +114,11 @@ class Channel
      */
     private $last_activity;
 
+    /**
+     * @ORM\Column(name="messages_increment", type="integer")
+     */
+    private $messages_increment = 0; //Will increment on each new message to count notifications
+
 
     public function __construct()
     {
@@ -139,7 +144,8 @@ class Channel
             "original_group" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
             "members_count" => $this->getMembersCount(),
             "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
-            "members" => $this->getMembers()
+            "members" => $this->getMembers(),
+            "messages_increment" => $this->getMessagesIncrement()
         );
     }
 
@@ -445,6 +451,22 @@ class Channel
     public function setMessagesCount($messages_count)
     {
         $this->messages_count = $messages_count;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMessagesIncrement()
+    {
+        return $this->messages_increment ? $this->messages_increment : 0;
+    }
+
+    /**
+     * @param mixed $messages_increment
+     */
+    public function setMessagesIncrement($messages_increment)
+    {
+        $this->messages_increment = $messages_increment;
     }
 
 }

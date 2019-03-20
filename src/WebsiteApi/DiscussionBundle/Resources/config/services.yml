@@ -1,31 +1,4 @@
 services:
     app.messages:
             class: WebsiteApi\DiscussionBundle\Services\MessageSystem
-            arguments: ["@app.twake_doctrine", "@app.applications_api", "@app.websockets"]
-
-    app.messages_master:
-            class: WebsiteApi\DiscussionBundle\Services\MessagesMasterService
-            arguments: ["@app.twake_doctrine",'@app.workspace_levels']
-
-    app.streamSystem:
-            class: WebsiteApi\DiscussionBundle\Services\StreamSystem
-            arguments: ["@app.string_cleaner", "@app.twake_doctrine", '@security.authorization_checker','@app.pusher', '@app.contacts', '@app.workspace_levels', '@app.workspace_members','@app.messagesNotificationsCenter','@app.callSystem',"@app.messages"]
-
-    app.messagesNotificationsCenter:
-            class: WebsiteApi\DiscussionBundle\Services\MessagesNotificationsCenter
-            arguments: [ "@app.twake_doctrine","@app.notifications",'@app.pusher', "@app.workspaces"]
-
-    discussion.topic:
-          class: WebsiteApi\DiscussionBundle\Topic\DiscussionTopic
-          tags:
-              - { name: gos_web_socket.topic }
-
-    discussion.notifications.topic:
-          class: WebsiteApi\DiscussionBundle\Topic\NotificationsCenterTopic
-          tags:
-              - { name: gos_web_socket.topic }
-
-    discussionspace.topic:
-          class: WebsiteApi\DiscussionBundle\Topic\DiscussionSpaceTopic
-          tags:
-              - { name: gos_web_socket.topic }
+            arguments: ["@app.twake_doctrine", "@app.applications_api", "@app.websockets", "@app.channels.notifications"]

@@ -155,6 +155,7 @@ class Application extends SearchableObject
     {
         $this->group_id = $group_id;
         $this->name = $name;
+        $this->creation_date = new \DateTime();
     }
 
 
@@ -603,7 +604,7 @@ class Application extends SearchableObject
             "icon_url" => $this->getIconUrl(),
             "website" => $this->getWebsite(),
             "install_count" => $this->getInstallCount(),
-            "creation_date" => $this->getCreationDate()->getTimestamp(),
+            "creation_date" => $this->getCreationDate() ? $this->getCreationDate()->getTimestamp() : new \DateTime(),
             "privileges" => $this->getPrivileges(),
             "capabilities" => $this->getCapabilities(),
             "display" => $this->getDisplayConfiguration(),

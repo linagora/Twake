@@ -18,11 +18,12 @@ use WebsiteApi\DiscussionBundle\Model\MessagesSystemInterface;
 class MessageSystem
 {
 
-    function __construct($entity_manager, $applications_api, $websockets_service)
+    function __construct($entity_manager, $applications_api, $websockets_service, $message_notifications_center_service)
     {
         $this->em = $entity_manager;
         $this->applications_api = $applications_api;
         $this->websockets_service = $websockets_service;
+        $this->message_notifications_center_service = $message_notifications_center_service;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -251,16 +252,6 @@ class MessageSystem
 
             $did_create = true;
 
-            if (!$ephemeral) {
-
-                $channel->setMessagesCount($channel->getMessagesCount() + 1);
-
-                $this->em->persist($channel);
-
-                //TODO update channel last id and last activity etc
-
-            }
-
         } else if ($message->getContent() != $object["content"]) {
             $message->setEdited(true);
             $message->setModificationDate(new \DateTime());
@@ -381,6 +372,15 @@ class MessageSystem
         $this->em->persist($message);
 
         if (!$ephemeral) {
+
+            if ($channel && $did_create) {
+                $channel->setMessagesCount($channel->getMessagesCount() + 1);
+
+                $this->message_notifications_center_service->newElement($channel, $message, $user);
+
+                $this->em->persist($channel);
+            }
+
             $this->em->flush();
 
             if ($channel->getAppId()) {

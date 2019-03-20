@@ -59,7 +59,10 @@ class DirectMessagesSystem extends ChannelSystemAbstract
             if ($link->getChannelId()) {
                 $channel = $channelRepo->find(Array("direct" => 1, "original_workspace_id" => "", "id" => $link->getChannelId()));
                 if ($channel) {
-                    $result[] = $channel->getAsArray();
+                    $tmp = $channel->getAsArray();
+                    $tmp["_user_last_message_increment"] = $link->getLastMessagesIncrement();
+                    $tmp["_user_last_access"] = $link->getLastAccess() ? $link->getLastAccess()->getTimestamp() : null;
+                    $result[] = $tmp;
                 }
             }
         }

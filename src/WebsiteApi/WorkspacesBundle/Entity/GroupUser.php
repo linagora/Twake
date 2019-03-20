@@ -81,6 +81,11 @@ class GroupUser
      */
     protected $appsusage_period;
 
+    /**
+     * @ORM\Column(type="twake_boolean")
+     */
+    private $hasnotifications = false;
+
 	public function __construct($group, $user) {
 		$this->group = $group;
 		$this->user = $user;
@@ -283,6 +288,22 @@ class GroupUser
     public function setExterne($externe)
     {
         $this->externe = $externe;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHasNotifications()
+    {
+        return $this->hasnotifications;
+    }
+
+    /**
+     * @param mixed $hasnotifications
+     */
+    public function setHasNotifications($hasnotifications)
+    {
+        $this->hasnotifications = $hasnotifications;
     }
 
 

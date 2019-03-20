@@ -16,14 +16,13 @@ class WorkspaceMembers implements WorkspaceMembersInterface
     private $doctrine;
     private $pusher;
     private $pricing;
-    private $messages;
     private $calendar;
     /* @var WorkspacesActivities $workspacesActivities*/
     var $workspacesActivities;
     var $groupManager;
     var $channels_system;
 
-    public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner, $pusher, $priceService, $messages, $calendar, $workspacesActivities, $groupManager, $channels_system)
+    public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner, $pusher, $priceService, $calendar, $workspacesActivities, $groupManager, $channels_system)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -31,7 +30,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         $this->twake_mailer = $twake_mailer;
         $this->pusher = $pusher;
         $this->pricing = $priceService;
-        $this->messages = $messages;
         $this->calendar = $calendar;
         $this->workspacesActivities = $workspacesActivities;
         $this->groupManager = $groupManager;

@@ -12,42 +12,16 @@ use WebsiteApi\UsersBundle\Entity\User;
 
 class NotificationsTopic implements TopicInterface, PushableTopicInterface
 {
-	public function getName(){ return 'notifications.topic'; }
 
-	var $doctrine;
-	var $clientManipulator;
-
-    public function __construct($clientManipulator, $doctrine) {
-	    $this->clientManipulator = $clientManipulator;
-	    $this->doctrine = $doctrine;
-    }
+    public function getName(){ return 'notifications.topic'; }
 
     public function onSubscribe( ConnectionInterface $connection, Topic $topic, WampRequest $request ){
-	    $currentUser = $this->clientManipulator->getClient($connection);
-	    if (!($currentUser instanceof User)) {
-		    $topic->remove($connection); //Eject the hacker !
-		    return;
-	    }
-	    //Verify user is logged in
-	    if ($currentUser == null
-		    || is_string($currentUser)
-	    ) {
-		    $topic->remove($connection); //Eject the hacker !
-		    return; //Cancel operation
-	    }
-	    if($currentUser->getId()!= $request->getAttributes()->get('id_user')){
-		    $topic->remove($connection); //Eject the hacker !
-		    return;
-	    }
     }
 
 	public function onPush(Topic $topic, WampRequest $request, $data, $provider)
 	{
 		$topic->broadcast($data);
 	}
-
-
-	/* UNUSED */
 
 	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible){
 	}

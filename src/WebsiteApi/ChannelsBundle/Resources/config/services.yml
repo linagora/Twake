@@ -6,3 +6,7 @@ services:
     app.channels.channels_system:
             class: WebsiteApi\ChannelsBundle\Services\ChannelsSystem
             arguments: ["@app.twake_doctrine", "@app.messages"]
+
+    app.channels.notifications:
+            class: WebsiteApi\ChannelsBundle\Services\ChannelsNotificationsSystem
+            arguments: [ "@app.twake_doctrine", "@app.notifications", "@app.pusher"]

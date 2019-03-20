@@ -9,20 +9,3 @@ services:
         class: WebsiteApi\NotificationsBundle\Topic\NotificationsTopic
         tags:
             - { name: gos_web_socket.topic }
-        arguments: ["@gos_web_socket.websocket.client_manipulator", "@app.twake_doctrine"]
-
-
-    drive.activity.topic:
-        class: WebsiteApi\NotificationsBundle\Topic\DriveActivityTopic
-        tags:
-            - { name: gos_web_socket.topic }
-
-    calendar.activity.topic:
-        class: WebsiteApi\NotificationsBundle\Topic\CalendarActivityTopic
-        tags:
-            - { name: gos_web_socket.topic }
-
-    project.activity.topic:
-        class: WebsiteApi\NotificationsBundle\Topic\ProjectActivityTopic
-        tags:
-            - { name: gos_web_socket.topic }

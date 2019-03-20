@@ -34,6 +34,7 @@ class ChannelMember
 
     /**
      * @ORM\Column(name="channel_id", type="twake_timeuuid")
+     * @ORM\Id
      */
     private $channel_id;
 
@@ -57,6 +58,16 @@ class ChannelMember
      * @ORM\Column(name="last_access", type="twake_datetime" , options={"default" : "2018-07-27 14:00:58"})
      */
     private $last_access = 0;
+
+    /**
+     * @ORM\Column(name="muted", type="twake_boolean")
+     */
+    private $muted = 0;
+
+    /**
+     * @ORM\Column(name="last_messages_increment", type="integer")
+     */
+    private $last_messages_increment = 0; //Will increment on each new message to count notifications
 
     /**
      * ChannelMember constructor.
@@ -153,6 +164,36 @@ class ChannelMember
         $this->direct = $direct;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getMuted()
+    {
+        return $this->muted;
+    }
 
+    /**
+     * @param mixed $muted
+     */
+    public function setMuted($muted)
+    {
+        $this->muted = $muted;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastMessagesIncrement()
+    {
+        return $this->last_messages_increment;
+    }
+
+    /**
+     * @param mixed $last_messages_increment
+     */
+    public function setLastMessagesIncrement($last_messages_increment)
+    {
+        $this->last_messages_increment = $last_messages_increment;
+    }
 
 }

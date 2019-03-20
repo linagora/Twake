@@ -46,17 +46,13 @@ class ChannelsSystem extends ChannelSystemAbstract
 
         $result = [];
         foreach ($channels as $channel) {
-            $ok = true;
-            if ($channel->getPrivate()) {
+            $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user" => $current_user, "channel_id" => $channel->getId()));
+            if ($res) {
+                $tmp = $channel->getAsArray();
+                $tmp["_user_last_message_increment"] = $res->getLastMessagesIncrement();
+                $tmp["_user_last_access"] = $res->getLastAccess() ? $res->getLastAccess()->getTimestamp() : null;
 
-                $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user" => $current_user, "channel_id" => $channel->getId()));
-
-                if (!$res) {
-                    $ok = false;
-                }
-            }
-            if ($ok) {
-                $result[] = $channel->getAsArray();
+                $result[] = $tmp;
             }
         }
 

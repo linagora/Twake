@@ -26,7 +26,7 @@ services:
 
     app.workspace_members:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspaceMembers
-        arguments: ["@app.twake_doctrine", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner","@app.pusher","@app.pricing_plan", "@app.messages_master", "@app.calendars", '@app.workspaces_activities', '@app.group_managers', '@app.channels.channels_system']
+        arguments: ["@app.twake_doctrine", "@app.workspace_levels", "@app.twake_mailer", "@app.string_cleaner","@app.pusher","@app.pricing_plan", "@app.calendars", '@app.workspaces_activities', '@app.group_managers', '@app.channels.channels_system']
 
     app.workspaces:
         class: WebsiteApi\WorkspacesBundle\Services\Workspaces

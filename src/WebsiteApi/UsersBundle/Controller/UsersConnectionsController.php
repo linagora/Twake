@@ -250,10 +250,8 @@ class UsersConnectionsController extends Controller
 			$workspaces = Array();
 			foreach ($workspaces_obj as $workspace_obj){
                 $value = $workspace_obj["workspace"]->getAsArray();
-                $value["last_access"] = $workspace_obj["last_access"]->getTimestamp();
-                $value["ishidden"] = $workspace_obj["ishidden"];
-                $value["hasnotifications"] = $workspace_obj["hasnotifications"];
-                $value["isfavorite"] = $workspace_obj["isfavorite"];
+                $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
+                $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
 
                 $workspaces[] = $value;
             }

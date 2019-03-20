@@ -53,17 +53,7 @@ class WorkspaceUser
     /**
      * @ORM\Column(type="twake_boolean")
      */
-    private $ishidden = false;
-
-    /**
-     * @ORM\Column(type="twake_boolean")
-     */
-    private $isfavorite = false;
-
-    /**
-     * @ORM\Column(type="twake_boolean")
-     */
-    private $hasnotifications = true;
+    private $hasnotifications = false;
 
     public function __construct($workspace, $user, $level_id)
     {
@@ -200,8 +190,6 @@ class WorkspaceUser
             "level_id" => $this->getLevelId(),
             "date_added" => $this->getDateAdded(),
             "last_access" => $this->getLastAccess(),
-            "ishidden" => $this->getisHidden(),
-            "isfavorite" => $this->getisFavorite(),
             "hasnotifications" => $this->getHasNotifications()
         );
     }
