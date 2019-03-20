@@ -160,7 +160,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $this->twake_mailer->send($mail, "inviteToWorkspaceMail", Array(
                 "_language" => $currentUser ? $currentUser->getLanguage() : "en",
                 "mail" => $mail,
-                "sender_user" => $currentUser ? $currentUser->getUsername() : "twakebot",
+                "sender_user" => $currentUser ? $currentUser->getUsername() : "TwakeBot",
                 "sender_user_mail" => $currentUser ? $currentUser->getEmail() : "noreply@twakeapp.com",
                 "workspace" => $workspace->getName(),
                 "group" => $workspace->getGroup()->getDisplayName()
@@ -236,7 +236,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(),));
                 $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUser", PHP_INT_MAX);
 
-                if (count($nbuserGroup) >= $limit + 1) { // Margin of 1 to be sure we do not count twakebot
+                if (count($nbuserGroup) >= $limit) { // Margin of 1 to be sure we do not count twakebot
                     return false;
                 }
             }
@@ -335,10 +335,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
         ) {
 
-            $total_membres_not_bot = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$workspaceId))->getMemberCount();
+            $total_membres = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspaceId))->getMemberCount();
 
             if ($userId == $currentUserId) {
-                if ($total_membres_not_bot == 1) {
+                if ($total_membres == 1) {
                     return false; // can't remove myself if I'm the last
                 }
             }
@@ -366,20 +366,16 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $this->doctrine->persist($groupmember);
 
             //If multiple users
-            if ($total_membres_not_bot > 1) {
+            if ($total_membres > 1) {
 
                 //Test if other workspace administrators are present
                 $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace"=>$workspace->getId(),"id"=>$member->getLevel()));
 
                 if ($currentUserId != null && $level->getisAdmin()) {
                     $other_workspace_admins = $workspaceUserRepository->findBy(Array("level_id" => $member->getLevelId()));
-                    if (count($other_workspace_admins) <= 2) {
-                        foreach ($other_workspace_admins as $other_workspace_admin) {
-                            if ($other_workspace_admin->getUser()->getUsername() == "twake_bot") {
-                                header("twake-debug: no other workspace admins");
-                                return false;
-                            }
-                        }
+                    if (count($other_workspace_admins) <= 1) {
+                        header("twake-debug: no other workspace admins");
+                        return false;
                     }
                 }
             }
@@ -470,7 +466,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
     }
 
-    public function getMembers($workspaceId, $currentUserId = null, $twake_bot = true, $order = Array("last_access" => "DESC"), $max = 0, $offset = 0)
+    public function getMembers($workspaceId, $currentUserId = null, $order = Array("last_access" => "DESC"), $max = 0, $offset = 0)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "")
@@ -489,9 +485,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $users = Array();
             foreach ($link as $user) {
 
-                if ($user->getUser()->getUsername() == "twake_bot" && !$twake_bot) {
-                    continue;
-                }
                 $group_user = $groupUserRepository->findOneBy(Array("user" => $user->getUser()->getId(), "group" => $workspace->getGroup()));
                 $groupId = $workspace->getGroup();
                 if($group_user){

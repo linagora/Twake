@@ -25,6 +25,7 @@ class WorkspaceController extends Controller
 
         $workspaceId = $request->request->get("workspaceId");
 
+        $this->get("app.channels.notifications")->checkReadWorkspace($workspaceId, $this->getUser());
 
 		$ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
 		if(!$ws){

@@ -377,7 +377,7 @@ class Groups implements GroupsInterface
             $groupLinks = $groupManagerRepository->findBy(Array("group"=>$group));
             $users = Array();
             foreach ($groupLinks as $link){
-                if( $link->getUser()->getUsername()!="twake_bot" && (!$onlyExterne || $link->getExterne())){
+                if (!$onlyExterne || $link->getExterne()) {
                     $users[] = Array(
                         "user" => $link->getUser(),
                         "externe" => $link->getExterne(),

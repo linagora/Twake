@@ -107,6 +107,8 @@ class MessageSystem
 
         }
 
+        $channel = $this->em->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel_id));
+        $this->message_notifications_center_service->read($channel, $current_user);
 
         return $messages;
     }

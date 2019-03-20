@@ -154,19 +154,8 @@ class Workspaces implements WorkspacesInterface
         $this->doctrine->persist($workspace);
         $this->doctrine->flush();
 
-        $twakebot = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "twake_bot"));
-        $twakebotId = $twakebot->getId();
-
 
         $this->translate->setDefaultLanguage($user->getLanguage());
-
-        // Create stream
-        //$streamGeneral = new Channel($workspace, new TranslationObject($this->translate, "general"), false, "This is the general stream");
-        //$streamGeneral->setType("stream");
-        //$streamRandom = new Stream($workspace, "Random", false, "This is the random stream");
-        //$streamRandom->setType("stream");
-        //$this->doctrine->persist($streamGeneral);
-        //$this->doctrine->persist($streamRandom);
 
         $this->doctrine->flush();
 
@@ -293,10 +282,6 @@ class Workspaces implements WorkspacesInterface
         $this->doctrine->persist($levelUser);
         $this->doctrine->flush();
 
-
-
-        //Add twake_bot
-        $this->wms->addMember($workspace->getId(), $twakebotId, false, $levelUser->getId());
 
         //init default apps
         $this->init($workspace);

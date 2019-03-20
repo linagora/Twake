@@ -27,18 +27,14 @@ class WorkspaceMembersController extends Controller
         $response = Array("errors" => Array(), "data" => Array());
 
         $workspaceId = $request->request->get("workspaceId");
-        $twake_bot = $request->request->get("twake_bot", false);
         $order = $request->request->get("order", null);
         $max = $request->request->get("max", null);
         $offset = $request->request->get("offset", null);
 
-        $members = $this->get("app.workspace_members")->getMembers($workspaceId, $this->getUser()->getId(), $twake_bot, $order, $max, $offset);
+        $members = $this->get("app.workspace_members")->getMembers($workspaceId, $this->getUser()->getId(), $order, $max, $offset);
         $list = Array();
         foreach ($members as $member) {
             $user = $member["user"]->getAsArray();
-            if ($user["username"] == "twake_bot") {
-                continue;
-            }
             $list[] = Array(
                 "user" => $user,
                 "last_access" => $member["last_access"],

@@ -72,11 +72,11 @@ class ChannelSystemAbstract
 
             $wuRepo = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $members = $wuRepo->findBy(Array("workspace" => $workspace));
+            $ids = Array();
             foreach ($members as $member) {
-                $_member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($member->getUser(), $channel);
-                $this->entity_manager->persist($_member);
+                $ids[] = $member->getUser()->getId();
             }
-            $this->entity_manager->flush();
+            $this->updateChannelMembers($channel, $ids);
 
         }
     }
@@ -90,13 +90,15 @@ class ChannelSystemAbstract
         foreach ($channels as $channel_entity) {
             $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user" => $user));
             $this->entity_manager->remove($member);
+            $channel_entity->setMembers(array_diff($channel_entity->getMembers(), [$user->getId()]));
+            $this->entity_manager->persist($channel_entity);
         }
         $this->entity_manager->flush();
     }
 
     public function addWorkspaceMember($workspace, $user)
     {
-        $channels = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findBy(
+        $channels = $this->entity_manager->getRepository("TwakeChannelsB    undle:Channel")->findBy(
             Array("original_workspace_id" => $workspace->getId(), "direct" => false)
         );
 
@@ -104,6 +106,8 @@ class ChannelSystemAbstract
             if (!$channel_entity->getPrivate()) {
                 $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($user, $channel_entity);
                 $this->entity_manager->persist($member);
+                $channel_entity->setMembers(array_merge($channel_entity->getMembers(), [$user->getId()]));
+                $this->entity_manager->persist($channel_entity);
             }
         }
         $this->entity_manager->flush();

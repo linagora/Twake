@@ -4,6 +4,7 @@
 namespace WebsiteApi\ChannelsBundle\Services;
 
 use Exception;
+use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\ChannelsBundle\Entity\ChannelMember;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
@@ -87,6 +88,98 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $this->doctrine->persist($channel);
 
         $this->doctrine->flush();
+
+    }
+
+    public function read($channel, $user)
+    {
+
+        $membersRepo = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember");
+        /**
+         * @var $member ChannelMember
+         */
+        $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user" => $user));
+
+        $member->setLastMessagesIncrement($channel->getMessagesIncrement());
+        $member->setLastAccess(new \DateTime());
+
+        $array = $channel->getAsArray();
+        $array["_user_last_message_increment"] = $member->getLastMessagesIncrement();
+        $array["_user_last_access"] = $member->getLastAccess() ? $member->getLastAccess()->getTimestamp() : 0;
+        $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $array)), "notifications/" . $user->getId());
+
+        //Verify workspaces and groups
+        $this->checkReadWorkspace($channel->getOriginalWorkspaceId(), $user, false);
+
+        $this->doctrine->persist($member);
+        $this->doctrine->flush();
+
+    }
+
+    public function checkReadWorkspace($workspace_id, $user, $flush = true)
+    {
+
+        if (!$workspace_id) {
+            return;
+        }
+
+        $all_read = true;
+
+        $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(
+            Array("original_workspace_id" => $workspace_id, "direct" => false)
+        );
+        //TODO check also linked channels in workspace when implemented
+        foreach ($channels as $_channel) {
+            $link = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(
+                Array("channel_id" => $_channel->getId(), "user" => $user)
+            );
+            if ($link && $link->getLastMessagesIncrement() < $_channel->getMessagesIncrement()) {
+                $all_read = false;
+                break;
+            }
+        }
+        if ($all_read) {
+            //Mark workspace as read
+            $workspaceUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace_id, "user" => $user));
+            if ($workspaceUser && $workspaceUser->getHasNotifications()) {
+                $workspaceUser->setHasNotifications(false);
+                $this->doctrine->persist($workspaceUser);
+                $this->pusher->push(Array("type" => "update", "notification" => Array("workspace_id" => $workspace_id, "hasnotifications" => false)), "notifications/" . $user->getId());
+
+
+                $all_read = true;
+                $groupId = $workspaceUser->getWorkspace()->getGroup()->getId();
+                $workspacesUser = $workspaceUsers->findBy(Array("user" => $user));
+
+                foreach ($workspacesUser as $workspaceUser) {
+                    if ($workspaceUser->getHasNotifications()) {
+                        $workspace = $workspaceUser->getWorkspace();
+                        if ($workspace->getGroup()->getId() == $groupId) {
+                            $all_read = false;
+                            break;
+                        }
+                    }
+                }
+
+                if ($all_read) {
+                    $groupUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+                    $groupUser = $groupUsers->findOneBy(Array("group" => $groupId, "user" => $user));
+
+                    if ($groupUser && $groupUser->getHasNotifications()) {
+                        $groupUser->setHasNotifications(false);
+                        $this->doctrine->persist($groupUser);
+                        $this->pusher->push(Array("type" => "update", "notification" => Array("group_id" => $groupId, "hasnotifications" => false)), "notifications/" . $user->getId());
+                    }
+                }
+
+            }
+
+        }
+
+        if ($flush) {
+            $this->doctrine->flush();
+        }
 
     }
 

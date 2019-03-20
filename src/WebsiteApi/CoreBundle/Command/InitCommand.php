@@ -105,21 +105,6 @@ class InitCommand extends ContainerAwareCommand
             $manager->persist($plan);
         }
 
-
-        //Création de l'user twake_bot
-        $twake_bot = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "twake_bot"));
-        if($twake_bot==null){
-            $twake_bot = new User();
-        }
-        $twake_bot->setIsNew(false);
-        $twake_bot->setIsRobot(true);
-        $twake_bot->setPassword(bin2hex(random_bytes(20)));
-        $twake_bot->setUsername("twake_bot");
-        $twake_bot->setFirstName("Twake");
-        $twake_bot->setLastName("Bot");
-        $twake_bot->setEmail("twake_bot@twakeapp.com");
-        $manager->persist($twake_bot);
-
         $manager->flush();
 
 
