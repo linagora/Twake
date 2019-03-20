@@ -27,6 +27,10 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
     public function newElement($channel)
     {
 
+        if (is_string($channel)) {
+            $channel = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel));
+        }
+
         $channel->setLastActivity(new \DateTime());
         $channel->setMessagesIncrement($channel->getMessagesIncrement() + 1);
 
@@ -51,29 +55,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
                     $workspace = $channel->getOriginalWorkspaceId();
 
-                    //TODO also check all links of this channel when implemented
-                    if ($workspace) {
-
-                        $workspaceUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-                        $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace, "user" => $member->getUser()));
-
-                        if ($workspaceUser && !$workspaceUser->getHasNotifications()) {
-                            $workspaceUser->setHasNotifications(true);
-                            $this->doctrine->persist($workspaceUser);
-                            $this->pusher->push(Array("type" => "update", "notification" => Array("workspace_id" => $workspaceUser->getWorkspace()->getId(), "hasnotifications" => true)), "notifications/" . $member->getUser()->getId());
-
-                            $groupUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
-                            $groupUser = $groupUsers->findOneBy(Array("group" => $workspaceUser->getWorkspace()->getGroup(), "user" => $member->getUser()));
-
-                            if ($groupUser && !$groupUser->getHasNotifications()) {
-                                $groupUser->setHasNotifications(true);
-                                $this->doctrine->persist($groupUser);
-                                $this->pusher->push(Array("type" => "update", "notification" => Array("group_id" => $workspaceUser->getWorkspace()->getGroup()->getId(), "hasnotifications" => true)), "notifications/" . $member->getUser()->getId());
-                            }
-
-                        }
-
-                    }
+                    $this->addNotificationOnWorkspace($workspace, $member->getUser(), false);
 
                 }
 
@@ -81,6 +63,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
             } else {
                 $member->setLastMessagesIncrement($channel->getMessagesIncrement());
+                $member->setLastAccess(new \DateTime());
             }
             $this->doctrine->persist($member);
         }
@@ -91,8 +74,49 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
     }
 
+    public function unread($channel, $user)
+    {
+
+        if (is_string($channel)) {
+            $channel = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel));
+        }
+
+        if (!$channel) {
+            return false;
+        }
+
+        $membersRepo = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember");
+        /**
+         * @var $member ChannelMember
+         */
+        $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user" => $user));
+
+        $member->setLastMessagesIncrement($channel->getMessagesIncrement() - 1);
+
+        $array = $channel->getAsArray();
+        $array["_user_last_message_increment"] = $member->getLastMessagesIncrement();
+        $array["_user_last_access"] = $member->getLastAccess() ? $member->getLastAccess()->getTimestamp() : 0;
+        $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $array)), "notifications/" . $user->getId());
+
+        $this->addNotificationOnWorkspace($channel->getOriginalWorkspaceId(), $user, false);
+
+        $this->doctrine->persist($member);
+        $this->doctrine->flush();
+
+        return true;
+
+    }
+
     public function read($channel, $user)
     {
+
+        if (is_string($channel)) {
+            $channel = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel));
+        }
+
+        if (!$channel) {
+            return false;
+        }
 
         $membersRepo = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember");
         /**
@@ -114,42 +138,93 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $this->doctrine->persist($member);
         $this->doctrine->flush();
 
+        return true;
+
+    }
+
+    public function addNotificationOnWorkspace($workspace_id, $user, $flush = true)
+    {
+
+        if (!$workspace_id) {
+            return false;
+        }
+
+        //TODO also check all links of this channel when implemented
+        if ($workspace_id) {
+
+            $workspaceUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace_id, "user" => $user));
+
+            if ($workspaceUser && !$workspaceUser->getHasNotifications()) {
+                $workspaceUser->setHasNotifications(true);
+                $this->doctrine->persist($workspaceUser);
+                $this->pusher->push(Array("type" => "update", "notification" => Array("workspace_id" => $workspaceUser->getWorkspace()->getId(), "hasnotifications" => true)), "notifications/" . $user->getId());
+
+                $groupUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+                $groupUser = $groupUsers->findOneBy(Array("group" => $workspaceUser->getWorkspace()->getGroup(), "user" => $user));
+
+                if ($groupUser && !$groupUser->getHasNotifications()) {
+                    $groupUser->setHasNotifications(true);
+                    $this->doctrine->persist($groupUser);
+                    $this->pusher->push(Array("type" => "update", "notification" => Array("group_id" => $workspaceUser->getWorkspace()->getGroup()->getId(), "hasnotifications" => true)), "notifications/" . $user->getId());
+                }
+
+            }
+
+        }
+
+        if ($flush) {
+            $this->doctrine->flush();
+        }
+
+        return true;
+
     }
 
     public function checkReadWorkspace($workspace_id, $user, $flush = true)
     {
 
         if (!$workspace_id) {
-            return;
+            return false;
         }
+
+        $workspaceUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+        $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace_id, "user" => $user));
 
         $all_read = true;
+        if ($workspaceUser && $workspaceUser->getHasNotifications()) {
 
-        $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(
-            Array("original_workspace_id" => $workspace_id, "direct" => false)
-        );
-        //TODO check also linked channels in workspace when implemented
-        foreach ($channels as $_channel) {
-            $link = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(
-                Array("channel_id" => $_channel->getId(), "user" => $user)
+            $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(
+                Array("original_workspace_id" => $workspace_id, "direct" => false)
             );
-            if ($link && $link->getLastMessagesIncrement() < $_channel->getMessagesIncrement()) {
-                $all_read = false;
-                break;
+            //TODO check also linked channels in workspace when implemented
+            foreach ($channels as $_channel) {
+                $link = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(
+                    Array("direct" => false, "channel_id" => $_channel->getId(), "user" => $user)
+                );
+                if ($link && $link->getLastMessagesIncrement() < $_channel->getMessagesIncrement()) {
+                    $all_read = false;
+                    break;
+                }
             }
         }
+
         if ($all_read) {
             //Mark workspace as read
-            $workspaceUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
-            $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace_id, "user" => $user));
             if ($workspaceUser && $workspaceUser->getHasNotifications()) {
                 $workspaceUser->setHasNotifications(false);
                 $this->doctrine->persist($workspaceUser);
                 $this->pusher->push(Array("type" => "update", "notification" => Array("workspace_id" => $workspace_id, "hasnotifications" => false)), "notifications/" . $user->getId());
+            }
 
+            $groupId = $workspaceUser->getWorkspace()->getGroup()->getId();
 
-                $all_read = true;
-                $groupId = $workspaceUser->getWorkspace()->getGroup()->getId();
+            $groupUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupUser = $groupUsers->findOneBy(Array("group" => $groupId, "user" => $user));
+
+            $all_read = true;
+
+            if ($groupUser && $groupUser->getHasNotifications()) {
                 $workspacesUser = $workspaceUsers->findBy(Array("user" => $user));
 
                 foreach ($workspacesUser as $workspaceUser) {
@@ -161,18 +236,14 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
                         }
                     }
                 }
+            }
 
-                if ($all_read) {
-                    $groupUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
-                    $groupUser = $groupUsers->findOneBy(Array("group" => $groupId, "user" => $user));
-
-                    if ($groupUser && $groupUser->getHasNotifications()) {
-                        $groupUser->setHasNotifications(false);
-                        $this->doctrine->persist($groupUser);
-                        $this->pusher->push(Array("type" => "update", "notification" => Array("group_id" => $groupId, "hasnotifications" => false)), "notifications/" . $user->getId());
-                    }
+            if ($all_read) {
+                if ($groupUser && $groupUser->getHasNotifications()) {
+                    $groupUser->setHasNotifications(false);
+                    $this->doctrine->persist($groupUser);
+                    $this->pusher->push(Array("type" => "update", "notification" => Array("group_id" => $groupId, "hasnotifications" => false)), "notifications/" . $user->getId());
                 }
-
             }
 
         }
@@ -180,6 +251,29 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         if ($flush) {
             $this->doctrine->flush();
         }
+
+        return true;
+
+    }
+
+    public function mute($channel, $state, $user)
+    {
+
+        if (is_string($channel)) {
+            $channel = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel));
+        }
+
+        if (!$channel) {
+            return false;
+        }
+
+        $membersRepo = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember");
+        $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user" => $user));
+
+        $member->setMuted($state);
+        $this->doctrine->flush();
+
+        return true;
 
     }
 

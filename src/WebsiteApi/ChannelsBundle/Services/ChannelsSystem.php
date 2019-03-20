@@ -51,6 +51,7 @@ class ChannelsSystem extends ChannelSystemAbstract
                 $tmp = $channel->getAsArray();
                 $tmp["_user_last_message_increment"] = $res->getLastMessagesIncrement();
                 $tmp["_user_last_access"] = $res->getLastAccess() ? $res->getLastAccess()->getTimestamp() : null;
+                $tmp["_user_muted"] = $res->getMuted();
 
                 $result[] = $tmp;
             }
