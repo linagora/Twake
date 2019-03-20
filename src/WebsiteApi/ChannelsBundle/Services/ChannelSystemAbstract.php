@@ -66,6 +66,21 @@ class ChannelSystemAbstract
 
     }
 
+    public function addAllWorkspaceMember($workspace, $channel)
+    {
+        if ($workspace && $channel) {
+
+            $wuRepo = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $members = $wuRepo->findBy(Array("workspace" => $workspace));
+            foreach ($members as $member) {
+                $_member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($member->getUser(), $channel);
+                $this->entity_manager->persist($_member);
+            }
+            $this->entity_manager->flush();
+
+        }
+    }
+
     public function delWorkspaceMember($workspace, $user)
     {
         $channels = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findBy(

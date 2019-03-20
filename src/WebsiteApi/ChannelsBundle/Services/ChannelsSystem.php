@@ -78,6 +78,8 @@ class ChannelsSystem extends ChannelSystemAbstract
             return false;
         }
 
+        $did_create = false;
+
         $members = isset($object["members"]) ? $object["members"] : [];
         $members = array_unique($members);
         sort($members);
@@ -98,6 +100,8 @@ class ChannelsSystem extends ChannelSystemAbstract
 
             $channel->setOriginalGroup($group);
             $channel->setOriginalWorkspaceId($workspace->getId());
+
+            $did_create = true;
 
         } else {
             $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->find(Array("id" => $object["id"], "direct" => $object["direct"], "original_workspace_id" => $object["original_workspace"]));
@@ -132,7 +136,13 @@ class ChannelsSystem extends ChannelSystemAbstract
             $this->messages_service->save($init_message, Array());
         }
 
-        $this->updateChannelMembers($channel, $members, $current_user->getId());
+        if ($channel->getPrivate()) {
+            $this->updateChannelMembers($channel, $members, $current_user->getId());
+        }
+
+        if ($did_create && !$channel->getPrivate()) {
+            $this->addAllWorkspaceMember($workspace, $channel);
+        }
 
         return $channel->getAsArray();
     }
