@@ -243,6 +243,16 @@ class Notification
         $this->last_mail = $last_mail;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getChannelId()
+    {
+        return $this->channel_id;
+    }
+
+
+
 	public function getAsArray(){
 		return Array(
 			"id" => $this->getId(),
