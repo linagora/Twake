@@ -54,7 +54,7 @@
         "easycorp/easyadmin-bundle": ">=1.0",
         "php-opencloud/openstack": "^3.0",
         "atoum/atoum": "^3.3",
-        "emojione/emojione": "^4.5"
+        "emojione/emojione": "3.1"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",

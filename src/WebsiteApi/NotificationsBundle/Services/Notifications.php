@@ -2,6 +2,10 @@
 
 
 namespace WebsiteApi\NotificationsBundle\Services;
+
+use Emojione\Client;
+use Emojione\Emojione;
+use Emojione\Ruleset;
 use phpDocumentor\Reflection\Types\Array_;
 use RMS\PushNotificationsBundle\Message\iOSMessage;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
@@ -31,6 +35,7 @@ class Notifications implements NotificationsInterface
         $this->pushNotificationServer = $pushNotificationServer;
         $this->standalone = $standalone;
         $this->licenceKey = $licenceKey;
+        $this->emojione_client = new Client(new Ruleset());
     }
 
     /**
@@ -74,7 +79,11 @@ class Notifications implements NotificationsInterface
             $title = "Notification";
         }
         if ($channel && !$channel->getDirect()) {
-            $title .= " to " . $channel->getName();
+            $title .= " to ";
+            if ($channel->getIcon()) {
+                $title .= $channel->getIcon() . " ";
+            }
+            $title .= $channel->getName();
         }
         if ($workspace) {
             $title .= " in " . $workspace->getName() . " (" . $workspace->getGroup()->getName() . ")";
@@ -88,7 +97,6 @@ class Notifications implements NotificationsInterface
             }
         }
         //End title and text construction
-
 
         $data = Array(
             "type"=>"add",
@@ -392,6 +400,9 @@ class Notifications implements NotificationsInterface
         $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
         $devices = $devicesRepo->findBy(Array("user"=>$user));
 
+        $title = html_entity_decode($this->emojione_client->shortnameToUnicode($title), ENT_NOQUOTES, 'UTF-8');
+        $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');
+
         $count = count($devices);
         for($i = 0; $i < $count; $i++) {
             $device = $devices[$i];
@@ -437,6 +448,9 @@ class Notifications implements NotificationsInterface
     }
 
     private function sendMail($application, $workspace, $user, $text){
+
+        $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');
+
         $this->mailer->send($user->getEmail(), "notification", Array(
             "_language" => $user ? $user->getLanguage() : "en",
             "application_name"=>($application)?$application->getName():"Twake",
@@ -446,7 +460,7 @@ class Notifications implements NotificationsInterface
         ));
     }
 
-    public function deleteAllExceptMessages($user,$force=false){
+    public function deleteAllExceptMessages($user, $force=false){
 
         return true;
 

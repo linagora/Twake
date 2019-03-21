@@ -4,92 +4,92 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-  "content-hash": "d253b26b66f03e92c432080b1fa82385",
+    "content-hash": "68cc01337b74173e71d47fcd2285779c",
     "packages": [
         {
-          "name": "atoum/atoum",
-          "version": "3.3.0",
-          "source": {
-            "type": "git",
-            "url": "https://github.com/atoum/atoum.git",
-            "reference": "c5279d0ecd4e2d53af6b38815db2cafee8fc46b6"
-          },
-          "dist": {
-            "type": "zip",
-            "url": "https://api.github.com/repos/atoum/atoum/zipball/c5279d0ecd4e2d53af6b38815db2cafee8fc46b6",
-            "reference": "c5279d0ecd4e2d53af6b38815db2cafee8fc46b6",
-            "shasum": ""
-          },
-          "require": {
-            "ext-hash": "*",
-            "ext-json": "*",
-            "ext-tokenizer": "*",
-            "ext-xml": "*",
-            "php": "^5.6.0 || ^7.0.0 <7.4.0"
-          },
-          "replace": {
-            "mageekguy/atoum": "*"
-          },
-          "require-dev": {
-            "friendsofphp/php-cs-fixer": "^2"
-          },
-          "suggest": {
-            "atoum/stubs": "Provides IDE support (like autocompletion) for atoum",
-            "ext-mbstring": "Provides support for UTF-8 strings",
-            "ext-xdebug": "Provides code coverage report (>= 2.3)"
-          },
-          "bin": [
-            "bin/atoum"
-          ],
-          "type": "library",
-          "extra": {
-            "branch-alias": {
-              "dev-master": "3.x-dev"
-            }
-          },
-          "autoload": {
-            "classmap": [
-              "classes/"
-            ]
-          },
-          "notification-url": "https://packagist.org/downloads/",
-          "license": [
-            "BSD-3-Clause"
-          ],
-          "authors": [
-            {
-              "name": "Frédéric Hardy",
-              "email": "frederic.hardy@atoum.org",
-              "homepage": "http://blog.mageekbox.net"
+            "name": "atoum/atoum",
+            "version": "3.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/atoum/atoum.git",
+                "reference": "c5279d0ecd4e2d53af6b38815db2cafee8fc46b6"
             },
-            {
-              "name": "François Dussert",
-              "email": "francois.dussert@atoum.org"
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/atoum/atoum/zipball/c5279d0ecd4e2d53af6b38815db2cafee8fc46b6",
+                "reference": "c5279d0ecd4e2d53af6b38815db2cafee8fc46b6",
+                "shasum": ""
             },
-            {
-              "name": "Gérald Croes",
-              "email": "gerald.croes@atoum.org"
+            "require": {
+                "ext-hash": "*",
+                "ext-json": "*",
+                "ext-tokenizer": "*",
+                "ext-xml": "*",
+                "php": "^5.6.0 || ^7.0.0 <7.4.0"
             },
-            {
-              "name": "Julien Bianchi",
-              "email": "julien.bianchi@atoum.org"
+            "replace": {
+                "mageekguy/atoum": "*"
             },
-            {
-              "name": "Ludovic Fleury",
-              "email": "ludovic.fleury@atoum.org"
-            }
-          ],
-          "description": "Simple modern and intuitive unit testing framework for PHP 5.3+",
-          "homepage": "http://www.atoum.org",
-          "keywords": [
-            "TDD",
-            "atoum",
-            "test",
-            "unit testing"
-          ],
-          "time": "2018-03-15T22:46:39+00:00"
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^2"
+            },
+            "suggest": {
+                "atoum/stubs": "Provides IDE support (like autocompletion) for atoum",
+                "ext-mbstring": "Provides support for UTF-8 strings",
+                "ext-xdebug": "Provides code coverage report (>= 2.3)"
+            },
+            "bin": [
+                "bin/atoum"
+            ],
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "3.x-dev"
+                }
+            },
+            "autoload": {
+                "classmap": [
+                    "classes/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "authors": [
+                {
+                    "name": "Frédéric Hardy",
+                    "email": "frederic.hardy@atoum.org",
+                    "homepage": "http://blog.mageekbox.net"
+                },
+                {
+                    "name": "François Dussert",
+                    "email": "francois.dussert@atoum.org"
+                },
+                {
+                    "name": "Gérald Croes",
+                    "email": "gerald.croes@atoum.org"
+                },
+                {
+                    "name": "Julien Bianchi",
+                    "email": "julien.bianchi@atoum.org"
+                },
+                {
+                    "name": "Ludovic Fleury",
+                    "email": "ludovic.fleury@atoum.org"
+                }
+            ],
+            "description": "Simple modern and intuitive unit testing framework for PHP 5.3+",
+            "homepage": "http://www.atoum.org",
+            "keywords": [
+                "TDD",
+                "atoum",
+                "test",
+                "unit testing"
+            ],
+            "time": "2018-03-15T22:46:39+00:00"
         },
-      {
+        {
             "name": "aws/aws-sdk-php",
             "version": "3.81.2",
             "source": {
@@ -1613,6 +1613,49 @@
                 "php calendar"
             ],
             "time": "2018-03-13T19:39:55+00:00"
+        },
+        {
+            "name": "emojione/emojione",
+            "version": "v3.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/emojione/emojione.git",
+                "reference": "4a166f9334809b5044ecf493f7decf47d50e0a8a"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/emojione/emojione/zipball/4a166f9334809b5044ecf493f7decf47d50e0a8a",
+                "reference": "4a166f9334809b5044ecf493f7decf47d50e0a8a",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=5.3"
+            },
+            "require-dev": {
+                "phpunit/phpunit": "~4.6 || ~5.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Emojione\\": "lib/php/src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "(CC-BY-4.0 and MIT)"
+            ],
+            "description": "EmojiOne is a complete set of emojis designed for the web. It includes libraries to easily convert unicode characters to shortnames (:smile:) and shortnames to our custom emoji images. PNG format provided for the emoji images.",
+            "homepage": "http://www.emojione.com",
+            "keywords": [
+                "emoji",
+                "emojione",
+                "emojis",
+                "emoticons",
+                "smileys",
+                "smilies",
+                "unicode"
+            ],
+            "time": "2017-06-30T17:09:19+00:00"
         },
         {
             "name": "evenement/evenement",
