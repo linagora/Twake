@@ -8,7 +8,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * Mail
  *
- * @ORM\Table(name="device",options={"engine":"MyISAM"})
+ * @ORM\Table(name="device",options={"engine":"MyISAM", "scylladb_keys": {{"id": "ASC"}, {"value": "ASC"}, {"user_id":"ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\UsersBundle\Repository\DeviceRepository")
  */
 class Device
@@ -18,7 +18,7 @@ class Device
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
 	/**

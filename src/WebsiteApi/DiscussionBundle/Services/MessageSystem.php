@@ -377,13 +377,14 @@ class MessageSystem
 
             if ($channel && $did_create) {
                 $channel->setMessagesCount($channel->getMessagesCount() + 1);
-
-                $this->message_notifications_center_service->newElement($channel, $message, $user);
-
                 $this->em->persist($channel);
             }
 
             $this->em->flush();
+
+            if ($channel && $did_create) {
+                $this->message_notifications_center_service->newElement($channel, $application, $user, $this->mdToText($message->getContent()), $message->getId());
+            }
 
             if ($channel->getAppId()) {
                 if ($did_create) {
@@ -467,6 +468,48 @@ class MessageSystem
             "object" => $message->getAsArray()
         );
         $this->websockets_service->push("messages/" . $message->getChannelId(), $event);
+
+    }
+
+    private function mdToText($array)
+    {
+
+        if (!$array) {
+            return "";
+        }
+
+        if (is_string($array)) {
+            $array = [$array];
+        }
+
+        if (isset($array["original_str"])) {
+            return $array["original_str"];
+        }
+
+        if (isset($array["type"]) || isset($array["start"])) {
+            $array = [$array];
+        }
+
+        $result = "";
+
+        try {
+            foreach ($array as $item) {
+                if (is_string($item)) {
+                    $result .= $item;
+                } else if (isset($item["type"])) {
+                    if (in_array($item["type"], Array("underline", "strikethrough", "bold", "italic", "mquote", "quote", "email", "url", "", "system"))) {
+                        $result .= $this->mdToText($item["content"]);
+                    }
+                } else {
+                    $result .= $this->mdToText($item["content"]);
+                }
+            }
+
+        } catch (\Exception $e) {
+            return "Open Twake to see this message.";
+        }
+
+        return $result;
 
     }
 

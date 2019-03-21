@@ -24,7 +24,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $this->pusher = $pusher;
     }
 
-    public function newElement($channel)
+    public function newElement($channel, $sender_application = null, $sender_user = null, $message_as_text = "", $message_id = "")
     {
 
         if (is_string($channel)) {
@@ -40,26 +40,27 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
          */
         $members = $membersRepo->findBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId()));
 
+        $workspace = $channel->getOriginalWorkspaceId();
+        $workspace_ent = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
+
+        $users_to_notify = [];
+
         foreach ($members as $member) {
 
 
-            if (!$member->getMuted()) {
+            if (!$member->getMuted() && $member->getUser()->getId() != $sender_user->getId()) {
                 $member->setLastActivity(new \DateTime());
-
 
                 $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $channel->getAsArray())), "notifications/" . $member->getUser()->getId());
 
                 //Updating workspace and group notifications
                 if (!$channel->getDirect()) {
 
-
-                    $workspace = $channel->getOriginalWorkspaceId();
-
                     $this->addNotificationOnWorkspace($workspace, $member->getUser(), false);
 
                 }
 
-                //TODO Send notification via notification service
+                $users_to_notify[] = $member->getUser();
 
             } else {
                 $member->setLastMessagesIncrement($channel->getMessagesIncrement());
@@ -67,6 +68,21 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
             }
             $this->doctrine->persist($member);
         }
+
+        $this->notificationSystem->pushNotification(
+            null,
+            $sender_application,
+            $sender_user,
+            $workspace_ent,
+            $channel,
+            $users_to_notify,
+            "channel_" . $channel->getId(),
+            $message_as_text,
+            $message_id,
+            Array(),
+            Array("push"),
+            true
+        );
 
         $this->doctrine->persist($channel);
 

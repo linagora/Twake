@@ -453,6 +453,18 @@ class User extends SearchableObject implements UserInterface
 		$this->notification_preference = json_encode($notification_preference);
 	}
 
+    public function getFullName()
+    {
+        $name = "@" . $this->getUsername();
+        if ($this->getFirstName() && $this->getFirstName() != "") {
+            $name = $this->getFirstName();
+        }
+        if ($this->getFirstName() && $this->getFirstName() != "" && $this->getLastName() && $this->getLastName() != "") {
+            $name .= " " . $this->getLastName();
+        }
+        return ucwords($name);
+    }
+
 	public function getAsArray()
 	{
 		$return = Array(

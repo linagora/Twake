@@ -519,7 +519,7 @@ class User implements UserInterface
 
         $res = false;
 		if($user != null) {
-			$device = $devicesRepository->findOneBy(Array("type"=>$type, "value"=>$value));
+            $device = $devicesRepository->findOneBy(Array("value" => $value));
 			if(!$device){
 				$newDevice = new Device($user, $type, $value, $version);
 			}else if($device->getUser()!=$user) {
@@ -547,8 +547,8 @@ class User implements UserInterface
 
         $res = false;
 		if($user != null) {
-			$device = $devicesRepository->findOneBy(Array("user"=>$user, "type"=>$type, "value"=>$value));
-			if($device) {
+            $device = $devicesRepository->findOneBy(Array("value" => $value));
+            if ($device && $device->getUser()->getId() == $userId) {
 				$this->em->remove($device);
 				$this->em->flush();
 			}

@@ -36,27 +36,28 @@ class Notification
 	 */
 	private $user;
 
-	/**
+    /**
      * @ORM\Column(type="twake_text", nullable=true)
-     * @Encrypted
-	 */
-	private $code;
+     */
+    private $code;
 
-	/**
+    /**
+     * @ORM\Column(type="twake_text", nullable=true)
+     */
+    private $shortcut;
+
+    /**
      * @ORM\Column(type="twake_text",  nullable=true)
-     * @Encrypted
 	 */
 	private $title;
 
 	/**
      * @ORM\Column(type="twake_text",  nullable=true)
-     * @Encrypted
 	 */
 	private $text;
 
     /**
      * @ORM\Column(type="twake_text")
-     * @Encrypted
      */
     private $data = "{}";
 
@@ -262,6 +263,24 @@ class Notification
     {
         $this->isread = $isread;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getShortcut()
+    {
+        return $this->shortcut;
+    }
+
+    /**
+     * @param mixed $shortcut
+     */
+    public function setShortcut($shortcut)
+    {
+        $this->shortcut = $shortcut;
+    }
+
+
 
 }
 
