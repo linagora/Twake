@@ -21,11 +21,16 @@ class Notification
      */
 	private $id;
 
-	/**
+    /**
      * @ORM\Column(type="twake_text")
      * @ORM\Id
-	 */
+     */
     private $application_id;
+
+    /**
+     * @ORM\Column(type="twake_text")
+     */
+    private $channel_id;
 
 	/**
      * @ORM\Column(type="twake_text")
@@ -84,11 +89,12 @@ class Notification
      */
     private $isread;
 
-    public function __construct($application_id, $workspace_id, $user)
+    public function __construct($application_id, $workspace_id, $channel_id, $user)
 	{
 		$this->date = new \DateTime();
         $this->application_id = $application_id;
         $this->workspace_id = $workspace_id;
+        $this->channel_id = $channel_id;
 		$this->user = $user;
 		$this->setIsRead(false);
 	}
@@ -244,6 +250,7 @@ class Notification
 			"code" => $this->getCode(),
             "workspace_id" => ($this->getWorkspaceId() ? $this->getWorkspaceId() : null),
             "application_id" => ($this->getApplicationId() ? $this->getApplication() : null),
+            "channel_id" => ($this->getChannelId() ? $this->getChannelId() : null),
 			"title" => $this->getTitle(),
 			"text" => $this->getText(),
             "is_read" => $this->getisRead(),

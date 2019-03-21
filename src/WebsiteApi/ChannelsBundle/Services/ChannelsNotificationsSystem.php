@@ -154,7 +154,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         if ($channel->getOriginalWorkspaceId()) {
             $this->checkReadWorkspace($channel->getOriginalWorkspaceId(), $user, false);
         } else {
-            $this->countBadge();
+            $this->countBadge($user);
         }
 
         $this->doctrine->persist($member);
@@ -268,7 +268,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
                 }
 
                 //Test if all workspaces are readed
-                $this->countBadge();
+                $this->countBadge($user);
 
 
             }
@@ -285,6 +285,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
     public function countBadge($user)
     {
+        $workspaceUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
         $all_read = true;
         $workspacesUser = $workspaceUsers->findBy(Array("user" => $user));

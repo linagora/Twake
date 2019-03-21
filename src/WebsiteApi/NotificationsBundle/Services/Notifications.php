@@ -206,7 +206,7 @@ class Notifications implements NotificationsInterface
                 $data["text"] = "[Private]";
             }
 
-            $n = new Notification($application ? $application->getId() : "", $workspace ? $workspace->getId() : "", $user);
+            $n = new Notification($application ? $application->getId() : "", $workspace ? $workspace->getId() : "", $channel ? $channel->getId() : "", $user);
             if ($shortcut) {
                 $n->setShortcut($shortcut);
             }
