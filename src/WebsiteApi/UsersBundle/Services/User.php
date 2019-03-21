@@ -817,7 +817,13 @@ class User implements UserInterface
 
 		if($user != null){
 
-			$user->setNotificationPreference($notification);
+            $all_notification = $user->getNotificationPreference();
+
+            foreach ($notification as $key => $value) {
+                $all_notification[$key] = $value;
+            }
+
+            $user->setNotificationPreference($all_notification);
 			$this->em->persist($user);
 			$this->em->flush();
 

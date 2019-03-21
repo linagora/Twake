@@ -25,6 +25,7 @@ class Websockets
             "channels/direct_messages" => "app.channels.direct_messages_system",
             "channels/workspace" => "app.channels.channels_system",
             "channels/workspace_private" => "app.channels.channels_system",
+            "notifications" => "app.notifications",
             "messages" => "app.messages",
             "drive" => "app.drive"
         );
@@ -111,9 +112,9 @@ class Websockets
         }
 
         if (!$route_entity) {
+            //Nobody never init this collection so nobody will receive this event
             return false;
         }
-
 
         $route_endpoint = $route_entity->getRouteRandomEndpoint();
         $key_version = $route_entity->getKeyVersion();

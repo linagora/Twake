@@ -1,14 +1,15 @@
-notifications_init:
-    path:     /init
-    defaults: { _controller: TwakeNotificationsBundle:Default:init}
+#Collections
+notifications_get:
+    path:     /get
+    defaults: { _controller: TwakeNotificationsBundle:Default:get}
+
+notifications_remove:
+    path:     /remove
+    defaults: { _controller: TwakeNotificationsBundle:Default:remove}
 
 notifications_deleteAll:
     path:     /deleteAll
     defaults: { _controller: TwakeNotificationsBundle:Default:deleteAllExceptMessages}
-
-notifications_delete:
-    path:     /delete
-    defaults: { _controller: TwakeNotificationsBundle:Default:delete}
 
 notifications_readAll:
     path:     /readAll

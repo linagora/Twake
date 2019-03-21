@@ -428,6 +428,7 @@ class User extends SearchableObject implements UserInterface
         $preferences["disabled_workspaces"] = (isset($preferences["disabled_workspaces"]))?$preferences["disabled_workspaces"]:[];
         $preferences["workspace"] = (isset($preferences["workspace"]))?$preferences["workspace"]:[];
         $preferences["mail_notifications"] = (isset($preferences["mail_notifications"])) ? $preferences["mail_notifications"] : 2;
+        $preferences["disable_until"] = (isset($preferences["disable_until"])) ? $preferences["disable_until"] : 0;
 
 		return $preferences;
 	}
@@ -445,6 +446,7 @@ class User extends SearchableObject implements UserInterface
 		@$preferences["dont_use_keywords"] = intval($notification_preference["use_keywords"]);
 		@$preferences["keywords"] = substr($notification_preference["keywords"], 0, 512);
         @$preferences["mail_notifications"] = intval($notification_preference["mail_notifications"]);
+        @$preferences["disable_until"] = (isset($notification_preference["disable_until"])) ? $notification_preference["disable_until"] : 0;
 
         foreach ($notification_preference["disabled_workspaces"] as $item) {
             @$preferences["disabled_workspaces"][] = intval($item);

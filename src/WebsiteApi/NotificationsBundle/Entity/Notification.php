@@ -8,7 +8,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * Mail
  *
- * @ORM\Table(name="notification",options={"engine":"MyISAM"})
+ * @ORM\Table(name="notification",options={"engine":"MyISAM", "scylladb_keys":{ {"user_id":"ASC", "workspace_id":"ASC", "application_id":"ASC", "id":"ASC"}, {"id":"ASC"} }})
  * @ORM\Entity(repositoryClass="WebsiteApi\NotificationsBundle\Repository\NotificationRepository")
  */
 class Notification
@@ -18,22 +18,25 @@ class Notification
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
 	private $id;
 
 	/**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
+     * @ORM\Column(type="twake_text")
+     * @ORM\Id
 	 */
-	private $application;
+    private $application_id;
 
 	/**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\Column(type="twake_text")
+     * @ORM\Id
 	 */
-	private $workspace;
+    private $workspace_id;
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-	 */
+     * @ORM\Id
+     */
 	private $user;
 
     /**
@@ -81,11 +84,11 @@ class Notification
      */
     private $isread;
 
-	public function __construct($application, $workspace, $user)
+    public function __construct($application_id, $workspace_id, $user)
 	{
 		$this->date = new \DateTime();
-		$this->application = $application;
-		$this->workspace = $workspace;
+        $this->application_id = $application_id;
+        $this->workspace_id = $workspace_id;
 		$this->user = $user;
 		$this->setIsRead(false);
 	}
@@ -106,17 +109,17 @@ class Notification
 	/**
 	 * @return mixed
 	 */
-	public function getApplication()
-	{
-		return $this->application;
+    public function getApplicationId()
+    {
+        return $this->application_id;
 	}
 
 	/**
 	 * @return mixed
 	 */
-	public function getWorkspace()
-	{
-		return $this->workspace;
+    public function getWorkspaceId()
+    {
+        return $this->workspace_id;
 	}
 
 	/**
@@ -239,8 +242,8 @@ class Notification
 			"id" => $this->getId(),
 			"date" => $this->getDate()->getTimestamp(),
 			"code" => $this->getCode(),
-			"workspace_id" => ($this->getWorkspace()?$this->getWorkspace()->getId():null),
-			"app_id" => ($this->getApplication()?$this->getApplication()->getId():null),
+            "workspace_id" => ($this->getWorkspaceId() ? $this->getWorkspaceId() : null),
+            "application_id" => ($this->getApplicationId() ? $this->getApplication() : null),
 			"title" => $this->getTitle(),
 			"text" => $this->getText(),
             "is_read" => $this->getisRead(),

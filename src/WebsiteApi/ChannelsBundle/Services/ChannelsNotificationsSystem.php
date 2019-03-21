@@ -114,7 +114,9 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $array["_user_last_access"] = $member->getLastAccess() ? $member->getLastAccess()->getTimestamp() : 0;
         $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $array)), "notifications/" . $user->getId());
 
-        $this->addNotificationOnWorkspace($channel->getOriginalWorkspaceId(), $user, false);
+        if ($channel->getOriginalWorkspaceId()) {
+            $this->addNotificationOnWorkspace($channel->getOriginalWorkspaceId(), $user, false);
+        }
 
         $this->doctrine->persist($member);
         $this->doctrine->flush();
@@ -149,7 +151,11 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $array)), "notifications/" . $user->getId());
 
         //Verify workspaces and groups
-        $this->checkReadWorkspace($channel->getOriginalWorkspaceId(), $user, false);
+        if ($channel->getOriginalWorkspaceId()) {
+            $this->checkReadWorkspace($channel->getOriginalWorkspaceId(), $user, false);
+        } else {
+            $this->countBadge();
+        }
 
         $this->doctrine->persist($member);
         $this->doctrine->flush();
@@ -260,6 +266,11 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
                     $this->doctrine->persist($groupUser);
                     $this->pusher->push(Array("type" => "update", "notification" => Array("group_id" => $groupId, "hasnotifications" => false)), "notifications/" . $user->getId());
                 }
+
+                //Test if all workspaces are readed
+                $this->countBadge();
+
+
             }
 
         }
@@ -269,6 +280,23 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         }
 
         return true;
+
+    }
+
+    public function countBadge($user)
+    {
+
+        $all_read = true;
+        $workspacesUser = $workspaceUsers->findBy(Array("user" => $user));
+        foreach ($workspacesUser as $workspaceUser) {
+            if ($workspaceUser->getHasNotifications()) {
+                $all_read = false;
+                break;
+            }
+        }
+        if ($all_read) {
+            $this->notificationSystem->updateDeviceBadge($user, 0);
+        }
 
     }
 
