@@ -136,6 +136,8 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
             return false;
         }
 
+        $this->notificationSystem->removeMailReminder($user);
+
         $membersRepo = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember");
         /**
          * @var $member ChannelMember
@@ -209,6 +211,8 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         if (!$workspace_id) {
             return false;
         }
+
+        $this->notificationSystem->removeMailReminder($user);
 
         $workspaceUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
         $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspace_id, "user" => $user));

@@ -108,6 +108,16 @@ class User extends SearchableObject implements UserInterface
     protected $notification_preference = "{}";
 
     /**
+     * @ORM\Column(name="notification_read_increment", type="twake_bigint")
+     */
+    protected $notification_read_increment = 0;
+
+    /**
+     * @ORM\Column(name="notification_write_increment", type="twake_bigint")
+     */
+    protected $notification_write_increment = 0;
+
+    /**
      * @ORM\Column(name="workspaces_preference", type="twake_text")
      * @Encrypted
      */
@@ -983,6 +993,36 @@ class User extends SearchableObject implements UserInterface
         }
     }
 
+    /**
+     * @return mixed
+     */
+    public function getNotificationReadIncrement()
+    {
+        return $this->notification_read_increment;
+    }
 
+    /**
+     * @param mixed $notification_read_increment
+     */
+    public function setNotificationReadIncrement($notification_read_increment)
+    {
+        $this->notification_read_increment = $notification_read_increment;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getNotificationWriteIncrement()
+    {
+        return $this->notification_write_increment;
+    }
+
+    /**
+     * @param mixed $notification_write_increment
+     */
+    public function setNotificationWriteIncrement($notification_write_increment)
+    {
+        $this->notification_write_increment = $notification_write_increment;
+    }
 
 }

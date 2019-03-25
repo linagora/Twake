@@ -8,7 +8,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * Mail
  *
- * @ORM\Table(name="notification",options={"engine":"MyISAM", "scylladb_keys":{ {"user_id":"ASC", "workspace_id":"ASC", "application_id":"ASC", "id":"ASC"}, {"id":"ASC"} }})
+ * @ORM\Table(name="notification",options={"engine":"MyISAM", "scylladb_keys":{ {"user_id":"ASC", "id":"ASC"}, {"id":"ASC"} }})
  * @ORM\Entity(repositoryClass="WebsiteApi\NotificationsBundle\Repository\NotificationRepository")
  */
 class Notification

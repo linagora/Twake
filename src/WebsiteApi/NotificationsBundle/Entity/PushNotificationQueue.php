@@ -18,7 +18,7 @@ class PushNotificationQueue
 	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
 	private $id;
 
 	/**

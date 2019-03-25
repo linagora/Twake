@@ -4,13 +4,15 @@
 namespace WebsiteApi\NotificationsBundle\Services;
 
 use Emojione\Client;
-use Emojione\Emojione;
 use Emojione\Ruleset;
 use phpDocumentor\Reflection\Types\Array_;
 use RMS\PushNotificationsBundle\Message\iOSMessage;
+use WebsiteApi\NotificationsBundle\Entity\MailNotificationQueue;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
 use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
 use WebsiteApi\NotificationsBundle\Entity\PushNotificationQueue;
+use WebsiteApi\UsersBundle\Entity\User;
+
 /**
  * Class Notifications
  * @package WebsiteApi\UsersBundle\Services
@@ -147,6 +149,8 @@ class Notifications implements NotificationsInterface
                 }
             }
 
+            $mail_preferences = isset($notificationPreference["mail_notifications"]) ? $notificationPreference["mail_notifications"] : 2;
+
             $useDevices = false;
             if( $data["workspace_id"] != null){
                 $workspace_id = $data["workspace_id"];
@@ -225,6 +229,11 @@ class Notifications implements NotificationsInterface
 
             if ($save_notification) {
                 $this->doctrine->persist($n);
+
+                if ($mail_preferences == 2 || $mail_preferences == 1) {
+                    $this->addMailReminder($user);
+                }
+
             }
 
             if (in_array("push", $type) && $toPush && !$notification_disabled) {
@@ -316,57 +325,65 @@ class Notifications implements NotificationsInterface
     public function readAll($application, $workspace, $user, $code = null, $force=false)
     {
 
-        $this->deleteAll($application, $workspace, $user, $code, $force);
-        return;
+        $user->setNotificationReadIncrement($user->getNotificationWriteIncrement());
+        $this->doctrine->persist($user);
 
-        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+        //TODO remove all badges
 
-        $search = Array(
-            "user" => $user
-        );
+        $this->doctrine->flush();
 
-        if ($code) {
-            $search["code"] = $code;
-        }
-
-        if ($application) {
-            $search["application"] = $application;
-        }
-
-        if ($workspace) {
-            $search["workspace"] = $workspace;
-        }
-
-        $search["isread"] = false;
-
-        $notif = $nRepo->findBy($search);
-
-        $count = count($notif);
-        for($i = 0; $i < $count; $i++) {
-            $notif[$i]->setIsRead(true);
-            $this->doctrine->persist($notif[$i]);
-        }
-
-        if ($count == 0){
-            return false;
-        }
-
-        if($count>0 || $force) {
-            $this->doctrine->flush();
-
-            $totalNotifications = $this->countAll($user);
-
-            $data = Array(
-                "action"=>"remove",
-                "workspace_id"=>($workspace)?$workspace->getId():null,
-                "app_id"=>($application)?$application->getId():null
-            );
-            $this->pusher->push($data, "notifications/".$user->getId());
-
-            $this->updateDeviceBadge($user, $totalNotifications);
-            return true;
-        }
         return true;
+
+        /*        return;
+
+                $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+
+                $search = Array(
+                    "user" => $user
+                );
+
+                if ($code) {
+                    $search["code"] = $code;
+                }
+
+                if ($application) {
+                    $search["application"] = $application;
+                }
+
+                if ($workspace) {
+                    $search["workspace"] = $workspace;
+                }
+
+                $search["isread"] = false;
+
+                $notif = $nRepo->findBy($search);
+
+                $count = count($notif);
+                for($i = 0; $i < $count; $i++) {
+                    $notif[$i]->setIsRead(true);
+                    $this->doctrine->persist($notif[$i]);
+                }
+
+                if ($count == 0){
+                    return false;
+                }
+
+                if($count>0 || $force) {
+                    $this->doctrine->flush();
+
+                    $totalNotifications = $this->countAll($user);
+
+                    $data = Array(
+                        "action"=>"remove",
+                        "workspace_id"=>($workspace)?$workspace->getId():null,
+                        "app_id"=>($application)?$application->getId():null
+                    );
+                    $this->pusher->push($data, "notifications/".$user->getId());
+
+                    $this->updateDeviceBadge($user, $totalNotifications);
+                    return true;
+                }
+                return true;*/
 
 
     }
@@ -469,6 +486,44 @@ class Notifications implements NotificationsInterface
             "username"=>$user->getUsername(),
             "text"=>$text
         ));
+    }
+
+    /**
+     * @param $user User
+     */
+    private function addMailReminder($user)
+    {
+
+        $user->setNotificationWriteIncrement($user->getNotificationWriteIncrement() + 1);
+        $this->doctrine->persist($user);
+
+        $repo = $this->doctrine->getRepository("TwakeNotificationsBundle:MailNotificationQueue");
+        $reminder = $repo->findOneBy(Array("user_id" => $user->getId()));
+        if (!$reminder) {
+            $reminder = new MailNotificationQueue($user->getId());
+            $this->doctrine->persist($reminder);
+        }
+
+        $this->doctrine->flush();
+
+    }
+
+    /**
+     * @param $user User
+     */
+    public function removeMailReminder($user)
+    {
+
+        $user->setNotificationReadIncrement($user->getNotificationWriteIncrement());
+        $this->doctrine->persist($user);
+
+        $repo = $this->doctrine->getRepository("TwakeNotificationsBundle:MailNotificationQueue");
+        $reminder = $repo->findOneBy(Array("user_id" => $user->getId()));
+        if ($reminder) {
+            $this->doctrine->remove($reminder);
+            $this->doctrine->flush();
+        }
+
     }
 
     public function deleteAllExceptMessages($user, $force=false){
