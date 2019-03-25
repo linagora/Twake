@@ -294,11 +294,11 @@ class DriveFileSystem
             $dirName = $directory->getName();
         }
 
-        $this->userToNotifyService->notifyUsers($dirid,$groupId, "drive.move_file",
+        /*$this->userToNotifyService->notifyUsers($dirid,$groupId, "drive.move_file",
             new TranslationObject($this->translate,"drive.has_been_moved", $fileOrDirectory->getName(), $dirName),
             $fileOrDirectory->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getWorkspaceId());
-        $this->workspacesActivities->recordActivity($fileOrDirectory->getWorkspaceId(), $userId, "drive", "workspace.activity.file.move", "TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
+        $this->workspacesActivities->recordActivity($fileOrDirectory->getWorkspaceId(), $userId, "drive", "workspace.activity.file.move", "TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());*/
 
         return true;
     }
@@ -512,8 +512,8 @@ class DriveFileSystem
 
         $this->updateLabelsCount($fileOrDirectory->getWorkspaceId());
 
-        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getWorkspaceId());
-        $this->workspacesActivities->recordActivity($fileOrDirectory->getWorkspaceId(), $userId, "drive", "workspace.activity.file.rename", "TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
+        //$this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getWorkspaceId());
+        //$this->workspacesActivities->recordActivity($fileOrDirectory->getWorkspaceId(), $userId, "drive", "workspace.activity.file.rename", "TwakeDriveBundle:DriveFile", $fileOrDirectory->getId());
 
         return true;
 
@@ -538,7 +538,7 @@ class DriveFileSystem
 
         $this->doctrine->persist($file);
         $this->doctrine->flush();
-        $this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.move_detached_file_to_drive","TwakeDriveBundle:DriveFile", $file->getId());
+        //$this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.move_detached_file_to_drive","TwakeDriveBundle:DriveFile", $file->getId());
 
         return $file;
     }
@@ -1329,11 +1329,11 @@ class DriveFileSystem
         }else if(is_int($directory))
             $dirid = $directory;
 
-        $this->userToNotifyService->notifyUsers($dirid,$workspace,"drive.file_updated",
+        /*$this->userToNotifyService->notifyUsers($dirid,$workspace,"drive.file_updated",
             new TranslationObject($this->translate,"drive.has_been_update", $file->getName()),
             $file->getId(), $userId);
         $this->pusher->push(Array("action" => "update"), "drive/" . $file->getWorkspaceId());
-        $this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.upload_new_version","TwakeDriveBundle:DriveFile", $file->getId());
+        $this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.upload_new_version","TwakeDriveBundle:DriveFile", $file->getId());*/
 
 
         if ($this->preview->isImage($file->getExtension())) {

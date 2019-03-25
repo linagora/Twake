@@ -69,6 +69,11 @@ class Channel
     private $direct = 0;
 
     /**
+     * @ORM\Column(name="application", type="twake_boolean")
+     */
+    private $application = 0;
+
+    /**
      * @ORM\Column(name="app_id", type="twake_text")
      */
     private $app_id = "";
@@ -137,6 +142,7 @@ class Channel
             "channel_group_name" => $this->getChannelGroupName(),
             "private" => $this->getPrivate(),
             "direct" => $this->getDirect(),
+            "application" => $this->getApplication(),
             "app_id" => $this->getAppId(),
             "app_group_id" => $this->getAppGroupId(),
             "app_bot_identifier" => $this->getAppBotIdentifier(),
@@ -291,6 +297,22 @@ class Channel
     public function setDirect($direct)
     {
         $this->direct = ($direct == true);
+    }
+
+    /**
+     * @return Boolean (application channel or not)
+     */
+    public function getApplication()
+    {
+        return $this->application;
+    }
+
+    /**
+     * @param mixed $direct
+     */
+    public function setApplication($application)
+    {
+        $this->application = ($application == true);
     }
 
     /**

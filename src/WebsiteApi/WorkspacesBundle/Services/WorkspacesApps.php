@@ -18,14 +18,15 @@ class WorkspacesApps implements WorkspacesAppsInterface
 	private $doctrine;
     private $gms;
     private $pusher;
+    private $channel_system;
 
-
-    public function __construct($doctrine, $workspaces_levels_service, $group_managers_service, $pusher)
+    public function __construct($doctrine, $workspaces_levels_service, $group_managers_service, $pusher, $channel_system)
 	{
 		$this->doctrine = $doctrine;
 		$this->wls = $workspaces_levels_service;
         $this->gms = $group_managers_service;
         $this->pusher = $pusher;
+        $this->channel_system = $channel_system;
 
     }
 
@@ -166,6 +167,8 @@ class WorkspacesApps implements WorkspacesAppsInterface
             );
             $this->pusher->push($datatopush, "workspace_apps/" . $workspace->getId());
 
+            $this->channel_system->getApplicationChannel($app, $workspace);
+
             return true;
         }
 
@@ -223,6 +226,8 @@ class WorkspacesApps implements WorkspacesAppsInterface
                 "workspace_app" => $workspace_app
             );
             $this->pusher->push($datatopush, "workspace_apps/" . $workspace->getId());
+
+            $this->channel_system->removeApplicationChannel($app, $workspace);
 
             return true;
         }

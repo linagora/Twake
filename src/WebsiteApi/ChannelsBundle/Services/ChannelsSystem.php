@@ -11,9 +11,10 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 class ChannelsSystem extends ChannelSystemAbstract
 {
 
-    function __construct($entity_manager, $messages_service)
+    function __construct($entity_manager, $messages_service, $websockets_service)
     {
         $this->messages_service = $messages_service;
+        $this->websockets_service = $websockets_service;
         parent::__construct($entity_manager);
     }
 
@@ -60,7 +61,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         return $result;
     }
 
-    public function remove($object, $options, $current_user)
+    public function remove($object, $options, $current_user = null)
     {
         $options["workspace_id"] = $object["original_workspace"];
         $options["group_id"] = $object["original_group"];
@@ -146,6 +147,81 @@ class ChannelsSystem extends ChannelSystemAbstract
         }
 
         return $channel->getAsArray();
+    }
+
+    public function getApplicationChannel($application, $workspace)
+    {
+
+        $identifier = "app_" . $application->getId() . "+ws_" . $workspace->getId();
+
+        $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findOneBy(
+            Array("identifier" => $identifier)
+        );
+
+        if (!$channel) {
+
+            $channel = new \WebsiteApi\ChannelsBundle\Entity\Channel();
+            $channel->setDirect(false);
+            $channel->setApplication(true);
+
+            $channel->setOriginalGroup($workspace->getGroup());
+            $channel->setOriginalWorkspaceId($workspace->getId());
+
+            $channel->setAppId($application->getId());
+            $channel->setIdentifier($identifier);
+
+            $did_create = true;
+
+            $this->entity_manager->persist($channel);
+            $this->entity_manager->flush();
+
+            $event = Array(
+                "client_id" => "system",
+                "action" => "save",
+                "object_type" => "",
+                "object" => $channel->getAsArray()
+            );
+            $this->websockets_service->push("channels/workspace/" . $workspace->getId(), $event);
+
+        }
+
+        if ($channel->getPrivate()) {
+            $this->updateChannelMembers($channel, $members, $current_user->getId());
+        }
+
+        if ($did_create && !$channel->getPrivate()) {
+            $this->addAllWorkspaceMember($workspace, $channel);
+        }
+
+        return $channel;
+
+    }
+
+    public function removeApplicationChannel($application, $workspace)
+    {
+        $identifier = "app_" . $application->getId() . "+ws_" . $workspace->getId();
+
+        $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findOneBy(
+            Array("identifier" => $identifier)
+        );
+
+        if ($channel) {
+
+            $event = Array(
+                "client_id" => "system",
+                "action" => "remove",
+                "object_type" => "",
+                "front_id" => $channel->getFrontId()
+            );
+            $this->websockets_service->push("channels/workspace/" . $workspace->getId(), $event);
+
+            $this->entity_manager->remove($channel);
+            $this->entity_manager->flush();
+
+            return true;
+        }
+
+        return false;
     }
 
 }
