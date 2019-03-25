@@ -86,22 +86,16 @@ class DefaultController extends Controller
         return new JsonResponse($data);
     }
 
-    public function readAction(Request $request){
+
+    public function readAllAction(Request $request)
+    {
         $data = Array(
             'errors' => Array(),
             'data' => Array()
         );
 
-        $application_tmp = $request->request->get("application");
-        $workspace_id_tmp = $request->request->get("workspace_id");
-
-        $application_id = isset($application_tmp["id"]) ? $application_tmp["id"] : $application_tmp;
-
-        $workspace_id = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id_tmp));
-        $application = $this->get("app.twake_doctrine")->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("id" => $application_id));
-
         $user = $this->getUser();
-        $delete = $this->get('app.notifications')->readAll($application, $workspace_id, $user, null, false);
+        $delete = $this->get('app.notifications')->readAll($user);
         if (!$delete){
             $data["errors"][] = "no read made";
         } else{
@@ -110,4 +104,5 @@ class DefaultController extends Controller
 
         return new JsonResponse($data);
     }
+
 }

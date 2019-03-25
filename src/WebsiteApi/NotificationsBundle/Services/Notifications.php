@@ -322,69 +322,54 @@ class Notifications implements NotificationsInterface
 
     }
 
-    public function readAll($application, $workspace, $user, $code = null, $force=false)
+    public function readAll($user)
     {
 
-        $user->setNotificationReadIncrement($user->getNotificationWriteIncrement());
-        $this->doctrine->persist($user);
+        $this->removeMailReminder($user);
 
-        //TODO remove all badges
+        $has_notification_group = false;
+        $has_notification_workspace = false;
 
+        $group_members = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser")->findBy(Array("user" => $user));
+        foreach ($group_members as $group_member) {
+            if ($group_member->getHasNotifications()) {
+                $has_notification_group = true;
+                $group_member->setHasNotifications(false);
+                $this->doctrine->persist($group_member);
+            }
+        }
         $this->doctrine->flush();
 
-        return true;
+        if ($has_notification_group) {
 
-        /*        return;
-
-                $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
-
-                $search = Array(
-                    "user" => $user
-                );
-
-                if ($code) {
-                    $search["code"] = $code;
+            $workspace_members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("user" => $user));
+            foreach ($workspace_members as $workspace_member) {
+                if ($workspace_member->getHasNotifications()) {
+                    $has_notification_workspace = true;
+                    $workspace_member->setHasNotifications(false);
+                    $this->doctrine->persist($workspace_member);
                 }
+            }
+            $this->doctrine->flush();
 
-                if ($application) {
-                    $search["application"] = $application;
-                }
+        }
 
-                if ($workspace) {
-                    $search["workspace"] = $workspace;
-                }
+        $channel_members = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("direct" => true, "user" => $user));
+        if ($has_notification_workspace) {
+            $channel_members = array_merge($channel_members, $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("direct" => false, "user" => $user)));
+        }
+        foreach ($channel_members as $channel_member) {
 
-                $search["isread"] = false;
-
-                $notif = $nRepo->findBy($search);
-
-                $count = count($notif);
-                for($i = 0; $i < $count; $i++) {
-                    $notif[$i]->setIsRead(true);
-                    $this->doctrine->persist($notif[$i]);
-                }
-
-                if ($count == 0){
-                    return false;
-                }
-
-                if($count>0 || $force) {
-                    $this->doctrine->flush();
-
-                    $totalNotifications = $this->countAll($user);
-
-                    $data = Array(
-                        "action"=>"remove",
-                        "workspace_id"=>($workspace)?$workspace->getId():null,
-                        "app_id"=>($application)?$application->getId():null
-                    );
-                    $this->pusher->push($data, "notifications/".$user->getId());
-
-                    $this->updateDeviceBadge($user, $totalNotifications);
-                    return true;
-                }
-                return true;*/
-
+            $channel = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel_member->getChannelId()));
+            if (!$channel) {
+                $this->doctrine->remove($channel_member);
+            }
+            if ($channel && $channel->getMessagesIncrement() != $channel_member->getLastMessagesIncrement()) {
+                $channel_member->setLastMessagesIncrement($channel->getMessagesIncrement());
+                $this->doctrine->persist($channel_member);
+            }
+        }
+        $this->doctrine->flush();
 
     }
 
