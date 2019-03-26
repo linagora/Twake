@@ -15,6 +15,11 @@ class DiscussionController extends Controller
     {
         $options = $request->request->get("options");
         $object = $request->request->get("object");
+
+        if ($object["ephemeral_id"]) {
+            return new JsonResponse(Array("status" => "cancelled"));
+        }
+
         $res = $this->get("app.messages")->remove($object, $options, $this->getUser());
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));

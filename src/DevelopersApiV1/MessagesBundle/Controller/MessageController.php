@@ -16,6 +16,45 @@ use Symfony\Component\HttpFoundation\Request;
 class MessageController extends Controller
 {
 
+    public function removeMessageAction(Request $request)
+    {
+
+        $capabilities = [];
+
+        $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
+        if (is_array($application) && $application["error"]) {
+            return new JsonResponse($application);
+        }
+
+        $options = Array(
+            "application_id" => $application->getId()
+        );
+
+        $object = $request->request->get("message", null);
+        $chan_id = $object["channel_id"];
+
+        if (!$object["ephemeral_id"]) {
+            $result = $this->get("app.messages")->remove($object, $options);
+        } else {
+            $result = true;
+        }
+
+        if ($result) {
+
+            $event = Array(
+                "client_id" => "system",
+                "action" => "remove",
+                "object_type" => "",
+                "front_id" => $object["front_id"]
+            );
+            $this->get("app.websockets")->push("messages/" . $chan_id, $event);
+
+        }
+
+        return new JsonResponse(Array("result" => $object));
+
+    }
+
     public function saveMessageAction(Request $request)
     {
 

@@ -1,8 +1,15 @@
 #Message routing
+developers_api_v1_messages_remove_message:
+    path:     /remove
+    defaults: { _controller: DevelopersApiV1MessagesBundle:Message:removeMessage }
+    methods: [POST]
+
 developers_api_v1_messages_send_message:
     path:     /save
     defaults: { _controller: DevelopersApiV1MessagesBundle:Message:saveMessage }
     methods: [POST]
+
+#OLD CODE
 
 developers_api_v1_messages_send_message:
     path:     /workspace/{workspace_id}/messages/stream/{stream_id}/message
