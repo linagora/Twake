@@ -18,16 +18,15 @@ class VersionController extends Controller
 
         return new JsonResponse(Array("data" =>
                 Array(
-                    "branding" => Array(
-                        "logo" => "https://www.weare-aerospace.com/wp-content/uploads/2017/06/WeareGROUP_logoQ.png",
-                        "name" => "WeAre Aerospace",
-                        "link" => "https://weare-aerospace.com"
-                    ),
-                    "jisti_domain" => "meet.jit.si",
+                    /*                    "branding" => Array(
+                                            "logo" => "https://www.weare-aerospace.com/wp-content/uploads/2017/06/WeareGROUP_logoQ.png",
+                                            "name" => "WeAre Aerospace",
+                                            "link" => "https://weare-aerospace.com"
+                                        ),*/
                     "use_cas" => false,
                     "help_link" => "https://go.crisp.chat/chat/embed/?website_id=9ef1628b-1730-4044-b779-72ca48893161",
-                    "version" => "1.1.0-0",
-                    "last_compatible_mobile_version" => "1.1.300"
+                    "version" => "1.2.0-0",
+                    "last_compatible_mobile_version" => "1.2.000"
                 ))
         );
 

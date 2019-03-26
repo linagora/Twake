@@ -48,7 +48,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         foreach ($members as $member) {
 
 
-            if (!$member->getMuted() && $member->getUser()->getId() != $sender_user->getId()) {
+            if (!$member->getMuted() && (!$sender_user || $member->getUser()->getId() != $sender_user->getId())) {
                 $member->setLastActivity(new \DateTime());
 
                 $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $channel->getAsArray())), "notifications/" . $member->getUser()->getId());

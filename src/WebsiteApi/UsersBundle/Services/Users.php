@@ -63,12 +63,12 @@ class Users
         return $result;
     }
 
-    public function getById($id)
+    public function getById($id, $entity = false)
     {
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->find($id);
         if ($user) {
-            return $user->getAsArray();
+            return $entity ? $user : $user->getAsArray();
         }
         return false;
     }

@@ -29,7 +29,12 @@ class MessageController extends Controller
         $object = $request->request->get("message", null);
         $chan_id = $object["channel_id"];
 
-        $object = $this->get("app.messages")->save($object, $options, null, $application);
+        $user = null;
+        if (isset($object["sender"])) {
+            $user = $this->get("app.users")->getById($object["sender"], true);
+        }
+
+        $object = $this->get("app.messages")->save($object, $options, $user, $application);
 
         $event = Array(
             "client_id" => "bot",
