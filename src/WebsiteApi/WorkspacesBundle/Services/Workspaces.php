@@ -38,8 +38,9 @@ class Workspaces implements WorkspacesInterface
     var $calendarEventService;
     var $calendarService;
     var $driveAdapteService;
+    var $workspaces_service;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $taskService, $calendarService, $calendarEventService, $driveAdapteService)
+    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $taskService, $calendarService, $calendarEventService, $driveAdapteService, $workspaces_service)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -56,6 +57,7 @@ class Workspaces implements WorkspacesInterface
         $this->calendarService = $calendarService;
         $this->calendarEventService = $calendarEventService;
         $this->driveAdapteService = $driveAdapteService;
+        $this->workspaces_service = $workspaces_service;
     }
 
     public function getPrivate($userId = null)
@@ -658,8 +660,9 @@ class Workspaces implements WorkspacesInterface
 
             foreach ($grouppaceapps as $ga) {
                 if ($ga->getWorkspaceDefault()) {
-                    $workspaceapp = new WorkspaceApp($workspace, $ga->getId(), $ga->getAppId());
-                    $this->doctrine->persist($workspaceapp);
+
+                    $this->workspaces_service->enableApp($workspace->getId(), $ga->getAppId());
+
                 }
             }
 

@@ -98,7 +98,7 @@ class ChannelSystemAbstract
 
     public function addWorkspaceMember($workspace, $user)
     {
-        $channels = $this->entity_manager->getRepository("TwakeChannelsB    undle:Channel")->findBy(
+        $channels = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findBy(
             Array("original_workspace_id" => $workspace->getId(), "direct" => false)
         );
 
