@@ -4,6 +4,7 @@
 namespace WebsiteApi\ChannelsBundle\Services;
 
 use Exception;
+use WebsiteApi\ChannelsBundle\Entity\ChannelTab;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -62,6 +63,77 @@ class ChannelSystemAbstract
 
         $channel_entity->setMembers($members_ids);
         $this->entity_manager->persist($channel_entity);
+        $this->entity_manager->flush();
+
+    }
+
+    public function renameTab($channel_id, $application_id, $tab_id, $name)
+    {
+
+        $tab = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelTab")->findOneBy(Array("channel_id" => $channel_id, "app_id" => $application_id, "id" => $tab_id));
+        if (!$tab) {
+            return;
+        }
+        $tab->setName($name);
+        $this->entity_manager->persist($tab);
+        $this->entity_manager->flush();
+
+        $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel_id));
+        $cached_tabs = $channel->getTabs();
+        foreach ($cached_tabs as $k => $cached_tab) {
+            if ($cached_tab["id"] == $tab_id) {
+                $cached_tabs[$k] = $tab->getAsArray();
+            }
+        }
+        $channel->setTabs($cached_tabs);
+
+        $this->entity_manager->persist($channel);
+        $this->entity_manager->flush();
+
+    }
+
+    public function removeTab($channel_id, $application_id, $tab_id)
+    {
+
+        $tab = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelTab")->findOneBy(Array("channel_id" => $channel_id, "app_id" => $application_id, "id" => $tab_id));
+        if (!$tab) {
+            return;
+        }
+        $this->entity_manager->remove($tab);
+        $this->entity_manager->flush();
+
+        $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel_id));
+        $cached_tabs = $channel->getTabs();
+        $cached_tabs_new = [];
+        foreach ($cached_tabs as $cached_tab) {
+            if ($cached_tab["id"] != $tab_id) {
+                $cached_tabs_new[] = $cached_tab;
+            }
+        }
+        $channel->setTabs($cached_tabs_new);
+
+        $this->entity_manager->persist($channel);
+        $this->entity_manager->flush();
+
+    }
+
+    public function addTab($channel_id, $application_id, $name)
+    {
+
+        $tab = new ChannelTab();
+        $tab->setAppId($application_id);
+        $tab->setChannelId($channel_id);
+        $tab->setName($name);
+
+        $this->entity_manager->persist($tab);
+        $this->entity_manager->flush();
+
+        $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel_id));
+        $cached_tabs = $channel->getTabs();
+        $cached_tabs[] = $tab->getAsArray();
+        $channel->setTabs($cached_tabs);
+
+        $this->entity_manager->persist($channel);
         $this->entity_manager->flush();
 
     }

@@ -146,6 +146,14 @@ class ChannelsSystem extends ChannelSystemAbstract
             $this->addAllWorkspaceMember($workspace, $channel);
         }
 
+        if (isset($object["_once_save_tab"])) {
+            if (isset($object["_once_save_tab"]["id"]) && $object["_once_save_tab"]["id"]) {
+                $this->renameTab($channel->getId(), $object["_once_save_tab"]["app_id"], $object["_once_save_tab"]["id"], $object["_once_save_tab"]["name"]);
+            } else {
+                $this->addTab($channel->getId(), $object["_once_save_tab"]["app_id"], $object["_once_save_tab"]["name"]);
+            }
+        }
+
         return $channel->getAsArray();
     }
 

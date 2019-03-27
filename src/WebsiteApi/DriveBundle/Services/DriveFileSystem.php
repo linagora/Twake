@@ -875,7 +875,7 @@ class DriveFileSystem
             $element = $this->convertToEntity($element_id, "TwakeDriveBundle:DriveFile");
         }
 
-        if (!$element || $element->getWorkspaceId() != $workspace_id) {
+        if (!$element || ($element->getWorkspaceId() != $workspace_id && !$element->getDetachedFile())) {
             return null;
         }
 

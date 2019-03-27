@@ -75,7 +75,9 @@ class DriveSystem
             return null;
         }
 
-        $path = $this->dfs->getPath($workspace_id, $element_id);
+        if (!$data->getDetachedFile()) {
+            $path = $this->dfs->getPath($workspace_id, $element_id);
+        }
 
         $data = $data->getAsArray();
         $data["path"] = $path;

@@ -115,6 +115,11 @@ class Channel
     private $members = "[]";
 
     /**
+     * @ORM\Column(name="tabs", type="twake_text")
+     */
+    private $tabs = "[]";
+
+    /**
      * @ORM\Column(name="last_activity", type="twake_datetime" , options={"default" : "2018-07-27 14:00:58"})
      */
     private $last_activity;
@@ -151,6 +156,7 @@ class Channel
             "members_count" => $this->getMembersCount(),
             "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
             "members" => $this->getMembers(),
+            "tabs" => $this->getTabs(),
             "messages_increment" => $this->getMessagesIncrement()
         );
     }
@@ -458,6 +464,23 @@ class Channel
     {
         $this->members = json_encode($members);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTabs()
+    {
+        return json_decode($this->tabs, 1);
+    }
+
+    /**
+     * @param mixed $tabs
+     */
+    public function setTabs($tabs)
+    {
+        $this->tabs = json_encode($tabs);
+    }
+
 
     /**
      * @return mixed

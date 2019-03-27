@@ -14,8 +14,10 @@ use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 class UsersConnectionsController extends Controller
 {
 
-	public function aliveAction(){
-		if($this->getUser()) {
+    public function aliveAction(Request $request)
+    {
+        $focus = $request->request->get("focus", true);
+        if ($this->getUser() && $focus) {
 			$this->get("app.user")->alive($this->getUser()->getId());
 		}
         return new JsonResponse(Array("data" => "ok"));
@@ -31,7 +33,7 @@ class UsersConnectionsController extends Controller
     {
         $response = new Response();
         $response->setContent("<script>document.location='" . base64_decode($request->query->get("redirect")) . "'</script>");
-        return $response;;
+        return $response;
     }
 
 	public function loginAction(Request $request)
