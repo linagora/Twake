@@ -1728,7 +1728,8 @@ class DriveFileSystem
 
                 $file->setPreviewHasBeenGenerated(true);
 
-                if ($this->genPreview($file)) {
+                $res = $this->genPreview($file);
+                if ($res) {
                     $file->setHasPreview(true);
                 }
 
@@ -1749,6 +1750,8 @@ class DriveFileSystem
 
         if (!$file->getIsDirectory() && $file->getLastVersion($this->doctrine)) {
 
+            error_log("will generate preview");
+
             $path = $this->getRoot() . "/" . $file->getPath();
             $previewPath = $this->getRoot() . "/" . $file->getPreviewPath();
 
@@ -1765,6 +1768,7 @@ class DriveFileSystem
                     $res = $this->preview->generatePreview(basename($path), $tmppath, dirname($path), $ext);
                     if ($this->file_exists($path . ".png", null)) {
                         rename($path . ".png", $previewPath);
+                        $res = true;
                     } else {
                         error_log("FILE NOT GENERATED !");
                         $res = false;
