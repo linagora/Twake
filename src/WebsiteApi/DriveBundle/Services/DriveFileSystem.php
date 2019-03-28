@@ -1339,6 +1339,7 @@ class DriveFileSystem
         if ($this->preview->isImage($file->getExtension())) {
             $this->genPreview($file);
             $file->setPreviewHasBeenGenerated(true);
+            $file->setHasPreview(true);
             $this->doctrine->persist($file);
             $this->doctrine->flush();
         }
@@ -1378,6 +1379,7 @@ class DriveFileSystem
         if ($this->preview->isImage($newFile->getExtension())) {
             $this->genPreview($newFile);
             $newFile->setPreviewHasBeenGenerated(true);
+            $newFile->setHasPreview(true);
             $this->doctrine->persist($newFile);
             $this->doctrine->flush();
         }
@@ -1726,7 +1728,9 @@ class DriveFileSystem
 
                 $file->setPreviewHasBeenGenerated(true);
 
-                $this->genPreview($file);
+                if ($this->genPreview($file)) {
+                    $file->setHasPreview(true);
+                }
 
                 $this->doctrine->persist($file);
                 $this->doctrine->flush();

@@ -118,6 +118,11 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
      */
     private $previewhasbeengenerated = false;
 
+    /**
+     * @ORM\Column(type="twake_boolean")
+     */
+    private $has_preview = false;
+
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
 	 */
@@ -576,6 +581,7 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
             "url" => $this->getUrl(),
             "opening_rate" => $this->getOpeningRate(),
             "public_access_key" => $this->getPublicAccessKey(),
+            "has_preview" => $this->getHasPreview(),
             "preview_has_been_generated" => $this->getPreviewHasBeenGenerated(),
             "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null,
             "object_link_cache" => $this->getObjectLinkCache()
@@ -688,4 +694,22 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
     {
         return json_decode($this->object_link_cache, 1);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getHasPreview()
+    {
+        return $this->has_preview;
+    }
+
+    /**
+     * @param mixed $haspreview
+     */
+    public function setHasPreview($has_preview)
+    {
+        $this->has_preview = $has_preview;
+    }
+
+
 }
