@@ -40,6 +40,11 @@ class ChannelTab extends FrontObject
      */
     private $name = "";
 
+    /**
+     * @ORM\Column(name="configuration", type="twake_text", nullable=true)
+     */
+    private $configuration = "{}";
+
 
     public function __construct()
     {
@@ -117,5 +122,23 @@ class ChannelTab extends FrontObject
     {
         $this->channel_id = $channel_id;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getConfiguration()
+    {
+        return json_decode($this->configuration, true);
+    }
+
+    /**
+     * @param mixed $configuration
+     */
+    public function setConfiguration($configuration)
+    {
+        $this->configuration = json_encode($configuration);
+    }
+
+
 
 }

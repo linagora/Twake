@@ -97,6 +97,7 @@ class ChannelSystemAbstract
 
         $tab = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelTab")->findOneBy(Array("channel_id" => $channel_id, "app_id" => $application_id, "id" => $tab_id));
         if (!$tab) {
+            error_log("deleted");
             return;
         }
         $this->entity_manager->remove($tab);
