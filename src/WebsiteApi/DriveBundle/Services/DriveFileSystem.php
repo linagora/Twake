@@ -275,6 +275,7 @@ class DriveFileSystem
         //Update directories size
         $this->updateSize($fileOrDirectory->getParentId(), -$fileOrDirectory->getSize());
         $this->updateSize($directory, $fileOrDirectory->getSize());
+        $fileOrDirectory->setDetachedFile(false);
 
         $this->doctrine->remove($fileOrDirectory);
         $this->doctrine->flush();
@@ -517,30 +518,6 @@ class DriveFileSystem
 
         return true;
 
-    }
-
-    public function moveDetachedFileToDrive($workspace, $detachedFileId, $directory, $userId = 0){
-        $directory = $this->convertToEntity($directory, "TwakeDriveBundle:DriveFile");
-        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
-        $user = $this->convertToEntity($userId, "TwakeUsersBundle:User");
-        /* @var DriveFile $file */
-        $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=>$detachedFileId));
-
-        if ($workspace == null || $this->getFreeSpace($workspace) <= 0) {
-            return false;
-        }
-
-        $file->setDetachedFile(false);
-        $file->setParentId($directory);
-        $this->updateSize($directory, $file->getSize());
-        $this->improveName($file);
-        $file->setWorkspaceId($workspace->getId());
-
-        $this->doctrine->persist($file);
-        $this->doctrine->flush();
-        //$this->workspacesActivities->recordActivity($workspace,$userId,"drive","workspace.activity.file.move_detached_file_to_drive","TwakeDriveBundle:DriveFile", $file->getId());
-
-        return $file;
     }
 
     public function save($object, $user = null, $application = null)
