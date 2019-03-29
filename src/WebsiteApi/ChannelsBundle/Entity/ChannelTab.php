@@ -58,7 +58,8 @@ class ChannelTab extends FrontObject
             "front_id" => $this->getFrontId(),
             "app_id" => $this->getAppId(),
             "channel_id" => $this->getChannelId(),
-            "name" => $this->getName()
+            "name" => $this->getName(),
+            "configuration" => $this->getConfiguration()
         );
     }
 

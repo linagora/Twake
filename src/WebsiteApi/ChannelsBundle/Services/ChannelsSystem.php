@@ -156,6 +156,9 @@ class ChannelsSystem extends ChannelSystemAbstract
         if (isset($object["_once_remove_tab"])) {
             $this->removeTab($channel->getId(), $object["_once_remove_tab"]["app_id"], $object["_once_remove_tab"]["id"]);
         }
+        if (isset($object["_once_save_tab_config"])) {
+            $this->updateTabConfiguration($channel->getId(), $object["_once_save_tab_config"]["app_id"], $object["_once_save_tab_config"]["id"], $object["_once_save_tab_config"]["configuration"]);
+        }
 
         return $channel->getAsArray();
     }

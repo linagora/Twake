@@ -67,6 +67,31 @@ class ChannelSystemAbstract
 
     }
 
+    public function updateTabConfiguration($channel_id, $application_id, $tab_id, $configuration)
+    {
+
+        $tab = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelTab")->findOneBy(Array("channel_id" => $channel_id, "app_id" => $application_id, "id" => $tab_id));
+        if (!$tab) {
+            return;
+        }
+        $tab->setConfiguration($configuration);
+        $this->entity_manager->persist($tab);
+        $this->entity_manager->flush();
+
+        $channel = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel_id));
+        $cached_tabs = $channel->getTabs();
+        foreach ($cached_tabs as $k => $cached_tab) {
+            if ($cached_tab["id"] == $tab_id) {
+                $cached_tabs[$k] = $tab->getAsArray();
+            }
+        }
+        $channel->setTabs($cached_tabs);
+
+        $this->entity_manager->persist($channel);
+        $this->entity_manager->flush();
+
+    }
+
     public function renameTab($channel_id, $application_id, $tab_id, $name)
     {
 
