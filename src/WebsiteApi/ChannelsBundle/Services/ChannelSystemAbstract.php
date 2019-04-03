@@ -50,6 +50,7 @@ class ChannelSystemAbstract
         foreach ($members_ids as $member_id) {
             if (!in_array($member_id, $current_members)) {
                 $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($usersRepo->find($member_id), $channel_entity);
+                $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
                 $this->entity_manager->persist($member);
             }
         }
@@ -203,6 +204,7 @@ class ChannelSystemAbstract
         foreach ($channels as $channel_entity) {
             if (!$channel_entity->getPrivate()) {
                 $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($user, $channel_entity);
+                $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
                 $this->entity_manager->persist($member);
                 $channel_entity->setMembers(array_merge($channel_entity->getMembers(), [$user->getId()]));
                 $this->entity_manager->persist($channel_entity);

@@ -123,14 +123,14 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
      */
     private $has_preview = false;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
-	 */
+     */
     private $copyof;
 
-	/**
+    /**
      * @ORM\Column(type="twake_boolean")
-    */
+     */
     private $shared = false;
 
     /**
@@ -658,6 +658,11 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
     public function setGroup($group)
     {
         $this->group = $group;
+    }
+
+    public function hasPreviewLink()
+    {
+        return !!$this->preview_link;
     }
 
     /**

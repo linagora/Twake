@@ -406,6 +406,9 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
     public function genPreview(DriveFile $file)
     {
+
+        $res = false;
+
         try {
 
             if (!$file->getIsDirectory() && $file->getLastVersion($this->doctrine)) {
@@ -421,58 +424,66 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                     try {
 
                         //Remove old preview
-                        if ($file->getPreviewLink()) {
+                        if ($file->hasPreviewLink()) {
                             try {
                                 $this->openstack->objectStoreV1()
                                     ->getContainer($this->openstack_public_bucket_name)
                                     ->getObject("public/uploads/previews/" . $file->getPath() . ".png")
                                     ->delete();
-                            } catch (Exception $e) {
-                                error_log($e->getMessage());
+                            } catch (\Exception $e) {
+                                //error_log($e->getMessage());
                             }
                         }
 
-                        $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext);
-                        $previewpath = dirname($tmppath) . "/" . basename($file->getPreviewPath());
+                        try {
+                            $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext);
+                        } catch (\Exception $e) {
+                            //error_log($e->getMessage());
+                        }
+                        $previewpath = dirname($tmppath) . "/" . basename($file->getPath());
 
-                        if (file_exists($previewpath . ".png")) {
+                        if ($previewpath && file_exists($previewpath . ".png")) {
 
                             try {
                                 // Upload data.
                                 $options = [
-                                    'name' => "public/uploads/previews/" . $file->getPreviewPath() . ".png",
+                                    'name' => "public/uploads/previews/" . $file->getPath() . ".png",
                                     'stream' => new Stream(fopen($previewpath . ".png", "rb")),
                                 ];
                                 $result = $this->openstack->objectStoreV1()
                                     ->getContainer($this->openstack_public_bucket_name)
                                     ->createObject($options);
 
-                                $file->setPreviewLink($result->getPublicUri());
+                                $file->setPreviewLink($result->getPublicUri() . "");
+                                $res = true;
 
-                            } catch (Exception $e) {
-                                $e->getMessage();
+                            } catch (\Exception $e) {
+                                $res = false;
+                                //error_log($e->getMessage());
                             }
 
-                            @unlink($previewpath . ".png");
+                            @unlink($previewpath);
                             error_log("PREVIEW GENERATED !");
 
                         } else {
-                            error_log("FILE NOT GENERATED !");
+                            $res = false;
+                            error_log("FILE NOT GENERATED !" . $e->getMessage());
                         }
 
                     } catch (\Exception $e) {
-
+                        //error_log($e->getMessage());
                     }
 
                     @unlink($tmppath);
 
                 }
-
             }
 
         } catch (\Exception $e) {
-
+            //error_log($e->getMessage());
+            $res = false;
         }
+        return $res;
 
     }
 
