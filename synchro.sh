@@ -21,7 +21,7 @@ start_synchro() {
 
     #construction de la requête à exécuter
     #Note : pour les fichiers à exclure, utiliser le fichier exclude.txt
-    cmd="sshpass -p $psswd rsync -azv --exclude-from=\"exclude.txt\" $local $id@51.68.94.194:$repo"
+    cmd="sshpass -p $psswd rsync -azv --exclude-from=\"exclude.txt\" $local $id@51.68.94.194:/home/$id/$repo"
 
     echo "Démarrage de la synchronisation"
 
