@@ -53,11 +53,11 @@ if [ "$#" -eq 1 ]; then
         stop)
             stop_synchro ;;
         *)
-            echo "Usage : bash $0 start|stop"
+            echo "Usage : $0 start|stop"
             exit 1;;
     esac
 else
-    echo "Usage : bash $0 start|stop"
+    echo "Usage : $0 start|stop"
     exit 1
 fi
 
