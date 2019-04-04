@@ -123,6 +123,15 @@ class ChannelsSystem extends ChannelSystemAbstract
         $channel->setIcon($object["icon"]);
         $channel->setDescription($object["description"]);
         $channel->setChannelGroupName($object["channel_group_name"]);
+
+        $add_everybody = false;
+        if ($channel->getPrivate() && !$object["private"]) {
+            $add_everybody = true;
+        }
+        if (!$channel->getPrivate() && $object["private"]) {
+            $members = [];
+        }
+
         $channel->setPrivate($object["private"]);
 
         $this->entity_manager->persist($channel);
@@ -142,7 +151,10 @@ class ChannelsSystem extends ChannelSystemAbstract
             $this->updateChannelMembers($channel, $members, $current_user->getId());
         }
 
-        if ($did_create && !$channel->getPrivate()) {
+        if (($did_create || $add_everybody) && !$channel->getPrivate()) {
+            if (!$workspace) {
+                $workspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:Workspace")->find($object["original_workspace"]);
+            }
             $this->addAllWorkspaceMember($workspace, $channel);
         }
 
