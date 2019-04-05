@@ -182,6 +182,7 @@ class ChannelSystemAbstract
 
     public function delWorkspaceMember($workspace, $user)
     {
+        $membersRepo = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember");
         $channels = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findBy(
             Array("original_workspace_id" => $workspace->getId(), "direct" => false)
         );

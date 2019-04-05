@@ -45,6 +45,11 @@ class ChannelMember
     private $direct = 0;
 
     /**
+     * @ORM\Column(name="external", type="twake_boolean")
+     */
+    private $external = 0;
+
+    /**
      * @ORM\Column(name="last_activity_least_updated", type="twake_datetime" , options={"default" : "2018-07-27 14:00:58"})
      */
     private $last_activity_least_updated = 0;
@@ -162,6 +167,22 @@ class ChannelMember
     public function setDirect($direct)
     {
         $this->direct = $direct;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExternal()
+    {
+        return $this->external;
+    }
+
+    /**
+     * @param mixed $direct
+     */
+    public function setExternal($external)
+    {
+        $this->external = $external;
     }
 
     /**
