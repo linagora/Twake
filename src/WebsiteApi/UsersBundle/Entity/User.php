@@ -103,7 +103,6 @@ class User extends SearchableObject implements UserInterface
 
     /**
      * @ORM\Column(name="notification_preference", type="twake_text")
-     * @Encrypted
      */
     protected $notification_preference = "{}";
 
@@ -119,13 +118,16 @@ class User extends SearchableObject implements UserInterface
 
     /**
      * @ORM\Column(name="workspaces_preference", type="twake_text")
-     * @Encrypted
      */
     protected $workspaces_preference = "{}";
 
     /**
+     * @ORM\Column(name="tutorial_status", type="twake_text")
+     */
+    protected $tutorial_status = "{}";
+
+    /**
      * @ORM\Column(name="phone", type="twake_text")
-     * @Encrypted
      */
     protected $phone = "";
 
@@ -464,6 +466,17 @@ class User extends SearchableObject implements UserInterface
 
 		$this->notification_preference = json_encode($notification_preference);
 	}
+
+
+    public function getTutorialStatus()
+    {
+        return json_decode($this->tutorial_status, true);
+    }
+
+    public function setTutorialStatus($tutorial_status)
+    {
+        @$this->tutorial_status = json_encode($tutorial_status);
+    }
 
     public function getFullName()
     {

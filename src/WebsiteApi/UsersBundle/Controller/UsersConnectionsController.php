@@ -243,6 +243,7 @@ class UsersConnectionsController extends Controller
 			$data["data"] = $this->getUser()->getAsArray();
             $data["data"]["workspaces_preferences"] = $this->getUser()->getWorkspacesPreference();
             $data["data"]["notifications_preferences"] = $this->getUser()->getNotificationPreference();
+            $data["data"]["tutorial_status"] = $this->getUser()->getTutorialStatus();
 
 			$data["data"]["status"] = "connected";
 
