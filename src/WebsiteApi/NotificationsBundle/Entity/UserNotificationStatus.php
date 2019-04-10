@@ -22,7 +22,7 @@ class UserNotificationStatus
     private $id;
 
     /**
-     * @ORM\ManyToOne(name="user_id", type="twake_timeuuid")
+     * @ORM\Column(name="user_id", type="twake_timeuuid")
      * @ORM\Id
      */
     private $user_id;
@@ -39,6 +39,22 @@ class UserNotificationStatus
     public function __construct($user_id)
     {
         $this->user_id = $user_id;
+    }
+
+    /**
+     * @return int
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param int $id
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     /**

@@ -47,7 +47,7 @@ class ChannelsSystem extends ChannelSystemAbstract
 
         $result = [];
         foreach ($channels as $channel) {
-            $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user" => $current_user, "channel_id" => $channel->getId()));
+            $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $current_user->getId(), "channel_id" => $channel->getId()));
             if ($res) {
                 $tmp = $channel->getAsArray();
                 $tmp["_user_last_message_increment"] = $res->getLastMessagesIncrement();
@@ -157,6 +157,11 @@ class ChannelsSystem extends ChannelSystemAbstract
             }
             $this->addAllWorkspaceMember($workspace, $channel);
         }
+
+        //Add external members
+        $ext_members = isset($object["ext_members"]) ? $object["ext_members"] : [];
+        $this->updateExtChannelMembers($channel, $ext_members, $current_user->getId());
+
 
         if (isset($object["_once_save_tab"])) {
             if (isset($object["_once_save_tab"]["id"]) && $object["_once_save_tab"]["id"]) {

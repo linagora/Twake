@@ -40,9 +40,9 @@ class NotificationMailCommand extends ContainerAwareCommand
             if ($date > 60 * 30) //30 minutes
             {
 
-                $user_notification_status = $em->getRepository("TwakeNotificationsBundle:UserNotificationStatus")->findOneBy(Array("user_id" => $user_id));
+                $user_notification_status = $em->getRepository("TwakeNotificationsBundle:UserNotificationStatus")->findOneBy(Array("user_id" => $entry->getUserId()));
                 if (!$user_notification_status) {
-                    $user_notification_status = new UserNotificationStatus($user);
+                    $user_notification_status = new UserNotificationStatus($entry->getUserId());
                 }
 
                 if ($user_notification_status->getMailStatus() == 0) {
@@ -52,11 +52,14 @@ class NotificationMailCommand extends ContainerAwareCommand
                     $em->remove($entry);
 
                     $em->persist($user_notification_status);
+
+                    error_log("send to " . $entry->getUserId());
+                } else {
+                    error_log("cancelled " . $entry->getUserId());
                 }
 
+                error_log($date);
             }
-
-            error_log($date);
 
         }
 

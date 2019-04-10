@@ -27,10 +27,10 @@ class ChannelMember
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\Column(name="user_id", type="text")
      * @ORM\Id
      */
-    private $user;
+    private $user_id = "";
 
     /**
      * @ORM\Column(name="channel_id", type="twake_timeuuid")
@@ -79,9 +79,9 @@ class ChannelMember
      * @param $user
      * @param $channel
      */
-    public function __construct($user, $channel)
+    public function __construct($user_id, $channel)
     {
-        $this->user = $user;
+        $this->user_id = $user_id;
         $this->channel_id = $channel->getId();
         $this->last_activity_least_updated = new \DateTime();
         $this->last_activity = new \DateTime();
@@ -107,7 +107,7 @@ class ChannelMember
      */
     public function getUser()
     {
-        return $this->user;
+        return $this->user_id;
     }
 
     /**
