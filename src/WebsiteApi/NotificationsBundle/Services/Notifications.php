@@ -498,6 +498,11 @@ class Notifications implements NotificationsInterface
      */
     public function removeMailReminder($user)
     {
+        $user_notification_status = $em->getRepository("TwakeNotificationsBundle:UserNotificationStatus")->findOneBy(Array("user_id" => $user->getId()));
+        if ($user_notification_status) {
+            $user_notification_status->setMailStatus(0);
+            $this->doctrine->persist($user_notification_status);
+        }
 
         $user->setNotificationReadIncrement($user->getNotificationWriteIncrement());
         $this->doctrine->persist($user);

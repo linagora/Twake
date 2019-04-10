@@ -173,7 +173,9 @@ class ChannelSystemAbstract
             $members = $wuRepo->findBy(Array("workspace" => $workspace));
             $ids = Array();
             foreach ($members as $member) {
-                $ids[] = $member->getUser()->getId();
+                if (!$member->getExterne()) {
+                    $ids[] = $member->getUser()->getId();
+                }
             }
             $this->updateChannelMembers($channel, $ids);
 
