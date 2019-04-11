@@ -70,6 +70,7 @@ class ChannelSystemAbstract
 
     public function updateExtChannelMembers($channel_entity, $ext_members, $current_user_id = null)
     {
+
         $_ext_members = [];
         $members = $channel_entity->getMembers();
         foreach ($ext_members as $ext_member) {
@@ -89,16 +90,24 @@ class ChannelSystemAbstract
             if (!in_array($member_id, $current_ext)) {
                 $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($member_id, $channel_entity);
                 $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
+                $member->setExterne(true);
                 $this->entity_manager->persist($member);
                 $did_something = true;
+
+                //TODO Vérifier que l'utilisateur est bien invité au workspace également
+
             }
         }
 
         foreach ($current_ext as $member_id) {
             if (!in_array($member_id, $_ext_members)) {
                 $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $usersRepo->find($member_id)));
-                $this->entity_manager->remove($member);
+                if ($member) {
+                    $this->entity_manager->remove($member);
+                }
                 $did_something = true;
+
+                //TODO Si utilisateur invité dans aucun channel, supprimer des invités
             }
         }
 
@@ -106,7 +115,7 @@ class ChannelSystemAbstract
             $channel_entity->setExtMembers($_ext_members);
 
             $this->entity_manager->persist($channel_entity);
-            $this->entity_manager->flush($channel);
+            $this->entity_manager->flush();
         }
     }
 

@@ -105,7 +105,7 @@ class ChannelMember
     /**
      * @return mixed
      */
-    public function getUser()
+    public function getUserId()
     {
         return $this->user_id;
     }

@@ -172,6 +172,11 @@ class User extends SearchableObject implements UserInterface
     protected $password;
 
     /**
+     * @ORM\Column(type="string", length=16)
+     */
+    protected $timezone;
+
+    /**
      * @ORM\Column(name="last_login", type="twake_datetime")
      */
     protected $lastlogin;
@@ -503,7 +508,8 @@ class User extends SearchableObject implements UserInterface
             "isNew" => $this->getisNew(),
             "isRobot" => $this->getisRobot(),
             "status_icon" => $this->getStatusIcon(),
-            "front_id" => $this->getFrontId()
+            "front_id" => $this->getFrontId(),
+            "timezone" => $timezone
 		);
 		return $return;
 	}
@@ -1036,6 +1042,22 @@ class User extends SearchableObject implements UserInterface
     public function setNotificationWriteIncrement($notification_write_increment)
     {
         $this->notification_write_increment = $notification_write_increment;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTimezone()
+    {
+        return $this->timezone;
+    }
+
+    /**
+     * @param mixed $timezone
+     */
+    public function setTimezone($timezone)
+    {
+        $this->timezone = $timezone;
     }
 
 }
