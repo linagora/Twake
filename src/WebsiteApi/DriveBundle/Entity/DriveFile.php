@@ -315,7 +315,7 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
             return null;
         }
         if($this->getDetachedFile()){
-            return "detached/" . $this->workspace_id . "/" . $this->getLastVersionId();
+            return "" . $this->workspace_id . "/" . $this->getLastVersionId();
         }
         return $this->workspace_id . "/" . $this->getLastVersionId();
     }
@@ -329,7 +329,7 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
             return null;
         }
         if($this->getDetachedFile()){
-            return "detached/" . $this->workspace_id . "/preview/" . $this->getLastVersionId() . ".png";
+            return "" . $this->workspace_id . "/preview/" . $this->getLastVersionId() . ".png";
         }
         return $this->workspace_id . "/preview/" . $this->getLastVersionId() . ".png";
     }

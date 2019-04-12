@@ -80,6 +80,7 @@ class ChannelSystemAbstract
         }
 
         $current_ext = $channel_entity->getExtMembers();
+        $current_ext = $current_ext ? $current_ext : [];
 
         $membersRepo = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember");
         $usersRepo = $this->entity_manager->getRepository("TwakeUsersBundle:User");
