@@ -509,7 +509,7 @@ class User extends SearchableObject implements UserInterface
             "isRobot" => $this->getisRobot(),
             "status_icon" => $this->getStatusIcon(),
             "front_id" => $this->getFrontId(),
-            "timezone" => $timezone
+            "timezone_offset" => $this->timezone
 		);
 		return $return;
 	}
