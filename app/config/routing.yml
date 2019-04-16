@@ -87,6 +87,11 @@ twake_workspaces:
     prefix:   /ajax/workspace/
     methods: [POST]
 
+twake_globalsearch:
+    resource: "@TwakeGlobalSearchBundle/Resources/config/routing.yml"
+    prefix:   /ajax/globalsearch/
+    methods: [POST]
+
 twake_users:
     resource: "@TwakeUsersBundle/Resources/config/routing.yml"
     prefix:   /ajax/users/
