@@ -58,7 +58,9 @@ class ChannelSystemAbstract
         foreach ($current_members as $member_id) {
             if (!in_array($member_id, $members_ids)) {
                 $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $usersRepo->find($member_id)));
-                $this->entity_manager->remove($member);
+                if ($member) {
+                    $this->entity_manager->remove($member);
+                }
             }
         }
 

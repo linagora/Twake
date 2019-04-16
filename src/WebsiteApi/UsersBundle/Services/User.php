@@ -935,7 +935,7 @@ class User implements UserInterface
             if ($user->getTimezone() != intval($timezone)) {
                 $user->setTimezone(intval($timezone) . "");
                 $this->em->persist($user);
-                $this->flush();
+                $this->em->flush();
             }
         }
     }
