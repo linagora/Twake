@@ -13,7 +13,7 @@ start_synchro() {
 
     #construction de la requête à exécuter
     #Note : pour les fichiers à exclure, utiliser le fichier exclude.txt
-    cmd="sshpass -p $psswd rsync -azv --exclude-from=\"exclude.txt\" . $id@51.68.94.194:/home/$id/src/twake-core"
+    cmd="sshpass -p $psswd rsync -azv --exclude-from=\"exclude.txt\" . $id@51.68.94.194:/home/twake/$id/src/twake-core"
 
     echo "Démarrage de la synchronisation"
 
