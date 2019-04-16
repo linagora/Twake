@@ -1,11 +1,11 @@
 <?php
 
-namespace TwakeGlobalSearchBundle\Controller;
 
+namespace WebsiteApi\GlobalSearchBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 
 class GlobalSearchController extends Controller
@@ -16,7 +16,7 @@ class GlobalSearchController extends Controller
         error_log("debut du test");
 
 
-        $this->get('globalsearch.event')->proceedEvent();
+        $this->get('globalsearch.event')->TestSearch();
 
         return new Response("Hello !");
 

@@ -1,4 +1,4 @@
 services:
 
   globalsearch.event:
-    class: TwakeGlobalSearchBundle\Services\Event
+    class: WebsiteApi\GlobalSearchBundle\Services\Event

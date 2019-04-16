@@ -38,6 +38,7 @@ class AppKernel extends Kernel
 	        new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new WebsiteApi\MarketBundle\TwakeMarketBundle(),
             new WebsiteApi\DriveBundle\TwakeDriveBundle(),
+            new WebsiteApi\GlobalSearchBundle\TwakeGlobalSearchBundle(),
             new Administration\AuthenticationBundle\AdministrationAuthenticationBundle(),
             new WebsiteApi\CalendarBundle\TwakeCalendarBundle(),
             new WebsiteApi\ProjectBundle\TwakeProjectBundle(),

@@ -1,9 +1,9 @@
 <?php
-
-namespace TwakeGlobalSearchBundle;
+#test
+namespace WebsiteApi\GlobalSearchBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
-class  TwakeGlobalSearchBundle extends Bundle
+class TwakeGlobalSearchBundle extends Bundle
 {
 }

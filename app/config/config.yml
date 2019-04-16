@@ -14,6 +14,7 @@ imports:
     - { resource: "@TwakeMarketBundle/Resources/config/services.yml" }
     - { resource: "@TwakePaymentsBundle/Resources/config/services.yml" }
     - { resource: "@TwakeUploadBundle/Resources/config/services.yml" }
+    - { resource: "@TwakeGlobalSearchBundle/Resources/config/services.yml" }
 #[REMOVE_ONPREMISE]
     - { resource: "@AdministrationAuthenticationBundle/Resources/config/services.yml" }
 #[/REMOVE_ONPREMISE]

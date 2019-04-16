@@ -1,3 +1,3 @@
-globalsearch_event:
+twake_globalsearch_event:
   path:       /event
   defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:event }

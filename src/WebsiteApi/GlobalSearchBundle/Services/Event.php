@@ -1,15 +1,13 @@
 <?php
 
-namespace TwakeGlobalSearchBundle\Services;
+namespace WebsiteApi\GlobalSearchBundle\Services;
 
 class Event
 {
 
     public function TestSearch()
     {
-        error_log("On peut commencer ");
-
-
+        error_log("On peut commencer");
     }
 
 }
