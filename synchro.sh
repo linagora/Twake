@@ -11,17 +11,9 @@ start_synchro() {
 
     read -s psswd
 
-    echo "Indiquez le répertoire local à synchroniser"
-
-    read local
-
-    echo "Indiquez le répertoire de synchronisation du serveur distant"
-
-    read repo
-
     #construction de la requête à exécuter
     #Note : pour les fichiers à exclure, utiliser le fichier exclude.txt
-    cmd="sshpass -p $psswd rsync -azv --exclude-from=\"exclude.txt\" $local $id@51.68.94.194:/home/$id/$repo"
+    cmd="sshpass -p $psswd rsync -azv --exclude-from=\"exclude.txt\" . $id@51.68.94.194:/home/twake/$id/src/twake-core"
 
     echo "Démarrage de la synchronisation"
 
