@@ -191,15 +191,18 @@ class MessageSystem
 
             if (!$message) {
                 $message = $message_repo->findOneBy(Array("id" => $object["id"]));
-                if (isset($object["channel_id"]) && $object["channel_id"] != $message->getChannelId()) {
-                    return false;
-                }
-                if (isset($object["_once_replace_message_parent_message"]) && $object["_once_replace_message_parent_message"] != $message->getParentMessageId()) {
-                    return false;
-                } else
-                    if (isset($object["parent_message_id"]) && $object["parent_message_id"] != $message->getParentMessageId()) {
+                if ($message) {
+                    if (isset($object["channel_id"]) && $object["channel_id"] != $message->getChannelId()) {
                         return false;
                     }
+                    if (isset($object["_once_replace_message_parent_message"]) && $object["_once_replace_message_parent_message"] != $message->getParentMessageId()) {
+                        return false;
+                    } else if (isset($object["parent_message_id"]) && $object["parent_message_id"] != $message->getParentMessageId()) {
+                        return false;
+                    }
+                } else {
+                    return falses;
+                }
             }
 
             //Verify can modify this message
@@ -497,7 +500,10 @@ class MessageSystem
                 if (is_string($item)) {
                     $result .= $item;
                 } else if (isset($item["type"])) {
-                    if (in_array($item["type"], Array("underline", "strikethrough", "bold", "italic", "mquote", "quote", "email", "url", "", "system"))) {
+                    if (in_array($item["type"], Array("underline", "strikethrough", "bold", "italic", "mquote", "quote", "email", "url", "", "nop", "br", "system"))) {
+                        if ($item["type"] == "br") {
+                            $result .= " ";
+                        }
                         $result .= $this->mdToText($item["content"]);
                     }
                 } else {

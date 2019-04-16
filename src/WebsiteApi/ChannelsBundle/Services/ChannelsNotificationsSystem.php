@@ -148,6 +148,10 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
          */
         $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user_id" => $user->getId()));
 
+        if (!$member) {
+            return false;
+        }
+
         $member->setLastMessagesIncrement($channel->getMessagesIncrement());
         $member->setLastAccess(new \DateTime());
 
