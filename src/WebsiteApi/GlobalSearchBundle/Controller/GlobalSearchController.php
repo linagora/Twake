@@ -11,7 +11,7 @@ use Symfony\Component\HttpFoundation\Response;
 class GlobalSearchController extends Controller
 {
 
-    public function eventAction(Request $request)
+    public function ESAction(Request $request)
     {
         error_log("debut du test");
 
