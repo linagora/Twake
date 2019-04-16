@@ -73,7 +73,15 @@ class MessageController extends Controller
             $user = $this->get("app.users")->getById($object["sender"], true);
         }
 
-        $object = $this->get("app.messages")->save($object, $options, $user, $application);
+        try {
+            $object = $this->get("app.messages")->save($object, $options, $user, $application);
+        } catch (\Exception $e) {
+            $object = false;
+        }
+
+        if (!$object) {
+            return new JsonResponse(Array("error" => "unknown error or malformed query."));
+        }
 
         $event = Array(
             "client_id" => "bot",
@@ -83,7 +91,7 @@ class MessageController extends Controller
         );
         $this->get("app.websockets")->push("messages/" . $chan_id, $event);
 
-        return new JsonResponse(Array("result" => $object));
+        return new JsonResponse(Array("object" => $object));
 
     }
 

@@ -109,6 +109,7 @@ class InitCommand extends ContainerAwareCommand
 
 
         // Création des applications    de base
+        $app = null;
         $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "twake_drive"));
         if (!$app) {
             $app = new Application(new FakeCassandraTimeuuid(), "Documents");
@@ -118,6 +119,25 @@ class InitCommand extends ContainerAwareCommand
         $app->setWebsite("https://twakeapp.com");
         $app->setDescription("Application de stockage de fichier de Twake.");
         $app->setSimpleName("twake_drive");
+        $app->setAppGroupName("twake");
+        $app->setPublic(true);
+        $app->setIsAvailableToPublic(true);
+        $app->setTwakeTeamValidation(true);
+        $app->setDisplayConfiguration(json_decode('{"messages_module":{"in_plus":true},"channel_tab":true,"app":true}', true));
+        $app->setDefault(true);
+        $manager->persist($app);
+        $manager->flush();
+
+        $app = null;
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "twake_calendar"));
+        if (!$app) {
+            $app = new Application(new FakeCassandraTimeuuid(), "Calendar");
+            $app->setApiPrivateKey($app->generatePrivateApiKey());
+        }
+        $app->setIconUrl("/public/img/twake-emoji/twake-calendar.png");
+        $app->setWebsite("https://twakeapp.com");
+        $app->setDescription("Application calendrier partagé de Twake.");
+        $app->setSimpleName("twake_calendar");
         $app->setAppGroupName("twake");
         $app->setPublic(true);
         $app->setIsAvailableToPublic(true);

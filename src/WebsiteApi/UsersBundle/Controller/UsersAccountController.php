@@ -73,6 +73,27 @@ class UsersAccountController extends Controller
 
     }
 
+    public function setTutorialStatusAction(Request $request)
+    {
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        if ($this->getUser()) {
+
+            $status = $request->request->get("status", Array());
+            $this->get("app.user")->setTutorialStatus($this->getUser()->getId(), $status);
+
+        } else {
+            $data["errors"][] = "unknown";
+        }
+
+        return new JsonResponse($data);
+
+    }
+
 	public function updateNotificationPreferenceByWorkspaceAction(Request $request){
         $data = Array(
             "errors" => Array(),

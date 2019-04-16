@@ -49,14 +49,15 @@ class ChannelSystemAbstract
 
         foreach ($members_ids as $member_id) {
             if (!in_array($member_id, $current_members)) {
-                $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($usersRepo->find($member_id), $channel_entity);
+                $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($member_id, $channel_entity);
+                $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
                 $this->entity_manager->persist($member);
             }
         }
 
         foreach ($current_members as $member_id) {
             if (!in_array($member_id, $members_ids)) {
-                $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user" => $usersRepo->find($member_id)));
+                $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $usersRepo->find($member_id)));
                 $this->entity_manager->remove($member);
             }
         }
@@ -65,6 +66,58 @@ class ChannelSystemAbstract
         $this->entity_manager->persist($channel_entity);
         $this->entity_manager->flush();
 
+    }
+
+    public function updateExtChannelMembers($channel_entity, $ext_members, $current_user_id = null)
+    {
+
+        $_ext_members = [];
+        $members = $channel_entity->getMembers();
+        foreach ($ext_members as $ext_member) {
+            if (!in_array($ext_member, $members)) {
+                $_ext_members[] = $ext_member;
+            }
+        }
+
+        $current_ext = $channel_entity->getExtMembers();
+        $current_ext = $current_ext ? $current_ext : [];
+
+        $membersRepo = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember");
+        $usersRepo = $this->entity_manager->getRepository("TwakeUsersBundle:User");
+
+        $did_something = false;
+
+        foreach ($_ext_members as $member_id) {
+            if (!in_array($member_id, $current_ext)) {
+                $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($member_id, $channel_entity);
+                $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
+                $member->setExterne(true);
+                $this->entity_manager->persist($member);
+                $did_something = true;
+
+                //TODO Vérifier que l'utilisateur est bien invité au workspace également
+
+            }
+        }
+
+        foreach ($current_ext as $member_id) {
+            if (!in_array($member_id, $_ext_members)) {
+                $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $usersRepo->find($member_id)));
+                if ($member) {
+                    $this->entity_manager->remove($member);
+                }
+                $did_something = true;
+
+                //TODO Si utilisateur invité dans aucun channel, supprimer des invités
+            }
+        }
+
+        if ($did_something) {
+            $channel_entity->setExtMembers($_ext_members);
+
+            $this->entity_manager->persist($channel_entity);
+            $this->entity_manager->flush();
+        }
     }
 
     public function updateTabConfiguration($channel_id, $application_id, $tab_id, $configuration)
@@ -172,7 +225,9 @@ class ChannelSystemAbstract
             $members = $wuRepo->findBy(Array("workspace" => $workspace));
             $ids = Array();
             foreach ($members as $member) {
-                $ids[] = $member->getUser()->getId();
+                if (!$member->getExterne()) {
+                    $ids[] = $member->getUser()->getId();
+                }
             }
             $this->updateChannelMembers($channel, $ids);
 
@@ -181,12 +236,13 @@ class ChannelSystemAbstract
 
     public function delWorkspaceMember($workspace, $user)
     {
+        $membersRepo = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember");
         $channels = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findBy(
             Array("original_workspace_id" => $workspace->getId(), "direct" => false)
         );
 
         foreach ($channels as $channel_entity) {
-            $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user" => $user));
+            $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $user));
             $this->entity_manager->remove($member);
             $channel_entity->setMembers(array_diff($channel_entity->getMembers(), [$user->getId()]));
             $this->entity_manager->persist($channel_entity);
@@ -202,7 +258,8 @@ class ChannelSystemAbstract
 
         foreach ($channels as $channel_entity) {
             if (!$channel_entity->getPrivate()) {
-                $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($user, $channel_entity);
+                $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($user->getId(), $channel_entity);
+                $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
                 $this->entity_manager->persist($member);
                 $channel_entity->setMembers(array_merge($channel_entity->getMembers(), [$user->getId()]));
                 $this->entity_manager->persist($channel_entity);

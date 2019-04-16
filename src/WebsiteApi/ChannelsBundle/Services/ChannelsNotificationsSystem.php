@@ -35,6 +35,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $channel->setMessagesIncrement($channel->getMessagesIncrement() + 1);
 
         $membersRepo = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember");
+        $userRepo = $this->doctrine->getRepository("TwakeUsersBundle:User");
         /**
          * @var $members ChannelMember[]
          */
@@ -48,19 +49,22 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         foreach ($members as $member) {
 
 
-            if (!$member->getMuted() && (!$sender_user || $member->getUser()->getId() != $sender_user->getId())) {
+            if (!$member->getMuted() && (!$sender_user || $member->getUserId() != $sender_user->getId())) {
+
+                $user = $userRepo->find($member->getUserId());
+
                 $member->setLastActivity(new \DateTime());
 
-                $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $channel->getAsArray())), "notifications/" . $member->getUser()->getId());
+                $this->pusher->push(Array("type" => "update", "notification" => Array("channel" => $channel->getAsArray())), "notifications/" . $member->getUserId());
 
                 //Updating workspace and group notifications
                 if (!$channel->getDirect()) {
 
-                    $this->addNotificationOnWorkspace($workspace, $member->getUser(), false);
+                    $this->addNotificationOnWorkspace($workspace, $user, false);
 
                 }
 
-                $users_to_notify[] = $member->getUser();
+                $users_to_notify[] = $user;
 
             } else {
                 $member->setLastMessagesIncrement($channel->getMessagesIncrement());
@@ -105,7 +109,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         /**
          * @var $member ChannelMember
          */
-        $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user" => $user));
+        $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user_id" => $user->getId()));
 
         $member->setLastMessagesIncrement($channel->getMessagesIncrement() - 1);
 
@@ -142,7 +146,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         /**
          * @var $member ChannelMember
          */
-        $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user" => $user));
+        $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user_id" => $user->getId()));
 
         $member->setLastMessagesIncrement($channel->getMessagesIncrement());
         $member->setLastAccess(new \DateTime());
@@ -226,7 +230,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
             //TODO check also linked channels in workspace when implemented
             foreach ($channels as $_channel) {
                 $link = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(
-                    Array("direct" => false, "channel_id" => $_channel->getId(), "user" => $user)
+                    Array("direct" => false, "channel_id" => $_channel->getId(), "user_id" => $user->getId())
                 );
                 if ($link && $link->getLastMessagesIncrement() < $_channel->getMessagesIncrement()) {
                     $all_read = false;
@@ -317,7 +321,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         }
 
         $membersRepo = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember");
-        $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user" => $user));
+        $member = $membersRepo->findOneBy(Array("direct" => $channel->getDirect(), "channel_id" => $channel->getId(), "user_id" => $user->getId()));
 
         $member->setMuted($state);
         $this->doctrine->flush();

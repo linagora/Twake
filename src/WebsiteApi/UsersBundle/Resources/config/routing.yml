@@ -153,6 +153,11 @@ twake_user_account_update_notification:
     methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersAccount:updateNotificationPreferenceByWorkspace }
 
+twake_user_account_set_tutorial_status:
+    path:     /account/set_tutorial_status
+    methods: [POST]
+    defaults: { _controller: TwakeUsersBundle:UsersAccount:setTutorialStatus}
+
 twake_user_account_update_status:
     path:     /account/update_status
     methods: [POST]

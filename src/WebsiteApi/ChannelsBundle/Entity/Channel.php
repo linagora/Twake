@@ -115,6 +115,11 @@ class Channel
     private $members = "[]";
 
     /**
+     * @ORM\Column(name="ext_members", type="twake_text")
+     */
+    private $ext_members = "[]";
+
+    /**
      * @ORM\Column(name="tabs", type="twake_text")
      */
     private $tabs = "[]";
@@ -156,6 +161,7 @@ class Channel
             "members_count" => $this->getMembersCount(),
             "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
             "members" => $this->getMembers(),
+            "ext_members" => $this->getExtMembers(),
             "tabs" => $this->getTabs(),
             "messages_increment" => $this->getMessagesIncrement()
         );
@@ -463,6 +469,22 @@ class Channel
     public function setMembers($members)
     {
         $this->members = json_encode($members);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExtMembers()
+    {
+        return json_decode($this->ext_members, 1);
+    }
+
+    /**
+     * @param mixed $ext_members
+     */
+    public function setExtMembers($ext_members)
+    {
+        $this->ext_members = json_encode($ext_members);
     }
 
     /**

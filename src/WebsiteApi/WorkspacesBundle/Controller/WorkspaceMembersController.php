@@ -49,7 +49,8 @@ class WorkspaceMembersController extends Controller
         $listMails = Array();
         foreach ($pendingMails as $mail) {
             $listMails[] = Array(
-                "mail" => $mail->getMail()
+                "mail" => $mail->getMail(),
+                "externe" => $mail->getExterne()
             );
         }
 

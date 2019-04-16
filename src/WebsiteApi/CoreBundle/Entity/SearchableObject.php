@@ -15,7 +15,7 @@ class SearchableObject extends FrontObject
     /**
      * @ORM\Column(name="es_indexed", type="twake_boolean")
      */
-    protected $es_indexed;
+    protected $es_indexed = false;
 
     protected $es_type = "misc";
 

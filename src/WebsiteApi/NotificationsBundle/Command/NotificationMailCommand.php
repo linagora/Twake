@@ -9,6 +9,7 @@ use Symfony\Component\Process\Process;
 use WebsiteApi\NotificationsBundle\Entity\MailNotificationQueue;
 use Emojione\Client;
 use Emojione\Ruleset;
+use WebsiteApi\NotificationsBundle\Entity\UserNotificationStatus;
 use WebsiteApi\UsersBundle\Entity\User;
 
 
@@ -38,11 +39,27 @@ class NotificationMailCommand extends ContainerAwareCommand
 
             if ($date > 60 * 30) //30 minutes
             {
-                $users[] = Array("user" => $entry->getUserId(), "date" => $entry->getDate()->getTimestamp());
-                $em->remove($entry);
-            }
 
-            error_log($date);
+                $user_notification_status = $em->getRepository("TwakeNotificationsBundle:UserNotificationStatus")->findOneBy(Array("user_id" => $entry->getUserId()));
+                if (!$user_notification_status) {
+                    $user_notification_status = new UserNotificationStatus($entry->getUserId());
+                }
+
+                if ($user_notification_status->getMailStatus() == 0) {
+                    $user_notification_status->setMailStatus(1);
+
+                    $users[] = Array("user" => $entry->getUserId(), "date" => $entry->getDate()->getTimestamp());
+                    $em->remove($entry);
+
+                    $em->persist($user_notification_status);
+
+                    error_log("send to " . $entry->getUserId());
+                } else {
+                    error_log("cancelled " . $entry->getUserId());
+                }
+
+                error_log($date);
+            }
 
         }
 

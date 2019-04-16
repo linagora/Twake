@@ -915,6 +915,31 @@ class User implements UserInterface
         return true;
     }
 
+    public function setTutorialStatus($userId, $status)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($userId);
+
+        if ($user != null) {
+            $user->setTutorialStatus($status);
+            $this->em->persist($user);
+            $this->em->flush();
+        }
+
+        return true;
+    }
+
+    public function updateTimezone($user, $timezone = false)
+    {
+        if ($user && $timezone !== false) {
+            if ($user->getTimezone() != intval($timezone)) {
+                $user->setTimezone(intval($timezone) . "");
+                $this->em->persist($user);
+                $this->flush();
+            }
+        }
+    }
+
     private function removeLinkedToUserRows($entity, $user, $col = "user")
     {
         $repo = $this->em->getRepository($entity);

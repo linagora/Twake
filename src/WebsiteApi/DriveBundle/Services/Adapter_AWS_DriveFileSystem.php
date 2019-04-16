@@ -384,6 +384,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
     public function genPreview(DriveFile $file)
     {
 
+        $res = false;
         if (!$file->getIsDirectory() && $file->getLastVersion($this->doctrine)) {
 
             $ext = $file->getExtension();
@@ -408,22 +409,29 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
                         }
                     }
 
-                    $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext);
+                    try {
+                        $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext);
+                    } catch (\Exception $e) {
+                        //error_log($e->getMessage());
+                    }
                     $previewpath = dirname($tmppath) . "/" . basename($file->getPath());
+
                     if (file_exists($previewpath . ".png")) {
 
                         try {
                             // Upload data.
                             $result = $this->aws_s3_client->putObject([
                                 'Bucket' => $this->aws_bucket_name,
-                                'Key' => "public/uploads/previews/" . $file->getPath() . ".png",
+                                'Key' => "public/uploads/previews/" . $file->getId() . ".png",
                                 'Body' => fopen($previewpath . ".png", "rb"),
                                 'ACL' => 'public-read'
                             ]);
 
-                            $file->setPreviewLink($result['ObjectURL']);
+                            $file->setPreviewLink($result['ObjectURL'] . "");
+                            $res = true;
 
                         } catch (S3Exception $e) {
+                            $res = false;
                             $e->getMessage();
                         }
 
@@ -431,6 +439,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
                         error_log("PREVIEW GENERATED !");
 
                     } else {
+                        $res = false;
                         error_log("FILE NOT GENERATED !");
                     }
 
@@ -443,6 +452,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
             }
 
         }
+        return $res;
 
     }
 

@@ -230,7 +230,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 return;
             }
 
-
             if ($workspace->getGroup() != null) {
                 $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
                 $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(),));
@@ -259,6 +258,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $level = $levelRepository->findOneBy(Array("workspace" => $workspaceId, "id" => $levelId));
             }
             $member = new WorkspaceUser($workspace, $user, $level->getId());
+            $member->setExterne($asExterne);
 
             $workspace->setMemberCount($workspace->getMemberCount() + 1);
 
@@ -369,7 +369,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             if ($total_membres > 1) {
 
                 //Test if other workspace administrators are present
-                $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace"=>$workspace->getId(),"id"=>$member->getLevel()));
+                $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $member->getLevelId()));
 
                 if ($currentUserId != null && $level->getisAdmin()) {
                     $other_workspace_admins = $workspaceUserRepository->findBy(Array("level_id" => $member->getLevelId()));
@@ -492,7 +492,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                         "user" => $user->getUser(),
                         "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
                         "level" => $user->getLevelId(),
-                        "externe" => $group_user->getExterne(),
+                        "externe" => $user->getExterne(),
                         "groupLevel" => $this->groupManager->getLevel($groupId,$user->getUser()->getId(),$currentUserId)
                     );
 

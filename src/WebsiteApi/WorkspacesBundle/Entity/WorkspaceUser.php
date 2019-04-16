@@ -55,6 +55,11 @@ class WorkspaceUser
      */
     private $hasnotifications = false;
 
+    /**
+     * @ORM\Column(name="is_externe", type="twake_boolean")
+     */
+    private $externe;
+
     public function __construct($workspace, $user, $level_id)
     {
 		$this->workspace = $workspace;
@@ -182,6 +187,22 @@ class WorkspaceUser
         $this->hasnotifications = $hasnotifications;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getExterne()
+    {
+        return $this->externe;
+    }
+
+    /**
+     * @param mixed $isclient
+     */
+    public function setExterne($externe)
+    {
+        $this->externe = $externe;
+    }
+
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
@@ -190,7 +211,8 @@ class WorkspaceUser
             "level_id" => $this->getLevelId(),
             "date_added" => $this->getDateAdded(),
             "last_access" => $this->getLastAccess(),
-            "hasnotifications" => $this->getHasNotifications()
+            "hasnotifications" => $this->getHasNotifications(),
+            "externe" => $this->getExterne()
         );
     }
 

@@ -47,7 +47,7 @@ class ChannelsSystem extends ChannelSystemAbstract
 
         $result = [];
         foreach ($channels as $channel) {
-            $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user" => $current_user, "channel_id" => $channel->getId()));
+            $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $current_user->getId(), "channel_id" => $channel->getId()));
             if ($res) {
                 $tmp = $channel->getAsArray();
                 $tmp["_user_last_message_increment"] = $res->getLastMessagesIncrement();
@@ -123,6 +123,15 @@ class ChannelsSystem extends ChannelSystemAbstract
         $channel->setIcon($object["icon"]);
         $channel->setDescription($object["description"]);
         $channel->setChannelGroupName($object["channel_group_name"]);
+
+        $add_everybody = false;
+        if ($channel->getPrivate() && !$object["private"]) {
+            $add_everybody = true;
+        }
+        if (!$channel->getPrivate() && $object["private"]) {
+            $members = [];
+        }
+
         $channel->setPrivate($object["private"]);
 
         $this->entity_manager->persist($channel);
@@ -142,9 +151,17 @@ class ChannelsSystem extends ChannelSystemAbstract
             $this->updateChannelMembers($channel, $members, $current_user->getId());
         }
 
-        if ($did_create && !$channel->getPrivate()) {
+        if (($did_create || $add_everybody) && !$channel->getPrivate()) {
+            if (!$workspace) {
+                $workspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:Workspace")->find($object["original_workspace"]);
+            }
             $this->addAllWorkspaceMember($workspace, $channel);
         }
+
+        //Add external members
+        $ext_members = isset($object["ext_members"]) ? $object["ext_members"] : [];
+        $this->updateExtChannelMembers($channel, $ext_members, $current_user->getId());
+
 
         if (isset($object["_once_save_tab"])) {
             if (isset($object["_once_save_tab"]["id"]) && $object["_once_save_tab"]["id"]) {
