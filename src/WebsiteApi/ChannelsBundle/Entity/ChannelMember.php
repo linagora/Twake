@@ -27,10 +27,10 @@ class ChannelMember
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\Column(name="user_id", type="text")
      * @ORM\Id
      */
-    private $user;
+    private $user_id = "";
 
     /**
      * @ORM\Column(name="channel_id", type="twake_timeuuid")
@@ -45,9 +45,9 @@ class ChannelMember
     private $direct = 0;
 
     /**
-     * @ORM\Column(name="external", type="twake_boolean")
+     * @ORM\Column(name="externe", type="twake_boolean")
      */
-    private $external = 0;
+    private $externe = 0;
 
     /**
      * @ORM\Column(name="last_activity_least_updated", type="twake_datetime" , options={"default" : "2018-07-27 14:00:58"})
@@ -79,9 +79,9 @@ class ChannelMember
      * @param $user
      * @param $channel
      */
-    public function __construct($user, $channel)
+    public function __construct($user_id, $channel)
     {
-        $this->user = $user;
+        $this->user_id = $user_id;
         $this->channel_id = $channel->getId();
         $this->last_activity_least_updated = new \DateTime();
         $this->last_activity = new \DateTime();
@@ -105,9 +105,9 @@ class ChannelMember
     /**
      * @return mixed
      */
-    public function getUser()
+    public function getUserId()
     {
-        return $this->user;
+        return $this->user_id;
     }
 
     /**
@@ -172,17 +172,17 @@ class ChannelMember
     /**
      * @return mixed
      */
-    public function getExternal()
+    public function getExterne()
     {
-        return $this->external;
+        return $this->externe;
     }
 
     /**
      * @param mixed $direct
      */
-    public function setExternal($external)
+    public function setExterne($externe)
     {
-        $this->external = $external;
+        $this->externe = $externe;
     }
 
     /**

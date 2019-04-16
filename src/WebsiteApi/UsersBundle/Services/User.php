@@ -929,6 +929,17 @@ class User implements UserInterface
         return true;
     }
 
+    public function updateTimezone($user, $timezone = false)
+    {
+        if ($user && $timezone !== false) {
+            if ($user->getTimezone() != intval($timezone)) {
+                $user->setTimezone(intval($timezone) . "");
+                $this->em->persist($user);
+                $this->flush();
+            }
+        }
+    }
+
     private function removeLinkedToUserRows($entity, $user, $col = "user")
     {
         $repo = $this->em->getRepository($entity);

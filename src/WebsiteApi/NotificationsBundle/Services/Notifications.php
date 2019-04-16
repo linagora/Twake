@@ -354,9 +354,9 @@ class Notifications implements NotificationsInterface
 
         }
 
-        $channel_members = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("direct" => true, "user" => $user));
+        $channel_members = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("direct" => true, "user_id" => $user->getId()));
         if ($has_notification_workspace) {
-            $channel_members = array_merge($channel_members, $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("direct" => false, "user" => $user)));
+            $channel_members = array_merge($channel_members, $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("direct" => false, "user_id" => $user->getId())));
         }
         foreach ($channel_members as $channel_member) {
 
@@ -498,6 +498,11 @@ class Notifications implements NotificationsInterface
      */
     public function removeMailReminder($user)
     {
+        $user_notification_status = $this->doctrine->getRepository("TwakeNotificationsBundle:UserNotificationStatus")->findOneBy(Array("user_id" => $user->getId()));
+        if ($user_notification_status) {
+            $user_notification_status->setMailStatus(0);
+            $this->doctrine->persist($user_notification_status);
+        }
 
         $user->setNotificationReadIncrement($user->getNotificationWriteIncrement());
         $this->doctrine->persist($user);

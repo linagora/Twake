@@ -240,7 +240,9 @@ class UsersConnectionsController extends Controller
                 $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], $device["version"]);
             }
 
-			$data["data"] = $this->getUser()->getAsArray();
+            $this->get("app.user")->updateTimezone($this->getUser(), $request->request->get("timezone", false));
+
+            $data["data"] = $this->getUser()->getAsArray();
             $data["data"]["workspaces_preferences"] = $this->getUser()->getWorkspacesPreference();
             $data["data"]["notifications_preferences"] = $this->getUser()->getNotificationPreference();
             $data["data"]["tutorial_status"] = $this->getUser()->getTutorialStatus();

@@ -104,7 +104,7 @@ class ManagerAdapter
             $this->es_remove($es_remove, $es_remove->getEsType(), $es_remove->getEsIndex());
         }
         $this->es_removes = Array();
-        foreach ($this->es_updates as $es_update) {
+        foreach ($this->es_updates as $id => $es_update) {
             $this->es_put($es_update, $es_update->getEsType(), $es_update->getEsIndex());
             $es_update->updatePreviousIndexationArray();
         }
