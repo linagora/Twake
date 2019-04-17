@@ -89,10 +89,6 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/TwakeApp/prometheus-monitoring-bundle"
-        },
-        {
-            "type": "vcs",
             "url": "https://github.com/TwakeApp/prometheus-bundle"
         }
     ]
