@@ -60,6 +60,11 @@ class CollectorRegistry
         $this->addCollector(new ResponseTimeCollector());
     }
 
+    public function setAppCode($code)
+    {
+        $this->appCode = $code;
+    }
+
     /**
      * Add a collector to the registry
      *
@@ -101,15 +106,19 @@ class CollectorRegistry
     public function save()
     {
         foreach ($this->collectors as $collector) {
-            $collector->save(
-                $this->registry->get($collector->getCollectorName()),
+            if ($this->routeName) {
+                $collector->save(
+                    $this->registry->get($collector->getCollectorName()),
+                    [$this->appCode, $this->routeName]
+                );
+            }
+        }
+
+        if ($this->routeName) {
+            $this->registry->getCounter('app_collectors_call_count')->inc(
+                1,
                 [$this->appCode, $this->routeName]
             );
         }
-
-        $this->registry->getCounter('app_collectors_call_count')->inc(
-            1,
-            [$this->appCode, $this->routeName]
-        );
     }
 }

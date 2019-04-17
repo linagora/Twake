@@ -34,7 +34,9 @@ class MonitoringCollectionSubscriber implements EventSubscriberInterface
     {
         $this->dataRegistry = $dataRegistry;
 
-        $dataRegistry->init();
+        $this->dataRegistry->setAppCode("twake-core");
+        $this->dataRegistry->init();
+
     }
 
     /**
@@ -54,6 +56,13 @@ class MonitoringCollectionSubscriber implements EventSubscriberInterface
         $request = $event->getRequest();
 
         $route = $request->get('_route');
+
+        $app_code = "twake-core";
+        if (strpos($request->attributes->get('_controller'), "DevelopersApi") === 0) {
+            $app_code = "twake-api";
+        }
+
+        $this->dataRegistry->setAppCode($app_code);
 
         if ($route != "tweede_golf_prometheus_metrics") {
 
