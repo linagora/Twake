@@ -22,6 +22,9 @@ class AppKernel extends Kernel
 	        new EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle(),
 	        new CMEN\GoogleChartsBundle\CMENGoogleChartsBundle(),
             new \Aws\Symfony\AwsBundle(),
+            new Circle\RestClientBundle\CircleRestClientBundle(),
+            new TweedeGolf\PrometheusBundle\TweedeGolfPrometheusBundle(),
+            new Suez\Bundle\PrometheusMonitoringBundle\SuezPrometheusMonitoringBundle(),
 
 			new WebsiteApi\CoreBundle\TwakeCoreBundle(),
 			new WebsiteApi\UsersBundle\TwakeUsersBundle(),
@@ -44,7 +47,6 @@ class AppKernel extends Kernel
             new WebsiteApi\ProjectBundle\TwakeProjectBundle(),
             new WebsiteApi\NotificationsBundle\TwakeNotificationsBundle(),
             new WebsiteApi\OnlyOfficeBundle\TwakeOnlyOfficeBundle(),
-            new Circle\RestClientBundle\CircleRestClientBundle(),
             new DevelopersApiV1\CoreBundle\DevelopersApiV1CoreBundle(),
             new DevelopersApiV1\MessagesBundle\DevelopersApiV1MessagesBundle(),
             new DevelopersApiV1\UsersBundle\DevelopersApiV1UsersBundle(),

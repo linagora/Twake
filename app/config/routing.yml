@@ -25,6 +25,10 @@ easy_admin_bundle_user_data:
     defaults: {_controller: AdministrationAuthenticationBundle:User:show}
     path:   /administration/V2/user
 
+tweede_golf_prometheus:
+    resource: "@TweedeGolfPrometheusBundle/Resources/config/routing.yml"
+    prefix: /api/prometheus
+
 #website_group:
 #    resource: "@WebsiteGroupBundle/Resources/config/routing.yml"
 #    prefix:   /group/

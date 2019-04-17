@@ -127,7 +127,8 @@ class MessageSystem
         $message_repo = $this->em->getRepository("TwakeDiscussionBundle:Message");
         $message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => $object["parent_message_id"], "id" => $object["id"]));
 
-        if (!$this->hasAccess($object, $current_user, $message)) {
+        //TODO for allow_delete == "administrators" implement user access verification
+        if (!$this->hasAccess($object, $current_user, $message) || $object["hidden_data"]["allow_delete"] == "everyone" || $object["hidden_data"]["allow_delete"] == "administrators") {
             return false;
         }
 
@@ -485,35 +486,43 @@ class MessageSystem
             $array = [$array];
         }
 
-        if (isset($array["original_str"])) {
-            return $array["original_str"];
-        }
+        if (isset($array["fallback_string"])) {
+            $result = $array["fallback_string"];
+        } else if (isset($array["original_str"])) {
+            $result = $array["original_str"];
+        } else {
 
-        if (isset($array["type"]) || isset($array["start"])) {
-            $array = [$array];
-        }
-
-        $result = "";
-
-        try {
-            foreach ($array as $item) {
-                if (is_string($item)) {
-                    $result .= $item;
-                } else if (isset($item["type"])) {
-                    if (in_array($item["type"], Array("underline", "strikethrough", "bold", "italic", "mquote", "quote", "email", "url", "", "nop", "br", "system"))) {
-                        if ($item["type"] == "br") {
-                            $result .= " ";
-                        }
-                        $result .= $this->mdToText($item["content"]);
-                    }
-                } else {
-                    $result .= $this->mdToText($item["content"]);
-                }
+            if (isset($array["type"]) || isset($array["start"])) {
+                $array = [$array];
             }
 
-        } catch (\Exception $e) {
-            return "Open Twake to see this message.";
+            $result = "";
+
+            try {
+                foreach ($array as $item) {
+                    if (is_string($item)) {
+                        $result .= $item;
+                    } else if (isset($item["type"])) {
+                        if (in_array($item["type"], Array("underline", "strikethrough", "bold", "italic", "mquote", "quote", "email", "url", "", "nop", "br", "system"))) {
+                            if ($item["type"] == "br") {
+                                $result .= " ";
+                            }
+                            $result .= $this->mdToText($item["content"]);
+                        }
+                    } else {
+                        $result .= $this->mdToText($item["content"]);
+                    }
+                }
+
+            } catch (\Exception $e) {
+                return "Open Twake to see this message.";
+            }
+
         }
+
+
+        $result = preg_replace("/@(.*):.*(( |$))/", "@$1$2", $result);
+        $result = preg_replace("/#(.*):.*(( |$))/", "#$1$2", $result);
 
         return $result;
 

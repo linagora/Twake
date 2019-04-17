@@ -37,3 +37,18 @@ services:
             - '@?monolog.logger.websocket'
         tags:
             - { name: console.command, command: twake:websocket:run }
+
+
+
+    #MONITORING
+
+    app.monitoring_collector_registry:
+        class: WebsiteApi\CoreBundle\Services\Monitoring\CollectorRegistry
+        arguments: ["twake-core", '@TweedeGolf\PrometheusClient\CollectorRegistry']
+
+    app.monitoring_event_listener:
+        arguments: ["@app.monitoring_collector_registry"]
+        class: WebsiteApi\CoreBundle\Services\Monitoring\MonitoringCollectionSubscriber
+        tags:
+            - { name: kernel.event_listener, event: kernel.response }
+            - { name: kernel.event_listener, event: kernel.terminate }
