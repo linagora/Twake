@@ -54,7 +54,8 @@
         "easycorp/easyadmin-bundle": ">=1.0",
         "php-opencloud/openstack": "^3.0",
         "atoum/atoum": "^3.3",
-        "emojione/emojione": "3.1"
+        "emojione/emojione": "3.1",
+        "twakeapp/prometheus-bundle": "dev-master"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
@@ -84,5 +85,15 @@
         "symfony-tests-dir": "tests",
         "symfony-assets-install": "relative",
         "branch-alias": null
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/TwakeApp/prometheus-monitoring-bundle"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/TwakeApp/prometheus-bundle"
+        }
+    ]
 }

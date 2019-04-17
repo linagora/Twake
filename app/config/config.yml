@@ -141,3 +141,33 @@ nelmio_api_doc: ~
 
 cmen_google_charts:
     version: "current"
+
+tweede_golf_prometheus:
+    storage_adapter_service: TweedeGolf\PrometheusClient\Storage\ApcuAdapter
+    metrics_path: metrics
+    make_memory_adapter: true
+    register_defaults: true
+    collectors:
+        app_collectors_call_count:
+            counter:
+                labels: [app, route]
+                help: Number of call to the API
+        app_collectors_response_code:
+            counter:
+                labels: [app, route, status_code]
+                help: number of call to the API per response code
+        app_collectors_memory_usage:
+            gauge:
+                labels: [app, route]
+                help: Memory in byte per route
+                initializer: 0
+        app_collectors_response_time:
+            gauge:
+                labels: [app, route]
+                help: Request execution time in seconds
+                initializer: 0.0
+        app_collectors_response_size:
+            gauge:
+                labels: [app, route]
+                help: Response size in bytes
+                initializer: 0
