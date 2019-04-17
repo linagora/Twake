@@ -2,3 +2,4 @@ services:
 
   globalsearch.event:
     class: WebsiteApi\GlobalSearchBundle\Services\Event
+    arguments: ["@app.twake_doctrine"]

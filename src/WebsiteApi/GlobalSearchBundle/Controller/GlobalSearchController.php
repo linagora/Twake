@@ -13,8 +13,6 @@ class GlobalSearchController extends Controller
 
     public function ESAction(Request $request)
     {
-        error_log("debut du test");
-
 
         $this->get('globalsearch.event')->TestSearch();
 
