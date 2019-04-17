@@ -24,7 +24,6 @@ class AppKernel extends Kernel
             new \Aws\Symfony\AwsBundle(),
             new Circle\RestClientBundle\CircleRestClientBundle(),
             new TweedeGolf\PrometheusBundle\TweedeGolfPrometheusBundle(),
-            new Suez\Bundle\PrometheusMonitoringBundle\SuezPrometheusMonitoringBundle(),
 
 			new WebsiteApi\CoreBundle\TwakeCoreBundle(),
 			new WebsiteApi\UsersBundle\TwakeUsersBundle(),
