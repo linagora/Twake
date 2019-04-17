@@ -479,6 +479,7 @@ class MessageSystem
     {
 
         if (!$array) {
+            error_log("nothing to convert on notification");
             return "";
         }
 
@@ -488,41 +489,41 @@ class MessageSystem
 
         if (isset($array["fallback_string"])) {
             $result = $array["fallback_string"];
-        } else
-            if (isset($array["original_str"])) {
-                $result = $array["original_str"];
-            } else {
+        } else if (isset($array["original_str"])) {
+            $result = $array["original_str"];
+        } else {
 
-                if (isset($array["type"]) || isset($array["start"])) {
-                    $array = [$array];
-                }
+            if (isset($array["type"]) || isset($array["start"])) {
+                $array = [$array];
+            }
 
-                $result = "";
+            $result = "";
 
-                try {
-                    foreach ($array as $item) {
-                        if (is_string($item)) {
-                            $result .= $item;
-                        } else if (isset($item["type"])) {
-                            if (in_array($item["type"], Array("underline", "strikethrough", "bold", "italic", "mquote", "quote", "email", "url", "", "nop", "br", "system"))) {
-                                if ($item["type"] == "br") {
-                                    $result .= " ";
-                                }
-                                $result .= $this->mdToText($item["content"]);
+            try {
+                foreach ($array as $item) {
+                    if (is_string($item)) {
+                        $result .= $item;
+                    } else if (isset($item["type"])) {
+                        if (in_array($item["type"], Array("underline", "strikethrough", "bold", "italic", "mquote", "quote", "email", "url", "", "nop", "br", "system"))) {
+                            if ($item["type"] == "br") {
+                                $result .= " ";
                             }
-                        } else {
                             $result .= $this->mdToText($item["content"]);
                         }
+                    } else {
+                        $result .= $this->mdToText($item["content"]);
                     }
-
-                } catch (\Exception $e) {
-                    return "Open Twake to see this message.";
                 }
 
-                $result = preg_replace("/@(.*):.*(( |$))/g", "@$1$2", $result);
-                $result = preg_replace("/#(.*):.*(( |$))/g", "#$1$2", $result);
-
+            } catch (\Exception $e) {
+                return "Open Twake to see this message.";
             }
+
+        }
+
+
+        $result = preg_replace("/@(.*):.*(( |$))/", "@$1$2", $result);
+        $result = preg_replace("/#(.*):.*(( |$))/", "#$1$2", $result);
 
         return $result;
 
