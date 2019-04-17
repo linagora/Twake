@@ -244,10 +244,8 @@ class ManagerAdapter
             $repository = $this->getRepository($options["repository"]);
         }
 
-        $route = "http://" . $this->es_server . "/" . $index . "/user/";
+        $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
         $route .= "_search";
-        error_log("ROUTE");
-        error_log(print_r($route,true));
 
         try {
             $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
@@ -267,22 +265,18 @@ class ManagerAdapter
             if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
                 $res = $res["hits"]["hits"];
                 foreach ($res as $object_json) {
-                    error_log("RESULT");
-                    error_log(print_r($object_json[_source][id],true));
-//                    if ($repository) {
-//                        $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
-//                    } else {
-//                        $obj = $object_json["_id"];
-//                    }
-//                    if ($obj) {
-//                        $result[] = $obj;
-//                    }
+                    if ($repository) {
+                        $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
+                    } else {
+                        $obj = $object_json["_id"];
+                    }
+                    if ($obj) {
+                        $result[] = $obj;
+                    }
                 }
             }
 
         }
-        error_log("RESULT");
-        error_log(print_r($result,true));
         return $result;
 
     }
