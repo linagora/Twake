@@ -16,8 +16,6 @@ class Event
         $stopWords = Array(" ");
         //error_log(print_r(getcwd(),true));
         $content=file_get_contents("testfile.txt");
-        //error_log(print_r($content,true));
-        //error_log(print_r($content,true));
 
         //$words = array_count_values(str_word_count(strtolower($content), 1));
         $content = str_replace(array("\\'", "'")," ",$content);
