@@ -479,7 +479,6 @@ class MessageSystem
     {
 
         if (!$array) {
-            error_log("nothing to convert on notification");
             return "";
         }
 
