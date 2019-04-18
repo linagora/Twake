@@ -1,0 +1,5 @@
+#Message routing
+developers_api_v1_channes_get_app_user_chan:
+    path:     /get_direct_channel
+    defaults: { _controller: DevelopersApiV1ChannelsBundle:Channel:getDirectChannel }
+    methods: [POST]
