@@ -295,7 +295,7 @@ class ApplicationApi
         }
 
         $resource = new ApplicationResource($workspace_id, $app_id, $resource_type, $resource_id);
-        $this->doctrine > persist($resource);
+        $this->doctrine->persist($resource);
         $this->doctrine->flush();
 
         $this->notifyApp($app_id, "resource", "add", Array(
@@ -345,7 +345,7 @@ class ApplicationApi
         }
 
         if ($choosen) {
-            $this->doctrine > remove($choosen);
+            $this->doctrine->remove($choosen);
             $this->doctrine->flush();
         }
 

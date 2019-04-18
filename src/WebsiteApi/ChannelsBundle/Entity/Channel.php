@@ -167,6 +167,7 @@ class Channel
             "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
             "members" => $this->getMembers(),
             "ext_members" => $this->getExtMembers(),
+            "connectors" => $this->getConnectors(),
             "tabs" => $this->getTabs(),
             "messages_increment" => $this->getMessagesIncrement()
         );
