@@ -16,8 +16,6 @@ class Event
         $stopWords = Array(" ");
         //error_log(print_r(getcwd(),true));
         $content=file_get_contents("testfile.txt");
-        //error_log(print_r($content,true));
-        //error_log(print_r($content,true));
 
         //$words = array_count_values(str_word_count(strtolower($content), 1));
         $content = str_replace(array("\\'", "'")," ",$content);
@@ -29,11 +27,11 @@ class Event
         foreach ($words as $value){
             if (strlen($value) > 3 && is_numeric($value)==false) {
                 if ($totalwords < 101) //we define the weight of word trough the text
-                    $weight = 5;
+                    $weight = 10;
                 elseif ($totalwords < 301)
-                    $weight = 3;
+                    $weight = 7;
                 else
-                    $weight = 1;
+                    $weight = 4;
                 if(!($keywords[$value])){ //if the word is not in our table
                     if (substr($value, -1) == "s") { //we check if it's a plural
                         $maybesinglar = substr($value, 0, strlen($value) - 1);
