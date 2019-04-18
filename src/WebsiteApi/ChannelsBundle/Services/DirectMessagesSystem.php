@@ -11,10 +11,10 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 class DirectMessagesSystem extends ChannelSystemAbstract
 {
 
-    function __construct($entity_manager, $messages_service)
+    function __construct($entity_manager, $messages_service, $applicationsApi)
     {
         $this->messages_service = $messages_service;
-        parent::__construct($entity_manager);
+        parent::__construct($entity_manager, $applicationsApi);
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */

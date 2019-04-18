@@ -11,9 +11,10 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 
 class ChannelSystemAbstract
 {
-    function __construct($entity_manager)
+    function __construct($entity_manager, $applicationsApi = null)
     {
         $this->entity_manager = $entity_manager;
+        $this->applicationsApi = $applicationsApi;
     }
 
     public function removeGeneralChannel($object)
@@ -120,6 +121,35 @@ class ChannelSystemAbstract
             $this->entity_manager->persist($channel_entity);
             $this->entity_manager->flush();
         }
+    }
+
+    public function updateConnectors($channel_entity, $connectors_ids, $current_user_id = null)
+    {
+
+
+        $current_connectors = $channel_entity->getConnectors();
+        $current_connectors = $current_connectors ? $current_connectors : [];
+
+        $did_something = false;
+
+        foreach ($connectors_ids as $connector_id) {
+            if (!in_array($connector_id, $current_connectors)) {
+                $this->applicationsApi->addResource($connector_id, $channel_entity->getOriginalWorkspaceId(), "channel", $channel_entity->getId(), $current_user_id);
+            }
+        }
+
+        foreach ($current_connectors as $current_connector_id) {
+            if (!in_array($current_connector_id, $connector_id)) {
+                $this->applicationsApi->removeResource($connector_id, $channel_entity->getOriginalWorkspaceId(), "channel", $channel_entity->getId(), $current_user_id);
+            }
+        }
+
+        if ($did_something) {
+            $channel_entity->setConnectors($connectors_ids);
+            $this->entity_manager->persist($channel_entity);
+            $this->entity_manager->flush();
+        }
+
     }
 
     public function updateTabConfiguration($channel_id, $application_id, $tab_id, $configuration)
