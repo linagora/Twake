@@ -23,8 +23,8 @@ class Event
         $content = (new \Spatie\PdfToText\Pdf())
             ->setPdf('civ.pdf')
             ->text();
-        $content = iconv(mb_detect_encoding($content, mb_detect_order(), true), "ISO-8859-1//IGNORE", $content);
-        $content = iconv("ISO-8859-1","UTF-8",$content);
+        //$content = iconv(mb_detect_encoding($content, mb_detect_order(), true), "ISO-8859-1//IGNORE", $content);
+        //$content = iconv("ISO-8859-1","UTF-8",$content);
         $content = preg_replace('~\b[a-z]{1,3}\b\s*~', '', $content);
         //error_log(print_r($content,true));
         $size = substr_count($content, ' ');
