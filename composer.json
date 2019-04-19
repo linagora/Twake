@@ -55,7 +55,8 @@
         "php-opencloud/openstack": "^3.0",
         "atoum/atoum": "^3.3",
         "emojione/emojione": "3.1",
-        "twakeapp/prometheus-bundle": "dev-master"
+        "twakeapp/prometheus-bundle": "dev-master",
+        "spatie/pdf-to-text": "*"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
