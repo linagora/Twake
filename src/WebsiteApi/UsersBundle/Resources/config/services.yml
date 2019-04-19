@@ -20,6 +20,10 @@ services:
         class: WebsiteApi\UsersBundle\Services\TokenService
         arguments: ["@app.twake_doctrine"]
 
+    app.user_updates:
+        class: WebsiteApi\UsersBundle\Services\Updates
+        arguments: []
+
     users.topic:
         class: WebsiteApi\UsersBundle\Topic\UsersTopic
         tags:

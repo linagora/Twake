@@ -50,7 +50,7 @@ class GeneralController extends Controller
         );
         $this->get("app.websockets")->push("updates/" . $user_id, $event);
 
-        return new JsonResponse(Array("result" => $object));
+        return new JsonResponse(Array("result" => "success"));
 
     }
 

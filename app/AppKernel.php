@@ -50,6 +50,7 @@ class AppKernel extends Kernel
             new DevelopersApiV1\MessagesBundle\DevelopersApiV1MessagesBundle(),
             new DevelopersApiV1\UsersBundle\DevelopersApiV1UsersBundle(),
             new DevelopersApiV1\ChannelsBundle\DevelopersApiV1ChannelsBundle(),
+            new DevelopersApiV1\GeneralBundle\DevelopersApiV1GeneralBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
