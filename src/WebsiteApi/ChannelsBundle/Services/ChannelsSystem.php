@@ -11,11 +11,11 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 class ChannelsSystem extends ChannelSystemAbstract
 {
 
-    function __construct($entity_manager, $messages_service, $websockets_service)
+    function __construct($entity_manager, $messages_service, $websockets_service, $applicationsApi)
     {
         $this->messages_service = $messages_service;
         $this->websockets_service = $websockets_service;
-        parent::__construct($entity_manager);
+        parent::__construct($entity_manager, $applicationsApi);
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -87,6 +87,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         sort($members);
 
 
+        //Create or find channel
         if (!isset($object["id"])) {
 
             if (!$object["original_group"] || !$object["original_workspace"]) {
@@ -112,18 +113,21 @@ class ChannelsSystem extends ChannelSystemAbstract
             }
         }
 
-        //Not a direct channel
+        //It should not be a direct channel !
         if ($channel->getDirect()) {
             return false;
         }
 
-        //Modifiy $channel
+
+        //Modifiy channel details
         $channel->setMembersCount(count($members));
         $channel->setName($object["name"]);
         $channel->setIcon($object["icon"]);
         $channel->setDescription($object["description"]);
         $channel->setChannelGroupName($object["channel_group_name"]);
 
+
+        //Manage private or not private status
         $add_everybody = false;
         if ($channel->getPrivate() && !$object["private"]) {
             $add_everybody = true;
@@ -131,13 +135,14 @@ class ChannelsSystem extends ChannelSystemAbstract
         if (!$channel->getPrivate() && $object["private"]) {
             $members = [];
         }
-
         $channel->setPrivate($object["private"]);
 
         $this->entity_manager->persist($channel);
         $this->entity_manager->flush($channel);
 
-        if (!isset($object["id"])) {
+
+        //Send first message if created channel
+        if ($did_create) {
             //Init channel with a first message
             $init_message = Array(
                 "channel_id" => $channel->getId(),
@@ -147,10 +152,11 @@ class ChannelsSystem extends ChannelSystemAbstract
             $this->messages_service->save($init_message, Array());
         }
 
+
+        //Private and non private users management
         if ($channel->getPrivate()) {
             $this->updateChannelMembers($channel, $members, $current_user->getId());
         }
-
         if (($did_create || $add_everybody) && !$channel->getPrivate()) {
             if (!$workspace) {
                 $workspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:Workspace")->find($object["original_workspace"]);
@@ -158,11 +164,22 @@ class ChannelsSystem extends ChannelSystemAbstract
             $this->addAllWorkspaceMember($workspace, $channel);
         }
 
+
         //Add external members
-        $ext_members = isset($object["ext_members"]) ? $object["ext_members"] : [];
-        $this->updateExtChannelMembers($channel, $ext_members, $current_user->getId());
+        if (isset($object["ext_members"])) {
+            $ext_members = $object["ext_members"];
+            $this->updateExtChannelMembers($channel, $ext_members, $current_user->getId());
+        }
 
 
+        //Manage connectors
+        if (!$channel->getAppId() && isset($object["connectors"])) {
+            $connectors = $object["connectors"];
+            $this->updateConnectors($channel, $connectors, $current_user->getId());
+        }
+
+
+        //Tabs
         if (isset($object["_once_save_tab"])) {
             if (isset($object["_once_save_tab"]["id"]) && $object["_once_save_tab"]["id"]) {
                 $this->renameTab($channel->getId(), $object["_once_save_tab"]["app_id"], $object["_once_save_tab"]["id"], $object["_once_save_tab"]["name"]);
@@ -178,6 +195,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         }
 
         return $channel->getAsArray();
+
     }
 
     public function getApplicationChannel($application, $workspace)

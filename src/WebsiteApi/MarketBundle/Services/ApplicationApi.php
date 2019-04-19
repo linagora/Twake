@@ -3,6 +3,7 @@
 namespace WebsiteApi\MarketBundle\Services;
 
 use WebsiteApi\MarketBundle\Entity\Application;
+use WebsiteApi\MarketBundle\Entity\ApplicationResource;
 use WebsiteApi\MarketBundle\Model\MarketApplicationInterface;
 use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
 use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
@@ -212,6 +213,10 @@ class ApplicationApi
         $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
         $app = $repo->findOneBy(Array("id" => $app_id));
 
+        if (!$app) {
+            return false;
+        }
+
         $event_route = $app->getApiEventsUrl();
 
         //Check route is correct
@@ -257,13 +262,103 @@ class ApplicationApi
 
     }
 
-    public function addResource($app_id, $workspace_id, $resource_type, $resource_id)
+    public function addResource($app_id, $workspace_id, $resource_type, $resource_id, $current_user_id = null)
     {
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $app = $repo->findOneBy(Array("id" => $app_id));
+
+        if (!$app) {
+            return false;
+        }
+
+        $repo = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $repo->findOneBy(Array("id" => $workspace_id));
+
+        if (!$workspace) {
+            return false;
+        }
+
+        $current_user = null;
+        if ($current_user_id) {
+            $repo = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $current_user = $repo->findOneBy(Array("id" => $current_user_id));
+        }
+
+        //Verify we do not have this resource
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource");
+        $candidates = $repo->findBy(Array("application_id" => $app_id, "workspace_id" => $workspace_id));
+
+        foreach ($candidates as $candidate) {
+            if ($candidate->getResourceId() == $resource_id) { //No necessity to verufy type as uuid are universaly unique
+                return true;
+            }
+        }
+
+        $resource = new ApplicationResource($workspace_id, $app_id, $resource_type, $resource_id);
+        $this->doctrine->persist($resource);
+        $this->doctrine->flush();
+
+        $this->notifyApp($app_id, "resource", "add", Array(
+            "workspace" => $workspace,
+            "resource" => Array(
+                "id" => $resource_id,
+                "type" => $resource_type
+            ),
+            "user" => $current_user
+        ));
+
+        return true;
 
     }
 
-    public function removeResource($app_id, $workspace_id, $resource_type, $resource_id)
+    public function removeResource($app_id, $workspace_id, $resource_type, $resource_id, $current_user_id = null)
     {
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $app = $repo->findOneBy(Array("id" => $app_id));
+
+        if (!$app) {
+            return false;
+        }
+
+        $repo = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $repo->findOneBy(Array("id" => $workspace_id));
+
+        if (!$workspace) {
+            return false;
+        }
+
+        $current_user = null;
+        if ($current_user_id) {
+            $repo = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $current_user = $repo->findOneBy(Array("id" => $current_user_id));
+        }
+
+        //Verify we do not have this resource
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource");
+        $candidates = $repo->findBy(Array("application_id" => $app_id, "workspace_id" => $workspace_id));
+
+        $choosen = null;
+        foreach ($candidates as $candidate) {
+            if ($candidate->getResourceId() == $resource_id) { //No necessity to verufy type as uuid are universaly unique
+                $choosen = $candidate;
+            }
+        }
+
+        if ($choosen) {
+            $this->doctrine->remove($choosen);
+            $this->doctrine->flush();
+        }
+
+        $this->notifyApp($app_id, "resource", "remove", Array(
+            "workspace" => $workspace,
+            "resource" => Array(
+                "id" => $resource_id,
+                "type" => $resource_type
+            ),
+            "user" => $current_user
+        ));
+
+        return true;
 
     }
 

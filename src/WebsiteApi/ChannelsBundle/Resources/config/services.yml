@@ -1,11 +1,11 @@
 services:
     app.channels.direct_messages_system:
             class: WebsiteApi\ChannelsBundle\Services\DirectMessagesSystem
-            arguments: ["@app.twake_doctrine", "@app.messages"]
+            arguments: ["@app.twake_doctrine", "@app.messages", "@app.applications_api"]
 
     app.channels.channels_system:
             class: WebsiteApi\ChannelsBundle\Services\ChannelsSystem
-            arguments: ["@app.twake_doctrine", "@app.messages", "@app.websockets"]
+            arguments: ["@app.twake_doctrine", "@app.messages", "@app.websockets", "@app.applications_api"]
 
     app.channels.notifications:
             class: WebsiteApi\ChannelsBundle\Services\ChannelsNotificationsSystem

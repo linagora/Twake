@@ -134,6 +134,11 @@ class Channel
      */
     private $messages_increment = 0; //Will increment on each new message to count notifications
 
+    /**
+     * @ORM\Column(name="connectors", type="twake_text")
+     */
+    private $connectors = "[]";
+
 
     public function __construct()
     {
@@ -162,6 +167,7 @@ class Channel
             "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
             "members" => $this->getMembers(),
             "ext_members" => $this->getExtMembers(),
+            "connectors" => $this->getConnectors(),
             "tabs" => $this->getTabs(),
             "messages_increment" => $this->getMessagesIncrement()
         );
@@ -501,6 +507,22 @@ class Channel
     public function setTabs($tabs)
     {
         $this->tabs = json_encode($tabs);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getConnectors()
+    {
+        return json_decode($this->connectors, 1);
+    }
+
+    /**
+     * @param mixed $tabs
+     */
+    public function setConnectors($connectors)
+    {
+        $this->connectors = json_encode($connectors);
     }
 
 

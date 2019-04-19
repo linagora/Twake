@@ -153,6 +153,14 @@ developers_api_v1_users:
     resource: "@DevelopersApiV1UsersBundle/Resources/config/routing.yml"
     prefix:   /api/v1/users/
 
+developers_api_v1_channels:
+    resource: "@DevelopersApiV1ChannelsBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/channels/
+
+developers_api_v1_general:
+    resource: "@DevelopersApiV1GeneralBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/general/
+
 developers_api_error:
     path:     /api/{req}
     defaults: { _controller: DevelopersApiV1CoreBundle:Default:BadRequest }

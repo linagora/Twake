@@ -324,6 +324,7 @@ class User extends SearchableObject implements UserInterface
 
 	public function isActive(){
         $this->lastactivity = date("U");
+        $this->connected = true;
 	}
 
 	/* Manage connections with websocket */
@@ -334,7 +335,7 @@ class User extends SearchableObject implements UserInterface
 
 	public function isConnected()
 	{
-        if (date("U") - $this->lastactivity > 120) {
+        if (date("U") - $this->lastactivity > 60 * 5) {
 			$this->connected = false;
 			return false;
 		}

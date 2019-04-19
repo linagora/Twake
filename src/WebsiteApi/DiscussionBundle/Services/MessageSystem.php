@@ -128,7 +128,7 @@ class MessageSystem
         $message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => $object["parent_message_id"], "id" => $object["id"]));
 
         //TODO for allow_delete == "administrators" implement user access verification
-        if (!$this->hasAccess($object, $current_user, $message) || $object["hidden_data"]["allow_delete"] == "everyone" || $object["hidden_data"]["allow_delete"] == "administrators") {
+        if (!($this->hasAccess($object, $current_user, $message) || $object["hidden_data"]["allow_delete"] == "everyone" || $object["hidden_data"]["allow_delete"] == "administrators")) {
             return false;
         }
 
