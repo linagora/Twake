@@ -177,6 +177,9 @@ class MessageSystem
         }
 
         $ephemeral = (isset($object["_once_ephemeral_message"]) && $object["_once_ephemeral_message"] || isset($object["ephemeral_id"]) && $object["ephemeral_id"]);
+        if ($ephemeral) {
+            unset($object["id"]);
+        }
 
         $message_repo = $this->em->getRepository("TwakeDiscussionBundle:Message");
 
@@ -202,7 +205,7 @@ class MessageSystem
                         return false;
                     }
                 } else {
-                    return falses;
+                    return false;
                 }
             }
 

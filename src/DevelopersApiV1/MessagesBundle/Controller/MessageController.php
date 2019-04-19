@@ -83,6 +83,15 @@ class MessageController extends Controller
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
         }
 
+        if (isset($object["message"])) {
+            if (isset($object["message"]["formatted"])) {
+                $object["content"]["last_change"] = date("U");
+            } else {
+                $object["content"]["formatted"] = $object["content"];
+                $object["content"]["last_change"] = date("U");
+            }
+        }
+
         $event = Array(
             "client_id" => "bot",
             "action" => "save",

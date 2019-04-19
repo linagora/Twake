@@ -16,6 +16,37 @@ use Symfony\Component\HttpFoundation\Request;
 class GeneralController extends Controller
 {
 
+    public function closeConfigureAction(Request $request)
+    {
+
+        $capabilities = [];
+
+        $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
+        if (is_array($application) && $application["error"]) {
+            return new JsonResponse($application);
+        }
+
+        $user_id = $request->request->get("user_id", null);
+        if (!$user_id) {
+            return new JsonResponse(Array("error" => "missing_user_id"));
+        }
+
+        $connection_id = $request->request->get("connection_id", false);
+        if (!$connection_id) {
+            return new JsonResponse(Array("error" => "missing_connection_id"));
+        }
+
+        $event = Array(
+            "connection_id" => $connection_id,
+            "action" => "close_configure",
+            "application" => $application->getAsArray()
+        );
+        $this->get("app.websockets")->push("updates/" . $user_id, $event);
+
+        return new JsonResponse(Array("result" => "success"));
+
+    }
+
     public function configureAction(Request $request)
     {
 
