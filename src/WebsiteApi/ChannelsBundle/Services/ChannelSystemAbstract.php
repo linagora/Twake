@@ -135,12 +135,14 @@ class ChannelSystemAbstract
         foreach ($connectors_ids as $connector_id) {
             if (!in_array($connector_id, $current_connectors)) {
                 $this->applicationsApi->addResource($connector_id, $channel_entity->getOriginalWorkspaceId(), "channel", $channel_entity->getId(), $current_user_id);
+                $did_something = true;
             }
         }
 
         foreach ($current_connectors as $current_connector_id) {
             if (!in_array($current_connector_id, $connector_id)) {
                 $this->applicationsApi->removeResource($connector_id, $channel_entity->getOriginalWorkspaceId(), "channel", $channel_entity->getId(), $current_user_id);
+                $did_something = true;
             }
         }
 

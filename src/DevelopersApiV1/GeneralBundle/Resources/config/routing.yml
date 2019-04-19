@@ -1,0 +1,5 @@
+#Message routing
+developers_api_v1_general_configure:
+    path:     /configure
+    defaults: { _controller: DevelopersApiV1GeneralBundle:General:configure }
+    methods: [POST]

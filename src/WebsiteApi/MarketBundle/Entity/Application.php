@@ -551,6 +551,7 @@ class Application extends SearchableObject
             "group" //Information sur le groupe
         );
         $return["available_capabilities"] = Array(
+            "display_modal", //Afficher une modal (comme une modal de configuration)
             "drive_add", //Ajouter un fichiers
             "drive_remove", //Supprimer un fichier existant
             "drive_modify", //Modifier un fichier existant

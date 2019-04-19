@@ -89,12 +89,14 @@ class DirectMessagesSystem extends ChannelSystemAbstract
 
         if (isset($object["app_id"]) && $object["app_id"]) {
 
+            $object["front_id"] = $object["group_id"] . "_app_" . $object["app_id"] . "_" . $current_user->getId();
+
             $members = [$current_user->getId()];
 
             if (isset($object["group_id"])) {
                 $app_bot_identifier = $object["group_id"] . "_app_" . $object["app_id"];
             } else if (isset($object["app_bot_identifier"])) {
-                $app_bot_identifier = $object["app_bot_identifier"];
+                $app_bot_identifier = $object["app_bot_identifi er"];
             } else {
                 return false;
             }
