@@ -113,7 +113,7 @@ class MessageSystem
         return $messages;
     }
 
-    public function remove($object, $options, $current_user)
+    public function remove($object, $options, $current_user = null)
     {
         $channel_id = $object["channel_id"];
         if (!$channel_id) {
@@ -127,8 +127,12 @@ class MessageSystem
         $message_repo = $this->em->getRepository("TwakeDiscussionBundle:Message");
         $message = $message_repo->findOneBy(Array("channel_id" => $object["channel_id"], "parent_message_id" => $object["parent_message_id"], "id" => $object["id"]));
 
+        if (!$message) {
+            return false;
+        }
+
         //TODO for allow_delete == "administrators" implement user access verification
-        if (!($this->hasAccess($object, $current_user, $message) || $object["hidden_data"]["allow_delete"] == "everyone" || $object["hidden_data"]["allow_delete"] == "administrators")) {
+        if (!($this->hasAccess($message->getAsArray(), $current_user, $message) || $message->getAsArray()["hidden_data"]["allow_delete"] == "everyone" || $message->getAsArray()["hidden_data"]["allow_delete"] == "administrators")) {
             return false;
         }
 

@@ -35,8 +35,10 @@ class MessageController extends Controller
 
         if (!$object["ephemeral_id"]) {
             $result = $this->get("app.messages")->remove($object, $options);
+            $front_id = $result["front_id"];
         } else {
             $result = true;
+            $front_id = $object["front_id"];
         }
 
         if ($result) {
@@ -45,7 +47,7 @@ class MessageController extends Controller
                 "client_id" => "system",
                 "action" => "remove",
                 "object_type" => "",
-                "front_id" => $object["front_id"]
+                "front_id" => $front_id
             );
             $this->get("app.websockets")->push("messages/" . $chan_id, $event);
 

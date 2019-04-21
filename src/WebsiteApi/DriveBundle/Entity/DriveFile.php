@@ -165,6 +165,7 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
 
     public function __construct($workspace_id, $parent_id, $isdirectory = false)
     {
+        parent::__construct();
         $this->workspace_id = $workspace_id;
         $this->setParentId($parent_id);
         $this->isdirectory = $isdirectory;

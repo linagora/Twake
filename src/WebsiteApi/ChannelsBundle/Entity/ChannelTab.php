@@ -48,7 +48,7 @@ class ChannelTab extends FrontObject
 
     public function __construct()
     {
-        $this->front_id = sha1(random_bytes(40));
+        parent::__construct();
     }
 
     public function getAsArray()

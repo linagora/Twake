@@ -200,6 +200,7 @@ class User extends SearchableObject implements UserInterface
 
     public function __construct()
 	{
+        parent::__construct();
 		$this->enabled = true;
 		$this->connections = 0;
 		$this->connected = 1;
@@ -207,7 +208,6 @@ class User extends SearchableObject implements UserInterface
         $this->roles = array();
         $this->lastlogin = new \DateTime();
         $this->passwordrequestedat = new \DateTime();
-        $this->front_id = bin2hex(random_bytes(20));
 	}
 
 	/**
