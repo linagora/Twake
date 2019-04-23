@@ -79,6 +79,8 @@ class Notifications implements NotificationsInterface
     )
     {
 
+        $text = trim($text);
+
         //Construct title and text according with metadata
         if ($sender_user) {
             $title = $sender_user->getFullName();

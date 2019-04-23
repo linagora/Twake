@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\CalendarBundle\Services;
+namespace WebsiteApi\_old_CalendarBundle\Services;
 /**
  * Created by PhpStorm.
  * User: laura
@@ -13,11 +13,11 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use \Eluceo\iCal\Component ;
 use Symfony\Component\Validator\Constraints\DateTime;
-use WebsiteApi\CalendarBundle\Entity\Calendar;
-use WebsiteApi\CalendarBundle\Entity\CalendarEvent;
-use WebsiteApi\CalendarBundle\Entity\CalendarExportToken;
-use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
-use WebsiteApi\CalendarBundle\Model\exportImportInterface;
+use WebsiteApi\_old_CalendarBundle\Entity\Calendar;
+use WebsiteApi\_old_CalendarBundle\Entity\CalendarEvent;
+use WebsiteApi\_old_CalendarBundle\Entity\CalendarExportToken;
+use WebsiteApi\_old_CalendarBundle\Entity\LinkCalendarWorkspace;
+use WebsiteApi\_old_CalendarBundle\Model\exportImportInterface;
 
 
 

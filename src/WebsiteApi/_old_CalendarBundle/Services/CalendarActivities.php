@@ -1,9 +1,9 @@
 <?php
 
-namespace WebsiteApi\CalendarBundle\Services;
+namespace WebsiteApi\_old_CalendarBundle\Services;
 
-use WebsiteApi\CalendarBundle\Entity\CalendarActivity;
-use WebsiteApi\CalendarBundle\Model\CalendarActivityInterface;
+use WebsiteApi\_old_CalendarBundle\Entity\CalendarActivity;
+use WebsiteApi\_old_CalendarBundle\Model\CalendarActivityInterface;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\NotificationsBundle\Services\Notifications;
 

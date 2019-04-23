@@ -115,6 +115,7 @@ class InitCommand extends ContainerAwareCommand
             $app = new Application(new FakeCassandraTimeuuid(), "Documents");
             $app->setApiPrivateKey($app->generatePrivateApiKey());
         }
+        $app->setEsIndex(false);
         $app->setIconUrl("/public/img/twake-emoji/twake-drive.png");
         $app->setWebsite("https://twakeapp.com");
         $app->setDescription("Application de stockage de fichier de Twake.");
@@ -134,6 +135,7 @@ class InitCommand extends ContainerAwareCommand
             $app = new Application(new FakeCassandraTimeuuid(), "Calendar");
             $app->setApiPrivateKey($app->generatePrivateApiKey());
         }
+        $app->setEsIndex(false);
         $app->setIconUrl("/public/img/twake-emoji/twake-calendar.png");
         $app->setWebsite("https://twakeapp.com");
         $app->setDescription("Application calendrier partagé de Twake.");

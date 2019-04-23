@@ -1,15 +1,15 @@
 <?php
 
 
-namespace WebsiteApi\CalendarBundle\Services;
+namespace WebsiteApi\_old_CalendarBundle\Services;
 
 use Symfony\Component\Validator\Constraints\DateTime;
-use WebsiteApi\CalendarBundle\Entity\Calendar;
-use WebsiteApi\CalendarBundle\Entity\CalendarEvent;
-use WebsiteApi\CalendarBundle\Entity\Event;
-use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
-use WebsiteApi\CalendarBundle\Entity\LinkEventUser;
-use WebsiteApi\CalendarBundle\Model\CalendarEventsInterface;
+use WebsiteApi\_old_CalendarBundle\Entity\Calendar;
+use WebsiteApi\_old_CalendarBundle\Entity\CalendarEvent;
+use WebsiteApi\_old_CalendarBundle\Entity\Event;
+use WebsiteApi\_old_CalendarBundle\Entity\LinkCalendarWorkspace;
+use WebsiteApi\_old_CalendarBundle\Entity\LinkEventUser;
+use WebsiteApi\_old_CalendarBundle\Model\CalendarEventsInterface;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 /**

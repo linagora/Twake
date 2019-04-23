@@ -38,7 +38,11 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 	public function can($workspaceId, $userId, $action)
 	{
 
+        error_log("A");
+
         if (!$userId) {
+
+            error_log("A1");
             return false;
         }
 
@@ -56,6 +60,8 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 		}
 
 		if($workspace->getUser() != null && $workspace->getUser()->getId()==$user->getId()){
+
+            error_log("A2");
 			return true;
 		}
 
@@ -63,6 +69,8 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 		if($link){
             $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
             if(!$link || !$level){
+
+                error_log("A3");
                 return false;
             }
 
@@ -86,6 +94,8 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
             $value = intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$actions[1]));
 
             if(!isset($rights[$object]) || intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$rights[$object])) < $value){
+
+                error_log("A4");
                 return false;
             }
 

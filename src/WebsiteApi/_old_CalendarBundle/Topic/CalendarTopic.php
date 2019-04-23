@@ -1,5 +1,6 @@
 <?php
-namespace WebsiteApi\CalendarBundle\Topic;
+
+namespace WebsiteApi\_old_CalendarBundle\Topic;
 
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;
 use Symfony\Component\Validator\Constraints\DateTime;

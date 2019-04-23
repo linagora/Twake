@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\CalendarBundle\Command;
+namespace WebsiteApi\_old_CalendarBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
@@ -11,12 +11,17 @@ use WebsiteApi\WorkspacesBundle\Entity\Group;
 use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
 
 
-class CalendarSynchronizationCommand extends ContainerAwareCommand
+class ReminderCheckerCommand extends ContainerAwareCommand
 {
+    var $leveladmin;
+    var $output;
+    var $force;
+    var $twake;
+
     protected function configure()
     {
         $this
-            ->setName("twake:calendar_synchronization");
+            ->setName("twake:calendar_check");
     }
 
 
@@ -25,7 +30,10 @@ class CalendarSynchronizationCommand extends ContainerAwareCommand
 
         $services = $this->getApplication()->getKernel()->getContainer();
 
-        $services->get("app.export_import")->updateCalendarsByLink();
+        $services->get("app.calendar_events")->checkReminders();
+
+        posix_kill(posix_getpid(), SIGKILL);
+
     }
 
 

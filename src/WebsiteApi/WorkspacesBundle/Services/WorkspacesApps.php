@@ -118,6 +118,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
         $app = $appRepository->findOneBy(Array("id" => $applicationId));
 
         if($workspace==null || $app==null){
+            error_log("FDSQ " . ($app == null) . " " . ($workspace == null));
             return false;
         }
 
