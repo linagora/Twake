@@ -80,6 +80,7 @@ class Notifications implements NotificationsInterface
     {
 
         $text = trim($text);
+        $text = preg_replace("/ +/", " ", $text);
 
         //Construct title and text according with metadata
         if ($sender_user) {
