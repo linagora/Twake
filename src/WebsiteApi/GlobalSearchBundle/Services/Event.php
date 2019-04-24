@@ -11,6 +11,13 @@ class Event
         $this->doctrine = $doctrine;
     }
 
+    public function update_keyword($keywords,$titre){
+        $keywords[] = Array(
+            "word" => $titre,
+            "score" => 5
+        );
+    }
+
     public function TestSearch()
     {
         $content = (new \Spatie\PdfToText\Pdf())
@@ -91,11 +98,16 @@ END;
             "data" => Array(
                 "id" => "idtrain",
                 "type"=> "txt",
-                "name" => "billet_train",
+                "name" => "billet de train",
                 "creation_date"=> "2091-04-23",
                 "keywords"=> $inter
             )
         );
+        error_log("cc");
+        $this->update_keyword($inter,"billet de train");
+
+        $this->doctrine->es_put_perso($options);
+
 
         $terms = Array();
         $terms[] = Array(
@@ -161,7 +173,6 @@ END;
 //        foreach ($objects as $object) {
 //            $result[] = $object->getAsArray();
 //        }
-//        $this->doctrine->es_put_perso($options);
         $this->doctrine->es_search_perso($options);
         return $result;
     }
