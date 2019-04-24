@@ -28,6 +28,8 @@ class Websockets
             "notifications" => "app.notifications",
             "messages" => "app.messages",
             "drive" => "app.drive",
+            "event" => "app.calendar.event",
+            "calendar" => "app.calendar.calendar",
             "updates" => "app.user_updates"
         );
 

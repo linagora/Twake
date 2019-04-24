@@ -4,8 +4,8 @@ namespace WebsiteApi\WorkspacesBundle\Services;
 
 
 use Symfony\Component\Validator\Constraints\DateTime;
-use WebsiteApi\CalendarBundle\Entity\Calendar;
-use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
+use WebsiteApi\_old_CalendarBundle\Entity\Calendar;
+use WebsiteApi\_old_CalendarBundle\Entity\LinkCalendarWorkspace;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\ChannelsBundle\Entity\Channel;
 use WebsiteApi\DriveBundle\Entity\DriveLabel;
@@ -32,7 +32,6 @@ class Workspaces implements WorkspacesInterface
     private $string_cleaner;
     private $pusher;
     private $translate;
-    private $taskService;
     /* @var WorkspacesActivities $workspacesActivities*/
     var $workspacesActivities;
     var $calendarEventService;
@@ -40,7 +39,7 @@ class Workspaces implements WorkspacesInterface
     var $driveAdapteService;
     var $workspaces_service;
 
-    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $taskService, $calendarService, $calendarEventService, $driveAdapteService, $workspaces_service)
+    public function __construct($doctrine, $workspaces_levels_service, $workspaces_members_service, $groups_managers_service, $groups_apps_service, $groups_service, $priceService, $cleaner, $pusher, $workspacesActivities, $translate, $calendarService, $calendarEventService, $driveAdapteService, $workspaces_service)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -53,7 +52,6 @@ class Workspaces implements WorkspacesInterface
         $this->pusher = $pusher;
         $this->workspacesActivities = $workspacesActivities;
         $this->translate = $translate;
-        $this->taskService = $taskService;
         $this->calendarService = $calendarService;
         $this->calendarEventService = $calendarEventService;
         $this->driveAdapteService = $driveAdapteService;

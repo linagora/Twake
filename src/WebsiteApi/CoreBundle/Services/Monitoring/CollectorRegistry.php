@@ -105,6 +105,10 @@ class CollectorRegistry
      */
     public function save()
     {
+        if (!function_exists('apcu_add')) {
+            return;
+        }
+
         foreach ($this->collectors as $collector) {
             if ($this->routeName) {
                 $collector->save(

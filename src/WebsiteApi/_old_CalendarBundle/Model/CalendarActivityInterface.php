@@ -6,7 +6,7 @@
  * Time: 09:26
  */
 
-namespace WebsiteApi\CalendarBundle\Model;
+namespace WebsiteApi\_old_CalendarBundle\Model;
 
 
 interface CalendarActivityInterface

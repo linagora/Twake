@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\CalendarBundle\Controller;
+namespace WebsiteApi\_old_CalendarBundle\Controller;
 
 use phpDocumentor\Reflection\Types\Array_;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;

@@ -1,15 +1,15 @@
 <?php
 
 
-namespace WebsiteApi\CalendarBundle\Services;
+namespace WebsiteApi\_old_CalendarBundle\Services;
 
 use DateTime;
 use phpDocumentor\Reflection\Types\Array_;
 use PHPUnit\Util\Json;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
-use WebsiteApi\CalendarBundle\Entity\LinkCalendarWorkspace;
-use WebsiteApi\CalendarBundle\Model\CalendarsInterface;
-use WebsiteApi\CalendarBundle\Entity\Calendar;
+use WebsiteApi\_old_CalendarBundle\Entity\LinkCalendarWorkspace;
+use WebsiteApi\_old_CalendarBundle\Model\CalendarsInterface;
+use WebsiteApi\_old_CalendarBundle\Entity\Calendar;
 
 /**
  * Manage calendar

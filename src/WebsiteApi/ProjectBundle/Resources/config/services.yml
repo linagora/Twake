@@ -1,33 +1,33 @@
 services:
 
-    app.board_tasks:
-        class: WebsiteApi\ProjectBundle\Services\BoardTasks
-        arguments: ["@app.twake_doctrine", '@app.pusher', '@app.workspace_levels', '@app.notifications','@app.boardActivity', '@app.objectLinks', '@app.workspaces_activities', '@app.calendar_events']
+#    app.board_tasks:
+#        class: WebsiteApi\ProjectBundle\Services\BoardTasks
+#        arguments: ["@app.twake_doctrine", '@app.pusher', '@app.workspace_levels', '@app.notifications','@app.boardActivity', '@app.objectLinks', '@app.workspaces_activities', '@app.calendar_events']
 
-    app.boards:
-        class: WebsiteApi\ProjectBundle\Services\Boards
-        arguments: ["@app.twake_doctrine", '@app.pusher', '@app.workspace_levels','@app.boardActivity', '@app.list_of_tasks_service']
+#    app.boards:
+#        class: WebsiteApi\ProjectBundle\Services\Boards
+#        arguments: ["@app.twake_doctrine", '@app.pusher', '@app.workspace_levels','@app.boardActivity', '@app.list_of_tasks_service']
 
-    board.topic:
-        class: WebsiteApi\ProjectBundle\Topic\BoardTopic
-        tags:
-            - { name: gos_web_socket.topic }
-        arguments: []
-
-    board_workspace.topic:
-        class: WebsiteApi\ProjectBundle\Topic\BoardWorkspaceTopic
-        tags:
-            - { name: gos_web_socket.topic }
-        arguments: []
-
-    app.export_import_project:
-        class: WebsiteApi\ProjectBundle\Services\exportImport
-        arguments: ["@app.board_tasks"]
-
-    app.boardActivity:
-        class: WebsiteApi\ProjectBundle\Services\BoardActivities
-        arguments: ["@app.twake_doctrine", "@app.pusher", "@app.notifications"]
-
-    app.list_of_tasks_service:
-        class: WebsiteApi\ProjectBundle\Services\ListOfTasksService
-        arguments: ["@app.twake_doctrine", '@app.pusher', '@app.workspace_levels']
+#    board.topic:
+#        class: WebsiteApi\ProjectBundle\Topic\BoardTopic
+#        tags:
+#            - { name: gos_web_socket.topic }
+#        arguments: []
+#
+#    board_workspace.topic:
+#        class: WebsiteApi\ProjectBundle\Topic\BoardWorkspaceTopic
+#        tags:
+#            - { name: gos_web_socket.topic }
+#        arguments: []
+#
+#    app.export_import_project:
+#        class: WebsiteApi\ProjectBundle\Services\exportImport
+#        arguments: ["@app.board_tasks"]
+#
+#    app.boardActivity:
+#        class: WebsiteApi\ProjectBundle\Services\BoardActivities
+#        arguments: ["@app.twake_doctrine", "@app.pusher", "@app.notifications"]
+#
+#    app.list_of_tasks_service:
+#        class: WebsiteApi\ProjectBundle\Services\ListOfTasksService
+#        arguments: ["@app.twake_doctrine", '@app.pusher', '@app.workspace_levels']

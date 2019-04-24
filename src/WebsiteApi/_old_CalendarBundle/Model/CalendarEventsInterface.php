@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\CalendarBundle\Model;
+namespace WebsiteApi\_old_CalendarBundle\Model;
 
 //TODO : - replace current arguments by service arguments (no $request)
 //       - reduce the number of function if possible

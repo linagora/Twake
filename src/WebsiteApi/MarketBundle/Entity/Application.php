@@ -153,6 +153,7 @@ class Application extends SearchableObject
      */
     public function __construct($group_id, $name)
     {
+        parent::__construct();
         $this->group_id = $group_id;
         $this->name = $name;
         $this->creation_date = new \DateTime();

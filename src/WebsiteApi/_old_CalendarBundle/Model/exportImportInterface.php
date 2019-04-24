@@ -6,7 +6,7 @@
  * Time: 10:09
  */
 
-namespace WebsiteApi\CalendarBundle\Model;
+namespace WebsiteApi\_old_CalendarBundle\Model;
 
 
 interface exportImportInterface

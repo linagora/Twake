@@ -1,29 +1,9 @@
 services:
 
-    app.calendar_events:
-        class: WebsiteApi\CalendarBundle\Services\CalendarEvents
-        arguments: ["@app.twake_doctrine", '@app.pusher', '@app.workspace_levels', '@app.notifications','@app.calendarActivity' ,'@app.workspaces_activities', '@app.objectLinks']
+    app.calendar.event:
+        class: WebsiteApi\CalendarBundle\Services\CalendarEvent
+        arguments: ["@app.twake_doctrine"]
 
-    app.calendars:
-        class: WebsiteApi\CalendarBundle\Services\Calendars
-        arguments: ["@app.twake_doctrine", '@app.pusher', '@app.workspace_levels']
-
-    calendar.topic:
-        class: WebsiteApi\CalendarBundle\Topic\CalendarTopic
-        tags:
-            - { name: gos_web_socket.topic }
-        arguments: []
-
-    calendar_workspace.topic:
-        class: WebsiteApi\CalendarBundle\Topic\CalendarWorkspaceTopic
-        tags:
-            - { name: gos_web_socket.topic }
-        arguments: []
-
-    app.export_import:
-        class: WebsiteApi\CalendarBundle\Services\exportImport
-        arguments: ["@app.calendar_events","@app.twake_doctrine","@app.calendars"]
-
-    app.calendarActivity:
-        class: WebsiteApi\CalendarBundle\Services\CalendarActivities
-        arguments: ["@app.twake_doctrine", "@app.pusher", "@app.notifications"]
+    app.calendar.calendar:
+        class: WebsiteApi\CalendarBundle\Services\CalendarCalendar
+        arguments: ["@app.twake_doctrine"]

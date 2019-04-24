@@ -101,6 +101,7 @@ class Message extends FrontObject
      */
     public function __construct($channel_id, $parent_message_id)
     {
+        parent::__construct();
         $this->channel_id = $channel_id;
         $this->parent_message_id = $parent_message_id;
         $this->creation_date = new \DateTime();

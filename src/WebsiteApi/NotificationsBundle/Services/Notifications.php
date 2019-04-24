@@ -79,6 +79,8 @@ class Notifications implements NotificationsInterface
     )
     {
 
+        $text = trim($text);
+
         //Construct title and text according with metadata
         if ($sender_user) {
             $title = $sender_user->getFullName();
@@ -251,13 +253,13 @@ class Notifications implements NotificationsInterface
             }
 
             if ($toPush && !$notification_disabled) {
-                $data = Array(
+                $ws_data = Array(
                     "client_id" => "system",
                     "action" => "save",
                     "object_type" => "",
                     "object" => $n->getAsArray()
                 );
-                $this->pusher->push("notifications/" . $user->getId(), $data);
+                $this->pusher->push("notifications/" . $user->getId(), $ws_data);
             }
 
         }
@@ -449,6 +451,7 @@ class Notifications implements NotificationsInterface
             "device_id" => $deviceId,
             "type" => $type
         );
+
         try {
             $element = new PushNotificationQueue($data);
             $this->doctrine->persist($element);
