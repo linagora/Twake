@@ -14,8 +14,9 @@ class Event
     public function update_keyword($keywords,$titre){
         $keywords[] = Array(
             "word" => $titre,
-            "score" => 5
+            "score" => 5.0
         );
+        return $keywords;
     }
 
     public function TestSearch()
@@ -93,6 +94,10 @@ END;
             );
         }
 
+
+        $inter=$this->update_keyword($inter,"billet de train");
+        var_dump($inter);
+
         $options = Array(
             "index" => "file",
             "data" => Array(
@@ -103,31 +108,31 @@ END;
                 "keywords"=> $inter
             )
         );
-        error_log("cc");
-        $this->update_keyword($inter,"billet de train");
+
+        var_dump(json_encode($options,JSON_PRETTY_PRINT));
 
         $this->doctrine->es_put_perso($options);
 
 
         $terms = Array();
         $terms[] = Array(
-            "term" => Array(
+            "match_phrase" => Array(
                 "keywords.word" => "combat"
             ));
         $terms[] = Array(
-            "term" => Array(
+            "match_phrase" => Array(
                 "keywords.word" => "unité"
             ));
         $terms[] = Array(
-            "term" => Array(
+            "match_phrase" => Array(
                 "keywords.word" => "toulouse"
             ));
         $terms[] = Array(
-            "term" => Array(
+            "match_phrase" => Array(
                 "keywords.word" => "twake"
             ));
         $terms[] = Array(
-            "term" => Array(
+            "match_phrase" => Array(
                 "keywords.word" => "opération"
             ));
 
@@ -173,7 +178,7 @@ END;
 //        foreach ($objects as $object) {
 //            $result[] = $object->getAsArray();
 //        }
-        $this->doctrine->es_search_perso($options);
+//        $this->doctrine->es_search_perso($options);
         return $result;
     }
 
