@@ -204,6 +204,8 @@ class ManagerAdapter
             }
         }
 
+
+
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
         try {
@@ -294,18 +296,14 @@ class ManagerAdapter
 
         if (isset($options["index"]) && !$type) {
             $index = $options["index"];
-        }
 
-        $repository = null;
-        if (isset($options["repository"])) {
-            $repository = $this->getRepository($options["repository"]);
         }
 
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
         $route .= "_search";
 
         try {
-            $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            $res = $this->circle->post($route, json_encode(Array("query" => $options["query"],"sort"=>$options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
 
         } catch (\Exception $e) {
             error_log("Unable to post on ElasticSearch.");
@@ -317,25 +315,60 @@ class ManagerAdapter
         $result = [];
         if ($res) {
             $res = json_decode($res, 1);
+            var_dump($res["hits"]["hits"]);
 
 
-            if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
-                $res = $res["hits"]["hits"];
-                foreach ($res as $object_json) {
-                    if ($repository) {
-                        $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
-                    } else {
-                        $obj = $object_json["_id"];
-                    }
-                    if ($obj) {
-                        $result[] = $obj;
-                    }
-                }
-            }
+//            if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
+//                $res = $res["hits"]["hits"];
+//                foreach ($res as $object_json) {
+//                    if ($repository) {
+//                        $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
+//                    } else {
+//                        $obj = $object_json["_id"];
+//                    }
+//                    if ($obj) {
+//                        $result[] = $obj;
+//                    }
+//                }
+//            }
 
         }
         return $result;
 
     }
+
+    public function es_put_perso($options = Array(), $index=null, $server = "twake")
+    {
+        if (isset($options["index"]) && !$type) {
+            $index = $options["index"];
+        }
+//        if (is_array($entity)) {
+//            $id = $entity["id"];
+//            $data = $entity["data"];
+//
+//            if (!is_array($data)) {
+//                $data = Array("content" => $data);
+//            }
+//        } else {
+//            $id = $entity->getId();
+//
+//            if (method_exists($entity, "getIndexationArray")) {
+//                $data = $entity->getIndexationArray();
+//            } else {
+//                $data = $entity->getAsArray();
+//            }
+//        }
+//
+
+        $data = $options["data"];
+        $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $options["data"]["id"];
+        try {
+            $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+        } catch (\Exception $e) {
+            error_log("Unable to put on ElasticSearch.");
+        }
+
+    }
+
 
 }
