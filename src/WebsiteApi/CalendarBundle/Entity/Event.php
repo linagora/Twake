@@ -5,6 +5,7 @@ namespace WebsiteApi\CalendarBundle\Entity;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
+use WebsiteApi\CoreBundle\Entity\FrontObject;
 
 /**
  * Event
