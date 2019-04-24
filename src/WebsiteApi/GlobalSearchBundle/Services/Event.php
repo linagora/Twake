@@ -11,21 +11,19 @@ class Event
         $this->doctrine = $doctrine;
     }
 
-    public function update_keyword($keywords,$titre){
-        $keywords[] = Array(
-            "word" => $titre,
-            "score" => 5.0
-        );
-        return $keywords;
-    }
+    public function indexfile($document){
+        //need the string with the name of the file
+        //check the extension of the file
+//        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+////        $filetype = finfo_file($finfo, $document);
+////
+////        if($ext === 'txt')
+////            $content = file_get_contents($document);
+////        elseif($ext === 'pdf')
+////            $content = (new \Spatie\PdfToText\Pdf())
+////                ->setPdf($document)
+////                ->text();
 
-    public function TestSearch()
-    {
-        $content = (new \Spatie\PdfToText\Pdf())
-            ->setPdf('train.pdf')
-            ->text();
-
-        //$content = file_get_contents("testfile.txt");
         $content = str_replace(array("\\'", "'")," ",$content);
         $size = substr_count($content, ' ');
 
@@ -79,24 +77,23 @@ END;
 
         arsort($keywords); // Sort based on frequency
 
-        $fin = array_slice($keywords, 0, 10);
+        $keywords_raw = array_slice($keywords, 0, 10);
         $max = array_values(array_slice($keywords, 0, 1))[0];
 
-        $inter = Array();
-        foreach ($fin as $key => $score) {
-                $fin[$key] = ($score/$max);
+        $keywords_score= Array();
+        foreach ($keywords_raw as $key => $score) {
+            $keywords_raw[$key] = ($score/$max);
         }
 
-        foreach ($fin as $key => $score) {
-            $inter[] = Array(
+        foreach ($keywords_raw as $key => $score) {
+            $keywords_score[] = Array(
                 "word" => $key,
-                "score" => $fin[$key]
+                "score" => $keywords_raw[$key]
             );
         }
 
-
-        $inter=$this->update_keyword($inter,"billet de train");
-        var_dump($inter);
+        $keywords_score=$this->update_keyword($keywords_score,"billet de train"); //change this with document title
+        var_dump($keywords_score);
 
         $options = Array(
             "index" => "file",
@@ -105,7 +102,7 @@ END;
                 "type"=> "txt",
                 "name" => "billet de train",
                 "creation_date"=> "2091-04-23",
-                "keywords"=> $inter
+                "keywords"=> $keywords_score
             )
         );
 
@@ -113,28 +110,16 @@ END;
 
         $this->doctrine->es_put_perso($options);
 
+    }
 
+    public function search_file($termslist){
         $terms = Array();
-        $terms[] = Array(
-            "match_phrase" => Array(
-                "keywords.word" => "combat"
-            ));
-        $terms[] = Array(
-            "match_phrase" => Array(
-                "keywords.word" => "unité"
-            ));
-        $terms[] = Array(
-            "match_phrase" => Array(
-                "keywords.word" => "toulouse"
-            ));
-        $terms[] = Array(
-            "match_phrase" => Array(
-                "keywords.word" => "twake"
-            ));
-        $terms[] = Array(
-            "match_phrase" => Array(
-                "keywords.word" => "opération"
-            ));
+        foreach($termslist as $term){
+            $terms[] = Array(
+                "match_phrase" => Array(
+                    "keywords.word" => $term
+                ));
+        }
 
         $nested  = Array(
             "nested" => Array(
@@ -178,8 +163,95 @@ END;
 //        foreach ($objects as $object) {
 //            $result[] = $object->getAsArray();
 //        }
-//        $this->doctrine->es_search_perso($options);
-        return $result;
+        $this->doctrine->es_search_perso($options);
+    }
+
+    public function update_keyword($keywords,$titre){
+        $keywords[] = Array(
+            "word" => $titre,
+            "score" => 5.0
+        );
+        return $keywords;
+    }
+
+    public function TestSearch()
+    {
+
+        $terms = Array();
+        $terms[] = Array(
+            "match_phrase" => Array(
+                "keywords.word" => "combat"
+            ));
+        $terms[] = Array(
+            "match_phrase" => Array(
+                "keywords.word" => "unité"
+            ));
+        $terms[] = Array(
+            "match_phrase" => Array(
+                "keywords.word" => "toulouse"
+            ));
+        $terms[] = Array(
+            "match_phrase" => Array(
+                "keywords.word" => "twake"
+            ));
+        $terms[] = Array(
+            "match_phrase" => Array(
+                "keywords.word" => "opération"
+            ));
+        $terms[] = Array(
+            "match_phrase" => Array(
+                "keywords.word" => "billet de train"
+            ));
+
+        $nested  = Array(
+            "nested" => Array(
+                "path" => "keywords",
+                "score_mode" => "avg",
+                "query" => Array(
+                    "bool" => Array(
+                        "should" => $terms
+                    )
+                )
+            )
+        );
+
+        $options = Array(
+            //"repository" => "TwakeGlobalSearchBundle:User",
+            "index" => "file",
+            "query" => Array(
+                "bool" => Array(
+                    "must" => Array(
+                        Array(
+                            "match_phrase" => Array(
+                                "name" => "billet de train"
+                            )),
+                        $nested
+                    )
+                )
+            ),
+            "sort" => Array(
+                "keywords.score" => Array(
+                    "mode" => "sum",
+                    "order" => "desc",
+                    "nested" => Array(
+                        "path" => "keywords",
+                        "filter" => Array(
+                            "bool" => Array(
+                                "should" => $terms
+                            )
+                        )
+                    )
+                )
+            )
+        );
+       //var_dump(json_encode($options,JSON_PRETTY_PRINT));
+//
+//        $result = [];
+////        foreach ($objects as $object) {
+////            $result[] = $object->getAsArray();
+////        }
+           $this->doctrine->es_search_perso($options);
+//        return $result;
     }
 
 }
