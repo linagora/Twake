@@ -35,7 +35,10 @@ class CalendarEvent
 
     public function save($object, $options, $current_user)
     {
-        return Array();
+
+        $object["id"] = "123";
+
+        return $object;
     }
 
 }

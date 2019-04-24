@@ -2,9 +2,14 @@
 calendar_event_get:
     path:     /event/get
     defaults: { _controller: TwakeCalendarBundle:Event:get}
+    methods: [POST]
+
 calendar_event_save:
     path:     /event/save
     defaults: { _controller: TwakeCalendarBundle:Event:save}
+    methods: [POST]
+
 calendar_event_remove:
     path:     /event/remove
     defaults: { _controller: TwakeCalendarBundle:Event:remove}
+    methods: [POST]

@@ -109,13 +109,14 @@ class InitCommand extends ContainerAwareCommand
 
 
         // Création des applications    de base
+        error_log("> Creating basic apps");
         $app = null;
         $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "twake_drive"));
         if (!$app) {
             $app = new Application(new FakeCassandraTimeuuid(), "Documents");
             $app->setApiPrivateKey($app->generatePrivateApiKey());
         }
-        $app->setEsIndex(false);
+        $app->setEsIndexed(false);
         $app->setIconUrl("/public/img/twake-emoji/twake-drive.png");
         $app->setWebsite("https://twakeapp.com");
         $app->setDescription("Application de stockage de fichier de Twake.");
@@ -135,7 +136,7 @@ class InitCommand extends ContainerAwareCommand
             $app = new Application(new FakeCassandraTimeuuid(), "Calendar");
             $app->setApiPrivateKey($app->generatePrivateApiKey());
         }
-        $app->setEsIndex(false);
+        $app->setEsIndexed(false);
         $app->setIconUrl("/public/img/twake-emoji/twake-calendar.png");
         $app->setWebsite("https://twakeapp.com");
         $app->setDescription("Application calendrier partagé de Twake.");
