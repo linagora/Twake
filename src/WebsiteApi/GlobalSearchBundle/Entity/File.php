@@ -12,12 +12,12 @@ use WebsiteApi\CoreBundle\Entity\SearchableObject;
  * Application
  *
  * @ORM\Table(name="application",options={"engine":"MyISAM", "scylladb_keys": {{"group_id": "ASC", "app_group_name": "ASC", "id": "ASC"}, {"id": "ASC"}, {"simple_name": "ASC"}, {"default": "ASC"}}})
- * @ORM\Entity(repositoryClass="WebsiteApi\GlobalSearhcBundle\Repository\UserRepository")
+ * @ORM\Entity(repositoryClass="WebsiteApi\GlobalSearhcBundle\Repository\FileRepository")
  */
-class User extends SearchableObject
+class File extends SearchableObject
 {
 
-    protected $es_type = "users";
+    protected $es_type = "file";
 
     /**
      * @var int
@@ -30,46 +30,46 @@ class User extends SearchableObject
      * @ORM\Column(name="username", type="twake_text", options={"index": true})
      * @Encrypted
      */
-    protected $username="";
+    protected $name="";
     /**
      * @ORM\Column(name="fullname", type="twake_text", options={"index": true})
      * @Encrypted
      */
-    protected $fullname="";
+    protected $type="";
     /**
-     * @ORM\Column(name="email", type="string", length=512, options={"index": true})
+     * @ORM\Column(name="creation_date", type="date",options={"index": true})
      */
-    protected $email="";
+    protected $creation_date="";
 
     public function getAsArray()
     {
         $return = Array(
             "id" => $this->getId(),
-            "username" => $this->getUsername(),
-            "fullname" => $this->getFullname(),
-            "email" => $this->getEmail(),
+            "name" => $this->getName(),
+            "type" => $this->getType(),
+            "creation_date" => $this->getDate(),
         );
         return $return;
     }
-    
+
     public function getId()
     {
         return $this->id;
     }
 
-    public function getUsername()
+    public function getName()
     {
-        return $this->username;
+        return $this->name;
     }
 
-    public function getFullname()
+    public function getType()
     {
-        return $this->fullname;
+        return $this->type;
     }
 
-    public function getEmail()
+    public function getDate()
     {
-        return $this->email;
+        return $this->creation_date;
     }
 
 
