@@ -37,7 +37,7 @@ class DrivePreview
     }
 
     /* Do not generate preview for files larger than 50Mo */
-    public function generatePreview($filename, $file, $path, $ext)
+    public function generatePreview($filename, $file, $path, $ext, $entity = null)
     {
 
         try {
@@ -60,11 +60,11 @@ class DrivePreview
                 $filetype === 'image/tiff' ||
                 $filetype === 'image/webp' ||
                 $this->isImage($ext)) {
-                return $this->generateImagePreview($filename, $file, $path);
+                return $this->generateImagePreview($filename, $file, $path, $entity);
             }
 
             if ($filetype === 'application/pdf') {
-                return $this->generateImagePreview($filename, $file, $path, true);
+                return $this->generateImagePreview($filename, $file, $path, $entity,true);
             }
             if ($filetype === 'application/msword' ||
                 $filetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -104,7 +104,7 @@ class DrivePreview
                 $ext === 'txt' ||
                 $ext === 'svg'
             ) {
-                return $this->generateImagePreview($filename, $file, $path, false, true);
+                return $this->generateImagePreview($filename, $file, $path, $entity, false, true);
             }
 
 
@@ -153,7 +153,97 @@ class DrivePreview
         return $image;
     }
 
-    public function generateImagePreview($filename, $file, $path, $isText = false, $isOffice = false)
+    public function update_keyword($keywords,$titre){
+        $keywords[] = Array(
+            "word" => $titre,
+            "score" => 5.0
+        );
+        return $keywords;
+    }
+
+
+    public function set_keyword($file,$entity){
+        try {
+            $content = (new \Spatie\PdfToText\Pdf())
+                ->setPdf($file)
+                ->text();
+            $content = str_replace(array("\\'", "'"), " ", $content);
+            $size = substr_count($content, ' ');
+
+            $words = str_word_count(strtolower($content), 1, 'ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒàâäçéèêëîïôöùûüÿæœ');
+            $totalwords = 1;
+
+            $keywords = Array();
+
+            $regex = "/((?: [\x00-\x7F]|[\xC0-\xDF][\x80-\xBF]|[\xE0-\xEF][\x80-\xBF]{2}|[\xF0-\xF7][\x80-\xBF]{3}){1,100})|./x";
+
+            foreach ($words as $value) {
+                $value = preg_replace($regex, '$1', $value);
+                if (strlen($value) > 3 && is_numeric($value) == false) {
+                    if ($totalwords < floor($size * 0.20)) //we define the weight of word trough the text
+                        $weight = 20;
+                    elseif ($totalwords > floor($size * 80))
+                        $weight = 20;
+                    else
+                        $weight = 3;
+                    if (!($keywords[$value]) || substr($value, -1) == "s") { //if the word is not in our table
+                        if (substr($value, -1) == "s") { //we check if it's a plural
+                            $maybesinglar = substr($value, 0, strlen($value) - 1);
+                            if ($keywords[$maybesinglar]) { // we check if their is already a singular for this word
+                                $keywords[$maybesinglar] += $weight + max(strlen($maybesinglar) - 4, 0) * 2; //if we find a singular we add the singular version of the word instead of the plural
+                            } else { // if not we add the new words or it's the first time we saw the word so we need to add it
+                                $keywords[$value] = $weight + max(strlen($value) - 4, 0) * 2;
+                            }
+                        } else {
+                            $keywords[$value] = $weight + max(strlen($value) - 4, 0) * 2; // we add the new word which is not a plural or it the first time we saw it
+                        }
+                    } else { //if the word is in the table
+                        $keywords[$value] += $weight + max(strlen($value) - 4, 0) * 2; // we adjust his weight in the table
+                    }
+                }
+                $totalwords++; //we add our total of word to alter the weight of futur word.
+            }
+
+            arsort($keywords); // Sort based on frequency
+
+            $keywords_raw = array_slice($keywords, 0, 10);
+            $max = array_values(array_slice($keywords, 0, 1))[0];
+
+            $keywords_score = Array();
+            foreach ($keywords_raw as $key => $score) {
+                $keywords_raw[$key] = ($score / $max);
+            }
+
+            foreach ($keywords_raw as $key => $score) {
+                $keywords_score[] = Array(
+                    "word" => $key,
+                    "score" => $keywords_raw[$key]
+                );
+            }
+
+            //$keywords_score = $this->update_keyword($keywords_score, "billet de train"); //change this with document title
+
+//            $options = Array(
+//                "index" => "file",
+//                "data" => Array(
+//                    "id" => "idtrain",
+//                    "type" => "txt",
+//                    "name" => "billet de train",
+//                    "creation_date" => "2091-04-23",
+//                    "keywords" => $keywords_score
+//                )
+//            );
+
+            //var_dump(json_encode($options, JSON_PRETTY_PRINT));
+
+            //$this->doctrine->es_put_perso($options);
+            $entity->setContentKeywords($keywords_score);
+        }catch(\Exception $e){
+
+        }
+    }
+
+    public function generateImagePreview($filename, $file, $path, $entity=null, $isText = false, $isOffice = false)
     {
         $filepath = $path . "/" . $filename;
         $width = $this->img_width;
@@ -163,9 +253,11 @@ class DrivePreview
 
         if ($isText) {
             $im->readimage($file . "[0]");
+            $this->set_keyword($file,$entity);
         }elseif ($isOffice){
             $file = $this->convertToPDF($file);
             $im->readimage($file . "[0]");
+            $this->set_keyword($file,$entity);
         }else{
             $im->readimage($file);
         }

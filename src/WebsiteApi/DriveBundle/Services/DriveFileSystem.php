@@ -1742,7 +1742,7 @@ class DriveFileSystem
                 $tmppath = $tmppath . ".tw";
 
                 try {
-                    $res = $this->preview->generatePreview(basename($path), $tmppath, dirname($path), $ext);
+                    $res = $this->preview->generatePreview(basename($path), $tmppath, dirname($path), $ext, $file);
                     if ($this->file_exists($path . ".png", null)) {
                         rename($path . ".png", $previewPath);
                         $res = true;

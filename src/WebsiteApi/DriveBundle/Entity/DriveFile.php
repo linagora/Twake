@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\CoreBundle\Entity\FrontObject;
+use WebsiteApi\CoreBundle\Entity\SearchableObject;
 use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
@@ -14,7 +15,7 @@ use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
  * @ORM\Table(name="drive_file",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "parent_id":"ASC", "isintrash": "ASC", "id":"DESC"}, {"id": "DESC"}, {"previewhasbeengenerated": "DESC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileRepository")
  */
-class DriveFile extends FrontObject implements ObjectLinksInterface
+class DriveFile extends SearchableObject implements ObjectLinksInterface
 {
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
@@ -162,6 +163,14 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
      */
     private $object_link_cache;
 
+    /**
+     * @ORM\Column(name ="content_keywords", type="twake_text", nullable=true)
+     */
+    private $content_keywords;
+
+
+    protected $es_type = "DriveFile";
+
 
     public function __construct($workspace_id, $parent_id, $isdirectory = false)
     {
@@ -182,6 +191,17 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
         $this->setPreviewHasBeenGenerated(false);
     }
 
+    public function getIndexationArray()
+    {
+        return Array(
+            "id" => $this->getId(),
+            "type" => $this->getExtension(),
+            "name"=> $this->getName(),
+            "creation_date"=> $this->getLastModified(),
+            "keywords" => $this->getContentKeywords()
+        );
+    }
+
     public function setId($id)
     {
         $this->id = $id;
@@ -190,6 +210,22 @@ class DriveFile extends FrontObject implements ObjectLinksInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getContentKeywords()
+    {
+        return json_decode($this->content_keywords, true);
+    }
+
+    /**
+     * @param mixed $content_keywords
+     */
+    public function setContentKeywords($content_keywords)
+    {
+        $this->content_keywords = json_encode($content_keywords);
     }
 
     /**
