@@ -39,4 +39,25 @@ class ChannelController extends Controller
 
     }
 
+    public function getChannelsByWorkspaceAction(Request $request)
+    {
+        $privileges = ["workspace"];
+
+        $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
+        if (is_array($application) && $application["error"]) {
+            return new JsonResponse($application);
+        }
+        $user_id = $request->request->get("user_id", "");
+        $workspace_id = $request->request->get("workspace_id", "");
+        if ($workspace_id){
+            if ($user_id) {
+                $user_entity = $this->get("app.users")->getById($user_id, true);
+            }
+            if($user_entity) {
+                $objects = $this->get("app.channels.channels_system")->get(Array("workspace_id" => $workspace_id), $user_entity);
+            }
+        }
+        return new JsonResponse(Array("data" => $objects));
+    }
+
 }
