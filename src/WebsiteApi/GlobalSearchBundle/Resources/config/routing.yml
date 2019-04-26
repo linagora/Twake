@@ -1,3 +1,8 @@
 globalsearch_event:
   path:       /event
   defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:ES }
+
+
+globalsearch_message:
+  path:       /message
+  defaults: { _controller: TwakeGlobalSearchBundle:Message:ESMessage }

@@ -1,43 +1,18 @@
 {
     "_source": {
         "includes": [
-            "id",
-            "channel_id",
-            "workspace_id"
+            "id"
         ],
         "excludes": [
-            "author_id",
-            "author_name",
-            "keywords"
+            "content"
         ]
     },
     "properties": {
         "id": {
             "type": "keyword"
         },
-        "channel_id": {
+        "content": {
             "type": "keyword"
-        },
-        "workspace_id": {
-            "type": "keyword"
-        },
-        "author_id": {
-            "type": "keywords"
-        },
-        "author_name":{
-            "type": "keywords"
-        },
-        "keywords": {
-            "type": "nested",
-            "properties":{
-                "keyword":{
-                    "type": "keyword"
-                },
-                "score":
-                {
-                    "type": "float"
-                }
-            }
         }
     }
 

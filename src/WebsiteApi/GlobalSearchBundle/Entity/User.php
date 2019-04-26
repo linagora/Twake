@@ -11,7 +11,7 @@ use WebsiteApi\CoreBundle\Entity\SearchableObject;
 /**
  * Application
  *
- * @ORM\Table(name="application",options={"engine":"MyISAM", "scylladb_keys": {{"group_id": "ASC", "app_group_name": "ASC", "id": "ASC"}, {"id": "ASC"}, {"simple_name": "ASC"}, {"default": "ASC"}}})
+ * @ORM\Table(name="user",options={"engine":"MyISAM", "scylladb_keys": {{"group_id": "ASC", "app_group_name": "ASC", "id": "ASC"}, {"id": "ASC"}, {"simple_name": "ASC"}, {"default": "ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\GlobalSearhcBundle\Repository\UserRepository")
  */
 class User extends SearchableObject

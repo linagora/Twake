@@ -169,7 +169,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     private $content_keywords;
 
 
-    protected $es_type = "DriveFile";
+    protected $es_type = "drive_file";
 
 
     public function __construct($workspace_id, $parent_id, $isdirectory = false)
@@ -198,6 +198,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "type" => $this->getExtension(),
             "name"=> $this->getName(),
             "creation_date"=> $this->getLastModified(),
+            "workspace_id" => $this->getWorkspaceId(),
             "keywords" => $this->getContentKeywords()
         );
     }

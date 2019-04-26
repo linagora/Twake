@@ -362,6 +362,9 @@ class ManagerAdapter
 
         $data = $options["data"];
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $options["data"]["id"];
+        error_log(print_r($route,true));
+        error_log(print_r($data,true));
+
         try {
             $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         } catch (\Exception $e) {
