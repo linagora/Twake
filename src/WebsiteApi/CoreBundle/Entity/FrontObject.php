@@ -35,7 +35,9 @@ class FrontObject
      */
     public function setFrontId($front_id)
     {
-        $this->front_id = $front_id;
+        if ($front_id) {
+            $this->front_id = $front_id;
+        }
     }
 
 }
