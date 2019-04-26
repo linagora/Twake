@@ -177,7 +177,7 @@ END;
     public function TestSearch()
     {
 //        $content = (new \Spatie\PdfToText\Pdf())
-//                ->setPdf('civ.pdf')
+//                ->setPdf('mem.pdf')
 //                ->text();
 //
 //        $content = str_replace(array("\\'", "'")," ",$content);
@@ -249,14 +249,14 @@ END;
 //        }
 //
 //        $keywords_score=$this->update_keyword($keywords_score,"billet de train"); //change this with document title
-//        var_dump($keywords_score);
+//        var_dump(json_encode($keywords_score));
 //
 //        $options = Array(
 //            "index" => "file",
 //            "data" => Array(
-//                "id" => "civ",
+//                "id" => "mem",
 //                "type"=> "pdf",
-//                "name" => "manuel civilisation",
+//                "name" => "mémoire ingénieur",
 //                "creation_date"=> "2091-04-23",
 //                "workspace_id" => "workspace_2",
 //                "keywords"=> $keywords_score
@@ -264,33 +264,33 @@ END;
 //        );
 //
 //        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
-//
+////
 //        $this->doctrine->es_put_perso($options);
 
         $terms = Array();
         $terms[] = Array(
-            "match_phrase" => Array(
-                "keywords.word" => "combat"
+            "bool" => Array(
+                "filter" => Array(
+                    "regexp" => Array(
+                        "keywords.word" => ".*ité.*"
+                    )
+                )
             ));
         $terms[] = Array(
-            "match_phrase" => Array(
-                "keywords.word" => "unité"
+            "bool" => Array(
+                "filter" => Array(
+                    "regexp" => Array(
+                        "keywords.word" => ".*applica.*"
+                    )
+                )
             ));
         $terms[] = Array(
-            "match_phrase" => Array(
-                "keywords.word" => "toulouse"
-            ));
-        $terms[] = Array(
-            "match_phrase" => Array(
-                "keywords.word" => "twake"
-            ));
-        $terms[] = Array(
-            "match_phrase" => Array(
-                "keywords.word" => "opération"
-            ));
-        $terms[] = Array(
-            "match_phrase" => Array(
-                "keywords.word" => "billet de train"
+            "bool" => Array(
+                "filter" => Array(
+                    "regexp" => Array(
+                        "keywords.word" => ".*oppe.*"
+                    )
+                )
             ));
 
         $nested  = Array(
@@ -334,7 +334,7 @@ END;
                 )
             )
         );
-       var_dump(json_encode($options,JSON_PRETTY_PRINT));
+       //var_dump(json_encode($options,JSON_PRETTY_PRINT));
 //
 //        $result = [];
 ////        foreach ($objects as $object) {

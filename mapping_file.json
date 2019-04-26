@@ -25,13 +25,13 @@
             "type": "date"
         },
         "workspace_id":{
-            "type": "keywords"
+            "type": "keyword"
         },
         "keywords": {
             "type": "nested",
             "properties":{
                 "keyword":{
-                    "type": "keyword"
+                    "type": "text"
                 },
                 "score":
                 {

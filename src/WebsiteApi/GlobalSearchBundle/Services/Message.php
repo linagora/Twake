@@ -33,27 +33,64 @@ class Message
 //            "vous pouvez faire coucou si vous voulez",
 //            "bon j'ai pas pris la partie sur octante mon truc doit être multi langue mais l'argot peut etre exclus"
 //            );
+//        $bloc = Array("Ha attends je regarde, non c'est un plus clair ",
+//            "C'est le bleu #317595 on refera un choix final plus tard mais on aime bien lui en attendant pour avancer, tu as moyen de changer les couleurs rapidement pendant que le projet avance ?",
+//            "C'est noté! Oui sans problème les couleurs sont variables",
+//            "Un peu à la illustrator avec les palettes ? (j'avais cherché sans succès pendant ma courte période d'utilisation de Sketch...)",
+//            "C'est ça en gros les couleurs, shadows, gradients et font peuvent être définis dans des \"layer style\" et \"text style\" qui sont donc variables facilement. Pour les font c'est un peu plus long à setter mais pour les couleurs c'est très simple",
+//            "C'est génial ça, merci de l'info je regarderai, je trouvais que ça manquait cruellement !",
+//        );
 
-        $authors = Array("Charlotte","Valentin","Clement","Thomas");
+        //$authors=Array("Romaric","Clement");
+
+        //$authors = Array("Charlotte","Valentin","Clement","Thomas");
         //$messages_id = Array("p1","p2","p3","p4","p5","p6","p7","p8","p9");
 
-        $authors = Array("bibi","moi");
+        //$authors = Array("bibi","moi");
         //$messages_id = Array("i1","i2","i3","i4","i5","i6","i7","i8","i9");
-        $keywords=$this->update_keyword($bloc,$authors);
+        //$keywords=$this->update_keyword($bloc,$authors);
 
         //error_log(print_r($keywords,true));
+//
+//        $options = Array(
+//            "index" => "message",
+//            "data" => Array(
+//                "id" => "blocmessage3",
+//                "content" => $keywords
+//            )
+//        );
+
+        //$this->doctrine->es_put_perso($options);
+
+        $terms = Array();
+        $terms[] = Array(
+            "match_phrase" => Array(
+                "content" => "Salut ca va"
+            ));
+        $terms[] = Array(
+            "match_phrase" => Array(
+                "content" => "mouais ca va mais j'ai faim"
+            ));
+        $terms[] = Array(
+            "match_phrase" => Array(
+                "content" => "J y vais demain normalement"
+            ));
 
         $options = Array(
+            //"repository" => "TwakeGlobalSearchBundle:User",
             "index" => "message",
-            "data" => Array(
-                "id" => "blocmessage1",
-                "content" => $keywords
-            )
-        );
+            "query" => Array(
+                "bool" => Array(
+                    "should" => $terms
+                    )
+                )
+            );
 
-        var_dump(json_encode($options,JSON_PRETTY_PRINT));
 
-        $this->doctrine->es_put_perso($options);
+        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
+        $result = $this->doctrine->es_search_perso($options);
+        //var_dump($result);
+
     }
 
 }

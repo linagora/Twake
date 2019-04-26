@@ -301,9 +301,10 @@ class ManagerAdapter
 
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
         $route .= "_search";
-
+        //var_dump($route);
         try {
             $res = $this->circle->post($route, json_encode(Array("query" => $options["query"],"sort"=>$options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            //$res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
 
         } catch (\Exception $e) {
             error_log("Unable to post on ElasticSearch.");
@@ -316,7 +317,9 @@ class ManagerAdapter
         if ($res) {
             $res = json_decode($res, 1);
             var_dump($res["hits"]["hits"]);
-
+            foreach ($res["hits"]["hits"] as $hit){
+                var_dump($hit["_id"]);
+            }
 
 //            if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
 //                $res = $res["hits"]["hits"];
@@ -333,6 +336,7 @@ class ManagerAdapter
 //            }
 
         }
+        $result = $res["hits"]["hits"];
         return $result;
 
     }
