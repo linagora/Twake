@@ -334,7 +334,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
                             $command = "CREATE INDEX IF NOT EXISTS \"";
                             $command .= $index_name . "\" ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
-                            $command .= "(" . $key . ")";
+                            $command .= "(\"" . $key . "\")";
                         }
                         $connection->exec($command);
                         $viable_indexes[] = $index_name;
@@ -359,7 +359,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
 
                     $index_base_command = "CREATE INDEX IF NOT EXISTS \"" . $index_name . "\" ON " . strtolower($connection->getKeyspace()) . ".\"" . $table_name . "\" ";
 
-                    $command = $index_base_command . "(" . $indexed_field . ")";
+                    $command = $index_base_command . "(\"" . $indexed_field . "\")";
                     $connection->exec($command);
 
                     $viable_indexes[] = $index_name;

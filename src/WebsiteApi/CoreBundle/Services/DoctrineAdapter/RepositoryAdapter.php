@@ -52,6 +52,72 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         return $a;
     }
 
+    public function findRange(Array $filters, $order_field = null, $min = null, $max = null, $view_to_use = null)
+    {
+
+        try {
+
+            $mapping = Array();
+            if (isset($this->getClassMetadata()->associationMappings)) {
+                foreach ($this->getClassMetadata()->associationMappings as $field => $data) {
+                    $mapping[] = $field;
+                }
+            }
+            if (isset($this->getClassMetadata()->fieldMappings)) {
+                foreach ($this->getClassMetadata()->fieldMappings as $field => $data) {
+                    if ($data["type"] == "twake_timeuuid") {
+                        $mapping[] = $field;
+                    }
+                }
+            }
+
+            //Cassandra
+            $qb = $this->createQueryBuilder('e');
+
+            foreach ($filters as $filter => $value) {
+                $qb = $qb->andWhere($qb->expr()->eq('e.' . $filter, ":" . $filter . "_param"));
+                if (in_array($filter, $mapping)) {
+                    if (is_object($value)) {
+                        $qb = $qb->setParameter($filter . "_param", new FakeCassandraTimeuuid($value->getId()));
+                    } else {
+                        $qb = $qb->setParameter($filter . "_param", new FakeCassandraTimeuuid($value));
+                    }
+                } else {
+                    $qb = $qb->setParameter($filter . "_param", $value);
+                }
+            }
+
+            if ($min) {
+                $qb = $qb->andWhere($qb->expr()->gte('e.' . $order_field, ":offset_min"));
+                $qb = $qb->setParameter("offset_min", new FakeCassandraTimeuuid($min));
+            }
+            if ($max) {
+                $qb = $qb->andWhere($qb->expr()->lte('e.' . $order_field, ":offset_max"));
+                $qb = $qb->setParameter("offset_max", new FakeCassandraTimeuuid($max));
+            }
+
+            if ($view_to_use) {
+                $this->_em->getConnection()->getWrappedConnection()->changeTableToView($view_to_use);
+            }
+
+            $qb = $qb->getQuery();
+            $a = $qb->execute();
+
+
+            foreach ($a as $e) {
+                if (method_exists($e, "getEsIndexed")) {
+                    $e->updatePreviousIndexationArray();
+                }
+            }
+
+        } catch (\Exception $e) {
+            error_log($e);
+            var_dump($e->getTraceAsString());
+            die("ERROR with findBy");
+        }
+        return $a;
+    }
+
     public function findBy(Array $filters, ?array $sort = null, $limit = null, $offset = null, $order_field = null, $order_direction = "ASC", $view_to_use = null)
     {
         $cassandra = strpos(get_class($this->_em->getConnection()->getDriver()), "PDOCassandra") >= 0;

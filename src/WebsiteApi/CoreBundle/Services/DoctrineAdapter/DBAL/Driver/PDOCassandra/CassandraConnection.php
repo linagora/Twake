@@ -367,7 +367,8 @@ class CassandraConnection
         $keys = Array(
             "token",
             "from",
-            "to"
+            "to",
+            "default"
         );
 
         $sql = explode('FROM ', $sql, 2);
