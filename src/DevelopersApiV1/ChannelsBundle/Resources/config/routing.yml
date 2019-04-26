@@ -3,3 +3,8 @@ developers_api_v1_channes_get_app_user_chan:
     path:     /get_direct_channel
     defaults: { _controller: DevelopersApiV1ChannelsBundle:Channel:getDirectChannel }
     methods: [POST]
+
+developers_api_v1_channels_get_app_workspace_chan:
+    path:     /get_by_workspace
+    defaults: { _controller: DevelopersApiV1ChannelsBundle:Channel:getChannelsByWorkspace }
+    methods: [POST]

@@ -1330,27 +1330,34 @@ class DriveFileSystem
 
         $newFile = $this->save($object, $user, $application);
 
-        if (!$file) {
-            return false;
-        }
+        try {
 
-        $real = $this->getRoot() . $newFile->getPath();
-        $size = filesize($file["tmp_name"]);
+            if (!$file) {
+                return false;
+            }
 
-        $context = Array(
-            "max_size" => 5000000000 // 5Go
-        );
-        $errors = $uploader->upload($file, $real, $context);
+            $real = $this->getRoot() . $newFile->getPath();
+            $size = filesize($file["tmp_name"]);
 
-        $newFile->setSize($size);
+            $context = Array(
+                "max_size" => 5000000000 // 5Go
+            );
+            $errors = $uploader->upload($file, $real, $context);
 
-        $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion($this->doctrine)->getKey(), $newFile->getLastVersion($this->doctrine)->getMode());
+            $newFile->setSize($size);
 
-        $this->setRawContent($newFile, null, false, $user);
+            $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion($this->doctrine)->getKey(), $newFile->getLastVersion($this->doctrine)->getMode());
 
-        if (count($errors["errors"]) > 0) {
-            $this->delete($newFile);
-            return false;
+            $this->setRawContent($newFile, null, false, $user);
+
+            if (count($errors["errors"]) > 0) {
+                $this->delete($newFile);
+                return false;
+            }
+
+        } catch (\Exception $e) {
+            $newFile->setPreviewHasBeenGenerated(true);
+            $newFile->setHasPreview(false);
         }
 
         if ($this->preview->isImage($newFile->getExtension())) {
@@ -1360,6 +1367,9 @@ class DriveFileSystem
             $this->doctrine->persist($newFile);
             $this->doctrine->flush();
         }
+
+        $this->doctrine->flush($newFile);
+
 
         return $newFile;
 
@@ -1698,23 +1708,27 @@ class DriveFileSystem
 
         while ($time_elapsed_secs < 60) {
             /* @var DriveFile $file */
-            $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("previewhasbeengenerated" => false));
-            if (!$file) {
-                sleep(1);
-            }else {
+            $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("previewhasbeengenerated" => false), Array(), 50);
+            foreach ($files as $file) {
+                if ($file->getSize() > 10) {
 
-                $file->setPreviewHasBeenGenerated(true);
+                    $file->setPreviewHasBeenGenerated(true);
 
-                $res = $this->genPreview($file);
-                if ($res) {
-                    $file->setHasPreview(true);
+                    $res = $this->genPreview($file);
+                    if ($res) {
+                        $file->setHasPreview(true);
+                    }
+
+                    $this->doctrine->persist($file);
+                    $this->doctrine->flush();
+
+                    $this->pusher->push(Array("action" => "update"), "drive/" . $file->getWorkspaceId());
+
                 }
 
-                $this->doctrine->persist($file);
-                $this->doctrine->flush();
-
-                $this->pusher->push(Array("action" => "update"), "drive/" . $file->getWorkspaceId());
             }
+            $this->doctrine->clear();
+            sleep(1);
 
             $time_elapsed_secs = microtime(true) - $start;
         }

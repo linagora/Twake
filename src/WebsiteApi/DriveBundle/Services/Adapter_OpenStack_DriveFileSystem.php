@@ -436,7 +436,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                         }
 
                         try {
-                            $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext);
+                            $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext, $file);
                         } catch (\Exception $e) {
                             //error_log($e->getMessage());
                         }
