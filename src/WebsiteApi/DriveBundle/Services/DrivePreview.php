@@ -234,6 +234,7 @@ END;
             foreach ($words as $value) {
                 $value = strtr($value, $replace);
                 $value = preg_replace($regex, '$1', $value);
+                $value = strtolower($value);
                 if (!isset($keywords[$value])) {
                     $keywords[$value] = 0;
                 }
@@ -268,7 +269,7 @@ END;
             arsort($keywords); // Sort based on frequency
 
 
-            $keywords_raw = array_slice($keywords, 0, 10);
+            $keywords_raw = array_slice($keywords, 0, 100);
             $max = array_values(array_slice($keywords, 0, 1))[0];
 
             foreach ($keywords_raw as $key => $score) {

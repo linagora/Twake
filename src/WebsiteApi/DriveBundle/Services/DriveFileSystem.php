@@ -1727,6 +1727,7 @@ class DriveFileSystem
                 }
 
             }
+            $this->doctrine->clear();
             sleep(1);
 
             $time_elapsed_secs = microtime(true) - $start;
