@@ -355,6 +355,7 @@ class Event extends FrontObject
     {
         return Array(
             "id" => $this->getId(),
+            "front_id" => $this->getFrontId(),
             "from" => $this->getFrom(),
             "to" => $this->getTo(),
             "all_day" => $this->getAllDay(),
