@@ -45,12 +45,12 @@ class EventCalendar
     private $event_id;
 
 
-    public function __construct($workspace_id, $calendar_id, $event_id, $ts)
+    public function __construct($workspace_id, $calendar_id, $event_id, $sort_date)
     {
         $this->workspace_id = $workspace_id;
         $this->calendar_id = $calendar_id;
         $this->event_id = $event_id;
-        $this->sort_date = floor($ts / (60 * 60 * 24 * 7)); //Timestamp rounded by week
+        $this->sort_date = $sort_date;
     }
 
     /**

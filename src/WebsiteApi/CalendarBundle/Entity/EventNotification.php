@@ -34,16 +34,30 @@ class EventNotification
     private $when_ts;
 
     /**
+     * @ORM\Column(name="delay", type="twake_bigint")
+     * @ORM\Id
+     */
+    private $delay;
+
+    /**
+     * @ORM\Column(name="mode", type="twake_text")
+     * @ORM\Id
+     */
+    private $mode;
+
+    /**
      * @ORM\Column(name="event_id", type="twake_timeuuid")
      */
     private $event_id;
 
 
-    public function __construct($event_id, $ts)
+    public function __construct($event_id, $delay, $ts, $mode = "push")
     {
         $this->event_id = $event_id;
         $this->when_ts = $ts;
         $this->when_ts_week = floor($ts / (60 * 60 * 24 * 7)); //Timestamp rounded by week
+        $this->setDelay($delay);
+        $this->setMode($mode);
     }
 
     /**
@@ -85,6 +99,39 @@ class EventNotification
     {
         return $this->event_id;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getDelay()
+    {
+        return $this->delay;
+    }
+
+    /**
+     * @param mixed $delay
+     */
+    public function setDelay($delay)
+    {
+        $this->delay = $delay;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMode()
+    {
+        return $this->mode;
+    }
+
+    /**
+     * @param mixed $mode
+     */
+    public function setMode($mode)
+    {
+        $this->mode = $mode;
+    }
+
 
 
 }

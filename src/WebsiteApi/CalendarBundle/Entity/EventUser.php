@@ -44,11 +44,11 @@ class EventUser
     private $accept_status = "pending";
 
 
-    public function __construct($user_id_or_mail, $event_id, $ts, $accept_status = "pending")
+    public function __construct($user_id_or_mail, $event_id, $sort_date, $accept_status = "pending")
     {
         $this->user_id_or_mail = $user_id_or_mail;
         $this->event_id = $event_id;
-        $this->sort_date = floor($ts / (60 * 60 * 24 * 7)); //Timestamp rounded by week
+        $this->sort_date = $sort_date;
         $this->accept_status = $accept_status;
     }
 

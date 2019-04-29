@@ -319,6 +319,17 @@ class Event extends FrontObject
         $this->tags = json_encode($tags);
     }
 
+    public function getSortKey()
+    {
+        $after_sort_date = floor($this->getFrom() / (60 * 60 * 24 * 7));
+        $before_sort_date = floor($this->getTo() / (60 * 60 * 24 * 7));
+        $sort_key = [$after_sort_date];
+        if ($after_sort_date != $before_sort_date) {
+            $sort_key = [$after_sort_date, $before_sort_date];
+        }
+        return $sort_key;
+    }
+
     public function getAsArray()
     {
         return Array(

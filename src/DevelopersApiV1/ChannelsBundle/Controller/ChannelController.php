@@ -47,6 +47,7 @@ class ChannelController extends Controller
         if (is_array($application) && $application["error"]) {
             return new JsonResponse($application);
         }
+        $objects = false;
         $user_id = $request->request->get("user_id", "");
         $workspace_id = $request->request->get("workspace_id", "");
         if ($workspace_id){
@@ -57,7 +58,19 @@ class ChannelController extends Controller
                 $objects = $this->get("app.channels.channels_system")->get(Array("workspace_id" => $workspace_id), $user_entity);
             }
         }
-        return new JsonResponse(Array("data" => $objects));
+
+        if ($objects === false) {
+            return new JsonResponse(Array("error" => "payload_error"));
+        }
+
+        $res = [];
+        foreach ($objects as $object) {
+            if (!$object["direct"] && !$object["application"]) {
+                $res[] = $object;
+            }
+        }
+
+        return new JsonResponse(Array("data" => $res));
     }
 
 }

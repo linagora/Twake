@@ -140,7 +140,7 @@ class ChannelSystemAbstract
         }
 
         foreach ($current_connectors as $current_connector_id) {
-            if (!in_array($current_connector_id, $connector_id)) {
+            if (!in_array($current_connector_id, $connectors_ids)) {
                 $this->applicationsApi->removeResource($connector_id, $channel_entity->getOriginalWorkspaceId(), "channel", $channel_entity->getId(), $current_user_id);
                 $did_something = true;
             }
