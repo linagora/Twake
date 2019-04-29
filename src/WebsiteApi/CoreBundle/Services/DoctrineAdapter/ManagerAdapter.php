@@ -299,12 +299,17 @@ class ManagerAdapter
 
         }
 
+        $repository = null;
+        if (isset($options["repository"])) {
+            $repository = $this->getRepository($options["repository"]);
+        }
+
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
         $route .= "_search";
         //var_dump($route);
         try {
-            $res = $this->circle->post($route, json_encode(Array("query" => $options["query"],"sort"=>$options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
-            //$res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            //$res = $this->circle->post($route, json_encode(Array("query" => $options["query"],"sort"=>$options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
 
         } catch (\Exception $e) {
             error_log("Unable to post on ElasticSearch.");
@@ -316,24 +321,25 @@ class ManagerAdapter
         $result = [];
         if ($res) {
             $res = json_decode($res, 1);
-            var_dump($res["hits"]["hits"]);
-            foreach ($res["hits"]["hits"] as $hit){
-                var_dump($hit["_id"]);
-            }
-
-//            if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
-//                $res = $res["hits"]["hits"];
-//                foreach ($res as $object_json) {
-//                    if ($repository) {
-//                        $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
-//                    } else {
-//                        $obj = $object_json["_id"];
-//                    }
-//                    if ($obj) {
-//                        $result[] = $obj;
-//                    }
-//                }
+//            var_dump($res["hits"]["hits"]);
+//            foreach ($res["hits"]["hits"] as $hit){
+//                var_dump($hit["_id"]);
 //            }
+
+            if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
+                $res = $res["hits"]["hits"];
+                foreach ($res as $object_json) {
+                    if ($repository) {
+                        $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
+                        var_dump($obj);
+                    } else {
+                        $obj = $object_json["_id"];
+                    }
+                    if ($obj) {
+                        $result[] = $obj;
+                    }
+                }
+            }
 
         }
         $result = $res["hits"]["hits"];

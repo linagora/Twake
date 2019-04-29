@@ -1,18 +1,35 @@
 {
     "_source": {
         "includes": [
-            "id"
+            "id",
+            "workspace_id",
+            "channel_id"
         ],
         "excludes": [
-            "content"
+            "keywords"
         ]
     },
     "properties": {
         "id": {
             "type": "keyword"
         },
-        "content": {
+        "workspace_id": {
             "type": "keyword"
+        },
+        "channel_id": {
+            "type": "keyword"
+        },
+        "keywords": {
+            "type": "nested",
+            "properties":{
+                "keyword":{
+                    "type": "text"
+                },
+                "score":
+                {
+                    "type": "float"
+                }
+            }
         }
     }
 
