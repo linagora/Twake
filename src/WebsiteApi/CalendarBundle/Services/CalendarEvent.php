@@ -58,9 +58,11 @@ class CalendarEvent
                 $events_ids[] = $event_link->getEventId();
             }
 
-        }
+        } else {
 
-        if ($mode == "user") {
+            if (!isset($options["users_ids_or_mails"]) && $current_user) {
+                $options["users_ids_or_mails"] = [$current_user->getId()];
+            }
 
             $events_links = [];
             foreach (($options["users_ids_or_mails"] ? $options["users_ids_or_mails"] : []) as $user_id_or_mail) {
@@ -149,10 +151,22 @@ class CalendarEvent
         $event->setAvailable($object["available"]);
 
         //Manage dates
+        $object["type"] = in_array($object["type"], ["event", "remind", "move", "deadline"]) ? $object["type"] : "event";
+        if (!isset($object["from"])) {
+            if (isset($object["to"])) {
+                $object["from"] = $object["to"] - 60 * 60;
+            } else {
+                $object["from"] = date("U");
+            }
+        }
+        if (!isset($object["to"])) {
+            $object["to"] = $object["from"] + 60 * 60;
+        }
         $tmp_sort_key = json_encode($event->getSortKey());
         $event->setFrom($object["from"]);
         $event->setTo($object["to"]);
         $event->setAllDay($object["all_day"]);
+        $event->setType($object["type"]);
         $event->setRepetitionDefinition($object["repetition_definition"]);
         $sort_key = json_encode($event->getSortKey());
         if ($sort_key != $tmp_sort_key) {
@@ -161,16 +175,26 @@ class CalendarEvent
 
         $this->doctrine->flush();
 
+        if (count($object["workspaces_calendars"]) == 0 && count($object["participants"]) == 0) {
+            if (!$current_user) {
+                return false; //No calendar and no user
+            }
+            //Add current user at least
+            $object["participants"] = [Array("user_id_or_mail" => $current_user->getId())];
+        }
+
         $this->updateParticipants($event, $object["participants"], $sort_key_has_changed || $did_create);
         $this->updateCalendars($event, $object["workspaces_calendars"], $sort_key_has_changed || $did_create);
         $this->updateNotifications($event, $object["notifications"], $sort_key_has_changed || $did_create);
 
-        return $object;
+        return $event->getAsArray();
     }
 
     private function updateParticipants(Event $event, $participants = Array(), $replace_all = false)
     {
         $sort_key = $event->getSortKey();
+
+        $participants = $participants ? $participants : [];
 
         $updated_participants = $this->formatArrayInput($participants, ["user_id_or_mail"]);
         $current_participants = $event->getParticipants();
@@ -203,6 +227,8 @@ class CalendarEvent
     {
         $sort_key = $event->getSortKey();
 
+        $calendars = $calendars ? $calendars : [];
+
         $updated_calendars = $this->formatArrayInput($calendars, ["calendar_id", "workspace_id"]);
         $current_calendars = $event->getWorkspacesCalendars();
         $event->setWorkspacesCalendars($updated_calendars);
@@ -220,7 +246,7 @@ class CalendarEvent
             }
         }
 
-        foreach (($replace_all ? $updated_participants : $get_diff["add"]) as $calendar) {
+        foreach (($replace_all ? $updated_calendars : $get_diff["add"]) as $calendar) {
             foreach ($sort_key as $sort_date) {
                 $user = new EventCalendar($calendar["workspace_id"], $calendar["calendar_id"], $event->getId(), $sort_date);
                 $this->doctrine->persist($user);
@@ -233,6 +259,8 @@ class CalendarEvent
 
     private function updateNotifications(Event $event, $notifications = Array(), $replace_all = false)
     {
+
+        $notifications = $notifications ? $notifications : [];
 
         $updated_notifications = $this->formatArrayInput($notifications, ["delay", "mode"]);
         $current_notifications = $event->getNotifications();

@@ -38,6 +38,11 @@ class Event extends FrontObject
     private $all_day = false;
 
     /**
+     * @ORM\Column(name="type", type="twake_text")
+     */
+    private $type = "event";
+
+    /**
      * @ORM\Column(name="repetition_definition", type="twake_text")
      */
     private $repetition_definition = "{}";
@@ -157,6 +162,22 @@ class Event extends FrontObject
     public function setAllDay($all_day)
     {
         $this->all_day = $all_day;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param mixed $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
     }
 
     /**
