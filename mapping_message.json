@@ -19,17 +19,9 @@
         "channel_id": {
             "type": "keyword"
         },
-        "keywords": {
-            "type": "nested",
-            "properties":{
-                "keyword":{
-                    "type": "text"
-                },
-                "score":
-                {
-                    "type": "float"
-                }
-            }
+        "content": {
+            "type": "text"
+            
         }
     }
 

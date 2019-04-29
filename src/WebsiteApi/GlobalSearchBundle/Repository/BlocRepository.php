@@ -11,11 +11,5 @@ namespace WebsiteApi\GlobalSearchBundle\Repository;
 class BlocRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
-//    public function findOneBy(Array $arr)
-//    {
-//        $res="";
-//        var_dump("passage");
-//        return $res;
-//    }
 
 }
