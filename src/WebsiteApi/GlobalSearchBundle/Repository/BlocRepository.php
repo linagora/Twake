@@ -11,16 +11,11 @@ namespace WebsiteApi\GlobalSearchBundle\Repository;
 class BlocRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
-    public function findOneBy(Array $arr)
-    {
-//        $res = parent::findOneBy($arr);
-//
-//        if ($res) {
-//            $res->setIdAsString();
-//        }
-        $res= "";
-//
-        return $res;
-    }
+//    public function findOneBy(Array $arr)
+//    {
+//        $res="";
+//        var_dump("passage");
+//        return $res;
+//    }
 
 }

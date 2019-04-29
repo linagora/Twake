@@ -5,14 +5,13 @@ namespace WebsiteApi\GlobalSearchBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
-use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\CoreBundle\Entity\SearchableObject;
 
 /**
  * Bloc
  *
- * @ORM\Table(name="bloc",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id": "ASC", "channel_id": "ASC", "id": "ASC"}} })
- * @ORM\Entity(repositoryClass="WebsiteApi\GlobalSearhcBundle\Repository\BlocRepository")
+ * @ORM\Table(name="bloc",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id": "ASC", "channel_id": "ASC", "id": "DESC"}, {"id": "ASC"} } })
+ * @ORM\Entity(repositoryClass="WebsiteApi\GlobalSearchBundle\Repository\BlocRepository")
  */
 class Bloc extends SearchableObject
 {
@@ -27,33 +26,53 @@ class Bloc extends SearchableObject
      */
     protected $id;
     /**
-     * @ORM\Column(name="workspace_id", type="text")
+     * @ORM\Column(name="workspace_id", type="twake_timeuuid")
      * @ORM\Id
      */
-    protected $workspace_id = "";
+    protected $workspace_id;
     /**
-     * @ORM\Column(name="channel_id", type="text")
+     * @ORM\Column(name="channel_id", type="twake_timeuuid")
      * @ORM\Id
      */
-    protected $channel_id = "";
+    protected $channel_id;
     /**
-     * @ORM\Column(name="min_message_id", type="text")
+     * @ORM\Column(name="min_message_id", type="twake_timeuuid")
      * @ORM\Id
      */
-    protected $min_message_id = "";
+    protected $min_message_id;
     /**
-     * @ORM\Column(name="max_message_id", type="text")
+     * @ORM\Column(name="max_message_id", type="twake_timeuuid")
      * @ORM\Id
      */
-    protected $max_message_id = "";
+    protected $max_message_id;
     /**
-     * @ORM\Column(name ="nb_message", type="twake_int", nullable=true)
+     * @ORM\Column(name ="nb_message", type="twake_timeuuid", nullable=true)
      */
-    protected $nb_message=0;
+    protected $nb_message;
     /**
-     * @ORM\Column(name ="content_keywords", type="twake_text", nullable=true)
+     * @ORM\Column(name ="content_keywords", type="integer", nullable=true)
      */
     protected $content_keywords;
+
+    /**
+     * Bloc constructor.
+     * @param string $workspace_id
+     * @param string $channel_id
+     * @param string $min_message_id
+     * @param string $max_message_id
+     * @param int $nb_message
+     * @param $content_keywords
+     */
+    public function __construct($workspace_id, $channel_id, $min_message_id, $max_message_id, $nb_message, $content_keywords)
+    {
+        $this->workspace_id = $workspace_id;
+        $this->channel_id = $channel_id;
+        $this->min_message_id = $min_message_id;
+        $this->max_message_id = $max_message_id;
+        $this->nb_message = $nb_message;
+        $this->content_keywords = $content_keywords;
+    }
+
 
     public function getAsArray()
     {
