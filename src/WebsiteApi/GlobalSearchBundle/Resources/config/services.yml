@@ -5,5 +5,5 @@ services:
     arguments: ["@app.twake_doctrine"]
 
   globalsearch.message:
-    class: WebsiteApi\GlobalSearchBundle\Services\Message
+    class: WebsiteApi\GlobalSearchBundle\Services\Blocmessage
     arguments: ["@app.twake_doctrine"]
