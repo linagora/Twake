@@ -15,7 +15,7 @@ use WebsiteApi\UsersBundle\Model\UserInterface;
 /**
  * This service is responsible for subscribtions, unsubscribtions, request for new password
  */
-class User implements UserInterface
+class User
 {
 
 	private $em;
@@ -137,7 +137,7 @@ class User implements UserInterface
 			->getEncoder($user)
 			->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
-		if($passwordValid && !$user->getBanned()){
+        if ($passwordValid && !$user->getBanned() && $user->getMailVerified()) {
 
 			// User log in
 			$token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
@@ -368,8 +368,8 @@ class User implements UserInterface
             return false;
         }
 
-        $token = $this->subscribeMail($mail,false);
-        $user = $this->subscribe($token, "", $pseudo, $password, $lastName, $firstName, $phone, true);
+        $token = $this->subscribeMail($mail, $pseudo, $password, $lastName, $firstName, $phone, false);
+        $user = $this->verifyMail($mail, $token, "", true);
         if($user==null || $user== false){
             return false;
         }
@@ -396,15 +396,24 @@ class User implements UserInterface
         return $user;
     }
 
-	public function subscribeMail($mail,$sendEmail = true)
-	{
+    public function subscribeMail($mail, $pseudo, $password, $name, $firstname, $phone, $sendEmail = true)
+    {
+
+        $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
+
+        //Check pseudo doesn't exists
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
+        if ($user != null) {
+            return false;
+        }
 
 		$mail = $this->string_cleaner->simplifyMail($mail);
 
 		//Check mail doesn't exists
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
-		if($user != null){
+        if ($user != null && $user->getMailVerified()) {
 			return false;
 		}
 		$mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
@@ -413,8 +422,14 @@ class User implements UserInterface
 			return false;
 		}
 
+        if ($user && !$user->getMailVerified() && $user->getisNew()) { //This user never verified his email, so we remove it.
+            $this->em->remove($user);
+            $this->em->flush();
+        }
+
 		$verificationNumberMail = new VerificationNumberMail($mail);
 		$code = $verificationNumberMail->getCode();
+        $this->em->persist($verificationNumberMail);
 
         $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
 
@@ -422,37 +437,71 @@ class User implements UserInterface
             $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "magic_link" => $magic_link));
         }
 
-		$this->em->persist($verificationNumberMail);
+        //Create the temporary user
+        $user = new \WebsiteApi\UsersBundle\Entity\User();
+        $user->setSalt(bin2hex(random_bytes(40)));
+        $factory = $this->encoder_factory;
+        $encoder = $factory->getEncoder($user);
+        $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
+        $user->setUsername($pseudo);
+        $user->setEmail($mail);
+        $user->setFirstName($firstname);
+        $user->setLastName($name);
+        $user->setPhone($phone);
+        $this->em->persist($user);
+
 		$this->em->flush();
+
 		return $verificationNumberMail->getToken();
 	}
 
-
-	public function checkNumberForSubscribe($token, $code)
-	{
-		$verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
-		$ticket = $verificationRepository->findOneBy(Array("token"=>$token));
-
-		if($ticket != null) {
-            return $ticket->verifyCode($code) || $ticket->getVerified();
-		}
-
-		return false;
-	}
-
-    public function verifyMail($mail, $token, $code)
+    public function verifyMail($mail, $token, $code, $force = false, $response = null)
     {
         $verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
         $ticket = $verificationRepository->findOneBy(Array("token" => $token));
-        if ($ticket != null && $ticket->verifyCode($code) && $ticket->getMail($mail)) {
-            $ticket->setVerified(true);
-            $this->em->persist($ticket);
-            $this->em->flush();
+        if (($ticket != null && $ticket->verifyCode($code) && $ticket->getMail($mail)) || $force) {
+
+            if ($ticket) {
+                $ticket->setVerified(true);
+                $this->em->persist($ticket);
+                $this->em->flush();
+            }
+
+            $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+            $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
+            if ($user) {
+                $user->setMailVerified(true);
+                $this->em->persist($user);
+
+                $mailObj = new Mail();
+                $mailObj->setMail($user->getEmail());
+                $mailObj->setUser($user);
+
+                $this->em->persist($mailObj);
+
+                $this->em->flush();
+
+                $this->workspace_members_service->autoAddMemberByNewMail($mail, $user->getId());
+
+
+                // User auto log in
+                $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
+                $request = $this->request_stack->getCurrentRequest();
+                if ($request && $response) {
+                    $this->core_remember_me_manager->doRemember($request, $response, $token);
+                    $this->token_storage->setToken($token);
+                    $event = new InteractiveLoginEvent($request, $token);
+                    $this->event_dispatcher->dispatch("security.interactive_login", $event);
+                }
+
+            }
+
             return true;
         }
         return false;
     }
 
+    /*
     public function subscribe($token, $code, $pseudo, $password, $name, $firstname, $phone, $force = false)
 	{
 
@@ -504,7 +553,7 @@ class User implements UserInterface
 		}
 
 		return false;
-	}
+	}*/
 
 	public function checkPassword($userId, $password)
 	{
