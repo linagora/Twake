@@ -37,20 +37,18 @@ class Bloc extends SearchableObject
     protected $channel_id;
     /**
      * @ORM\Column(name="min_message_id", type="twake_timeuuid")
-     * @ORM\Id
      */
     protected $min_message_id;
     /**
      * @ORM\Column(name="max_message_id", type="twake_timeuuid")
-     * @ORM\Id
      */
     protected $max_message_id;
     /**
-     * @ORM\Column(name ="nb_message", type="twake_timeuuid", nullable=true)
+     * @ORM\Column(name ="nb_message", type="integer", nullable=true)
      */
     protected $nb_message;
     /**
-     * @ORM\Column(name ="content_keywords", type="integer", nullable=true)
+     * @ORM\Column(name ="content_keywords", type="twake_text", nullable=true)
      */
     protected $content_keywords;
 
@@ -70,7 +68,7 @@ class Bloc extends SearchableObject
         $this->min_message_id = $min_message_id;
         $this->max_message_id = $max_message_id;
         $this->nb_message = $nb_message;
-        $this->content_keywords = $content_keywords;
+        $this->content_keywords = json_encode($content_keywords);
     }
 
 
@@ -189,7 +187,7 @@ class Bloc extends SearchableObject
      */
     public function getContentKeywords()
     {
-        return $this->content_keywords;
+        return json_decode($this->content_keywords);
     }
 
     /**
@@ -197,9 +195,16 @@ class Bloc extends SearchableObject
      */
     public function setContentKeywords($content_keywords)
     {
-        $this->content_keywords = $content_keywords;
+        $this->content_keywords = json_encode($content_keywords);
     }
 
+    public function addmessage($message){
+        $content = $this->getContentKeywords();
+        array_push($content ,$message);
+        $this->setContentKeywords($content);
+        $this->setNbMessage($this->getNbMessage()+1);
+
+        }
 
 
 }
