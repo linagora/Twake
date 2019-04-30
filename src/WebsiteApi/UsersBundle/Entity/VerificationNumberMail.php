@@ -74,7 +74,7 @@ class VerificationNumberMail
     public function __construct($mail, $validitytime = 3600)
 	{
 		$this->mail = $mail;
-		$this->token = bin2hex(random_bytes(128));
+        $this->token = bin2hex(random_bytes(40));
         $this->hashcode = bin2hex(random_bytes(128));
 		$this->date = new \DateTime();
         $this->validitytime = max(3600, $validitytime);

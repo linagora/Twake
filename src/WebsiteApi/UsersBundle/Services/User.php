@@ -448,7 +448,9 @@ class User implements UserInterface
             $ticket->setVerified(true);
             $this->em->persist($ticket);
             $this->em->flush();
+            return true;
         }
+        return false;
     }
 
     public function subscribe($token, $code, $pseudo, $password, $name, $firstname, $phone, $force = false)

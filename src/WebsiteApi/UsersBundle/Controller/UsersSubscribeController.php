@@ -79,15 +79,17 @@ class UsersSubscribeController extends Controller
         $token = $request->request->get("token", "");
         $mail = $request->request->get("mail", "");
 
+        $mail = trim(strtolower($mail));
+
         $res = $this->get("app.user")->verifyMail($mail, $token, $code);
 
-        if ($res || $this->get("app.user")->current()) {
+        if ($res) {
 
             $data["data"]["status"] = "success";
 
         } else {
 
-            $data["errors"][] = "badusername";
+            $data["errors"][] = "error";
 
         }
 
