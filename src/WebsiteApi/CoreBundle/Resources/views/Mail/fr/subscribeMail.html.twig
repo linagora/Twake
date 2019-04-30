@@ -6,9 +6,14 @@
 
 {% block body %}
 
-    <b>Bienvenu sur Twake !</b>
+    <b>Bienvenue sur Twake !</b>
     <br>
-    Pour créer votre compte, vous avez besoin du code ci-dessous :
+    Pour terminer votre inscription, cliquez sur ce lien :
+    <br>
+    <a style="color: #0787DC;"
+       href="{{ twakeurl }}{{ magic_link }}">{{ twakeurl }}{{ magic_link|slice(0, 50) ~ '...' }}</a>.
+    <br><br>
+    Vous pouvez également utiliser le code ci-dessous :
     <br>
     <br>
     <center>

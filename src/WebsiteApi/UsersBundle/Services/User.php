@@ -416,8 +416,10 @@ class User implements UserInterface
 		$verificationNumberMail = new VerificationNumberMail($mail);
 		$code = $verificationNumberMail->getCode();
 
+        $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
+
 		if($sendEmail){
-            $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code));
+            $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "magic_link" => $magic_link));
         }
 
 		$this->em->persist($verificationNumberMail);
@@ -432,12 +434,24 @@ class User implements UserInterface
 		$ticket = $verificationRepository->findOneBy(Array("token"=>$token));
 
 		if($ticket != null) {
-			return $ticket->verifyCode($code);
+            return $ticket->verifyCode($code) || $ticket->getVerified();
 		}
 
 		return false;
 	}
-	public function subscribe($token, $code, $pseudo, $password,$name,$firstname,$phone, $force=false)
+
+    public function verifyMail($mail, $token, $code)
+    {
+        $verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
+        $ticket = $verificationRepository->findOneBy(Array("token" => $token));
+        if ($ticket != null && $ticket->verifyCode($code) && $ticket->getMail($mail)) {
+            $ticket->setVerified(true);
+            $this->em->persist($ticket);
+            $this->em->flush();
+        }
+    }
+
+    public function subscribe($token, $code, $pseudo, $password, $name, $firstname, $phone, $force = false)
 	{
 
 		$pseudo = $this->string_cleaner->simplifyUsername($pseudo);
@@ -455,7 +469,7 @@ class User implements UserInterface
 		$factory = $this->encoder_factory;
 
 		if($ticket != null) {
-			if($ticket->verifyCode($code) || $force){
+            if ($ticket->verifyCode($code) || $ticket->getVerified() || $force) {
 
 				$mail = $ticket->getMail();
 

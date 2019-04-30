@@ -67,6 +67,32 @@ class UsersSubscribeController extends Controller
 
 	}
 
+    public function doVerifyMailAction(Request $request)
+    {
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $code = $request->request->get("code", "");
+        $token = $request->request->get("token", "");
+        $mail = $request->request->get("mail", "");
+
+        $res = $this->get("app.user")->verifyMail($mail, $token, $code);
+
+        if ($res || $this->get("app.user")->current()) {
+
+            $data["data"]["status"] = "success";
+
+        } else {
+
+            $data["errors"][] = "badusername";
+
+        }
+
+        return new JsonResponse($data);
+    }
 
 	public function subscribeAction(Request $request)
 	{

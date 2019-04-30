@@ -22,12 +22,17 @@ class FrontObject
         $this->front_id = bin2hex(random_bytes(20));
     }
 
+    public function getId()
+    {
+        return "";
+    }
+
     /**
      * @return mixed
      */
     public function getFrontId()
     {
-        return $this->front_id;
+        return $this->front_id ? $this->front_id : $this->getId();
     }
 
     /**

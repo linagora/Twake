@@ -156,7 +156,7 @@ class CalendarEvent
             if (isset($object["to"])) {
                 $object["from"] = $object["to"] - 60 * 60;
             } else {
-                $object["from"] = date("U");
+                $object["from"] = intval(date("U") / (15 * 60)) * 15 * 60;
             }
         }
         if (!isset($object["to"])) {
