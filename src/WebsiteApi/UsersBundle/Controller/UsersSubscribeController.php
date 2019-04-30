@@ -22,8 +22,13 @@ class UsersSubscribeController extends Controller
 
 
 		$email = $request->request->get("email", "");
+        $username = $request->request->get("username", "");
+        $password = $request->request->get("password", "");
+        $name = $request->request->get("name", "");
+        $firstname = $request->request->get("firstname", "");
+        $phone = $request->request->get("phone", "");
 
-		$res = $this->get("app.user")->subscribeMail($email);
+        $res = $this->get("app.user")->subscribeMail($email, $username, $password, $name, $firstname, $phone);
 
 		if ($res) {
 
@@ -31,7 +36,7 @@ class UsersSubscribeController extends Controller
 
 		} else {
 
-			$data["errors"][] = "alreadyused";
+            $data["errors"][] = "error_mail_or_password";
 
 		}
 
@@ -39,35 +44,45 @@ class UsersSubscribeController extends Controller
 
 	}
 
+    public function doVerifyMailAction(Request $request)
+    {
 
-	public function verifyMailAction(Request $request)
-	{
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $code = $request->request->get("code", "");
+        $token = $request->request->get("token", "");
+        $mail = $request->request->get("mail", "");
 
-		$code = $request->request->get("code", "");
-		$token = $request->request->get("token", "");
+        $mail = trim(strtolower($mail));
 
-		$res = $this->get("app.user")->checkNumberForSubscribe($token, $code);
+        $response = new JsonResponse(Array());
 
-		if ($res) {
+        $res = $this->get("app.user")->verifyMail($mail, $token, $code, false, $response);
 
-			$data["data"]["status"] = "success";
+        if ($res) {
 
-		} else {
+            $data["data"]["status"] = "success";
 
-			$data["errors"][] = "badcode";
+            $device = $request->request->get("device", false);
+            if ($device && isset($device["type"]) && isset($device["value"])) {
+                $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], isset($device["version"]) ? $device["version"] : null);
+            }
 
-		}
+        } else {
 
-		return new JsonResponse($data);
+            $data["errors"][] = "error";
 
-	}
+        }
 
+        $response->setContent(json_encode($data));
 
+        return $response;
+    }
+
+    /*
 	public function subscribeAction(Request $request)
 	{
 
@@ -99,6 +114,7 @@ class UsersSubscribeController extends Controller
 		return new JsonResponse($data);
 
 	}
+    */
 
 	public function getAvaibleAction(Request $request){
         $data = Array(

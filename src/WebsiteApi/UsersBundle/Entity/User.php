@@ -141,6 +141,11 @@ class User extends SearchableObject implements UserInterface
      */
     protected $isnew = true;
 
+    /**
+     * @ORM\Column(name="mail_verified", type="twake_boolean")
+     */
+    protected $mail_verified = false;
+
 
     protected $username;
 
@@ -878,6 +883,22 @@ class User extends SearchableObject implements UserInterface
         $this->lastlogin = $time;
 
         return $this;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMailVerified()
+    {
+        return $this->mail_verified;
+    }
+
+    /**
+     * @param mixed $mail_verified
+     */
+    public function setMailVerified($mail_verified)
+    {
+        $this->mail_verified = $mail_verified;
     }
 
     /**

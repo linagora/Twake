@@ -6,15 +6,15 @@
 
 {% block body %}
 
-    <b>Bienvenu sur Twake !</b>
+    <b>Bienvenue sur Twake !</b>
     <br>
-    Pour créer votre compte, vous avez besoin du code ci-dessous :
+    Pour terminer votre inscription, cliquez sur ce lien :
     <br>
-    <br>
-    <center>
-        <div style="display: inline-block; color: #ffffff; background-color: #057CD7; border: solid 1px #057CD7; border-radius: 5px; box-sizing: border-box; text-decoration: none; font-size: 14px; font-weight: bold; margin: 0; padding: 12px 25px; text-transform: capitalize; border-color: #057CD7;">
-        {{ code }}
-    </div>
-    </center>
+    <a style="color: #0787DC;"
+       href="{{ twakeurl }}{{ magic_link }}">{{ twakeurl }}{{ magic_link }}</a>.
+    <br><br>
+    En cliquant sur ce lien, vous acceptez <a style="color: #0787DC;" href="https://twakeapp.com/files/TOS.pdf">les
+    condition d'utilisation de Twake</a>.
+    <br><br>
 
 {% endblock %}

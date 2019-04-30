@@ -171,10 +171,10 @@ twake_user_subscribe_mail:
     methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersSubscribe:mail }
 
-twake_user_subscribe_mailverify:
-    path:     /subscribe/verifymail
+twake_user_subscribe_do_verify_mail:
+    path:     /subscribe/doverifymail
     methods: [POST]
-    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:verifyMail }
+    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:doVerifyMail }
 
 twake_user_subscribe_identity:
     path:     /subscribe/identity

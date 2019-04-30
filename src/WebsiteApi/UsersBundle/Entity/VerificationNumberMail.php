@@ -23,13 +23,18 @@ class VerificationNumberMail
 	 */
 	private $id;
 
-	/**
-	 * @var string
-	 *
+    /**
+     * @var string
+     *
      * @ORM\Column(name="mail", type="twake_text")
      * @Encrypted
-	 */
-	private $mail;
+     */
+    private $mail;
+
+    /**
+     * @ORM\Column(name="verified", type="twake_boolean")
+     */
+    private $verified = false;
 
 	/**
 	 * @var string
@@ -69,7 +74,7 @@ class VerificationNumberMail
     public function __construct($mail, $validitytime = 3600)
 	{
 		$this->mail = $mail;
-		$this->token = bin2hex(random_bytes(128));
+        $this->token = bin2hex(random_bytes(40));
         $this->hashcode = bin2hex(random_bytes(128));
 		$this->date = new \DateTime();
         $this->validitytime = max(3600, $validitytime);
@@ -137,6 +142,22 @@ class VerificationNumberMail
 	{
 		return $this->clean_code;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getVerified()
+    {
+        return $this->verified;
+    }
+
+    /**
+     * @param mixed $verified
+     */
+    public function setVerified($verified)
+    {
+        $this->verified = $verified;
+    }
 
 }
 
