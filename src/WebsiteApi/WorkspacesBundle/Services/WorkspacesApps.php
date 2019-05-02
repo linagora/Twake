@@ -19,14 +19,16 @@ class WorkspacesApps implements WorkspacesAppsInterface
     private $gms;
     private $pusher;
     private $channel_system;
+    private $application_api;
 
-    public function __construct($doctrine, $workspaces_levels_service, $group_managers_service, $pusher, $channel_system)
+    public function __construct($doctrine, $workspaces_levels_service, $group_managers_service, $pusher, $channel_system, $application_api)
 	{
 		$this->doctrine = $doctrine;
 		$this->wls = $workspaces_levels_service;
         $this->gms = $group_managers_service;
         $this->pusher = $pusher;
         $this->channel_system = $channel_system;
+        $this->application_api = $application_api;
 
     }
 
@@ -136,6 +138,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $groupapp->setPrivilegesCapabilitiesLastRead(new \DateTime());
             $groupapp->setCapabilities($app->getCapabilities());
             $groupapp->setPrivileges($app->getPrivileges());
+            $groupapp->setHooks($app->getHooks());
 
             //Search if the App is already enabled
             $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
@@ -156,6 +159,11 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $workspaceapp = new WorkspaceApp($workspace, $groupapp->getId(), $groupapp->getAppId());
             $this->doctrine->persist($workspaceapp);
             $this->doctrine->flush();
+
+            //Add resource access to workspace if workspace privilege is requested
+            if (in_array("workspace", $app->getPrivileges())) {
+                $this->application_api->addResource($app->getId(), $workspace->getId(), "workspace", $workspace->getId(), $current_user_id);
+            }
 
             $workspace_app = $groupapp->getAsArray();
             $workspace_app["workspace_id"] = $workspace->getId();
@@ -216,6 +224,9 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
             $this->doctrine->remove($workspaceapp);
             $this->doctrine->flush();
+
+            //Remove resource access to workspace
+            $this->application_api->removeResource($app->getId(), $workspace->getId(), "workspace", $workspace->getId(), $current_user_id);
 
             $workspace_app = $groupapp->getAsArray();
             $workspace_app["workspace_id"] = $workspace->getId();

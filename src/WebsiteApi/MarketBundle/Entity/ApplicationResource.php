@@ -46,6 +46,11 @@ class ApplicationResource
     protected $resource_id;
 
     /**
+     * @ORM\Column(name="application_hooks", type="twake_text")
+     */
+    protected $application_hooks;
+
+    /**
      * ApplicationResource constructor.
      * @param $id
      * @param $workspace_id
@@ -139,6 +144,25 @@ class ApplicationResource
     public function setResourceId($resource_id)
     {
         $this->resource_id = $resource_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getApplicationHooks()
+    {
+        if (!$this->application_hooks) {
+            return Array();
+        }
+        return json_decode($this->application_hooks, true);
+    }
+
+    /**
+     * @param mixed $application_hooks
+     */
+    public function setApplicationHooks($application_hooks)
+    {
+        $this->application_hooks = json_encode($application_hooks);
     }
 
 

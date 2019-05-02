@@ -67,6 +67,11 @@ class GroupApp
      */
     protected $capabilities = "[]";
 
+    /**
+     * @ORM\Column(name="hooks", type="twake_text")
+     */
+    protected $hooks = "[]";
+
 
     public function __construct($group, $app_id)
     {
@@ -214,6 +219,25 @@ class GroupApp
     public function setCapabilities($capabilities)
     {
         $this->capabilities = json_encode($capabilities);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHooks()
+    {
+        if (!$this->hooks) {
+            return Array();
+        }
+        return json_decode($this->hooks, true);
+    }
+
+    /**
+     * @param mixed $hooks
+     */
+    public function setHooks($hooks)
+    {
+        $this->hooks = json_encode($hooks);
     }
 
 

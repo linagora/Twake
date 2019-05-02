@@ -224,7 +224,7 @@ class Groups implements GroupsInterface
 
         $groupApps = $groupAppRepository->findBy(Array("group" => $group));
 
-        $listApps = $appRepository->findBy(Array("default" => true));
+        $listApps = $appRepository->findBy(Array("is_default" => true));
 
         if(count($groupApps) != 0){
             return false;
