@@ -76,7 +76,7 @@ class MessageController extends Controller
         }
 
         try {
-            $object = $this->get("app.messages")->save($object, $options, $user, $application);
+            $object = $this->get("app.messages")->save($object, Array(), $user, $application);
         } catch (\Exception $e) {
             $object = false;
         }

@@ -166,3 +166,11 @@ developers_api_error:
     defaults: { _controller: DevelopersApiV1CoreBundle:Default:BadRequest }
     requirements:
       req: ".*"
+
+developers_api_v1_calendar:
+    resource: "@DevelopersApiV1CalendarBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/calendar/
+
+developers_api_v1_drive:
+    resource: "@DevelopersApiV1DriveBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/drive/

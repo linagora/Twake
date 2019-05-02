@@ -51,6 +51,8 @@ class AppKernel extends Kernel
             new DevelopersApiV1\UsersBundle\DevelopersApiV1UsersBundle(),
             new DevelopersApiV1\ChannelsBundle\DevelopersApiV1ChannelsBundle(),
             new DevelopersApiV1\GeneralBundle\DevelopersApiV1GeneralBundle(),
+            new DevelopersApiV1\CalendarBundle\DevelopersApiV1CalendarBundle(),
+            new DevelopersApiV1\DriveBundle\DevelopersApiV1DriveBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
