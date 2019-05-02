@@ -27,10 +27,9 @@ class DriveFileVersion
     private $file_id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\Column(name="creator_id", type="twake_text")
      */
-    private $user;
+    private $creator_id;
 
 	/**
      * @ORM\Column(type="twake_text")
@@ -67,7 +66,7 @@ class DriveFileVersion
     private $filename;
 
 
-	public function __construct(DriveFile $file, User $user)
+    public function __construct(DriveFile $file, $user_id)
 	{
         $this->file_id = $file->getId();
 		$this->setKey(base64_encode(random_bytes(256)));
@@ -75,7 +74,7 @@ class DriveFileVersion
 		$this->resetRealName();
 		$this->date_added = new \DateTime();
 		$this->setFileName($file->getName());
-		$this->setUser($user);
+        $this->setUserId($user_id);
 	}
 
 	/**
@@ -179,17 +178,17 @@ class DriveFileVersion
     /**
      * @return mixed
      */
-    public function getUser()
+    public function getUserId()
     {
-        return $this->user;
+        return $this->creator_id;
     }
 
     /**
      * @param mixed $user
      */
-    public function setUser($user)
+    public function setUserId($user)
     {
-        $this->user = $user;
+        $this->creator_id = $user;
     }
 
     /**
