@@ -1,0 +1,10 @@
+#Calendar routing
+developers_api_v1_calendar_remove_event:
+    path:     /event/remove
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:removeEvent }
+    methods: [POST]
+
+developers_api_v1_calendar_add_event:
+    path:     /event/save
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:saveEvent }
+    methods: [POST]
