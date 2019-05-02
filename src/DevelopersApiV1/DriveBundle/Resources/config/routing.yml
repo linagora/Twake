@@ -1,0 +1,10 @@
+#Calendar routing
+developers_api_v1_drive_remove_drive:
+    path:     /remove
+    defaults: { _controller: DevelopersApiV1DriveBundle:Drive:remove }
+    methods: [POST]
+
+developers_api_v1_drive_add_drive:
+    path:     /save
+    defaults: { _controller: DevelopersApiV1DriveBundle:Drive:save }
+    methods: [POST]

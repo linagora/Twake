@@ -584,6 +584,9 @@ class Application extends SearchableObject
         $return["available_capabilities"] = Array(
             "display_modal", //Afficher une modal (comme une modal de configuration)
             "messages_send", //Envoyer des messages
+            "drive_create",
+            "calendar_event_create",
+            "calendar_event_remove",
             //"drive_add", //Ajouter un fichiers
             //"drive_remove", //Supprimer un fichier existant
             //"drive_modify", //Modifier un fichier existant

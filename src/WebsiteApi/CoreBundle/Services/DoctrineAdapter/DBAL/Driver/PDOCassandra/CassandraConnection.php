@@ -193,6 +193,8 @@ class PDOStatementAdapter
 class CassandraConnection
 {
 
+    private $use_ttl = null;
+
     public function __construct($keyspace, $username, $password, $driverOptions)
     {
         $this->cluster = Cassandra::cluster()
@@ -207,6 +209,11 @@ class CassandraConnection
     public function changeTableToView($view_to_use)
     {
         $this->view_to_use = $view_to_use;
+    }
+
+    public function useTTLOnFirstInsert($ttl)
+    {
+        $this->use_ttl = $ttl;
     }
 
     public function getSchema()
@@ -257,14 +264,14 @@ class CassandraConnection
      */
     public function query($cql = null, $pdoStatement = null)
     {
-        $view_to_user = false;
+        $view_to_use = false;
         if ($this->view_to_use) {
-            $view_to_user = $this->view_to_use . "_custom_index";
+            $view_to_use = $this->view_to_use . "_custom_index";
         }
         $this->view_to_use = null;
 
-        if ($view_to_user) {
-            $_cql = preg_replace("/ FROM [a-z_\-0-9]+ /", " FROM " . $view_to_user . " ", $cql);
+        if ($view_to_use) {
+            $_cql = preg_replace("/ FROM [a-z_\-0-9]+ /", " FROM " . $view_to_use . " ", $cql);
             $_cql = preg_replace("/ *SELECT .* FROM /", "SELECT * FROM ", $_cql);
 
             $results = $this->query($_cql, $pdoStatement);
@@ -299,6 +306,10 @@ class CassandraConnection
             $sql = $this->removeTableAlias($cql);
             $sql = $this->normalizeCount($sql);
             $sql = $this->removeCQLUnallowedKeys($sql);
+            if ($this->use_ttl && $this->use_ttl > 0) {
+                $sql = $this->addTTL($sql, $this->use_ttl);
+            }
+            $this->use_ttl = null;
 
             if ($sql == "SELECT uuid()") {
                 $sql = "select now() from system.local";
@@ -401,8 +412,21 @@ class CassandraConnection
             $sql = preg_replace('/\(' . preg_quote($key, '/') . '\)/', '("' . $key . '")', $sql);
         }
 
-        $vals = explode("FROM ", $sql);
 
+
+        return $sql;
+    }
+
+    private function addTTL($sql, $ttl)
+    {
+        if (!$ttl || intval($ttl) < 1) {
+            return;
+        }
+        if (strpos($sql, "INSERT ") === 0) {
+            $sql = preg_replace("/; *$/", "", $sql);
+            $sql = $sql . " USING TTL  " . intval($ttl) . " ";
+            $sql = $sql . ";";
+        }
         return $sql;
     }
 }

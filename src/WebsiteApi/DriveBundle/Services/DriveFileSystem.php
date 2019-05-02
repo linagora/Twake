@@ -525,16 +525,21 @@ class DriveFileSystem
 
         $workspace = $object["workspace_id"];
         $directory = $object["parent_id"];
+        $detached_file = $object["detached"];
 
-        if ($directory == "root") {
+        if ($directory == "root" || (!$detached_file && !$directory)) {
             $directory = $this->getRootEntity($workspace);
             $directory = $directory->getId();
         }
 
-        $detached_file = $object["detached"];
         if ($detached_file && !$directory) {
             $directory = "detached";
         }
+
+        if (!$directory) {
+            return false;
+        }
+
         $content = $object["content"];
         if (!$content) {
             $content = "";
@@ -567,7 +572,7 @@ class DriveFileSystem
                 $this->doctrine->persist($drive_element);
                 $this->doctrine->flush();
 
-                $fileVersion = new DriveFileVersion($drive_element, $user);
+                $fileVersion = new DriveFileVersion($drive_element, $user ? $user->getId() : "");
                 $this->doctrine->persist($fileVersion);
                 $this->doctrine->flush();
 
@@ -805,7 +810,7 @@ class DriveFileSystem
         if ($this->file_exists($path, $file)) {
 
             if ($newVersion) {
-                $newVersion = new DriveFileVersion($file, $user);
+                $newVersion = new DriveFileVersion($file, $user ? $user->getId() : "");
                 $file->setLastVersionId($newVersion->getId());
                 $this->doctrine->persist($newVersion);
             }
@@ -1273,7 +1278,7 @@ class DriveFileSystem
         $file->setName($fileData["name"]);
         $file->setPreviewHasBeenGenerated(false);
 
-        $lastVersion = new DriveFileVersion($file,$user);
+        $lastVersion = new DriveFileVersion($file, $user ? $user->getId() : "");
         $this->doctrine->persist($lastVersion);
         $file->setLastVersionId($lastVersion->getId());
 
@@ -1328,21 +1333,35 @@ class DriveFileSystem
     public function upload($object, $file, $uploader, $user = null, $application = null)
     {
 
-        $newFile = $this->save($object, $user, $application);
-
         try {
 
             if (!$file) {
                 return false;
             }
 
-            $real = $this->getRoot() . $newFile->getPath();
-            $size = filesize($file["tmp_name"]);
+            $newFile = $this->save($object, $user, $application);
 
-            $context = Array(
-                "max_size" => 5000000000 // 5Go
-            );
-            $errors = $uploader->upload($file, $real, $context);
+            $real = $this->getRoot() . $newFile->getPath();
+
+            if (is_string($file)) {
+                if (strpos($file, "https://") === 0) {
+                    file_put_contents($real, fopen($file, 'r'));
+                    $size = filesize($real);
+                } else {
+
+                    $this->doctrine->remove($newFile);
+                    $this->doctrine->flush();
+
+                    return false;
+                }
+            } else {
+                $size = filesize($file["tmp_name"]);
+
+                $context = Array(
+                    "max_size" => 5000000000 // 5Go
+                );
+                $errors = $uploader->upload($file, $real, $context);
+            }
 
             $newFile->setSize($size);
 

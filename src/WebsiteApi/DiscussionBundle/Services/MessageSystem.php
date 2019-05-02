@@ -404,10 +404,10 @@ class MessageSystem
                 $resources = array_merge($resources, $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "workspace", $channel->getOriginalWorkspaceId()));
                 $apps_ids = [];
                 foreach ($resources as $resource) {
-                    if ($resource->getResourceId() == $channel->getOriginalWorkspaceId() && in_array("new_message_in_workspace", $resource->getApplicationHooks())) {
+                    if ($resource->getResourceId() == $channel->getOriginalWorkspaceId() && !in_array("new_message_in_workspace", $resource->getApplicationHooks())) {
                         continue; //Si resource sur tout le workspace et qu'on a pas le hook new_message_in_workspace on a pas le droit
                     }
-                    if (in_array("new_message", $resource->getApplicationHooks())) {
+                    if (in_array("new_message", $resource->getApplicationHooks()) || in_array("new_message_in_workspace", $resource->getApplicationHooks())) {
                         $apps_ids[] = $resource->getApplicationId();
                     }
                 }
