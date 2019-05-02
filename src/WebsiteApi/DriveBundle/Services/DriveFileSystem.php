@@ -1337,12 +1337,22 @@ class DriveFileSystem
             }
 
             $real = $this->getRoot() . $newFile->getPath();
-            $size = filesize($file["tmp_name"]);
 
-            $context = Array(
-                "max_size" => 5000000000 // 5Go
-            );
-            $errors = $uploader->upload($file, $real, $context);
+            if (is_string($file)) {
+                if (strpos($file, "https://") === 0) {
+                    file_put_contents($real, fopen($file, 'r'));
+                    $size = filesize($real);
+                } else {
+                    return false;
+                }
+            } else {
+                $size = filesize($file["tmp_name"]);
+
+                $context = Array(
+                    "max_size" => 5000000000 // 5Go
+                );
+                $errors = $uploader->upload($file, $real, $context);
+            }
 
             $newFile->setSize($size);
 
