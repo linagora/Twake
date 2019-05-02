@@ -38,27 +38,33 @@ class Blocmessage
             $blocbdd->setLock(true);
         }
         $blocbdd->addmessage($message, $message_id);
-        //var_dump($blocbdd);
         $this->doctrine->persist($blocbdd);
+        $this->doctrine->persist($message_obj);
+        $message_obj->setBlockId($blocbdd->getId()."");
         $this->doctrine->flush();
+
 //        //mettre a jour le bloc
-//
+
         if ($blocbdd->getNbMessage() == 10){
             var_dump("PRET A INDEXER LE BLOC DE MESSAGE");
             // indexer le bloc de message
-            $options = Array(
-                "index" => "message",
-                "data" => Array(
-                    "id" => $blocbdd->getId()."",
-                    "workspace_id" => $workspace_id,
-                    "channel_id" => $channel_id,
-                    "content" => $blocbdd->getContentKeywords()
-                )
-            );
-            $this->doctrine->es_put_perso($options);
+            $this->indexES($blocbdd,$workspace_id,$channel_id);
         }
         $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
         var_dump($lastbloc);
+    }
+
+    public function indexES($blocbdd){
+        $options = Array(
+            "index" => "message",
+            "data" => Array(
+                "id" => $blocbdd->getId()."",
+                "workspace_id" => $blocbdd->getWorkspaceId(),
+                "channel_id" => $blocbdd->getChannelId(),
+                "content" => $blocbdd->getContentKeywords()
+            )
+        );
+        $this->doctrine->es_put_perso($options);
     }
 
     public function SearchMessage($words){
@@ -69,7 +75,7 @@ class Blocmessage
 //                "workspace_id" => "workspace_id"
 //            ),
 //            "match_phrase" => Array(
-//                "channel_id" => "channle_id"
+//                "channel_id" => "channel_id"
 //            )
 //        );
 
@@ -97,8 +103,9 @@ class Blocmessage
             )
         );
 
-        //r_dump(json_encode($options,JSON_PRETTY_PRINT));
+        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
         $result = $this->doctrine->es_search_perso($options);
+        array_slice($result, 0, 5);
         $id_message=Array();
         //var_dump($result);
         foreach ($result as $bloc){
@@ -112,15 +119,68 @@ class Blocmessage
                 $compt++;
             }
         }
-        var_dump($id_message);
+        //var_dump($id_message);
         $messages = Array();
         foreach($id_message as $id) {
             $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
             $messages[] = $message;
            }
-        var_dump($messages);
+        //var_dump($messages);
 
     }
+
+    public function Updateinbloc($message){  //this param is a message ENTITY
+        //var_dump($message->getId()."");
+        $bloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
+        //var_dump($bloc->getMessages());
+        $position = array_search($message->getId()."",$bloc->getMessages());
+        $contents = $bloc->getContentKeywords();
+        $contents[$position] = "blabla"; //$message->get;Content()
+        //$bloc->setContentKeywords($contents)
+
+
+        $this->doctrine->persist($bloc);
+        $this->doctrine->flush();
+
+        // Need to reindex the bloc in ES if he is already indexed
+        if($bloc->getLock() == true){
+            $this->indexES($bloc);
+        }
+
+    }
+
+    public function Deleteinbloc($message){
+
+        $bloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
+        $position = array_search($message->getId()."",$bloc->getMessages());
+
+        if($position == 0){ //change id min or max
+            $bloc->setMinMessageId($bloc->getMessages()[1]);
+        }
+        elseif ($position == 9){
+            $bloc->setMaxMessageId($bloc->getMessages()[8]);
+        }
+        $bloc->setNbMessage($bloc->getNbMessage()-1);
+
+        $contents = $bloc->getContentKeywords();
+        $ids = $bloc->getMessages();
+        array_splice($contents, $position, 1);
+        array_splice($ids, $position, 1);
+        $bloc->setContentKeywords($contents);
+        $bloc->setMessages($ids);
+//        unset($bloc->getContentKeywords()[$position]);
+//        unset($bloc->getMessages()[$position]);
+
+
+        $this->doctrine->persist($bloc);
+        $this->doctrine->flush();
+        var_dump($bloc);
+        if($bloc->getLock() == true){
+            $this->indexES($bloc);
+        }
+
+    }
+
     public function TestMessage()
     {
         //$message= Array("Salut ca va ?", "Oui et toi", "mouais ca va mais j'ai faim", "Viens on va manger", "J'ai pas de sous", "Je paye", "c'est cool", "Tacos", "Ca marche");
@@ -156,6 +216,7 @@ class Blocmessage
         );
 
         $messagetest="je test la version finale";
+        //$messagetest="je commence a voir faim ca veut dire que je vais mieux";
         //$this->IndexBloc($messagetest,"480f11b4-4747-11e9-aa8e-0242ac120005","480f11b4-4747-11e9-aa8e-0242ac120005");
 //        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
 //        //var_dump($lastbloc);
@@ -164,15 +225,24 @@ class Blocmessage
 //            $this->doctrine->flush();
 //        }
 
-
+        //$mess = $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => "acda5224-6cd7-11e9-8bf9-0242ac130002"));
+        //var_dump($mess);
 
 //        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
 //        var_dump($lastbloc);
 
 
-        $words = Array("faim","version");
-        $this->SearchMessage($words);
+//        $words = Array("version");
+//        $this->SearchMessage($words);
 
+        $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
+
+
+        //$this->Updateinbloc($message);
+
+        $this->Deleteinbloc($message);
+
+        //f173c7be-6cdf-11e9-ab9e-0242ac130002
     }
 
 }

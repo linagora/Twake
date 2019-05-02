@@ -300,7 +300,6 @@ class ManagerAdapter
 
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
         $route .= "_search";
-        //var_dump($route);
         try {
             //$res = $this->circle->post($route, json_encode(Array("query" => $options["query"],"sort"=>$options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
             $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
@@ -309,24 +308,17 @@ class ManagerAdapter
             error_log("Unable to post on ElasticSearch.");
         }
 
-
         $res = $res->getContent();
 
         $result = [];
         if ($res) {
             $res = json_decode($res, 1);
-            //var_dump($res["hits"]["hits"]);
-//            foreach ($res["hits"]["hits"] as $hit){
-//                var_dump($hit["_id"]);
-//            }
 
             if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
                 $res = $res["hits"]["hits"];
-                //var_dump($res);
                 foreach ($res as $object_json) {
                     if ($repository) {
                         $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
-                        //var_dump($obj);
                     } else {
                         $obj = $object_json["_id"];
                     }
@@ -337,8 +329,7 @@ class ManagerAdapter
             }
 
         }
-        //$result = $res["hits"]["hits"];
-       return array_slice($result, 0, 5);
+       return $result;
 
     }
 
