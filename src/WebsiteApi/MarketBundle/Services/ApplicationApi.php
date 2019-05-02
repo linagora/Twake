@@ -262,6 +262,13 @@ class ApplicationApi
 
     }
 
+    public function getResources($workspace_id, $resource_type, $resource_id)
+    {
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource");
+        $list = $repo->findBy(Array("resource_id" => $resource_id, "workspace_id" => $workspace_id));
+        return $list;
+    }
+
     public function addResource($app_id, $workspace_id, $resource_type, $resource_id, $current_user_id = null)
     {
         $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
@@ -295,6 +302,7 @@ class ApplicationApi
         }
 
         $resource = new ApplicationResource($workspace_id, $app_id, $resource_type, $resource_id);
+        $resource->setApplicationHooks($app->getHooks());
         $this->doctrine->persist($resource);
         $this->doctrine->flush();
 

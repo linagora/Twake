@@ -11,7 +11,7 @@ use WebsiteApi\CoreBundle\Entity\SearchableObject;
 /**
  * Application
  *
- * @ORM\Table(name="application",options={"engine":"MyISAM", "scylladb_keys": {{"group_id": "ASC", "app_group_name": "ASC", "id": "ASC"}, {"id": "ASC"}, {"simple_name": "ASC"}, {"default": "ASC"}}})
+ * @ORM\Table(name="application",options={"engine":"MyISAM", "scylladb_keys": {{"group_id": "ASC", "app_group_name": "ASC", "id": "ASC"}, {"id": "ASC"}, {"simple_name": "ASC"}, {"is_default": "ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\MarketBundle\Repository\ApplicationRepository")
  */
 class Application extends SearchableObject
@@ -34,7 +34,7 @@ class Application extends SearchableObject
     protected $group_id;
 
     /**
-     * @ORM\Column(name="default", type="twake_boolean")
+     * @ORM\Column(name="is_default", type="twake_boolean")
      */
     protected $default;
 
@@ -137,6 +137,11 @@ class Application extends SearchableObject
      * @ORM\Column(name="capabilities", type="twake_text")
      */
     protected $capabilities = "[]";
+
+    /**
+     * @ORM\Column(name="hooks", type="twake_text")
+     */
+    protected $hooks = "[]";
 
 
     // Display configuration
@@ -469,6 +474,9 @@ class Application extends SearchableObject
      */
     public function getPrivileges()
     {
+        if (!$this->privileges) {
+            return Array();
+        }
         return json_decode($this->privileges, true);
     }
 
@@ -485,6 +493,9 @@ class Application extends SearchableObject
      */
     public function getCapabilities()
     {
+        if (!$this->capabilities) {
+            return Array();
+        }
         return json_decode($this->capabilities, true);
     }
 
@@ -494,6 +505,25 @@ class Application extends SearchableObject
     public function setCapabilities($capabilities)
     {
         $this->capabilities = json_encode($capabilities);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHooks()
+    {
+        if (!$this->hooks) {
+            return Array();
+        }
+        return json_decode($this->hooks, true);
+    }
+
+    /**
+     * @param mixed $hooks
+     */
+    public function setHooks($hooks)
+    {
+        $this->hooks = json_encode($hooks);
     }
 
     /**
@@ -541,29 +571,33 @@ class Application extends SearchableObject
         $return["capabilities"] = $this->getCapabilities();
 
         $return["available_privileges"] = Array(
-            "drive_tree", //Liste des fichiers, noms et autres metadatas
-            "drive_files_content", //Téléchargement des fichiers et preview des fichiers
-            "messages_history", //Récupérer ou rechercher des messages
             "channels", //Lister les channels et leur configuration (tabulations etc)
-            "members", //Lister les membres d’un espace de travail
-            "group_members", //Lister les membres d’un groupe entier
             "workspace", //Information sur l’espace de travail
-            "applications", //Liste des applications déployées sur l’espace de travail (sans le détail de leur configuration)
-            "group" //Information sur le groupe
+            //"drive_tree", //Liste des fichiers, noms et autres metadatas
+            //"drive_files_content", //Téléchargement des fichiers et preview des fichiers
+            //"messages_history", //Récupérer ou rechercher des messages
+            //"members", //Lister les membres d’un espace de travail
+            //"group_members", //Lister les membres d’un groupe entier
+            //"applications", //Liste des applications déployées sur l’espace de travail (sans le détail de leur configuration)
+            //"group" //Information sur le groupe
         );
         $return["available_capabilities"] = Array(
             "display_modal", //Afficher une modal (comme une modal de configuration)
-            "drive_add", //Ajouter un fichiers
-            "drive_remove", //Supprimer un fichier existant
-            "drive_modify", //Modifier un fichier existant
-            "drive_add_version", //Ajouter une version à un fichier existant
             "messages_send", //Envoyer des messages
-            "messages_remove", //Supprimer des messages autre que ceux de l’application
-            "messages_modify", //Modifier des messages autre que ceux de l’application
-            "members_add", //Ajouter un membre
-            "members_remove", //Supprimer un membre
-            "workspace_add", //Ajouter un espace de travail
-            "workspace_remove" //Supprimer un espace de travail
+            //"drive_add", //Ajouter un fichiers
+            //"drive_remove", //Supprimer un fichier existant
+            //"drive_modify", //Modifier un fichier existant
+            //"drive_add_version", //Ajouter une version à un fichier existant
+            //"messages_remove", //Supprimer des messages autre que ceux de l’application
+            //"messages_modify", //Modifier des messages autre que ceux de l’application
+            //"members_add", //Ajouter un membre
+            //"members_remove", //Supprimer un membre
+            //"workspace_add", //Ajouter un espace de travail
+            //"workspace_remove" //Supprimer un espace de travail
+        );
+        $return["available_hooks"] = Array(
+            "new_message", //Nouveau message hook dans un channel particulier (si écouté)
+            "new_message_in_workspace", //Nouveau message hook dans tous le workspace
         );
         $return["available_categories"] = Array(
             "bots",
@@ -609,6 +643,7 @@ class Application extends SearchableObject
             "creation_date" => $this->getCreationDate() ? $this->getCreationDate()->getTimestamp() : new \DateTime(),
             "privileges" => $this->getPrivileges(),
             "capabilities" => $this->getCapabilities(),
+            "hooks" => $this->getHooks(),
             "display" => $this->getDisplayConfiguration(),
             "public" => $this->getPublic(),
             "is_available_to_public" => $this->getisAvailableToPublic()

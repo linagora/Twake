@@ -166,6 +166,7 @@ class MarketApplication
 
                     $application_original->setPrivileges($application["privileges"]);
                     $application_original->setCapabilities($application["capabilities"]);
+                    $application_original->setHooks($application["hooks"]);
 
                     $application_original->setDisplayConfiguration($application["display"]);
                 }
