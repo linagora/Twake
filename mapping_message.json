@@ -6,7 +6,7 @@
             "channel_id"
         ],
         "excludes": [
-            "keywords"
+            "content"
         ]
     },
     "properties": {

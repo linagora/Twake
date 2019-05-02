@@ -315,7 +315,7 @@ class ManagerAdapter
         $result = [];
         if ($res) {
             $res = json_decode($res, 1);
-//            var_dump($res["hits"]["hits"]);
+            //var_dump($res["hits"]["hits"]);
 //            foreach ($res["hits"]["hits"] as $hit){
 //                var_dump($hit["_id"]);
 //            }

@@ -41,7 +41,7 @@ class ChannelController extends Controller
 
     public function getChannelsByWorkspaceAction(Request $request)
     {
-        $privileges = ["workspace"];
+        $privileges = ["channels"];
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
         if (is_array($application) && $application["error"]) {

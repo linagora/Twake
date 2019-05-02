@@ -38,7 +38,7 @@ services:
 
     app.workspaces_apps:
         class: WebsiteApi\WorkspacesBundle\Services\WorkspacesApps
-        arguments: ["@app.twake_doctrine", "@app.workspace_levels","@app.group_managers","@app.pusher", "@app.channels.channels_system"]
+        arguments: ["@app.twake_doctrine", "@app.workspace_levels","@app.group_managers","@app.pusher", "@app.channels.channels_system", "@app.applications_api"]
 
     groups.topic:
         class: WebsiteApi\WorkspacesBundle\Topic\GroupsTopic

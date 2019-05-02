@@ -19,39 +19,46 @@ class Blocmessage
     {
         $message_obj = new Message($channel_id, "");
         $this->doctrine->persist($message_obj);
-        var_dump($message_obj->getId()."");
-//        var_dump($lastbloc);
-//        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
-//        if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
-//            var_dump("passage");
-//            $content = Array();
-//            $message_id = Array();
-//            $blocbdd = new Bloc($workspace_id, $channel_id, 0, $content, $message_id);
-//        } else
-//            $blocbdd = $lastbloc;
-//
-//        var_dump($blocbdd);
-//        $blocbdd->addmessage($message, $message_obj->getId());
-//        $this->doctrine->persist($blocbdd);
-//        $this->doctrine->flush();
+        $message_id = $message_obj->getId()."";
+        //var_dump($message_id);
+        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
+        //var_dump($lastbloc);
+//        //var_dump($lastbloc);
+       if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
+           //var_dump("passage");
 
+            $content = Array();
+            $message_array_id = Array();
+            $blocbdd = new Bloc($workspace_id, $channel_id, $content, $message_array_id);
+            $blocbdd->setMinMessageId($message_id);
+        } else
+            $blocbdd = $lastbloc;
+        if ($blocbdd->getNbMessage() == 9 ) {
+            $blocbdd->setMaxMessageId($message_id);
+            $blocbdd->setLock(true);
+        }
+        $blocbdd->addmessage($message, $message_id);
+        //var_dump($blocbdd);
+        $this->doctrine->persist($blocbdd);
+        $this->doctrine->flush();
 //        //mettre a jour le bloc
 //
-//        if (count($blocbdd->getContentKeywords()) > 10) {
-//            //var_dump("PRET A INDEXER LE BLOC DE MESSAGE");
-//            // indexer le bloc de message
-//            $options = Array(
-//                "index" => "message",
-//                "data" => Array(
-//                    "id" => $blocbdd->getId(),
-//                    "workspace_id" => $workspace_id,
-//                    "channel_id" => $channel_id,
-//                    "content" => $blocbdd->getContentKeywords()
-//                )
-//            );
-//            $this->doctrine->es_put_perso($options);
-
-//        }
+        if ($blocbdd->getNbMessage() == 10){
+            var_dump("PRET A INDEXER LE BLOC DE MESSAGE");
+            // indexer le bloc de message
+            $options = Array(
+                "index" => "message",
+                "data" => Array(
+                    "id" => $blocbdd->getId()."",
+                    "workspace_id" => $workspace_id,
+                    "channel_id" => $channel_id,
+                    "content" => $blocbdd->getContentKeywords()
+                )
+            );
+            $this->doctrine->es_put_perso($options);
+        }
+        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
+        var_dump($lastbloc);
     }
 
     public function SearchMessage($words){
@@ -67,15 +74,16 @@ class Blocmessage
 //        );
 
         $terms = Array();
-        $terms[] = Array(
-            "match_phrase" => Array(
-                "content" => "application"
-            ));
         foreach ($words as $word){
             $terms[] = Array(
-                "match_phrase" => Array(
-                    "content" => ".*"+$word+".*"
-                ));
+                "bool" => Array(
+                    "filter" => Array(
+                        "regexp" => Array(
+                            "content" => ".*".$word.".*"
+                        )
+                    )
+                )
+            );
         }
         //"must" => $must_es,
 
@@ -89,11 +97,10 @@ class Blocmessage
             )
         );
 
-        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
+        //r_dump(json_encode($options,JSON_PRETTY_PRINT));
         $result = $this->doctrine->es_search_perso($options);
-//        var_dump($result);
         $id_message=Array();
-
+        //var_dump($result);
         foreach ($result as $bloc){
             $content = $bloc->getContentKeywords();
             $compt = 0;
@@ -105,13 +112,13 @@ class Blocmessage
                 $compt++;
             }
         }
-//        var_dump($id_message);
-//        $messages = Array();
-//        foreach($id_message as $id) {
-//            $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
-//            $messages[] = $message;
-//           }
-//        var_dump($messages);
+        var_dump($id_message);
+        $messages = Array();
+        foreach($id_message as $id) {
+            $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
+            $messages[] = $message;
+           }
+        var_dump($messages);
 
     }
     public function TestMessage()
@@ -148,12 +155,23 @@ class Blocmessage
             - moi j'aime bien la couleur sombre du 005 mais pas Benoit qui trouve ça trop gris/noir et donc pas assez coloré, par contre on est d'accord sur le fait que la version 005 est celle qu'on préfère pour le moment (celle avec le fond gris clair), reste donc à jouer sur cette couleur sombre et voir comment on peut l'améliorer !"
         );
 
-        $messagetest="IL FAUT TESTER";
-        $this->IndexBloc($messagetest,"480f11b4-4747-11e9-aa8e-0242ac120005","480f11b4-4747-11e9-aa8e-0242ac120005");
+        $messagetest="je test la version finale";
+        //$this->IndexBloc($messagetest,"480f11b4-4747-11e9-aa8e-0242ac120005","480f11b4-4747-11e9-aa8e-0242ac120005");
+//        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
+//        //var_dump($lastbloc);
+//        foreach($lastbloc as $bloc){
+//            $this->doctrine->remove($bloc);
+//            $this->doctrine->flush();
+//        }
 
 
-        $words = Array("application","illustrator");
-        //$this->SearchMessage($words);
+
+//        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
+//        var_dump($lastbloc);
+
+
+        $words = Array("faim","version");
+        $this->SearchMessage($words);
 
     }
 

@@ -283,14 +283,14 @@ class User
         $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
         $mailExists = $mailsRepository->findOneBy(Array("mail"=>$mail));
 
-        if($user != null || $mailExists != null){
+        if (($user != null && $user->getMailVerified()) || $mailExists != null) {
             $retour[] = -1;
         }
 
         //Check pseudo doesn't exists
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
-        if($user != null){
+        if ($user != null && $user->getMailVerified()) {
             $retour[] = -2;
         }
         if(count($retour)<=0){
@@ -404,7 +404,7 @@ class User
         //Check pseudo doesn't exists
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
-        if ($user != null) {
+        if ($user != null && $user->getMailVerified()) {
             return false;
         }
 
