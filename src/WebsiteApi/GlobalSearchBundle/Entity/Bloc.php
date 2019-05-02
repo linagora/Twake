@@ -46,7 +46,7 @@ class Bloc extends SearchableObject
     /**
      * @ORM\Column(name ="nb_message", type="integer", nullable=true)
      */
-    protected $nb_message;
+    protected $nb_message = 0;
     /**
      * @ORM\Column(name ="content_keywords", type="twake_text", nullable=true)
      */
@@ -58,7 +58,7 @@ class Bloc extends SearchableObject
     protected $messages;
 
     /**
-     * @ORM\Column(name ="lock", type="boolean")
+     * @ORM\Column(name ="lock", type="twake_boolean")
      */
     protected $lock = false;
 
@@ -70,11 +70,10 @@ class Bloc extends SearchableObject
      * @param int $nb_message
      * @param $content_keywords
      */
-    public function __construct($workspace_id, $channel_id, $nb_message, $content_keywords, $messages)
+    public function __construct($workspace_id, $channel_id, $content_keywords, $messages)
     {
         $this->workspace_id = $workspace_id;
         $this->channel_id = $channel_id;
-        $this->nb_message = $nb_message;
         $this->content_keywords = json_encode($content_keywords);
         $this->messages = json_encode($messages);
 
