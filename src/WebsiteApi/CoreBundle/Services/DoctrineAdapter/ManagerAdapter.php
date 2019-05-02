@@ -285,12 +285,6 @@ class ManagerAdapter
 
     }
 
-
-
-
-
-
-
     public function es_search_perso($options = Array(), $index = null, $server = "twake")
     {
 
@@ -328,10 +322,11 @@ class ManagerAdapter
 
             if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
                 $res = $res["hits"]["hits"];
+                //var_dump($res);
                 foreach ($res as $object_json) {
                     if ($repository) {
                         $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
-                        var_dump($obj);
+                        //var_dump($obj);
                     } else {
                         $obj = $object_json["_id"];
                     }
@@ -342,8 +337,8 @@ class ManagerAdapter
             }
 
         }
-        $result = $res["hits"]["hits"];
-        return $result;
+        //$result = $res["hits"]["hits"];
+       return array_slice($result, 0, 5);
 
     }
 

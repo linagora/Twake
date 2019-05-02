@@ -3,8 +3,9 @@
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
 use WebsiteApi\GlobalSearchBundle\Entity\Bloc;
+use WebsiteApi\DiscussionBundle\Entity\Message;
 
-class Message
+class Blocmessage
 
 {
     private $doctrine;
@@ -14,10 +15,104 @@ class Message
         $this->doctrine = $doctrine;
     }
 
-    public function AddMessage($message,$workspace_id,$channel_id = null){
-        $blocs = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id"=>$workspace_id,"channel_id"=>$channel_id));
-        $blocs->addmessage($message);
-        //var_dump($blocs->getContentKeywords());
+    public function IndexBloc($message,$workspace_id,$channel_id)
+    {
+        $message_obj = new Message($channel_id, "");
+        $this->doctrine->persist($message_obj);
+        var_dump($message_obj->getId()."");
+//        var_dump($lastbloc);
+//        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
+//        if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
+//            var_dump("passage");
+//            $content = Array();
+//            $message_id = Array();
+//            $blocbdd = new Bloc($workspace_id, $channel_id, 0, $content, $message_id);
+//        } else
+//            $blocbdd = $lastbloc;
+//
+//        var_dump($blocbdd);
+//        $blocbdd->addmessage($message, $message_obj->getId());
+//        $this->doctrine->persist($blocbdd);
+//        $this->doctrine->flush();
+
+//        //mettre a jour le bloc
+//
+//        if (count($blocbdd->getContentKeywords()) > 10) {
+//            //var_dump("PRET A INDEXER LE BLOC DE MESSAGE");
+//            // indexer le bloc de message
+//            $options = Array(
+//                "index" => "message",
+//                "data" => Array(
+//                    "id" => $blocbdd->getId(),
+//                    "workspace_id" => $workspace_id,
+//                    "channel_id" => $channel_id,
+//                    "content" => $blocbdd->getContentKeywords()
+//                )
+//            );
+//            $this->doctrine->es_put_perso($options);
+
+//        }
+    }
+
+    public function SearchMessage($words){
+
+
+//        $must_es = Array(
+//            "match_phrase" => Array(
+//                "workspace_id" => "workspace_id"
+//            ),
+//            "match_phrase" => Array(
+//                "channel_id" => "channle_id"
+//            )
+//        );
+
+        $terms = Array();
+        $terms[] = Array(
+            "match_phrase" => Array(
+                "content" => "application"
+            ));
+        foreach ($words as $word){
+            $terms[] = Array(
+                "match_phrase" => Array(
+                    "content" => ".*"+$word+".*"
+                ));
+        }
+        //"must" => $must_es,
+
+        $options = Array(
+            "repository" => "TwakeGlobalSearchBundle:Bloc",
+            "index" => "message",
+            "query" => Array(
+                "bool" => Array(
+                    "should" => $terms
+                )
+            )
+        );
+
+        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
+        $result = $this->doctrine->es_search_perso($options);
+//        var_dump($result);
+        $id_message=Array();
+
+        foreach ($result as $bloc){
+            $content = $bloc->getContentKeywords();
+            $compt = 0;
+            foreach($content as $phrase){
+                foreach ($words as $word){
+                    if( strpos( $phrase, $word ) !== false )
+                        $id_message[]=$bloc->getMessages()[$compt];
+                }
+                $compt++;
+            }
+        }
+//        var_dump($id_message);
+//        $messages = Array();
+//        foreach($id_message as $id) {
+//            $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
+//            $messages[] = $message;
+//           }
+//        var_dump($messages);
+
     }
     public function TestMessage()
     {
@@ -32,7 +127,7 @@ class Message
 //            "vous pouvez faire coucou si vous voulez",
 //            "bon j'ai pas pris la partie sur octante mon truc doit être multi langue mais l'argot peut etre exclus"
 //            );
-       $message = Array("Ha attends je regarde, non c'est un plus clair ",
+       $content = Array("Ha attends je regarde, non c'est un plus clair ",
             "C'est le bleu #317595 on refera un choix final plus tard mais on aime bien lui en attendant pour avancer, tu as moyen de changer les couleurs rapidement pendant que le projet avance ?",
             "C'est noté! Oui sans problème les couleurs sont variables",
             "Un peu à la illustrator avec les palettes ? (j'avais cherché sans succès pendant ma courte période d'utilisation de Sketch...)",
@@ -53,77 +148,12 @@ class Message
             - moi j'aime bien la couleur sombre du 005 mais pas Benoit qui trouve ça trop gris/noir et donc pas assez coloré, par contre on est d'accord sur le fait que la version 005 est celle qu'on préfère pour le moment (celle avec le fond gris clair), reste donc à jouer sur cette couleur sombre et voir comment on peut l'améliorer !"
         );
 
-       $messagetest="J AI FAIM";
-        //mettre a jour le bloc
-        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" =>" 480f11b4-4747-11e9-aa8e-0242ac120005"));
-        $lastbloc->AddMessage($messagetest,"480f11b4-4747-11e9-aa8e-0242ac120005","480f11b4-4747-11e9-aa8e-0242ac120005");
-        $this->doctrine->persist($lastbloc);
-        $this->doctrine->flush();
-        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" =>" 480f11b4-4747-11e9-aa8e-0242ac120005"));
-        //var_dump($lastbloc);
-
-        if(count($lastbloc->getContentKeywords())> 8) {
-            var_dump("PRET A INDEXER LE BLOC DE MESSAGE");
-            //indexer le bloc de message
-//        $options = Array(
-//            "index" => "message",
-//            "data" => Array(
-//                "id" => "blocmessage1",
-//                "workspace_id" => "workspace_1",
-//                "channel_id" => "channel_1",
-//                "content" => $message
-//            )
-//        );
-            //        $this->doctrine->es_put_perso($options);
-        }
+        $messagetest="IL FAUT TESTER";
+        $this->IndexBloc($messagetest,"480f11b4-4747-11e9-aa8e-0242ac120005","480f11b4-4747-11e9-aa8e-0242ac120005");
 
 
-//        $blocbdd= new Bloc("480f11b4-4747-11e9-aa8e-0242ac120005", "480f11b4-4747-11e9-aa8e-0242ac120005", "480f11b4-4747-11e9-aa8e-0242ac120005","480f11b4-4747-11e9-aa8e-0242ac120005",0, $message);
-//        $this->doctrine->persist($blocbdd);
-//        $this->doctrine->flush();
-
-
-//        $this->doctrine->remove($blocs);
-//        $this->doctrine->flush();
-//        $this->doctrine->clear();
-//        $test = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
-//        var_dump(count($test));
-
-
-
-
-
-
-//        $terms = Array();
-//        $terms[] = Array(
-//            "match_phrase" => Array(
-//                "content" => "Salut ca va"
-//            ));
-//        $terms[] = Array(
-//            "match_phrase" => Array(
-//                "content" => "mouais ca va mais j'ai faim"
-//            ));
-//        $terms[] = Array(
-//            "match_phrase" => Array(
-//                "content" => "J y vais demain normalement"
-//            ));
-//
-//        $options = Array(
-//            "repository" => "TwakeGlobalSearchBundle:Bloc",
-//            "index" => "message",
-//            "query" => Array(
-//                "bool" => Array(
-//                    "should" => $terms
-//                    )
-//                )
-//            );
-
-
-
-
-        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
-        //$result = $this->doctrine->es_search_perso($options);
-        //var_dump($result);
+        $words = Array("application","illustrator");
+        //$this->SearchMessage($words);
 
     }
 

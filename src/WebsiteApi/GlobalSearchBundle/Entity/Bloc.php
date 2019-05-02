@@ -36,11 +36,11 @@ class Bloc extends SearchableObject
      */
     protected $channel_id;
     /**
-     * @ORM\Column(name="min_message_id", type="twake_timeuuid")
+     * @ORM\Column(name="min_message_id", type="twake_timeuuid", nullable=true)
      */
     protected $min_message_id;
     /**
-     * @ORM\Column(name="max_message_id", type="twake_timeuuid")
+     * @ORM\Column(name="max_message_id", type="twake_timeuuid", nullable=true)
      */
     protected $max_message_id;
     /**
@@ -53,22 +53,31 @@ class Bloc extends SearchableObject
     protected $content_keywords;
 
     /**
+     * @ORM\Column(name ="messages", type="twake_text", nullable=true)
+     */
+    protected $messages;
+
+    /**
+     * @ORM\Column(name ="lock", type="boolean")
+     */
+    protected $lock = false;
+
+
+    /**
      * Bloc constructor.
      * @param string $workspace_id
      * @param string $channel_id
-     * @param string $min_message_id
-     * @param string $max_message_id
      * @param int $nb_message
      * @param $content_keywords
      */
-    public function __construct($workspace_id, $channel_id, $min_message_id, $max_message_id, $nb_message, $content_keywords)
+    public function __construct($workspace_id, $channel_id, $nb_message, $content_keywords, $messages)
     {
         $this->workspace_id = $workspace_id;
         $this->channel_id = $channel_id;
-        $this->min_message_id = $min_message_id;
-        $this->max_message_id = $max_message_id;
         $this->nb_message = $nb_message;
         $this->content_keywords = json_encode($content_keywords);
+        $this->messages = json_encode($messages);
+
     }
 
 
@@ -87,6 +96,22 @@ class Bloc extends SearchableObject
     }
 
     /**
+     * @return mixed
+     */
+    public function getMessages()
+    {
+        return json_decode($this->messages);
+    }
+
+    /**
+     * @param mixed $messages
+     */
+    public function setMessages($messages)
+    {
+        $this->messages = json_encode($messages);
+    }
+
+    /**
      * @return int
      */
     public function getId()
@@ -100,6 +125,22 @@ class Bloc extends SearchableObject
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLock()
+    {
+        return $this->lock;
+    }
+
+    /**
+     * @param mixed $lock
+     */
+    public function setLock($lock)
+    {
+        $this->lock = $lock;
     }
 
     /**
@@ -198,12 +239,15 @@ class Bloc extends SearchableObject
         $this->content_keywords = json_encode($content_keywords);
     }
 
-    public function addmessage($message){
+    public function addmessage($message,$message_id){
         $content = $this->getContentKeywords();
         array_push($content ,$message);
         $this->setContentKeywords($content);
         $this->setNbMessage($this->getNbMessage()+1);
 
+        $ids = $this->getMessages();
+        array_push($ids,$message_id);
+        $this->setMessages($ids);
         }
 
 
