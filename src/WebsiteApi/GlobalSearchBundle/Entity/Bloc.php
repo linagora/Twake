@@ -105,7 +105,13 @@ class Bloc extends SearchableObject
         return $return;
     }
 
-
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
+    }
 
     /**
      * @return mixed

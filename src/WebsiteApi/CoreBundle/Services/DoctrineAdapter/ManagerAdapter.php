@@ -207,7 +207,7 @@ class ManagerAdapter
             }
         }
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
-        
+
         try {
             error_log("update es : " . $route);
             error_log(json_encode($data));

@@ -50,7 +50,7 @@ class Blocmessage
 
             // indexer le bloc de message
             //$this->indexES($blocbdd,$workspace_id,$channel_id);
-            $this->doctrine->es_put($blocbdd,"message");
+            $this->doctrine->es_put($blocbdd,$blocbdd->getEsType());
 
         }
         $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
@@ -136,7 +136,7 @@ class Blocmessage
 
         // Need to reindex the bloc in ES if he is already indexed
         if($bloc->getLock() == true){
-            $this->doctrine->es_put($bloc,"message");
+            $this->doctrine->es_put($bloc,$bloc->getEsType());
         }
 
     }
@@ -168,7 +168,7 @@ class Blocmessage
         $this->doctrine->flush();
         var_dump($bloc);
         if($bloc->getLock() == true){
-            $this->doctrine->es_put($bloc,"message");
+            $this->doctrine->es_put($bloc,$bloc->getEsType());
 
         }
 
@@ -223,8 +223,8 @@ class Blocmessage
         //$mess = $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => "acda5224-6cd7-11e9-8bf9-0242ac130002"));
         //var_dump($mess);
 
-//        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
-//        var_dump($lastbloc);
+        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
+        var_dump($lastbloc);
 
 
 //        $words = Array("version");
