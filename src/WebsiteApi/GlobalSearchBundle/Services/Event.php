@@ -116,9 +116,14 @@ END;
         $terms = Array();
         foreach($termslist as $term){
             $terms[] = Array(
-                "match_phrase" => Array(
-                    "keywords.word" => $term
-                ));
+                "bool" => Array(
+                    "filter" => Array(
+                        "regexp" => Array(
+                            "content" => ".*".$term.".*"
+                        )
+                    )
+                )
+            );
         }
 
         $nested  = Array(

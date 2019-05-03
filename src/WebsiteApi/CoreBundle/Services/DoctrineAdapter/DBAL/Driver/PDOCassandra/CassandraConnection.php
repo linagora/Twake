@@ -193,6 +193,8 @@ class PDOStatementAdapter
 class CassandraConnection
 {
 
+    private $use_ttl = null;
+
     public function __construct($keyspace, $username, $password, $driverOptions)
     {
         $this->cluster = Cassandra::cluster()
