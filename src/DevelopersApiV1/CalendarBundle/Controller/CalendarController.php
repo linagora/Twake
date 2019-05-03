@@ -39,6 +39,19 @@ class CalendarController extends Controller
         if (!$object) {
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
         }
+
+        if ($object) {
+
+            $event = Array(
+                "client_id" => "system",
+                "action" => "save",
+                "object_type" => "",
+                "object" => $object
+            );
+//            $this->get("app.websockets")->push("calendar_events/", $event);
+
+        }
+
         return new JsonResponse(Array("object" => $object));
 
     }

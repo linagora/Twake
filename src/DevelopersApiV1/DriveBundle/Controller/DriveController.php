@@ -28,9 +28,23 @@ class DriveController extends Controller
         } catch (\Exception $e) {
             $object = false;
         }
+
         if (!$object) {
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
         }
+
+        if ($object) {
+
+            $event = Array(
+                "client_id" => "system",
+                "action" => "save",
+                "object_type" => "",
+                "object" => $object
+            );
+            $this->get("app.websockets")->push("drive/" . $object["workspace_id"] . "/" . $object["parent_id"], $event);
+
+        }
+
         return new JsonResponse(Array("object" => $object));
 
 
