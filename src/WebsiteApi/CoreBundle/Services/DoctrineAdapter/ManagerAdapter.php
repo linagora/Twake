@@ -192,28 +192,22 @@ class ManagerAdapter
 
     public function es_put($entity, $index, $server = "twake")
     {
-
         if (is_array($entity)) {
             $id = $entity["id"];
             $data = $entity["data"];
-
             if (!is_array($data)) {
                 $data = Array("content" => $data);
             }
         } else {
             $id = $entity->getId();
-
             if (method_exists($entity, "getIndexationArray")) {
                 $data = $entity->getIndexationArray();
             } else {
                 $data = $entity->getAsArray();
             }
         }
-
-
-
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
-
+        
         try {
             error_log("update es : " . $route);
             error_log(json_encode($data));

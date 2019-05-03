@@ -94,6 +94,19 @@ class Bloc extends SearchableObject
         return $return;
     }
 
+    public function getIndexationArray()
+    {
+        $return = Array(
+            "id" => $this->getId()."",
+            "channel_id" => $this->getChannelId(),
+            "workspace_id" => $this->getWorkspaceId(),
+            "content_keyword" => $this->getContentKeywords(),
+        );
+        return $return;
+    }
+
+
+
     /**
      * @return mixed
      */
