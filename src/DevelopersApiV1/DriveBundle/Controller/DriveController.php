@@ -49,7 +49,7 @@ class DriveController extends Controller
 
         if ($workspace_id && $directory_id){
             $objects = $this->get("app.drive")->get(
-                    Array("workspace_id" => $workspace_id, "directory_id" => $directory_id), null);
+                    Array("workspace_id" => $workspace_id, "directory_id" => $directory_id, "trash" => false), null);
         }
         else{
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
