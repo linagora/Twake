@@ -50,4 +50,33 @@ class DriveController extends Controller
 
     }
 
+    public function getListAction(Request $request){
+        $privileges = ["drive_list"];
+        $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
+        if (is_array($application) && $application["error"]) {
+            return new JsonResponse($application);
+        }
+
+        $user_id = null;
+        $workspace_id = $request->request->get("workspace_id", null);
+        $directory_id = $request->request->get("directory_id", null);
+
+        if ($workspace_id && $directory_id){
+            $objects = $this->get("app.drive")->get(
+                    Array("workspace_id" => $workspace_id, "directory_id" => $directory_id), null);
+        }
+        else{
+            return new JsonResponse(Array("error" => "unknown error or malformed query."));
+        }
+
+        $res = [];
+        foreach ($objects as $object) {
+            if ($object["is_directory"]) {
+                $res[] = $object;
+            }
+        }
+
+        return new JsonResponse(Array("data" => $res));
+    }
+
 }

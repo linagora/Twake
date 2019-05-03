@@ -97,6 +97,11 @@ class Message extends FrontObject
     private $user_specific_content = "[]";
 
     /**
+     * @ORM\Column(name="block_id", type="twake_timeuuid", nullable=true)
+     */
+    private $block_id = null;
+
+    /**
      * Message constructor.
      */
     public function __construct($channel_id, $parent_message_id)
@@ -108,11 +113,13 @@ class Message extends FrontObject
         $this->modification_date = new \DateTime();
     }
 
+
     /**
      * Get the value of Id
      *
      * @return mixed
      */
+
     public function getId()
     {
         return $this->id;
@@ -421,6 +428,22 @@ class Message extends FrontObject
     public function setUserSpecificContent($user_specific_content)
     {
         $this->user_specific_content = json_encode($user_specific_content);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBlockId()
+    {
+        return $this->block_id;
+    }
+
+    /**
+     * @param mixed $block_id
+     */
+    public function setBlockId($block_id)
+    {
+        $this->block_id = $block_id;
     }
 
     public function getAsArray()
