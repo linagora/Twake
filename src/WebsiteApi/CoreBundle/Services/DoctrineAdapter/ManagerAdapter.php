@@ -104,7 +104,6 @@ class ManagerAdapter
 
     public function flush()
     {
-
         //ElasticSearch
         foreach ($this->es_removes as $es_remove) {
             $this->es_remove($es_remove, $es_remove->getEsType(), $es_remove->getEsIndex());
@@ -153,10 +152,19 @@ class ManagerAdapter
 
         if (method_exists($object, "getEsIndexed")) {
             //This is a searchable object
-            if (!$object->getEsIndexed() || $object->changesInIndexationArray()) {
-                $this->es_updates[$object->getId() . ""] = $object;
-                unset($this->es_removes[$object->getId() . ""]);
-                $object->setEsIndexed(true);
+            if (method_exists($object,"getLock()") ){
+                if($object->getLock() == true) {
+                    $this->es_updates[$object->getId() . ""] = $object;
+                    unset($this->es_removes[$object->getId() . ""]);
+                    $object->setEsIndexed(true);
+                }
+            }
+            else{
+                if (!$object->getEsIndexed() || $object->changesInIndexationArray()) {
+                    $this->es_updates[$object->getId() . ""] = $object;
+                    unset($this->es_removes[$object->getId() . ""]);
+                    $object->setEsIndexed(true);
+                }
             }
         }
 
@@ -192,6 +200,7 @@ class ManagerAdapter
 
     public function es_put($entity, $index, $server = "twake")
     {
+
         if (is_array($entity)) {
             $id = $entity["id"];
             $data = $entity["data"];
@@ -209,6 +218,8 @@ class ManagerAdapter
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
         try {
+//            var_dump($route);
+//            var_dump(json_encode($data));
             error_log("update es : " . $route);
             error_log(json_encode($data));
             $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));

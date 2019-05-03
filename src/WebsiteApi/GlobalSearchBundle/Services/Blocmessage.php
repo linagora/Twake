@@ -45,14 +45,14 @@ class Blocmessage
 
 //        //mettre a jour le bloc
 
-        if ($blocbdd->getNbMessage() == 10){
-            var_dump("PRET A INDEXER LE BLOC DE MESSAGE");
-
-            // indexer le bloc de message
-            //$this->indexES($blocbdd,$workspace_id,$channel_id);
-            $this->doctrine->es_put($blocbdd,$blocbdd->getEsType());
-
-        }
+//        if ($blocbdd->getNbMessage() == 10){
+//            var_dump("PRET A INDEXER LE BLOC DE MESSAGE");
+//
+//            // indexer le bloc de message
+//            //$this->indexES($blocbdd,$workspace_id,$channel_id);
+//            $this->doctrine->es_put($blocbdd,$blocbdd->getEsType());
+//
+//        }
         $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
         var_dump($lastbloc);
     }
@@ -210,7 +210,7 @@ class Blocmessage
 
         //$messagetest="je test la version finale";
         $messagetest="je commence a voir faim ca veut dire que je vais mieux";
-        //$this->IndexBloc($messagetest,"480f11b4-4747-11e9-aa8e-0242ac120005","480f11b4-4747-11e9-aa8e-0242ac120005");
+        $this->IndexBloc($messagetest,"480f11b4-4747-11e9-aa8e-0242ac120005","480f11b4-4747-11e9-aa8e-0242ac120005");
 
 
 //        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
@@ -223,8 +223,8 @@ class Blocmessage
         //$mess = $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => "acda5224-6cd7-11e9-8bf9-0242ac130002"));
         //var_dump($mess);
 
-        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
-        var_dump($lastbloc);
+//        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array());
+//        var_dump($lastbloc);
 
 
 //        $words = Array("version");
@@ -254,7 +254,7 @@ class Blocmessage
 //        $this->doctrine->persist($message_obj);
 //
 //        $message_obj->setBlockId($blocbdd->getId()."");
-//        //$this->doctrine->flush();
+//        $this->doctrine->flush();
 //
 //        $this->doctrine->es_put($blocbdd,"message");
 
