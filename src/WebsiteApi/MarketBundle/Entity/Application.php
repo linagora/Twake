@@ -573,6 +573,7 @@ class Application extends SearchableObject
         $return["available_privileges"] = Array(
             "channels", //Lister les channels et leur configuration (tabulations etc)
             "workspace", //Information sur l’espace de travail
+            "drive_list", //Lister documents dans le Drive
             //"drive_tree", //Liste des fichiers, noms et autres metadatas
             //"drive_files_content", //Téléchargement des fichiers et preview des fichiers
             //"messages_history", //Récupérer ou rechercher des messages

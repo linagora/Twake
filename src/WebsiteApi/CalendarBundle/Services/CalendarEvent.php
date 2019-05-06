@@ -10,9 +10,10 @@ use WebsiteApi\CalendarBundle\Entity\EventUser;
 class CalendarEvent
 {
 
-    function __construct($entity_manager)
+    function __construct($entity_manager, $enc_pusher)
     {
         $this->doctrine = $entity_manager;
+        $this->enc_pusher = $enc_pusher;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -183,9 +184,25 @@ class CalendarEvent
             $object["participants"] = [Array("user_id_or_mail" => $current_user->getId())];
         }
 
-        $this->updateParticipants($event, $object["participants"], $sort_key_has_changed || $did_create);
-        $this->updateCalendars($event, $object["workspaces_calendars"], $sort_key_has_changed || $did_create);
-        $this->updateNotifications($event, $object["notifications"], $sort_key_has_changed || $did_create);
+        $this->updateParticipants($event, $object["participants"] ? $object["participants"] : Array(), $sort_key_has_changed || $did_create);
+        $this->updateCalendars($event, $object["workspaces_calendars"] ? $object["workspaces_calendars"] : Array(), $sort_key_has_changed || $did_create);
+
+        //After checking user id or mails, we verify event is somewere
+        if (count($event->getParticipants()) == 0 && count($event->getWorkspacesCalendars()) == 0) {
+            $this->doctrine->remove($event);
+            $this->doctrine->flush();
+            return false;
+        }
+
+        $this->updateNotifications($event, $object["notifications"] ? $object["notifications"] : Array(), $sort_key_has_changed || $did_create);
+
+
+        //Notify modification for participant users
+        foreach ($event->getParticipants() as $participant) {
+            if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
+                $this->enc_pusher->push("calendar_events/user/" . $participant["user_id_or_mail"], $evt);
+            }
+        }
 
         return $event->getAsArray();
     }
@@ -198,8 +215,7 @@ class CalendarEvent
 
         $updated_participants = $this->formatArrayInput($participants, ["user_id_or_mail"]);
         $current_participants = $event->getParticipants();
-        $event->setParticipants($updated_participants);
-        $this->doctrine->persist($event);
+        $updated_participants_fixed = $current_participants;
 
         $get_diff = $this->getArrayDiffUsingKeys($updated_participants, $current_participants, ["user_id_or_mail"]);
 
@@ -209,16 +225,54 @@ class CalendarEvent
                 if (!$this->inArrayUsingKeys($get_diff["del"], Array("user_id_or_mail" => $user->getUserIdOrMail()), ["user_id_or_mail"]) || $replace_all) {
                     //Remove old participants
                     $this->doctrine->remove($user);
+
+                    //Remove from array fixed
+                    foreach ($updated_participants_fixed as $i => $v) {
+                        if ($v["user_id_or_mail"] == $user->getUserIdOrMail()) {
+                            unset($updated_participants_fixed[$i]);
+                        }
+                    }
+
                 }
             }
         }
 
         foreach (($replace_all ? $updated_participants : $get_diff["add"]) as $participant) {
             foreach ($sort_key as $sort_date) {
+
+                $fixed_participant = $participant;
+
+                //Remove from array fixed
+                if (strpos("@", $participant["user_id_or_mail"]) !== false) {
+                    //Mail given
+                    $mail = trim(strtolower($participant["user_id_or_mail"]));
+                    $mail_entity = $this->doctrine->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail" => $mail));
+                    if ($mail_entity) {
+                        $fixed_participant["user_id_or_mail"] = $mail_entity->getUser()->getId();
+                        $modified = true;
+                    }
+                } else if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
+                    //User id given
+                    $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
+                    if (!$user) {
+                        continue;
+                    }
+                } else {
+                    continue;
+                }
+
+                $participant = $fixed_participant;
+
                 $user = new EventUser($participant["user_id_or_mail"], $event->getId(), $sort_date);
                 $this->doctrine->persist($user);
+
+                $updated_participants_fixed[] = $participant;
+
             }
         }
+
+        $event->setParticipants($updated_participants_fixed);
+        $this->doctrine->persist($event);
 
         $this->doctrine->flush();
     }

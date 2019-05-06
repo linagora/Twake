@@ -32,7 +32,7 @@ class CalendarController extends Controller
         $object = $request->request->get("object", null);
         $user = null;
         try {
-            $object = $this->get("app.calendar_events")->save($object, Array(), $user);
+            $object = $this->get("app.calendar.event")->save($object, Array(), $user);
         } catch (\Exception $e) {
             $object = false;
         }
@@ -48,7 +48,14 @@ class CalendarController extends Controller
                 "object_type" => "",
                 "object" => $object
             );
-//            $this->get("app.websockets")->push("calendar_events/", $event);
+            $workspace_calendars = $event["workspaces_calendars"];
+            $workspace_ids = [];
+            foreach ($workspace_calendars as $wc) {
+                if (!in_array($wc["workspace_id"], $workspace_ids)) {
+                    $workspace_ids[] = $wc["workspace_id"];
+                    $this->get("app.websockets")->push("calendar_events/" . $wc["workspace_id"], $event);
+                }
+            }
 
         }
 

@@ -99,7 +99,7 @@ class ManagerAdapter
     /** !Caution! : thin ttl will be used on the first insert in the next flush ! */
     public function useTTLOnFirstInsert($ttl)
     {
-        $this->manager->getConnection()->getWrappedConnection()->useTTLOnFirstInsert($ttl);
+        $this->getManager()->getConnection()->getWrappedConnection()->useTTLOnFirstInsert($ttl);
     }
 
     public function flush()
