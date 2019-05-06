@@ -7,3 +7,7 @@ services:
   globalsearch.message:
     class: WebsiteApi\GlobalSearchBundle\Services\Blocmessage
     arguments: ["@app.twake_doctrine"]
+
+  globalsearch.global:
+    class: WebsiteApi\GlobalSearchBundle\Services\Search
+    arguments: ["@app.twake_doctrine"]

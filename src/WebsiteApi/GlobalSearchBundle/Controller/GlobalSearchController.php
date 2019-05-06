@@ -19,4 +19,12 @@ class GlobalSearchController extends Controller
         return new Response("Hello !");
 
     }
+
+    public function ESGlobalAction(Request $request)
+    {
+        $this->get('globalsearch.global')->GlobalSearch();
+
+        return new Response("Hello !");
+
+    }
 }
