@@ -117,12 +117,25 @@ class CalendarEvent
             return false;
         }
 
+        //Notify modification for participant users
+        $evt = Array(
+            "client_id" => "system",
+            "action" => "remove",
+            "object_type" => "",
+            "front_id" => $event->getFrontId()
+        );
+        foreach ($event->getParticipants() as $participant) {
+            if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
+                $this->enc_pusher->push("calendar_events/user/" . $participant["user_id_or_mail"], $evt);
+            }
+        }
+
         $this->doctrine->remove($event);
         $this->doctrine->flush();
 
         $this->removeEventDependancesById($id);
 
-        return $object;
+        return $event->getAsArray();
     }
 
     public function save($object, $options, $current_user)
@@ -174,6 +187,7 @@ class CalendarEvent
             $sort_key_has_changed = true;
         }
 
+        $this->doctrine->persist($event);
         $this->doctrine->flush();
 
         if (count($object["workspaces_calendars"]) == 0 && count($object["participants"]) == 0) {
@@ -198,6 +212,12 @@ class CalendarEvent
 
 
         //Notify modification for participant users
+        $evt = Array(
+            "client_id" => "system",
+            "action" => "save",
+            "object_type" => "",
+            "object" => $event->getAsArray()
+        );
         foreach ($event->getParticipants() as $participant) {
             if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
                 $this->enc_pusher->push("calendar_events/user/" . $participant["user_id_or_mail"], $evt);
@@ -243,7 +263,7 @@ class CalendarEvent
                 $fixed_participant = $participant;
 
                 //Remove from array fixed
-                if (strpos("@", $participant["user_id_or_mail"]) !== false) {
+                if (filter_var($participant["user_id_or_mail"], FILTER_VALIDATE_EMAIL)) {
                     //Mail given
                     $mail = trim(strtolower($participant["user_id_or_mail"]));
                     $mail_entity = $this->doctrine->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail" => $mail));

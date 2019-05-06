@@ -18,7 +18,23 @@ class CalendarController extends Controller
 
         $object = $request->request->get("object", null);
         $user = null;
-        $this->get("app.calendar.event")->remove($object, Array(), $user );
+        $object = $this->get("app.calendar.event")->remove($object, Array(), $user);
+
+        $event = Array(
+            "client_id" => "system",
+            "action" => "remove",
+            "object_type" => "",
+            "front_id" => $object["front_id"]
+        );
+        $workspace_calendars = $object["workspaces_calendars"] ? $object["workspaces_calendars"] : [];
+        $workspace_ids = [];
+        foreach ($workspace_calendars as $wc) {
+            if (!in_array($wc["workspace_id"], $workspace_ids)) {
+                $workspace_ids[] = $wc["workspace_id"];
+                $this->get("app.websockets")->push("calendar_events/" . $wc["workspace_id"], $event);
+            }
+        }
+
         return new JsonResponse(Array("result" => $object));
     }
 
@@ -48,7 +64,7 @@ class CalendarController extends Controller
                 "object_type" => "",
                 "object" => $object
             );
-            $workspace_calendars = $event["workspaces_calendars"];
+            $workspace_calendars = $object["workspaces_calendars"] ? $object["workspaces_calendars"] : [];
             $workspace_ids = [];
             foreach ($workspace_calendars as $wc) {
                 if (!in_array($wc["workspace_id"], $workspace_ids)) {
