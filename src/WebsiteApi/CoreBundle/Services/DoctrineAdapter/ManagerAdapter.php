@@ -272,6 +272,9 @@ class ManagerAdapter
 
         $res = $res->getContent();
 
+//        var_dump($route);
+//        var_dump($res);
+
         $result = [];
         if ($res) {
             $res = json_decode($res, 1);
@@ -320,7 +323,6 @@ class ManagerAdapter
         }
 
         $res = $res->getContent();
-
         $result = [];
         if ($res) {
             $res = json_decode($res, 1);
