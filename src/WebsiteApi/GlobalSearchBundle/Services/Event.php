@@ -111,7 +111,7 @@ END;
 
     }
 
-    public function SearchFile($termslist){
+    public function SearchFile($termslist){ //rajouter le must sur les workspace id
         $terms = Array();
         foreach($termslist as $term){
             $terms[] = Array(

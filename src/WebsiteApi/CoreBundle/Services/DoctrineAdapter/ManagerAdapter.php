@@ -278,8 +278,8 @@ class ManagerAdapter
 
         $res = $res->getContent();
 
-        var_dump($route);
-        var_dump($res);
+//        var_dump($route);
+//        var_dump($res);
 
         $result = [];
         if ($res) {

@@ -112,7 +112,7 @@ class Blocmessage
                         $id_message[]=$lastbloc->getMessages()[$compt];
             }
             $compt++;
-            var_dump($compt);
+            //var_dump($compt);
         }
 
 
@@ -131,7 +131,7 @@ class Blocmessage
                 $compt++;
             }
         }
-        var_dump($id_message);
+        //var_dump($id_message);
         $messages = Array(); //content all the message object
         foreach($id_message as $id) {
             $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
@@ -187,7 +187,7 @@ class Blocmessage
 
         $this->doctrine->persist($bloc);
         $this->doctrine->flush();
-        var_dump($bloc);
+        //var_dump($bloc);
         if($bloc->getLock() == true){
             $this->doctrine->es_put($bloc,$bloc->getEsType());
 
