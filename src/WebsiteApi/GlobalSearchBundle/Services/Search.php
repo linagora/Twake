@@ -23,9 +23,11 @@ class Search
     public function GlobalSearch(){
 
         $words = Array("appli","données");
-        $globalresult = Array();
+//        $globalresult = Array();
 //        $messages = $this->blocservice->SearchMessage($words);
-//        $files = $this->fileservice->SearchFile($words);
+//        var_dump($messages);
+        $files = $this->fileservice->SearchFile($words);
+        var_dump($files);
     }
 
 }

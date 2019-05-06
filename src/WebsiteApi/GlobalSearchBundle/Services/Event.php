@@ -107,20 +107,7 @@ END;
 
         $this->doctrine->flush();
 
-//        $options = Array(
-//            "index" => "file",
-//            "data" => Array(
-//                "id" => $file->getId(),
-//                "type"=> $file->getExtension(),
-//                "name" => $file->getName(),
-//                "creation_date"=> $file->getAdded(),
-//                "keywords"=> $keywords_score
-//            )
-//        );
-
         //var_dump(json_encode($options,JSON_PRETTY_PRINT));
-
-        //$this->doctrine->es_put($options,"file"); //ajouter es type dans drivefile
 
     }
 
@@ -131,7 +118,7 @@ END;
                 "bool" => Array(
                     "filter" => Array(
                         "regexp" => Array(
-                            "content" => ".*".$term.".*"
+                            "keywords.word" => ".*".$term.".*"
                         )
                     )
                 )
@@ -151,8 +138,8 @@ END;
         );
 
         $options = Array(
-            "repository" => "TwakeDrivefileBundle:DrilveFile",
-            "index" => "file",
+            "repository" => "TwakeDriveBundle:DriveFile",
+            "index" => "drive_file",
             "query" => Array(
                 "bool" => Array(
                     "should" => Array(
@@ -176,8 +163,9 @@ END;
             )
         );
 
+        //var_dump(json_encode($options));
         $files = $this->doctrine->es_search($options);
-        //var_dump($files);
+        return $files;
     }
 
     public function update_keyword($keywords,$titre){
@@ -191,11 +179,11 @@ END;
     public function TestSearch()
     {
 
-        $this->IndexFile("civ.pdf");
+        //$this->IndexFile("mem.pdf");
         //$file= $this->doctrine->getRepository("TwakeDriveBundle:Message")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
 
-//        $words=Array("appli");
-//        $this->SearchFile($words);
+        $words=Array("appli");
+        $this->SearchFile($words);
     }
 
 }
