@@ -131,13 +131,14 @@ class Blocmessage
                 $compt++;
             }
         }
-        //var_dump($id_message);
+        var_dump($id_message);
         $messages = Array(); //content all the message object
         foreach($id_message as $id) {
             $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
             $messages[] = $message;
            }
-        var_dump($messages);
+
+        return $messages;
 
     }
 

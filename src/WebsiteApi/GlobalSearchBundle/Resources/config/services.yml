@@ -10,4 +10,4 @@ services:
 
   globalsearch.global:
     class: WebsiteApi\GlobalSearchBundle\Services\Search
-    arguments: ["@app.twake_doctrine"]
+    arguments: ["@app.twake_doctrine", "@globalsearch.message", "globalsearch.event"]

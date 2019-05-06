@@ -217,11 +217,12 @@ class ManagerAdapter
         }
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
+
         try {
-//            var_dump($route);
-//            var_dump(json_encode($data));
-            error_log("update es : " . $route);
-            error_log(json_encode($data));
+            var_dump($route);
+            var_dump(json_encode($data));
+//            error_log("update es : " . $route);
+//            error_log(json_encode($data));
             $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         } catch (\Exception $e) {
             error_log("Unable to put on ElasticSearch.");
@@ -263,7 +264,12 @@ class ManagerAdapter
         $route .= "_search";
 
         try {
-            $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            if( isset($options["sort"])){
+                $res = $this->circle->post($route, json_encode(Array("query" => $options["query"],"sort"=>$options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            }
+            else{
+                $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            }
 
         } catch (\Exception $e) {
             error_log("Unable to post on ElasticSearch.");
@@ -299,58 +305,58 @@ class ManagerAdapter
 
     }
 
-    public function es_search_perso($options = Array(), $index = null, $server = "twake")
-    {
-
-        if (isset($options["index"]) && !$type) {
-            $index = $options["index"];
-
-        }
-
-        $repository = null;
-        if (isset($options["repository"])) {
-            $repository = $this->getRepository($options["repository"]);
-        }
-
-        $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
-        $route .= "_search";
-        try {
-            //$res = $this->circle->post($route, json_encode(Array("query" => $options["query"],"sort"=>$options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
-            $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
-
-        } catch (\Exception $e) {
-            error_log("Unable to post on ElasticSearch.");
-        }
-
-        $res = $res->getContent();
-        $result = [];
-        if ($res) {
-            $res = json_decode($res, 1);
-
-            if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
-                $res = $res["hits"]["hits"];
-                foreach ($res as $object_json) {
-                    if ($repository) {
-                        $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
-                    } else {
-                        $obj = $object_json["_id"];
-                    }
-                    if ($obj) {
-                        $result[] = $obj;
-                    }
-                }
-            }
-
-        }
-       return $result;
-
-    }
-
-    public function es_put_perso($options = Array(), $index=null, $server = "twake")
-    {
-        if (isset($options["index"]) && !$type) {
-            $index = $options["index"];
-        }
+//    public function es_search_perso($options = Array(), $index = null, $server = "twake")
+//    {
+//
+//        if (isset($options["index"]) && !$type) {
+//            $index = $options["index"];
+//
+//        }
+//
+//        $repository = null;
+//        if (isset($options["repository"])) {
+//            $repository = $this->getRepository($options["repository"]);
+//        }
+//
+//        $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
+//        $route .= "_search";
+//        try {
+//            //$res = $this->circle->post($route, json_encode(Array("query" => $options["query"],"sort"=>$options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+//            $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+//
+//        } catch (\Exception $e) {
+//            error_log("Unable to post on ElasticSearch.");
+//        }
+//
+//        $res = $res->getContent();
+//        $result = [];
+//        if ($res) {
+//            $res = json_decode($res, 1);
+//
+//            if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
+//                $res = $res["hits"]["hits"];
+//                foreach ($res as $object_json) {
+//                    if ($repository) {
+//                        $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
+//                    } else {
+//                        $obj = $object_json["_id"];
+//                    }
+//                    if ($obj) {
+//                        $result[] = $obj;
+//                    }
+//                }
+//            }
+//
+//        }
+//       return $result;
+//
+//    }
+//
+//    public function es_put_perso($options = Array(), $index=null, $server = "twake")
+//    {
+//        if (isset($options["index"]) && !$type) {
+//            $index = $options["index"];
+//        }
 //        if (is_array($entity)) {
 //            $id = $entity["id"];
 //            $data = $entity["data"];
@@ -368,19 +374,19 @@ class ManagerAdapter
 //            }
 //        }
 //
-
-        $data = $options["data"];
-        $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $options["data"]["id"];
-        error_log(print_r($route,true));
-        error_log(print_r($data,true));
-
-        try {
-            $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
-        } catch (\Exception $e) {
-            error_log("Unable to put on ElasticSearch.");
-        }
-
-    }
+//
+//        $data = $options["data"];
+//        $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $options["data"]["id"];
+//        error_log(print_r($route,true));
+//        error_log(print_r($data,true));
+//
+//        try {
+//            $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+//        } catch (\Exception $e) {
+//            error_log("Unable to put on ElasticSearch.");
+//        }
+//
+//    }
 
 
 }
