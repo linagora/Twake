@@ -882,4 +882,40 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
+    public function search($words){
+
+        $terms = Array();
+        foreach ($words as $word){
+            $terms[] = Array(
+                "bool" => Array(
+                    "filter" => Array(
+                        "regexp" => Array(
+                            "name" => ".*".$word.".*"
+                        )
+                    )
+                )
+            );
+        }
+
+
+        $options = Array(
+            "repository" => "TwakeWorkspacesBundle:Workspace",
+            "index" => "workspace",
+            "query" => Array(
+                "bool" => Array(
+                    "should" => $terms
+                )
+            )
+        );
+
+        $workspaces = $this->doctrine->es_search($options);
+        $result = [];
+        foreach ($workspaces as $workspace) {
+            $result[] = $workspace->getAsArray();
+        }
+
+        return $result;
+
+    }
+
 }

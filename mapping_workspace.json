@@ -1,0 +1,18 @@
+{
+    "_source": {
+        "includes": [
+            "id"
+        ],
+        "excludes": [
+            "name"
+        ]
+    },
+    "properties": {
+        "id": {
+            "type": "keyword"
+        },
+        "name": {
+            "type": "keyword"
+        }      
+    }
+}

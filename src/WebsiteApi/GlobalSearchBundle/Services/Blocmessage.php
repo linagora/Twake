@@ -15,7 +15,7 @@ class Blocmessage
         $this->doctrine = $doctrine;
     }
 
-    public function IndexBloc($message,$workspace_id,$channel_id)
+    public function index($message,$workspace_id,$channel_id)
     {
         $message_obj = new Message($channel_id, "");
         $this->doctrine->persist($message_obj);
@@ -56,7 +56,7 @@ class Blocmessage
         var_dump($lastbloc);
     }
 
-    public function SearchMessage($words){
+    public function search($words){
 
 
 //        $must_es = Array(
@@ -135,7 +135,7 @@ class Blocmessage
         $messages = Array(); //content all the message object
         foreach($id_message as $id) {
             $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
-            $messages[] = $message;
+            $messages[] = $message->getAsArray();
            }
 
         return $messages;
@@ -249,7 +249,7 @@ class Blocmessage
 
 
         $words = Array("commence","données");
-        $this->SearchMessage($words);
+        $this->search($words);
 
         //$message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
 

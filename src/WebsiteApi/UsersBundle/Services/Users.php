@@ -25,23 +25,25 @@ class Users
         $this->em = $em;
     }
 
-    public function search($query, $options = Array())
+    public function search($words, $options = Array())
     {
 
         $language_preference = isset($options["language_preference"]) ? $options["language_preference"] : false;
 
+        $terms = Array();
 
+        foreach ($words as $word){
+            $terms[] = Array("match" => Array("firstname" => $word));
+            $terms[] =  Array("match" => Array("lastname" => $word));
+            $terms[] = Array("prefix" => Array("username" => $word));
+        }
 
         $options = Array(
             "repository" => "TwakeUsersBundle:User",
             "index" => "users",
             "query" => Array(
                 "bool" => Array(
-                    "should" => Array(
-                        Array("match" => Array("firstname" => $query)),
-                        Array("match" => Array("lastname" => $query)),
-                        Array("prefix" => Array("username" => $query))
-                    ),
+                    "should" => $terms,
                     "minimum_should_match" => 1,
                     "filter" => Array(
                         "term" => Array(
@@ -51,6 +53,8 @@ class Users
                 )
             )
         );
+
+        //var_dump(json_encode($options));
 
         /*if ($language_preference) {
             $options["query"]["bool"]["should"][] = Array("match" => Array("language" => $language_preference));
