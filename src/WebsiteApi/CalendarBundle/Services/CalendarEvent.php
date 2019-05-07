@@ -117,6 +117,25 @@ class CalendarEvent
             return false;
         }
 
+        $participants = $event->getParticipants();
+
+        //Quit event
+        if ($event->getOwner() && $event->getOwner() != $current_user->getId()) {
+            $list = [];
+            foreach ($event->getParticipants() as $part) {
+                if ($part["user_id_or_mail"] != $current_user->getId()) {
+                    $list[] = $part;
+                }
+            }
+            $this->updateParticipants($event, $list, false);
+        } //Or delete event
+        else {
+            $this->doctrine->remove($event);
+            $this->doctrine->flush();
+
+            $this->removeEventDependancesById($id);
+        }
+
         //Notify modification for participant users
         $evt = Array(
             "client_id" => "system",
@@ -124,16 +143,11 @@ class CalendarEvent
             "object_type" => "",
             "front_id" => $event->getFrontId()
         );
-        foreach ($event->getParticipants() as $participant) {
+        foreach ($participants as $participant) {
             if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
                 $this->enc_pusher->push("calendar_events/user/" . $participant["user_id_or_mail"], $evt);
             }
         }
-
-        $this->doctrine->remove($event);
-        $this->doctrine->flush();
-
-        $this->removeEventDependancesById($id);
 
         return $event->getAsArray();
     }
@@ -190,16 +204,38 @@ class CalendarEvent
         $this->doctrine->persist($event);
         $this->doctrine->flush();
 
-        if (count($object["workspaces_calendars"]) == 0 && count($object["participants"]) == 0) {
-            if (!$current_user) {
-                return false; //No calendar and no user
-            }
-            //Add current user at least
-            $object["participants"] = [Array("user_id_or_mail" => $current_user->getId())];
-        }
+        if (isset($object["participants"])) {
 
-        $this->updateParticipants($event, $object["participants"] ? $object["participants"] : Array(), $sort_key_has_changed || $did_create);
-        $this->updateCalendars($event, $object["workspaces_calendars"] ? $object["workspaces_calendars"] : Array(), $sort_key_has_changed || $did_create);
+            if (count($object["workspaces_calendars"]) == 0 && count($object["participants"]) == 0 && !$current_user) {
+                return false;
+            }
+            if (count($object["workspaces_calendars"]) == 0 && $current_user) {
+                if (!is_array($object["participants"])) {
+                    $object["participants"] = [];
+                }
+                $object["participants"] = array_merge([Array("user_id_or_mail" => $current_user->getId())], $object["participants"]);
+            }
+            if (count($object["participants"]) > 0 && count($object["workspaces_calendars"]) == 0) {
+                if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $object["participants"][0]["user_id_or_mail"])) {
+                    $event->setOwner($current_user ? $current_user->getId() : $object["participants"][0]["user_id_or_mail"]);
+                } else {
+                    //No user (except mails) and no workspaces
+                    $this->doctrine->remove($event);
+                    $this->doctrine->flush();
+                    return false;
+                }
+            }
+
+            $this->updateParticipants($event, $object["participants"] ? $object["participants"] : Array(), $sort_key_has_changed || $did_create);
+        }
+        if (isset($object["workspaces_calendars"])) {
+
+            if (count($object["workspaces_calendars"]) > 0) {
+                $event->setOwner("");
+            }
+
+            $this->updateCalendars($event, $object["workspaces_calendars"] ? $object["workspaces_calendars"] : Array(), $sort_key_has_changed || $did_create);
+        }
 
         //After checking user id or mails, we verify event is somewere
         if (count($event->getParticipants()) == 0 && count($event->getWorkspacesCalendars()) == 0) {
@@ -208,7 +244,9 @@ class CalendarEvent
             return false;
         }
 
-        $this->updateNotifications($event, $object["notifications"] ? $object["notifications"] : Array(), $sort_key_has_changed || $did_create);
+        if (isset($object["notifications"])) {
+            $this->updateNotifications($event, $object["notifications"] ? $object["notifications"] : Array(), $sort_key_has_changed || $did_create);
+        }
 
 
         //Notify modification for participant users
