@@ -73,6 +73,11 @@ class Event extends FrontObject
     private $available = false;
 
     /**
+     * @ORM\Column(name="owner", type="twake_text")
+     */
+    private $owner;
+
+    /**
      * @ORM\Column(name="participants", type="twake_text")
      */
     private $participants = "{}";
@@ -279,6 +284,22 @@ class Event extends FrontObject
     /**
      * @return mixed
      */
+    public function getOwner()
+    {
+        return $this->owner;
+    }
+
+    /**
+     * @param mixed $owner
+     */
+    public function setOwner($owner)
+    {
+        $this->owner = $owner;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getParticipants()
     {
         return json_decode($this->participants, true);
@@ -360,11 +381,13 @@ class Event extends FrontObject
             "to" => $this->getTo(),
             "all_day" => $this->getAllDay(),
             "repetition_definition" => $this->getRepetitionDefinition(),
+            "type" => $this->getType(),
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
             "location" => $this->getLocation(),
             "private" => $this->getPrivate(),
             "available" => $this->getAvailable(),
+            "owner" => $this->getOwner(),
             "participants" => $this->getParticipants(),
             "workspaces_calendars" => $this->getWorkspacesCalendars(),
             "notifications" => $this->getNotifications(),
