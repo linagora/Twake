@@ -30,6 +30,8 @@ class Users
 
         $language_preference = isset($options["language_preference"]) ? $options["language_preference"] : false;
 
+
+
         $options = Array(
             "repository" => "TwakeUsersBundle:User",
             "index" => "users",
@@ -40,6 +42,7 @@ class Users
                         Array("match" => Array("lastname" => $query)),
                         Array("prefix" => Array("username" => $query))
                     ),
+                    "minimum_should_match" => 1,
                     "filter" => Array(
                         "term" => Array(
                             "banned" => false

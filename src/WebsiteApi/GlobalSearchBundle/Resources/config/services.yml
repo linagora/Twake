@@ -8,6 +8,14 @@ services:
     class: WebsiteApi\GlobalSearchBundle\Services\Blocmessage
     arguments: ["@app.twake_doctrine"]
 
+  globalsearch.user:
+    class: WebsiteApi\UsersBundle\Services\Users
+    arguments: ["@app.twake_doctrine"]
+
+    globalsearch.application:
+      class: WebsiteApi\MarketBundle\Services\MarketApplication
+      arguments: ["@app.twake_doctrine", "@app.group_managers","@app.pricing_plan"]
+
   globalsearch.global:
     class: WebsiteApi\GlobalSearchBundle\Services\Search
-    arguments: ["@app.twake_doctrine", "@globalsearch.message", "globalsearch.event"]
+    arguments: ["@app.twake_doctrine", "@globalsearch.message", "@globalsearch.event", "@globalsearch.user", "@globalsearch.application"]
