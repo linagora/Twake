@@ -4,7 +4,7 @@ namespace WebsiteApi\GlobalSearchBundle\Services;
 
 use WebsiteApi\DriveBundle\Entity\DriveFile;
 
-class Event
+class ESFile
 {
     private $doctrine;
 
