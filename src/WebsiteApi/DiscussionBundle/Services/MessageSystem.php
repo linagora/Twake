@@ -397,6 +397,9 @@ class MessageSystem
                 $this->message_notifications_center_service->newElement($channel, $application, $user, $this->mdToText($message->getContent()), $message->getId());
             }
 
+
+            //Notify connectors
+
             if ($channel->getAppId()) {
                 $apps_ids = [$channel->getAppId()];
             } else {

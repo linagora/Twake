@@ -164,6 +164,12 @@ class WorkspacesApps implements WorkspacesAppsInterface
             if (in_array("workspace", $app->getPrivileges())) {
                 $this->application_api->addResource($app->getId(), $workspace->getId(), "workspace", $workspace->getId(), $current_user_id);
             }
+            if (in_array("workspace_calendar", $app->getPrivileges())) {
+                $this->application_api->addResource($app->getId(), $workspace->getId(), "workspace_calendar", $workspace->getId(), $current_user_id);
+            }
+            if (in_array("workspace_drive", $app->getPrivileges())) {
+                $this->application_api->addResource($app->getId(), $workspace->getId(), "workspace_drive", $workspace->getId(), $current_user_id);
+            }
 
             $workspace_app = $groupapp->getAsArray();
             $workspace_app["workspace_id"] = $workspace->getId();

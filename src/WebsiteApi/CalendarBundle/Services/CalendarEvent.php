@@ -10,10 +10,11 @@ use WebsiteApi\CalendarBundle\Entity\EventUser;
 class CalendarEvent
 {
 
-    function __construct($entity_manager, $enc_pusher)
+    function __construct($entity_manager, $enc_pusher, $application_api)
     {
         $this->doctrine = $entity_manager;
         $this->enc_pusher = $enc_pusher;
+        $this->applications_api = $application_api;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -128,21 +129,30 @@ class CalendarEvent
                 }
             }
             $this->updateParticipants($event, $list, false);
+
+            $evt = Array(
+                "client_id" => "system",
+                "action" => "save",
+                "object_type" => "",
+                "object" => $event->getAsArray()
+            );
+
         } //Or delete event
         else {
             $this->doctrine->remove($event);
             $this->doctrine->flush();
 
             $this->removeEventDependancesById($id);
+
+            $evt = Array(
+                "client_id" => "system",
+                "action" => "remove",
+                "object_type" => "",
+                "front_id" => $event->getFrontId()
+            );
         }
 
         //Notify modification for participant users
-        $evt = Array(
-            "client_id" => "system",
-            "action" => "remove",
-            "object_type" => "",
-            "front_id" => $event->getFrontId()
-        );
         foreach ($participants as $participant) {
             if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
                 $this->enc_pusher->push("calendar_events/user/" . $participant["user_id_or_mail"], $evt);
@@ -159,7 +169,7 @@ class CalendarEvent
             return false;
         }
 
-        if (isset($object["id"])) {
+        if (isset($object["id"]) && $object["id"]) {
             $event = $this->doctrine->getRepository("TwakeCalendarBundle:Event")->find($object["id"]);
             if (!$event) {
                 return false;
@@ -204,7 +214,8 @@ class CalendarEvent
         $this->doctrine->persist($event);
         $this->doctrine->flush();
 
-        if (isset($object["participants"])) {
+        $old_participants = $event->getParticipants();
+        if (isset($object["participants"]) || $did_create) {
 
             if (count($object["workspaces_calendars"]) == 0 && count($object["participants"]) == 0 && !$current_user) {
                 return false;
@@ -256,11 +267,46 @@ class CalendarEvent
             "object_type" => "",
             "object" => $event->getAsArray()
         );
-        foreach ($event->getParticipants() as $participant) {
-            if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
+        $done = [];
+        foreach (array_merge($event->getParticipants(), $old_participants) as $participant) {
+            if (!in_array($participant["user_id_or_mail"], $done) && preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
+                $done[] = $participant["user_id_or_mail"];
                 $this->enc_pusher->push("calendar_events/user/" . $participant["user_id_or_mail"], $evt);
             }
         }
+
+
+        //Notify connectors
+        $resources = [];
+        $done = [];
+        foreach ($event->getWorkspacesCalendars() as $calendar) {
+            $workspace_id = $calendar["workspace_id"];
+            if (!in_array($workspace_id, $done)) {
+                $done[] = $workspace_id;
+                $this->applications_api->getResources($workspace_id, "workspace_calendar", $workspace_id);
+            }
+        }
+        $apps_ids = [];
+        foreach ($resources as $resource) {
+            if (in_array("new_event", $resource->getApplicationHooks())) {
+                $apps_ids[] = $resource->getApplicationId();
+            }
+        }
+        if (count($apps_ids) > 0) {
+            foreach ($apps_ids as $app_id) {
+                if ($app_id) {
+                    $data = Array(
+                        "event" => $event->getAsArray()
+                    );
+                    if ($did_create) {
+                        $this->applications_api->notifyApp($app_id, "hook", "new_event", $data);
+                    } else {
+                        $this->applications_api->notifyApp($app_id, "hook", "edit_event", $data);
+                    }
+                }
+            }
+        }
+
 
         return $event->getAsArray();
     }
@@ -328,6 +374,12 @@ class CalendarEvent
 
             }
         }
+
+        $_updated_participants_fixed = [];
+        foreach ($updated_participants_fixed as $v) {
+            $_updated_participants_fixed[] = $v;
+        }
+        $updated_participants_fixed = $_updated_participants_fixed;
 
         $event->setParticipants($updated_participants_fixed);
         $this->doctrine->persist($event);

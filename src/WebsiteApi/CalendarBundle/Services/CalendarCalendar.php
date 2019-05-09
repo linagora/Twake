@@ -8,9 +8,10 @@ use WebsiteApi\CalendarBundle\Entity\Calendar;
 class CalendarCalendar
 {
 
-    function __construct($entity_manager)
+    function __construct($entity_manager, $application_api)
     {
         $this->doctrine = $entity_manager;
+        $this->applications_api = $application_api;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -70,12 +71,14 @@ class CalendarCalendar
             return false;
         }
 
+        $did_create = false;
         if (isset($object["id"])) {
             $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($object["id"]);
             if (!$calendar) {
                 return false;
             }
         } else {
+            $did_create = true;
             $calendar = new Calendar($object["workspace_id"], "", "");
             $calendar->setFrontId($object["front_id"]);
         }
@@ -84,6 +87,30 @@ class CalendarCalendar
         $calendar->setColor($object["color"]);
         $calendar->setAutoParticipants($object["auto_participants"]);
 
+
+        //Notify connectors
+        $workspace_id = $calendar->getWorkspaceId();
+        $resources = $this->applications_api->getResources($workspace_id, "workspace_calendar", $workspace_id);
+        $apps_ids = [];
+        foreach ($resources as $resource) {
+            if (in_array("new_calendar", $resource->getApplicationHooks())) {
+                $apps_ids[] = $resource->getApplicationId();
+            }
+        }
+        if (count($apps_ids) > 0) {
+            foreach ($apps_ids as $app_id) {
+                if ($app_id) {
+                    $data = Array(
+                        "calendar" => $calendar->getAsArray()
+                    );
+                    if ($did_create) {
+                        $this->applications_api->notifyApp($app_id, "hook", "new_calendar", $data);
+                    } else {
+                        $this->applications_api->notifyApp($app_id, "hook", "edit_calendar", $data);
+                    }
+                }
+            }
+        }
 
         return $calendar->getAsArray();
 

@@ -2,8 +2,8 @@ services:
 
     app.calendar.event:
         class: WebsiteApi\CalendarBundle\Services\CalendarEvent
-        arguments: ["@app.twake_doctrine", "@app.websockets"]
+        arguments: ["@app.twake_doctrine", "@app.websockets", "@app.applications_api"]
 
     app.calendar.calendar:
         class: WebsiteApi\CalendarBundle\Services\CalendarCalendar
-        arguments: ["@app.twake_doctrine"]
+        arguments: ["@app.twake_doctrine", "@app.applications_api"]
