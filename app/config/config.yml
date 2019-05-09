@@ -15,6 +15,7 @@ imports:
     - { resource: "@TwakePaymentsBundle/Resources/config/services.yml" }
     - { resource: "@TwakeUploadBundle/Resources/config/services.yml" }
     - { resource: "@TwakeGlobalSearchBundle/Resources/config/services.yml" }
+    - { resource: "@TwakeDriveUploadBundle/Resources/config/services.yml" }
 #[REMOVE_ONPREMISE]
     - { resource: "@AdministrationAuthenticationBundle/Resources/config/services.yml" }
 #[/REMOVE_ONPREMISE]

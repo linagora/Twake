@@ -1,6 +1,6 @@
 <?php
 
-namespace WebsiteApi\GlobalSearchBundle\Services;
+namespace WebsiteApi\DriveUploadBundle\Services;
 
 class UploadFile
 {
