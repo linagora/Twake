@@ -1,0 +1,4 @@
+services:
+
+  driveupload.upload:
+    class: WebsiteApi\DriveUploadBundle\Services\UploadFile
