@@ -1,0 +1,22 @@
+{
+    "_source": {
+        "includes": [
+            "id"
+        ],
+        "excludes": [
+            "workspace_id",
+            "name"
+        ]
+    },
+    "properties": {
+        "id": {
+            "type": "keyword"
+        },
+        "workspace_id": {
+            "type": "keyword"
+        },
+        "name": {
+            "type": "keyword"
+        }      
+    }
+}

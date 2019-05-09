@@ -7,6 +7,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\Date;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\CoreBundle\Services\DoctrineAdapter\FakeCassandraTimeuuid;
+use WebsiteApi\CoreBundle\Entity\SearchableObject;
 
 /**
  * Channel
@@ -14,18 +15,16 @@ use WebsiteApi\CoreBundle\Services\DoctrineAdapter\FakeCassandraTimeuuid;
  * @ORM\Table(name="channel",options={"engine":"MyISAM", "scylladb_keys": {{"direct":"ASC", "original_workspace_id":"ASC", "id":"ASC"}, {"id":"ASC"}, {"identifier":"ASC"}, {"app_bot_identifier": "ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\ChannelsBundle\Repository\ChannelRepository")
  */
-class Channel
+class Channel extends SearchableObject
 {
+
+    protected $es_type = "channel";
+
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
  */
     private $id;
-
-    /**
-     * @ORM\Column(type="string", length=80)
-     */
-    private $front_id;
 
     /**
      * @ORM\Column(type="string", length=400, nullable=true)
@@ -144,6 +143,18 @@ class Channel
     {
         $this->front_id = sha1(random_bytes(40));
         $this->last_activity = new \DateTime();
+    }
+
+    public function getIndexationArray()
+    {
+        $return = Array(
+                "id" => $this->getId()."",
+                "workspace_id"=> $this->getOriginalWorkspaceId(),
+                "name" => $this->getName()
+
+            );
+
+        return $return;
     }
 
     public function getAsArray()

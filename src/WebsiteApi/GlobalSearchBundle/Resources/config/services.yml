@@ -1,7 +1,7 @@
 services:
 
-  globalsearch.event:
-    class: WebsiteApi\GlobalSearchBundle\Services\Event
+  globalsearch.file:
+    class: WebsiteApi\GlobalSearchBundle\Services\ESFile
     arguments: ["@app.twake_doctrine"]
 
   globalsearch.message:
@@ -12,10 +12,18 @@ services:
     class: WebsiteApi\UsersBundle\Services\Users
     arguments: ["@app.twake_doctrine"]
 
-    globalsearch.application:
-      class: WebsiteApi\MarketBundle\Services\MarketApplication
-      arguments: ["@app.twake_doctrine", "@app.group_managers","@app.pricing_plan"]
+  globalsearch.workspace:
+    class: WebsiteApi\WorkspacesBundle\Services\Workspaces
+    arguments: ["@app.twake_doctrine", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.groups", "@app.pricing_plan","@app.string_cleaner","@app.pusher",'@app.workspaces_activities','@app.translate','@app.calendar.calendar','@app.calendar.event','@app.drive.adapter_selector', "@app.workspaces_apps"]
 
-  globalsearch.global:
-    class: WebsiteApi\GlobalSearchBundle\Services\Search
-    arguments: ["@app.twake_doctrine", "@globalsearch.message", "@globalsearch.event", "@globalsearch.user", "@globalsearch.application"]
+  globalsearch.channel:
+    class: WebsiteApi\ChannelsBundle\Services\ChannelsSystem
+    arguments: ["@app.twake_doctrine", "@app.messages", "@app.websockets", "@app.applications_api"]
+
+  globalsearch.globaluwc:
+    class: WebsiteApi\GlobalSearchBundle\Services\GlobalSearchUWC
+    arguments: ["@app.twake_doctrine", "@globalsearch.user", "@globalsearch.workspace", "@globalsearch.channel"]
+
+  globalsearch.globalmf:
+    class: WebsiteApi\GlobalSearchBundle\Services\GlobalSearchMF
+    arguments: ["@app.twake_doctrine", "@globalsearch.message", "@globalsearch.file"]
