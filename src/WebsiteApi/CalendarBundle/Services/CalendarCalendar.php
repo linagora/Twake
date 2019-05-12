@@ -51,7 +51,7 @@ class CalendarCalendar
             return false;
         }
 
-        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($id);
+        $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id" => $id));
         if (!$calendar) {
             return false;
         }
@@ -73,7 +73,7 @@ class CalendarCalendar
 
         $did_create = false;
         if (isset($object["id"])) {
-            $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->find($object["id"]);
+            $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id" => $object["id"]));
             if (!$calendar) {
                 return false;
             }
