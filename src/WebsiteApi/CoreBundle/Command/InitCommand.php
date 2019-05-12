@@ -145,7 +145,8 @@ class InitCommand extends ContainerAwareCommand
         $app->setPublic(true);
         $app->setIsAvailableToPublic(true);
         $app->setTwakeTeamValidation(true);
-        $app->setDisplayConfiguration(json_decode('{"messages_module":{"in_plus":true},"channel_tab":true,"app":true}', true));
+        $app->setDisplayConfiguration(json_decode(/*'{"messages_module":{"in_plus":true},"channel_tab":true,*/
+            '{"app":true}', true));
         $app->setDefault(true);
         $manager->persist($app);
 

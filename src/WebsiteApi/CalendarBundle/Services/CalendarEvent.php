@@ -6,6 +6,7 @@ namespace WebsiteApi\CalendarBundle\Services;
 use WebsiteApi\CalendarBundle\Entity\Event;
 use WebsiteApi\CalendarBundle\Entity\EventNotification;
 use WebsiteApi\CalendarBundle\Entity\EventUser;
+use WebsiteApi\CalendarBundle\Entity\EventCalendar;
 
 class CalendarEvent
 {
