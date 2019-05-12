@@ -18,6 +18,11 @@ class DriveController extends Controller
 
         $object = $request->request->get("object", null);
         $file_uploaded = $request->request->get("file_url", null);
+
+        if (!$file_uploaded) {
+            $file_uploaded = $_FILES["file"];
+        }
+
         $user = null;
         if (isset($object["sender"])) {
             $user = $this->get("app.users")->getById($object["sender"], true);

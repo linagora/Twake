@@ -86,7 +86,8 @@ class CalendarCalendar
         $calendar->setTitle($object["title"]);
         $calendar->setColor($object["color"]);
         $calendar->setAutoParticipants($object["auto_participants"]);
-
+        $this->doctrine->persist($calendar);
+        $this->doctrine->flush();
 
         //Notify connectors
         $workspace_id = $calendar->getWorkspaceId();
