@@ -38,8 +38,8 @@ class CalendarEvent
     public function get($options, $current_user)
     {
 
-        $after_ts = $options["after_ts"];
-        $before_ts = $options["before_ts"];
+        $after_ts = floor(($options["after_ts"] ? $options["after_ts"] : 0) / (60 * 60 * 24 * 7));
+        $before_ts = floor(($options["before_ts"] ? $options["before_ts"] : 0) / (60 * 60 * 24 * 7));
         $mode = $options["mode"]; //User or workspace
 
         if (!$this->hasAccess($options, $current_user)) {
