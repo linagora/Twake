@@ -89,6 +89,8 @@ class CalendarCalendar
         $this->doctrine->persist($calendar);
         $this->doctrine->flush();
 
+        $this->updateConnectors($calendar, $object["connectors"], $current_user->getId());
+
         //Notify connectors
         $workspace_id = $calendar->getWorkspaceId();
         $resources = $this->applications_api->getResources($workspace_id, "workspace_calendar", $workspace_id);
@@ -114,6 +116,36 @@ class CalendarCalendar
         }
 
         return $calendar->getAsArray();
+
+    }
+
+    private function updateConnectors($calendar_entity, $connectors_ids, $current_user_id = null)
+    {
+
+        $current_connectors = $calendar_entity->getConnectors();
+        $current_connectors = $current_connectors ? $current_connectors : [];
+
+        $did_something = false;
+
+        foreach ($connectors_ids as $connector_id) {
+            if (!in_array($connector_id, $current_connectors)) {
+                $this->applications_api->addResource($connector_id, $calendar_entity->getWorkspaceId(), "calendar", $calendar_entity->getId(), $current_user_id);
+                $did_something = true;
+            }
+        }
+
+        foreach ($current_connectors as $current_connector_id) {
+            if (!in_array($current_connector_id, $connectors_ids)) {
+                $this->applications_api->removeResource($connector_id, $calendar_entity->getWorkspaceId(), "calendar", $calendar_entity->getId(), $current_user_id);
+                $did_something = true;
+            }
+        }
+
+        if ($did_something) {
+            $calendar_entity->setConnectors($connectors_ids);
+            $this->entity_manager->persist($calendar_entity);
+            $this->entity_manager->flush();
+        }
 
     }
 }

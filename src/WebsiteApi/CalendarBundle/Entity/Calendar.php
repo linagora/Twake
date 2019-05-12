@@ -44,6 +44,11 @@ class Calendar extends FrontObject
      */
     private $auto_participants = "[]";
 
+    /**
+     * @ORM\Column(name="connectors", type="twake_text", nullable=true)
+     */
+    private $connectors = "[]";
+
 
     public function __construct($workspace_id, $title, $color)
     {
@@ -133,12 +138,29 @@ class Calendar extends FrontObject
         $this->auto_participants = json_encode($auto_participants);
     }
 
+    /**
+     * @return mixed
+     */
+    public function getConnectors()
+    {
+        return json_decode($this->connectors, 1);
+    }
+
+    /**
+     * @param mixed $tabs
+     */
+    public function setConnectors($connectors)
+    {
+        $this->connectors = json_encode($connectors);
+    }
+
     public function getAsArray()
     {
         return Array(
             "id" => $this->getId(),
             "title" => $this->getTitle(),
             "color" => $this->getColor(),
+            "connectors" => $this->getConnectors(),
             "workspace_id" => $this->getWorkspaceId(),
             "auto_participants" => $this->getAutoParticipants()
         );
