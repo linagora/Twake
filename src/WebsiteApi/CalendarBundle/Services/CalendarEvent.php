@@ -571,12 +571,13 @@ class CalendarEvent
     public function checkReminders()
     {
 
-        $when_ts_week = date("U") / (7 * 24 * 60 * 60);
+        $when_ts_week = floor(date("U") / (7 * 24 * 60 * 60));
 
-        $notifications = $this->doctrine->getRepository("TwakeCalendarBundle:EventNotification")->findRange(Array("when_ts_week" => $when_ts_week), "when_ts", date("U") - 60 * 60, date("U") + 60 * 15);
+        $notifications = $this->doctrine->getRepository("TwakeCalendarBundle:EventNotification")->findRange(Array("when_ts_week" => $when_ts_week), "when_ts", date("U") - 60 * 60, date("U") + 60 * 45);
 
         foreach ($notifications as $notification) {
-            if ($notification->getWhenTs() >= date("U") - 60) {
+
+            if ($notification->getWhenTs() <= date("U") - 60 * 5) {
                 //Send notification
                 $event = $this->doctrine->getRepository("TwakeCalendarBundle:Event")->findOneBy(Array("id" => $notification->getEventId()));
 
@@ -607,8 +608,8 @@ class CalendarEvent
                         if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
                             $mail = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
                             if ($mail) {
-                                $mail = $mail->getEMail();
                                 $language = $mail->getLanguage();
+                                $mail = $mail->getEMail();
                             } else {
                                 $mail = null;
                             }
