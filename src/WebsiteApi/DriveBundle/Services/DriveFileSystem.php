@@ -60,6 +60,10 @@ class DriveFileSystem
             $var = $var; // Cassandra id do nothing
         }
 
+        if (is_array($var) && isset($var["id"])) {
+            $var = $var["id"];
+        }
+
         if (is_int($var) || is_string($var) || get_class($var) == "Ramsey\Uuid\Uuid") {
             return $this->doctrine->getRepository($repository)->findOneBy(Array("id" => $var));
         } else if (is_object($var)) {
@@ -1345,7 +1349,13 @@ class DriveFileSystem
 
             if (is_string($file)) {
                 if (strpos($file, "https://") === 0) {
-                    file_put_contents($real, fopen($file, 'r'));
+                    try {
+                        file_put_contents($real, fopen($file, 'r'));
+                    } catch (\Exception $e) {
+                        error_log($e);
+                        $this->delete($newFile);
+                        return false;
+                    }
                     $size = filesize($real);
                 } else {
 
@@ -1481,12 +1491,6 @@ class DriveFileSystem
     public function download($workspace, $file, $download, $versionId=0)
     {
 
-
-        if (isset($_SERVER['HTTP_ORIGIN'])) {
-            header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
-        }
-        header('Access-Control-Allow-Credentials: true');
-
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
         if (!$workspace) {
@@ -1536,36 +1540,46 @@ class DriveFileSystem
         //Directory : download as zip
         if ($files || $file == null || $file->getIsDirectory()) { //Directory or root
 
+            try {
 
-            if ($files) {
+                if ($files) {
 
-                $zip_path = $this->generateZip($workspace, $files);
+                    $zip_path = $this->generateZip($workspace, $files);
 
-                $archive_name = count($files) . " files from " . $workspace->getName();
+                    $archive_name = count($files) . " files from " . $workspace->getName();
 
-            } else {
-                if ($file->getSize() > 1000000000) //1Go is too large
-                {
+                } else {
+                    if ($file->getSize() > 1000000000) //1Go is too large
+                    {
+                        return false;
+                    }
+
+                    $zip_path = $this->generateZip($workspace, [$file]);
+
+                    $archive_name = ($file ? $file->getName() : "Documents");
+                }
+
+                if (!$zip_path) {
                     return false;
                 }
 
-                $zip_path = $this->generateZip($workspace, [$file]);
+                header('Content-Type: application/octet-stream');
+                header("Content-type: application/force-download");
+                header('Content-Disposition: attachment; filename="' . $archive_name . ".zip" . '"');
 
-                $archive_name = ($file ? $file->getName() : "Documents");
+                header('Expires: 0');
+                header('Cache-Control: must-revalidate');
+                header('Pragma: public');
+                header('Content-Length: ' . $this->filesize($zip_path));
+
+                if (isset($_SERVER['HTTP_ORIGIN'])) {
+                    header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+                }
+                header('Access-Control-Allow-Credentials: true');
+
+            } catch (\Exception $e) {
+                error_log($e);
             }
-
-            if (!$zip_path) {
-                return false;
-            }
-
-            header('Content-Type: application/octet-stream');
-            header("Content-type: application/force-download");
-            header('Content-Disposition: attachment; filename="' . $archive_name . ".zip" . '"');
-
-            header('Expires: 0');
-            header('Cache-Control: must-revalidate');
-            header('Pragma: public');
-            header('Content-Length: ' . $this->filesize($zip_path));
 
             $fp = fopen($zip_path, "r");
 
@@ -1624,6 +1638,11 @@ class DriveFileSystem
             header('Cache-Control: must-revalidate');
             header('Pragma: public');
             header('Content-Length: ' . $this->filesize($completePath));
+
+            if (isset($_SERVER['HTTP_ORIGIN'])) {
+                header('Access-Control-Allow-Origin: ' . $_SERVER['HTTP_ORIGIN']);
+            }
+            header('Access-Control-Allow-Credentials: true');
 
             $fp = fopen($completePath, "r");
 

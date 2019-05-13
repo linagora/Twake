@@ -410,7 +410,7 @@ class Notifications implements NotificationsInterface
         }
     }
 
-    private function pushDevice($user, $text, $title, $badge = null, $data = null, $doPush = true)
+    public function pushDevice($user, $text, $title, $badge = null, $data = null, $doPush = true)
     {
 
         $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
@@ -464,7 +464,8 @@ class Notifications implements NotificationsInterface
         }
     }
 
-    private function sendMail($application, $workspace, $user, $text){
+    public function sendMail($application, $workspace, $user, $text)
+    {
 
         $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');
 
@@ -475,6 +476,11 @@ class Notifications implements NotificationsInterface
             "username"=>$user->getUsername(),
             "text"=>$text
         ));
+    }
+
+    public function sendCustomMail($mail, $template, $options = Array())
+    {
+        $this->mailer->send($mail, $template, $options);
     }
 
     /**
