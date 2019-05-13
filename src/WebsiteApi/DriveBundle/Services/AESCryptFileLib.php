@@ -51,13 +51,15 @@ class AESCryptFileLib
 
 		//Actually do the encryption here
 		$dest_fh = $this->doEncryptFile($source_file, $passphrase, $dest_file, $ext_data);
+//        error_log(print_r($dest_fh,true));
 
-		//Return encrypted file location
+        //Return encrypted file location
 		$meta_data = stream_get_meta_data($dest_fh);
+//		error_log(print_r($meta_data,true));
 		fclose($dest_fh);
 		$filename = realpath($meta_data["uri"]);
 		return $filename;
-	}
+    }
 
 	public function readExtensionBlocks($source_file)
 	{

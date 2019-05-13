@@ -14,9 +14,17 @@ class UploadController extends Controller
     public function UploadfileAction(Request $request)
     {
 
-        $this->get('driveupload.upload')->TestUpload();
+        $response = new Response();
+        $this->get('driveupload.upload')->TestUpload($request, $response);
 
-        return new Response("Hello !");
+        return $response;
+
+    }
+
+    public function IndexAction(Request $request)
+    {
+
+        return new Response($this->render("TwakeDriveUploadBundle:Default:index.html.twig"));
 
     }
 

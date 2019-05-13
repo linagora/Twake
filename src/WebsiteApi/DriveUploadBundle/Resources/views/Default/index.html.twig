@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+    <header>
+        <script src="https://cdn.jsdelivr.net/npm/resumablejs@1.1.0/resumable.min.js">
+        </script>
+    </header>
+
+    <body>
+
+    <div>
+        <button type="button" aria-label="Add file" id="add-file-btn">
+            <span aria-hidden="true"></span> Add file
+        </button>
+        <button type="button" onclick="Upload()" aria-label="Start upload" id="start-upload-btn">
+            <span aria-hidden="true"></span> Start upload
+        </button>
+    </div>
+
+    <div>
+        <p>
+        <div id="upload-progress">
+            <div role="progressbar" style="width: 0%">
+                <span></span>
+            </div>
+        </div>
+        </p>
+    </div>
+
+    <script>
+        var r = new Resumable({
+            target:'http://51.68.94.194:8081/ajax/driveupload/upload',
+            chunkSize: 200000,
+            testChunks: false,
+            generateUniqueIdentifier :(file, event)=> {
+                var s ="tret46fgdfaze";
+                var i;
+                var l;
+                var o = '';
+                var n;
+
+                s += '';
+
+                for (i = 0, l = s.length; i < l; i++) {
+                    n = s.charCodeAt(i).toString(16);
+                    o += n.length < 2 ? '0' + n : n
+                }
+
+                return o
+            }
+        });
+
+        r.assignBrowse(document.getElementById('add-file-btn'));
+
+        r.on('fileAdded', function(file, event){
+            //alert("add");
+           //alert(r.files);
+        });
+
+        r.on('fileSuccess', function(file, message){
+        console.log(file);
+        });
+        r.on('fileError', function(file, message){
+        console.log(message);
+        });
+
+
+        function Upload() {
+            r.upload();
+           //alert("test");
+        }
+
+    </script>
+
+
+    </body>
+</html>

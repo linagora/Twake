@@ -99,7 +99,7 @@ twake_globalsearch:
 twake_driveupload:
     resource: "@TwakeDriveUploadBundle/Resources/config/routing.yml"
     prefix:   /ajax/driveupload/
-    methods: [POST]
+    methods: [POST,GET]
 
 twake_users:
     resource: "@TwakeUsersBundle/Resources/config/routing.yml"
