@@ -332,6 +332,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
     public function removeMember($workspaceId, $userId, $currentUserId = null)
     {
         if ($currentUserId == null
+            || $userId == $currentUserId
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
         ) {
 
@@ -389,7 +390,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                         return false;
                     }
                 }
-                $this->doctrine->remove($groupmember);
+                if ($groupmember) {
+                    $this->doctrine->remove($groupmember);
+                }
                 $groupmember = null;
             }
 
@@ -427,10 +430,11 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             );
             $this->pusher->push($datatopush, "group/" . $workspace->getId());*/
 
-            $workspace->setMemberCount($workspace->getMemberCount() - 1);
-
-            $this->doctrine->persist($workspace);
-            $this->doctrine->remove($member);
+            if ($member) {
+                $workspace->setMemberCount($workspace->getMemberCount() - 1);
+                $this->doctrine->persist($workspace);
+                $this->doctrine->remove($member);
+            }
             $this->doctrine->flush();
 
             $this->twake_mailer->send($user->getEmail(), "removedFromWorkspaceMail", Array("_language" => $user ? $user->getLanguage() : "en", "workspace" => $workspace->getName(), "username" => $user->getUsername(), "group" => $workspace->getGroup()->getDisplayName()));

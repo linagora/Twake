@@ -577,7 +577,7 @@ class CalendarEvent
 
         foreach ($notifications as $notification) {
 
-            if ($notification->getWhenTs() <= date("U") - 60 * 5) {
+            if ($notification->getWhenTs() <= date("U") + 60 * 5) {
                 //Send notification
                 $event = $this->doctrine->getRepository("TwakeCalendarBundle:Event")->findOneBy(Array("id" => $notification->getEventId()));
 
@@ -631,7 +631,7 @@ class CalendarEvent
                             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
                             if ($user) {
                                 $this->notifications->pushDevice(
-                                    $user, $text, "Calendar notification"
+                                    $user, $text, "📅 Calendar notification"
                                 );
                             }
                         }
