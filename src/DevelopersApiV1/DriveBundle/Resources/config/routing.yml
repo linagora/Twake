@@ -13,3 +13,8 @@ developers_api_v1_drive_get_list_drive:
     path:     /list
     defaults: { _controller: DevelopersApiV1DriveBundle:Drive:getList }
     methods: [POST]
+
+developers_api_v1_drive_download:
+    path:     /download
+    defaults: { _controller: DevelopersApiV1DriveBundle:Drive:download }
+    methods: [POST]

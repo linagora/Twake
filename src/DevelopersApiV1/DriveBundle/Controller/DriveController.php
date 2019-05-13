@@ -84,4 +84,22 @@ class DriveController extends Controller
         return new JsonResponse(Array("data" => $res));
     }
 
+    public function downloadAction(Request $request ){
+        $privileges = ["workspace_drive"];
+        $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
+        if (is_array($application) && $application["error"]) {
+            return new JsonResponse($application);
+        }
+
+        $workspace_id = $request->request->get("workspace_id", null);
+        $fileId = $request->request->get("file_id", null);
+
+        $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
+        @$response = $fileSystem->download($workspace_id, $fileId, true);
+
+        return $response;
+    }
+
+
+
 }
