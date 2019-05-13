@@ -619,7 +619,9 @@ class CalendarEvent
                             $this->notifications->sendCustomMail(
                                 $mail, "event_notification", Array(
                                     "_language" => $language ? $language : "en",
-                                    "text" => $text
+                                    "text" => $text,
+                                    "delay" => $delay,
+                                    "event" => $event->getAsArray()
                                 )
                             );
                         }
