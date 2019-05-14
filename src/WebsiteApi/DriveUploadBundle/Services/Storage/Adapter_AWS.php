@@ -14,7 +14,7 @@ class Adapter_AWS implements AdapterInterface{
         // TODO: Implement read() method.
     }
 
-    public function write($param_bag)
+    public function write($chunkFile, $param_bag)
     {
         // TODO: Implement write() method.
     }

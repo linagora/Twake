@@ -6,6 +6,6 @@ interface AdapterInterface{
 
     public function read();
 
-    public function write($param_bag);
+    public function write($chunkFile,$param_bag);
 
 }

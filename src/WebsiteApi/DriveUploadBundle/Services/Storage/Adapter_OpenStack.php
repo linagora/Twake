@@ -18,14 +18,13 @@ use OpenStack\Identity\v2\Service;
 
 class Adapter_OpenStack implements AdapterInterface{
 
-    protected  $parameter_drive_salt = "let's try a salt";
     protected $root ;
     protected $openstack;
 
     public function __construct($root,$openstack)
     {
         $this->root = $root;
-        error_log(print_r($openstack,true));
+        //error_log(print_r($openstack,true));
 
         $this->openstack_buckets = $openstack["buckets"];
         $this->openstack_buckets_prefix = $openstack["buckets_prefix"];
@@ -69,7 +68,7 @@ class Adapter_OpenStack implements AdapterInterface{
 
     protected function getRoot()
     {
-        error_log(print_r($this->root,true));
+        //error_log(print_r($this->root,true));
         return dirname($this->root) . "/" . "drive" . "/";
     }
 
@@ -78,42 +77,41 @@ class Adapter_OpenStack implements AdapterInterface{
         // TODO: Implement read() method.
     }
 
-    public function write($param_bag)
+    public function write($chunkFile,$param_bag)
     {
 
         //error_log("cc open stack");
-        $key = "OpenStack" . $this->parameter_drive_salt . $param_bag->getKey();
+        $key = "OpenStack" . $param_bag->getSalt() . $param_bag->getKey();
         $key = md5($key);
+        $this->encode($chunkFile,$param_bag);
 
-        $this->encode($param_bag);
+        $key_path = explode("/", $chunkFile)[1];
 
-//        $key_path = str_replace($this->getRoot() . "/", "", $param_bag->getPath());
-//        $key_path = str_replace($this->getRoot(), "", $key_path);
-
-        $key_path = $param_bag->getPath();
-
-        //error_log(print_r($key_path,true));
+        $chunkFile = $chunkFile.".encrypt";
 
         try {
 
             $options = [
                 'name' => "drive/" . $key_path,
-                'stream' => new Stream(fopen($param_bag->getPath(), 'rb')),
+                'stream' => new Stream(fopen($chunkFile, 'rb')),
             ];
-            //error_log(print_r($this->options,true));
+
             $this->openstack->objectStoreV1()
                 ->getContainer($this->openstack_bucket_name)
                 ->createObject($options);
 
-            @unlink($param_bag->getPath());
+            @unlink($chunkFile);
 
         } catch (Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
         }
     }
 
-    public function encode($param_bag)
+    private function encode($chunkFile,$param_bag)
     {
+        error_log(print_r($chunkFile,true));
+
+        $key = $param_bag->getKey();
         if ($param_bag->getMode() == "AES") {
             $mcrypt = new MCryptAES256Implementation();
             $lib = new AESCryptFileLib($mcrypt);
@@ -126,15 +124,15 @@ class Adapter_OpenStack implements AdapterInterface{
             $key = $param_bag->getMode() . $this->parameter_drive_salt . $param_bag->getKey();
         }
 
-        $pathTemp = $param_bag->getPath() . ".encrypt";
+        $pathTemp = $chunkFile . ".encrypt";
 
 
         //rename($path, $pathTemp);
 
-        $finalpath = $lib->encryptFile($param_bag->getPath() , $param_bag->getKey() , $pathTemp);
+        $finalpath = $lib->encryptFile($chunkFile , $key , $pathTemp);
         //error_log(print_r($finalpath,true));
-        @unlink($param_bag->getPath());
-        $param_bag->setPath($pathTemp);
+        @unlink($chunkFile);
+
         return $finalpath;
     }
 }

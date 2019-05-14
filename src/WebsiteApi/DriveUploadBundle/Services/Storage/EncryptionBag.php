@@ -4,13 +4,13 @@ namespace WebsiteApi\DriveUploadBundle\Services\Storage;
 
 class EncryptionBag{
 
-    private $path;
+    private $salt;
     private $key;
     private $mode;
 
-    public function __construct($path, $key, $mode)
+    public function __construct($key, $salt="", $mode = "OpenSSL-2")
     {
-        $this->path = $path;
+        $this->salt = $salt;
         $this->key = $key;
         $this->mode = $mode;
     }
@@ -18,17 +18,17 @@ class EncryptionBag{
     /**
      * @return mixed
      */
-    public function getPath()
+    public function getSalt()
     {
-        return $this->path;
+        return $this->salt;
     }
 
     /**
-     * @param mixed $path
+     * @param mixed $salt
      */
-    public function setPath($path)
+    public function setSalt($salt)
     {
-        $this->path = $path;
+        $this->salt = $salt;
     }
 
     /**

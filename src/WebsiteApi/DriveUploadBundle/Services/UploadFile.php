@@ -25,15 +25,16 @@ class UploadFile
 
         $request = new SimpleRequest($request);
         $response = new SimpleResponse($response);
-        $name= bin2hex(random_bytes(20));
+        //$name= bin2hex(random_bytes(20));
         $resumable = new Resumable($request, $response);
         $resumable->tempFolder = 'uploads';
         //$resumable->uploadFolder = 'uploads';
         $chunkFile = $resumable->process();
 
+        error_log(print_r($chunkFile,true));
 
-        $param_bag = new EncryptionBag($chunkFile,"testkey","AES");
-        $this->storagemanager->write($param_bag);
+        $param_bag = new EncryptionBag("testkey","let's try a salt", "AES");
+        $this->storagemanager->write($chunkFile,$param_bag);
 
 
    }
