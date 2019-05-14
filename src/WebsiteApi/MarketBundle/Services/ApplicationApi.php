@@ -57,6 +57,10 @@ class ApplicationApi
 
                         $group_id = $request->request->get("group_id", null);
 
+                        if (!$group_id && (count($capabilities) > 0 || count($privileges) > 0)) {
+                            return Array("error" => "you_need_to_provide_a_valid_group_id_field_in_any_api_request", "group_id" => $group_id);
+                        }
+
                         $can_do_it = false;
                         if ($group_id) {
                             $can_do_it = $this->hasCapability($application->getId(), $group_id, $capabilities);
