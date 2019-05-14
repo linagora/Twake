@@ -10,3 +10,7 @@ services:
   api.v1.access_log:
         class: DevelopersApiV1\CoreBundle\Services\AccessLogSystem
         arguments: ["@app.twake_doctrine"]
+
+  api.v1.check_user_data:
+    class: DevelopersApiV1\CoreBundle\Services\CheckUserInfo
+    arguments: ["@app.twake_doctrine"]
