@@ -10,7 +10,7 @@ use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 /**
  * Message
  *
- * @ORM\Table(name="access_token",options={"engine":"MyISAM", "scylladb_keys": {{"token": "ASC", "id": "ASC"}})
+ * @ORM\Table(name="access_token",options={"engine":"MyISAM", "scylladb_keys": {{"atoken": "ASC", "id": "ASC"}}} )
  * @ORM\Entity(repositoryClass="WebsiteApi\MarketBundle\Repository\DataTokenRepository")
  */
 class AccessToken
@@ -22,9 +22,9 @@ class AccessToken
     private $id;
 
     /**
-     * @ORM\Column(name="token", type="twake_text")
+     * @ORM\Column(name="atoken", type="twake_text")
      */
-    private $token;
+    private $atoken;
 
     /**
      * @ORM\Column(name="application_id", type="twake_timeuuid")
@@ -53,7 +53,7 @@ class AccessToken
      */
     public function resetToken()
     {
-        $this->token = bin2hex(random_bytes(64));
+        $this->atoken = bin2hex(random_bytes(64));
     }
 
 
@@ -88,15 +88,15 @@ class AccessToken
      */
     public function getToken()
     {
-        return $this->token;
+        return $this->atoken;
     }
 
     /**
      * @param mixed $token
      */
-    public function setToken($token)
+    public function setToken($atoken)
     {
-        $this->token = $token;
+        $this->atoken = $atoken;
     }
 
     /**
@@ -168,7 +168,6 @@ class AccessToken
             "user_id" => $this->getUserId(),
             "workspace_id" => $this->getWorkspaceId(),
             "group_id" => $this->getGroupId(),
-            "token" => $this->getToken(),
             "app_id" => $this->getApplicationId()
         );
     }

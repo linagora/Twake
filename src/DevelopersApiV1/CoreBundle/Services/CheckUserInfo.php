@@ -16,7 +16,7 @@ class CheckUserInfo
     }
 
     public function getInfo($token){
-        return $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("token" => $token));
+        return $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("atoken" => $token));
     }
 
 }

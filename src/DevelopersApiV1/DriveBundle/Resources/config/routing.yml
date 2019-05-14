@@ -14,6 +14,11 @@ developers_api_v1_drive_get_list_drive:
     defaults: { _controller: DevelopersApiV1DriveBundle:Drive:getList }
     methods: [POST]
 
+developers_api_v1_drive_get_find_drive:
+    path:     /find
+    defaults: { _controller: DevelopersApiV1DriveBundle:Drive:find }
+    methods: [POST]
+
 developers_api_v1_drive_download:
     path:     /download
     defaults: { _controller: DevelopersApiV1DriveBundle:Drive:download }
