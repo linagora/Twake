@@ -8,3 +8,8 @@ developers_api_v1_calendar_add_event:
     path:     /event/save
     defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:saveEvent }
     methods: [POST]
+
+developers_api_v1_calendar_get_calendar_list:
+    path:     /get_calendars
+    defaults: { _controller: DevelopersApiV1CalendarBundle:Calendar:getCalendarList }
+    methods: [POST]
