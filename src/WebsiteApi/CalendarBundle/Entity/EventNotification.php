@@ -35,13 +35,11 @@ class EventNotification
 
     /**
      * @ORM\Column(name="delay", type="twake_bigint")
-     * @ORM\Id
      */
     private $delay;
 
     /**
      * @ORM\Column(name="mode", type="twake_text")
-     * @ORM\Id
      */
     private $mode;
 

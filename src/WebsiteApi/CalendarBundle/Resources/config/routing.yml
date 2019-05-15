@@ -13,3 +13,19 @@ calendar_event_remove:
     path:     /event/remove
     defaults: { _controller: TwakeCalendarBundle:Event:remove}
     methods: [POST]
+
+#Calendars
+calendar_calendar_get:
+    path:     /calendar/get
+    defaults: { _controller: TwakeCalendarBundle:Calendar:get}
+    methods: [POST]
+
+calendar_calendar_save:
+    path:     /calendar/save
+    defaults: { _controller: TwakeCalendarBundle:Calendar:save}
+    methods: [POST]
+
+calendar_calendar_remove:
+    path:     /calendar/remove
+    defaults: { _controller: TwakeCalendarBundle:Calendar:remove}
+    methods: [POST]

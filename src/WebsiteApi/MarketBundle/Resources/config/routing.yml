@@ -14,6 +14,12 @@ twake_applications_event:
     path:     /app/api/event
     defaults: { _controller: TwakeMarketBundle:ApplicationApi:event }
 
+
+twake_applications_gettoken:
+    path:     /app/api/getToken
+    defaults: { _controller: TwakeMarketBundle:ApplicationApi:getToken }
+
+
 # Apps Developers
 
 twake_applications_create:

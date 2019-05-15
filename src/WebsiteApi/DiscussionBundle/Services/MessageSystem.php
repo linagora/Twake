@@ -63,7 +63,7 @@ class MessageSystem
         $message_repo = $this->em->getRepository("TwakeDiscussionBundle:Message");
 
         $offset = isset($options["offset"]) ? $options["offset"] : null;
-        $limit = isset($options["limit"]) ? $options["limit"] : 100;
+        $limit = isset($options["limit"]) ? $options["limit"] : 60;
         $parent_message_id = isset($options["parent_message_id"]) ? $options["parent_message_id"] : "";
 
         $messages_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => $parent_message_id), Array(), $limit, $offset, "id", "DESC");
@@ -396,6 +396,9 @@ class MessageSystem
             if ($channel && $did_create) {
                 $this->message_notifications_center_service->newElement($channel, $application, $user, $this->mdToText($message->getContent()), $message->getId());
             }
+
+
+            //Notify connectors
 
             if ($channel->getAppId()) {
                 $apps_ids = [$channel->getAppId()];

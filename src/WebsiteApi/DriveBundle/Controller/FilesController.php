@@ -526,7 +526,8 @@ class FilesController extends Controller
 
         if (true || $can) {
 
-            return $fileSystem->download($workspace_id, $fileId, $download, $versionId);
+            @$response = $fileSystem->download($workspace_id, $fileId, $download, $versionId);
+            return $response;
 
         }
 

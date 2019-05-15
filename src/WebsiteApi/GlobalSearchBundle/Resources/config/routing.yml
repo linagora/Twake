@@ -1,5 +1,5 @@
-globalsearch_event:
-  path:       /event
+globalsearch_file:
+  path:       /file
   defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:ES }
 
 
@@ -8,6 +8,10 @@ globalsearch_message:
   defaults: { _controller: TwakeGlobalSearchBundle:Message:ESMessage }
 
 
-globalsearch_global:
-  path:       /global
-  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:ESGlobal }
+globalsearch_globaluwc:
+  path:       /globaluwc
+  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:GlobalSearchUWC }
+
+globalsearch_globalmf:
+  path:       /globalmf
+  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:GlobalSearchMF }

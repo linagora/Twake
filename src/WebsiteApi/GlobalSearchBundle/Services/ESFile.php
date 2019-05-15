@@ -4,7 +4,7 @@ namespace WebsiteApi\GlobalSearchBundle\Services;
 
 use WebsiteApi\DriveBundle\Entity\DriveFile;
 
-class Event
+class ESFile
 {
     private $doctrine;
 
@@ -13,7 +13,7 @@ class Event
         $this->doctrine = $doctrine;
     }
 
-    public function IndexFile($document){
+    public function index($document){
         //need the string with the name of the file
         //check the extension of the file
 //        $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -111,7 +111,7 @@ END;
 
     }
 
-    public function SearchFile($termslist){ //rajouter le must sur les workspace id
+    public function search($termslist){ //rajouter le must sur les workspace id
         $terms = Array();
         foreach($termslist as $term){
             $terms[] = Array(
@@ -165,7 +165,12 @@ END;
 
         //var_dump(json_encode($options));
         $files = $this->doctrine->es_search($options);
-        return $files;
+        $files_final=Array();
+        foreach ($files as $file){
+            $files_final[]= $file->getAsArray();
+        }
+
+        return $files_final;
     }
 
     public function update_keyword($keywords,$titre){
@@ -183,7 +188,7 @@ END;
         //$file= $this->doctrine->getRepository("TwakeDriveBundle:Message")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
 
         $words=Array("appli");
-        $this->SearchFile($words);
+        $this->search($words);
     }
 
 }

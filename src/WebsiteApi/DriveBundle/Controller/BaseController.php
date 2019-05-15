@@ -31,8 +31,11 @@ class BaseController extends Controller
         $object = $request->request->get("object");
         $file_uploaded = null;
         if (isset($_FILES["file"])) {
+            $options = json_decode($options, true);
             $object = json_decode($object, true);
             $file_uploaded = $_FILES["file"];
+        } else {
+            $file_uploaded = $object["file_url"] ? $object["file_url"] : $request->request->get("file_url");
         }
         $res = $this->get("app.drive")->save($object, $options, $this->getUser(), null, $file_uploaded);
         if (!$res) {

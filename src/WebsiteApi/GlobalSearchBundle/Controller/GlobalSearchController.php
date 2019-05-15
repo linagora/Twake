@@ -14,17 +14,23 @@ class GlobalSearchController extends Controller
     public function ESAction(Request $request)
     {
 
-        $this->get('globalsearch.event')->TestSearch();
+        $this->get('globalsearch.file')->TestSearch();
 
         return new Response("Hello !");
 
     }
 
-    public function ESGlobalAction(Request $request)
+    public function GlobalSearchUWCAction(Request $request)
     {
-        $this->get('globalsearch.global')->GlobalSearch();
+        $this->get('globalsearch.globaluwc')->GlobalSearch();
 
         return new Response("Hello !");
+    }
 
+    public function GlobalSearchMFAction(Request $request)
+    {
+        $this->get('globalsearch.globalmf')->GlobalSearch();
+
+        return new Response("Hello !");
     }
 }

@@ -88,12 +88,18 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
             }
 
             if ($min) {
+                if (is_string($min)) {
+                    new FakeCassandraTimeuuid($min);
+                }
                 $qb = $qb->andWhere($qb->expr()->gte('e.' . $order_field, ":offset_min"));
-                $qb = $qb->setParameter("offset_min", new FakeCassandraTimeuuid($min));
+                $qb = $qb->setParameter("offset_min", $min);
             }
             if ($max) {
+                if (is_string($max)) {
+                    new FakeCassandraTimeuuid($max);
+                }
                 $qb = $qb->andWhere($qb->expr()->lte('e.' . $order_field, ":offset_max"));
-                $qb = $qb->setParameter("offset_max", new FakeCassandraTimeuuid($max));
+                $qb = $qb->setParameter("offset_max", $max);
             }
 
             if ($view_to_use) {

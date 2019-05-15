@@ -4,6 +4,7 @@ namespace WebsiteApi\MarketBundle\Services;
 
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\MarketBundle\Entity\ApplicationResource;
+use WebsiteApi\MarketBundle\Entity\AccessToken;
 use WebsiteApi\MarketBundle\Model\MarketApplicationInterface;
 use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
 use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
@@ -18,6 +19,19 @@ class ApplicationApi
         $this->doctrine = $doctrine;
         $this->rest_client = $rest_client;
     }
+
+
+    public function generatedToken($app_id, $workspace_id, $group_id, $user_id){
+
+        $entity = new AccessToken($app_id, $workspace_id, $group_id, $user_id);
+        $this->doctrine->useTTLOnFirstInsert(60*60);
+        $this->doctrine->persist($entity);
+        $this->doctrine->flush();
+
+        return $entity->getToken();
+
+    }
+
 
     /**
      * @param $app_id
@@ -56,6 +70,10 @@ class ApplicationApi
                     if ($key == $privateKey) {
 
                         $group_id = $request->request->get("group_id", null);
+
+                        if (!$group_id && (count($capabilities) > 0 || count($privileges) > 0)) {
+                            return Array("error" => "you_need_to_provide_a_valid_group_id_field_in_any_api_request", "group_id" => $group_id);
+                        }
 
                         $can_do_it = false;
                         if ($group_id) {

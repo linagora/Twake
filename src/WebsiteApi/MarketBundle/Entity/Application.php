@@ -573,6 +573,8 @@ class Application extends SearchableObject
         $return["available_privileges"] = Array(
             "channels", //Lister les channels et leur configuration (tabulations etc)
             "workspace", //Information sur l’espace de travail
+            "workspace_calendar", //Information sur le calendrier de l’espace de travail
+            "workspace_drive", //Information sur le drive de l’espace de travail
             "drive_list", //Lister documents dans le Drive
             //"drive_tree", //Liste des fichiers, noms et autres metadatas
             //"drive_files_content", //Téléchargement des fichiers et preview des fichiers
@@ -602,6 +604,9 @@ class Application extends SearchableObject
         $return["available_hooks"] = Array(
             "new_message", //Nouveau message hook dans un channel particulier (si écouté)
             "new_message_in_workspace", //Nouveau message hook dans tous le workspace
+            "new_calendar",
+            "new_event",
+            "new_file"
         );
         $return["available_categories"] = Array(
             "bots",
