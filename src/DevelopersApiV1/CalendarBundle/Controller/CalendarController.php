@@ -79,7 +79,8 @@ class CalendarController extends Controller
 
     }
 
-    public function getCalendarList(Request $request){
+    public function getCalendarListAction(Request $request)
+    {
         $privileges = ["workspace_calendar"];
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);

@@ -67,7 +67,7 @@ class DriveController extends Controller
         $workspace_id = $request->request->get("workspace_id", null);
         $element_id = $request->request->get("element_id", null);
 
-        if ($workspace_id && $directory_id){
+        if ($workspace_id && $element_id) {
             $object = $this->get("app.drive")->find(
                 Array("workspace_id" => $workspace_id, "element_id" => $element_id), null);
         }

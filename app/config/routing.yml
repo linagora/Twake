@@ -169,6 +169,10 @@ developers_api_v1_drive:
     resource: "@DevelopersApiV1DriveBundle/Resources/config/routing.yml"
     prefix:   /api/v1/drive/
 
+developers_api_v1_core:
+    resource: "@DevelopersApiV1CoreBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/core/
+
 developers_api_error:
     path:     /api/{req}
     defaults: { _controller: DevelopersApiV1CoreBundle:Default:BadRequest }
