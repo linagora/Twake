@@ -28,4 +28,15 @@ class UploadController extends Controller
 
     }
 
+    public function DownloadfileAction(Request $request)
+    {
+
+        $response = new Response();
+
+        $this->get('driveupload.download')->TestDownload();
+
+        return $response;
+
+    }
+
 }

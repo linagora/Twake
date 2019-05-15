@@ -4,6 +4,7 @@ namespace WebsiteApi\DriveUploadBundle\Services\Resumable;
 
 use Cake\Filesystem\File;
 use Cake\Filesystem\Folder;
+use WebsiteApi\DriveUploadBundle\Entity\UploadState;
 use WebsiteApi\DriveUploadBundle\Services\Resumable\Network\SimpleRequest;
 use WebsiteApi\DriveUploadBundle\Services\Resumable\Network\SimpleResponse;
 use Monolog\Logger;
@@ -34,15 +35,15 @@ class Resumable
         'chunkSize' => 'chunkSize',
         'totalSize' => 'totalSize'
     ];
-    protected  $parameter_drive_salt = "let's try a salt";
-    protected $date;
+    protected $doctrine;
 
     const WITHOUT_EXTENSION = true;
 
-    public function __construct(SimpleRequest $request, SimpleResponse $response)
+    public function __construct(SimpleRequest $request, SimpleResponse $response, $doctrine)
     {
         $this->request = $request;
         $this->response = $response;
+        $this->doctrine = $doctrine;
         $this->log = new Logger('debug');
         $this->log->pushHandler(new StreamHandler('debug.log', Logger::DEBUG));
         $this->preProcess();
@@ -168,22 +169,70 @@ class Resumable
         $finalname = $identifier.".chunk_".$chunkNumber;
 
         if (!$this->isChunkUploaded($identifier, $finalname, $chunkNumber)) {
+            if($chunkNumber == 1){
+                //error_log("passage");
+                $uploadstate = new UploadState($identifier,$filename,$this->getExtension());
+               // error_log(print_r($uploadstate,true));
+                $this->doctrine->persist($uploadstate);
+                //$nb = $uploadstate->getNbChunk();
+                //error_log(print_r($nb,true));
+                $this->doctrine->flush();
+            }
+            //error_log(print_r($filename,true));
             $chunkFile = $this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $finalname;
             $this->moveUploadedFile($file['tmp_name'], $chunkFile);
-            return $chunkFile;
-
         }
-//        if ($this->isFileUploadComplete($finalname, $identifier, $chunkSize, $totalSize)) {
+        if ($this->isFileUploadComplete($finalname, $identifier, $chunkSize, $totalSize)) {
+            $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
+            $uploadstate->setChunk($chunkNumber);
+            error_log(print_r($uploadstate->getChunk(),true));
+            $this->doctrine->persist($uploadstate);
+            $this->doctrine->flush();
+            error_log(print_r($chunkNumber,true));
 //            $this->isUploadComplete = true;
 //            $this->createFileAndDeleteTmp($identifier, $finalname);
-//        }
-        return $this->response->header(200);
+//            $this->deleteFileAfterUpload();
+       }
+        return $chunkFile;
+    }
+
+    public function deleteFileAfterUpload(){
+
     }
 
     public function isChunkUploaded($identifier, $filename, $chunkNumber)
     {
-        $file = new File($this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $filename);
+        $part = explode("_",$filename)[0];
+        $chemin = $this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $part . "_" . $chunkNumber;
+        //error_log("chemin");
+        //error_log(print_r($chemin,true));
+
+        $file = new File($chemin);
+
+        //$file = new File($this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $filename);
+//        error_log("passage");
+//        if($file->exists() == 1)
+//            return true;
+//        else
+//            return false;
         return $file->exists();
+    }
+
+    public function isFileUploadComplete($filename, $identifier, $chunkSize, $totalSize)
+    {
+        //error_log("cc");
+        if ($chunkSize <= 0) {
+            return false;
+        }
+        $numOfChunks = intval($totalSize / $chunkSize) + ($totalSize % $chunkSize == 0 ? 0 : 1);
+        //$numOfChunks= intval($totalSize / $chunkSize) ;
+        for ($i = 1; $i < $numOfChunks; $i++) {
+            if (!$this->isChunkUploaded($identifier, $filename, $i)) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
 
@@ -239,19 +288,6 @@ class Resumable
         if ($this->request->is('post')) {
             return $this->request->data('post');
         }
-    }
-    public function isFileUploadComplete($filename, $identifier, $chunkSize, $totalSize)
-    {
-        if ($chunkSize <= 0) {
-            return false;
-        }
-        $numOfChunks = intval($totalSize / $chunkSize) + ($totalSize % $chunkSize == 0 ? 0 : 1);
-        for ($i = 1; $i < $numOfChunks; $i++) {
-            if (!$this->isChunkUploaded($identifier, $filename, $i)) {
-                return false;
-            }
-        }
-        return true;
     }
 
     public function tmpChunkDir($identifier)

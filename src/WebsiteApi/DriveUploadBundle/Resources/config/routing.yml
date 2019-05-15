@@ -5,3 +5,8 @@ driveupload_upload:
 driveupload_index:
   path:       /index
   defaults: { _controller: TwakeDriveUploadBundle:Upload:Index}
+
+
+driveupload_download:
+  path:       /download
+  defaults: { _controller: TwakeDriveUploadBundle:Upload:Downloadfile}

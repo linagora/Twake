@@ -72,14 +72,9 @@ class Adapter_OpenStack implements AdapterInterface{
         return dirname($this->root) . "/" . "drive" . "/";
     }
 
-    public function read()
-    {
-        // TODO: Implement read() method.
-    }
-
     public function write($chunkFile,$param_bag)
     {
-
+        //error_log(print_r($chunkFile,true));
         //error_log("cc open stack");
         $key = "OpenStack" . $param_bag->getSalt() . $param_bag->getKey();
         $key = md5($key);
@@ -107,9 +102,38 @@ class Adapter_OpenStack implements AdapterInterface{
         }
     }
 
+    public function read($chunkFile,$param_bag)
+    {
+        $key = "OpenStack" . $param_bag->getSalt(). $param_bag->getKey();
+        $key = md5($key);
+
+
+        try {
+
+            $stream = $this->openstack->objectStoreV1()
+                ->getContainer($this->openstack_bucket_name)
+                ->getObject("drive/" . $chunkFile)
+                ->download();
+
+            $tmpPath = "uploads" . DIRECTORY_SEPARATOR . $chunkFile;
+            //$this->verifyPath($tmpPath);
+            file_put_contents($tmpPath, $stream->getContents());
+
+            $decodedPath = $this->decode($tmpPath, $param_bag);
+//            rename($decodedPath, $tmpPath);
+//
+            return $tmpPath;
+
+        } catch (Exception $e) {
+            error_log("Error accessing aws file.");
+        }
+
+        return false;
+    }
+
     private function encode($chunkFile,$param_bag)
     {
-        error_log(print_r($chunkFile,true));
+        //error_log(print_r($chunkFile,true));
 
         $key = $param_bag->getKey();
         if ($param_bag->getMode() == "AES") {
@@ -131,8 +155,33 @@ class Adapter_OpenStack implements AdapterInterface{
 
         $finalpath = $lib->encryptFile($chunkFile , $key , $pathTemp);
         //error_log(print_r($finalpath,true));
-        @unlink($chunkFile);
+        //@unlink($chunkFile);
 
         return $finalpath;
     }
+
+
+    protected function decode($chunkFile,$param_bag)
+    {
+        $key = $param_bag->getKey();
+        if ($param_bag->getMode() == "AES") {
+            $mcrypt = new MCryptAES256Implementation();
+            $lib = new AESCryptFileLib($mcrypt);
+        }
+        if ($param_bag->getMode() == "OpenSSL") {
+            $lib = new OpenSSLCryptLib();
+        }
+        if ($param_bag->getMode() == "OpenSSL-2") {
+            $lib = new OpenSSLCryptLib();
+            $key = $param_bag->getMode() . $this->parameter_drive_salt . $param_bag->getKey();
+        }
+        $pathTemp = $chunkFile . ".decrypt";
+
+        $finalpath = $lib->decryptFile($chunkFile, $key, $pathTemp);
+        //@unlink($chunkFile);
+        return $finalpath;
+
+    }
+
+
 }

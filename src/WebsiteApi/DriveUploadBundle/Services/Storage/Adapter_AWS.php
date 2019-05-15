@@ -9,7 +9,7 @@ class Adapter_AWS implements AdapterInterface{
 
     }
 
-    public function read()
+    public function read($chunkFile,$param_bag)
     {
         // TODO: Implement read() method.
     }
