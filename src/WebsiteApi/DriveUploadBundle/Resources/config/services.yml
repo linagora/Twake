@@ -1,7 +1,7 @@
 services:
   driveupload.upload:
     class: WebsiteApi\DriveUploadBundle\Services\UploadFile
-    arguments: ["@driveupload.storemanager","@app.twake_doctrine"]
+    arguments: ["@driveupload.resumable"]
 
   driveupload.storemanager:
     class: WebsiteApi\DriveUploadBundle\Services\Storage\Adapter_OpenStack
@@ -9,8 +9,8 @@ services:
 
   driveupload.download:
     class: WebsiteApi\DriveUploadBundle\Services\DownloadFile
-    arguments: ["@driveupload.storemanager","@app.twake_doctrine"]
+    arguments: ["@driveupload.resumable"]
 
-#  driveupload.resumable:
-#    class: WebsiteApi\DriveUploadBundle\Services\Resumalbe\Resumable
-#    arguments: ["@app.twake_doctrine"]
+  driveupload.resumable:
+    class: WebsiteApi\DriveUploadBundle\Services\Resumable\Resumable
+    arguments: ["@app.twake_doctrine","@driveupload.storemanager"]

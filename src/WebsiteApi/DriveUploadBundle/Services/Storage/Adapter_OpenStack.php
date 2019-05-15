@@ -178,7 +178,7 @@ class Adapter_OpenStack implements AdapterInterface{
         $pathTemp = $chunkFile . ".decrypt";
 
         $finalpath = $lib->decryptFile($chunkFile, $key, $pathTemp);
-        //@unlink($chunkFile);
+        @unlink($chunkFile);
         return $finalpath;
 
     }
