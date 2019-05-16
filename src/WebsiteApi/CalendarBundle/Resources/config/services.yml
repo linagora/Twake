@@ -7,3 +7,7 @@ services:
     app.calendar.calendar:
         class: WebsiteApi\CalendarBundle\Services\CalendarCalendar
         arguments: ["@app.twake_doctrine", "@app.applications_api"]
+
+    app.calendar.export:
+        class: WebsiteApi\CalendarBundle\Services\CalendarExport
+        arguments: ["@app.twake_doctrine", "@app.calendar.event"]

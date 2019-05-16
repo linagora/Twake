@@ -29,3 +29,14 @@ calendar_calendar_remove:
     path:     /calendar/remove
     defaults: { _controller: TwakeCalendarBundle:Calendar:remove}
     methods: [POST]
+
+#Export
+calendar_export:
+    path:     /export
+    defaults: { _controller: TwakeCalendarBundle:Export:export}
+    methods: [POST,GET]
+
+calendar_token_export:
+    path:     /token_export
+    defaults: { _controller: TwakeCalendarBundle:Export:generateToken}
+    methods: [POST,GET]
