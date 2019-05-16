@@ -10,7 +10,7 @@ class DriveController extends Controller
 {
 
     public function saveAction (Request $request){
-        $capabilities = ["drive_create"];
+        $capabilities = ["drive_save"];
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
             return new JsonResponse($application);
@@ -63,13 +63,20 @@ class DriveController extends Controller
             return new JsonResponse($application);
         }
 
-        $user_id = null;
         $workspace_id = $request->request->get("workspace_id", null);
         $element_id = $request->request->get("element_id", null);
 
+        $user = null;
+        if (isset($object["user_id"])) {
+            $user = $this->get("app.users")->getById($object["user_id"], true);
+            if (!$user) {
+                return null;
+            }
+        }
+
         if ($workspace_id && $element_id) {
             $object = $this->get("app.drive")->find(
-                Array("workspace_id" => $workspace_id, "element_id" => $element_id), null);
+                Array("workspace_id" => $workspace_id, "element_id" => $element_id), $user);
         }
         else{
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
