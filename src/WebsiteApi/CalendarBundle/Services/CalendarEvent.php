@@ -325,7 +325,7 @@ class CalendarEvent
             $workspace_id = $calendar["workspace_id"];
             if (!in_array($workspace_id, $done)) {
                 $done[] = $workspace_id;
-                $this->applications_api->getResources($workspace_id, "workspace_calendar", $workspace_id);
+                $resources = array_merge($resources, $this->applications_api->getResources($workspace_id, "workspace_calendar", $workspace_id));
             }
         }
         $apps_ids = [];

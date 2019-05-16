@@ -71,20 +71,22 @@ class ApplicationApi
 
                         $group_id = $request->request->get("group_id", null);
 
-                        if (!$group_id && (count($capabilities) > 0 || count($privileges) > 0)) {
+                        $group_app = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp")->findOneBy(Array("app_id" => $application->getId(), "group" => $group_id));
+
+                        if ((!$group_id || !$group_app) && (count($capabilities) > 0 || count($privileges) > 0)) {
                             return Array("error" => "you_need_to_provide_a_valid_group_id_field_in_any_api_request", "group_id" => $group_id);
                         }
 
                         $can_do_it = false;
                         if ($group_id) {
-                            $can_do_it = $this->hasCapability($application->getId(), $group_id, $capabilities);
+                            $can_do_it = $this->hasCapability($application->getId(), $group_id, $capabilities, $group_app);
                         }
                         if (!$can_do_it) {
                             return Array("error" => "you_do_not_have_this_set_of_required_capabilities", "capabilities" => $capabilities);
                         }
 
                         if ($group_id) {
-                            $can_do_it = $this->hasPrivilege($application->getId(), $group_id, $privileges);
+                            $can_do_it = $this->hasPrivilege($application->getId(), $group_id, $privileges, $group_app);
                         }
                         if (!$can_do_it) {
                             return Array("error" => "you_do_not_have_this_set_of_required_privileges", "privileges" => $privileges);
@@ -102,10 +104,10 @@ class ApplicationApi
 
     }
 
-    public function hasPrivilege($app_id, $group_id, $privileges = [])
+    public function hasPrivilege($app_id, $group_id, $privileges = [], $group_app = null)
     {
         $app = $this->get($app_id);
-        $group_app = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp")->findOneBy(Array("app_id" => $app_id, "group" => $group_id));
+        $group_app = $group_app ? $group_app : $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp")->findOneBy(Array("app_id" => $app_id, "group" => $group_id));
 
         if (!$group_app || !$app) {
             return false;
@@ -149,10 +151,10 @@ class ApplicationApi
         return false;
     }
 
-    public function hasCapability($app_id, $group_id, $capabilities = [])
+    public function hasCapability($app_id, $group_id, $capabilities = [], $group_app)
     {
         $app = $this->get($app_id);
-        $group_app = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp")->findOneBy(Array("app_id" => $app_id, "group" => $group_id));
+        $group_app = $group_app ? $group_app : $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp")->findOneBy(Array("app_id" => $app_id, "group" => $group_id));
 
         if (!$group_app || !$app) {
             return false;

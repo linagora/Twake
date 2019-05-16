@@ -221,7 +221,7 @@ class ManagerAdapter
 
         try {
 //            var_dump($route);
-            var_dump(json_encode($data));
+            //var_dump(json_encode($data));
 //            error_log("update es : " . $route);
 //            error_log(json_encode($data));
             $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));

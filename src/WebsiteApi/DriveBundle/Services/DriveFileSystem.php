@@ -530,6 +530,28 @@ class DriveFileSystem
         $workspace = $object["workspace_id"];
         $directory = $object["parent_id"];
         $detached_file = $object["detached"];
+        $filename = $object["name"];
+        $isDirectory = $object["is_directory"];
+        $id = $object["id"];
+        $content = $object["content"];
+        if (!$content) {
+            $content = "";
+        }
+
+        $drive_files_repo = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
+        $drive_element = null;
+
+        if (isset($object["id"])) {
+            $drive_element = $drive_files_repo->findOneBy(Array("id" => $id));
+
+            if ($drive_element) {
+                $filename = isset($object["name"]) ? $filename : $drive_element->getName();
+                $detached_file = isset($object["detached"]) ? $detached_file : $drive_element->getDetachedFile();
+                $workspace = $drive_element->getWorkspaceId();
+            }
+
+            //TODO check access
+        }
 
         if ($directory == "root" || (!$detached_file && !$directory)) {
             $directory = $this->getRootEntity($workspace);
@@ -542,25 +564,6 @@ class DriveFileSystem
 
         if (!$directory) {
             return false;
-        }
-
-        $content = $object["content"];
-        if (!$content) {
-            $content = "";
-        }
-        $id = $object["id"];
-
-        $filename = $object["name"];
-        $isDirectory = $object["is_directory"];
-
-        $drive_files_repo = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
-
-        $drive_element = null;
-
-        if (isset($object["id"])) {
-            $drive_element = $drive_files_repo->findOneBy(Array("id" => $id));
-
-            //TODO check access
         }
 
         if ($drive_element == null) {
