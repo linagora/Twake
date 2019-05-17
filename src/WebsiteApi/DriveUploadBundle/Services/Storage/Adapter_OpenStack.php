@@ -15,7 +15,6 @@ use GuzzleHttp\Psr7\Stream;
 
 use OpenStack\Identity\v2\Service;
 
-
 class Adapter_OpenStack implements AdapterInterface{
 
     protected $root ;
@@ -87,7 +86,7 @@ class Adapter_OpenStack implements AdapterInterface{
         try {
 
             $options = [
-                'name' => "drive/" . $key_path,
+                'name' => "drive/workspace_id/file_id/" . $key_path,
                 'stream' => new Stream(fopen($chunkFile, 'rb')),
             ];
 
@@ -107,12 +106,10 @@ class Adapter_OpenStack implements AdapterInterface{
         $key = "OpenStack" . $param_bag->getSalt(). $param_bag->getKey();
         $key = md5($key);
 
-
         try {
-
             $stream = $this->openstack->objectStoreV1()
                 ->getContainer($this->openstack_bucket_name)
-                ->getObject("drive/" . $chunkFile)
+                ->getObject("drive/workspace_id/file_id/" . $chunkFile)
                 ->download();
 
             $tmpPath = "uploads" . DIRECTORY_SEPARATOR . $chunkFile;
@@ -120,8 +117,7 @@ class Adapter_OpenStack implements AdapterInterface{
             file_put_contents($tmpPath, $stream->getContents());
 
             $decodedPath = $this->decode($tmpPath, $param_bag);
-//            rename($decodedPath, $tmpPath);
-//
+
             return $tmpPath;
 
         } catch (Exception $e) {
@@ -155,7 +151,7 @@ class Adapter_OpenStack implements AdapterInterface{
 
         $finalpath = $lib->encryptFile($chunkFile , $key , $pathTemp);
         //error_log(print_r($finalpath,true));
-        //@unlink($chunkFile);
+        @unlink($chunkFile);
 
         return $finalpath;
     }

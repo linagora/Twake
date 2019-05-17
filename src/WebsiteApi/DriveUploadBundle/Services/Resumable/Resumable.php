@@ -11,8 +11,6 @@ use Monolog\Handler\StreamHandler;
 
 use WebsiteApi\DriveUploadBundle\Services\Storage\EncryptionBag;
 
-
-
 class Resumable
 {
     public $debug = false;
@@ -64,6 +62,7 @@ class Resumable
             }
         }
     }
+
     public function process()
     {
         if (!empty($this->resumableParams())) {
@@ -133,11 +132,20 @@ class Resumable
         return $this->extension;
     }
 
+    public function CreateObject($identifier,$filename,$extension){
+
+        $chunklist = Array();
+        $uploadstate = new UploadState($identifier,$filename,$extension,$chunklist);
+        $this->doctrine->persist($uploadstate);
+        $this->doctrine->flush();
+    }
+
     public function handleTestChunk()
     {
         $identifier = $this->resumableParam($this->resumableOption['identifier']);
         $filename = $this->resumableParam($this->resumableOption['filename']);
         $chunkNumber = $this->resumableParam($this->resumableOption['chunkNumber']);
+
         if (!$this->isChunkUploaded($identifier, $filename, $chunkNumber)) {
             return $this->response->header(204);
         } else {
@@ -159,56 +167,30 @@ class Resumable
         $finalname = $identifier.".chunk_".$chunkNumber;
 
         if (!$this->isChunkUploaded($identifier, $finalname, $chunkNumber)) {
-            if($chunkNumber == 1){
-                //error_log("passage");
-                $uploadstate = new UploadState($identifier,$filename,$this->getExtension());
-               // error_log(print_r($uploadstate,true));
-                $this->doctrine->persist($uploadstate);
-                //$nb = $uploadstate->getNbChunk();
-                //error_log(print_r($nb,true));
-                $this->doctrine->flush();
-            }
-            //error_log(print_r($filename,true));
+
+            $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
+//            error_log(print_r($chunkNumber,true));
+//            error_log(print_r($uploadstate,true));
             $chunkFile = $this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $finalname;
             $this->moveUploadedFile($file['tmp_name'], $chunkFile);
-            $param_bag = new EncryptionBag("testkey","let's try a salt", "AES");
+            $param_bag = new EncryptionBag("testkey","let's try a salt", "OpenSSL-2");
             $this->storagemanager->write($chunkFile,$param_bag);
+            $chunktoadd = "chunk_".$chunkNumber;
+            $uploadstate->addChunk($chunktoadd);
+            $this->doctrine->persist($uploadstate);
+            $this->doctrine->flush();
+            //error_log("apres write");
 
         }
         $numOfChunks = intval($totalSize / $chunkSize);
-
-        if ($numOfChunks == $chunkNumber && $this->isFileUploadComplete($finalname, $identifier, $chunkSize, $totalSize)) {
+        if ($uploadstate->getChunk() == $numOfChunks && count($uploadstate->getChunklist()) == $numOfChunks ) {
             $this->isUploadComplete = true;
-            $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
+            $uploadstate->setSuccess(true);
             $uploadstate->setChunk($chunkNumber);
-            //error_log(print_r($uploadstate->getChunk(),true));
             $this->doctrine->persist($uploadstate);
             $this->doctrine->flush();
-//            error_log(print_r($chunkNumber,true));
-//            $this->isUploadComplete = true;
-//            $this->createFileAndDeleteTmp($identifier, $finalname);
-//            $this->deleteFileAfterUpload();
-            $this->deleteFileAfterUpload($identifier,$uploadstate->getChunk());
        }
         return $chunkFile;
-    }
-
-    public function deleteFileAfterUpload($identifier, $numOfChunks){
-        for ($i = 1; $i <= $numOfChunks; $i++) {
-            $chemin = "uploads" . DIRECTORY_SEPARATOR . $identifier . ".chunk_" . $i;
-            //error_log(print_r($chemin,true));
-            @unlink($chemin);
-        }
-
-    }
-
-    public function deleteFileAfterDownload($identifier, $numOfChunks){
-        for ($i = 1; $i <= $numOfChunks; $i++) {
-            $chemin = "uploads" . DIRECTORY_SEPARATOR . $identifier . ".chunk_" . $i . ".decrypt";
-            //error_log(print_r($chemin,true));
-            @unlink($chemin);
-        }
-
     }
 
     public function isChunkUploaded($identifier, $filename, $chunkNumber)
@@ -271,24 +253,24 @@ class Resumable
     public function downloadFile()
     {
 
-//        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findBy(Array());
-//        foreach ($uploadstate as $upload){
-//            $this->doctrine->remove($upload);
-//        }
-//        $this->doctrine->flush();
-
-        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("filename" => "jack.png"));
-        $param_bag = new EncryptionBag("testkey","let's try a salt", "AES");
-        $path = $this->createFileAndDeleteTmp($uploadstate->getIdentifier(), "jack.png");
-        //error_log(print_r($path,true));
-        for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
-            $chunkFile = $uploadstate->getIdentifier() . ".chunk_" . $i;
-            $chunktoadd = $this->storagemanager->read($chunkFile,$param_bag);
-            $chunkFile = "uploads" . DIRECTORY_SEPARATOR . $chunkFile . ".decrypt";
-            $this->createFileFromChunks($chunkFile,$path);
+        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findBy(Array());
+        var_dump(count($uploadstate));
+        var_dump($uploadstate);
+        foreach ($uploadstate as $upload){
+            $this->doctrine->remove($upload);
         }
-        $this->deleteFileAfterDownload($uploadstate->getIdentifier(), $uploadstate->getChunk());
+        $this->doctrine->flush();
 
+//        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("filename" => "fichier1go.txt"));
+//        $param_bag = new EncryptionBag("testkey","let's try a salt", "OpenSSL-2");
+//        $path = $this->createFileAndDeleteTmp($uploadstate->getIdentifier(), "fichier1go.txt");
+//        //error_log(print_r($path,true));
+//        for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
+//            $chunkFile = $uploadstate->getIdentifier() . ".chunk_" . $i;
+//            $chunktoadd = $this->storagemanager->read($chunkFile,$param_bag);
+//            $chunkFile = "uploads" . DIRECTORY_SEPARATOR . $chunkFile . ".decrypt";
+//            $this->createFileFromChunks($chunkFile,$path);
+//        }
 
     }
 
@@ -356,6 +338,7 @@ class Resumable
         $file = new File($chunkFile);
         //var_dump($destFile->read());
         $destFile->append($file->read());
+        @unlink($chunkFile);
         $this->log('Append ', ['chunk file' => $chunkFile]);
 
         $this->log('End of create files from chunks');

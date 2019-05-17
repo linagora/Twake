@@ -46,18 +46,48 @@ class UploadState
     protected $chunk;
 
     /**
-     * @ORM\Column(name ="succes", type="twake_boolean")
+     * @ORM\Column(name ="success", type="twake_boolean")
      */
-    protected $succes;
+    protected $success;
 
-    public function __construct($identifier, $filename, $extension)
+    /**
+     * @ORM\Column(name ="chunklist", type="twake_text", nullable=true)
+     */
+    protected $chunklist;
+
+    public function __construct($identifier, $filename, $extension, $chunklist)
     {
         $this->identifier = $identifier;
         $this->filename = $filename;
         $this->extension = $extension;
         $this->chunk = 1;
-        $this->succes = false;
+        $this->chunklist = json_encode($chunklist);
+        $this->success = false;
 
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getChunklist()
+    {
+        return json_decode($this->chunklist);
+    }
+
+    /**
+     * @param mixed $chunklist
+     */
+    public function setChunklist($chunklist)
+    {
+        $this->chunklist = json_encode($chunklist);
+    }
+
+    public function addChunk($chunk){
+
+        $chunklist = $this->getChunklist();
+        array_push($chunklist ,$chunk);
+        $this->setChunklist($chunklist);
+        $this->setChunk(count($this->getChunklist()));
     }
 
     public function getAsArray()
@@ -68,6 +98,7 @@ class UploadState
             "identifier" => $this->getIdentifier(),
             "extension" => $this->getExtension(),
             "chunk" => $this->getChunk(),
+            "chunklist" => $this->getChunklist(),
             "succes" => $this->getSucces()
         );
         return $return;
@@ -157,17 +188,17 @@ class UploadState
     /**
      * @return mixed
      */
-    public function getSucces()
+    public function getSuccess()
     {
-        return $this->succes;
+        return $this->success;
     }
 
     /**
-     * @param mixed $succes
+     * @param mixed $success
      */
-    public function setSucces($succes)
+    public function setSuccess($success)
     {
-        $this->succes = $succes;
+        $this->success = $success;
     }
 
 

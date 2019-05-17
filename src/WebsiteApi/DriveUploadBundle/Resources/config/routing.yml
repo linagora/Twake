@@ -9,3 +9,9 @@ driveupload_index:
 driveupload_download:
   path:       /download
   defaults: { _controller: TwakeDriveUploadBundle:Upload:Downloadfile}
+
+driveupload_preprocess:
+  path:       /preprocess
+  defaults: { _controller: TwakeDriveUploadBundle:Upload:Preprocess}
+
+

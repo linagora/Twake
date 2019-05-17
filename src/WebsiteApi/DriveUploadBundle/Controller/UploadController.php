@@ -30,4 +30,11 @@ class UploadController extends Controller
         return $response;
     }
 
+    public function PreprocessAction(Request $request)
+    {
+        $response = new Response();
+        $this->get('driveupload.upload')->PreProcess($request);
+        return $response;
+    }
+
 }

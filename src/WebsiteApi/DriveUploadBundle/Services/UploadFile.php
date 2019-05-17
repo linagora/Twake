@@ -16,6 +16,14 @@ class UploadFile
         $this->resumable = $resumable;
     }
 
+    public function Preprocess($request){
+        $identifier = $request->request->all()["identifier"];
+        $name = $request->request->all()["name"];
+        $extension = $request->request->all()["extension"];
+        $this->resumable->CreateObject($identifier,$name,$extension);
+
+    }
+
     public function TestUpload($request, $response)
     {
 
