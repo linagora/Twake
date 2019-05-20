@@ -38,7 +38,8 @@ class RemoteController extends Controller
 
             $mail = $request->request->get("mail", "");
             $html = $request->request->get("html", "");
-            $this->get("app.twake_mailer")->sendHTML($mail, $html);
+            $attachments = $request->request->get("attachments", Array());
+            $this->get("app.twake_mailer")->sendHTML($mail, $html, $attachments);
 
             return new JsonResponse(Array("status" => "success"));
 

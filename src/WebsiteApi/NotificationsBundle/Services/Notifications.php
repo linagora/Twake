@@ -478,9 +478,9 @@ class Notifications implements NotificationsInterface
         ));
     }
 
-    public function sendCustomMail($mail, $template, $options = Array())
+    public function sendCustomMail($mail, $template, $data = Array(), $files = Array())
     {
-        $this->mailer->send($mail, $template, $options);
+        $this->mailer->send($mail, $template, $data, $files);
     }
 
     /**

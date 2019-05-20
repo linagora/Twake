@@ -35,7 +35,8 @@ class TwakeMailer
 
     }
 
-	public function send($mail, $template, $data = Array(), $templateDirectory = "TwakeCoreBundle:Mail", $pdfPathFiles = Array()){
+    public function send($mail, $template, $data = Array(), $attachments = Array(), $templateDirectory = "TwakeCoreBundle:Mail")
+    {
 
 
 		$data["mail"] = $mail;
@@ -59,25 +60,33 @@ class TwakeMailer
 		);
 
         if ($this->standalone) {
-            $this->sendHtml($mail, $html, $pdfPathFiles);
+            $this->sendHtml($mail, $html, $attachments);
         } else {
-            $this->sendHtmlViaRemote($mail, $html);
+            $this->sendHtmlViaRemote($mail, $html, $attachments);
         }
 
     }
 
-    public function sendHtmlViaRemote($mail, $html)
+    public function sendHtmlViaRemote($mail, $html, $attachments = Array())
     {
+        $final_attachments = [];
+        foreach ($attachments as $attachment) {
+            if ($attachment["type"] == "raw") {
+                $final_attachments[] = $attachment;
+            }
+        }
+
         $masterServer = "https://app.twakeapp.com/api/remote";
         $data = Array(
             "licenceKey" => $this->licenceKey,
             "mail" => $mail,
-            "html" => $html
+            "html" => $html,
+            "attachments" => $final_attachments
         );
-        $result = $this->circle->post($masterServer . "/mail", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+        $this->circle->post($masterServer . "/mail", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
     }
 
-    public function sendHtml($mail, $html, $pdfPathFiles = Array())
+    public function sendHtml($mail, $html, $attachments = Array())
     {
         //[REMOVE_ONPREMISE]
 
@@ -115,8 +124,13 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
                 'text/plain'
             );
 
-        foreach ( $pdfPathFiles as $pathFile) {
-            $message->attach(Swift_Attachment::fromPath($pathFile));
+        foreach ($attachments as $attachment) {
+            if ($attachment["type"] == "path") {
+                $message->attach(Swift_Attachment::fromPath($attachment["path"]));
+            }
+            if ($attachment["type"] == "raw") {
+                $message->attach(new Swift_Attachment($attachment["data"], $attachment["filename"], $attachment["mimetype"]));
+            }
         }
 
 
