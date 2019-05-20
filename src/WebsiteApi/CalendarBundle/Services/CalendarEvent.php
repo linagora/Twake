@@ -302,7 +302,7 @@ class CalendarEvent
                             "sender_fullname" => $current_user ? ("@" . $current_user->getUsername()) : null,
                             "sender_email" => $current_user ? $current_user->getEmail() : null
                         ),
-                        Array("type" =>"raw", "data" => $this->calendarExport->generateIcs([$event]), "filename" => "event.ics", "mimetype" =>"text/calendar")
+                        [Array("type" => "raw", "data" => $this->calendarExport->generateIcs([$event->getAsArray()]), "filename" => "event.ics", "mimetype" => "text/calendar")]
                     );
                 } else if ($old_event["from"] != $event->getAsArray()["from"] || $old_event["to"] != $event->getAsArray()["to"]
                     || $old_event["title"] != $event->getAsArray()["title"] || $old_event["location"] != $event->getAsArray()["location"]
@@ -316,7 +316,7 @@ class CalendarEvent
                             "sender_fullname" => $current_user ? ("@" . $current_user->getUsername()) : null,
                             "sender_email" => $current_user ? $current_user->getEmail() : null
                         ),
-                        Array("type" =>"raw", "data" => $this->calendarExport->generateIcs([$event]), "filename" => "event.ics", "mimetype" =>"text/calendar")
+                        [Array("type" => "raw", "data" => $this->calendarExport->generateIcs([$event->getAsArray()]), "filename" => "event.ics", "mimetype" => "text/calendar")]
 
 
                     );

@@ -10,4 +10,4 @@ services:
 
     app.calendar.export:
         class: WebsiteApi\CalendarBundle\Services\CalendarExport
-        arguments: ["@app.twake_doctrine", "@app.calendar.event"]
+        arguments: ["@app.twake_doctrine"]

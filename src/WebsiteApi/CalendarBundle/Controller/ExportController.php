@@ -12,7 +12,7 @@ class ExportController extends Controller
         //$token = $request->request->get("token");
         $token = "23d17e55f50460fbc08b36360a2ffe6db4975dcaeb61c45852a18836ded1ae7e";
         if ($token){
-            return $this->get("app.calendar.export")->exportCalendar($token);
+            return $this->get("app.calendar.export")->exportCalendar($token, $this->get("app.calendar.event"));
         }
         else
             return new JsonResponse("Errors : Token not found");

@@ -12,9 +12,8 @@ use WebsiteApi\CalendarBundle\Entity\ExportToken;
 class CalendarExport
 {
 
-    public function __construct($doctrine, $calendarEvent)
+    public function __construct($doctrine)
     {
-        $this->calendarEvent = $calendarEvent;
         $this->doctrine = $doctrine;
     }
 
@@ -42,7 +41,8 @@ class CalendarExport
     }
 
 
-    public function exportCalendar($token){
+    public function exportCalendar($token, $calendarEventService)
+    {
         $entity = $this->doctrine->getRepository("TwakeCalendarBundle:ExportToken")->findOneBy(Array("user_token" =>$token ));
         if ($entity) {
             $options = Array();
@@ -55,7 +55,7 @@ class CalendarExport
             $user_entity = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $entity->getUserId()));
 
 
-            $events = $this->calendarEvent->get($options, $user_entity);
+            $events = $calendarEventService->get($options, $user_entity);
 
             if ($events) {
                 $vCalendar = $this->generateIcs($events);
@@ -87,6 +87,7 @@ class CalendarExport
 
         $vCalendar = new Component\Calendar('twakeapp.com');
         foreach ($events as $evt) {
+
             if (isset($evt["from"])) {
                 $dateStart = new \DateTime(date("c", (int)$evt["from"]), $time_zone);
             } else {
@@ -98,88 +99,109 @@ class CalendarExport
             } else {
                 return (new JsonResponse("Error : Date[to] inset"));
             }
+
             $vEvent = new Component\Event();
-            $rrule = $evt["repetition_definition"]["rrule"];
-            $rrule = explode("nRRULE",$rrule)[1];
 
-            foreach (explode(";", $rrule) as $parameter){
-                $data = explode("=", $parameter);
-                $properties["key"][] = $data[0];
-                $properties["value"][] = $data[1];
-            }
+            if ($evt["repetition_definition"]) {
+                try {
+                    $rrule = $evt["repetition_definition"]["rrule"];
+                    $rrule = explode("nRRULE", $rrule)[1];
 
-            foreach($properties as $p)
-            {
-                foreach($p as $key => $value){
-                    switch ($value){
-                        case ":FREQ" : $freq = $key;
+                    foreach (explode(";", $rrule) as $parameter) {
+                        $data = explode("=", $parameter);
+                        $properties["key"][] = $data[0];
+                        $properties["value"][] = $data[1];
+                    }
+
+                    foreach ($properties as $p) {
+                        foreach ($p as $key => $value) {
+                            switch ($value) {
+                                case ":FREQ" :
+                                    $freq = $key;
+                                    break;
+                                case ":INTERVAL" :
+                                    $interval = $key;
+                                    break;
+                                case "UNTIL" :
+                                    $until = $key;
+                                    break;
+                                case "COUNT" :
+                                    $count = $key;
+                                    break;
+                                Default:
+                            }
+
+                        }
+                    }
+                    $freq = $properties["value"][$freq];
+                    $interval = $properties["value"][$interval];
+                    $until = $properties["value"][$until];
+                    if ($count)
+                        $count = $properties["value"][$count];
+                    $stdRecurrenceRule = new \Eluceo\iCal\Property\Event\RecurrenceRule();
+
+                    switch ($freq) {
+                        case "WEEKLY" :
+                            $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_WEEKLY);
                             break;
-                        case ":INTERVAL" : $interval = $key;
+                        case "YEARLY" :
+                            $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_YEARLY);
                             break;
-                        case "UNTIL" : $until = $key;
+                        case "MONTHLY" :
+                            $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_MONTHLY);
                             break;
-                        case "COUNT" : $count = $key;
+                        case "DAILY" :
+                            $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_DAILY);
+                            break;
+                        case "HOURLY" :
+                            $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_HOURLY);
+                            break;
+                        case "MINUETELY" :
+                            $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_MINUETELY);
+                            break;
+                        case "SECONDLY" :
+                            $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_SECONDLY);
                             break;
                         Default:
                     }
 
-                }
-            }
-            $freq = $properties["value"][$freq];
-            $interval = $properties["value"][$interval];
-            $until = $properties["value"][$until];
-            if ($count)
-                $count = $properties["value"][$count];
-            $stdRecurrenceRule = new \Eluceo\iCal\Property\Event\RecurrenceRule();
 
-            switch ($freq){
-                case "WEEKLY" :
                     $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_WEEKLY);
-                    break;
-                case "YEARLY" :
-                    $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_YEARLY);
-                    break;
-                case "MONTHLY" :
-                    $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_MONTHLY);
-                    break;
-                case "DAILY" :
-                    $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_DAILY);
-                    break;
-                case "HOURLY" :
-                    $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_HOURLY);
-                    break;
-                case "MINUETELY" :
-                    $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_MINUETELY);
-                    break;
-                case "SECONDLY" :
-                    $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_SECONDLY);
-                    break;
-                Default:
-            }
+                    $stdRecurrenceRule->setUntil(\DateTime::createFromFormat("Ymd\THis\Z", $until));
+                    $stdRecurrenceRule->setInterval($interval);
 
+                    switch ($properties["key"][3]) {
+                        case "BYDAY" :
+                            $stdRecurrenceRule->setByDay($properties["value"][3]);
+                            break;
+                        case "BYMONTH" :
+                            $stdRecurrenceRule->setByMonth($properties["value"][3]);
+                            break;
+                        case "BYYEARDAY" :
+                            $stdRecurrenceRule->setByYearDay($properties["value"][3]);
+                            break;
+                        case "BYWEEKNO" :
+                            $stdRecurrenceRule->setByWeekNo($properties["value"][3]);
+                            break;
+                        case "BYMONTHDAY" :
+                            $stdRecurrenceRule->setByMonthDay($properties["value"][3]);
+                            break;
+                        case "BYHOUR" :
+                            $stdRecurrenceRule->setByHour($properties["value"][3]);
+                            break;
+                        case "BYMINUTE" :
+                            $stdRecurrenceRule->setByMinute($properties["value"][3]);
+                            break;
+                        case "BYSECOND" :
+                            $stdRecurrenceRule->setBySecond($properties["value"][3]);
+                            break;
+                        Default:
+                    }
 
-            $stdRecurrenceRule->setFreq(\Eluceo\iCal\Property\Event\RecurrenceRule::FREQ_WEEKLY);
-            $stdRecurrenceRule->setUntil(\DateTime::createFromFormat("Ymd\THis\Z", $until));
-            $stdRecurrenceRule->setInterval($interval);
-
-            switch ($properties["key"][3]){
-                case "BYDAY" : $stdRecurrenceRule->setByDay($properties["value"][3]);
-                    break;
-                case "BYMONTH" : $stdRecurrenceRule->setByMonth($properties["value"][3]);
-                    break;
-                case "BYYEARDAY" : $stdRecurrenceRule->setByYearDay($properties["value"][3]);
-                    break;
-                case "BYWEEKNO" : $stdRecurrenceRule->setByWeekNo($properties["value"][3]);
-                    break;
-                case "BYMONTHDAY" : $stdRecurrenceRule->setByMonthDay($properties["value"][3]);
-                    break;
-                case "BYHOUR" : $stdRecurrenceRule->setByHour($properties["value"][3]);
-                    break;
-                case "BYMINUTE" : $stdRecurrenceRule->setByMinute($properties["value"][3]);
-                    break;
-                case "BYSECOND" : $stdRecurrenceRule->setBySecond($properties["value"][3]);
-                    break;
-                Default:
+                    $vEvent->setRecurrenceRule($stdRecurrenceRule);
+                } catch (\Exception $e) {
+                    //No recurence !
+                }
             }
 
             $vEvent
@@ -191,8 +213,7 @@ class CalendarExport
                 ->setDescription(isset($evt["description"]) ? $evt["description"] : "")
                 ->setDuration($evt["repetition_definition"]["duration"])
                 ->setLocation(isset($evt["location"]) ? $evt["location"] : "")
-                ->setUniqueId($evt["id"])
-                ->setRecurrenceRule($stdRecurrenceRule);
+                ->setUniqueId($evt["id"]);
 
             $vCalendar->addComponent($vEvent);
         }
