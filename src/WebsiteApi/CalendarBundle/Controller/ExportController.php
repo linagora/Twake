@@ -18,6 +18,7 @@ class ExportController extends Controller
             return new JsonResponse("Errors : Token not found");
     }
 
+
     public function generateTokenAction(Request $request){
         error_log("generateTokenAction");
         $user = $this->getUser();
