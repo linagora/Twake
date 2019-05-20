@@ -11,9 +11,10 @@ use WebsiteApi\CalendarBundle\Entity\EventCalendar;
 class CalendarEvent
 {
 
-    function __construct($entity_manager, $enc_pusher, $application_api, $notifications)
+    function __construct($entity_manager, $enc_pusher, $application_api, $notifications, $calendarExport)
     {
         $this->doctrine = $entity_manager;
+        $this->calendarExport = $calendarExport;
         $this->enc_pusher = $enc_pusher;
         $this->applications_api = $application_api;
         $this->notifications = $notifications;
@@ -300,7 +301,8 @@ class CalendarEvent
                             "user_timezone_text" => str_replace("+-", "-", $current_user ? ("GMT+" . ($current_user->getTimezone() / 60)) : "GMT+0"),
                             "sender_fullname" => $current_user ? ("@" . $current_user->getUsername()) : null,
                             "sender_email" => $current_user ? $current_user->getEmail() : null
-                        )
+                        ),
+                        Array("type" =>"raw", "data" => $this->calendarExport->generateIcs([$event]), "filename" => "event.ics", "mimetype" =>"text/calendar")
                     );
                 } else if ($old_event["from"] != $event->getAsArray()["from"] || $old_event["to"] != $event->getAsArray()["to"]
                     || $old_event["title"] != $event->getAsArray()["title"] || $old_event["location"] != $event->getAsArray()["location"]
@@ -313,7 +315,10 @@ class CalendarEvent
                             "user_timezone_text" => str_replace("+-", "-", $current_user ? ("GMT+" . ($current_user->getTimezone() / 60)) : "GMT+0"),
                             "sender_fullname" => $current_user ? ("@" . $current_user->getUsername()) : null,
                             "sender_email" => $current_user ? $current_user->getEmail() : null
-                        )
+                        ),
+                        Array("type" =>"raw", "data" => $this->calendarExport->generateIcs([$event]), "filename" => "event.ics", "mimetype" =>"text/calendar")
+
+
                     );
                 }
             }
