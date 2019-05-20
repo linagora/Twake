@@ -122,6 +122,10 @@ class CalendarCalendar
     private function updateConnectors($calendar_entity, $connectors_ids, $current_user_id = null)
     {
 
+        if (!$connectors_ids) {
+            $connectors_ids = [];
+        }
+
         $current_connectors = $calendar_entity->getConnectors();
         $current_connectors = $current_connectors ? $current_connectors : [];
 
@@ -143,8 +147,8 @@ class CalendarCalendar
 
         if ($did_something) {
             $calendar_entity->setConnectors($connectors_ids);
-            $this->entity_manager->persist($calendar_entity);
-            $this->entity_manager->flush();
+            $this->doctrine->persist($calendar_entity);
+            $this->doctrine->flush();
         }
 
     }

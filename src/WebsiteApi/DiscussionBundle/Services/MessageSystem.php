@@ -399,33 +399,34 @@ class MessageSystem
 
 
             //Notify connectors
-
-            if ($channel->getAppId()) {
-                $apps_ids = [$channel->getAppId()];
-            } else {
-                $resources = $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "channel", $channel->getId());
-                $resources = array_merge($resources, $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "workspace", $channel->getOriginalWorkspaceId()));
-                $apps_ids = [];
-                foreach ($resources as $resource) {
-                    if ($resource->getResourceId() == $channel->getOriginalWorkspaceId() && !in_array("new_message_in_workspace", $resource->getApplicationHooks())) {
-                        continue; //Si resource sur tout le workspace et qu'on a pas le hook new_message_in_workspace on a pas le droit
-                    }
-                    if (in_array("new_message", $resource->getApplicationHooks()) || in_array("new_message_in_workspace", $resource->getApplicationHooks())) {
-                        $apps_ids[] = $resource->getApplicationId();
+            if ($channel->getOriginalWorkspaceId()) {
+                if ($channel->getAppId()) {
+                    $apps_ids = [$channel->getAppId()];
+                } else {
+                    $resources = $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "channel", $channel->getId());
+                    $resources = array_merge($resources, $this->applications_api->getResources($channel->getOriginalWorkspaceId(), "workspace", $channel->getOriginalWorkspaceId()));
+                    $apps_ids = [];
+                    foreach ($resources as $resource) {
+                        if ($resource->getResourceId() == $channel->getOriginalWorkspaceId() && !in_array("new_message_in_workspace", $resource->getApplicationHooks())) {
+                            continue; //Si resource sur tout le workspace et qu'on a pas le hook new_message_in_workspace on a pas le droit
+                        }
+                        if (in_array("new_message", $resource->getApplicationHooks()) || in_array("new_message_in_workspace", $resource->getApplicationHooks())) {
+                            $apps_ids[] = $resource->getApplicationId();
+                        }
                     }
                 }
-            }
-            if (count($apps_ids) > 0) {
-                foreach ($apps_ids as $app_id) {
-                    if ($app_id) {
-                        $data = Array(
-                            "message" => $message->getAsArray(),
-                            "channel" => $channel->getAsArray()
-                        );
-                        if ($did_create) {
-                            $this->applications_api->notifyApp($app_id, "hook", "new_message", $data);
-                        } else if ($channel->getAppId()) { //Only private channels with app can receive edit hook
-                            $this->applications_api->notifyApp($app_id, "hook", "edit_message", $data);
+                if (count($apps_ids) > 0) {
+                    foreach ($apps_ids as $app_id) {
+                        if ($app_id) {
+                            $data = Array(
+                                "message" => $message->getAsArray(),
+                                "channel" => $channel->getAsArray()
+                            );
+                            if ($did_create) {
+                                $this->applications_api->notifyApp($app_id, "hook", "new_message", $data);
+                            } else if ($channel->getAppId()) { //Only private channels with app can receive edit hook
+                                $this->applications_api->notifyApp($app_id, "hook", "edit_message", $data);
+                            }
                         }
                     }
                 }
