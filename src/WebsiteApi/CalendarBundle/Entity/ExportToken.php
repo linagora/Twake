@@ -25,7 +25,7 @@ class ExportToken
     private $id;
 
     /**
-     * @ORM\Column(name="workspaceid", type="integer")
+     * @ORM\Column(name="workspaceid", type="twake_timeuuid")
      */
     private $workspaceid;
 
@@ -36,23 +36,23 @@ class ExportToken
     private $calendars;
 
     /**
-     * @ORM\Column(name="user_token", type="twake_timeuuid")
+     * @ORM\Column(name="user_token", type="twake_text")
      */
-    private $token;
+    private $user_token;
 
     /**
      * ExportToken constructor.
      * @param $user_id
      * @param $workspaceid
      * @param $calendars
-     * @param $token
+     * @param $user_token
      */
-    public function __construct($user_id, $workspaceid, $calendars, $token)
+    public function __construct($user_id, $workspaceid, $calendars, $user_token)
     {
         $this->user_id = $user_id;
         $this->workspaceid = $workspaceid;
         $this->setCalendars($calendars);
-        $this->token = $token;
+        $this->user_token = $user_token;
     }
 
     /**
@@ -124,15 +124,15 @@ class ExportToken
      */
     public function getToken()
     {
-        return $this->token;
+        return $this->user_token;
     }
 
     /**
-     * @param mixed $token
+     * @param mixed $user_token
      */
     public function setToken($token)
     {
-        $this->token = $token;
+        $this->user_token = $token;
     }
 
 
