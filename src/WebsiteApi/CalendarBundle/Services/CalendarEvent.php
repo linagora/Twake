@@ -47,22 +47,25 @@ class CalendarEvent
             return false;
         }
 
-        if ($mode == "workspace") {
+        $events_ids = [];
+        if ($mode == "workspace" || $mode == "both") {
 
 
             $events_links = [];
             foreach (($options["calendar_list"] ? $options["calendar_list"] : []) as $object) {
                 $workspace_id = $object["workspace_id"];
                 $calendar_id = $object["calendar_id"];
-                $events_links = array_merge($this->doctrine->getRepository("TwakeCalendarBundle:EventCalendar")->findRange(Array("workspace_id" => $workspace_id, "calendar_id" => $calendar_id), "sort_date", $after_ts, $before_ts));
+                if ($calendar_id && $workspace_id) {
+                    $events_links = array_merge($this->doctrine->getRepository("TwakeCalendarBundle:EventCalendar")->findRange(Array("workspace_id" => $workspace_id, "calendar_id" => $calendar_id), "sort_date", $after_ts, $before_ts));
+                }
             }
 
-            $events_ids = [];
             foreach ($events_links as $event_link) {
                 $events_ids[] = $event_link->getEventId();
             }
 
-        } else {
+        }
+        if ($mode == "mine" || $mode == "both") {
 
             if (!isset($options["users_ids_or_mails"]) && $current_user) {
                 $options["users_ids_or_mails"] = [$current_user->getId()];
@@ -73,7 +76,6 @@ class CalendarEvent
                 $events_links = array_merge($this->doctrine->getRepository("TwakeCalendarBundle:EventUser")->findRange(Array("user_id_or_mail" => $user_id_or_mail), "sort_date", $after_ts, $before_ts));
             }
 
-            $events_ids = [];
             foreach ($events_links as $event_link) {
                 $events_ids[] = $event_link->getEventId();
             }
