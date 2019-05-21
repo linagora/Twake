@@ -96,7 +96,7 @@ class CalendarCalendar
         $resources = $this->applications_api->getResources($workspace_id, "workspace_calendar", $workspace_id);
         $apps_ids = [];
         foreach ($resources as $resource) {
-            if (in_array("new_calendar", $resource->getApplicationHooks())) {
+            if (in_array("calendar", $resource->getApplicationHooks())) {
                 $apps_ids[] = $resource->getApplicationId();
             }
         }

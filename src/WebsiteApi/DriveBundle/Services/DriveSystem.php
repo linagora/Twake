@@ -121,7 +121,7 @@ class DriveSystem
         $resources = $this->applications_api->getResources($drive_element->getWorkspaceId(), "workspace_drive", $drive_element->getWorkspaceId());
         $apps_ids = [];
         foreach ($resources as $resource) {
-            if (in_array("new_file", $resource->getApplicationHooks())) {
+            if (in_array("file", $resource->getApplicationHooks())) {
                 $apps_ids[] = $resource->getApplicationId();
             }
         }

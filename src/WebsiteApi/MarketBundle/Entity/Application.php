@@ -602,11 +602,11 @@ class Application extends SearchableObject
             //"workspace_remove" //Supprimer un espace de travail
         );
         $return["available_hooks"] = Array(
-            "new_message", //Nouveau message hook dans un channel particulier (si écouté)
-            "new_message_in_workspace", //Nouveau message hook dans tous le workspace
-            "new_calendar",
-            "new_event",
-            "new_file"
+            "message", //Nouveau message hook dans un channel particulier (si écouté)
+            "message_in_workspace", //Nouveau message hook dans tous le workspace
+            "calendar",
+            "event",
+            "file"
         );
         $return["available_categories"] = Array(
             "bots",

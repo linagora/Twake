@@ -126,10 +126,10 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
 
         foreach ($attachments as $attachment) {
             if ($attachment["type"] == "path") {
-                $message->attach(Swift_Attachment::fromPath($attachment["path"]));
+                $message->attach(\Swift_Attachment::fromPath($attachment["path"]));
             }
             if ($attachment["type"] == "raw") {
-                $message->attach(new Swift_Attachment($attachment["data"], $attachment["filename"], $attachment["mimetype"]));
+                $message->attach(new \Swift_Attachment($attachment["data"], $attachment["filename"], $attachment["mimetype"]));
             }
         }
 

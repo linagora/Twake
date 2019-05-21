@@ -149,6 +149,33 @@ class CalendarEvent
 
             $this->removeEventDependancesById($id);
 
+            //Notify connectors
+            $resources = [];
+            $done = [];
+            foreach ($event->getWorkspacesCalendars() as $calendar) {
+                $workspace_id = $calendar["workspace_id"];
+                if (!in_array($workspace_id, $done)) {
+                    $done[] = $workspace_id;
+                    $resources = array_merge($resources, $this->applications_api->getResources($workspace_id, "workspace_calendar", $workspace_id));
+                }
+            }
+            $apps_ids = [];
+            foreach ($resources as $resource) {
+                if (in_array("event", $resource->getApplicationHooks())) {
+                    $apps_ids[] = $resource->getApplicationId();
+                }
+            }
+            if (count($apps_ids) > 0) {
+                foreach ($apps_ids as $app_id) {
+                    if ($app_id) {
+                        $data = Array(
+                            "event" => $event->getAsArray()
+                        );
+                        $this->applications_api->notifyApp($app_id, "hook", "remove_event", $data);
+                    }
+                }
+            }
+
             $evt = Array(
                 "client_id" => "system",
                 "action" => "remove",
@@ -285,43 +312,52 @@ class CalendarEvent
         foreach ($event->getParticipants() as $participant) {
             if (filter_var($participant["user_id_or_mail"], FILTER_VALIDATE_EMAIL)) {
                 $mail = $participant["user_id_or_mail"];
-                $not_in_previous_participants = true;
-                foreach ($old_participants as $old_participant) {
-                    if ($old_participant["user_id_or_mail"] == $mail) {
-                        $not_in_previous_participants = false;
-                        break;
-                    }
+            } else if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
+                $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
+                if (!$user || ($current_user && $user->getId() == $current_user->getId())) {
+                    continue;
                 }
-                if ($did_create || $not_in_previous_participants) {
-                    $this->notifications->sendCustomMail(
-                        $mail, "event_invitation", Array(
-                            "_language" => $current_user ? $current_user->getLanguage() : "en",
-                            "event" => $event->getAsArray(),
-                            "user_timezone_delay" => $current_user ? (intval($current_user->getTimezone())) : null,
-                            "user_timezone_text" => str_replace("+-", "-", $current_user ? ("GMT+" . ($current_user->getTimezone() / 60)) : "GMT+0"),
-                            "sender_fullname" => $current_user ? ("@" . $current_user->getUsername()) : null,
-                            "sender_email" => $current_user ? $current_user->getEmail() : null
-                        ),
-                        [Array("type" => "raw", "data" => $this->calendarExport->generateIcs([$event->getAsArray()]), "filename" => "event.ics", "mimetype" => "text/calendar")]
-                    );
-                } else if ($old_event["from"] != $event->getAsArray()["from"] || $old_event["to"] != $event->getAsArray()["to"]
-                    || $old_event["title"] != $event->getAsArray()["title"] || $old_event["location"] != $event->getAsArray()["location"]
-                    || $old_event["description"] != $event->getAsArray()["description"]) {
-                    $this->notifications->sendCustomMail(
-                        $mail, "event_invitation_updated", Array(
-                            "_language" => $current_user ? $current_user->getLanguage() : "en",
-                            "event" => $event->getAsArray(),
-                            "user_timezone_delay" => $current_user ? (intval($current_user->getTimezone())) : null,
-                            "user_timezone_text" => str_replace("+-", "-", $current_user ? ("GMT+" . ($current_user->getTimezone() / 60)) : "GMT+0"),
-                            "sender_fullname" => $current_user ? ("@" . $current_user->getUsername()) : null,
-                            "sender_email" => $current_user ? $current_user->getEmail() : null
-                        ),
-                        [Array("type" => "raw", "data" => $this->calendarExport->generateIcs([$event->getAsArray()]), "filename" => "event.ics", "mimetype" => "text/calendar")]
-
-
-                    );
+                $mail = $user->getEmail();
+            } else {
+                continue;
+            }
+            $not_in_previous_participants = true;
+            foreach ($old_participants as $old_participant) {
+                if ($old_participant["user_id_or_mail"] == $mail) {
+                    $not_in_previous_participants = false;
+                    break;
                 }
             }
+            if ($did_create || $not_in_previous_participants) {
+                $this->notifications->sendCustomMail(
+                    $mail, "event_invitation", Array(
+                    "_language" => $current_user ? $current_user->getLanguage() : "en",
+                    "event" => $event->getAsArray(),
+                    "user_timezone_delay" => $current_user ? (intval($current_user->getTimezone())) : null,
+                    "user_timezone_text" => str_replace("+-", "-", $current_user ? ("GMT+" . ($current_user->getTimezone() / 60)) : "GMT+0"),
+                    "sender_fullname" => $current_user ? ("@" . $current_user->getUsername()) : null,
+                    "sender_email" => $current_user ? $current_user->getEmail() : null
+                ),
+                    [Array("type" => "raw", "data" => $this->calendarExport->generateIcs([$event->getAsArray()]), "filename" => "event.ics", "mimetype" => "text/calendar")]
+                );
+            } else if ($old_event["from"] != $event->getAsArray()["from"] || $old_event["to"] != $event->getAsArray()["to"]
+                || $old_event["title"] != $event->getAsArray()["title"] || $old_event["location"] != $event->getAsArray()["location"]
+                || $old_event["description"] != $event->getAsArray()["description"]) {
+                $this->notifications->sendCustomMail(
+                    $mail, "event_invitation_updated", Array(
+                    "_language" => $current_user ? $current_user->getLanguage() : "en",
+                    "event" => $event->getAsArray(),
+                    "user_timezone_delay" => $current_user ? (intval($current_user->getTimezone())) : null,
+                    "user_timezone_text" => str_replace("+-", "-", $current_user ? ("GMT+" . ($current_user->getTimezone() / 60)) : "GMT+0"),
+                    "sender_fullname" => $current_user ? ("@" . $current_user->getUsername()) : null,
+                    "sender_email" => $current_user ? $current_user->getEmail() : null
+                ),
+                    [Array("type" => "raw", "data" => $this->calendarExport->generateIcs([$event->getAsArray()]), "filename" => "event.ics", "mimetype" => "text/calendar")]
+
+
+                );
+            }
+
         }
 
 
@@ -337,7 +373,7 @@ class CalendarEvent
         }
         $apps_ids = [];
         foreach ($resources as $resource) {
-            if (in_array("new_event", $resource->getApplicationHooks())) {
+            if (in_array("event", $resource->getApplicationHooks())) {
                 $apps_ids[] = $resource->getApplicationId();
             }
         }
