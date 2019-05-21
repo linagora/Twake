@@ -39,6 +39,11 @@ class EventUser
     private $event_id;
 
     /**
+     * @ORM\Column(name="email", type="twake_text")
+     */
+    private $email = "";
+
+    /**
      * @ORM\Column(name="accept_status", type="twake_text")
      */
     private $accept_status = "pending";
@@ -106,6 +111,22 @@ class EventUser
     public function setAcceptStatus($accept_status)
     {
         $this->accept_status = $accept_status;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param mixed $email
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
     }
 
 

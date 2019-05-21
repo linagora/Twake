@@ -39,7 +39,7 @@ class CalendarController extends Controller
     }
 
     public function saveEventAction (Request $request){
-        $capabilities = ["calendar_event_create"];
+        $capabilities = ["calendar_event_save"];
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
             return new JsonResponse($application);

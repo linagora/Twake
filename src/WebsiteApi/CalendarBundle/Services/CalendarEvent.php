@@ -445,13 +445,16 @@ class CalendarEvent
                     if (!$user) {
                         continue;
                     }
+                    $mail = $user->getEmail();
                 } else {
                     continue;
                 }
 
+                $fixed_participant["email"] = $mail;
                 $participant = $fixed_participant;
 
                 $user = new EventUser($participant["user_id_or_mail"], $event->getId(), $sort_date);
+                $user->setEmail($mail);
                 $this->doctrine->persist($user);
 
                 $updated_participants_fixed[] = $participant;

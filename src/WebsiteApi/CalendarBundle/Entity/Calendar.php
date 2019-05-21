@@ -158,6 +158,7 @@ class Calendar extends FrontObject
     {
         return Array(
             "id" => $this->getId(),
+            "front_id" => $this->getFrontId(),
             "title" => $this->getTitle(),
             "color" => $this->getColor(),
             "connectors" => $this->getConnectors(),

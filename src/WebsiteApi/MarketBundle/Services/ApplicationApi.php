@@ -151,7 +151,7 @@ class ApplicationApi
         return false;
     }
 
-    public function hasCapability($app_id, $group_id, $capabilities = [], $group_app)
+    public function hasCapability($app_id, $group_id, $capabilities = [], $group_app = null)
     {
         $app = $this->get($app_id);
         $group_app = $group_app ? $group_app : $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp")->findOneBy(Array("app_id" => $app_id, "group" => $group_id));

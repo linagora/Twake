@@ -60,7 +60,7 @@ class MessageController extends Controller
     public function saveMessageAction(Request $request)
     {
 
-        $capabilities = ["messages_send"];
+        $capabilities = ["messages_save"];
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
