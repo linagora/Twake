@@ -20,17 +20,34 @@ class GlobalSearchController extends Controller
 
     }
 
-    public function GlobalSearchUWCAction(Request $request)
+    public function QuickSearchAction(Request $request)
     {
-        $this->get('globalsearch.globaluwc')->GlobalSearch();
+        $current_user = $this->getUser();
+        //error_log(print_r($current_user,true));
+        $group_id="480f11b4-4747-11e9-aa8e-0242ac120005";
+        if(!(isset($current_user)))
+        {
+            $current_user_id = "d8a1136c-544e-11e9-9f85-0242ac120005";
+        }
+        else
+        {
+            $current_user_id= $current_user->getId();
+        }
+        //var_dump($current_user);
+        $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id,$group_id);
+        $data = Array("data" => $globalresult);
+        //var_dump($data);
+        return new JsonResponse($data);
 
-        return new Response("Hello !");
     }
 
     public function GlobalSearchMFAction(Request $request)
     {
-        $this->get('globalsearch.globalmf')->GlobalSearch();
 
-        return new Response("Hello !");
+        $globalresult = $this->get('globalsearch.globalmf')->GlobalSearch();
+        $data = Array("data" => $globalresult);
+
+        return new JsonResponse($data);
+
     }
 }

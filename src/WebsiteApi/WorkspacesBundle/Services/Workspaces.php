@@ -882,35 +882,44 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function search($words){
+    public function search($group_id){
 
-        $terms = Array();
-        foreach ($words as $word){
-            $terms[] = Array(
-                "bool" => Array(
-                    "filter" => Array(
-                        "regexp" => Array(
-                            "name" => ".*".$word.".*"
-                        )
-                    )
-                )
-            );
-        }
-
+//        $terms = Array();
+//        foreach ($words as $word){
+//            $terms[] = Array(
+//                "bool" => Array(
+//                    "filter" => Array(
+//                        "regexp" => Array(
+//                            "name" => ".*".$word.".*"
+//                        )
+//                    )
+//                )
+//            );
+//        }
 
         $options = Array(
             "repository" => "TwakeWorkspacesBundle:Workspace",
             "index" => "workspace",
             "query" => Array(
                 "bool" => Array(
-                    "should" => $terms
+                    "must" => Array(
+                        "match_phrase" => Array(
+                            "group_id" => $group_id
+                        )
+                    )
+//                        "should" => $terms,
+//                        "minimum_should_match" => 1
                 )
             )
         );
 
+        //var_dump($options);
+
         $workspaces = $this->doctrine->es_search($options);
         $result = [];
+
         foreach ($workspaces as $workspace) {
+            //var_dump($workspace->getMembers()->getAsArray());
             $result[] = $workspace->getAsArray();
         }
 

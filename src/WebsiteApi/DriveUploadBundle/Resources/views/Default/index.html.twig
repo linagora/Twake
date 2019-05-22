@@ -59,13 +59,12 @@
             name = file["file"]["name"]
             extension = name.split('.');
             extension = extension[extension.length - 1];
-
         });
 
         r.assignBrowse(document.getElementById('add-file-btn'));
 
         function Upload() {
-            console.log(r.files);
+
             const Http = new XMLHttpRequest();
             const url='http://51.68.94.194:8081/ajax/driveupload/preprocess';
 

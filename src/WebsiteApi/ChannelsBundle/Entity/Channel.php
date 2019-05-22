@@ -149,9 +149,9 @@ class Channel extends SearchableObject
     {
         $return = Array(
                 "id" => $this->getId()."",
-                "workspace_id"=> $this->getOriginalWorkspaceId(),
+                "workspace_id" => $this->getOriginalWorkspaceId(),
+                "group_id" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
                 "name" => $this->getName()
-
             );
 
         return $return;

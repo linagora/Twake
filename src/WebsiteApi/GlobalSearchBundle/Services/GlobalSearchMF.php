@@ -35,7 +35,7 @@ class GlobalSearchMF
             $globalresult[]=Array( $file["id"] => "file");
         }
 
-        var_dump($globalresult);
+        return $globalresult;
     }
 
 }
