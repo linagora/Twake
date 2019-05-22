@@ -124,8 +124,17 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
         return $a;
     }
 
-    public function findBy(Array $filters, ?array $sort = null, $limit = null, $offset = null, $order_field = null, $order_direction = "ASC", $view_to_use = null)
+    public function findBy(Array $filters, ?array $sort = null, $limit = null, $offset = null, $order_fields = null, $order_directions = "ASC", $view_to_use = null)
     {
+
+        if (is_array($order_directions)) {
+            $order_direction = $order_directions[count($order_directions) - 1];
+            $order_field = $order_fields[count($order_fields) - 1];
+        } else {
+            $order_direction = $order_directions;
+            $order_field = $order_fields;
+        }
+
         $cassandra = strpos(get_class($this->_em->getConnection()->getDriver()), "PDOCassandra") >= 0;
 
         if ($offset && is_array($offset)) {
@@ -173,6 +182,19 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                 }
 
                 if ($offset) {
+                    if (is_array($order_fields)) {
+                        foreach ($order_fields as $i => $of) {
+                            if ($limit > 0) {
+                                $qb = $qb->addOrderBy('e.' . $of, $order_directions[$i]);
+                            } else {
+                                if ($order_directions[$i] == "ASC") {
+                                    $qb = $qb->addOrderBy('e.' . $of, "DESC");
+                                } else {
+                                    $qb = $qb->addOrderBy('e.' . $of, "ASC");
+                                }
+                            }
+                        }
+                    }
                     if ($limit > 0) {
                         $qb = $qb->andWhere($qb->expr()->lt('e.' . $order_field, ":offset"));
                     } else {

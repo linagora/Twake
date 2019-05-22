@@ -66,7 +66,7 @@ class MessageSystem
         $limit = isset($options["limit"]) ? $options["limit"] : 60;
         $parent_message_id = isset($options["parent_message_id"]) ? $options["parent_message_id"] : "";
 
-        $messages_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => $parent_message_id), Array(), $limit, $offset, "id", "DESC");
+        $messages_ent = $message_repo->findBy(Array("channel_id" => $channel_id, "parent_message_id" => $parent_message_id), Array(), $limit, $offset, ["parent_message_id", "id"], ["ASC", "DESC"]);
 
         $messages_ent = array_reverse($messages_ent);
 
