@@ -41,12 +41,22 @@ class GlobalSearchController extends Controller
 
     }
 
-    public function GlobalSearchMFAction(Request $request)
+    public function AdvancedSearchAction(Request $request)
     {
 
-        $globalresult = $this->get('globalsearch.globalmf')->GlobalSearch();
+        $current_user = $this->getUser();
+        //error_log(print_r($current_user,true));
+        $group_id="480f11b4-4747-11e9-aa8e-0242ac120005";
+        if(!(isset($current_user)))
+        {
+            $current_user_id = "d8a1136c-544e-11e9-9f85-0242ac120005";
+        }
+        else
+        {
+            $current_user_id= $current_user->getId();
+        }
+        $globalresult = $this->get('globalsearch.advancedsearch')->AdvancedSearch($current_user_id,$group_id);
         $data = Array("data" => $globalresult);
-
         return new JsonResponse($data);
 
     }

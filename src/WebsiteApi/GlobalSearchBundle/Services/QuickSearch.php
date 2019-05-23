@@ -53,6 +53,26 @@ class QuickSearch
         }
     }
 
+    public function SearchDirect($current_user_id){
+        $members = [];
+        $channels= $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
+        foreach ($channels as $channel){
+            if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == true)
+            {
+                //var_dump($channel->getOriginalGroup()->getId()."");
+                if (in_array($current_user_id,$channel->getAsArray()["members"])){
+                    $temp = $channel->getAsArray()["members"];
+                    foreach ($temp as $direct){
+                        if($direct != $current_user_id) {
+                            $user_acces = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $direct));
+                            $members[] = $user_acces->getAsArray()["username"];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public function QuickSearch($current_user_id,$group_id){
 
         //$words = Array("appli","données","Thomas","Général","Space");
@@ -64,11 +84,6 @@ class QuickSearch
         // foreach ($users as $user){
         //     $globalresult[]=Array( $user["id"] => "user");
         // }
-
-
-        //$user_acces = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $current_user_id));
-        //$temp =$user_acces->getWorkspaces();
-
 
          //$workspaces_search = $this->workspaceservice->search($words,$current_user_id,$group_id,true); // search workspace
          $workspaces = $this->workspaceservice->search($group_id);
@@ -96,6 +111,7 @@ class QuickSearch
                  }
              }
          }
+        //$this->SearchDirect($current_user_id); A utiliser avec ES quand ca sera pris en compte pour soucis de perf
 
 
         //var_dump($this->globalresult);
@@ -115,7 +131,7 @@ class QuickSearch
 //            if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false)
 //            {
 //                //var_dump($channel->getOriginalGroup()->getId()."");
-//                var_dump($channel->getAsArray()["name"]);
+//                var_dump($channel->getAsArray());
 //                //$this->doctrine->es_put($channel,$channel->getEsType());
 //            }
 //        }

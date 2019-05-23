@@ -24,6 +24,6 @@ services:
     class: WebsiteApi\GlobalSearchBundle\Services\QuickSearch
     arguments: ["@app.twake_doctrine", "@globalsearch.user", "@globalsearch.workspace", "@globalsearch.channel", "@globalsearch.file"]
 
-  globalsearch.globalmf:
-    class: WebsiteApi\GlobalSearchBundle\Services\GlobalSearchMF
-    arguments: ["@app.twake_doctrine", "@globalsearch.message", "@globalsearch.file"]
+  globalsearch.advancedsearch:
+    class: WebsiteApi\GlobalSearchBundle\Services\AdvancedSearch
+    arguments: ["@app.twake_doctrine", "@globalsearch.message", "@globalsearch.file","@globalsearch.workspace"]
