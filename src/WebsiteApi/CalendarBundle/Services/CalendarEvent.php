@@ -244,6 +244,8 @@ class CalendarEvent
             $sort_key_has_changed = true;
         }
 
+        $event->setEventLastModified();
+
         $this->doctrine->persist($event);
         $this->doctrine->flush();
 

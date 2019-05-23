@@ -97,12 +97,18 @@ class Event extends FrontObject
      */
     private $tags = "{}";
 
+    /**
+     * @ORM\Column(name="event_last_modified", type="twake_bigint")
+     */
+    private $event_last_modified;
+
 
     public function __construct($title, $from, $to)
     {
         $this->setTitle($title);
         $this->setFrom($from);
         $this->setTo($to);
+        $this->setEventLastModified();
     }
 
     /**
@@ -372,6 +378,24 @@ class Event extends FrontObject
         return $sort_key;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getEventLastModified()
+    {
+        return $this->event_last_modified;
+    }
+
+    /**
+     * @param mixed $event_last_modified
+     */
+    public function setEventLastModified()
+    {
+        $this->event_last_modified = date("U");
+    }
+
+
+
     public function getAsArray()
     {
         return Array(
@@ -391,7 +415,8 @@ class Event extends FrontObject
             "participants" => $this->getParticipants(),
             "workspaces_calendars" => $this->getWorkspacesCalendars(),
             "notifications" => $this->getNotifications(),
-            "tags" => $this->getTags()
+            "tags" => $this->getTags(),
+            "event_last_modified" => $this->getEventLastModified()
         );
     }
 

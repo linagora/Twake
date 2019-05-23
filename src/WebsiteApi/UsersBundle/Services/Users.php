@@ -28,6 +28,10 @@ class Users
     public function search($words, $options = Array())
     {
 
+        if (!$words || !is_array($words)) {
+            return [];
+        }
+
         $language_preference = isset($options["language_preference"]) ? $options["language_preference"] : false;
 
         $terms = Array();

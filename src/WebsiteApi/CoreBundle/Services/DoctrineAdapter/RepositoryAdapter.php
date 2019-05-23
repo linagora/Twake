@@ -196,9 +196,9 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                         }
                     }
                     if ($limit > 0) {
-                        $qb = $qb->andWhere($qb->expr()->lt('e.' . $order_field, ":offset"));
+                        $qb = $qb->andWhere($qb->expr()->lte('e.' . $order_field, ":offset"));
                     } else {
-                        $qb = $qb->andWhere($qb->expr()->gt('e.' . $order_field, ":offset"));
+                        $qb = $qb->andWhere($qb->expr()->gte('e.' . $order_field, ":offset"));
                     }
                     if (is_object($offset)) {
                         $qb = $qb->setParameter("offset", new FakeCassandraTimeuuid($offset->getId()));
