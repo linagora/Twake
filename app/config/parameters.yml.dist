@@ -39,7 +39,7 @@ parameters:
         use: false
         project_id: 1234567890
         auth_url: https://auth.cloud.ovh.net/v2.0
-        buckets_prefix: twake_
+        # buckets_prefix: dev_thomas_private
         buckets:
             fr:
                 public: openstack

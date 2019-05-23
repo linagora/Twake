@@ -97,9 +97,9 @@ END;
                 "score" => $keywords_raw[$key]
             );
         }
-        $file = new DriveFile("480f11b4-4747-11e9-aa8e-0242ac120005","480f11b4-4747-11e9-aa8e-0242ac120005");
-        $file->setName("pdf test");
-        $keywords_score=$this->update_keyword($keywords_score,$file->getName()); //change this with document title
+        $file = new DriveFile("d975075e-6028-11e9-b206-0242ac120005","d975075e-6028-11e9-b206-0242ac120005");
+        $file->setName($document);
+        $keywords_score=$this->update_keyword($keywords_score,$document); //change this with document title
         $file->setExtension("pdf");
         $file->setContentKeywords($keywords_score);
         $this->doctrine->persist($file);
@@ -111,7 +111,7 @@ END;
 
     }
 
-    public function search($termslist){ //rajouter le must sur les workspace id
+    public function search($termslist,$workspace){ //rajouter le must sur les workspace id
         $terms = Array();
         foreach($termslist as $term){
             $terms[] = Array(
@@ -142,6 +142,11 @@ END;
             "index" => "drive_file",
             "query" => Array(
                 "bool" => Array(
+                    "must" => Array(
+                        "match_phrase" => Array(
+                            "workspace_id" => $workspace["id"]
+                        )
+                    ),
                     "should" => Array(
                         $nested
                     )
@@ -184,11 +189,11 @@ END;
     public function TestSearch()
     {
 
-        //$this->IndexFile("mem.pdf");
-        //$file= $this->doctrine->getRepository("TwakeDriveBundle:Message")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
+       //$this->index("civ.pdf");
+        //$file= $this->doctrine->getRepository("TwakeDriveBundle:Drivefile")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
 
-        $words=Array("appli");
-        $this->search($words);
+//        $words=Array("appli");
+//        $this->search($words);
     }
 
 }

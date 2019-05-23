@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+    <header>
+        <script src="https://cdn.jsdelivr.net/npm/resumablejs@1.1.0/resumable.min.js">
+        </script>
+    </header>
+
+    <body>
+
+    <div>
+        <button type="button" aria-label="Add file" id="add-file-btn">
+            <span aria-hidden="true"></span> Add file
+        </button>
+        <button type="button" onclick="Upload()" aria-label="Start upload" id="start-upload-btn">
+            <span aria-hidden="true"></span> Start upload
+        </button>
+    </div>
+
+    <div>
+        <p>
+        <div id="upload-progress">
+            <div role="progressbar" style="width: 0%">
+                <span></span>
+            </div>
+        </div>
+        </p>
+    </div>
+
+    <script>
+        var r = new Resumable({
+            target:'http://51.68.94.194:8081/ajax/driveupload/upload',
+            chunkSize: 50000000,
+            testChunks: false,
+            simultaneousUploads:5,
+            generateUniqueIdentifier :(file, event)=> {
+                var s ="tret46fgdfaze";
+                var i;
+                var l;
+                var o = '';
+                var n;
+
+                s += '';
+
+                for (i = 0, l = s.length; i < l; i++) {
+                    n = s.charCodeAt(i).toString(16);
+                    o += n.length < 2 ? '0' + n : n
+                }
+
+                return o
+            }
+        });
+
+        var identifier = "";
+        var name = "";
+        var extension = "";
+
+        r.on('fileAdded', function(file, event){
+            identifier = file["file"]["uniqueIdentifier"]
+            name = file["file"]["name"]
+            extension = name.split('.');
+            extension = extension[extension.length - 1];
+        });
+
+        r.assignBrowse(document.getElementById('add-file-btn'));
+
+        function Upload() {
+
+            const Http = new XMLHttpRequest();
+            const url='http://51.68.94.194:8081/ajax/driveupload/preprocess';
+
+            Http.onreadystatechange = function(event) {
+                // XMLHttpRequest.DONE === 4
+                if (this.readyState === XMLHttpRequest.DONE) {
+                    if (this.status === 200) {
+                        console.log("Réponse reçue: %s", this.responseText);
+                    } else {
+                        console.log("Status de la réponse: %d (%s)", this.status, this.statusText);
+                    }
+                }
+            };
+
+            Http.open("POST", url);
+            Http.setRequestHeader("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8");
+            Http.send("name="+name+"&identifier="+identifier+"&extension="+extension);
+
+            r.upload();
+        }
+
+    </script>
+
+
+    </body>
+</html>

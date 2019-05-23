@@ -5,7 +5,8 @@
         ],
         "excludes": [
             "workspace_id",
-            "name"
+            "name",
+            "group_id"
         ]
     },
     "properties": {
@@ -13,6 +14,9 @@
             "type": "keyword"
         },
         "workspace_id": {
+            "type": "keyword"
+        },
+        "group_id": {
             "type": "keyword"
         },
         "name": {

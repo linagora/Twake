@@ -273,7 +273,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         return false;
     }
 
-    public function search($words,$workspace_id){
+    public function search($words,$workspace_id,$group_id){
 
         $terms = Array();
         foreach ($words as $word){
@@ -288,8 +288,6 @@ class ChannelsSystem extends ChannelSystemAbstract
             );
         }
 
-
-        //Pour la version en prod "must" => $must_es,
         $options = Array(
             "repository" => "TwakeChannelsBundle:Channel",
             "index" => "channel",
@@ -297,10 +295,14 @@ class ChannelsSystem extends ChannelSystemAbstract
                 "bool" => Array(
                     "must" => Array(
                         "match_phrase" => Array(
+                            "group_id" => $group_id
+                        ),
+                        "match_phrase" => Array(
                             "workspace_id" => $workspace_id
                         )
                     ),
-                    "should" => $terms
+                    "should" => $terms,
+                    "minimum_should_match" => 1
                 )
             )
         );

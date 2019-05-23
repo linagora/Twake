@@ -146,7 +146,7 @@ class ManagerAdapter
 
         if (method_exists($object, "getId") && (!$object->getId() || (is_object($object->getId()) && method_exists($object->getId(), "isNull") && $object->getId()->isNull()))) {
             $object->setId($this->generator->generate($this->getEntityManager(), $object));
-            error_log($object->getId());
+            //error_log($object->getId());
         }
 
 

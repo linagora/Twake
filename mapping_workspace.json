@@ -4,11 +4,15 @@
             "id"
         ],
         "excludes": [
-            "name"
+            "name",
+            "group_id"
         ]
     },
     "properties": {
         "id": {
+            "type": "keyword"
+        },
+        "group_id": {
             "type": "keyword"
         },
         "name": {

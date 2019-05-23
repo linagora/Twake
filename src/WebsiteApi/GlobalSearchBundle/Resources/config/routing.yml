@@ -8,10 +8,10 @@ globalsearch_message:
   defaults: { _controller: TwakeGlobalSearchBundle:Message:ESMessage }
 
 
-globalsearch_globaluwc:
-  path:       /globaluwc
-  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:GlobalSearchUWC }
+globalsearch_quicksearch:
+  path:       /quicksearch
+  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:QuickSearch }
 
-globalsearch_globalmf:
-  path:       /globalmf
-  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:GlobalSearchMF }
+globalsearch_advancedsearch:
+  path:       /advancedsearch
+  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:AdvancedSearch }

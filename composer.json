@@ -56,7 +56,8 @@
         "atoum/atoum": "^3.3",
         "emojione/emojione": "3.1",
         "twakeapp/prometheus-bundle": "dev-master",
-        "spatie/pdf-to-text": "*"
+        "spatie/pdf-to-text": "*",
+        "dilab/resumable.php": "0.1.4"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
