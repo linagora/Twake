@@ -20,6 +20,24 @@ class GlobalSearchController extends Controller
 
     }
 
+    public function ReindexAction(Request $request)
+    {
+
+        $this->get('globalsearch.reindex')->Reindex();
+
+        return new Response("Hello !");
+
+    }
+
+    public function MappingAction(Request $request)
+    {
+
+        $this->get('globalsearch.mapping')->Mapping();
+
+        return new Response("Hello !");
+
+    }
+
     public function QuickSearchAction(Request $request)
     {
         $current_user = $this->getUser();

@@ -231,36 +231,32 @@ class DrivePreview
 /x
 END;
 
-            foreach ($words as $value) {
-                $value = strtr($value, $replace);
+            foreach ($words as $value){
                 $value = preg_replace($regex, '$1', $value);
                 $value = strtolower($value);
-                if (!isset($keywords[$value])) {
-                    $keywords[$value] = 0;
-                }
-                if (strlen($value) > 3 && is_numeric($value) == false) {
-                    if ($totalwords < floor($size * 0.20)) //we define the weight of word trough the text
+                if (strlen($value) > 3 && is_numeric($value)==false) {
+                    if ($totalwords < floor($size*0.20)) //we define the weight of word trough the text
                         $weight = 20;
-                    elseif ($totalwords > floor($size * 80))
+                    elseif ($totalwords > floor($size*80))
                         $weight = 20;
                     else
                         $weight = 3;
-                    if (!isset($keywords[$value]) || substr($value, -1) == "s") { //if the word is not in our table
+                    if(!($keywords[$value]) || substr($value, -1) == "s"){ //if the word is not in our table
                         if (substr($value, -1) == "s") { //we check if it's a plural
                             $maybesinglar = substr($value, 0, strlen($value) - 1);
-                            if (!isset($keywords[$maybesinglar])) {
-                                $keywords[$maybesinglar] = 0;
-                            }
                             if ($keywords[$maybesinglar]) { // we check if their is already a singular for this word
-                                $keywords[$maybesinglar] += $weight + max(strlen($maybesinglar) - 4, 0) * 2; //if we find a singular we add the singular version of the word instead of the plural
-                            } else { // if not we add the new words or it's the first time we saw the word so we need to add it
-                                $keywords[$value] = $weight + max(strlen($value) - 4, 0) * 2;
+                                $keywords[$maybesinglar] += $weight+max(strlen($maybesinglar)-4,0)*2; //if we find a singular we add the singular version of the word instead of the plural
                             }
-                        } else {
-                            $keywords[$value] = $weight + max(strlen($value) - 4, 0) * 2; // we add the new word which is not a plural or it the first time we saw it
+                            else { // if not we add the new words or it's the first time we saw the word so we need to add it
+                                $keywords[$value] = $weight +max(strlen($value)-4,0)*2;
+                            }
                         }
-                    } else { //if the word is in the table
-                        $keywords[$value] += $weight + max(strlen($value) - 4, 0) * 2; // we adjust his weight in the table
+                        else {
+                            $keywords[$value] = $weight+max(strlen($value)-4,0)*2; // we add the new word which is not a plural or it the first time we saw it
+                        }
+                    }
+                    else{ //if the word is in the table
+                        $keywords[$value] += $weight+max(strlen($value)-4,0)*2; // we adjust his weight in the table
                     }
                 }
                 $totalwords++; //we add our total of word to alter the weight of futur word.
