@@ -117,24 +117,23 @@ class QuickSearch
         //var_dump($this->globalresult);
 
 
-//        $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array());
-//        foreach ($workspaces as $workspace) {
-//            //$this->doctrine->es_put($workspace,$workspace->getEsType());
-////            var_dump($workspace->getAsArray()["name"]);
-////            var_dump($workspace->getAsArray()["id"]);
-////            var_dump($workspace->getAsArray()["group"]["id"]);
-//
-//        }
+        $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array());
+        foreach ($workspaces as $workspace) {
+            $this->doctrine->es_put($workspace, $workspace->getEsType());
+            /*var_dump($workspace->getAsArray()["name"]);
+            var_dump($workspace->getAsArray()["id"]);
+            var_dump($workspace->getAsArray()["group"]["id"]);*/
 
-//        $channels= $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
-//        foreach ($channels as $channel){
-//            if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false)
-//            {
-//                //var_dump($channel->getOriginalGroup()->getId()."");
-//                var_dump($channel->getAsArray());
-//                //$this->doctrine->es_put($channel,$channel->getEsType());
-//            }
-//        }
+        }
+
+        $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
+        foreach ($channels as $channel) {
+            if ($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false) {
+                //var_dump($channel->getOriginalGroup()->getId()."");
+                //var_dump($channel->getAsArray());
+                $this->doctrine->es_put($channel, $channel->getEsType());
+            }
+        }
 
         return $this->globalresult;
     }

@@ -85,19 +85,20 @@ class CalendarExport
         $time_zone = new \DateTimeZone("Etc/UTC");
         date_default_timezone_set("Etc/UTC");
 
+
         $vCalendar = new Component\Calendar('twakeapp.com');
         foreach ($events as $evt) {
 
-            if (isset($evt["from"])) {
+            if (isset($evt["from"]) && $evt["from"]) {
                 $dateStart = new \DateTime(date("c", (int)$evt["from"]), $time_zone);
             } else {
-                return (new JsonResponse("Error : Date[from] inset"));
+                continue;
             }
-            if (isset($evt["to"])) {
+            if (isset($evt["to"]) && $evt["to"]) {
                 //If allday we need to remove one day because we dont use the normal format
                 $dateEnd = new \DateTime(date("c", (int)$evt["to"]), $time_zone);
             } else {
-                return (new JsonResponse("Error : Date[to] inset"));
+                continue;
             }
 
             $vEvent = new Component\Event();
@@ -195,10 +196,12 @@ class CalendarExport
                         case "BYSECOND" :
                             $stdRecurrenceRule->setBySecond($properties["value"][3]);
                             break;
-                        Default:
+                        default:
                     }
 
                     $vEvent->setRecurrenceRule($stdRecurrenceRule);
+                    $vEvent->setDuration(isset($evt["repetition_definition"]["duration"]) ? $evt["repetition_definition"]["duration"] : 0);
+
                 } catch (\Exception $e) {
                     //No recurence !
                 }
@@ -211,11 +214,14 @@ class CalendarExport
                 ->setDtEnd($dateEnd)
                 ->setSummary(isset($evt["title"]) ? $evt["title"] : "")
                 ->setDescription(isset($evt["description"]) ? $evt["description"] : "")
-                ->setDuration($evt["repetition_definition"]["duration"])
-                ->setLocation(isset($evt["location"]) ? $evt["location"] : "")
-                ->setUniqueId($evt["id"]);
+                ->setLocation(isset($evt["location"]) ? $evt["location"] : "");
+
+            if (isset($evt["id"])) {
+                $vEvent->setUniqueId($evt["id"] . "");
+            }
 
             $vCalendar->addComponent($vEvent);
+
         }
 
         return $vCalendar->render();

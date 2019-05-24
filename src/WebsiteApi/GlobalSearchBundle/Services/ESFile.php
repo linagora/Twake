@@ -149,7 +149,8 @@ END;
                     ),
                     "should" => Array(
                         $nested
-                    )
+                    ),
+                    "minimum_should_match" => 1
                 )
             ),
             "sort" => Array(

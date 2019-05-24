@@ -223,14 +223,14 @@ class CalendarEvent
 
         //Manage dates
         $object["type"] = in_array($object["type"], ["event", "remind", "move", "deadline"]) ? $object["type"] : "event";
-        if (!isset($object["from"])) {
+        if (!isset($object["from"]) || !$object["from"]) {
             if (isset($object["to"])) {
                 $object["from"] = $object["to"] - 60 * 60;
             } else {
                 $object["from"] = intval(date("U") / (15 * 60)) * 15 * 60;
             }
         }
-        if (!isset($object["to"])) {
+        if (!isset($object["to"]) || !$object["to"]) {
             $object["to"] = $object["from"] + 60 * 60;
         }
         $tmp_sort_key = json_encode($event->getSortKey());
