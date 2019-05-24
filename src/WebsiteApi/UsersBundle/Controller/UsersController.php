@@ -26,7 +26,7 @@ class UsersController extends Controller
             $options["language_preference"] = $this->getUser()->getLanguage();
         }
 
-        $users = $this->get("app.users")->search($query, $options);
+        $users = $this->get("app.users")->search(explode(" ", $query), $options);
 
         if ($users) {
             $data["data"] = $users;
