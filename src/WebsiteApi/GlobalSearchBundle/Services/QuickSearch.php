@@ -26,7 +26,7 @@ class QuickSearch
         foreach ($channels as $channel){
             if(in_array($current_user_id,$channel["members"]))
             {
-                $this->globalresult[] = Array("channel" => $channel, "workspace" => $workspace);
+                $this->globalresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
             }
         }
 
@@ -39,7 +39,7 @@ class QuickSearch
             if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false)
             {
                 $channel = $channel->getAsArray();
-                $this->globalresult[] = Array("channel" => $channel, "workspace" => $workspace);
+                $this->globalresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
             }
         }
 
@@ -48,7 +48,7 @@ class QuickSearch
     public function SearchFile($words,$workspace){
         $files = $this->fileservice->search($words,$workspace);
         foreach ($files as $file){
-            $this->globalresult[] = Array("file" => $file, "workspace" => $workspace);
+            $this->globalresult[] = Array("type" => "file", "file" => $file, "workspace" => $workspace);
 
         }
     }
