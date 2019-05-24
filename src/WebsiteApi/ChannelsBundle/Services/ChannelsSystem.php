@@ -277,6 +277,8 @@ class ChannelsSystem extends ChannelSystemAbstract
 
         $terms = Array();
         foreach ($words as $word){
+            $st = new StringCleaner();
+            $word= $st->simplifyInArray($word);
             $terms[] = Array(
                 "bool" => Array(
                     "filter" => Array(

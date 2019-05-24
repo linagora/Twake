@@ -136,6 +136,11 @@ class QuickSearch
 //            }
 //        }
 
+//        $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
+//        foreach ($files as $file){
+//                $this->doctrine->es_put($file,$file->getEsType());
+//        }
+
         return $this->globalresult;
     }
 

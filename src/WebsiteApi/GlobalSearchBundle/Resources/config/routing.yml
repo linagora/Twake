@@ -15,3 +15,11 @@ globalsearch_quicksearch:
 globalsearch_advancedsearch:
   path:       /advancedsearch
   defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:AdvancedSearch }
+
+globalsearch_reindex:
+  path:       /reindex
+  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:Reindex }
+
+globalsearch_mapping:
+  path:       /mapping
+  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:Mapping }

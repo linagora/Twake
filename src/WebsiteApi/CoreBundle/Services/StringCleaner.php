@@ -23,6 +23,17 @@ class StringCleaner
         return $str;
     }
 
+    public function simplifyInArray($data){
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                $data[$key] = $this->simplifyInArray($value);
+            }
+            if (is_string($value)) {
+                $data[$key] = $this->simplifyWithoutRemovingSpaces($value);
+            }
+        }
+        return $data;
+    }
     public function simplify($str){
         return preg_replace("/[^a-z0-9_-]/","",strtolower($this->removeAccents($str)));
     }

@@ -194,7 +194,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     public function getIndexationArray()
     {
         return Array(
-            "id" => $this->getId(),
+            "id" => $this->getId()."",
             "type" => $this->getExtension(),
             "name"=> $this->getName(),
             "creation_date" => ($this->getLastModified() ? $this->getLastModified()->format('Y-m-d') : null),
@@ -622,7 +622,9 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "has_preview" => $this->getHasPreview(),
             "preview_has_been_generated" => $this->getPreviewHasBeenGenerated(),
             "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null,
-            "object_link_cache" => $this->getObjectLinkCache()
+            "object_link_cache" => $this->getObjectLinkCache(),
+            "keywords" => $this->getContentKeywords()
+
         );
     }
 

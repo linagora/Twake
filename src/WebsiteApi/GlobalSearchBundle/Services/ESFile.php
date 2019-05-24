@@ -2,6 +2,7 @@
 
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
+use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\DriveBundle\Entity\DriveFile;
 
 class ESFile
@@ -53,6 +54,7 @@ END;
 
         foreach ($words as $value){
             $value = preg_replace($regex, '$1', $value);
+            $value = strtolower($value);
             if (strlen($value) > 3 && is_numeric($value)==false) {
                 if ($totalwords < floor($size*0.20)) //we define the weight of word trough the text
                     $weight = 20;
@@ -98,9 +100,9 @@ END;
             );
         }
         $file = new DriveFile("d975075e-6028-11e9-b206-0242ac120005","d975075e-6028-11e9-b206-0242ac120005");
-        $file->setName($document);
-        $keywords_score=$this->update_keyword($keywords_score,$document); //change this with document title
-        $file->setExtension("pdf");
+        $file->setName(explode(".", $document)[0]);
+        $keywords_score=$this->update_keyword($keywords_score,explode(".", $document)[0]); //change this with document title
+        $file->setExtension("PDF");
         $file->setContentKeywords($keywords_score);
         $this->doctrine->persist($file);
         //var_dump($file->getIndexationArray());
@@ -112,8 +114,11 @@ END;
     }
 
     public function search($termslist,$workspace){ //rajouter le must sur les workspace id
+
         $terms = Array();
         foreach($termslist as $term){
+            $st = new StringCleaner();
+            $term= $st->simplifyInArray($term);
             $terms[] = Array(
                 "bool" => Array(
                     "filter" => Array(
@@ -189,7 +194,7 @@ END;
     public function TestSearch()
     {
 
-       //$this->index("civ.pdf");
+       $this->index("civ.pdf");
         //$file= $this->doctrine->getRepository("TwakeDriveBundle:Drivefile")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
 
 //        $words=Array("appli");

@@ -27,3 +27,10 @@ services:
   globalsearch.advancedsearch:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedSearch
     arguments: ["@app.twake_doctrine", "@globalsearch.message", "@globalsearch.file","@globalsearch.workspace"]
+
+  globalsearch.reindex:
+    class: WebsiteApi\GlobalSearchBundle\Services\Reindex
+    arguments: ["@app.twake_doctrine"]
+
+  globalsearch.mapping:
+    class: WebsiteApi\GlobalSearchBundle\Services\Mapping
