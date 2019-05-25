@@ -252,6 +252,10 @@ class CalendarEvent
         $old_participants = $event->getParticipants();
         if (isset($object["participants"]) || $did_create) {
 
+            if (!isset($object["participants"])) {
+                $object["participants"] = $event->getParticipants();
+            }
+
             if (count($object["workspaces_calendars"]) == 0 && count($object["participants"]) == 0 && !$current_user) {
                 return false;
             }
@@ -275,6 +279,10 @@ class CalendarEvent
             $this->updateParticipants($event, $object["participants"] ? $object["participants"] : Array(), $sort_key_has_changed || $did_create);
         }
         if (isset($object["workspaces_calendars"])) {
+
+            if (!isset($object["workspaces_calendars"])) {
+                $object["workspaces_calendars"] = $event->getWorkspacesCalendars();
+            }
 
             if (count($object["workspaces_calendars"]) > 0) {
                 $event->setOwner("");
