@@ -250,7 +250,7 @@ class CalendarEvent
         $this->doctrine->flush();
 
         $old_participants = $event->getParticipants();
-        if (isset($object["participants"]) || $did_create) {
+        if (isset($object["participants"]) || $did_create || $sort_key_has_changed) {
 
             if (!isset($object["participants"])) {
                 $object["participants"] = $event->getParticipants();
@@ -278,7 +278,7 @@ class CalendarEvent
 
             $this->updateParticipants($event, $object["participants"] ? $object["participants"] : Array(), $sort_key_has_changed || $did_create);
         }
-        if (isset($object["workspaces_calendars"])) {
+        if (isset($object["workspaces_calendars"]) || $sort_key_has_changed) {
 
             if (!isset($object["workspaces_calendars"])) {
                 $object["workspaces_calendars"] = $event->getWorkspacesCalendars();
@@ -298,7 +298,12 @@ class CalendarEvent
             return false;
         }
 
-        if (isset($object["notifications"])) {
+        if (isset($object["notifications"]) || $sort_key_has_changed) {
+
+            if (!isset($object["notifications"])) {
+                $object["notifications"] = $event->getNotifications();
+            }
+
             $this->updateNotifications($event, $object["notifications"] ? $object["notifications"] : Array(), $sort_key_has_changed || $did_create);
         }
 
