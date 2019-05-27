@@ -29,7 +29,7 @@ class StringCleaner
                 $data[$key] = $this->simplifyInArray($value);
             }
             if (is_string($value)) {
-                $data[$key] = $this->simplifyWithoutRemovingSpaces($value);
+                $data[$key] = preg_replace("/[^a-z0-9 ]/\-","",strtolower($this->removeAccents($str)));
             }
         }
         return $data;

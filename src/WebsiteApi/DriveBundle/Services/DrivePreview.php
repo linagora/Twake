@@ -153,15 +153,6 @@ class DrivePreview
         return $image;
     }
 
-    public function update_keyword($keywords,$titre){
-        $keywords[] = Array(
-            "word" => $titre,
-            "score" => 5.0
-        );
-        return $keywords;
-    }
-
-
     public function set_keyword($file,$entity){
 
         try {
