@@ -101,7 +101,7 @@ END;
         }
         $file = new DriveFile("d975075e-6028-11e9-b206-0242ac120005","d975075e-6028-11e9-b206-0242ac120005");
         $file->setName(explode(".", $document)[0]);
-        $keywords_score=$this->update_keyword($keywords_score,explode(".", $document)[0]); //change this with document title
+       // $keywords_score=$this->update_keyword($keywords_score,explode(".", $document)[0]); //change this with document title
         $file->setExtension("PDF");
         $file->setContentKeywords($keywords_score);
         $this->doctrine->persist($file);

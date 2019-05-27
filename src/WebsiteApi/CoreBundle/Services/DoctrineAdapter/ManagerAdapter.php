@@ -199,7 +199,9 @@ class ManagerAdapter
 
     /* Elastic Search */
 
-    public function update_keyword($keywords,$word){ //update for important keywords from title or extension of a file
+    //update for important keywords from title or extension of a file only in ES to not repeat info in scyllaDB
+
+    public function update_ES_keyword($keywords,$word){
         $keywords[] = Array(
             "word" => $word,
             "score" => 5.0
@@ -219,15 +221,33 @@ class ManagerAdapter
         } else {
 
             $id = $entity->getId();
+
             if (method_exists($entity, "getIndexationArray")) {
                 $data = $entity->getIndexationArray();
             } else {
                 $data = $entity->getAsArray();
             }
+
+            if (method_exists($entity,"getContentKeywords")){
+                $keywords = $entity->getContentKeywords();
+                if ($keywords == null){
+                    $keywords = Array();
+                }
+                $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
+                foreach ($data as $field){
+                    if(is_string($field) && !(preg_match($UUIDv4, $field))) {
+                        var_dump($field);
+                        var_dump(preg_match($UUIDv4, $field));
+                        $keywords=$this->update_ES_keyword($keywords, $field);
+                    }
+                }
+                $data["keywords"] = $keywords;
+            }
+
         }
         $st = new StringCleaner();
         $data = $st->simplifyInArray($data);
-        //var_dump($data);
+        var_dump($data);
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
 
