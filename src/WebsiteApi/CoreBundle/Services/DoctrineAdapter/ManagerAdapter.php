@@ -9,6 +9,7 @@ use Doctrine\ORM\Repository\DefaultRepositoryFactory;
 use Doctrine\ORM\Tools\Setup;
 use Doctrine\DBAL\Types\Type;
 use Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator;
+use DateTime;
 
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 
@@ -204,9 +205,16 @@ class ManagerAdapter
     public function update_ES_keyword($keywords,$word){
         $keywords[] = Array(
             "word" => $word,
-            "score" => 5.0
+            "score" => 1.1
         );
         return $keywords;
+    }
+
+    function validateDate($date, $format = 'Y-m-d')
+    {
+        $d = DateTime::createFromFormat($format, $date);
+        // The Y ( 4 digits year ) returns TRUE for any integer with any number of digits so changing the comparison from == to === fixes the issue.
+        return $d && $d->format($format) === $date;
     }
 
     public function es_put($entity, $index, $server = "twake")
@@ -227,7 +235,6 @@ class ManagerAdapter
             } else {
                 $data = $entity->getAsArray();
             }
-
             if (method_exists($entity,"getContentKeywords")){
                 $keywords = $entity->getContentKeywords();
                 if ($keywords == null){
@@ -235,9 +242,8 @@ class ManagerAdapter
                 }
                 $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
                 foreach ($data as $field){
-                    if(is_string($field) && !(preg_match($UUIDv4, $field))) {
-                        var_dump($field);
-                        var_dump(preg_match($UUIDv4, $field));
+                    if(is_string($field) && !(preg_match($UUIDv4, $field)) && !($this->validateDate($field)) ) {
+                        //var_dump(preg_match($UUIDv4, $field));
                         $keywords=$this->update_ES_keyword($keywords, $field);
                     }
                 }
@@ -247,15 +253,11 @@ class ManagerAdapter
         }
         $st = new StringCleaner();
         $data = $st->simplifyInArray($data);
-        var_dump($data);
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
-
 
         try {
 //            var_dump($route);
             //var_dump(json_encode($data));
-//            error_log("update es : " . $route);
-//            error_log(json_encode($data));
             $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         } catch (\Exception $e) {
             error_log("Unable to put on ElasticSearch.");

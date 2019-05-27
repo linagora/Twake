@@ -41,18 +41,19 @@ class GlobalSearchController extends Controller
     public function QuickSearchAction(Request $request)
     {
         $current_user = $this->getUser();
-        //error_log(print_r($current_user,true));
-        $group_id="480f11b4-4747-11e9-aa8e-0242ac120005";
-        if(!(isset($current_user)))
-        {
-            $current_user_id = "d8a1136c-544e-11e9-9f85-0242ac120005";
-        }
-        else
-        {
-            $current_user_id= $current_user->getId();
-        }
+        $words = $identifier = $request->request->get("words");
+        $group_id = $request->request->get("group_id");
+//        if(!(isset($current_user)))
+//        {
+//            $current_user_id = "d8a1136c-544e-11e9-9f85-0242ac120005";
+//        }
+//        else
+//        {
+//            $current_user_id= $current_user->getId();
+//        }
+        $current_user_id= $current_user->getId();
         //var_dump($current_user);
-        $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id,$group_id);
+        $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id,$group_id,$words);
         $data = Array("data" => $globalresult);
         //var_dump($data);
         return new JsonResponse($data);

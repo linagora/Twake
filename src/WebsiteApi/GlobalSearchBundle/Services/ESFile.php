@@ -109,8 +109,6 @@ END;
 
         $this->doctrine->flush();
 
-        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
-
     }
 
     public function search($termslist,$workspace){ //rajouter le must sur les workspace id
@@ -184,21 +182,13 @@ END;
         return $files_final;
     }
 
-    public function update_keyword($keywords,$titre){
-        $keywords[] = Array(
-            "word" => $titre,
-            "score" => 5.0
-        );
-        return $keywords;
-    }
-
     public function TestSearch()
     {
 
-       $this->index("civ.pdf");
+       //$this->index("civ.pdf");
         //$file= $this->doctrine->getRepository("TwakeDriveBundle:Drivefile")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
 
-//        $words=Array("appli");
+//        $words=Array("civ");
 //        $this->search($words);
     }
 

@@ -46,8 +46,10 @@ class QuickSearch
     }
 
     public function SearchFile($words,$workspace){
+        //var_dump($workspace["id"]);
         $files = $this->fileservice->search($words,$workspace);
         foreach ($files as $file){
+            var_dump($file);
             $this->globalresult[] = Array("type" => "file", "file" => $file, "workspace" => $workspace);
 
         }
@@ -73,12 +75,14 @@ class QuickSearch
         }
     }
 
-    public function QuickSearch($current_user_id,$group_id){
+    public function QuickSearch($current_user_id,$group_id,$words){
 
         //$words = Array("appli","données","Thomas","Général","Space");
-        $words = Array("Général","Space","tranger","vrai","appli", "données", "Thomas");
+        //$words = Array("Général","Space","tranger","vrai","appli", "données", "Thomas");
+        //$words = Array("pdf");
         $this->globalresult = Array();
-
+//        var_dump($current_user_id);
+//        var_dump($group_id);
 
         // $users = $this->userservice->search($words);
         // foreach ($users as $user){
@@ -87,11 +91,12 @@ class QuickSearch
 
          //$workspaces_search = $this->workspaceservice->search($words,$current_user_id,$group_id,true); // search workspace
          $workspaces = $this->workspaceservice->search($group_id);
-
+        //var_dump($workspaces);
         foreach ($workspaces as $workspace){
              $workspace_user = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace["id"]));
              $temp = $workspace_user->getMembers();
-             foreach ($temp as $member){
+
+            foreach ($temp as $member){
                  $user = $member->getUser();
                  if($user->getAsArray()["id"] == $current_user_id) // on a acces au wp
                  {
@@ -117,23 +122,23 @@ class QuickSearch
         //var_dump($this->globalresult);
 
 
-        $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array());
-        foreach ($workspaces as $workspace) {
-            $this->doctrine->es_put($workspace, $workspace->getEsType());
-            /*var_dump($workspace->getAsArray()["name"]);
-            var_dump($workspace->getAsArray()["id"]);
-            var_dump($workspace->getAsArray()["group"]["id"]);*/
-
-        }
-
-        $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
-        foreach ($channels as $channel) {
-            if ($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false) {
-                //var_dump($channel->getOriginalGroup()->getId()."");
-                //var_dump($channel->getAsArray());
-                $this->doctrine->es_put($channel, $channel->getEsType());
-            }
-        }
+//        $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array());
+//        foreach ($workspaces as $workspace) {
+//            $this->doctrine->es_put($workspace, $workspace->getEsType());
+//            /*var_dump($workspace->getAsArray()["name"]);
+//            var_dump($workspace->getAsArray()["id"]);
+//            var_dump($workspace->getAsArray()["group"]["id"]);*/
+//
+//        }
+//
+//        $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
+//        foreach ($channels as $channel) {
+//            if ($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false) {
+//                //var_dump($channel->getOriginalGroup()->getId()."");
+//                //var_dump($channel->getAsArray());
+//                $this->doctrine->es_put($channel, $channel->getEsType());
+//            }
+//        }
 
 //        $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
 //        foreach ($files as $file){
