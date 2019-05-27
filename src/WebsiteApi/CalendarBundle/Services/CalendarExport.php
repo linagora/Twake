@@ -18,25 +18,22 @@ class CalendarExport
     }
 
     public function generateToken($request, $current_user = null){
-        error_log("generateTokenSerivce");
 
-        $user_id = $current_user->getId();
+        /*$user_id = $current_user->getId();
         $entity = $this->doctrine->getRepository("TwakeCalendarBundle:ExportToken")->findOneBy(Array("user_id" =>$user_id ));
-        if (!$entity){
+        if (!$entity){*/
             $workspace_id = $request->request->get('workspace_id');
             $calendars =$request->request->get('calendars');
 
-//            $calendars = Array("calendar_list" =>
-//                [Array("calendar_id" => "633ce0c6-77ec-11e9-a8c7-0242ac160002" ,"workspace_id" => "14005200-48b1-11e9-a0b4-0242ac120005" )] ,
-//                "mode" => "both");
-            $token = bin2hex(random_bytes(32));
+        $token = bin2hex(random_bytes(64));
 
             //Insert to export_token table
             $entity = new ExportToken($user_id, $workspace_id, $calendars, $token);
             $this->doctrine->persist($entity);
             $this->doctrine->flush();
-        }
+        //}
 
+        return $token;
 
     }
 
@@ -45,9 +42,8 @@ class CalendarExport
     {
         $entity = $this->doctrine->getRepository("TwakeCalendarBundle:ExportToken")->findOneBy(Array("user_token" =>$token ));
         if ($entity) {
-            $options = Array();
             $calendars = $entity->getCalendars();
-            $mode = $calendars["monde"];
+            $mode = $calendars["mode"];
             $options = Array("mode" => $mode,
                 "calendar_list" => isset($calendars["calendar_list"])?$calendars["calendar_list"]:"",
                 "after_ts" => date("U", strtotime("-2 months")),

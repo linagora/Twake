@@ -59,18 +59,18 @@ class Channel extends SearchableObject
     /**
      * @ORM\Column(name="private", type="twake_boolean")
      */
-    private $private = 0;
+    private $private = false;
 
     /**
      * @ORM\Column(name="direct", type="twake_boolean")
      * @ORM\Id
      */
-    private $direct = 0;
+    private $direct = false;
 
     /**
      * @ORM\Column(name="application", type="twake_boolean")
      */
-    private $application = 0;
+    private $application = false;
 
     /**
      * @ORM\Column(name="app_id", type="twake_text")

@@ -39,9 +39,4 @@ calendar_export:
 calendar_token_export:
     path:     /token_export
     defaults: { _controller: TwakeCalendarBundle:Export:generateToken}
-    methods: [POST,GET]
-
-calendar_vCalendar_export:
-    path:     /vCalendar_export
-    defaults: { _controller: TwakeCalendarBundle:Export:generateVCalendarAction}
-    methods: [POST,GET]
+    methods: [POST]

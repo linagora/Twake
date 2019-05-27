@@ -224,14 +224,6 @@ class ChannelsSystem extends ChannelSystemAbstract
             $this->entity_manager->persist($channel);
             $this->entity_manager->flush();
 
-            $event = Array(
-                "client_id" => "system",
-                "action" => "save",
-                "object_type" => "",
-                "object" => $channel->getAsArray()
-            );
-            $this->websockets_service->push("channels/workspace/" . $workspace->getId(), $event);
-
         }
 
         if ($channel->getPrivate()) {
@@ -241,6 +233,14 @@ class ChannelsSystem extends ChannelSystemAbstract
         if ($did_create && !$channel->getPrivate()) {
             $this->addAllWorkspaceMember($workspace, $channel);
         }
+
+        $event = Array(
+            "client_id" => "system",
+            "action" => "save",
+            "object_type" => "",
+            "object" => $channel->getAsArray()
+        );
+        $this->websockets_service->push("channels/workspace/" . $workspace->getId(), $event);
 
         return $channel;
 
