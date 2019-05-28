@@ -114,6 +114,7 @@ END;
     public function search($termslist,$workspace){ //rajouter le must sur les workspace id
 
         $terms = Array();
+
         foreach($termslist as $term){
             $st = new StringCleaner();
             $term= $st->simplifyInArray($term);
@@ -173,14 +174,28 @@ END;
         );
 
         //var_dump(json_encode($options));
+        //var_dump($workspace["id"]);
         $files = $this->doctrine->es_search($options);
         $files_final=Array();
+        //var_dump(json_encode($options));
         foreach ($files as $file){
-            $files_final[]= $file->getAsArray();
+            //var_dump($file->getAsArray());
+            $files_final[]= Array($file[0]->getAsArray(),$file[1][0]);
         }
-
+        //var_dump($files_final);
         return $files_final;
     }
+
+//    public static function cmp($file1, $file2)
+//    {
+//        var_dump($file1[1]);
+//        var_dump($file2[1]);
+//        var_dump(" ");
+//        if ($file1[1] == $file2[1]) {
+//            return 0;
+//        }
+//        return ($file1[1] > $file2[1]) ? -1 : 1;
+//    }
 
     public function TestSearch()
     {

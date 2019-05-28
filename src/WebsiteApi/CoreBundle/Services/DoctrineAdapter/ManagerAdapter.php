@@ -253,6 +253,7 @@ class ManagerAdapter
         }
         $st = new StringCleaner();
         $data = $st->simplifyInArray($data);
+        //var_dump($data);
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
         try {
@@ -314,22 +315,26 @@ class ManagerAdapter
         $res = $res->getContent();
 
 //        var_dump($route);
-//        var_dump($res);
 
         $result = [];
         if ($res) {
             $res = json_decode($res, 1);
-
+            if (isset($res["hits"]["hits"])){
+            }
 
             if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
                 $res = $res["hits"]["hits"];
                 foreach ($res as $object_json) {
+                    //var_dump($object_json["sort"]);
                     if ($repository) {
                         $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
                     } else {
                         $obj = $object_json["_id"];
                     }
-                    if ($obj) {
+                    if($obj && $object_json["sort"]){
+                        $result[] = Array($obj,$object_json["sort"]);
+                    }
+                    elseif ($obj) {
                         $result[] = $obj;
                     }
                 }

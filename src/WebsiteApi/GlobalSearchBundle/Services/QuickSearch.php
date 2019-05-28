@@ -2,6 +2,8 @@
 
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
+use WebsiteApi\CoreBundle\Services\StringCleaner;
+
 class QuickSearch
 {
     private $doctrine;
@@ -9,7 +11,19 @@ class QuickSearch
     private $workspaceservice;
     private $channelservice;
     private $fileservice;
+
+    //liste final de résultat
     private $globalresult;
+
+    //va stocker les résultat non prioritaire séparé par type
+    private $fileresult;
+    private $channelresult;
+
+    //va stocker les résultat prioritaire séparé par type
+    private $priofileresult;
+    private $prioresult;
+
+    private $workspace_prio;
 
     public function __construct($doctrine, $userservice, $workspaceservice, $channelservice, $fileservice)
     {
@@ -26,10 +40,14 @@ class QuickSearch
         foreach ($channels as $channel){
             if(in_array($current_user_id,$channel["members"]))
             {
-                $this->globalresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
+                if(isset($this->workspace_prio) && $this->workspace_prio == $workspace["id"]){
+                   $this->prioresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
+                }
+                else {
+                    $this->channelresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
+                }
             }
         }
-
     }
 
     public function AddAllChannels($workspace){
@@ -39,7 +57,12 @@ class QuickSearch
             if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false)
             {
                 $channel = $channel->getAsArray();
-                $this->globalresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
+                if(isset($this->workspace_prio) && $this->workspace_prio == $workspace["id"]){
+                    $this->prioresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
+                }
+                else{
+                    $this->channelresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
+                }
             }
         }
 
@@ -49,9 +72,12 @@ class QuickSearch
         //var_dump($workspace["id"]);
         $files = $this->fileservice->search($words,$workspace);
         foreach ($files as $file){
-            var_dump($file);
-            $this->globalresult[] = Array("type" => "file", "file" => $file, "workspace" => $workspace);
-
+            if(isset($this->workspace_prio) && $this->workspace_prio == $workspace["id"]){
+                $this->priofileresult[] = Array("type" => "file", "file" => $file[0], "score" => $file[1], "workspace" => $workspace);
+            }
+            else {
+                $this->fileresult[] = Array("type" => "file", "file" => $file[0], "score" => $file[1], "workspace" => $workspace);
+            }
         }
     }
 
@@ -75,14 +101,19 @@ class QuickSearch
         }
     }
 
-    public function QuickSearch($current_user_id,$group_id,$words){
+    public function QuickSearch($current_user_id,$group_id,$words,$workspace_prio = null){
 
         //$words = Array("appli","données","Thomas","Général","Space");
         //$words = Array("Général","Space","tranger","vrai","appli", "données", "Thomas");
-        //$words = Array("pdf");
+        $this->workspace_prio = $workspace_prio;
+        $this->workspace_prio = "d975075e-6028-11e9-b206-0242ac120005";
+        $words = Array("civ","Général");
+        $st = new StringCleaner();
+        $words = $st->simplifyInArray($words);
         $this->globalresult = Array();
-//        var_dump($current_user_id);
-//        var_dump($group_id);
+        $this->fileresult = Array();
+        $this->channelresult = Array();
+        $this->prioresult = Array();
 
         // $users = $this->userservice->search($words);
         // foreach ($users as $user){
@@ -117,35 +148,55 @@ class QuickSearch
              }
          }
         //$this->SearchDirect($current_user_id); A utiliser avec ES quand ca sera pris en compte pour soucis de perf
+        usort($this->fileresult,function ($file1, $file2){ //permet d'obtenir la list des fichier par liste de pertinence
+
+            if ($file1["score"] == $file2["score"]) {
+                return 0;
+            }
+            return ($file1["score"] > $file2["score"]) ? -1 : 1;
+        });
+
+        usort($this->priofileresult,function ($file1, $file2){ //permet d'obtenir la list des fichier par liste de pertinence
+
+            if ($file1["score"] == $file2["score"]) {
+                return 0;
+            }
+            return ($file1["score"] > $file2["score"]) ? -1 : 1;
+        });
 
 
-        //var_dump($this->globalresult);
 
+//        une fois toutes les données récupéré on construit le tableau de résltat final comme suit:
+//        - resultat prio
+//        - fichier prio
+//        - channel
+//        - fichier
 
-//        $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array());
-//        foreach ($workspaces as $workspace) {
-//            $this->doctrine->es_put($workspace, $workspace->getEsType());
-//            /*var_dump($workspace->getAsArray()["name"]);
-//            var_dump($workspace->getAsArray()["id"]);
-//            var_dump($workspace->getAsArray()["group"]["id"]);*/
+        $this->globalresult = array_merge($this->globalresult,$this->prioresult);
+        $this->globalresult = array_merge($this->globalresult,$this->priofileresult);
+        $this->globalresult = array_merge($this->globalresult,$this->channelresult);
+        $this->globalresult = array_merge($this->globalresult,$this->fileresult);
+        var_dump($this->globalresult);
+
 //
+//        $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array("id" => "0f34eff8-48af-11e9-9dd1-0242ac120005"));
+//        foreach ($workspaces as $workspace) {
+//            //var_dump($workspace->getAsArray());
 //        }
 //
 //        $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
 //        foreach ($channels as $channel) {
 //            if ($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false) {
-//                //var_dump($channel->getOriginalGroup()->getId()."");
 //                //var_dump($channel->getAsArray());
-//                $this->doctrine->es_put($channel, $channel->getEsType());
 //            }
 //        }
 
-//        $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
+//        $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("id" => "e604bc08-805d-11e9-b018-0242ac130002"));
 //        foreach ($files as $file){
-//                $this->doctrine->es_put($file,$file->getEsType());
+//            //var_dump($file->getAsArray());
 //        }
 
-        return $this->globalresult;
+        //return $this->globalresult;
     }
 
 }
