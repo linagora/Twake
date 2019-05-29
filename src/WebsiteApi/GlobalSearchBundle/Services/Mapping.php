@@ -25,14 +25,15 @@ class Mapping
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "workspace_id","name","group_id"
+                    "workspace_id","name","group_id","last_activity"
                 )
             ),
             "properties" => Array(
             "id" => Array("type" => "keyword"),
             "workspace_id" => Array("type" => "keyword"),
             "group_id" => Array("type" => "keyword"),
-            "name" => Array("type" => "keyword")
+            "name" => Array("type" => "keyword"),
+            "last_activity" => Array("type" => "integer")
         )
         );
 

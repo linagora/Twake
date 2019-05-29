@@ -325,12 +325,12 @@ class ManagerAdapter
             if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
                 $res = $res["hits"]["hits"];
                 foreach ($res as $object_json) {
-                    //var_dump($object_json["sort"]);
                     if ($repository) {
                         $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
                     } else {
                         $obj = $object_json["_id"];
                     }
+                    //var_dump($obj->getAsArray());
                     if($obj && $object_json["sort"]){
                         $result[] = Array($obj,$object_json["sort"]);
                     }

@@ -3,6 +3,9 @@
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
 use WebsiteApi\CoreBundle\Services\StringCleaner;
+use WebsiteApi\GlobalSearchBundle\Entity\SearchHistory;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class QuickSearch
 {
@@ -11,6 +14,7 @@ class QuickSearch
     private $workspaceservice;
     private $channelservice;
     private $fileservice;
+    private $memberservice;
 
     //liste final de résultat
     private $globalresult;
@@ -21,31 +25,36 @@ class QuickSearch
 
     //va stocker les résultat prioritaire séparé par type
     private $priofileresult;
-    private $prioresult;
+    private $priochannelresult;
+
+    private $history;
 
     private $workspace_prio;
 
-    public function __construct($doctrine, $userservice, $workspaceservice, $channelservice, $fileservice)
+    public function __construct($doctrine, $userservice, $workspaceservice, $channelservice, $fileservice, $memberservice)
     {
         $this->doctrine = $doctrine;
         $this->userservice = $userservice;
         $this->workspaceservice = $workspaceservice;
         $this->channelservice = $channelservice;
         $this->fileservice = $fileservice;
+        $this->memberservice = $memberservice;
     }
 
-    public function SearchInWorkspace($words,$workspace,$group_id,$current_user_id)
+    public function SearchInWorkspace($words,$workspaces,$current_user_id)
     {
-        $channels = $this->channelservice->search($words,$workspace["id"],$group_id); // search channel in a workspace
+        $channels = $this->channelservice->search($words,$workspaces); // search channel in a workspace
         foreach ($channels as $channel){
-            if(in_array($current_user_id,$channel["members"]))
+            if(in_array($current_user_id,$channel[0]["members"]))
             {
-                if(isset($this->workspace_prio) && $this->workspace_prio == $workspace["id"]){
-                   $this->prioresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
+                if(isset($this->workspace_prio) && $this->workspace_prio == $channel[0]["original_workspace"]){
+                    //var_dump($channel[0]["original_workspace"]);
+                    $this->priochannelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1], "workspace" =>  $workspaces[$channel[0]["original_workspace"]]);
                 }
                 else {
-                    $this->channelresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
+                    $this->channelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1], "workspace" =>  $workspaces[$channel[0]["original_workspace"]]);
                 }
+                $this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
             }
         }
     }
@@ -58,26 +67,28 @@ class QuickSearch
             {
                 $channel = $channel->getAsArray();
                 if(isset($this->workspace_prio) && $this->workspace_prio == $workspace["id"]){
-                    $this->prioresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
+                    $this->priochannelresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
                 }
                 else{
                     $this->channelresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
                 }
+                $this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
             }
         }
 
     }
 
-    public function SearchFile($words,$workspace){
+    public function SearchFile($words,$workspaces){
         //var_dump($workspace["id"]);
-        $files = $this->fileservice->search($words,$workspace);
+        $files = $this->fileservice->search($words,$workspaces);
         foreach ($files as $file){
-            if(isset($this->workspace_prio) && $this->workspace_prio == $workspace["id"]){
-                $this->priofileresult[] = Array("type" => "file", "file" => $file[0], "score" => $file[1], "workspace" => $workspace);
+            if(isset($this->workspace_prio) && $this->workspace_prio == $file[0]["workspace_id"]){
+                $this->priofileresult[] = Array("type" => "file", "file" => $file[0], "score" => $file[1], "workspace" =>$workspaces[$file[0]["workspace_id"]]);
             }
             else {
-                $this->fileresult[] = Array("type" => "file", "file" => $file[0], "score" => $file[1], "workspace" => $workspace);
+                $this->fileresult[] = Array("type" => "file", "file" => $file[0], "score" => $file[1],  "workspace" =>$workspaces[$file[0]["workspace_id"]]);
             }
+            $this->history->addSearch(Array("id" => $file[0]["id"],"type"=> "file", "compteur" => 0));
         }
     }
 
@@ -101,69 +112,62 @@ class QuickSearch
         }
     }
 
-    public function QuickSearch($current_user_id,$group_id,$words,$workspace_prio = null){
+    private static function cmpfile($file1, $file2){ //permet d'obtenir la list des fichier par liste de pertinence
+            if ($file1["score"] == $file2["score"]) {
+                return 0;
+            }
+            return ($file1["score"] > $file2["score"]) ? -1 : 1;
+        }
 
-        //$words = Array("appli","données","Thomas","Général","Space");
-        //$words = Array("Général","Space","tranger","vrai","appli", "données", "Thomas");
+    private static function cmpchannel($channel1, $channel2){ //permet d'obtenir la list des fichier par liste de pertinence
+        if ($channel1["channel"]["last_activity"] == $channel2["channel"]["last_activity"]) {
+            return 0;
+        }
+        return ($channel1["channel"]["last_activity"] > $channel2["channel"]["last_activity"]) ? -1 : 1;
+    }
+
+
+    public function QuickSearch($current_user_id, $words, $group_id = null, $workspace_prio = null){
+
         $this->workspace_prio = $workspace_prio;
-        $this->workspace_prio = "d975075e-6028-11e9-b206-0242ac120005";
-        $words = Array("civ","Général");
+        //$this->workspace_prio = "d975075e-6028-11e9-b206-0242ac120005";
+        //$words = Array("appli","general");
         $st = new StringCleaner();
         $words = $st->simplifyInArray($words);
         $this->globalresult = Array();
+
         $this->fileresult = Array();
+        $this->priofileresult = Array();
         $this->channelresult = Array();
-        $this->prioresult = Array();
+        $this->priochannelresult = Array();
 
-        // $users = $this->userservice->search($words);
-        // foreach ($users as $user){
-        //     $globalresult[]=Array( $user["id"] => "user");
-        // }
+//
+        $this->history = $this->doctrine->getRepository("TwakeGlobalSearchBundle:SearchHistory")->findOneBy(Array("user_id" => $current_user_id));
+        if(!isset($this->history)){
+            $this->history = new SearchHistory($current_user_id,Array());
+        }
 
-         //$workspaces_search = $this->workspaceservice->search($words,$current_user_id,$group_id,true); // search workspace
-         $workspaces = $this->workspaceservice->search($group_id);
+        $workspaces_acces = $this->memberservice->getWorkspaces($current_user_id);
+        $workspaces = Array(); //liste des workspace dont on a accces;
+        foreach ($workspaces_acces as $workspace_obj){
+            $value = $workspace_obj["workspace"]->getAsArray();
+            if(isset($group_id) && !(in_array($value,$workspaces)) && $value["group"]["id"] == $group_id){
+                $workspaces[$value["id"]] = $value;
+            }
+            elseif( !isset($group_id) && !(in_array($value,$workspaces))){
+                $workspaces[$value["id"]] = $value;
+            }
+        }
         //var_dump($workspaces);
-        foreach ($workspaces as $workspace){
-             $workspace_user = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace["id"]));
-             $temp = $workspace_user->getMembers();
+        $this->SearchFile($words,$workspaces);
+        $this->SearchInWorkspace($words,$workspaces,$current_user_id);
 
-            foreach ($temp as $member){
-                 $user = $member->getUser();
-                 if($user->getAsArray()["id"] == $current_user_id) // on a acces au wp
-                 {
-                     $match = false;
-                     foreach($words as $word){
-                         if ((strpos($workspace["name"], $word)) !== false){
-                             $match = true;
-                             $this->AddAllChannels($workspace);
-                             break;
-                         }
-                     }
-                     if(!$match)
-                     {
-                         $this->SearchInWorkspace($words, $workspace, $group_id, $current_user_id);
-                     }
-                     $this->SearchFile($words,$workspace);
-                 }
-             }
-         }
         //$this->SearchDirect($current_user_id); A utiliser avec ES quand ca sera pris en compte pour soucis de perf
-        usort($this->fileresult,function ($file1, $file2){ //permet d'obtenir la list des fichier par liste de pertinence
 
-            if ($file1["score"] == $file2["score"]) {
-                return 0;
-            }
-            return ($file1["score"] > $file2["score"]) ? -1 : 1;
-        });
-
-        usort($this->priofileresult,function ($file1, $file2){ //permet d'obtenir la list des fichier par liste de pertinence
-
-            if ($file1["score"] == $file2["score"]) {
-                return 0;
-            }
-            return ($file1["score"] > $file2["score"]) ? -1 : 1;
-        });
-
+//        usort($this->fileresult,array($this,'cmpfile')); //on a meme plus besoin de trier ES le fait pour nous normalement
+//        usort($this->priofileresult,array($this,'cmpfile'));
+//        usort($this->priochannelresult,array($this,'cmpchannel'));
+//        usort($this->channelresult,array($this,'cmpchannel'));
 
 
 //        une fois toutes les données récupéré on construit le tableau de résltat final comme suit:
@@ -172,11 +176,20 @@ class QuickSearch
 //        - channel
 //        - fichier
 
-        $this->globalresult = array_merge($this->globalresult,$this->prioresult);
+        $this->globalresult = array_merge($this->globalresult,$this->priochannelresult);
         $this->globalresult = array_merge($this->globalresult,$this->priofileresult);
         $this->globalresult = array_merge($this->globalresult,$this->channelresult);
         $this->globalresult = array_merge($this->globalresult,$this->fileresult);
-        var_dump($this->globalresult);
+       //
+       //var_dump($this->globalresult);
+
+
+//        $this->history = $this->doctrine->getRepository("TwakeGlobalSearchBundle:SearchHistory")->findOneBy(Array("user_id" => $current_user_id));
+//        var_dump(sizeof($this->history));
+//        //var_dump($this->history->getAsArray());
+//        $this->doctrine->persist($this->history); //rajouter if isset history
+//        //var_dump($this->history);
+//        $this->doctrine->flush();
 
 //
 //        $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array("id" => "0f34eff8-48af-11e9-9dd1-0242ac120005"));
@@ -190,13 +203,13 @@ class QuickSearch
 //                //var_dump($channel->getAsArray());
 //            }
 //        }
-
-//        $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("id" => "e604bc08-805d-11e9-b018-0242ac130002"));
+//
+//        $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
 //        foreach ($files as $file){
-//            //var_dump($file->getAsArray());
+//            var_dump($file->getAsArray());
 //        }
 
-        //return $this->globalresult;
+        return $this->globalresult;
     }
 
 }
