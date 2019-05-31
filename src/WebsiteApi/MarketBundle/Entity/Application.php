@@ -36,7 +36,7 @@ class Application extends SearchableObject
     /**
      * @ORM\Column(name="is_default", type="twake_boolean")
      */
-    protected $default;
+    protected $is_default;
 
     /**
      * @ORM\Column(name="app_group_name", type="twake_text")
@@ -202,15 +202,15 @@ class Application extends SearchableObject
      */
     public function getDefault()
     {
-        return $this->default;
+        return $this->is_default;
     }
 
     /**
-     * @param mixed $default
+     * @param mixed $is_default
      */
-    public function setDefault($default)
+    public function setDefault($is_default)
     {
-        $this->default = $default;
+        $this->is_default = $is_default;
     }
 
     /**

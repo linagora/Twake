@@ -46,14 +46,14 @@ class Blocmessage
 //        //mettre a jour le bloc
 
         if ($blocbdd->getNbMessage() == 10){
-            var_dump("PRET A INDEXER LE BLOC DE MESSAGE");
+            //var_dump("PRET A INDEXER LE BLOC DE MESSAGE");
 
             // indexer le bloc de message
             $this->doctrine->es_put($blocbdd,$blocbdd->getEsType());
 
         }
         $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
-        var_dump($lastbloc);
+        //var_dump($lastbloc);
     }
 
     public function search($words,$workspace_id){

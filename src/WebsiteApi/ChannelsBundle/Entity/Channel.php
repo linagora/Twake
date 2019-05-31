@@ -59,18 +59,18 @@ class Channel extends SearchableObject
     /**
      * @ORM\Column(name="private", type="twake_boolean")
      */
-    private $private = false;
+    private $private = 0;
 
     /**
      * @ORM\Column(name="direct", type="twake_boolean")
      * @ORM\Id
      */
-    private $direct = false;
+    private $direct = 0;
 
     /**
      * @ORM\Column(name="application", type="twake_boolean")
      */
-    private $application = false;
+    private $application = 0;
 
     /**
      * @ORM\Column(name="app_id", type="twake_text")
@@ -477,7 +477,11 @@ class Channel extends SearchableObject
      */
     public function getMembers()
     {
-        return json_decode($this->members, 1);
+        $m = json_decode($this->members, 1);
+        if ($m) {
+            return array_values($m);
+        }
+        return $m;
     }
 
     /**
@@ -493,7 +497,11 @@ class Channel extends SearchableObject
      */
     public function getExtMembers()
     {
-        return json_decode($this->ext_members, 1);
+        $m = json_decode($this->ext_members, 1);
+        if ($m) {
+            return array_values($m);
+        }
+        return $m;
     }
 
     /**
@@ -509,7 +517,11 @@ class Channel extends SearchableObject
      */
     public function getTabs()
     {
-        return json_decode($this->tabs, 1);
+        $m = json_decode($this->tabs, 1);
+        if ($m) {
+            return array_values($m);
+        }
+        return $m;
     }
 
     /**
@@ -525,7 +537,11 @@ class Channel extends SearchableObject
      */
     public function getConnectors()
     {
-        return json_decode($this->connectors, 1);
+        $m = json_decode($this->connectors, 1);
+        if ($m) {
+            return array_values($m);
+        }
+        return $m;
     }
 
     /**

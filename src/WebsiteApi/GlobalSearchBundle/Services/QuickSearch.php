@@ -49,7 +49,7 @@ class QuickSearch
         //var_dump($workspace["id"]);
         $files = $this->fileservice->search($words,$workspace);
         foreach ($files as $file){
-            var_dump($file);
+            //var_dump($file);
             $this->globalresult[] = Array("type" => "file", "file" => $file, "workspace" => $workspace);
 
         }
