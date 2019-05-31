@@ -70,19 +70,40 @@ class Reindex
 //            var_dump($workspace->getMembers()->getAsArray());
 //            //$this->doctrine->es_put($workspace,$workspace->getEsType());
 //        }
-        $channels= $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
-        foreach ($channels as $channel){
-            if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false)
-            {
-                //var_dump(gettype($channel->getAsArray()["last_activity"]));
-                $this->doctrine->es_put($channel,$channel->getEsType());
-            }
-        }
+//        $channels= $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
+//        foreach ($channels as $channel){
+//            if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false)
+//            {
+//                //var_dump(gettype($channel->getAsArray()["last_activity"]));
+//                $this->doctrine->es_put($channel,$channel->getEsType());
+//            }
+//        }
 //
 //        $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
 //        foreach ($files as $file){
 //                //$this->doctrine->es_put($file,$file->getEsType());
 //        }
+
+        $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
+        foreach ($channels as $channel) {
+            if ($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == true) {
+                //if(in_array($current_user_id,$channel->getAsArray()["members"])){
+                    $futurname="";
+                    //var_dump($channel->getIndexationarray());
+                    //var_dump($channel->getAsArray()["members"]);
+                    foreach ($channel->getAsArray()["members"] as $member){
+                        $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $member));
+                        $futurname = $futurname . $user->getUsername() . "_";
+                    }
+                    $futurname = substr($futurname, 0, -1);
+                    $channel->setName($futurname);
+                    $this->doctrine->persist($channel);
+                    //var_dump($channel->getAsArray());
+                //}
+            }
+            $this->doctrine->flush();
+        }
+
 
     }
 

@@ -340,4 +340,52 @@ class ChannelsSystem extends ChannelSystemAbstract
         return $result;
 
     }
+
+    public function searchprivate($words){
+
+        $terms = Array();
+        $should_workspaces = Array();
+        foreach ($words as $word){
+            $st = new StringCleaner();
+            $word= $st->simplifyInArray($word);
+            $terms[] = Array(
+                "bool" => Array(
+                    "filter" => Array(
+                        "regexp" => Array(
+                            "name" => ".*".$word.".*"
+                        )
+                    )
+                )
+            );
+        }
+
+        $options = Array(
+            "repository" => "TwakeChannelsBundle:Channel",
+            "index" => "channel",
+            "query" => Array(
+                "bool" => Array(
+                    "should" => Array(
+                        $terms
+                    ),
+                "minimum_should_match" => 2
+                )
+            ),
+            "sort" => Array(
+                "last_activity" => Array(
+                    "order" => "desc"
+                )
+            )
+        );
+
+        //var_dump(json_encode($options));
+        $channels = $this->entity_manager->es_search($options);
+
+        $result = [];
+        foreach ($channels as $channel) {
+            $result[]= Array($channel[0]->getAsArray(),$channel[1][0]);
+        }
+
+        return $result;
+
+    }
 }

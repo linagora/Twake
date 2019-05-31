@@ -44,7 +44,7 @@ class GlobalSearchController extends Controller
         $words = $identifier = $request->request->get("words");
         $group_id = $request->request->get("group_id");
         $workspace_id = $request->request->get("workspace_id");
-//        $group_id="480f11b4-4747-11e9-aa8e-0242ac120005";
+        //$group_id="480f11b4-4747-11e9-aa8e-0242ac120005";
 //        if(!(isset($current_user)))
 //        {
 //            $current_user_id = "d8a1136c-544e-11e9-9f85-0242ac120005";
