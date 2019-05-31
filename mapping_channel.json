@@ -6,7 +6,8 @@
         "excludes": [
             "workspace_id",
             "name",
-            "group_id"
+            "group_id",
+            "last_activity"
         ]
     },
     "properties": {
@@ -21,6 +22,9 @@
         },
         "name": {
             "type": "keyword"
-        }      
+        },
+        "last_activity": {
+            "type": "integer"
+        }       
     }
 }

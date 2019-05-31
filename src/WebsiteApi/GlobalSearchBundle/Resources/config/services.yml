@@ -22,7 +22,7 @@ services:
 
   globalsearch.quicksearch:
     class: WebsiteApi\GlobalSearchBundle\Services\QuickSearch
-    arguments: ["@app.twake_doctrine", "@globalsearch.user", "@globalsearch.workspace", "@globalsearch.channel", "@globalsearch.file"]
+    arguments: ["@app.twake_doctrine", "@globalsearch.user", "@globalsearch.workspace", "@globalsearch.channel", "@globalsearch.file","@app.workspace_members"]
 
   globalsearch.advancedsearch:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedSearch

@@ -43,6 +43,8 @@ class GlobalSearchController extends Controller
         $current_user = $this->getUser();
         $words = $identifier = $request->request->get("words");
         $group_id = $request->request->get("group_id");
+        $workspace_id = $request->request->get("workspace_id");
+//        $group_id="480f11b4-4747-11e9-aa8e-0242ac120005";
 //        if(!(isset($current_user)))
 //        {
 //            $current_user_id = "d8a1136c-544e-11e9-9f85-0242ac120005";
@@ -53,9 +55,10 @@ class GlobalSearchController extends Controller
 //        }
         $current_user_id= $current_user->getId();
         //var_dump($current_user);
-        $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id,$group_id,$words);
+        $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id, $words, $group_id, $workspace_id);
         $data = Array("data" => $globalresult);
         //var_dump($data);
+        //return new Response("Hello !");
         return new JsonResponse($data);
 
     }

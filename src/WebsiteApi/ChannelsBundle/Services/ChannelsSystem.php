@@ -273,9 +273,10 @@ class ChannelsSystem extends ChannelSystemAbstract
         return false;
     }
 
-    public function search($words,$workspace_id,$group_id){
+    public function search($words,$workspaces){
 
         $terms = Array();
+        $should_workspaces = Array();
         foreach ($words as $word){
             $st = new StringCleaner();
             $word= $st->simplifyInArray($word);
@@ -290,29 +291,50 @@ class ChannelsSystem extends ChannelSystemAbstract
             );
         }
 
+        foreach($workspaces as $workspace) {
+            $should_workspaces[] = Array(
+                "match_phrase" => Array(
+                    "workspace_id" => $workspace["id"]
+                )
+            );
+        }
+
         $options = Array(
             "repository" => "TwakeChannelsBundle:Channel",
             "index" => "channel",
             "query" => Array(
                 "bool" => Array(
                     "must" => Array(
-                        "match_phrase" => Array(
-                            "group_id" => $group_id
-                        ),
-                        "match_phrase" => Array(
-                            "workspace_id" => $workspace_id
+                        "bool" => Array(
+                            "should" => Array(
+                                    $should_workspaces
+                            ),
+                            "minimum_should_match" => 1,
+                            "must" => Array(
+                                "bool" => Array(
+                                    "should" => Array(
+                                        $terms
+                                    ),
+                                    "minimum_should_match" => 1
+                                )
+                            )
                         )
-                    ),
-                    "should" => $terms,
-                    "minimum_should_match" => 1
+                    )
+                )
+            ),
+            "sort" => Array(
+                "last_activity" => Array(
+                    "order" => "desc"
                 )
             )
         );
 
+        //var_dump(json_encode($options));
         $channels = $this->entity_manager->es_search($options);
+
         $result = [];
         foreach ($channels as $channel) {
-            $result[] = $channel->getAsArray();
+            $result[]= Array($channel[0]->getAsArray(),$channel[1][0]);
         }
 
         return $result;

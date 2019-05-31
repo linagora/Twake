@@ -99,7 +99,7 @@ END;
                 "score" => $keywords_raw[$key]
             );
         }
-        $file = new DriveFile("d975075e-6028-11e9-b206-0242ac120005","d975075e-6028-11e9-b206-0242ac120005");
+        $file = new DriveFile("14005200-48b1-11e9-a0b4-0242ac120005","14005200-48b1-11e9-a0b4-0242ac120005");
         $file->setName(explode(".", $document)[0]);
        // $keywords_score=$this->update_keyword($keywords_score,explode(".", $document)[0]); //change this with document title
         $file->setExtension("PDF");
@@ -111,9 +111,11 @@ END;
 
     }
 
-    public function search($termslist,$workspace){ //rajouter le must sur les workspace id
+    public function search($termslist,$workspaces){ //rajouter le must sur les workspace id
 
         $terms = Array();
+        $should_workspaces = Array();
+
         foreach($termslist as $term){
             $st = new StringCleaner();
             $term= $st->simplifyInArray($term);
@@ -128,7 +130,16 @@ END;
             );
         }
 
-        $nested  = Array(
+        foreach($workspaces as $workspace) {
+            $should_workspaces[] = Array(
+                "match_phrase" => Array(
+                    "workspace_id" => $workspace["id"]
+                )
+            );
+        }
+
+
+            $nested  = Array(
             "nested" => Array(
                 "path" => "keywords",
                 "score_mode" => "avg",
@@ -146,14 +157,21 @@ END;
             "query" => Array(
                 "bool" => Array(
                     "must" => Array(
-                        "match_phrase" => Array(
-                            "workspace_id" => $workspace["id"]
+                        "bool" => Array(
+                            "should" => Array(
+                                $should_workspaces
+                            ),
+                            "minimum_should_match" => 1,
+                            "must" => Array(
+                                "bool" => Array(
+                                    "should" => Array(
+                                        $nested
+                                    ),
+                                    "minimum_should_match" => 1
+                                )
+                            )
                         )
-                    ),
-                    "should" => Array(
-                        $nested
-                    ),
-                    "minimum_should_match" => 1
+                    )
                 )
             ),
             "sort" => Array(
@@ -173,23 +191,37 @@ END;
         );
 
         //var_dump(json_encode($options));
+        //var_dump($workspace["id"]);
         $files = $this->doctrine->es_search($options);
         $files_final=Array();
+        //var_dump(json_encode($options));
         foreach ($files as $file){
-            $files_final[]= $file->getAsArray();
+            //var_dump($file->getAsArray());
+            $files_final[]= Array($file[0]->getAsArray(),$file[1][0]);
         }
-
+        //var_dump($files_final);
         return $files_final;
     }
+
+//    public static function cmp($file1, $file2)
+//    {
+//        var_dump($file1[1]);
+//        var_dump($file2[1]);
+//        var_dump(" ");
+//        if ($file1[1] == $file2[1]) {
+//            return 0;
+//        }
+//        return ($file1[1] > $file2[1]) ? -1 : 1;
+//    }
 
     public function TestSearch()
     {
 
-       //$this->index("civ.pdf");
+       //$this->index("pdftest.pdf");
         //$file= $this->doctrine->getRepository("TwakeDriveBundle:Drivefile")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
 
 //        $words=Array("civ");
-//        $this->search($words);
+//        $this->search($words,"d975075e-6028-11e9-b206-0242ac120005");
     }
 
 }

@@ -151,7 +151,8 @@ class Channel extends SearchableObject
                 "id" => $this->getId()."",
                 "workspace_id" => $this->getOriginalWorkspaceId(),
                 "group_id" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
-                "name" => $this->getName()
+                "name" => $this->getName(),
+                "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
             );
 
         return $return;
