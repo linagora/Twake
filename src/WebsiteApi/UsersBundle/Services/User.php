@@ -276,6 +276,10 @@ class User
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
         $retour = Array();
 
+        if (!$this->string_cleaner->verifyMail($mail)) {
+            return false;
+        }
+
         //Check user doesn't exists
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
@@ -409,6 +413,10 @@ class User
         }
 
 		$mail = $this->string_cleaner->simplifyMail($mail);
+
+        if (!$this->string_cleaner->verifyMail($mail)) {
+            return false;
+        }
 
 		//Check mail doesn't exists
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
