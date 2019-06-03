@@ -31,8 +31,8 @@ class WebTestCaseExtended extends WebTestCase
         $res = $this->getClient()->getContainer()->get('circle.restclient')->post($this->server . $route, json_encode($data), Array(
             CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Cookie: ' . $cookies]
         ));
-        if (isset($res->headers->getAll()["Cookie"])) {
-            $this->cookies = $res->headers->getAll()["Cookie"];
+        if (isset($res->headers->all()["set-cookie"])) {
+            $this->cookies = join(";", $res->headers->all()["set-cookie"]);
         }
         return $res;
     }
@@ -40,8 +40,8 @@ class WebTestCaseExtended extends WebTestCase
     public function get($route)
     {
         $res = $this->getClient()->getContainer()->get('circle.restclient')->get($this->server . $route);
-        if (isset($res->headers->getAll()["Cookie"])) {
-            $this->cookies = $res->headers->getAll()["Cookie"];
+        if (isset($res->headers->all()["set-cookie"])) {
+            $this->cookies = join(";", $res->headers->all()["set-cookie"]);
         }
         return $res;
     }
