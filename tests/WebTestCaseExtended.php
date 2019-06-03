@@ -45,10 +45,9 @@ class WebTestCaseExtended extends WebTestCase
 
     protected function call($route, $data = Array(), $method = "GET")
     {
-        $this->getClient()->request($method, $route, array(), array(), array('CONTENT_TYPE' => 'application/json'),
-            json_encode($data)
-        );
-        return json_decode($this->getClient()->getResponse()->getContent(), 1);
+        error_log(json_encode($data));
+        $request = $this->getClient()->getContainer()->get('circle.restclient')->post($route, json_encode($data), Array(CURLOPT_HTTPHEADER=>Array("Content-Type": "application/json")));
+        return json_decode($request->getContent(), 1);
     }
 
     public function newUser(){
