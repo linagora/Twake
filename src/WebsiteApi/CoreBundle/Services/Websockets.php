@@ -86,12 +86,26 @@ class Websockets
         //TODO remove too old route entity and replace by new
 
         //Verify user has access
+        $get_result = false;
         if ($controller) {
             $type = $data["type"];
             if (isset($this->services_for_type[$type])) {
-                $has_access = $controller->getService($this->services_for_type[$type])->init($route, $data, $controller->getUser());
+                $service = $controller->getService($this->services_for_type[$type]);
+                $has_access = $service->init($route, $data, $controller->getUser());
                 if (!$has_access) {
                     return Array();
+                } else if (isset($data["get_options"]) && method_exists($service, "get")) {
+                    $_get_result = $service->get($data["get_options"], $controller->getUser());
+                    if ($_get_result) {
+                        $get_result = [];
+                        foreach ($_get_result as $result) {
+                            if (is_array($result)) {
+                                $get_result[] = $result;
+                            } else {
+                                $get_result[] = $result->getAsArray();
+                            }
+                        }
+                    }
                 }
             } else {
                 return Array();
@@ -101,7 +115,8 @@ class Websockets
         return Array(
             "route_id" => $route_endpoint,
             "key" => $new_key,
-            "key_version" => $key_version
+            "key_version" => $key_version,
+            "get" => $get_result
         );
 
     }

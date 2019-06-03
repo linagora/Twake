@@ -8,6 +8,45 @@ class WebTestCaseExtended extends WebTestCase
 {
 
     var $client;
+    var $cookies = "";
+    var $server = "";
+
+    protected function getClient()
+    {
+        if (!isset($this->client)) {
+            $this->client = static::createClient();
+        }
+        $this->server = "https://albatros.twakeapp.com";
+        return $this->client;
+    }
+
+    public function resetCookies()
+    {
+        $this->cookies = "";
+    }
+
+    public function post($route, $data)
+    {
+        $cookies = $this->cookies;
+        $res = $this->getClient()->getContainer()->get('circle.restclient')->post($this->server . $route, json_encode($data), Array(
+            CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Cookie: ' . $cookies]
+        ));
+        if (isset($res->headers->getAll()["Cookie"])) {
+            $this->cookies = $res->headers->getAll()["Cookie"];
+        }
+        return $res;
+    }
+
+    public function get($route)
+    {
+        $res = $this->getClient()->getContainer()->get('circle.restclient')->get($this->server . $route);
+        if (isset($res->headers->getAll()["Cookie"])) {
+            $this->cookies = $res->headers->getAll()["Cookie"];
+        }
+        return $res;
+    }
+
+    /*
 
     protected function getDoctrine()
     {
@@ -113,6 +152,6 @@ class WebTestCaseExtended extends WebTestCase
 
         return $sub;
     }
-
+    */
 
 }
