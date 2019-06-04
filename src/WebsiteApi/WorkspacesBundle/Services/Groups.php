@@ -204,15 +204,7 @@ class Groups implements GroupsInterface
             $this->doctrine->persist($group);
             $this->doctrine->flush();
 
-            $datatopush = Array(
-                "type" => "CHANGE_GROUP",
-                "data" => Array(
-                    "group" => $group->getAsArray(),
-                )
-            );
-            $this->pusher->push($datatopush, "group/" . $group->getId());
-
-            return true;
+            return $group;
         }
 
         return false;

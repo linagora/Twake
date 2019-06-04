@@ -551,7 +551,7 @@ class Workspaces implements WorkspacesInterface
             $this->doctrine->persist($workspace);
             $this->doctrine->flush();
 
-            return true;
+            return $workspace;
         }
 
         return false;

@@ -65,10 +65,14 @@ class GroupController extends Controller
                 $data["errors"][] = "badimage";
             } else {
 
-                $this->get("app.groups")->changeLogo($groupId, $thumbnail["file"], $this->getUser()->getId(), $this->getUploader());
+                $group = $this->get("app.groups")->changeLogo($groupId, $thumbnail["file"], $this->getUser()->getId(), $this->getUploader());
             }
         } else {
-            $this->get("app.groups")->changeLogo($groupId, null, $this->getUser()->getId(), $this->getUploader());
+            $group = $this->get("app.groups")->changeLogo($groupId, null, $this->getUser()->getId(), $this->getUploader());
+        }
+
+        if ($group) {
+            $data["data"] = $group->getAsArray();
         }
 
         return new JsonResponse($data);

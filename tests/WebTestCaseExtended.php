@@ -91,26 +91,17 @@ class WebTestCaseExtended extends WebTestCase
         return $this->getClient()->getResponse();
     }
 
-    public function newUser(){
-        $userToken = $this->get("app.user")->subscribeMail("phpunit@PHPUNIT.fr");
-        $user = $this->get("app.user")->subscribe($userToken,null, "phpunit","phpunit",true);
+    public function newUserByName($name){
+
+        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
 
         if (!$user) {
-            return $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "phpunit"));
+            $mail = $name . "@PHPUNIT.fr";
+            $token = $this->get("app.user")->subscribeMail($mail, $name, $name, "", "", "", false);
+            $this->get("app.user")->verifyMail($mail, $token, "", true);
+
+            $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
         }
-
-        $this->get("app.twake_doctrine")->persist($user);
-        $this->get("app.twake_doctrine")->flush();
-
-        return $user;
-    }
-
-    public function newUserByName($name){
-        $userToken = $this->get("app.user")->subscribeMail($name . "@PHPUNIT.fr");
-        $user = $this->get("app.user")->subscribe($userToken,null, $name,$name,true);
-
-        $this->get("app.twake_doctrine")->persist($user);
-        $this->get("app.twake_doctrine")->flush();
 
         return $user;
     }
