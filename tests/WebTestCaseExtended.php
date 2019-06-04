@@ -8,7 +8,8 @@ class WebTestCaseExtended extends WebTestCase
 {
 
     var $client;
-    var $cookies = "";
+
+/*    var $cookies = "";
     var $server = "";
 
     protected function getClient()
@@ -44,9 +45,9 @@ class WebTestCaseExtended extends WebTestCase
             $this->cookies = join(";", $res->headers->all()["set-cookie"]);
         }
         return $res;
-    }
+    }*/
 
-    /*
+
 
     protected function getDoctrine()
     {
@@ -84,9 +85,10 @@ class WebTestCaseExtended extends WebTestCase
 
     protected function call($route, $data = Array(), $method = "GET")
     {
-        error_log(json_encode($data));
-        $request = $this->getClient()->getContainer()->get('circle.restclient')->post($route, json_encode($data), Array(CURLOPT_HTTPHEADER=>Array("Content-Type": "application/json")));
-        return json_decode($request->getContent(), 1);
+        $this->getClient()->request($method, $route, array(), array(), array('CONTENT_TYPE' => 'application/json'),
+            json_encode($data)
+        );
+        return $this->getClient()->getResponse();
     }
 
     public function newUser(){
@@ -107,14 +109,18 @@ class WebTestCaseExtended extends WebTestCase
         $userToken = $this->get("app.user")->subscribeMail($name . "@PHPUNIT.fr");
         $user = $this->get("app.user")->subscribe($userToken,null, $name,$name,true);
 
-        if (!$user) {
-            return $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => $name));
-        }
-
         $this->get("app.twake_doctrine")->persist($user);
         $this->get("app.twake_doctrine")->flush();
 
         return $user;
+    }
+
+    public function removeUserByName($name){
+        $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
+        if (isset($user)) {
+            $this->get("app.twake_doctrine")->remove($user);
+            $this->get("app.twake_doctrine")->flush();
+        }
     }
 
     public function newGroup($userId){
@@ -152,6 +158,6 @@ class WebTestCaseExtended extends WebTestCase
 
         return $sub;
     }
-    */
+
 
 }
