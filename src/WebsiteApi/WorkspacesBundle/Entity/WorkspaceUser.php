@@ -144,7 +144,7 @@ class WorkspaceUser
      */
     public function getisHidden()
     {
-        return $this->ishidden;
+        //return $this->ishidden;
     }
 
     /**
@@ -152,7 +152,7 @@ class WorkspaceUser
      */
     public function setIsHidden($ishidden)
     {
-        $this->ishidden = $ishidden;
+        //$this->ishidden = $ishidden;
     }
 
     /**
@@ -160,7 +160,7 @@ class WorkspaceUser
      */
     public function getisFavorite()
     {
-        return $this->isfavorite;
+        //return $this->isfavorite;
     }
 
     /**
@@ -168,7 +168,7 @@ class WorkspaceUser
      */
     public function setIsFavorite($isfavorite)
     {
-        $this->isfavorite = $isfavorite;
+        //$this->isfavorite = $isfavorite;
     }
 
     /**

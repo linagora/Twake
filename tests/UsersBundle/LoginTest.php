@@ -13,19 +13,16 @@ class LoginTest extends WebTestCaseExtended
     public function testLoginCorrect()
 
     {
-        $this->removeUserByName("usertest");
-        $this->newUserByName("usertest");
-//        $result = $this->doPost("/ajax/users/login", Array(
-//            "_username" => "usertest",
-//            "_password" => "usertest"
-//        ));
-//
-//        error_log("> ".($result->getContent()));
-//
-//        $result = $this->doPost("/ajax/users/current/get", Array());
-//
-//        error_log("> ".($result->getContent()));
+//        $this->removeUserByName("usertest");
+//        $this->newUserByName("usertest");
+        $result = $this->doPost("/ajax/users/login", Array(
+            "_username" => "invite",
+            "_password" => "azeazeaze"
+        ));
 
+        $result = $this->doPost("/ajax/users/current/get", Array());
+        $name = json_decode($result->getContent(),true)["data"]["username"];
+        $this->assertEquals("invite", $name);
 
 
 
