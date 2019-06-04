@@ -60,7 +60,6 @@ class User
         $this->translate = $translate;
         $this->standalone = $standalone;
         $this->licenceKey = $licenceKey;
-        $this->circle = $circle;
 	}
 
 	public function current()
@@ -397,7 +396,7 @@ class User
             ),
             "Action" => "addforce"
         );
-        $result = $this->circle->post("https://api.mailjet.com/v3/REST/contactslist/2017737/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+        $result = $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2017737/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
 
         return $user;
     }

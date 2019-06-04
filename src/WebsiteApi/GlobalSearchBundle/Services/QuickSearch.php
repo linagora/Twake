@@ -1,6 +1,7 @@
 <?php
 
 namespace WebsiteApi\GlobalSearchBundle\Services;
+#test22
 
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\GlobalSearchBundle\Entity\SearchHistory;
