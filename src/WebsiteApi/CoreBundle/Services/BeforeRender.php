@@ -31,6 +31,7 @@ class BeforeRender
         $event->getResponse()->headers->set('Access-Control-Allow-Headers', ' Content-Type, *');
         $event->getResponse()->headers->set('Access-Control-Allow-Credentials', 'true');
         $event->getResponse()->headers->set('Access-Control-Allow-Methods', 'GET, POST');
+        $event->getResponse()->headers->set('Access-Control-Max-Age', '600');
         $length = strlen($event->getResponse()->getContent());
         $event->getResponse()->headers->set('x-decompressed-content-length', $length);
 

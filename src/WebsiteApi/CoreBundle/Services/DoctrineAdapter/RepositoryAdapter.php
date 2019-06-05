@@ -2,6 +2,8 @@
 
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter;
 
+use Doctrine\DBAL\Types\Type;
+
 class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 {
 
@@ -151,16 +153,20 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
             if (($view_to_use || $offset && $order_field) && $cassandra) {
 
 
-                $mapping = Array();
+                $mapping_timeuuid = Array();
+                $mapping_twake_text = Array();
                 if (isset($this->getClassMetadata()->associationMappings)) {
                     foreach ($this->getClassMetadata()->associationMappings as $field => $data) {
-                        $mapping[] = $field;
+                        $mapping_timeuuid[] = $field;
                     }
                 }
                 if (isset($this->getClassMetadata()->fieldMappings)) {
                     foreach ($this->getClassMetadata()->fieldMappings as $field => $data) {
+                        if ($data["type"] == "twake_text") {
+                            $mapping_twake_text[] = $field;
+                        }
                         if ($data["type"] == "twake_timeuuid") {
-                            $mapping[] = $field;
+                            $mapping_timeuuid[] = $field;
                         }
                     }
                 }
@@ -170,12 +176,17 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
 
                 foreach ($filters as $filter => $value) {
                     $qb = $qb->andWhere($qb->expr()->eq('e.' . $filter, ":" . $filter . "_param"));
-                    if (in_array($filter, $mapping)) {
+                    if (in_array($filter, $mapping_timeuuid)) {
                         if (is_object($value)) {
                             $qb = $qb->setParameter($filter . "_param", new FakeCassandraTimeuuid($value->getId()));
                         } else {
                             $qb = $qb->setParameter($filter . "_param", new FakeCassandraTimeuuid($value));
                         }
+                    } else if (in_array($filter, $mapping_twake_text)) {
+                        /** \Doctrine\DBAL\Types\Type @var $encryptedStringType */
+                        $encryptedStringType = Type::getType('twake_text');
+                        $encrypted = $encryptedStringType->convertToDatabaseValue($value, $this->_em->getConnection()->getDatabasePlatform());
+                        $qb = $qb->setParameter($filter . "_param", $encrypted);
                     } else {
                         $qb = $qb->setParameter($filter . "_param", $value);
                     }

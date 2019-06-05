@@ -25,7 +25,8 @@ class WebsocketsController extends Controller
                 "data" => Array(
                     "room_id" => $result["route_id"],
                     "key" => $result["key"],
-                    "key_version" => $result["key_version"]
+                    "key_version" => $result["key_version"],
+                    "get" => $result["get"]
                 )
             ));
         }

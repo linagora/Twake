@@ -60,7 +60,6 @@ class User
         $this->translate = $translate;
         $this->standalone = $standalone;
         $this->licenceKey = $licenceKey;
-        $this->circle = $circle;
 	}
 
 	public function current()
@@ -276,23 +275,29 @@ class User
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
         $retour = Array();
 
-        //Check user doesn't exists
-        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
-        //Check mail doesn't exists
-        $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-        $mailExists = $mailsRepository->findOneBy(Array("mail"=>$mail));
-
-        if (($user != null && $user->getMailVerified()) || $mailExists != null) {
+        if (!$this->string_cleaner->verifyMail($mail)) {
             $retour[] = -1;
+        } else {
+
+            //Check user doesn't exists
+            $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+            $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
+            //Check mail doesn't exists
+            $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+            $mailExists = $mailsRepository->findOneBy(Array("mail" => $mail));
+
+            if (($user != null && $user->getMailVerified()) || $mailExists != null) {
+                $retour[] = -1;
+            }
+
+            //Check pseudo doesn't exists
+            $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+            $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
+            if ($user != null && $user->getMailVerified()) {
+                $retour[] = -2;
+            }
         }
 
-        //Check pseudo doesn't exists
-        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
-        if ($user != null && $user->getMailVerified()) {
-            $retour[] = -2;
-        }
         if(count($retour)<=0){
             return true;
         }
@@ -391,7 +396,7 @@ class User
             ),
             "Action" => "addforce"
         );
-        $result = $this->circle->post("https://api.mailjet.com/v3/REST/contactslist/2017737/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+        $result = $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2017737/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
 
         return $user;
     }
@@ -409,6 +414,10 @@ class User
         }
 
 		$mail = $this->string_cleaner->simplifyMail($mail);
+
+        if (!$this->string_cleaner->verifyMail($mail)) {
+            return false;
+        }
 
 		//Check mail doesn't exists
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
@@ -869,6 +878,8 @@ class User
                 "action" => "changeUser"
             );
             $this->pusher->push($datatopush, "notifications/" . $user->getId());
+
+            return $user;
 
 		}
 

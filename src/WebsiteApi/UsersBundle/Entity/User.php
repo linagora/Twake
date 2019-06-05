@@ -508,7 +508,7 @@ class User extends SearchableObject implements UserInterface
 			"username" => $this->getUsername(),
 			"firstname" => $this->getFirstName(),
 			"lastname" => $this->getLastName(),
-			"thumbnail" => ($this->getThumbnail()==null)?null:$this->getThumbnail()->getPublicURL(2),
+            "thumbnail" => (($this->getThumbnail() == null) ? null : $this->getThumbnail()->getPublicURL(2)) . "",
             "connected" => $this->isConnected(),
 			"language" => $this->getLanguage(),
             "isNew" => $this->getisNew(),

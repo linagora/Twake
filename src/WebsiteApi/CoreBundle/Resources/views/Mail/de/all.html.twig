@@ -3,13 +3,13 @@
 {% block content %}
 
     <table class="main"
-           style="box-shadow: 5px 5px 100px rgba(0,0,0,0.2);border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 0 0 8px 8px;">
+           style="box-shadow: 5px 5px 100px rgba(0,0,0,0.2);border-collapse: separate; mso-table-lspace: 0pt; mso-table-rspace: 0pt; width: 100%; background: #ffffff; border-radius: 0 0 4px 4px;">
 
         <tr>
             <td class="wrapper"
-                style="font-family: sans-serif; font-size: 16px; vertical-align: top; box-sizing: border-box; padding: 20px;border-radius: 6px;color: #333;">
+                style="font-family: sans-serif; font-size: 16px; vertical-align: top; box-sizing: border-box; padding: 24px;border-radius: 6px;color: #444;">
 
-                <div style="font-size: 22px;text-align: center;margin-bottom: 30px;color: #0787DC;font-weight: bold;">{% block secondtitle %}Guten Tag!{% endblock %}</div>
+                <div style="font-size: 22px;text-align: center;margin:auto;margin-bottom: 32px;max-width: 80%;color: #837dff;font-weight: bold;">{% block secondtitle %}Guten Tag!{% endblock %}</div>
 
                 {% block body %}{% endblock %}
 
@@ -18,7 +18,7 @@
                 <br>
                 Ihr Twake-Team
                 <br>
-                <a style="color: #0787DC;" href="{{ twakeurl }}">{{ twakeurl }}</a>
+                <a style="color: #837dff;" href="{{ twakeurl }}">{{ twakeurl }}</a>
 
             </td>
         </tr>

@@ -100,13 +100,17 @@ class WorkspaceDataController extends Controller
 					$data["errors"][] = "badimage";
 				} else {
 
-                    $this->get("app.workspaces")->changeLogo($workspaceId, $thumbnail["file"], $this->getUser()->getId(), $this->getUploader());
+                    $workspace = $this->get("app.workspaces")->changeLogo($workspaceId, $thumbnail["file"], $this->getUser()->getId(), $this->getUploader());
 				}
 			} else {
-                $this->get("app.workspaces")->changeLogo($workspaceId, null, $this->getUser()->getId(), $this->getUploader());
+                $workspace = $this->get("app.workspaces")->changeLogo($workspaceId, null, $this->getUser()->getId(), $this->getUploader());
 			}
 
 		}
+
+        if ($workspace) {
+            $data["data"] = $workspace->getAsArray();
+        }
 
 		return new JsonResponse($data);
 

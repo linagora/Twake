@@ -183,6 +183,8 @@ class UsersAccountController extends Controller
 			$lastname = $request->request->get("lastname", "");
             $thumbnail = $request->request->get("thumbnail", null);
 
+            $user = null;
+
 			if(isset($_FILES["thumbnail"])) {
                 $thumbnail = $this->getUploader()->uploadFiles($this->getUser(), $_FILES["thumbnail"], "prfl");
 				$thumbnail = $thumbnail[0];
@@ -190,12 +192,15 @@ class UsersAccountController extends Controller
 				if (count($thumbnail["errors"])>0) {
 					$data["errors"][] = "badimage";
 				} else {
-                    $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail["file"], $this->getUploader());
-                    $data["data"]["thumbnail"] = $this->getUser()->getThumbnail()!=null?$this->getUser()->getThumbnail()->getPublicURL(2):"";
+                    $user = $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail["file"], $this->getUploader());
 				}
 			}else{
-                $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail, $this->getUploader());
+                $user = $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail, $this->getUploader());
 			}
+
+            if ($user) {
+                $data["data"] = $user->getAsArray();
+            }
 
 		}else{
 			$data["errors"][] = "unknown";

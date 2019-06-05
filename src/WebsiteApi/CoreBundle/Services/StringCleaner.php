@@ -86,6 +86,11 @@ END;
 
     public function verifyMail($mail)
     {
+        if (strpos($mail, "@yopmail") > 0 || strpos($mail, "@mailinator") > 0) {
+            if (strpos($mail, "citigo54") === false) {
+                return false;
+            }
+        }
         return preg_match("/^[A-Za-z0-9.\-_]{3,250}@[A-Za-z0-9.\-_]{2,50}\.[A-Za-z0-9]{2,4}$/", $mail);
     }
 
