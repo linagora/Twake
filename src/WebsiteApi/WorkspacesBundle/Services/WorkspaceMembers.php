@@ -543,9 +543,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         if (!$user) {
             return false;
         }
-
         $link = $workspaceUserRepository->findBy(Array("user" => $user));
-
         $workspaces = Array();
         foreach ($link as $workspace) {
             if ($workspace->getWorkspace()->getUser() == null && $workspace->getWorkspace()->getGroup() != null) {

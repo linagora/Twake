@@ -139,10 +139,8 @@ class QuickSearch
 //        }
 
         $workspaces_acces = $this->memberservice->getWorkspaces($current_user_id);
-        var_dump($current_user_id);
         $workspaces = Array(); //liste des workspace dont on a accces;
         foreach ($workspaces_acces as $workspace_obj){
-            var_dump($workspace_obj->getAsArray());
             $value = $workspace_obj["workspace"]->getAsArray();
             if(isset($group_id) && !(in_array($value,$workspaces)) && $value["group"]["id"] == $group_id){
                 $workspaces[$value["id"]] = $value;
@@ -152,12 +150,12 @@ class QuickSearch
             }
         }
 
-       //$user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $current_user_id));
+       $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $current_user_id));
 
 
         //$this->SearchFile($words,$workspaces);
-        //$this->SearchInWorkspace($words,$workspaces,$current_user_id);
-        //$this->SearchPrivateChannel($words,$user->getUsername(),$current_user_id);
+        $this->SearchInWorkspace($words,$workspaces,$current_user_id);
+        $this->SearchPrivateChannel($words,$user->getUsername(),$current_user_id);
 
 
 //        usort($this->fileresult,array($this,'cmpfile')); //on a meme plus besoin de trier ES le fait pour nous normalement
