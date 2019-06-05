@@ -539,9 +539,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
     {
         $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
         $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-
         $user = $userRepository->find($userId);
-
         if (!$user) {
             return false;
         }

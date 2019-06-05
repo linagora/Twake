@@ -273,7 +273,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         return false;
     }
 
-    public function search($words,$workspaces){
+    public function search($words,$workspaces,$current_user_id){
 
         $terms = Array();
         $should_workspaces = Array();
@@ -306,8 +306,13 @@ class ChannelsSystem extends ChannelSystemAbstract
                 "bool" => Array(
                     "must" => Array(
                         "bool" => Array(
+                            "filter" => Array(
+                                "match_phrase" => Array(
+                                    "members" => $current_user_id
+                                )
+                            ),
                             "should" => Array(
-                                    $should_workspaces
+                                $should_workspaces
                             ),
                             "minimum_should_match" => 1,
                             "must" => Array(
@@ -341,10 +346,9 @@ class ChannelsSystem extends ChannelSystemAbstract
 
     }
 
-    public function searchprivate($words){
+    public function searchprivate($words,$current_user_id){
 
         $terms = Array();
-        $should_workspaces = Array();
         foreach ($words as $word){
             $st = new StringCleaner();
             $word= $st->simplifyInArray($word);
@@ -364,6 +368,11 @@ class ChannelsSystem extends ChannelSystemAbstract
             "index" => "channel",
             "query" => Array(
                 "bool" => Array(
+                    "filter" => Array(
+                        "match_phrase" => Array(
+                            "members" => $current_user_id
+                        )
+                    ),
                     "should" => Array(
                         $terms
                     ),

@@ -219,6 +219,12 @@ END;
 
        //$this->index("pdftest.pdf");
         //$file= $this->doctrine->getRepository("TwakeDriveBundle:Drivefile")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
+//        $file = new DriveFile("14005200-48b1-11e9-a0b4-0242ac120000","14005200-48b1-11e9-a0b4-0242ac120000");
+//        $file->setName("testbug");
+//        // $keywords_score=$this->update_keyword($keywords_score,explode(".", $document)[0]); //change this with document title
+//        $file->setExtension("PDF");
+//        $this->doctrine->es_put($file,$file->getEsType());
+        var_dump("cc");
 
 //        $words=Array("civ");
 //        $this->search($words,"d975075e-6028-11e9-b206-0242ac120005");

@@ -16,7 +16,7 @@ class QuickSearch
     private $fileservice;
     private $memberservice;
 
-    //liste final de résultat
+    //liste final de résultats
     private $globalresult;
 
     //va stocker les résultat non prioritaire séparé par type
@@ -43,7 +43,7 @@ class QuickSearch
 
     public function SearchInWorkspace($words,$workspaces,$current_user_id)
     {
-        $channels = $this->channelservice->search($words,$workspaces); // search channel in a workspace
+        $channels = $this->channelservice->search($words,$workspaces,$current_user_id); // search channel in a workspace
         foreach ($channels as $channel){
             if(in_array($current_user_id,$channel[0]["members"]) || in_array($current_user_id,$channel[0]["ext_members"]))
             {
@@ -54,7 +54,7 @@ class QuickSearch
                 else {
                     $this->channelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1], "workspace" =>  $workspaces[$channel[0]["original_workspace"]]);
                 }
-                $this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
+                //$this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
             }
         }
     }
@@ -72,7 +72,7 @@ class QuickSearch
                 else{
                     $this->channelresult[] = Array("type" => "channel", "channel" => $channel, "workspace" => $workspace);
                 }
-                $this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
+                //$this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
             }
         }
 
@@ -88,17 +88,17 @@ class QuickSearch
             else {
                 $this->fileresult[] = Array("type" => "file", "file" => $file[0], "score" => $file[1],  "workspace" =>$workspaces[$file[0]["workspace_id"]]);
             }
-            $this->history->addSearch(Array("id" => $file[0]["id"],"type"=> "file", "compteur" => 0));
+            //$this->history->addSearch(Array("id" => $file[0]["id"],"type"=> "file", "compteur" => 0));
         }
     }
 
-    public function SearchPrivateChannel($words,$name){
+    public function SearchPrivateChannel($words,$name,$current_user_id){
         $words[] = $name;
         //var_dump($words);
-        $channels = $this->channelservice->searchprivate($words); // search channel in a workspace
+        $channels = $this->channelservice->searchprivate($words,$current_user_id); // search channel in a workspace
         foreach ($channels as $channel){
             $this->channelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1]);
-            $this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
+            //$this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
          }
 
     }
@@ -122,7 +122,7 @@ class QuickSearch
 
         $this->workspace_prio = $workspace_prio;
         //$this->workspace_prio = "d975075e-6028-11e9-b206-0242ac120005";
-        //$words = Array("appli","general",'justin');
+        $words = Array("appli","general",'justin');
         $st = new StringCleaner();
         $words = $st->simplifyInArray($words);
         $this->globalresult = Array();
@@ -132,14 +132,16 @@ class QuickSearch
         $this->channelresult = Array();
         $this->priochannelresult = Array();
 
-        $this->history = $this->doctrine->getRepository("TwakeGlobalSearchBundle:SearchHistory")->findOneBy(Array("user_id" => $current_user_id));
-        if(!isset($this->history)){
-            $this->history = new SearchHistory($current_user_id,Array());
-        }
+//        $this->history = $this->doctrine->getRepository("TwakeGlobalSearchBundle:SearchHistory")->findOneBy(Array("user_id" => $current_user_id));
+//        if(!isset($this->history)){
+//            $this->history = new SearchHistory($current_user_id,Array());
+//        }
 
         $workspaces_acces = $this->memberservice->getWorkspaces($current_user_id);
+        var_dump($current_user_id);
         $workspaces = Array(); //liste des workspace dont on a accces;
         foreach ($workspaces_acces as $workspace_obj){
+            var_dump($workspace_obj->getAsArray());
             $value = $workspace_obj["workspace"]->getAsArray();
             if(isset($group_id) && !(in_array($value,$workspaces)) && $value["group"]["id"] == $group_id){
                 $workspaces[$value["id"]] = $value;
@@ -149,12 +151,14 @@ class QuickSearch
             }
         }
 
-        $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $current_user_id));
+       //$user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $current_user_id));
+
 
         //$this->SearchFile($words,$workspaces);
-        $this->SearchInWorkspace($words,$workspaces,$current_user_id);
-        $this->SearchPrivateChannel($words,$user->getUsername());
-        
+        //$this->SearchInWorkspace($words,$workspaces,$current_user_id);
+        //$this->SearchPrivateChannel($words,$user->getUsername(),$current_user_id);
+
+
 //        usort($this->fileresult,array($this,'cmpfile')); //on a meme plus besoin de trier ES le fait pour nous normalement
 //        usort($this->priofileresult,array($this,'cmpfile'));
 //        usort($this->priochannelresult,array($this,'cmpchannel'));
@@ -172,7 +176,7 @@ class QuickSearch
         $this->globalresult = array_merge($this->globalresult,$this->channelresult);
         $this->globalresult = array_merge($this->globalresult,$this->fileresult);
        //
-       //var_dump($this->globalresult);
+       var_dump($this->globalresult);
 
 
 //        $this->history = $this->doctrine->getRepository("TwakeGlobalSearchBundle:SearchHistory")->findOneBy(Array("user_id" => $current_user_id));
@@ -181,6 +185,13 @@ class QuickSearch
 //        $this->doctrine->persist($this->history); //rajouter if isset history
 //        //var_dump($this->history);
 //        $this->doctrine->flush();
+
+//        $channels= $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
+//        foreach ($channels as $channel){
+//            if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == true) {
+//                var_dump($channel->getIndexationArray());
+//            }
+//        }
 
 //
 //        $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array("id" => "0f34eff8-48af-11e9-9dd1-0242ac120005"));

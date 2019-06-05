@@ -153,6 +153,8 @@ class Channel extends SearchableObject
                 "group_id" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
                 "name" => $this->getName(),
                 "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
+                "members" => $this->getMembers(),
+                "ext_members" => $this->getExtMembers()
             );
 
         return $return;
@@ -183,6 +185,10 @@ class Channel extends SearchableObject
             "tabs" => $this->getTabs(),
             "messages_increment" => $this->getMessagesIncrement()
         );
+    }
+
+    public function getTotalMembers(){
+        return array_merge($this->getMembers(),$this->getExtMembers());
     }
 
 
