@@ -35,6 +35,18 @@ class CalendarCalendar
             return false;
         }
 
+        if (count($calendars) == 0) {
+            $cal = $this->save(Array(
+                "workspace_id" => $workspace_id,
+                "title" => "General",
+                "color" => "#33b679",
+                "auto_participants" => Array()
+            ), Array(), null);
+            if ($cal) {
+                return [$cal];
+            }
+        }
+
         $ret = [];
         foreach ($calendars as $calendar) {
             $ret[] = $calendar->getAsArray();
