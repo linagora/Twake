@@ -242,7 +242,7 @@ class ManagerAdapter
                 }
                 $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
                 foreach ($data as $field){
-                    if(is_string($field) && !(preg_match($UUIDv4, $field)) && !($this->validateDate($field)) ) {
+                    if(is_string($field) && !(preg_match($UUIDv4, $field)) && !($this->validateDate($field)) &&$field != "" ) {
                         //var_dump(preg_match($UUIDv4, $field));
                         $keywords=$this->update_ES_keyword($keywords, $field);
                     }
@@ -251,8 +251,10 @@ class ManagerAdapter
             }
 
         }
+
         $st = new StringCleaner();
         $data = $st->simplifyInArray($data);
+        var_dump($data);
         //var_dump($data);
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
