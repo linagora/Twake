@@ -254,7 +254,7 @@ class ManagerAdapter
 
         $st = new StringCleaner();
         $data = $st->simplifyInArray($data);
-        var_dump($data);
+        //var_dump($data);
         //var_dump($data);
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 

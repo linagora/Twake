@@ -65,6 +65,10 @@ class WebTestCaseExtended extends WebTestCase
         return $this->client->getContainer()->get($service);
     }
 
+    protected function clearClient(){
+        $this->client = null;
+    }
+
     protected function getClient()
     {
         if (!isset($this->client)) {
@@ -115,6 +119,7 @@ class WebTestCaseExtended extends WebTestCase
 
     public function removeUserByName($name){
         $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
+
         if (isset($user)) {
 
             $mails = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user" => $user));
@@ -125,8 +130,6 @@ class WebTestCaseExtended extends WebTestCase
 
             $this->get("app.twake_doctrine")->remove($user);
             $this->get("app.twake_doctrine")->flush();
-        } else {
-            error_log("no such user");
         }
     }
 

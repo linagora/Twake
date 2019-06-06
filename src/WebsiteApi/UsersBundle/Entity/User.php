@@ -815,8 +815,8 @@ class User extends SearchableObject implements UserInterface
      */
     public function setEmail($email)
     {
-        $this->email = $email;
-        $this->emailcanonical = $email;
+        $this->email = trim(strtolower($email));
+        $this->emailcanonical = trim(strtolower($email));
 
         return $this;
     }

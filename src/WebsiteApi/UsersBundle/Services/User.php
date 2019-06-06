@@ -90,6 +90,9 @@ class User
     public function loginWithUsernameOnly($usernameOrMail)
     {
 
+        $usernameOrMail = trim(strtolower($usernameOrMail));
+
+
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("usernamecanonical" => $this->string_cleaner->simplifyUsername($usernameOrMail)));
         if ($user == null) {
@@ -121,10 +124,13 @@ class User
 	public function login($usernameOrMail, $password, $rememberMe = false, $request = null, $response = null)
 	{
 
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $usernameOrMail = trim(strtolower($usernameOrMail));
+
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
         $user = $userRepository->findOneBy(Array("usernamecanonical" => $this->string_cleaner->simplifyUsername($usernameOrMail)));
-		if($user==null){
+
+        if($user==null){
             $user = $userRepository->findOneBy(Array("emailcanonical" => $this->string_cleaner->simplifyMail($usernameOrMail)));
 		}
 
@@ -446,6 +452,7 @@ class User
             $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "magic_link" => $magic_link));
         }
 
+
         //Create the temporary user
         $user = new \WebsiteApi\UsersBundle\Entity\User();
         $user->setSalt(bin2hex(random_bytes(40)));
@@ -466,6 +473,9 @@ class User
 
     public function verifyMail($mail, $token, $code, $force = false, $response = null)
     {
+
+        $mail = trim(strtolower($mail));
+
         $verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
         $ticket = $verificationRepository->findOneBy(Array("token" => $token));
         if (($ticket != null && $ticket->verifyCode($code) && $ticket->getMail($mail)) || $force) {
@@ -479,6 +489,7 @@ class User
             $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
             $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
             if ($user) {
+
                 $user->setMailVerified(true);
                 $this->em->persist($user);
 
