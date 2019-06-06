@@ -74,6 +74,9 @@ class SearchableObject extends FrontObject
      */
     public function setEsIndex($es_index)
     {
+        if (!$es_index) {
+            $this->on_construct_indexation_array = "";
+        }
         $this->es_index = $es_index;
     }
 
@@ -84,12 +87,12 @@ class SearchableObject extends FrontObject
 
     public function updatePreviousIndexationArray()
     {
-        $this->on_construct_indexation_array = $this->getIndexationArray();
+        $this->on_construct_indexation_array = json_encode($this->getIndexationArray());
     }
 
     public function changesInIndexationArray()
     {
-        if (json_encode($this->getIndexationArray()) != json_encode($this->on_construct_indexation_array)) {
+        if (json_encode($this->getIndexationArray()) != $this->on_construct_indexation_array) {
             return true;
         }
         return false;
