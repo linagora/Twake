@@ -151,6 +151,7 @@ class QuickSearch
         }
 
        $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $current_user_id));
+        var_dump($user);
 
 
         //$this->SearchFile($words,$workspaces);
@@ -175,7 +176,7 @@ class QuickSearch
         $this->globalresult = array_merge($this->globalresult,$this->channelresult);
         $this->globalresult = array_merge($this->globalresult,$this->fileresult);
        //
-       var_dump($this->globalresult);
+       //var_dump($this->globalresult);
 
 
 //        $this->history = $this->doctrine->getRepository("TwakeGlobalSearchBundle:SearchHistory")->findOneBy(Array("user_id" => $current_user_id));

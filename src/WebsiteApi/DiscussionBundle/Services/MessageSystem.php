@@ -334,6 +334,7 @@ class MessageSystem
         //Update reactions
         if (isset($object["_user_reaction"]) && $user && $message->getId()) {
 
+            error_log("cc");
             $message_reaction_repo = $this->em->getRepository("TwakeDiscussionBundle:MessageReaction");
             $message_reaction = $message_reaction_repo->findOneBy(Array("user_id" => $user->getId(), "message_id" => $message->getId()));
 
