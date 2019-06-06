@@ -52,6 +52,8 @@ class DriveFileSystem
         $this->workspacesApps = $workspacesApps;
         $this->workspacesActivities = $workspacesActivities;
         $this->objectLinkSystem = $objectLinkSystem;
+
+        $this->previewableExt = Array("png", "jpeg", "jpg", "gif", "tiff", "ai", "svg", "pdf", "txt", "rtf", "csv", "docx", "doc", "odt", "xls", "xlsx", "ods", "ppt", "pptx", "odp");
     }
 
     protected function convertToEntity($var, $repository)
@@ -1400,6 +1402,9 @@ class DriveFileSystem
             $this->doctrine->flush();
         }
 
+
+        $newFile->setEsIndexed(false);
+        $this->doctrine->persist($newFile);
         $this->doctrine->flush($newFile);
 
 
@@ -1751,13 +1756,17 @@ class DriveFileSystem
             /* @var DriveFile $file */
             $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("previewhasbeengenerated" => false), Array(), 50);
             foreach ($files as $file) {
-                if ($file->getSize() > 10) {
+                if ($file->getSize() > 10 && $file->getSize() < 50000000) {
 
                     $file->setPreviewHasBeenGenerated(true);
 
-                    $res = $this->genPreview($file);
-                    if ($res) {
-                        $file->setHasPreview(true);
+                    if (in_array(strtolower($file->getExtension()), $this->previewableExt)) {
+
+                        $res = $this->genPreview($file);
+                        if ($res) {
+                            $file->setHasPreview(true);
+                        }
+
                     }
 
                     $this->doctrine->persist($file);

@@ -37,7 +37,7 @@ class NotificationMailCommand extends ContainerAwareCommand
 
             $date = date("U") - $entry->getDate()->getTimestamp();
 
-            if ($date > 60 * 30) //30 minutes
+            if ($date > 60 * 60 * 12) //12h
             {
 
                 $user_notification_status = $em->getRepository("TwakeNotificationsBundle:UserNotificationStatus")->findOneBy(Array("user_id" => $entry->getUserId()));

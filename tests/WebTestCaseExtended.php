@@ -65,6 +65,10 @@ class WebTestCaseExtended extends WebTestCase
         return $this->client->getContainer()->get($service);
     }
 
+    protected function clearClient(){
+        $this->client = null;
+    }
+
     protected function getClient()
     {
         if (!isset($this->client)) {
@@ -101,6 +105,19 @@ class WebTestCaseExtended extends WebTestCase
         }
 
         $mail = $name . "@twake_phpunit.fr";
+
+        $userWithMail = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("emailcanonical" => $mail));
+        if ($userWithMail) {
+            error_log("Removed already existing user with mail " . $userWithMail);
+            $this->removeUserByName($userWithMail->getUsername());
+        }
+
+        $mails = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findBy(Array("mail" => $mail));
+        foreach ($mails as $mail) {
+            $this->get("app.twake_doctrine")->remove($mail);
+        }
+
+
         $token = $this->get("app.user")->subscribeMail($mail, $name, $name, "", "", "", false);
         $this->get("app.user")->verifyMail($mail, $token, "", true);
 
@@ -115,6 +132,7 @@ class WebTestCaseExtended extends WebTestCase
 
     public function removeUserByName($name){
         $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
+
         if (isset($user)) {
 
             $mails = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user" => $user));
@@ -125,8 +143,6 @@ class WebTestCaseExtended extends WebTestCase
 
             $this->get("app.twake_doctrine")->remove($user);
             $this->get("app.twake_doctrine")->flush();
-        } else {
-            error_log("no such user");
         }
     }
 

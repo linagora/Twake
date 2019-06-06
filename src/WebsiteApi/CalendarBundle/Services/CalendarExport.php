@@ -19,8 +19,8 @@ class CalendarExport
 
     public function generateToken($request, $current_user = null){
 
-        /*$user_id = $current_user->getId();
-        $entity = $this->doctrine->getRepository("TwakeCalendarBundle:ExportToken")->findOneBy(Array("user_id" =>$user_id ));
+        $user_id = $current_user->getId();
+        /*$entity = $this->doctrine->getRepository("TwakeCalendarBundle:ExportToken")->findOneBy(Array("user_id" =>$user_id ));
         if (!$entity){*/
             $workspace_id = $request->request->get('workspace_id');
             $calendars =$request->request->get('calendars');
