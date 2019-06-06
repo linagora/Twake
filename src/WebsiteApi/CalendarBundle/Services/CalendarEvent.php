@@ -234,6 +234,7 @@ class CalendarEvent
             $object["to"] = $object["from"] + 60 * 60;
         }
         $tmp_sort_key = json_encode($event->getSortKey());
+        $from_changed = ($object["from"] != $event->getFrom());
         $event->setFrom($object["from"]);
         $event->setTo($object["to"]);
         $event->setAllDay($object["all_day"]);
@@ -298,13 +299,13 @@ class CalendarEvent
             return false;
         }
 
-        if (isset($object["notifications"]) || $sort_key_has_changed) {
+        if (isset($object["notifications"]) || $sort_key_has_changed || $from_changed) {
 
             if (!isset($object["notifications"])) {
                 $object["notifications"] = $event->getNotifications();
             }
 
-            $this->updateNotifications($event, $object["notifications"] ? $object["notifications"] : Array(), $sort_key_has_changed || $did_create);
+            $this->updateNotifications($event, $object["notifications"] ? $object["notifications"] : Array(), ($sort_key_has_changed || $did_create || $from_changed));
         }
 
 
@@ -546,7 +547,7 @@ class CalendarEvent
         }
 
         foreach (($replace_all ? $updated_notifications : $get_diff["add"]) as $notification) {
-            $notification = new EventNotification($event->getId(), $notification["delay"], $event->getFrom() + $notification["delay"], $notification["mode"]);
+            $notification = new EventNotification($event->getId(), $notification["delay"], $event->getFrom() - $notification["delay"], $notification["mode"]);
             $this->doctrine->persist($notification);
         }
 
@@ -634,7 +635,7 @@ class CalendarEvent
 
         $when_ts_week = floor(date("U") / (7 * 24 * 60 * 60));
 
-        $notifications = $this->doctrine->getRepository("TwakeCalendarBundle:EventNotification")->findRange(Array("when_ts_week" => $when_ts_week), "when_ts", date("U") - 60 * 60, date("U") + 60 * 45);
+        $notifications = $this->doctrine->getRepository("TwakeCalendarBundle:EventNotification")->findRange(Array("when_ts_week" => $when_ts_week));//, "when_ts", date("U") - 60 * 60, date("U") + 60 * 45);
 
         foreach ($notifications as $notification) {
 
