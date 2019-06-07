@@ -356,9 +356,7 @@ class CalendarEvent
                 ),
                     [Array("type" => "raw", "data" => $this->calendarExport->generateIcs([$event->getAsArray()]), "filename" => "event.ics", "mimetype" => "text/calendar")]
                 );
-            } else if ($old_event["from"] != $event->getAsArray()["from"] || $old_event["to"] != $event->getAsArray()["to"]
-                || $old_event["title"] != $event->getAsArray()["title"] || $old_event["location"] != $event->getAsArray()["location"]
-                || $old_event["description"] != $event->getAsArray()["description"]) {
+            } else if ($this->hasRealChange($old_event, $event->getAsArray())) {
                 $this->notifications->sendCustomMail(
                     $mail, "event_invitation_updated", Array(
                     "_language" => $current_user ? $current_user->getLanguage() : "en",
@@ -410,6 +408,15 @@ class CalendarEvent
 
 
         return $event->getAsArray();
+    }
+
+    //TODO Not the best to send update email every time, change it to a worker waiting 30 minutes at least
+    private function hasRealChange($old_event, $new_event)
+    {
+        return ($old_event["from"] != $new_event["from"] || $old_event["to"] != $new_event["to"]
+            || strlen(str_replace(" ", "", $old_event["title"] . "")) - strlen(trim($new_event["title"] . "")) > 10
+            || strlen(str_replace(" ", "", $old_event["location"] . "")) - strlen(trim($new_event["location"] . "")) > 10
+            || strlen(str_replace(" ", "", $old_event["description"] . "")) - strlen(trim($new_event["description"] . "")) > 10);
     }
 
     private function updateParticipants(Event $event, $participants = Array(), $replace_all = false)
