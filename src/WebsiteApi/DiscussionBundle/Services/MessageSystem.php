@@ -340,7 +340,7 @@ class MessageSystem
             $user_reaction = $object["_user_reaction"];
             $reaction = Array();
 
-            if($current_reactions && !(is_array($current_reactions[0]))){
+            /*if($current_reactions && !(is_array($current_reactions[0]))){
                 $reacttochangeformat = Array();
                 $allreactionppl = $message_reaction_repo->findBy(Array("message_id" => $message->getId()));
                 //error_log(print_r(count($allreactionppl),true));
@@ -355,7 +355,7 @@ class MessageSystem
                 }
                 //error_log(print_r($reacttochangeformat,true));
                 $current_reactions = $reacttochangeformat;
-            }
+            }*/
 
             if ($message_reaction) {
                 if ($user_reaction == $message_reaction->getReaction()) {
