@@ -27,13 +27,10 @@ class DrivePreview
             $ext === 'png' ||
             $ext === 'jpg' ||
             $ext === 'jpeg' ||
-            $ext === 'jp2' ||
             $ext === 'gif' ||
             $ext === 'svg' ||
-            $ext === 'tiff' ||
-            $ext === 'bmp' ||
-            $ext === 'ico' ||
-            $ext === 'webp');
+            $ext === 'tiff'
+        );
     }
 
     /* Do not generate preview for files larger than 50Mo */
