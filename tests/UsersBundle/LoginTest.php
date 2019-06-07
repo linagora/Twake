@@ -11,6 +11,7 @@ class LoginTest extends WebTestCaseExtended
     public function testLoginCorrect()
 
     {
+
         $this->removeUserByName("usertest001");
         $user = $this->newUserByName("usertest001");
 

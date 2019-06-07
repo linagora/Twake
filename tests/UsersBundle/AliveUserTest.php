@@ -25,7 +25,7 @@ class AliveUserTest extends WebTestCaseExtended
 
         $difference = $currentDate - $lastActivityUser;
 
-        $this->assertLessThanOrEqual(0,$difference);
+        $this->assertLessThanOrEqual(10,$difference);
 
 
 
