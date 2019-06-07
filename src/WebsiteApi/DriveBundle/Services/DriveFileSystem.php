@@ -222,25 +222,51 @@ class DriveFileSystem
 
     protected function updateSize($directory, $delta)
     {
-        if (!$directory || is_string($directory)) {
+//        error_log("cc");
+//        error_log(print_r("type of dic: ". gettype($directory),true));
+//        error_log("\n");
+        if (!$directory){ //|| is_string($directory)) {
             $directory = null;
+        }
+
+        if(is_string($directory)){
+            $directory = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory));
+
         }
 
         while ($directory != null) {
 
             if ($directory == "root") {
+                //error_log("je s'apelle root");
                 $directory = $this->getRootEntity();
             }
 
-            if (!$directory || is_string($directory)) {
+            if(is_string($directory)){
+                $directory = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory));
+
+            }
+            if (!$directory ){//|| is_string($directory)) {
                 $directory = null;
-            } else {
+
+            }
+
+            if($directory != null){
+//                error_log(print_r("directory type: " . gettype($directory),true));
+//                error_log(print_r("id ".$directory->getId(),true));
+                //error_log(print_r($directory,true));
+                //error_log(print_r("delta: ".$delta,true));
+                $currentSize = $directory->getSize();
+                //error_log(print_r("currentsize: ".$currentSize,true));
+                $directory->setSize($currentSize + $delta);
+                //$directory->setSize(0);
 
                 $currentSize = $directory->getSize();
-                $directory->setSize($currentSize + $delta);
+                //error_log(print_r("aftersize: ".$currentSize,true));
                 $this->doctrine->persist($directory);
+                $this->doctrine->flush();
                 $directory = $directory->getParentId();
-
+//                error_log(print_r("parent id: ".$directory,true));
+//                error_log("\n");
             }
         }
     }
@@ -1096,6 +1122,7 @@ class DriveFileSystem
         $fileOrDirectory->setParentId($this->getRootEntity($fileOrDirectory->getWorkspaceId())->getId()); //On le met dans le root de la corbeille
         $fileOrDirectory->setIsInTrash(true);
 
+        //error_log(print_r(gettype($fileOrDirectory->getOldParent()),true));
         $this->updateSize($fileOrDirectory->getOldParent(), -$fileOrDirectory->getSize());
 
         $this->doctrine->persist($fileOrDirectory);
@@ -1344,7 +1371,6 @@ class DriveFileSystem
     {
 
         try {
-
             if (!$file) {
                 return false;
             }
@@ -1372,7 +1398,6 @@ class DriveFileSystem
                 }
             } else {
                 $size = filesize($file["tmp_name"]);
-
                 $context = Array(
                     "max_size" => 5000000000 // 5Go
                 );
