@@ -288,6 +288,7 @@ class DriveFileSystem
 
         $fileOrDirectory->setParentId($directory->getId());
 
+        $this->setWorkspaceId($directory->getWorkspaceId());
         $this->improveName($fileOrDirectory);
 
         $this->doctrine->persist($fileOrDirectory);
@@ -1402,11 +1403,9 @@ class DriveFileSystem
             $this->doctrine->flush();
         }
 
-
         $newFile->setEsIndexed(false);
         $this->doctrine->persist($newFile);
         $this->doctrine->flush($newFile);
-
 
         return $newFile;
 
@@ -1772,7 +1771,7 @@ class DriveFileSystem
                     $this->doctrine->persist($file);
                     $this->doctrine->flush();
 
-                    $this->pusher->push(Array("action" => "update"), "drive/" . $file->getWorkspaceId());
+                    $this->pusher->push(Array("action" => "update_file", "file" => $file->getAsArray()), "drive/file/" . $file->getWorkspaceId() . "/" . $file->getParentId());
 
                 }
 

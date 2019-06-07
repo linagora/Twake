@@ -240,6 +240,14 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     /**
      * @return mixed
      */
+    public function setWorkspaceId($wid)
+    {
+        $this->workspace_id = $wid;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getParentId()
     {
         return $this->parent_id;
