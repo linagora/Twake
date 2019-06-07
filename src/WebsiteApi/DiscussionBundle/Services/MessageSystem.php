@@ -333,56 +333,79 @@ class MessageSystem
 
         //Update reactions
         if (isset($object["_user_reaction"]) && $user && $message->getId()) {
-
-            error_log("cc");
             $message_reaction_repo = $this->em->getRepository("TwakeDiscussionBundle:MessageReaction");
             $message_reaction = $message_reaction_repo->findOneBy(Array("user_id" => $user->getId(), "message_id" => $message->getId()));
-
             $current_reactions = $message->getReactions();
+            //error_log(print_r($current_reactions,true));
             $user_reaction = $object["_user_reaction"];
             $reaction = Array();
 
-            if ($message_reaction) {
+            if($current_reactions && !(is_array($current_reactions[0]))){
+                $reacttochangeformat = Array();
+                $allreactionppl = $message_reaction_repo->findBy(Array("message_id" => $message->getId()));
+                //error_log(print_r(count($allreactionppl),true));
+                foreach ($allreactionppl as $ppl){
+                    $reacttochangeformat[$ppl->getReaction()]["users"][]= $ppl->getUserId() ;
+                    if($reacttochangeformat[$ppl->getReaction()]["count"]){
+                        $reacttochangeformat[$ppl->getReaction()]["count"]++;
+                    }
+                    else{
+                        $reacttochangeformat[$ppl->getReaction()]["count"] = 1 ;
+                    }
+                }
+                //error_log(print_r($reacttochangeformat,true));
+                $current_reactions = $reacttochangeformat;
+            }
 
+            if ($message_reaction) {
                 if ($user_reaction == $message_reaction->getReaction()) {
                     //Noop
                 } else if (!$user_reaction) {
                     $this->em->remove($message_reaction);
-                    $reaction["remove"] = $message_reaction->getReaction();
+                    $reaction["remove"] = Array( $message_reaction->getReaction() => Array("user" => $user->getId() ));
                 } else {
-                    $reaction["remove"] = $message_reaction->getReaction();
-                    $reaction["add"] = $user_reaction;
+                    $reaction["remove"] = Array( $message_reaction->getReaction() => Array("user" => $user->getId() ) );
+                    $reaction["add"] = Array( $user_reaction => $user->getId());
+
                     $message_reaction->setReaction($user_reaction);
                     $this->em->persist($message_reaction);
                 }
 
             } else if ($user_reaction) {
                 $message_reaction = new MessageReaction($message->getId(), $user->getId());
-                $reaction["add"] = $user_reaction;
+                $reaction["add"] = Array( $user_reaction => Array("user" => $user->getId() ));
                 $message_reaction->setReaction($user_reaction);
                 $this->em->persist($message_reaction);
             }
 
+
             if (isset($reaction["add"])) {
-                if (!isset($current_reactions[$reaction["add"]])) {
-                    $current_reactions[$reaction["add"]] = 0;
+                $key_first = array_keys($reaction["add"])[0];
+                //error_log(print_r($key_first,true));
+                if(array_key_exists($key_first,$current_reactions)){
+                    //error_log('ici');
+                    $current_reactions[$key_first]["users"][] = $user->getId();
                 }
-                $current_reactions[$reaction["add"]] += 1;
+                else{
+                    $current_reactions[$key_first]["users"] = Array($user->getId());
+                }
+                $current_reactions[$key_first]["count"]++;
             }
             if (isset($reaction["remove"])) {
-                if (!isset($current_reactions[$reaction["remove"]])) {
-                    $current_reactions[$reaction["remove"]] = 0;
-                } else {
-                    $current_reactions[$reaction["remove"]] += -1;
-                }
-                if ($current_reactions[$reaction["remove"]] <= 0) {
-                    unset($current_reactions[$reaction["remove"]]);
+                $key_first = array_keys($reaction["remove"])[0];
+                if(array_key_exists($key_first,$current_reactions)){
+                    $keytoremove = array_search( $user->getId(),$current_reactions[$key_first]["users"]);
+                    unset($current_reactions[$key_first]["users"][$keytoremove]);
+                    $current_reactions[$key_first]["count"]--;
+                    if($current_reactions[$key_first]["count"]==0){
+                        unset($current_reactions[$key_first]);
+                    }
                 }
             }
+
             $message->setReactions($current_reactions);
-
         }
-
+//
         $this->em->persist($message);
 
         if (!$ephemeral) {

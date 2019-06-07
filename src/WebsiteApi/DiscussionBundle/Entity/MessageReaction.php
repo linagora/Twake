@@ -58,4 +58,13 @@ class MessageReaction
         $this->reaction = $reaction;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+
 }
