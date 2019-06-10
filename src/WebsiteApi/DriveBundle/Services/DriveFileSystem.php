@@ -624,7 +624,7 @@ class DriveFileSystem
                 $this->doctrine->persist($fileVersion);
 
             } else {
-                $size = 10;
+                $size = 0;
             }
 
             $drive_element->setSize($size);

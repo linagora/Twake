@@ -151,10 +151,10 @@ class QuickSearch
         }
 
        $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $current_user_id));
-        var_dump($user);
+        //var_dump($user);
 
 
-        //$this->SearchFile($words,$workspaces);
+        $this->SearchFile($words, $workspaces);
         $this->SearchInWorkspace($words,$workspaces,$current_user_id);
         $this->SearchPrivateChannel($words,$user->getUsername(),$current_user_id);
 

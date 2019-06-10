@@ -224,7 +224,7 @@ END;
 //        // $keywords_score=$this->update_keyword($keywords_score,explode(".", $document)[0]); //change this with document title
 //        $file->setExtension("PDF");
 //        $this->doctrine->es_put($file,$file->getEsType());
-        var_dump("cc");
+        //var_dump("cc");
 
 //        $words=Array("civ");
 //        $this->search($words,"d975075e-6028-11e9-b206-0242ac120005");

@@ -145,6 +145,8 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
 	private function html2txt($html){
 		$html = explode("</head>", $html);
 		$html = str_replace("<br>", "\n", $html[1]);
+        $html = preg_replace("/(\r?\n)\s/", "\n", $html);
+        $html = preg_replace("/(\r?\n){2,}/", "\n\n", $html);
 		return strip_tags($html);
 	}
 

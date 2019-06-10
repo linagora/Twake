@@ -466,7 +466,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     {
         $this->size = $size;
         if($this->size < 10){
-            $this->size = 10;
+            $this->size = 0;
         }
     }
 
