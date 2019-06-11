@@ -187,10 +187,13 @@ END;
                         $weight = 20;
                     else
                         $weight = 3;
+                    if (!isset($keywords[$value])) {
+                        $keywords[$value] = 0;
+                    }
                     if(!($keywords[$value]) || substr($value, -1) == "s"){ //if the word is not in our table
                         if (substr($value, -1) == "s") { //we check if it's a plural
                             $maybesinglar = substr($value, 0, strlen($value) - 1);
-                            if ($keywords[$maybesinglar]) { // we check if their is already a singular for this word
+                            if (isset($keywords[$maybesinglar])) { // we check if their is already a singular for this word
                                 $keywords[$maybesinglar] += $weight+max(strlen($maybesinglar)-4,0)*2; //if we find a singular we add the singular version of the word instead of the plural
                             }
                             else { // if not we add the new words or it's the first time we saw the word so we need to add it
@@ -221,7 +224,7 @@ END;
             $keywords_score = Array();
             foreach ($keywords_raw as $key => $score) {
                 $keywords_score[] = Array(
-                    "word" => $key,
+                    "keyword" => $key,
                     "score" => $keywords_raw[$key]
                 );
             }
@@ -229,8 +232,8 @@ END;
             $entity->setContentKeywords($keywords_score);
 
         }catch(\Exception $e){
-
         }
+
     }
 
     public function generateImagePreview($filename, $file, $path, $entity=null, $isText = false, $isOffice = false)
