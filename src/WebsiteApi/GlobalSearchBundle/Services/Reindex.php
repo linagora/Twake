@@ -70,19 +70,20 @@ class Reindex
 //            var_dump($workspace->getMembers()->getAsArray());
 //            //$this->doctrine->es_put($workspace,$workspace->getEsType());
 //        }
-        $channels= $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
-        foreach ($channels as $channel){
-            //if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false)
-           // {
-                //var_dump(gettype($channel->getAsArray()["last_activity"]));
-                $this->doctrine->es_put($channel,$channel->getEsType());
-            //}
-        }
-//
-//        $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
-//        foreach ($files as $file){
-//                //$this->doctrine->es_put($file,$file->getEsType());
+//        $channels= $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
+//        foreach ($channels as $channel){
+//            //if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false)
+//           // {
+//                //var_dump(gettype($channel->getAsArray()["last_activity"]));
+//                $this->doctrine->es_put($channel,$channel->getEsType());
+//            //}
 //        }
+
+        $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
+        foreach ($files as $file){
+            var_dump($file->getAsArray());
+                //$this->doctrine->es_put($file,$file->getEsType());
+        }
 
 //        $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
 //        foreach ($channels as $channel) {

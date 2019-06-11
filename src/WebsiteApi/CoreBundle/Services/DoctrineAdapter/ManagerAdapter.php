@@ -204,7 +204,7 @@ class ManagerAdapter
 
     public function update_ES_keyword($keywords,$word){
         $keywords[] = Array(
-            "word" => $word,
+            "keyword" => $word,
             "score" => 1.1
         );
         return $keywords;

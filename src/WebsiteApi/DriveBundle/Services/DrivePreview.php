@@ -221,7 +221,7 @@ END;
             $keywords_score = Array();
             foreach ($keywords_raw as $key => $score) {
                 $keywords_score[] = Array(
-                    "word" => $key,
+                    "keyword" => $key,
                     "score" => $keywords_raw[$key]
                 );
             }

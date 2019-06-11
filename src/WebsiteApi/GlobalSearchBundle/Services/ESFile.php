@@ -95,7 +95,7 @@ END;
 
         foreach ($keywords_raw as $key => $score) {
             $keywords_score[] = Array(
-                "word" => $key,
+                "keyword" => $key,
                 "score" => $keywords_raw[$key]
             );
         }
@@ -123,7 +123,7 @@ END;
                 "bool" => Array(
                     "filter" => Array(
                         "regexp" => Array(
-                            "keywords.word" => ".*".$term.".*"
+                            "keywords.keyword" => ".*".$term.".*"
                         )
                     )
                 )
