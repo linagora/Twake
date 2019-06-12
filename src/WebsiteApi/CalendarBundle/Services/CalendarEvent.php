@@ -57,7 +57,7 @@ class CalendarEvent
                 $workspace_id = $object["workspace_id"];
                 $calendar_id = $object["calendar_id"];
                 if ($calendar_id && $workspace_id) {
-                    $events_links = array_merge($this->doctrine->getRepository("TwakeCalendarBundle:EventCalendar")->findRange(Array("workspace_id" => $workspace_id, "calendar_id" => $calendar_id), "sort_date", $after_ts, $before_ts));
+                    $events_links = array_merge($events_links, $this->doctrine->getRepository("TwakeCalendarBundle:EventCalendar")->findRange(Array("workspace_id" => $workspace_id, "calendar_id" => $calendar_id), "sort_date", $after_ts, $before_ts));
                 }
             }
 
@@ -74,7 +74,7 @@ class CalendarEvent
 
             $events_links = [];
             foreach (($options["users_ids_or_mails"] ? $options["users_ids_or_mails"] : []) as $user_id_or_mail) {
-                $events_links = array_merge($this->doctrine->getRepository("TwakeCalendarBundle:EventUser")->findRange(Array("user_id_or_mail" => $user_id_or_mail), "sort_date", $after_ts, $before_ts));
+                $events_links = array_merge($events_links, $this->doctrine->getRepository("TwakeCalendarBundle:EventUser")->findRange(Array("user_id_or_mail" => $user_id_or_mail), "sort_date", $after_ts, $before_ts));
             }
 
             foreach ($events_links as $event_link) {
@@ -671,7 +671,7 @@ class CalendarEvent
                 $participants = $event->getParticipants();
 
                 foreach ($participants as $participant) {
-                    if ($notification->getMode() == "mail") {
+                    if ($notification->getMode() == "mail" || !$notification->getMode()) {
                         $mail = $participant["user_id_or_mail"];
                         $language = false;
                         if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
@@ -694,7 +694,8 @@ class CalendarEvent
                                 )
                             );
                         }
-                    } else {
+                    }
+                    if ($notification->getMode() == "push" || !$notification->getMode()) {
                         //Push notification
                         if (preg_match('/\w{8}-\w{4}-\w{4}-\w{4}-\w{12}/', $participant["user_id_or_mail"])) {
                             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $participant["user_id_or_mail"]));
