@@ -189,4 +189,36 @@ class UserLoginTest extends WebTestCaseExtended
         $result = $this->doPost("/ajax/users/current/get", Array());
         $this->assertEquals(Array(), json_decode($result->getContent(),true)["data"] );
     }
+
+    public function testVerifyMail(){
+
+        $this->removeUserByName("usertest001");
+        $user = $this->newUserByName("usertest001");
+        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+
+        $result = $this->doPost("/ajax/users/recover/mail", Array(
+            "email" => "usertest001@twake_phpunit.fr"
+        ));
+        $token = json_decode($result->getContent(), true)["data"]["token"];
+
+        $verif = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:VerificationNumberMail")->findOneBy(Array("token" => $token));
+        $code = $verif->getcode();
+        $this->get("app.twake_doctrine")->persist($verif);
+        $this->get("app.twake_doctrine")->flush();
+
+
+        $res = $this->doPost("/ajax/users/subscribe/doverifymail", Array(
+            "code" => $code,
+            "token" => $token,
+            "mail" => "usertest001@twake_phpunit.fr"
+        ));
+//        $verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
+//        $ticket = $verificationRepository->findOneBy(Array("token" => $token));
+//        error_log(print($ticket),true);
+//        error_log(printf($ticket->verifyCode($code)),true);
+//        $mail = trim(strtolower("usertest001@twake_phpunit.fr"));
+//        error_log(print_r($ticket->getMail($mail)),true);
+//
+
+    }
 }
