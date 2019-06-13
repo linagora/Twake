@@ -123,7 +123,7 @@ class QuickSearch
 
         $this->workspace_prio = $workspace_prio;
         //$this->workspace_prio = "d975075e-6028-11e9-b206-0242ac120005";
-        $words = Array("appli","general",'justin');
+        //$words = Array("Romaric",'justin');
         $st = new StringCleaner();
         $words = $st->simplifyInArray($words);
         $this->globalresult = Array();
