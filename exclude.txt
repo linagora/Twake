@@ -1,5 +1,3 @@
 ﻿vendor/
 .*
-src/WebsiteApi/GlobalSearchBundle
-src/WebsiteApi/DriveUploadBundle
-src/WebsiteApi/DriveBundle
+./tests
