@@ -42,8 +42,8 @@ class DriveSystem
         if (!$this->hasAccess($options, $current_user)) {
             return false;
         }
-
         $elements = $this->dfs->listDirectory($workspace_id, $directory_id, $trash);
+        var_dump($elements);
         $path = $this->dfs->getPath($workspace_id, $directory_id);
 
         $list = Array();
@@ -52,7 +52,6 @@ class DriveSystem
             $array["path"] = $path;
             $list[] = $array;
         }
-
         return $list;
 
     }

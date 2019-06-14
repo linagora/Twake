@@ -209,7 +209,6 @@ class User
 		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 		/* @var \WebsiteApi\UsersBundle\Entity\User $user */
         $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
-
 		if($user != null) {
 			$verificationNumberMail = new VerificationNumberMail($mail);
 

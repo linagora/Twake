@@ -23,7 +23,6 @@ class UsersRecoverController extends Controller
 		$email = $request->request->get("email", "");
 
 		$res = $this->get("app.user")->requestNewPassword($email);
-
 		if ($res) {
 
 			$data["data"]["token"] = $res;
