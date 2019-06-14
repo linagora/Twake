@@ -378,7 +378,7 @@ class User
             return false;
         }
 
-        $token = $this->subscribeMail($mail, $pseudo, $password, $lastName, $firstName, $phone, false);
+        $token = $this->subscribeMail($mail, $pseudo, $password, $lastName, $firstName, $phone, $language, false);
         $user = $this->verifyMail($mail, $token, "", true);
         if($user==null || $user== false){
             return false;
@@ -392,21 +392,10 @@ class User
         $this->em->persist($user);
         $this->em->flush();
 
-        $data = Array(
-            "Email" => $mail,
-            "Properties" => Array(
-                "first_name" => $firstName,
-                "last_name" => $lastName,
-                "language" => $language,
-            ),
-            "Action" => "addforce"
-        );
-        $result = $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2017737/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
-
         return $user;
     }
 
-    public function subscribeMail($mail, $pseudo, $password, $name, $firstname, $phone, $sendEmail = true)
+    public function subscribeMail($mail, $pseudo, $password, $name, $firstname, $phone, $language, $sendEmail = true)
     {
 
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
@@ -451,7 +440,6 @@ class User
             $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "magic_link" => $magic_link));
         }
 
-
         //Create the temporary user
         $user = new \WebsiteApi\UsersBundle\Entity\User();
         $user->setSalt(bin2hex(random_bytes(40)));
@@ -463,11 +451,25 @@ class User
         $user->setFirstName($firstname);
         $user->setLastName($name);
         $user->setPhone($phone);
+        $user->setLanguage($language ? $language : "en");
         $this->em->persist($user);
 
 		$this->em->flush();
 
-		return $verificationNumberMail->getToken();
+
+        $data = Array(
+            "Email" => $mail,
+            "Properties" => Array(
+                "first_name" => $firstName,
+                "last_name" => $name,
+                "language" => $language,
+            ),
+            "Action" => "addforce"
+        );
+        $result = $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2017737/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+
+
+        return $verificationNumberMail->getToken();
 	}
 
     public function verifyMail($mail, $token, $code, $force = false, $response = null)

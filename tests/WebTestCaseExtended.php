@@ -118,7 +118,7 @@ class WebTestCaseExtended extends WebTestCase
         }
 
 
-        $token = $this->get("app.user")->subscribeMail($mail, $name, $name, "", "", "", false);
+        $token = $this->get("app.user")->subscribeMail($mail, $name, $name, "", "", "", "en", false);
         $this->get("app.user")->verifyMail($mail, $token, "", true);
 
         $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
