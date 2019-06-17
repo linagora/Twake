@@ -43,7 +43,6 @@ class DriveSystem
             return false;
         }
         $elements = $this->dfs->listDirectory($workspace_id, $directory_id, $trash);
-        var_dump($elements);
         $path = $this->dfs->getPath($workspace_id, $directory_id);
 
         $list = Array();

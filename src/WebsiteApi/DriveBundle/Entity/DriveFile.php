@@ -258,11 +258,11 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
      */
     public function setParentId($parent_id)
     {
-        $this->parent_id = $parent_id;
+        $this->parent_id = $parent_id . "";
         if ($parent) {
             $this->root_group_folder = NULL;
         } else {
-            $this->root_group_folder = $this->getWorkspaceId();
+            $this->root_group_folder = $this->getWorkspaceId() . "";
         }
     }
 

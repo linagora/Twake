@@ -456,17 +456,22 @@ class User
 
 		$this->em->flush();
 
-
-        $data = Array(
-            "Email" => $mail,
-            "Properties" => Array(
-                "first_name" => $firstname,
-                "last_name" => $name,
-                "language" => $language,
-            ),
-            "Action" => "addforce"
-        );
-        $result = $this->circle->post("https: //api.mailjet.com/v3/REST/contactslist/2315379/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+        if ($sendEmail) {
+            try {
+                $data = Array(
+                    "Email" => $mail,
+                    "Properties" => Array(
+                        "first_name" => $firstname,
+                        "last_name" => $name,
+                        "language" => $language,
+                    ),
+                    "Action" => "addforce"
+                );
+                $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2315379/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+            } catch (\Exception $exception) {
+                error_log($exception->getMessage());
+            }
+        }
 
         return $verificationNumberMail->getToken();
 	}
