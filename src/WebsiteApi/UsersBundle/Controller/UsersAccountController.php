@@ -310,18 +310,15 @@ class UsersAccountController extends Controller
 
 	public function addMailAction(Request $request)
 	{
-
 		$data = Array(
 			"errors" => Array(),
 			"data" => Array()
 		);
 
 		if($this->getUser()){
-
 			$mail = $request->request->get("mail", "");
 
 			$token = $this->get("app.user")->addNewMail($this->getUser()->getId(), $mail);
-
 			if($token) {
 				$data["data"]["token"] = $token;
 			}else{
