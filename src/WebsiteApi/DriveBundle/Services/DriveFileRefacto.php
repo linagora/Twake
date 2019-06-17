@@ -52,14 +52,14 @@ class DriveFileRefacto
             $array["path"] = $path;
             $list[] = $array;
         }
-        var_dump($list);
+        //var_dump($list);
         return $list;
 
     }
 
     public function remove($object, $options, $current_user)
     {
-        error_log("CRITICAL SYSTEM FAILURE: YOU NEED TO RESTART YOU SERVER NOW CONSULT LOG FOR MORE DETAILS");
+        //error_log("CRITICAL SYSTEM FAILURE: YOU NEED TO RESTART YOU SERVER NOW CONSULT LOG FOR MORE DETAILS");
     }
 
     public function save($object, $options, $current_user = null)
@@ -147,16 +147,16 @@ class DriveFileRefacto
             else{ // on a un parent ce n'est pas une creation c'est un déplacement
                 $fileordirectory_parent_id = $fileordirectory->getParentId();
                 if ($fileordirectory_parent_id != $parent_id) { //changement de parent id donc le fichier a été déplacé.
-                    var_dump("diffrent parent id ");
+                    //var_dump("diffrent parent id ");
                     $fileordirectory->setOldParent($fileordirectory_parent_id);
                     $fileordirectory->setParentId($parent_id);
                     $size = $fileordirectory->getSize();
                     if ($fileordirectory->getDetachedFile() == false) {
-                        var_dump("change size not detached ");
+                        //var_dump("change size not detached ");
                         //on doit modifer la taille recursivement de l'ancien dossier parent
                         $this->updateSize($fileordirectory_parent_id, -$size);
                     } else {
-                        var_dump(" change detached ");
+                        //var_dump(" change detached ");
                         $fileordirectory->setDetachedFile(false);
 //                        $workspace_id = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=> $parent_id));
 //                        $workspace_id = $workspace_id->getWorkspaceId();
@@ -165,10 +165,10 @@ class DriveFileRefacto
                     //et de la même façon la taille du dossier d'accueil et de ses parents.
                     $this->updateSize($parent_id, $size);
 
-                    var_dump("save");
+                    //var_dump("save");
                     $this->em->remove($fileordirectory);
                     $this->em->flush();
-                    var_dump("fin save");
+                    //var_dump("fin save");
                 }
             }
         }
@@ -195,7 +195,7 @@ class DriveFileRefacto
 
         //var_dump($fileordirectory->getAsArray());
 
-        return "hello";
+        return $fileordirectory;
     }
 
     public function printfunction(){
