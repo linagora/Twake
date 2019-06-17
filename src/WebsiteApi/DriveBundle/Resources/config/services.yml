@@ -66,3 +66,7 @@ services:
     app.drive.AWS_FileSystem:
         class: WebsiteApi\DriveBundle\Services\Adapter_AWS_DriveFileSystem
         arguments: [%aws%, "@app.twake_doctrine", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@app.applications','@app.drive.UserToNotifyService', '@app.translate', '@app.workspaces_apps','@app.workspaces_activities', '@app.objectLinks']
+
+    app.drive_refacto:
+        class: WebsiteApi\DriveBundle\Services\DriveFileRefacto
+        arguments: ["@app.twake_doctrine", "@app.drive.adapter_selector", "@app.upload", "@app.applications_api"]
