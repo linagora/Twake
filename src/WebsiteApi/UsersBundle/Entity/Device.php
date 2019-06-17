@@ -133,6 +133,16 @@ class Device
         $this->version = isset($version) ? $version : "unknown";
 	}
 
+    public function getAsArray()
+    {
+        return Array(
+            "user" => $this->getUser()->getAsArray(),
+            "type" => $this->getType(),
+            "value" => $this->getValue(),
+            "version" => $this->getVersion()
+
+        );
+    }
 
 
 }
