@@ -53,4 +53,14 @@ class DriveFileRefactoController extends Controller
         }
         return new JsonResponse(Array("data" => $objects));
     }
+
+    public function printAction(Request $request){
+
+         $this->get("app.drive_refacto")->printfunction();
+
+        return new JsonResponse("hello");
+
+
+
+    }
 }
