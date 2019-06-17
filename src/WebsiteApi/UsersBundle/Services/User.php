@@ -622,6 +622,7 @@ class User
 		}
 
 		return $res;
+
 	}
 
 	public function removeDevice($userId, $type, $value)
