@@ -366,11 +366,7 @@ class UserLoginTest extends WebTestCaseExtended
         ));
 
 
-        $userRepository = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User");
-        $userWithThisMailAsMainMail = $userRepository->findOneBy(Array("emailcanonical" => "usertest001@wake_phpunit.fr"));
-        if($user != null && $userWithThisMailAsMainMail==null) {
-            error_log("on est dans le if");
-        }
+
     }
 
 }

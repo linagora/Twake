@@ -731,7 +731,7 @@ class User
 			if($ticket->verifyCode($code)){
                 $userWithMail = $userRepository->findOneBy(Array("emailcanonical" => $ticket->getMail()));
 
-                if ($userWithMail == null || $userWithMail->getUser()->getId() != $userId) {
+                if ($userWithMail == null || $userWithMail->getId() != $userId) {
                     $mailExists = $mailRepository->findOneBy(Array("mail" => $ticket->getMail()));
 
 					if($mailExists == null) {
