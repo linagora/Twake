@@ -29,38 +29,30 @@ class DriveFileRefactoController extends Controller
     {
         $options = $request->request->get("options");
         $object = $request->request->get("object");
-        $file_uploaded = null;
-        if (isset($_FILES["file"])) {
-            $options = json_decode($options, true);
-            $object = json_decode($object, true);
-            $file_uploaded = $_FILES["file"];
-        } else {
-            $file_uploaded = $object["file_url"] ? $object["file_url"] : $request->request->get("file_url");
-        }
-        $res = $this->get("app.drive_refacto")->save($object, $options, $this->getUser(), null, $file_uploaded);
+        //$file_uploaded = null;
+//        if (isset($_FILES["file"])) {
+//            $options = json_decode($options, true);
+//            $object = json_decode($object, true);
+//            $file_uploaded = $_FILES["file"];
+//        } else {
+//            $file_uploaded = $object["file_url"] ? $object["file_url"] : $request->request->get("file_url");
+//        }
+        //$res = $this->get("app.drive_refacto")->save($object, $options, $this->getUser());
+        $res = $this->get("app.drive_refacto")->save($object, $options);
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new JsonResponse(Array("data" => Array("object" => $res->getAsArray())));
     }
 
     public function getAction(Request $request)
     {
         $options = $request->request->get("options");
         $objects = $this->get("app.drive_refacto")->get($options, $this->getUser());
+
         if ($objects === false) {
             return new JsonResponse(Array("status" => "error"));
         }
         return new JsonResponse(Array("data" => $objects));
-    }
-
-    public function printAction(Request $request){
-
-         $this->get("app.drive_refacto")->printfunction();
-
-        return new JsonResponse("hello");
-
-
-
     }
 }

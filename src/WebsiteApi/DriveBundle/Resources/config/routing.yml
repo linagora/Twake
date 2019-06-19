@@ -222,7 +222,3 @@ drive_refractor_save:
 drive_refractor_remove:
     path:     /removerefacto
     defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:remove }
-
-drive_refractor_print:
-    path:     /print
-    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:print }

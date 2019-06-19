@@ -100,7 +100,6 @@ class WebTestCaseExtended extends WebTestCase
         $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
 
         if ($user) {
-            error_log("Removed already existing user " . $name);
             $this->removeUserByName($name);
         }
 
