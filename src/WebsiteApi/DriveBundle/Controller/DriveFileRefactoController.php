@@ -22,7 +22,7 @@ class DriveFileRefactoController extends Controller
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new JsonResponse(Array("data" => Array("object" => $res->getAsArray())));
     }
 
     public function saveAction(Request $request)
@@ -53,6 +53,6 @@ class DriveFileRefactoController extends Controller
         if ($objects === false) {
             return new JsonResponse(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => $objects));
+        return new JsonResponse(Array("data" => $objects->getAsArray()));
     }
 }

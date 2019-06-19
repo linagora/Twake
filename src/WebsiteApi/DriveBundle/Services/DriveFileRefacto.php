@@ -31,43 +31,17 @@ class DriveFileRefacto
 
     public function get($options, $current_user)
     {
-        $directory_id = $options["directory_id"];
-        $workspace_id = $options["workspace_id"];
-
-        if(isset($options["trash"]) && $options["trash"]){
-            $trash = $options["trash"];
-        }
-        else{
-            $trash = false;
-        }
-
-
-        if(!isset($directory_id) || !isset($workspace_id)){
-            return false;
-        }
-
-        if (!$directory_id) {
-            $directory_id = "root";
-        }
-
         if (!$this->hasAccess($options, $current_user)) {
             return false;
         }
 
-        $elements = $this->dfs->listDirectory($workspace_id, $directory_id);
-
-        $path = $this->dfs->getPath($workspace_id, $directory_id);
-
-
-        $list = Array();
-        foreach ($elements as $element) {
-            $array = $element->getAsArray();
-            $array["path"] = $path;
-            $list[] = $array;
+        if(isset($options["id"])) {
+            $fileordirectory = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $options["id"].""));
+            return $fileordirectory;
         }
-
-        return $list;
-
+        else{
+            return false;
+        }
     }
 
     public function recursedelete($directory){
@@ -110,7 +84,7 @@ class DriveFileRefacto
                 return false;
             }
         }
-
+        return $fileordirectory;
     }
 
     public function save($object, $options, $current_user = null)

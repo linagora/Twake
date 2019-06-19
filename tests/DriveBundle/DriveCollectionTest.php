@@ -170,10 +170,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         ));
 
         $fileordirectory = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $workspace_id, "parent_id" => $idtofind_root));
-        //error_log(print_r($fileordirectory,true));
-        foreach($fileordirectory as $file){
-            //error_log(print_r($file->getAsArray(),true));
-        }
+
 
         $fileordirectory = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_root));
         $this->assertEquals(null,$fileordirectory, "The deleted file still exist");
@@ -185,15 +182,12 @@ class DriveCollectionTest extends WebTestCaseExtended
 // =================================================================================================================================================
 // =================================================================================================================================================
 
-        $options = Array("workspace_id" => $workspace_id, "directory_id" => $idtofind_root);
+        $options = Array("id" => $root_id);
         $result = $this->doPost("/ajax/drive/getrefacto", Array(
             "options" => $options
         ));
+        $this->assertEquals($root_id,json_decode($result->getContent(),true)["data"]["id"], "Wrong file found or null");
 
-        $code = json_decode($result->getStatusCode(),true);
-        $this->assertEquals(200,$code, "Something went wrong with the get");
-
-        //TODO rajouter le test quand les fichiers seront upload sur openstack et essayer de les récupérer.
 
 // =================================================================================================================================================
 // =================================================================================================================================================
