@@ -45,7 +45,7 @@ class TwakeMailer
 
         $language = "en";
         if (isset($data["_language"])) {
-            $language = "fr";
+            $language = $data["_language"];
             $templateName = $templateDirectory . ":" . $language . "/" . $template . '.html.twig';
             if (!$this->templating->exists($templateName)) {
                 $language = "en";
