@@ -67,7 +67,7 @@ class DriveFileRefacto
                 ->findOneBy(Array("id" => $object["id"]));
             if($fileordirectory){
                 //on change la taille de tous les dossiers parent a celui ci
-                $this->updateSize($fileordirectory->getParentId(), -$fileordirectory->getSize());
+                $this->updateSize($fileordirectory->getParentId(), -$fileordirectory->getSize(), 0);
                 //error_log(print_r($object["id"],true));
                 //on a besoin de voir si le fichier qu'on veut supprimer était lui même parent d'autre fichier
                 $fileson = $this->em->getRepository("TwakeDriveBundle:DriveFile")
@@ -123,29 +123,28 @@ class DriveFileRefacto
         if (isset($object["trash"]) && $object["trash"] && !$did_create){ // on veut mettre un fichier a la corbeille
             $oldparent = $fileordirectory->getParentId()."";
             $newparent = $this->getTrashEntity($fileordirectory->getWorkspaceId()."")->getId()."";
-            $this->move($fileordirectory,$oldparent,$newparent,true);
+            //error_log(print_r("new parent id: " . $newparent,true));
+            $this->move($fileordirectory,$oldparent,$newparent,1);
 
-            //ON NE DOIT PAS COMPTER LE POIDS DE LA CORBEILLE DANS LA RACIN DONC ON AJUSTE
-            $root = $this->getRootEntity($fileordirectory->getWorkspaceId()."");
-            $root_size = $root->getSize();
-            $this->getRootEntity($fileordirectory->getWorkspaceId()."")->setSize($root_size - $fileordirectory->getSize());
-            $this->em->persist($root);
-            $this->em->flush();
-
-            //on met recursivement a jour les is in trash de tous les fils de l'objets mis en corbeille
             $fileordirectory->setOldParent($oldparent);
-            error_log(print_r($fileordirectory->getAsArray(),true));
+
+
             $this->recursetrash($fileordirectory);
 
 
         }
         elseif(isset($object["trash"]) && !$object["trash"] && !$did_create){ //on veut restaurer un fichier de la corbeille sur son ancien parent
-            $oldparent = "";
+            error_log("restauration");
+            $oldparent = $fileordirectory->getParentId()."";
             $newparent = $fileordirectory->getOldParent()."";
-            $parenttrash = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=> $newparent));
-            if($parenttrash->getIsInTrash()){ // Si le parent est a la corbeille également on va le mettre a la racine du workspace
-                $newparent = $this->getRootEntity()->getId()."";            }
-            $this->move($fileordirectory,$oldparent,$newparent);
+            $parenttrash = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=> $oldparent));
+            if($parenttrash->getIsInTrash() && $newparent === ""){ // Si le parent est a la corbeille également on va le mettre a la racine du workspace
+                $newparent = $this->getRootEntity($fileordirectory->getWorkspaceId()."")->getId()."";
+            }
+            $this->move($fileordirectory,$oldparent,$newparent,2);
+
+            $fileordirectory->setOldParent("");
+            $this->recursetrash($fileordirectory);
 
         }
 
@@ -194,34 +193,37 @@ class DriveFileRefacto
                 $this->recursetrash($file);
             }
         }
-        $this->em->remove($directory);
-        $this->em->flush();
+        $file = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory->getId()));
+        if(isset($file)){
+            $this->em->remove($directory);
+            $this->em->flush();
+        }
         $directory->setIsInTrash(!($directory->getIsInTrash()));
         $this->em->persist($directory);
         $this->em->flush();
     }
 
-    public function move($fileordirectory,$oldparent, $newparent, $intrash = false){
+    public function move($fileordirectory,$oldparent, $newparent, $to_or_out_trash = 0){
         $this->em->remove($fileordirectory);
         $this->em->flush();
         $fileordirectory->setParentId($newparent);
         $size = $fileordirectory->getSize();
         if ($fileordirectory->getDetachedFile() == false) {
             //on doit modifer la taille recursivement de l'ancien dossier parent
-            $this->updateSize($oldparent, -$size);
+            $this->updateSize($oldparent, -$size, $to_or_out_trash);
         } else {
             $fileordirectory->setDetachedFile(false);
         }
-        $this->updateSize($newparent, $size);
+        $this->updateSize($newparent, $size, $to_or_out_trash);
+
     }
 
-    protected function updateSize($directory, $delta) // on passe l'id du directory
+    protected function updateSize($directory, $delta, $to_or_out_trash) // on passe l'id du directory
     {
         while ($directory != null) {
             if ($directory == "root") {
                 $directory = $this->getRootEntity();
             }
-
             if(is_string($directory)){
                 $directory = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory.""));
 
@@ -230,26 +232,17 @@ class DriveFileRefacto
                 $directory = null;
 
             }
-
             if($directory != null){
-                //error_log(print_r("directory type: " . gettype($directory),true));
-                //error_log(print_r("id ".$directory->getId(),true));
-                //error_log(print_r($directory->getAsArray(),true));
-                //error_log(print_r("delta: ".$delta,true));
-                $currentSize = $directory->getSize();
-                //error_log(print_r("currentsize: ".$currentSize,true));
-                $actualsize = $directory->getSize();
-                $directory->setSize($currentSize + $delta);
-                //$directory->setSize(0);
-                $currentSize = $directory->getSize();
-                //error_log(print_r("aftersize: ".$currentSize,true));
-                $this->em->persist($directory);
-                $this->em->flush();
-                $directory = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory->getId().""));
-                //error_log(print_r("get size: ".$directory->getSize(),true));
+
+
+                if(!($directory->getParentId() == "" && (($to_or_out_trash === 1 && $delta > 0) || ($to_or_out_trash === 2 && $delta < 0)))){
+                    $currentSize = $directory->getSize();
+                    $directory->setSize($currentSize + $delta);
+                    $this->em->persist($directory);
+                    $this->em->flush();
+                }
+                $directory = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory->getId() . ""));
                 $directory = $directory->getParentId();
-                //error_log(print_r("parent id: ".$directory,true));
-//                error_log("\n");
             }
         }
     }
@@ -272,14 +265,20 @@ class DriveFileRefacto
         $root_id = $root->getId()."";
 
         $trash = $this->em->getRepository("TwakeDriveBundle:DriveFile")
-            ->findOneBy(Array("workspace_id" => $workspace_id."", "isintrash" => false, "parent_id" => $root_id));
+            ->findBy(Array("workspace_id" => $workspace_id."", "parent_id" => $root_id, "isintrash" => false));
+        foreach ($trash as $file){
+            if($file->getName() === "trash"){
+                $trash = $file;
+                break;
+            }
+        }
         if (!$trash) {
             $trash = new DriveFile($workspace_id, $root_id, true);
             $trash->setName("trash");
             $this->em->persist($trash);
             $this->em->flush();
         }
-        return $root;
+        return $trash;
     }
 
 }
