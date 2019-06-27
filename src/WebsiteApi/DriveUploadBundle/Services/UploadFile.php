@@ -20,6 +20,8 @@ class UploadFile
         $identifier = $request->request->all()["identifier"];
         $name = $request->request->all()["name"];
         $extension = $request->request->all()["extension"];
+        //$size = $request->request->all()["size"];
+        //error_log(print_r($size,true));
         $this->resumable->CreateObject($identifier,$name,$extension);
 
     }

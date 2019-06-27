@@ -27,11 +27,13 @@
     </div>
 
     <script>
+        var obj = {"parent_id": "root", "workspace_id": "test"};
         var r = new Resumable({
-            target:'http://51.68.94.194:8081/ajax/driveupload/upload',
-            chunkSize: 50000000,
+            target:'http://51.68.91.127:8081/ajax/driveupload/upload',
+            chunkSize: 70000,
             testChunks: false,
             simultaneousUploads:5,
+            headers: obj,
             generateUniqueIdentifier :(file, event)=> {
                 var s ="tret46fgdfaze";
                 var i;
@@ -53,10 +55,12 @@
         var identifier = "";
         var name = "";
         var extension = "";
+        var size = 0;
 
         r.on('fileAdded', function(file, event){
-            identifier = file["file"]["uniqueIdentifier"]
-            name = file["file"]["name"]
+            console.log(file);
+            identifier = file["file"]["uniqueIdentifier"];
+            name = file["file"]["name"];
             extension = name.split('.');
             extension = extension[extension.length - 1];
         });
@@ -66,7 +70,7 @@
         function Upload() {
 
             const Http = new XMLHttpRequest();
-            const url='http://51.68.94.194:8081/ajax/driveupload/preprocess';
+            const url='http://51.68.91.127:8081/ajax/driveupload/preprocess';
 
             Http.onreadystatechange = function(event) {
                 // XMLHttpRequest.DONE === 4

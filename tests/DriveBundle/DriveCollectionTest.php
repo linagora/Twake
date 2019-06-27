@@ -38,7 +38,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         //ON CREE UN FICHIER QUI VA SE TROUVER A LA RACINE DU WORKSPACE EN SPECIFIANT UN PARENT
 
         $object = Array("parent_id" => $root_id, "workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest");
-        $options = Array();
+        $options = Array("new" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
             "options" => $options
@@ -57,6 +57,13 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005",$fileordirectory->getFrontId()."", "Wrong front id for file create with a parent in database");
         $this->assertEquals("filefortest",$fileordirectory->getName(), "Wrong name for file create with a parent in database");
         $this->assertEquals(false,$fileordirectory->getIsInTrash(), "Wrong is in trash attribut for file create with a parent in database");
+
+        //test sur le versionning de ce fichier
+
+        $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_parent));
+        $this->assertEquals("filefortest",$version->getFileName(), "Wrong name for the version");
+
+
 
 // =================================================================================================================================================
 // =================================================================================================================================================
@@ -83,6 +90,9 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005",$fileordirectory->getFrontId()."", "Wrong front id for file create without a parent in database");
         $this->assertEquals("filefortest",$fileordirectory->getName(), "Wrong name for file create with a parent in database");
         $this->assertEquals(false,$fileordirectory->getIsInTrash(), "Wrong is in trash attribut for file create with a parent in database");
+
+        $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_root));
+        $this->assertEquals("filefortest",$version->getFileName(), "Wrong name for the version");
 
 // =================================================================================================================================================
 // =================================================================================================================================================

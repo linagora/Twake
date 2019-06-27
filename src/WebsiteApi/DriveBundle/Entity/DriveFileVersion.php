@@ -8,21 +8,22 @@ use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\UsersBundle\Entity\User;
 
 /**
- * DriveFile
+ * DriveFileVersion
  *
- * @ORM\Table(name="drive_file_version",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileRepository")
+ * @ORM\Table(name="drive_file_version",options={"engine":"MyISAM" , "scylladb_keys": { {"file_id": "DESC", "id":"DESC"} } })
+ * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileVersionRepository")
  */
 class DriveFileVersion
 {
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-    s*/
+    */
     private $id;
 
 	/**
      * @ORM\Column(name="file_id", type="twake_timeuuid")
+     * @ORM\Id
 	 */
     private $file_id;
 

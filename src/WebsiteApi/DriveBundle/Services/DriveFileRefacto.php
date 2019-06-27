@@ -5,6 +5,7 @@ namespace WebsiteApi\DriveBundle\Services;
 
 
 use WebsiteApi\DriveBundle\Entity\DriveFile;
+use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
 
 class DriveFileRefacto
 {
@@ -87,8 +88,34 @@ class DriveFileRefacto
         return $fileordirectory;
     }
 
+    public function versionning($fileordirectory, $current_user = null, $new = false){
+
+        //on recupere la derniere version pour le fichier en cours
+
+        $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $fileordirectory->getId()));
+
+        if($version == null || ($version != null && $new = true)){ // on crée une nouvelle version pour le fichier en question
+            $version = new DriveFileVersion($fileordirectory,$current_user);
+        }
+        elseif($version != null && $new = false){ //on modifie la version actuelle
+            $version->setDateAdded(new \DateTime());
+            $old_id = $version->getFileId()."";
+
+            // on supprime l'ancienne version du fichier ?
+//            $filedelete = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("id" => $old_id ));
+//            $this->em->persist($filedelete);
+//            $this->em->flush();
+            $version->setFileId($fileordirectory->getId());
+        }
+
+        $this->em->persist($version);
+        $this->em->flush();
+    }
+
     public function save($object, $options, $current_user = null)
     {
+
+        error_log("test save call");
 
         if (!$this->hasAccess($options, $current_user)) {
             return false;
@@ -134,7 +161,6 @@ class DriveFileRefacto
 
         }
         elseif(isset($object["trash"]) && !$object["trash"] && !$did_create){ //on veut restaurer un fichier de la corbeille sur son ancien parent
-            error_log("restauration");
             $oldparent = $fileordirectory->getParentId()."";
             $newparent = $fileordirectory->getOldParent()."";
             $parenttrash = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=> $oldparent));
@@ -181,6 +207,16 @@ class DriveFileRefacto
             $this->em->persist($fileordirectory);
             $this->em->flush();
         }
+
+
+        if(isset($options["new"])){
+            $new = $options["new"];
+        }
+        else{
+            $new = true;
+        }
+
+        $this->versionning($fileordirectory,$current_user,$new);
 
         return $fileordirectory;
     }

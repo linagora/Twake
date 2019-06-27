@@ -37,4 +37,11 @@ class UploadController extends Controller
         return $response;
     }
 
+    public function PreviewAction(Request $request)
+    {
+        $response = new Response();
+        $this->get('driveupload.previewmanager')->generatePreviewFromFolder($request);
+        return $response;
+    }
+
 }
