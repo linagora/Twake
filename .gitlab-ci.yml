@@ -1,11 +1,16 @@
-image:services:services:stages:docker:stages: 
-stages:test:- test
+image: docker
 
+services:
+    - docker:dind
+    
+stages:
+    - test
+    
 test:
-stage: test
-only:
-- dev
-script:
-- echo run tests in this section
-when: manual
-# "when: always", if you want to execute job automatically regardless of the status of jobs from prior stages. 
+    stage: test
+    only:
+        - dev
+    script:
+        - echo run tests in this section
+    when: manual
+    #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages.
