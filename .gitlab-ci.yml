@@ -1,0 +1,17 @@
+image: docker
+
+services:
+    - docker:dind
+    
+stages:
+    - test
+    - deploy
+    
+test: 
+    stage: test
+    only:
+    - dev
+    script:
+    - echo run tests in this section
+    when: manual 
+    #"when: always" to execute job automatically and regardless of the status of jobs from prior stages
