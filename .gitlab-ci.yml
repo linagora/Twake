@@ -15,6 +15,5 @@ test:
         - sudo apt-get install -y pyton-pip
         - pip install docker-compose
         - docker-compose up -d --build
-        - sudo docker-compose exec php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
     when: manual
     #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages.
