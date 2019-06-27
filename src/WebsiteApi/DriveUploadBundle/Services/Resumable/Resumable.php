@@ -187,7 +187,6 @@ class Resumable
         $finalname = $identifier.".chunk_".$chunkNumber;
 
         if (!$this->isChunkUploaded($identifier, $finalname, $chunkNumber)) {
-            $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
             //error_log(print_r($chunkNumber,true));
 //            error_log(print_r($uploadstate,true));
             $chunkFile = $this->tmpChunkDir() . DIRECTORY_SEPARATOR . $finalname;
@@ -198,6 +197,7 @@ class Resumable
             $param_bag = new EncryptionBag("testkey","let's try a salt", "OpenSSL-2");
             $this->storagemanager->write($chunkFile,$param_bag);
             $chunktoadd = "chunk_".$chunkNumber;
+            $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
             $uploadstate->addChunk($chunktoadd);
             $this->doctrine->persist($uploadstate);
             $this->doctrine->flush();

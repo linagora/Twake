@@ -115,8 +115,6 @@ class DriveFileRefacto
     public function save($object, $options, $current_user = null)
     {
 
-        error_log("test save call");
-
         if (!$this->hasAccess($options, $current_user)) {
             return false;
         }
@@ -216,7 +214,9 @@ class DriveFileRefacto
             $new = true;
         }
 
-        $this->versionning($fileordirectory,$current_user,$new);
+        if(isset($options["version"]) && $options["version"]) {
+            $this->versionning($fileordirectory, $current_user, $new);
+        }
 
         return $fileordirectory;
     }

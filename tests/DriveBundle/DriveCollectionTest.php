@@ -38,7 +38,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         //ON CREE UN FICHIER QUI VA SE TROUVER A LA RACINE DU WORKSPACE EN SPECIFIANT UN PARENT
 
         $object = Array("parent_id" => $root_id, "workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest");
-        $options = Array("new" => true);
+        $options = Array("new" => true, "version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
             "options" => $options
@@ -60,8 +60,11 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         //test sur le versionning de ce fichier
 
-        $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_parent));
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_parent));
         $this->assertEquals("filefortest",$version->getFileName(), "Wrong name for the version");
+        $this->assertEquals($idtofind_parent,$version->getFileId(), "Wrong file id for the version");
+        $this->get("app.twake_doctrine")->remove($version);
+        $this->get("app.twake_doctrine")->flush();
 
 
 
@@ -71,7 +74,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         // ON CREE UN FICHIER QUI VA SE TROUVER A LA RACINE DU WORKSPACE SANS SPECIFIER UN PARENT
 
         $object = Array("workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest");
-        $options = Array();
+        $options = Array("version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
             "options" => $options
@@ -91,8 +94,13 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("filefortest",$fileordirectory->getName(), "Wrong name for file create with a parent in database");
         $this->assertEquals(false,$fileordirectory->getIsInTrash(), "Wrong is in trash attribut for file create with a parent in database");
 
-        $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_root));
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_root));
         $this->assertEquals("filefortest",$version->getFileName(), "Wrong name for the version");
+        $this->assertEquals($idtofind_root,$version->getFileId(), "Wrong file id for the version");
+
+        $this->get("app.twake_doctrine")->remove($version);
+        $this->get("app.twake_doctrine")->flush();
+
 
 // =================================================================================================================================================
 // =================================================================================================================================================
@@ -100,7 +108,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         // ON CREE UN FICHIER DETACHED
 
         $object = Array("workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true);
-        $options = Array();
+        $options = Array("version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
             "options" => $options
@@ -121,6 +129,13 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals(true,$fileordirectory->getDetachedFile(), "Wrong detached bool for file create without a parent detached in database" );
         $this->assertEquals("filefortest",$fileordirectory->getName(), "Wrong name for file create with a parent in database");
         $this->assertEquals(false,$fileordirectory->getIsInTrash(), "Wrong is in trash attribut for file create with a parent in database");
+
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_detached));
+        $this->assertEquals("filefortest",$version->getFileName(), "Wrong name for the version");
+        $this->assertEquals($idtofind_detached,$version->getFileId(), "Wrong file id for the version");
+        $this->get("app.twake_doctrine")->remove($version);
+        $this->get("app.twake_doctrine")->flush();
+
 
 // =================================================================================================================================================
 // =================================================================================================================================================
@@ -148,6 +163,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals(false,$fileordirectory->getDetachedFile(), "Wrong detached bool for file reatached" );
         $this->assertEquals("filefortest",$fileordirectory->getName(), "Wrong name for file create reatached");
         $this->assertEquals(false,$fileordirectory->getIsInTrash(), "Wrong is in trash attribut for file create with a parent in database");
+
 
 // =================================================================================================================================================
 // =================================================================================================================================================
@@ -300,7 +316,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         //ON VA CREER UN FICHIER QUI SERA FILS DU FICHIER DETACHED QU ON VIENT DE RESTAURER A LA RACINE
 
         $object = Array("parent_id" => $idtofind_detached, "workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortestremove");
-        $options = Array();
+        $options = Array("version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
             "options" => $options
@@ -313,6 +329,10 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("filefortestremove",json_decode($result->getContent(),true)["data"]["object"]["name"], "Wrong name for file create with a parent");
         $this->assertEquals(false,json_decode($result->getContent(),true)["data"]["object"]["trash"], "Wrong is in trash attribut for file create with a parent");
 
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_son_of_detached));
+        $this->assertEquals("filefortestremove",$version->getFileName(), "Wrong name for the version");
+        $this->get("app.twake_doctrine")->remove($version);
+        $this->get("app.twake_doctrine")->flush();
 
 // =================================================================================================================================================
 // =================================================================================================================================================
@@ -373,6 +393,41 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals(null,$workspace);
         $fileordirectory = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("workspace_id" => $workspace_id));
         $this->assertEquals(null,$fileordirectory);
+
+
+        //ON SUPPRIME TOUTE LES VERSIONS QUI ONT ETE CREE
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
+        foreach ($version as $v){
+            $this->get("app.twake_doctrine")->remove($v);
+            $this->get("app.twake_doctrine")->flush();
+        }
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
+        $this->assertEquals(Array(),$version);
+
+
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_root));
+        foreach ($version as $v){
+            $this->get("app.twake_doctrine")->remove($v);
+            $this->get("app.twake_doctrine")->flush();
+        }
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_root));
+        $this->assertEquals(Array(),$version);
+
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
+        foreach ($version as $v){
+            $this->get("app.twake_doctrine")->remove($v);
+            $this->get("app.twake_doctrine")->flush();
+        }
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_root));
+        $this->assertEquals(Array(),$version);
+
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_son_of_detached));
+        foreach ($version as $v){
+            $this->get("app.twake_doctrine")->remove($v);
+            $this->get("app.twake_doctrine")->flush();
+        }
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_root));
+        $this->assertEquals(Array(),$version);
 
     }
 }

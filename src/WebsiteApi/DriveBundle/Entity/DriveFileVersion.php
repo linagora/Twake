@@ -10,7 +10,7 @@ use WebsiteApi\UsersBundle\Entity\User;
 /**
  * DriveFileVersion
  *
- * @ORM\Table(name="drive_file_version",options={"engine":"MyISAM" , "scylladb_keys": { {"file_id": "DESC", "id":"DESC"} } })
+ * @ORM\Table(name="drive_file_version",options={"engine":"MyISAM" , "scylladb_keys": { {"id": "DESC"}, {"file_id": "DESC"} } })
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileVersionRepository")
  */
 class DriveFileVersion
@@ -23,7 +23,6 @@ class DriveFileVersion
 
 	/**
      * @ORM\Column(name="file_id", type="twake_timeuuid")
-     * @ORM\Id
 	 */
     private $file_id;
 
