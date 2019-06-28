@@ -1,7 +1,7 @@
 image: docker
 
-include:
-    - '/twake/docker-compose.yml'
+#include:
+    #- '/twake/docker-compose.yml'
   
   #- 'twake-nginx'
   #- 'twake-php'
@@ -11,9 +11,8 @@ include:
   
     
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement
-    #- apk update && apk install sudo
-    #- sudo apk install pyton-pip
-    - apk add python python-dev py-pip build-base libffi-dev openssl-dev  # curl
+    - ssh <a href="mahaut@51.68.91.127">mahaut@51.68.91.127</a> 'drush @kg cr'
+    - apk add python python-dev py-pip build-base libffi-dev openssl-dev 
     - pip install docker-compose
     - docker-compose up -d --build
     - echo installations faites !!!!
