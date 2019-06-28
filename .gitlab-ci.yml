@@ -1,5 +1,8 @@
 image: docker
 
+dependencies:
+    - install
+    
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement
     - apk update && apk install -y sudo
     - sudo apk install -y pyton-pip
