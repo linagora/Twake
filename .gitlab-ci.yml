@@ -1,7 +1,6 @@
 image: docker
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement
-    - export PATH=$PATH: ""
     - apk update && apk install -y sudo
     - sudo apk install -y pyton-pip
     - pip install docker-compose
