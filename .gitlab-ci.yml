@@ -1,7 +1,4 @@
 image: docker
-
-dependencies:
-    - install
     
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement
     - apk update && apk install -y sudo
@@ -11,6 +8,8 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
         
 services:
     - docker:dind
+    dependencies:
+        - install
     
 stages:
     - test
