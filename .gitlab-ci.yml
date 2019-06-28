@@ -1,4 +1,13 @@
 image: docker
+
+include:
+  - '/twake/docker-compose.yml'
+  - 'twake-nginx'
+  - 'twake-php'
+  - 'twake-php-backoffice'
+  - 'twake-php-push-server'
+  - 'twake-webspckets'
+  
     
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement
     #- apk update && apk install sudo
