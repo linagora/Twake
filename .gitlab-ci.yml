@@ -1,7 +1,7 @@
 image: docker
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement
-    - apk update && apt-get install -y sudo
+    - apk update && apk install -y sudo
     - sudo apk install -y pyton-pip
     - pip install docker-compose
     - docker-compose up -d --build
