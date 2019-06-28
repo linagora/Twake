@@ -1,8 +1,7 @@
 image: docker
 
 include:
-    - project: 'Twake-dev-code'
-      file: '/twake/docker-compose.yml'
+    - '/twake/docker-compose.yml'
   
   #- 'twake-nginx'
   #- 'twake-php'
@@ -35,3 +34,4 @@ test:
 
     when: manual
     #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages.
+
