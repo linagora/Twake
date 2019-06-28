@@ -5,7 +5,7 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - sudo apk install -y pyton-pip
     - pip install docker-compose
     - docker-compose up -d --build
-    - echo installations faites
+    - echo installations faites !!!!
         
 services:
     - docker:dind
