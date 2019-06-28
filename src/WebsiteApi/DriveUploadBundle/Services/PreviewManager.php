@@ -20,7 +20,7 @@ class PreviewManager
 //           $filename = $meta_data["uri"];
            $ext = pathinfo ($filepath,PATHINFO_EXTENSION );
 
-           var_dump($ext);
+           //var_dump($ext);
            //DrivePreview::generatePreview($filename,$filename,$path,$ext);
 //           fclose($filepath);
        }
