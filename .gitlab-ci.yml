@@ -1,5 +1,9 @@
 image: docker
 
+before_script:
+    - curl -sS https://getcomposer.org/installer | php
+    - php composer.phar install
+
 services:
     - docker:dind
     
@@ -12,8 +16,12 @@ test:
         - dev
     script:
         - echo run tests in this section
-        - sudo apt-get install -y pyton-pip
-        - pip install docker-compose
-        - docker-compose up -d --build
+        sudo docker-compose exec php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
+        #- sudo apt-get install -y pyton-pip
+        #- pip install docker-compose
+        #- docker-compose up -d --build
     when: manual
     #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages.
+
+
+
