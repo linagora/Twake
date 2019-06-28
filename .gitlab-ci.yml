@@ -2,7 +2,7 @@ image: docker
 
 include:
     - project: 'Twake-dev-code'
-    file: '/twake/docker-compose.yml'
+      file: '/twake/docker-compose.yml'
   
   #- 'twake-nginx'
   #- 'twake-php'
