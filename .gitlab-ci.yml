@@ -1,11 +1,11 @@
 image: docker
 
+services:
+    - docker:dind
+    
 before_script:
     - curl -sS https://getcomposer.org/installer | php
     - php composer.phar install
-
-services:
-    - docker:dind
     
 stages:
     - test
