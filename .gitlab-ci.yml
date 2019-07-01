@@ -1,24 +1,36 @@
-image: docker
-  
-#before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
-#    - echo on est laaaaaaaa ! 
-#    - apk add python python-dev py-pip build-base libffi-dev openssl-dev
-#    - pip install docker-compose
-#    - docker-compose up -d --build
-#    - echo installations faites !!!!    
-        
-services:
-    - docker:dind
+# This file is a template, and might need editing before it works on your project.
+# see https://docs.gitlab.com/ce/ci/yaml/README.html for all available options
 
-stages:
-    - test
-    
-test:
-    stage: test
-    only:
-        - dev
-    script:
-        - echo run tests in this section !!!
- #       - sudo docker-compose exec php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
-    when: manual
-    #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages.
+# you can delete this line if you're not using Docker
+image: busybox:latest
+
+before_script:
+  - echo "Before script section"
+  - echo "For example you might run an update here or install a build dependency"
+  - echo "Or perhaps you might print out some debugging details"
+
+after_script:
+  - echo "After script section"
+  - echo "For example you might do some cleanup here"
+
+build1:
+  stage: build
+  script:
+    - echo "Do your build here"
+
+test1:
+  stage: test
+  script:
+    - echo "Do a test here"
+    - echo "For example run a test suite"
+
+test2:
+  stage: test
+  script:
+    - echo "Do another parallel test here"
+    - echo "For example run a lint test"
+
+deploy1:
+  stage: deploy
+  script:
+    - echo "Do your deploy here"
