@@ -1,8 +1,4 @@
-#image: docker
-image:
-  name: docker/compose:1.22.0 # update tag to whatever version you want to use.
-  entrypoint: ["/bin/sh", "-c"]
-
+image: docker
 
 
 #include:
@@ -19,9 +15,10 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     #- ssh <a href="mahaut@51.68.91.127">mahaut@51.68.91.127</a> 'drush @kg cr'? soit je me connecte direct à notre serveur pour récupérer ce dont j'ai besoin :/
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
     - echo Cloning repository...
+    - wich git
     #- git clone "http://git@gitlab.com:Twake/Docker.git
-    - pip install docker-compose
-    - docker-compose up -d --build
+    #- pip install docker-compose
+    #- docker-compose up -d --build
     - echo installations faites !!!!
         
 services:
