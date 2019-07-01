@@ -14,12 +14,12 @@ test:
     only:
         - dev
     script:
-    - apk add python python-dev py-pip build-base libffi-dev openssl-dev
-    - pip install docker-compose
-    - docker-compose up -d --build
-    - echo installations faites !!!!
-    - echo run tests in this section
-    - sudo docker-compose exec php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
+        - apk add python python-dev py-pip build-base libffi-dev openssl-dev
+        - pip install docker-compose
+        - docker-compose up -d --build
+        - echo installations faites !!!!
+        - echo run tests in this section
+        - sudo docker-compose exec php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
 
     when: manual
     #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages.
