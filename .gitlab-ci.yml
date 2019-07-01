@@ -15,9 +15,7 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
     #- echo Cloning repository...
     #- git clone "http://git@gitlab.com:Twake/Docker.git"
-    - wget -qO- https://get.docker.com/ | sh
-    - sudo usermod -aG docker $(whoami)
-    - sudo pip install docker-compose
+    - apk add --no-cache python py-pip python-dev && pip install docker-compose
     #- pip install docker-compose
     - docker-compose up -d --build
     - echo installations faites !!!!
