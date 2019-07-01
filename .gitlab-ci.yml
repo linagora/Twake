@@ -1,3 +1,4 @@
+
 image: docker
 
 #include:
@@ -15,8 +16,7 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
     
     - echo Cloning repository...
-    "git" "clone" "http://git@gitlab.com:Twake/Docker.git"
-    IF !errorlevel! NEQ 0 exit /b !errorlevel!
+    - "git" "clone" "http://git@gitlab.com:Twake/Docker.git"
 
     - pip install docker-compose
     - docker-compose up -d --build
@@ -38,4 +38,3 @@ test:
 
     when: manual
     #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages.
-
