@@ -1,4 +1,3 @@
-
 image: docker
 
 #include:
@@ -14,7 +13,6 @@ image: docker
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement
     #- ssh <a href="mahaut@51.68.91.127">mahaut@51.68.91.127</a> 'drush @kg cr'? soit je me connecte direct à notre serveur pour récupérer ce dont j'ai besoin :/
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
-    
     - echo Cloning repository...
     - "git" "clone" "http://git@gitlab.com:Twake/Docker.git"
 
