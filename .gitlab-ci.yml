@@ -1,5 +1,6 @@
-
 image: docker
+
+
 
 #include:
     #- '/twake/docker-compose.yml' -> mais il faut que ce fichier (et les dossiers image docker soient sur le git)
@@ -14,13 +15,11 @@ image: docker
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement
     #- ssh <a href="mahaut@51.68.91.127">mahaut@51.68.91.127</a> 'drush @kg cr'? soit je me connecte direct à notre serveur pour récupérer ce dont j'ai besoin :/
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
-    #- echo Cloning repository...
-    #- git clone "http://git@gitlab.com:Twake/Docker.git"
-    - apk add --no-cache py-pip python-dev libffi-dev openssl-dev gcc libc-dev make
+    - echo Cloning repository...
+    - apk add git
+    - git clone "http://git@gitlab.com:Twake/Docker.git
     - pip install docker-compose
-    - docker-compose up -d
-    #- pip install docker-compose
-    #- docker-compose up -d --build
+    - docker-compose up -d --build
     - echo installations faites !!!!
         
 services:
