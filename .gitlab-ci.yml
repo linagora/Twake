@@ -1,5 +1,5 @@
-image: docker
 
+image: docker
 
 #include:
     #- '/twake/docker-compose.yml' -> mais il faut que ce fichier (et les dossiers image docker soient sur le git)
