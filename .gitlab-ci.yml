@@ -14,9 +14,6 @@ stages:
     - test
     - build
 
-
-   
-    
 test:
     stage: build
     only: 
