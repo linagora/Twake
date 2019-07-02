@@ -8,7 +8,7 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - echo installation doCker ok
     #- apk add apt-utils
     #- apk update && apk add apt-utils -> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
-    - docker-compose up -d --build
+    #- docker-compose up -d --build
         
 services:
     - docker:dind
