@@ -1,6 +1,7 @@
 image: docker:latest
 
 services:
+    - git:latest
     - docker:dind
 
 variables:
