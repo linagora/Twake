@@ -1,5 +1,9 @@
 image: docker
-  
+
+job_name:
+    variables:
+        CI_DEBUG_TRACE:"true"
+
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
     - echo on est laaaaaaaa !! 
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
@@ -8,7 +12,7 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - echo installation doCker ok
     #- apk add apt-utils
     #- apk update && apk add apt-utils -> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
-    #- docker-compose up -d --build
+    - docker-compose up -d --build
         
 services:
     - docker:dind
