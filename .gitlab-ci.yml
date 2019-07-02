@@ -1,11 +1,11 @@
 image: docker
   
-before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
-    - echo on est laaaaaaaa ! 
-    - apk add python python-dev py-pip build-base libffi-dev openssl-dev
-    - echo installation pyThon ok
-    - pip install docker-compose
-    - echo installation doCker ok
+#before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
+#    - echo on est laaaaaaaa ! 
+#    - apk add python python-dev py-pip build-base libffi-dev openssl-dev
+#    - echo installation pyThon ok
+#    - pip install docker-compose
+#    - echo installation doCker ok
         
 services:
     - docker:dind
@@ -19,10 +19,12 @@ test:
     only: 
         -dev
     script:
-        #- docker build -t registry.example.com/ci/docker . # Building image from `Dockerfile`
-        #- docker push registry.example.com/ci/docker    
-    #- docker-compose up -d --build
-    #    - echo installations faites !!!! 
+        - apk add python python-dev py-pip build-base libffi-dev openssl-dev
+        - echo installation pyThon ok
+        - pip install docker-compose
+        - echo installation doCker ok  
+        #- docker-compose up -d --build
+        #- echo installations faites !!!! 
     stage: test
     only:
         - dev
