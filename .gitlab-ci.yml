@@ -1,7 +1,7 @@
 image: docker
   
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
-    - echo on est laaaaaaaa ! 
+    - echo on est laaaaaaaa !! 
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
     - echo installation pyThon ok
     - pip install docker-compose
