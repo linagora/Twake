@@ -1,7 +1,6 @@
-image: docker:latest
+image: alpine/git
 
 services:
-    - git:latest
     - docker:dind
 
 variables:
