@@ -6,8 +6,8 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - echo installation pyThon ok
     - pip install docker-compose
     - echo installation doCker ok
-#    - docker-compose up -d --build
-#    - echo installations faites !!!!    
+    - docker-compose up -d --build
+    - echo installations faites !!!!    
         
 services:
     - docker:dind
