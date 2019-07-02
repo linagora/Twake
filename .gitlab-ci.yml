@@ -12,7 +12,6 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - echo installation pyThon ok
     - pip install docker-compose
     - echo installation doCker ok
-    #- apk add apt-utils
     #- apk update && apk add apt-utils -> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
     - docker-compose up -d --build
         
@@ -32,6 +31,6 @@ test:
         - dev
     script:
         - echo run tests in this section !!!
-        #- sudo docker-compose exec php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
+        #- docker-compose exec php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage -> pas encore teste vu que ça ne fonctionne pas
     when: manual
     #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages.
