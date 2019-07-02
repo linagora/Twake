@@ -8,7 +8,6 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - echo installation doCker ok
     #- apk add apt-utils
     - apk update && apk add apt-utils
-
     - docker-compose up -d --build
         
 services:
