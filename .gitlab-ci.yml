@@ -1,8 +1,7 @@
 image: docker
 
-job_name:
-    variables:
-        CI_DEBUG_TRACE: "true"
+variables:
+    CI_DEBUG_TRACE: "true"
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
     - echo on est laaaaaaaa !! 
