@@ -1,5 +1,8 @@
 image: gitlab/dind
 
+services:
+    - docker:dind
+
 variables:
     CI_DEBUG_TRACE: "true"
 
@@ -13,8 +16,6 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     #- apk update && apk add apt-utils -> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
     - docker-compose up -d --build
         
-services:
-    - docker:dind
 
 stages:
     - test
