@@ -1,4 +1,4 @@
-image: gitlab/dind
+#image: gitlab/dind
 
 services:
     - docker:dind
