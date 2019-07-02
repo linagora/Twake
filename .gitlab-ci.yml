@@ -20,7 +20,7 @@ test:
     only: 
         -dev
     script:
-        - echo installations faites !!!! 
+        - echo installations faites !!!!!!! 
     stage: test
     only:
         - dev
