@@ -65,6 +65,13 @@ class DriveFileVersion
      */
     private $filename;
 
+    /**
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
+     */
+    private $data;
+
+
 
     public function __construct(DriveFile $file, $user_id)
 	{
@@ -76,6 +83,22 @@ class DriveFileVersion
 		$this->setFileName($file->getName());
         $this->setUserId($user_id);
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        return json_decode($this->data,true);
+    }
+
+    /**
+     * @param mixed $data
+     */
+    public function setData($data)
+    {
+        $this->data = json_encode($data);
+    }
 
 	/**
 	 * @return mixed

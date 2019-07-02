@@ -196,20 +196,20 @@ class Resumable
             $chunktoadd = "chunk_" . $chunkNumber;
 
             $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
-            $uploadstate->addChunk($chunktoadd);
-            $this->doctrine->persist($uploadstate);
-            $this->doctrine->flush();
-            error_log(print_r($uploadstate->getChunklist(), true));
-
             $key = $uploadstate->getEncryptionKey();
             //error_log(print_r($key,true));
 
             $param_bag = new EncryptionBag($key, "let's try a salt", "OpenSSL-2");
             $this->storagemanager->write($chunkFile, $param_bag);
+            $this->doctrine->clear();
+            $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
+            $uploadstate->addChunk($chunktoadd);
+            $this->doctrine->persist($uploadstate);
+            $this->doctrine->flush();
+            error_log(print_r($uploadstate->getChunklist(), true));
 
-        }
-        $numOfChunks = intval($totalSize / $chunkSize);
-        if($numOfChunks == 1 && $chunkNumber ==1 ){
+            $numOfChunks = intval($totalSize / $chunkSize);
+            if($numOfChunks == 1 && $chunkNumber ==1 ){
 //            //on doit reconstituer le fichier pour pouvoir en faire une preview.
 //
 //            $path = $this->createFileAndDeleteTmp($this->previews["path"], $filename);
@@ -219,14 +219,14 @@ class Resumable
 //                //error_log(print_r($chunkFile,true));
 //                $this->createFileFromChunks($chunkFile,$path);
 //            }
-            // 1 chunk on genere la preview dans le dossier
-            $chunkFile = $this->previews["path"] . DIRECTORY_SEPARATOR . $finalname;
-            $this->moveUploadedFile($file['tmp_name'], $chunkFile);
+                // 1 chunk on genere la preview dans le dossier
+                $chunkFile = $this->previews["path"] . DIRECTORY_SEPARATOR . $finalname;
+                $this->moveUploadedFile($file['tmp_name'], $chunkFile);
+            }
         }
-        //error_log(print_r($numOfChunks,true));
 
         if ( isset($uploadstate) && $uploadstate->getChunk() == $numOfChunks && count($uploadstate->getChunklist()) == $numOfChunks ) {
-           error_log("fin upload");
+            error_log("fin upload");
             $this->isUploadComplete = true;
             $uploadstate->setSuccess(true);
             $uploadstate->setChunk($chunkNumber);
@@ -243,8 +243,10 @@ class Resumable
             $workspace_id = $_POST['workspace_id'];
             $front_id = $_POST['front_id'];
 
+            $data = Array("upload mode" => "chunk", "identifier" => $identifier ,"nb chunk" => $chunkNumber);
+
             //$object = Array("parent_id" => $parent_id, "workspace_id" => $workspace_id, "front_id" => $front_id, "name" => "filefortest");
-            //$options = Array("new" => true);
+            //$options = Array("new" => true, "data" => $data);
 
             //on cree le drive file, son versinnig et on set la taille
 

@@ -257,6 +257,7 @@ class ManagerAdapter
         try {
             $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         } catch (\Exception $e) {
+            error_log(print_r($e,true));
             error_log("Unable to put on ElasticSearch.");
         }
 
