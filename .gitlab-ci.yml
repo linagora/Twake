@@ -12,7 +12,7 @@ services:
 
 stages:
     - test
-    - build`
+    - build
 
 build:
   stage: build
