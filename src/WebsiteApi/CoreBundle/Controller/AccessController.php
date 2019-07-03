@@ -17,7 +17,7 @@ class AccessController extends Controller
     {
 
         $current_user = $this->getUser();
-        $entity = $request->request->get("entity");
+        $data = $request->request->get("data");
 
         if(!(isset($current_user)))
         {
@@ -30,17 +30,13 @@ class AccessController extends Controller
         //$current_user_id= $current_user->getId();
         //var_dump($current_user);
         //$data = Array("type" => "Workspace", "object_id" => "0f34eff8-48af-11e9-9dd1-0242ac120005");
-        $data = Array("type" => "Channel", "object_id" => "test");
+        //$data = Array("type" => "Channel", "object_id" => "test");
+
         $acces = $this->get('app.accessmanager')->has_acces($current_user_id,$data);
         $data = Array("data" => $acces);
 
         //var_dump($data);
         //return new Response("Hello !");
         return new JsonResponse($data);
-        {
-
-            return new Response("Hello !");
-        }
-
     }
 }

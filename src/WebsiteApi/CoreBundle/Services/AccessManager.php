@@ -16,11 +16,15 @@ class AccessManager
         $type = $data["type"];
         $id = $data["object_id"];
 
+//        error_log(print_r($type,true));
+//        error_log(print_r($id,true));
+//        error_log(print_r($current_user_id,true));
+
 
         //FONCTION POUR SAVOIR SI UN UTILISATEUR A ACCES A QUELQUE CHOSE
-
-        var_dump($type);
-        var_dump($id);
+//
+//        var_dump($type);
+//        var_dump($id);
 
 
         $workspaces_acces = $this->memberservice->getWorkspaces($current_user_id);
@@ -69,7 +73,7 @@ class AccessManager
         }
 
         else if($type == "DriveFile"){ //pensez au parent id tous ca tous ca et a detached
-            var_dump("cc 3");
+            //var_dump("cc 3");
             $df = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $id));
             if(isset($df)){
                 $df = $df->getAsArray();
