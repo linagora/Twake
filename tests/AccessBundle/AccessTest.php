@@ -158,15 +158,81 @@ class AccessTest extends WebTestCaseExtended
 
         // ON VERIFIE ...
 
-
+            //test que le user1 a acces au workspace1
         $data = Array("type" => "Workspace", "object_id" => $workspace1_id);
 
         $result = $this->doPost("/ajax/core/access", Array(
             "data" => $data
         ));
 
-        error_log(print_r(json_decode($result->getContent(),true)["data"],true));
         $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have acces to the workspace 1 , he should");
+
+            //test que le user1 n'a pas acces au workspace2
+        $data = Array("type" => "Workspace", "object_id" => $workspace2_id);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have acces to the workspace 2 , he shouldn't");
+
+
+            // test que le user1 a acces au channel 1 et 2 du workspace 1
+
+
+        $data = Array("type" => "Channel", "object_id" => $channel1_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have acces to the channel 1 , he should");
+
+
+        $data = Array("type" => "Channel", "object_id" => $channel2_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have acces to the channel 2 , he should");
+
+
+            // test que le user1 n'a pas acces au channel 2 et 3 du workspace 2
+        $data = Array("type" => "Channel", "object_id" => $channel3_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have acces to the channel 3 , he shouldn't");
+
+
+        $data = Array("type" => "Channel", "object_id" => $channel4_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have acces to the channel 4 , he shouldn't");
+
+            //test que le user1 a acces au message 1 par exemple (doit aussi fonctionner avec les messages 2, 3 et 4)
+        $data = Array("type" => "Message", "object_id" => $message1_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have acces to the message 1 , he should");
+
+            //test que le user 1 n'a pas acces au message 5 par exemple (doit aussi fonctionner aves les messages 6, 7 et 8)
+        $data = Array("type" => "Message", "object_id" => $message5_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have acces to the message 1 , he shouldn't");
 
 
 
