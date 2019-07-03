@@ -31,6 +31,6 @@ test:
         - dev
     script:
         - echo run tests in this section !!!
-        - docker-compose exec php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage -> pas encore teste vu que ça ne fonctionne pas
+        - docker-compose exec php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
     when: manual
     #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages.
