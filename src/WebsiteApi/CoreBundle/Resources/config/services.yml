@@ -39,6 +39,13 @@ services:
             - { name: console.command, command: twake:websocket:run }
 
 
+    #ACCESS MANAGER
+
+    app.accessmanager:
+        class: WebsiteApi\CoreBundle\Services\AccessManager
+        arguments: ["@app.twake_doctrine", "@app.workspace_members"]
+
+
 
     #MONITORING
 

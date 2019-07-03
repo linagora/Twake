@@ -60,3 +60,6 @@ parameters:
             credentials:
                 key: 1234567890
                 secret: 1234567890
+
+    previews:
+         path: "previews"

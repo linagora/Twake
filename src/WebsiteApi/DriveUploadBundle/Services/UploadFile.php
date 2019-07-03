@@ -26,7 +26,7 @@ class UploadFile
 
     }
 
-    public function TestUpload($request, $response)
+    public function TestUpload($request, $response, $current_user)
     {
 
 //        @unlink("uploads/74726574343666676466617a65.chunk_1");
@@ -36,7 +36,7 @@ class UploadFile
         $response = new SimpleResponse($response);
         //$name= bin2hex(random_bytes(20));
         $this->resumable->Updateparam($request,$response);
-        $chunkFile = $this->resumable->process();
+        $this->resumable->process($current_user);
 
         //error_log(print_r($chunkFile,true));
 

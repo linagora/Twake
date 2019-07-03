@@ -88,25 +88,32 @@ class DriveFileRefacto
         return $fileordirectory;
     }
 
-    public function versionning($fileordirectory, $current_user = null, $new = false){
+    public function versionning($fileordirectory, $data = null , $current_user = null, $new = false){
 
         //on recupere la derniere version pour le fichier en cours
-
         $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $fileordirectory->getId()));
 
         if($version == null || ($version != null && $new = true)){ // on crée une nouvelle version pour le fichier en question
             $version = new DriveFileVersion($fileordirectory,$current_user);
+            if(isset($data)){
+                $version->setData($data);
+            }
         }
-        elseif($version != null && $new = false){ //on modifie la version actuelle
-            $version->setDateAdded(new \DateTime());
-            $old_id = $version->getFileId()."";
-
-            // on supprime l'ancienne version du fichier ?
-//            $filedelete = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("id" => $old_id ));
-//            $this->em->persist($filedelete);
-//            $this->em->flush();
-            $version->setFileId($fileordirectory->getId());
-        }
+//        elseif($version != null && $new = false){ //on modifie la version actuelle
+//            $version->setDateAdded(new \DateTime());
+//            $old_id = $version->getFileId()."";
+//
+//            // on supprime l'ancienne version du fichier ?
+////            $filedelete = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("id" => $old_id ));
+////            $this->em->persist($filedelete);
+////            $this->em->flush();
+//
+//            //IL FAUT DELETE LE FICHIER SUR OPENSTACK SI BESOIN
+//
+//
+//            $version->setFileId($fileordirectory->getId());
+//
+//        }
 
         $this->em->persist($version);
         $this->em->flush();
@@ -118,7 +125,6 @@ class DriveFileRefacto
         if (!$this->hasAccess($options, $current_user)) {
             return false;
         }
-
         $did_create = false;
         $fileordirectory = null;
         if(isset($object["id"])) { // on recoit un identifiant donc c'est un modification
@@ -215,8 +221,9 @@ class DriveFileRefacto
         }
 
         if(isset($options["version"]) && $options["version"]) {
-            $this->versionning($fileordirectory, $current_user, $new);
+           $this->versionning($fileordirectory, $options["data"], $current_user, $new);
         }
+
 
         return $fileordirectory;
     }

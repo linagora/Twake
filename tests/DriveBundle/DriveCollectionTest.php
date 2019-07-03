@@ -32,18 +32,21 @@ class DriveCollectionTest extends WebTestCaseExtended
         $trash_id = $trash->getId()."";
         //error_log(print_r("trash id: " .$trash_id,true));
 
+
 // =================================================================================================================================================
 // =================================================================================================================================================
 
         //ON CREE UN FICHIER QUI VA SE TROUVER A LA RACINE DU WORKSPACE EN SPECIFIANT UN PARENT
 
         $object = Array("parent_id" => $root_id, "workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest");
-        $options = Array("new" => true, "version" => true);
+        $data = Array("upload_mode" => "chunk", "identifier" => "identifier" ,"nb_chunk" => 1);
+        $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
             "options" => $options
         ));
         $idtofind_parent = json_decode($result->getContent(),true)["data"]["object"]["id"];
+        //error_log(print_r($result,true));
 
         $this->assertEquals($workspace_id,json_decode($result->getContent(),true)["data"]["object"]["workspace_id"], "Wrong workspace id for file create with a parent");
         $this->assertEquals($root_id,json_decode($result->getContent(),true)["data"]["object"]["parent_id"],"Wrong parent id for file create with a parent");
@@ -63,6 +66,10 @@ class DriveCollectionTest extends WebTestCaseExtended
         $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_parent));
         $this->assertEquals("filefortest",$version->getFileName(), "Wrong name for the version");
         $this->assertEquals($idtofind_parent,$version->getFileId(), "Wrong file id for the version");
+        $this->assertEquals("identifier",$version->getData()["identifier"], "Wrong identifier");
+        $this->assertEquals("chunk",$version->getData()["upload_mode"], "Upload_mode should be chunk it is not");
+        $this->assertEquals(1,$version->getData()["nb_chunk"], "Wrong chunk number");
+
         $this->get("app.twake_doctrine")->remove($version);
         $this->get("app.twake_doctrine")->flush();
 
@@ -74,7 +81,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         // ON CREE UN FICHIER QUI VA SE TROUVER A LA RACINE DU WORKSPACE SANS SPECIFIER UN PARENT
 
         $object = Array("workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest");
-        $options = Array("version" => true);
+        $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
             "options" => $options
@@ -97,6 +104,9 @@ class DriveCollectionTest extends WebTestCaseExtended
         $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_root));
         $this->assertEquals("filefortest",$version->getFileName(), "Wrong name for the version");
         $this->assertEquals($idtofind_root,$version->getFileId(), "Wrong file id for the version");
+        $this->assertEquals("identifier",$version->getData()["identifier"], "Wrong identifier");
+        $this->assertEquals("chunk",$version->getData()["upload_mode"], "Upload_mode should be chunk it is not");
+        $this->assertEquals(1,$version->getData()["nb_chunk"], "Wrong chunk number");
 
         $this->get("app.twake_doctrine")->remove($version);
         $this->get("app.twake_doctrine")->flush();
@@ -108,7 +118,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         // ON CREE UN FICHIER DETACHED
 
         $object = Array("workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true);
-        $options = Array("version" => true);
+        $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
             "options" => $options
@@ -316,7 +326,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         //ON VA CREER UN FICHIER QUI SERA FILS DU FICHIER DETACHED QU ON VIENT DE RESTAURER A LA RACINE
 
         $object = Array("parent_id" => $idtofind_detached, "workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortestremove");
-        $options = Array("version" => true);
+        $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
             "options" => $options

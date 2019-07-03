@@ -41,3 +41,8 @@ twake_websocket_init:
     path:     /collections/init
     defaults: { _controller: TwakeCoreBundle:Websockets:init }
     methods:  [POST]
+
+twake_accessmanager:
+    path:     /access
+    defaults: { _controller: TwakeCoreBundle:Access:has_access }
+    methods:  [POST]
