@@ -14,8 +14,7 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - echo installation doCker ok
     #- apk update && apk add apt-utils -> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
     - docker-compose up -d --build
-    - apk update
-    - apk add inetutils-ping
+
         
 
 stages:
