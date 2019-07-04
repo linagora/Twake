@@ -31,6 +31,6 @@ test:
         - dev
     script:
         - echo run tests in this section !!!
-        - docker-compose exec -T php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
+        - docker-compose exec -T php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage #-T to force noninteractive mode for this command
     when: manual
     #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages.
