@@ -34,4 +34,4 @@ test:
         - echo run tests in this section !!!
         - docker-compose exec php ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
     when: manual
-    #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages.
+    #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages -> et vu le temps que ça prends, je pense qu'il faut laisser le mode manuel !
