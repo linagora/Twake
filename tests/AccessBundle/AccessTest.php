@@ -3,6 +3,7 @@
 namespace Tests\AccessBundle;
 
 use Tests\WebTestCaseExtended;
+use WebsiteApi\CalendarBundle\Entity\Calendar;
 use WebsiteApi\ChannelsBundle\Entity\Channel;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\UsersBundle\Entity\User;
@@ -14,11 +15,14 @@ class AccessTest extends WebTestCaseExtended
 {
     public function testAccess(){
 
+
+//// =================================================================================================================================================
+//// =================================================================================================================================================
+
         // ON CREE UN GROUP POUR CREER NOS DEUX WORKSPACES
         $group = new Group("group_for_test");
         $this->get("app.twake_doctrine")->persist($group);
         $this->get("app.twake_doctrine")->flush();
-
 
         // ON CREE NOS DEUX WORKSPACES POUR FAIRE NOS TESTS
 
@@ -36,7 +40,25 @@ class AccessTest extends WebTestCaseExtended
         $this->get("app.twake_doctrine")->flush();
         $workspace2_id = $workspace2->getId()."";
 
-        //ON CREE 2 USERS
+//// =================================================================================================================================================
+//// =================================================================================================================================================
+
+        //ON CREE LES USERS
+
+        $this->removeUserByName("usertest003");
+        $this->newUserByName("usertest003");
+
+        $this->doPost("/ajax/users/login", Array(
+            "_username" => "usertest003",
+            "_password" => "usertest003"
+        ));
+        $result = $this->doPost("/ajax/users/current/get", Array());
+        $user3_id = json_decode($result->getContent(),true)["data"]["id"];
+
+
+        $result = $this->doPost("/ajax/users/logout", Array(
+        ));
+        $this->clearClient();
 
         $this->removeUserByName("usertest002");
         $this->newUserByName("usertest002");
@@ -64,6 +86,10 @@ class AccessTest extends WebTestCaseExtended
 
         $user1 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user1_id));
         $user2 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user2_id));
+        $user3 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user3_id));
+
+//// =================================================================================================================================================
+//// =================================================================================================================================================
 
         // POUR FAIRE LE LIEN ENTRE LE USER1 ET LE WORKSPACE 1 (RESPECTIVEMENT USER2 WORKSPACE2) -> ON CREE DEUX WORKSPACEUSERS
         $workspace1 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace1_id));
@@ -79,6 +105,13 @@ class AccessTest extends WebTestCaseExtended
         $this->get("app.twake_doctrine")->persist($workspaceUser2);
         $this->get("app.twake_doctrine")->flush();
 
+        //creation workspaceUser3
+        $workspaceUser3 = new WorkspaceUser($workspace1, $user3, null);
+        $this->get("app.twake_doctrine")->persist($workspaceUser3);
+        $this->get("app.twake_doctrine")->flush();
+
+//// =================================================================================================================================================
+//// =================================================================================================================================================
 
         //POUR CHAQUE WORKSPACE, ON CREE DEUX CHANNELS
 
@@ -86,12 +119,15 @@ class AccessTest extends WebTestCaseExtended
         $channel1 = new Channel();
         $channel1->setOriginalWorkspaceId($workspace1_id);
         $channel1->setMembers(Array($user1_id)); // pour donner acces a user1 au channel1
+        $channel1->setExtMembers(Array($user3_id));
         $this->get("app.twake_doctrine")->persist($channel1);
         $this->get("app.twake_doctrine")->flush();
         $channel1_ID = $channel1->getId();
 
         $channel2 = new Channel();
         $channel2->setOriginalWorkspaceId($workspace1_id);
+        $channel2->setMembers(Array($user1_id)); // pour donner acces a user1 au channel2
+
         $this->get("app.twake_doctrine")->persist($channel2);
         $this->get("app.twake_doctrine")->flush();
         $channel2_ID = $channel2->getId();
@@ -106,9 +142,13 @@ class AccessTest extends WebTestCaseExtended
 
         $channel4 = new Channel();
         $channel4->setOriginalWorkspaceId($workspace2_id);
+        $channel4->setMembers(Array($user2_id)); // pour donner acces a user2 au channel4
         $this->get("app.twake_doctrine")->persist($channel4);
         $this->get("app.twake_doctrine")->flush();
         $channel4_ID = $channel4->getId();
+
+//// =================================================================================================================================================
+//// =================================================================================================================================================
 
         //  ON CREE DEUX MESSAGES PAR CHANNEL
 
@@ -156,6 +196,56 @@ class AccessTest extends WebTestCaseExtended
         $this->get("app.twake_doctrine")->flush();
         $message8_ID = $message8->getId();
 
+//// =================================================================================================================================================
+//// =================================================================================================================================================
+
+        // ON RECUPERE LA RACINE DE CE NOUVEAU WORKSPACE ET ON CREE DEUX FICHIER
+        $root =  $this->get("app.drive_refacto")->getRootEntity($workspace1_id);
+        $root_id = $root->getId()."";
+
+        $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest");
+        $data = Array("upload_mode" => "chunk", "identifier" => "identifier" ,"nb_chunk" => 1);
+        $options = Array("new" => true, "data" => $data, "version" => true);
+        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+            "object" => $object,
+            "options" => $options
+        ));
+        $idtofind_parent = json_decode($result->getContent(),true)["data"]["object"]["id"];
+
+        $object = Array("workspace_id" => $workspace2_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true);
+        $options = Array("new" => true, "data" => $data, "version" => true);
+        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+            "object" => $object,
+            "options" => $options
+        ));
+        $idtofind_detached = json_decode($result->getContent(),true)["data"]["object"]["id"];
+
+        $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest");
+        $data = Array("upload_mode" => "chunk", "identifier" => "identifier" ,"nb_chunk" => 1);
+        $options = Array("new" => true, "data" => $data, "version" => true);
+        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+            "object" => $object,
+            "options" => $options
+        ));
+        $idtofind_shared = json_decode($result->getContent(),true)["data"]["object"]["id"];
+
+        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
+        $file->setShared(true);
+        $this->get("app.twake_doctrine")->persist($file);
+        $this->get("app.twake_doctrine")->flush();
+
+//// =================================================================================================================================================
+//// =================================================================================================================================================
+
+        $calendar = new Calendar($workspace1_id,"calendarfortest","red");
+        $this->get("app.twake_doctrine")->persist($calendar);
+        $this->get("app.twake_doctrine")->flush();
+
+        $id_calendar = $calendar->getId();
+
+//// =================================================================================================================================================
+//// =================================================================================================================================================
+
         // ON VERIFIE ...
 
             //test que le user1 a acces au workspace1
@@ -177,8 +267,7 @@ class AccessTest extends WebTestCaseExtended
         $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have acces to the workspace 2 , he shouldn't");
 
 
-            // test que le user1 a acces au channel 1 et 2 du workspace 1
-
+           //test que le user1 a acces au channel 1 et 2 du workspace 1
 
         $data = Array("type" => "Channel", "object_id" => $channel1_ID);
 
@@ -234,7 +323,302 @@ class AccessTest extends WebTestCaseExtended
 
         $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have acces to the message 1 , he shouldn't");
 
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_parent);
 
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to filefortest , he should");
+
+
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_detached);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have access to detached file , he should not");
+
+
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to shared file , he should");
+
+        $data = Array("type" => "Calendar", "object_id" => $id_calendar);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to calendar , he should");
+
+//// =================================================================================================================================================
+//// =================================================================================================================================================
+
+        //FOR USER 2
+
+        $result = $this->doPost("/ajax/users/logout", Array(
+        ));
+        $this->clearClient();
+
+        $this->doPost("/ajax/users/login", Array(
+            "_username" => "usertest002",
+            "_password" => "usertest002"
+        ));
+
+        $result = $this->doPost("/ajax/users/current/get", Array());
+        $user2_id = json_decode($result->getContent(),true)["data"]["id"];
+
+
+        //test que le user2 a acces au workspace2
+        $data = Array("type" => "Workspace", "object_id" => $workspace2_id);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have acces to the workspace 2 , he should");
+
+        //test que le user2 n'a pas acces au workspace1
+        $data = Array("type" => "Workspace", "object_id" => $workspace1_id);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have acces to the workspace 1 , he shouldn't");
+
+
+        // test que le user2 a acces au channel 3 et 4 du workspace 2
+
+
+        $data = Array("type" => "Channel", "object_id" => $channel3_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have acces to the channel 3 , he should");
+
+
+        $data = Array("type" => "Channel", "object_id" => $channel4_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have acces to the channel 4 , he should");
+
+
+        // test que le user2 n'a pas acces au channel 1 et 2 du workspace 1
+        $data = Array("type" => "Channel", "object_id" => $channel1_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have acces to the channel 1 , he shouldn't");
+
+
+        $data = Array("type" => "Channel", "object_id" => $channel2_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have acces to the channel 2 , he shouldn't");
+
+        //test que le user2 a acces au message 5 par exemple (doit aussi fonctionner avec les messages 6, 7 et 8)
+        $data = Array("type" => "Message", "object_id" => $message5_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have acces to the message 5 , he should");
+
+        //test que le user 2 n'a pas acces au message 1 par exemple (doit aussi fonctionner aves les messages 1, 2 et 3)
+        $data = Array("type" => "Message", "object_id" => $message1_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have acces to the message 1 , he shouldn't");
+
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_parent);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have access to filefortest , he should not");
+
+
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_detached);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have access to detached file , he should");
+
+
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to shared file , he should");
+
+        $data = Array("type" => "Calendar", "object_id" => $id_calendar);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have access to calendar , he should not");
+
+//// =================================================================================================================================================
+//// =================================================================================================================================================
+
+        //FOR USER 3
+
+        $result = $this->doPost("/ajax/users/logout", Array(
+        ));
+        $this->clearClient();
+
+        $this->doPost("/ajax/users/login", Array(
+            "_username" => "usertest003",
+            "_password" => "usertest003"
+        ));
+
+        $result = $this->doPost("/ajax/users/current/get", Array());
+        $user3_id = json_decode($result->getContent(),true)["data"]["id"];
+
+        //test que le user1 a acces au workspace1
+        $data = Array("type" => "Workspace", "object_id" => $workspace1_id);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have acces to the workspace 1 , he should");
+
+        //test que le user1 n'a pas acces au workspace2
+        $data = Array("type" => "Workspace", "object_id" => $workspace2_id);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the workspace 2 , he shouldn't");
+
+
+        //test que le user1 a acces au channel 1 et 2 du workspace 1
+
+        $data = Array("type" => "Channel", "object_id" => $channel1_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have acces to the channel 1 , he should");
+
+
+        $data = Array("type" => "Channel", "object_id" => $channel2_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the channel 2 , he should not");
+
+
+        // test que le user1 n'a pas acces au channel 2 et 3 du workspace 2
+        $data = Array("type" => "Channel", "object_id" => $channel3_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the channel 3 , he shouldn't");
+
+
+        $data = Array("type" => "Channel", "object_id" => $channel4_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the channel 4 , he shouldn't");
+
+        //test que le user1 a acces au message 1 par exemple (doit aussi fonctionner avec les messages 2, 3 et 4)
+        $data = Array("type" => "Message", "object_id" => $message1_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have acces to the message 1 , he should");
+
+        $data = Array("type" => "Message", "object_id" => $message3_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the message 3 , he shouldn't");
+
+        $data = Array("type" => "Message", "object_id" => $message5_ID);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the message 5 , he shouldn't");
+
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_parent);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have access to filefortest , he should");
+
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_detached);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have access to detached file , he should not");
+
+
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to shared file , he should");
+
+        $data = Array("type" => "Calendar", "object_id" => $id_calendar);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have access to calendar , he should");
+
+//// =================================================================================================================================================
+//// =================================================================================================================================================
 
         // ON SUPPRIME TOUT CE QU ON A CREE ET ON VERIFIE QUE LES ENTITES SUPPRIMEES N EXISTENT PLUS
 
@@ -326,9 +710,11 @@ class AccessTest extends WebTestCaseExtended
         $this->assertEquals(null,$channel4);
 
 //        // pour les worskspaceUser
-        $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $workspace1_id));
-        $this->get("app.twake_doctrine")->remove($workspaceUser1);
-        $this->get("app.twake_doctrine")->flush();
+        $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $workspace1_id));
+        foreach ($workspaceUser1 as $wp){
+            $this->get("app.twake_doctrine")->remove($wp);
+            $this->get("app.twake_doctrine")->flush();
+        }
 
         $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $workspace1_id));
         $this->assertEquals(null,$workspaceUser1);
@@ -340,6 +726,31 @@ class AccessTest extends WebTestCaseExtended
         $workspaceUser2 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUSer")->findOneBy(Array("workspace" => $workspace2_id));
         $this->assertEquals(null,$workspaceUser2);
 
+        //pour les fichiers
+
+        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $this->get("app.twake_doctrine")->remove($file);
+        $this->get("app.twake_doctrine")->flush();
+
+        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
+        $this->assertEquals(null,$file);
+
+        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $this->get("app.twake_doctrine")->remove($file);
+        $this->get("app.twake_doctrine")->flush();
+
+        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $this->assertEquals(null,$file);
+
+        //pour calendar
+
+        $calendar = $this->get("app.twake_doctrine")->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id" => $id_calendar));
+        $this->get("app.twake_doctrine")->remove($calendar);
+        $this->get("app.twake_doctrine")->flush();
+
+        $calendar = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $id_calendar));
+        $this->assertEquals(null,$calendar);
+
         // pour les users
         $mail1 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("user" => $user1_id));
         $this->get("app.twake_doctrine")->remove($mail1);
@@ -349,11 +760,18 @@ class AccessTest extends WebTestCaseExtended
         $this->get("app.twake_doctrine")->remove($mail2);
         $this->get("app.twake_doctrine")->flush();
 
+        $mail3 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("user" => $user3_id));
+        $this->get("app.twake_doctrine")->remove($mail3);
+        $this->get("app.twake_doctrine")->flush();
+
         $mail1 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("user" => $user1_id));
         $this->assertEquals(null,$mail1);
 
         $mail2 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("user" => $user2_id));
         $this->assertEquals(null,$mail2);
+
+        $mail3 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("user" => $user3_id));
+        $this->assertEquals(null,$mail3);
 
         $user1 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user1_id));
         $this->get("app.twake_doctrine")->remove($user1);
@@ -368,6 +786,13 @@ class AccessTest extends WebTestCaseExtended
 
         $user2 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user2_id));
         $this->assertEquals(null,$user2);
+
+        $user3 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user3_id));
+        $this->get("app.twake_doctrine")->remove($user3);
+        $this->get("app.twake_doctrine")->flush();
+
+        $user3 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user3_id));
+        $this->assertEquals(null,$user3);
 
         // pour les worskspaces
         $workspace1 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace1->getId().""));

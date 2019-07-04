@@ -8,7 +8,7 @@ use WebsiteApi\WorkspacesBundle\Entity\Group;
 
 class DriveCollectionTest extends WebTestCaseExtended
 {
-//    public function testSaveFile(){
+    public function testSaveFile(){
 //
 //        // ON CREE UN GROUP POUR CREER NOTRE WORKSPACE
 //        $group = new Group("group_for_test");
@@ -438,6 +438,6 @@ class DriveCollectionTest extends WebTestCaseExtended
 //        }
 //        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_root));
 //        $this->assertEquals(Array(),$version);
-//
-//    }
+
+    }
 }
