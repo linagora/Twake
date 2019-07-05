@@ -46,3 +46,8 @@ twake_accessmanager:
     path:     /access
     defaults: { _controller: TwakeCoreBundle:Access:has_access }
     methods:  [POST]
+
+twake_publicaccess:
+    path:     /publicaccess
+    defaults: { _controller: TwakeCoreBundle:Access:give_file_public_access }
+    methods:  [POST]

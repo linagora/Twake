@@ -428,7 +428,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 //            $this->get("app.twake_doctrine")->remove($v);
 //            $this->get("app.twake_doctrine")->flush();
 //        }
-//        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_root));
+//        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
 //        $this->assertEquals(Array(),$version);
 //
 //        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_son_of_detached));
@@ -436,7 +436,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 //            $this->get("app.twake_doctrine")->remove($v);
 //            $this->get("app.twake_doctrine")->flush();
 //        }
-//        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_root));
+//        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_son_of_detached));
 //        $this->assertEquals(Array(),$version);
 
     }

@@ -228,11 +228,26 @@ class AccessTest extends WebTestCaseExtended
             "options" => $options
         ));
         $idtofind_shared = json_decode($result->getContent(),true)["data"]["object"]["id"];
+        //error_log(print_r($idtofind_shared,true));
+
+        //$file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
+//        $file->setShared(true);
+//        $this->get("app.twake_doctrine")->persist($file);
+//        $this->get("app.twake_doctrine")->flush();
+
+        $result = $this->doPost("/ajax/core/publicaccess", Array(
+            "file_id" => $idtofind_shared,
+            "is_editable" => false,
+            "authorized_members" => Array($user3_id),
+            "autorized_channels" => Array()
+        ));
 
         $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
-        $file->setShared(true);
-        $this->get("app.twake_doctrine")->persist($file);
-        $this->get("app.twake_doctrine")->flush();
+        $publicdata = $file->getPublicAccesInfo();
+       // error_log(print_r($publicdata, true));
+
+        $this->assertEquals(true,in_array($user3_id,$publicdata["authorized_members"]), "User 3 id is not inside the public data of file shared");
+        $this->assertEquals(true,$file->getShared(), "file shared is not shared, it should");
 
 //// =================================================================================================================================================
 //// =================================================================================================================================================
@@ -341,13 +356,13 @@ class AccessTest extends WebTestCaseExtended
         $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have access to detached file , he should not");
 
 
-        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
-
-        $result = $this->doPost("/ajax/core/access", Array(
-            "data" => $data
-        ));
-
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to shared file , he should");
+//        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
+//
+//        $result = $this->doPost("/ajax/core/access", Array(
+//            "data" => $data
+//        ));
+//
+//        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to shared file , he should");
 
         $data = Array("type" => "Calendar", "object_id" => $id_calendar);
 
@@ -469,13 +484,13 @@ class AccessTest extends WebTestCaseExtended
         $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have access to detached file , he should");
 
 
-        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
-
-        $result = $this->doPost("/ajax/core/access", Array(
-            "data" => $data
-        ));
-
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to shared file , he should");
+//        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
+//
+//        $result = $this->doPost("/ajax/core/access", Array(
+//            "data" => $data
+//        ));
+//
+//        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to shared file , he should");
 
         $data = Array("type" => "Calendar", "object_id" => $id_calendar);
 
@@ -600,14 +615,14 @@ class AccessTest extends WebTestCaseExtended
 
         $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have access to detached file , he should not");
 
-
-        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
+        $token = $publicdata["token"];
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared, "option" => Array("token" => $token));
 
         $result = $this->doPost("/ajax/core/access", Array(
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to shared file , he should");
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have access to shared file , he should");
 
         $data = Array("type" => "Calendar", "object_id" => $id_calendar);
 
@@ -616,6 +631,7 @@ class AccessTest extends WebTestCaseExtended
         ));
 
         $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have access to calendar , he should");
+
 
 //// =================================================================================================================================================
 //// =================================================================================================================================================
@@ -728,6 +744,30 @@ class AccessTest extends WebTestCaseExtended
 
         //pour les fichiers
 
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
+        foreach ($version as $v){
+            $this->get("app.twake_doctrine")->remove($v);
+            $this->get("app.twake_doctrine")->flush();
+        }
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_parent));
+        $this->assertEquals(Array(),$version);
+
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_shared));
+        foreach ($version as $v){
+            $this->get("app.twake_doctrine")->remove($v);
+            $this->get("app.twake_doctrine")->flush();
+        }
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_shared));
+        $this->assertEquals(Array(),$version);
+
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
+        foreach ($version as $v){
+            $this->get("app.twake_doctrine")->remove($v);
+            $this->get("app.twake_doctrine")->flush();
+        }
+        $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $idtofind_detached));
+        $this->assertEquals(Array(),$version);
+
         $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
         $this->get("app.twake_doctrine")->remove($file);
         $this->get("app.twake_doctrine")->flush();
@@ -740,6 +780,13 @@ class AccessTest extends WebTestCaseExtended
         $this->get("app.twake_doctrine")->flush();
 
         $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
+        $this->assertEquals(null,$file);
+
+        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
+        $this->get("app.twake_doctrine")->remove($file);
+        $this->get("app.twake_doctrine")->flush();
+
+        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
         $this->assertEquals(null,$file);
 
         //pour calendar

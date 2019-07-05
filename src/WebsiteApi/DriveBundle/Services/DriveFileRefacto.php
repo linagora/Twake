@@ -93,12 +93,16 @@ class DriveFileRefacto
         //on recupere la derniere version pour le fichier en cours
         $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $fileordirectory->getId()));
 
-        if($version == null || ($version != null && $new = true)){ // on crée une nouvelle version pour le fichier en question
+        if(!isset($version) || (isset($version) && $new = true)){ // on crée une nouvelle version pour le fichier en question
             $version = new DriveFileVersion($fileordirectory,$current_user);
             if(isset($data)){
                 $version->setData($data);
             }
         }
+//        error_log(print_r($version->getFileId()."",true));
+//        error_log(print_r($version->getData(),true));
+
+
 //        elseif($version != null && $new = false){ //on modifie la version actuelle
 //            $version->setDateAdded(new \DateTime());
 //            $old_id = $version->getFileId()."";
@@ -117,6 +121,7 @@ class DriveFileRefacto
 
         $this->em->persist($version);
         $this->em->flush();
+
     }
 
     public function save($object, $options, $current_user = null)

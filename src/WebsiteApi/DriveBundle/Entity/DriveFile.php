@@ -168,9 +168,13 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
      */
     private $content_keywords;
 
+    /**
+     * @ORM\Column(name ="public_access_info", type="twake_text", nullable=true)
+     */
+    private $public_acces_info;
+
 
     protected $es_type = "drive_file";
-
 
     public function __construct($workspace_id, $parent_id, $isdirectory = false)
     {
@@ -190,6 +194,23 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
         $this->default_web_app = null;
         $this->setPreviewHasBeenGenerated(false);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getPublicAccesInfo()
+    {
+        return json_decode($this->public_acces_info,true);
+    }
+
+    /**
+     * @param mixed $public_acces_info
+     */
+    public function setPublicAccesInfo($public_acces_info)
+    {
+        $this->public_acces_info = json_encode($public_acces_info);
+    }
+
 
     public function getIndexationArray()
     {

@@ -176,9 +176,11 @@ class DriveFileVersion
 	    return Array(
 	        "id" => $this->id,
             "name" => $this->getFileName(),
+            "file_id" => $this->getFileId(),
             "added" => $this->date_added->getTimestamp(),
             "size" => $this->size,
-            "user" => $this->user!=null ? $this->user->getId() != 0 ? $this->user->getAsArray() : "" : ""
+            "user" => $this->user!=null ? $this->user->getId() != 0 ? $this->user->getAsArray() : "" : "",
+            "data" => $this->getData()
             );
     }
 
