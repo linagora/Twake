@@ -16,10 +16,6 @@ class AccessManager
         $type = $data["type"];
         $id = $data["object_id"];
 
-//        error_log(print_r($type,true));
-//        error_log(print_r($id,true));
-//        error_log(print_r($current_user_id,true));
-
 
         //FONCTION POUR SAVOIR SI UN UTILISATEUR A ACCES A QUELQUE CHOSE
 
@@ -72,36 +68,35 @@ class AccessManager
         }
 
         else if($type == "DriveFile"){ //pensez au parent id tous ca tous ca et a detached
-            error_log("enter drive file");
             $df = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $id));
+
             if(isset($df)){
                 $df = $df->getAsArray();
                 $detached = $df["detached"];
                 $shared = $df["shared"];
                 $workpace_id = $df["workspace_id"];
-                error_log('drive file is set');
-                error_log(print_r($detached,true));
-                error_log(print_r($shared,true));
-                error_log(print_r($workpace_id,true));
                 if(!$detached && !(in_array($workpace_id,$workspaces)) ){
-                    error_log("!detached");
                     return false;
                 }
                 elseif($detached && !(in_array($workpace_id,$workspaces)) ){
                     //comment avoir l'acces à un fichier detached?
-                    error_log("detached");
                     return false;
                 }
-                if($shared && !isset($options["token"])){
-                    error_log("passage avec token");
+                if($shared && isset($options["token"])){
                     $token = $options["token"];
-                    $members = $options["authorized_members"];
-                    $channels = $options["authorized_channels"];
-                    if(isset($members) && !in_array($current_user_id,$members)){
-                        //fichier privé a certains et user pas dedans;
+                    $members = $df["public_acces_info"]["authorized_members"];
+                    $channels = $df["public_acces_info"]["authorized_channels"];
+
+                    if(!isset($members) && !isset($channels)) {
+                        // si les deux liste sont vide alors l'utilisateur ne peux pas avoir acces au fichier
                         return false;
                     }
-                    elseif(isset($channels)){
+
+                    if($members != Array() && !in_array($current_user_id,$members) && $channels == Array()){
+                    //fichier privé a certains et user pas dedans;
+                    return false;
+                    }
+                    elseif( $channels != Array() && $members == Array()){
                         // il y a des channels en privé , on regarde si user et sur au moins un d'eux
                         $access = false;
                         foreach ($channels as $channel){
@@ -114,11 +109,11 @@ class AccessManager
                             return false;
                         }
                     }
-                    if( $token != $df->getPublicAccesInfo()["token"] ){
+                    if( $token != $df["public_acces_info"]["token"] ){
                         return false;
                     }
                 }
-                else{
+                elseif($shared && !isset($options["token"])){
                     return false;
                 }
             }
@@ -155,14 +150,14 @@ class AccessManager
         $df = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $file_id));
         $shared = $df->getShared();
         $publicaccess = $df->getPublicAccesInfo();
-        if($shared == false) {
+        if(isset($shared)) {
             //on cree la liste des personnes autorizé;
             $df->setShared(true);
             $token = sha1(bin2hex(random_bytes(20)));;
             $jsondata = Array(
                 "token" => $token,
                 "authorized_members" => $authorized_members,
-                "autorized_channels" => $authorized_channels,
+                "authorized_channels" => $authorized_channels,
                 "is_editable" => $is_editable);
             $df->setPublicAccesInfo($jsondata);
             $this->doctrine->persist($df);
@@ -170,5 +165,6 @@ class AccessManager
         }
 
     }
+
 
 }

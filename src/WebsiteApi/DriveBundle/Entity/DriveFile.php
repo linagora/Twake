@@ -653,6 +653,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null,
             "object_link_cache" => $this->getObjectLinkCache(),
             //"keywords" => $this->getContentKeywords()
+            "public_acces_info" => $this->getPublicAccesInfo()
 
         );
     }

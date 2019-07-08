@@ -18,6 +18,7 @@ class AccessController extends Controller
 
         $current_user = $this->getUser();
         $data = $request->request->get("data");
+        $options = $request->request->get("options");
 
         if(!(isset($current_user)))
         {
@@ -32,7 +33,7 @@ class AccessController extends Controller
         //$data = Array("type" => "Workspace", "object_id" => "0f34eff8-48af-11e9-9dd1-0242ac120005");
         //$data = Array("type" => "Channel", "object_id" => "test");
 
-        $acces = $this->get('app.accessmanager')->has_access($current_user_id,$data);
+        $acces = $this->get('app.accessmanager')->has_access($current_user_id,$data,$options);
         $data = Array("data" => $acces);
 
         //var_dump($data);
@@ -47,7 +48,7 @@ class AccessController extends Controller
         $file_id = $request->request->get("file_id");
         $is_editable = $request->request->get("is_editable");
         $authorized_members = $request->request->get("authorized_members");
-        $authorized_channels = $request->request->get("autorized_channels");
+        $authorized_channels = $request->request->get("authorized_channels");
 
         if(!(isset($current_user)))
         {
