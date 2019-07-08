@@ -33,7 +33,7 @@ test:
     script:
         - echo run tests in this section !!!
         - docker-compose exec -t  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage #error : the input device is not a TTY
-        - echo pourquoi
+        - echo affiche malgré tout
 
     when: manual
     #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages -> et vu le temps que ça prends, je pense qu'il faut laisser le mode manuel !
