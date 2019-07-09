@@ -27,45 +27,8 @@ services:
         links:
           - websockets
           - scylladb
-    websockets:
-        image: twake-websockets
-        build: twake-websockets
-        volumes:
-            - ./cron:/cron
-            - ./src/twake-core:/twake-core:cached
-        depends_on:
-            - scylladb
-#          - mysql
-        restart: "always"
-    elasticsearch_twake:
-        image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
-        container_name: elasticsearch_twake
-        environment:
-          - cluster.name=docker-cluster
-          - bootstrap.memory_lock=true
-          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
-        ulimits:
-          memlock:
-            soft: -1
-            hard: -1
-        volumes:
-          - ./data/es_twake:/usr/share/elasticsearch/data
-        ports:
-          - 9200:9200
-        restart: "always"
-    nginx:
-        image: twake-nginx
-        build: twake-nginx
-        ports:
-            - 8000:80
-        links:
-            - php
-            - websockets
-        volumes_from:
-            - php
-        volumes:
-            - ./data/logs/nginx/:/var/log/nginx
-            - ./data/letsencrypt/:/etc/letsencrypt/
+    
+    
     php_push_server:
         image: twake-php-push-server
         build: twake-php-push-server
