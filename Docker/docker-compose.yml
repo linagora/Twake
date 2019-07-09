@@ -1,0 +1,67 @@
+version: '2'
+
+services:
+    db:
+        image: mysql:5.7.22
+        volumes:
+            - ./data/db:/var/lib/mysql
+            - ./database_dump_aws.sql:/docker-entrypoint-initdb.d/dump.sql
+        environment:
+            MYSQL_VERSION: 5.7
+            MYSQL_ROOT_PASSWORD: database_root
+            MYSQL_DATABASE: Twake
+            MYSQL_USER: root
+            MYSQL_PASSWORD: database_root
+            MAX_CONNECTIONS: 10000
+        ulimits:
+            nproc: 65535
+            nofile:
+                soft: 20000
+                hard: 40000
+        restart: "always"
+    php:
+        image: twake-php
+        build: twake-php
+        volumes:
+            - ./cron:/cron
+            - ./data/twake-core:/twake-core:cached
+            - ./data/twake-react:/twake-react
+            - ./data/fpm/:/etc/data/fpm/
+        depends_on:
+          - "db"
+        links:
+          - websockets
+          - php_push_server
+        restart: "always"
+    websockets:
+        image: twake-websockets
+        build: twake-websockets
+        volumes:
+            - ./cron:/cron
+            - ./data/twake-core:/twake-core:cached
+        depends_on:
+          - "db"
+        restart: "always"
+    php_push_server:
+        image: twake-php-push-server
+        build: twake-php-push-server
+        volumes:
+            - ./data/twake-push-server:/twake-push-server
+        restart: "unless-stopped"
+    nginx:
+        image: twake-nginx
+        build: twake-nginx
+        ports:
+            - 80:80
+            - 443:443
+        links:
+            - php
+            - websockets
+        volumes_from:
+            - php
+        volumes:
+            - ./data/logs/nginx/:/var/log/nginx
+            - ./data/letsencrypt/:/etc/letsencrypt/
+            - ./twake-nginx/nginx.conf:/etc/nginx/nginx.conf
+            - ./twake-nginx/site.conf:/etc/nginx/sites-available/site.conf
+        restart: "always"
