@@ -1,59 +1,63 @@
 version: '2'
 
 services:
-    db:
-        image: mysql:5.7.22
-        volumes:
-            - ./data/db:/var/lib/mysql
-            - ./database_dump_aws.sql:/docker-entrypoint-initdb.d/dump.sql
-        environment:
-            MYSQL_VERSION: 5.7
-            MYSQL_ROOT_PASSWORD: database_root
-            MYSQL_DATABASE: Twake
-            MYSQL_USER: root
-            MYSQL_PASSWORD: database_root
-            MAX_CONNECTIONS: 10000
-        ulimits:
-            nproc: 65535
-            nofile:
-                soft: 20000
-                hard: 40000
-        restart: "always"
+    scylladb:
+      image: scylladb/scylla
+      ports:
+        - 9180:9180
+        - 9100:9100
+        - 9160:9160
+        - 9042:9042
+      volumes:
+        - ./data/scylladb:/var/lib/scylla
+      restart: "always"
+      command: '--experimental 1'
     php:
         image: twake-php
         build: twake-php
         volumes:
             - ./cron:/cron
-            - ./data/twake-core:/twake-core:cached
-            - ./data/twake-react:/twake-react
+            - ./src/twake-core:/twake-core:cached
+            - ./src/twake-react:/twake-react
             - ./data/fpm/:/etc/data/fpm/
         depends_on:
-          - "db"
+          - scylladb
+#          - mysql
+          - elasticsearch_twake
         links:
           - websockets
-          - php_push_server
-        restart: "always"
+          - scylladb
     websockets:
         image: twake-websockets
         build: twake-websockets
         volumes:
             - ./cron:/cron
-            - ./data/twake-core:/twake-core:cached
+            - ./src/twake-core:/twake-core:cached
         depends_on:
-          - "db"
+            - scylladb
+#          - mysql
         restart: "always"
-    php_push_server:
-        image: twake-php-push-server
-        build: twake-php-push-server
+    elasticsearch_twake:
+        image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
+        container_name: elasticsearch_twake
+        environment:
+          - cluster.name=docker-cluster
+          - bootstrap.memory_lock=true
+          - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+        ulimits:
+          memlock:
+            soft: -1
+            hard: -1
         volumes:
-            - ./data/twake-push-server:/twake-push-server
-        restart: "unless-stopped"
+          - ./data/es_twake:/usr/share/elasticsearch/data
+        ports:
+          - 9200:9200
+        restart: "always"
     nginx:
         image: twake-nginx
         build: twake-nginx
         ports:
-            - 80:80
-            - 443:443
+            - 8000:80
         links:
             - php
             - websockets
@@ -62,6 +66,19 @@ services:
         volumes:
             - ./data/logs/nginx/:/var/log/nginx
             - ./data/letsencrypt/:/etc/letsencrypt/
-            - ./twake-nginx/nginx.conf:/etc/nginx/nginx.conf
-            - ./twake-nginx/site.conf:/etc/nginx/sites-available/site.conf
-        restart: "always"
+    php_push_server:
+        image: twake-php-push-server
+        build: twake-php-push-server
+        volumes:
+            - ./data/twake-push-server:/twake-push-server
+        restart: "unless-stopped"
+    node-exporter:
+        image: prom/node-exporter
+        ports:
+            - 9100:9120
+
+networks:
+  esnet:
+  esnet_backoffice:
+  redis-net:
+  cassandranet:
