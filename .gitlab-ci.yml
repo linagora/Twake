@@ -34,7 +34,7 @@ test:
         - echo run tests in this section !!!
         - docker-compose exec php php ./bin/console t:s:u #Update databases
         - docker-compose exec php php ./bin/console twake:init #Init install
-        - docker-compose exec php -t  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
+        - docker-compose exec -t php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
         - echo affiche malgré tout
 
     when: manual
