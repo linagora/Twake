@@ -28,9 +28,9 @@ test:
     script:
         - echo run tests in this section !!!
         - docker ps #To get the name of the existing container
-        #- docker-compose exec -t php php ./bin/console t:s:u #Update databases
-        #- docker-compose exec -t php php ./bin/console twake:init #Init install
-        #- docker-compose exec -t php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
+        - docker-compose exec -it php php ./bin/console t:s:u #Update databases
+        - docker-compose exec -it php php ./bin/console twake:init #Init install
+        - docker-compose exec -it php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
         - echo affiche malgré tout
 
     when: manual
