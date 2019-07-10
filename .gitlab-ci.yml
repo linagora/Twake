@@ -1,9 +1,8 @@
-privileged = true # Needed to run docker:dind
-
 image: docker
 
 services:
     - docker:dind
+    - privileged = true # Needed to run docker:dind
 
 #variables:
 #    CI_DEBUG_TRACE: "true"
