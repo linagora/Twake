@@ -16,7 +16,7 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     #- apk update && apk add apt-utils -> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
     - docker-compose up -d --build
 
-        
+privileges = true
 
 stages:
     - test
@@ -29,8 +29,8 @@ test:
         - echo run tests in this section !!!
         - docker ps #To get the name of the existing container
         #peut être remplacer exec par run pour voir si ça ne fonctionne pas mieux
-        - docker-compose run -it php php ./bin/console t:s:u #Update databases
-        - docker-compose exec -it php php ./bin/console t:s:u 
+    
+        - docker-compose exec -it php php ./bin/console t:s:u #Update databases
         - docker-compose exec -it php php ./bin/console twake:init #Init install
         - docker-compose exec -it php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
         - echo affiche malgré tout
