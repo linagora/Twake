@@ -34,7 +34,7 @@ test:
         - docker-compose exec php php ./bin/console t:s:u #Update databases
         - docker-compose exec php php ./bin/console twake:init #Init install
         - docker-compose exec php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
-        - echo affiche malgré tout
+        - echo affiche malgré tout pourquoi ça ne marche pas !!!
 
     when: manual
     #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages -> et vu le temps que ça prends, je pense qu'il faut laisser le mode manuel !
