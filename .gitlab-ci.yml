@@ -20,22 +20,17 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
 
 stages:
     - test
-    - build
 
 test:
-    stage: build
-    only: 
-        -dev
-    script:
-        - echo installations faites ! 
     stage: test
     only:
         - dev
     script:
         - echo run tests in this section !!!
-        - docker-compose exec -t php php ./bin/console t:s:u #Update databases
-        - docker-compose exec -t php php ./bin/console twake:init #Init install
-        - docker-compose exec -t php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
+        - docker ps #To get the name of the existing container
+        #- docker-compose exec -t php php ./bin/console t:s:u #Update databases
+        #- docker-compose exec -t php php ./bin/console twake:init #Init install
+        #- docker-compose exec -t php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
         - echo affiche malgré tout
 
     when: manual
