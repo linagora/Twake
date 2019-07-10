@@ -11,7 +11,7 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     #- apk update && apk add git
     - echo on est laaaaaaaa !! 
     #- apk add python python-dev py-pip build-base libffi-dev openssl-dev
-     - apk add --no-cache py-pip
+    - apk add --no-cache py-pip
     - echo installation pyThon ok !
     - pip install docker-compose
     - echo installation doCker ok
