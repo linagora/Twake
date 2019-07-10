@@ -30,8 +30,9 @@ test:
         - docker ps #To get the name of the existing container
         #peut être remplacer exec par run pour voir si ça ne fonctionne pas mieux
         - docker-compose run -it php php ./bin/console t:s:u #Update databases
-        - docker-compose run -it php php ./bin/console twake:init #Init install
-        - docker-compose run -it php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
+        - docker-compose exec -it php php ./bin/console t:s:u 
+        - docker-compose exec -it php php ./bin/console twake:init #Init install
+        - docker-compose exec -it php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
         - echo affiche malgré tout
 
     when: manual
