@@ -173,6 +173,11 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
      */
     private $public_acces_info;
 
+    /**
+     * @ORM\Column(name="last_user", type="twake_text", nullable=true)
+     * @Encrypted
+     */
+    private $last_user;
 
     protected $es_type = "drive_file";
 
@@ -232,6 +237,22 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastUser()
+    {
+        return $this->last_user;
+    }
+
+    /**
+     * @param mixed $last_user
+     */
+    public function setLastUser($last_user)
+    {
+        $this->last_user = $last_user;
     }
 
     /**
@@ -636,7 +657,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
 
             'name' => $this->getName(),
             'description' => $this->getDescription(),
-
+            "last_user" => $this->getLastUser(),
             'size' => $this->getSize()?$this->getSize():0,
             'added' => $this->getAdded() ? $this->getAdded()->getTimestamp() : null,
             'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
