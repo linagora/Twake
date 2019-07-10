@@ -7,6 +7,7 @@ services:
 #    CI_DEBUG_TRACE: "true"
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
+    - apk update && apk add git
     - echo on est laaaaaaaa !! 
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
     - echo installation pyThon ok !
@@ -19,20 +20,18 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
 
 stages:
     - test
-    - build
 
 test:
-    stage: build
-    only: 
-        -dev
-    script:
-        - echo installations faites ! 
     stage: test
     only:
         - dev
     script:
         - echo run tests in this section !!!
-        - docker-compose exec -t  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage #error : the input device is not a TTY
+        - docker ps #To get the name of the existing container
+        #peut être remplacer exec par run pour voir si ça ne fonctionne pas mieux
+        - docker-compose run -it php php ./bin/console t:s:u #Update databases
+        - docker-compose run -it php php ./bin/console twake:init #Init install
+        - docker-compose run -it php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
         - echo affiche malgré tout
 
     when: manual
