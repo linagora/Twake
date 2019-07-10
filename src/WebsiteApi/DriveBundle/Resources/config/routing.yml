@@ -222,3 +222,13 @@ drive_refractor_save:
 drive_refractor_remove:
     path:     /removerefacto
     defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:remove }
+
+twake_publicaccess:
+    path:     /publicaccess
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:give_file_public_access }
+    methods:  [POST]
+
+twake_privateaccess:
+    path:     /privateaccess
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:give_file_private_access }
+    methods:  [POST]

@@ -20,17 +20,17 @@ class AccessManager
         //FONCTION POUR SAVOIR SI UN UTILISATEUR A ACCES A QUELQUE CHOSE
 
 
-        $workspaces_acces = $this->memberservice->getWorkspaces($current_user_id);
-        $workspaces = Array(); //liste des workspace dont on a accces;
-        foreach ($workspaces_acces as $workspace_obj){
-            $value = $workspace_obj["workspace"]->getAsArray();
-            $workspaces[$value["id"]] = $value["id"];
-        }
+//        $workspaces_acces = $this->memberservice->getWorkspaces($current_user_id);
+//        $workspaces = Array(); //liste des workspace dont on a accces;
+//        foreach ($workspaces_acces as $workspace_obj){
+//            $value = $workspace_obj["workspace"]->getAsArray();
+//            $workspaces[$value["id"]] = $value["id"];
+//        }
 
 
 
         if($type == "Workspace"){
-            if(!(in_array($id,$workspaces))){
+            if(!$this->user_has_workspace_access($current_user_id,$id)){
                 return false;
             }
         }
@@ -42,7 +42,7 @@ class AccessManager
                 $workspace_id = $channel["original_workspace"];
                 $members = $channel["members"];
                 $ext_members = $channel["ext_members"];
-                if( (!in_array($workspace_id,$workspaces)) || ((!in_array($current_user_id,$members)) && (!in_array($current_user_id,$ext_members)))  )
+                if( !$this->user_has_workspace_access($current_user_id,$workspace_id) || ((!in_array($current_user_id,$members)) && (!in_array($current_user_id,$ext_members)))  )
                 {
                     return false;
                 }
@@ -72,17 +72,14 @@ class AccessManager
 
             if(isset($df)){
                 $df = $df->getAsArray();
-                $detached = $df["detached"];
-                $shared = $df["shared"];
-                $workpace_id = $df["workspace_id"];
-                if(!$detached && !(in_array($workpace_id,$workspaces)) ){
+                $workspace_id = $df["workspace_id"];
+                if(isset($df["public_acces_info"]["token"]) && $df["public_acces_info"]["token"] != "" && !isset($options["token"])){
                     return false;
                 }
-                elseif($detached && !(in_array($workpace_id,$workspaces)) ){
-                    //comment avoir l'acces à un fichier detached?
+                elseif( isset($df["public_acces_info"]["token"]) && $df["public_acces_info"]["token"] == "" && isset($options["token"] ) && $options["token"] == ""){
                     return false;
                 }
-                if($shared && isset($options["token"])){
+                elseif(isset($options["token"]) && $options["token"] != "" && $df["public_acces_info"]["token"] != ""){
                     $token = $options["token"];
                     $members = $df["public_acces_info"]["authorized_members"];
                     $channels = $df["public_acces_info"]["authorized_channels"];
@@ -113,7 +110,7 @@ class AccessManager
                         return false;
                     }
                 }
-                elseif($shared && !isset($options["token"])){
+                if(!$this->user_has_workspace_access($current_user_id,$workspace_id)){
                     return false;
                 }
             }
@@ -126,8 +123,8 @@ class AccessManager
             $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id" => $id));
             if(isset($calendar)){
                 $calendar = $calendar->getAsArray();
-                $workpace_id = $calendar["workspace_id"];
-                if( !(in_array($workpace_id,$workspaces))){
+                $workspace_id = $calendar["workspace_id"];
+                if( !$this->user_has_workspace_access($current_user_id,$workspace_id) ){
                     return false;
                 }
             }
@@ -140,31 +137,21 @@ class AccessManager
         return true;
     }
 
-    public function give_file_public_access($file_id, $is_editable = false, $authorized_members = Array(), $authorized_channels = Array()){
-
-//        error_log(print_r($is_editable, true));
-//        error_log(print_r($authorized_members, true));
-//        error_log(print_r($authorized_channels, true));
-
-
-        $df = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $file_id));
-        $shared = $df->getShared();
-        $publicaccess = $df->getPublicAccesInfo();
-        if(isset($shared)) {
-            //on cree la liste des personnes autorizé;
-            $df->setShared(true);
-            $token = sha1(bin2hex(random_bytes(20)));;
-            $jsondata = Array(
-                "token" => $token,
-                "authorized_members" => $authorized_members,
-                "authorized_channels" => $authorized_channels,
-                "is_editable" => $is_editable);
-            $df->setPublicAccesInfo($jsondata);
-            $this->doctrine->persist($df);
-            $this->doctrine->flush();
+    public function user_has_workspace_access($current_user_id,$workspace_id){
+        $wp = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id));
+        $members = $wp->getMembers();
+        $access = false;
+        foreach ($members as $member){
+            if($member->getUser()->getId() == $current_user_id){
+                $access = true;
+            }
+        }
+        if(!$access){
+            return false;
         }
 
-    }
+        return true;
 
+    }
 
 }

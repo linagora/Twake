@@ -55,4 +55,28 @@ class DriveFileRefactoController extends Controller
         }
         return new JsonResponse(Array("data" => $objects->getAsArray()));
     }
+
+    public function give_file_public_accessAction(Request $request)
+    {
+
+        $file_id = $request->request->get("file_id");
+        $is_editable = $request->request->get("is_editable");
+        $authorized_members = $request->request->get("authorized_members");
+        $authorized_channels = $request->request->get("authorized_channels");
+
+        $publicaccess = $this->get('app.drive_refacto')->give_file_public_access($file_id,$is_editable,$authorized_members,$authorized_channels);
+        $data = Array("data" => $publicaccess);
+
+        return new JsonResponse($data);
+    }
+
+    public function give_file_private_accessAction(Request $request)
+    {
+        $file_id = $request->request->get("file_id");
+
+        $publicaccess = $this->get('app.drive_refacto')->give_file_private_access($file_id);
+        $data = Array("data" => $publicaccess);
+
+        return new JsonResponse($data);
+    }
 }

@@ -328,5 +328,34 @@ class DriveFileRefacto
         }
         return $trash;
     }
+    public function give_file_public_access($file_id, $is_editable = false, $authorized_members = Array(), $authorized_channels = Array())
+    {
+        $df = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $file_id));
+        //on cree la liste des personnes autorizé;
+        $token = sha1(bin2hex(random_bytes(20)));;
+        $jsondata = Array(
+            "token" => $token,
+            "authorized_members" => $authorized_members,
+            "authorized_channels" => $authorized_channels,
+            "is_editable" => $is_editable);
+        $df->setPublicAccesInfo($jsondata);
+        $this->em->persist($df);
+        $this->em->flush();
+    }
+
+    public function give_file_private_access($file_id)
+    {
+        $df = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $file_id));
+        $jsondata = Array(
+            "token" => "",
+            "authorized_members" => Array(),
+            "authorized_channels" => Array(),
+            "is_editable" => false
+        );
+        $df->setPublicAccesInfo($jsondata);
+        $this->em->persist($df);
+        $this->em->flush();
+    }
+
 
 }

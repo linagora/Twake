@@ -41,15 +41,10 @@ class AccessController extends Controller
         return new JsonResponse($data);
     }
 
-    public function give_file_public_accessAction(Request $request)
+    public function user_has_workspace_accessAction(Request $request)
     {
-
+        $workspace_id = $request->request->get("workspace_id");
         $current_user = $this->getUser();
-        $file_id = $request->request->get("file_id");
-        $is_editable = $request->request->get("is_editable");
-        $authorized_members = $request->request->get("authorized_members");
-        $authorized_channels = $request->request->get("authorized_channels");
-
         if(!(isset($current_user)))
         {
             $current_user_id = "d8a1136c-544e-11e9-9f85-0242ac120005";
@@ -58,17 +53,12 @@ class AccessController extends Controller
         {
             $current_user_id= $current_user->getId();
         }
-        //$current_user_id= $current_user->getId();
-        //var_dump($current_user);
-        //$data = Array("type" => "Workspace", "object_id" => "0f34eff8-48af-11e9-9dd1-0242ac120005");
-        //$data = Array("type" => "Channel", "object_id" => "test");
-
-        $publicaccess = $this->get('app.accessmanager')->give_file_public_access($file_id,$is_editable,$authorized_members,$authorized_channels);
+        $publicaccess = $this->get('app.accessmanager')->user_has_workspace_access($current_user_id,$workspace_id);
         $data = Array("data" => $publicaccess);
 
-        //var_dump($data);
-        //return new Response("Hello !");
         return new JsonResponse($data);
     }
+
+
 
 }
