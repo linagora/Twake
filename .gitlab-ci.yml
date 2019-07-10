@@ -1,3 +1,5 @@
+privileged = true # Needed to run docker:dind
+
 image: docker
 
 services:
@@ -15,8 +17,6 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - echo installation doCker ok
     #- apk update && apk add apt-utils -> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
     - docker-compose up -d --build
-
-privileges = true
 
 stages:
     - test
