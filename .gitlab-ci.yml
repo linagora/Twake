@@ -10,6 +10,9 @@ services:
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
     - apk update && apk add git
     - echo on est laaaaaaaa !! 
+    - rm Docker/twake-php twake-php
+    - rm Docker/docker-compose-test.yml docker-compose.yml
+    - rm Docker/parameters-test.yml app/config/paramters.yml
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
     #- apk add --no-cache py-pip
     - echo installation pyThon ok !
