@@ -7,15 +7,15 @@ parameters:
     SERVER_NAME: https://twakeapp.com
     DRIVE_SALT: SecretPassword
     PUSH_NOTIFICATION_SERVER: http://localhost:8009/server.php
-    ELASTIC_SERVER: elasticsearch_twake:9200
-    websocket_host: 127.0.0.1
+    ELASTIC_SERVER: 
+    websocket_host: 
     websocket_port: 8080
-    websocket_pusher_remote_host: 127.0.0.1
-    websocket_pusher_host: 127.0.0.1
+    websocket_pusher_remote_host: 
+    websocket_pusher_host: 
     websocket_pusher_port: 8081
-    database_driver: pdo_mysql
-    database_host: mysql
-    database_port: 3306
+    database_driver: pdo_cassandra
+    database_host: scylladb
+    database_port: 9160
     database_dbname: Twake
     database_user: root
     database_password: root
