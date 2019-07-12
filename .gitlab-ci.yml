@@ -15,7 +15,7 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - echo installation pyThon ok !
     - pip install docker-compose
     - echo installation doCker ok
-    - apk update && apk add apt-utils #-> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
+    #- apk update && apk add apt-utils #-> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
     - docker-compose up -d --build
     #- docker-compose exec -T php composer install #pour eviter l'erreur du TTY sans mettre le -it en option de nos docker-compose
 
