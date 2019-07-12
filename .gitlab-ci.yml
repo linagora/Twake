@@ -29,9 +29,9 @@ test:
     script:
         - echo run tests in this section !!!
         - docker ps #To get the name of the existing container (juste pour info)
-        - docker-compose exec php php ./bin/console t:s:u -it #Update databases
-        - docker-compose exec php php ./bin/console twake:init - it#Init install
-        - docker-compose exec php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage -it
+        - docker-compose exec -T php php ./bin/console t:s:u  #Update databases
+        - docker-compose exec -T php php ./bin/console twake:init#Init install
+        - docker-compose exec -T php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
         - echo affiche malgré tout pourquoi ça ne marche pas !!!
 
     when: manual
