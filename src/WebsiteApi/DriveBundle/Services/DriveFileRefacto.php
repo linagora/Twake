@@ -88,12 +88,13 @@ class DriveFileRefacto
         return $fileordirectory;
     }
 
-    public function versionning($fileordirectory, $data = null , $current_user = null, $new = false){
+    public function versionning($fileordirectory, $current_user, $data = null , $new = false){
 
         //on recupere la derniere version pour le fichier en cours
-        $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $fileordirectory->getId()));
-
-        if(!isset($version) || (isset($version) && $new = true)){ // on crée une nouvelle version pour le fichier en question
+        if(isset($current_user)){
+            $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $fileordirectory->getId()));
+        }
+        if((!isset($version) || (isset($version) && $new = true))){ // on crée une nouvelle version pour le fichier en question
             $version = new DriveFileVersion($fileordirectory,$current_user);
             if(isset($data)){
                 $version->setData($data);
@@ -130,11 +131,13 @@ class DriveFileRefacto
         if (!$this->hasAccess($options, $current_user)) {
             return false;
         }
+
         $did_create = false;
         $fileordirectory = null;
         if(isset($object["id"])) { // on recoit un identifiant donc c'est un modification
             $fileordirectory = $this->em->getRepository("TwakeDriveBundle:DriveFile")
                 ->findOneBy(Array("id" => $object["id"].""));
+            $fileordirectory->setLastModified();
             if(!$fileordirectory){
                 return false;
             }
@@ -212,6 +215,9 @@ class DriveFileRefacto
             $fileordirectory->setName($object["name"]);
         }
 
+        $fileordirectory->setLastUser($current_user);
+
+
         if(isset($fileordirectory)){
             $this->em->persist($fileordirectory);
             $this->em->flush();
@@ -226,7 +232,7 @@ class DriveFileRefacto
         }
 
         if(isset($options["version"]) && $options["version"]) {
-           $this->versionning($fileordirectory, $options["data"], $current_user, $new);
+           $this->versionning($fileordirectory, $current_user, $options["data"], $new);
         }
 
 
@@ -328,5 +334,34 @@ class DriveFileRefacto
         }
         return $trash;
     }
+    public function give_file_public_access($file_id, $is_editable = false, $authorized_members = Array(), $authorized_channels = Array())
+    {
+        $df = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $file_id));
+        //on cree la liste des personnes autorizé;
+        $token = sha1(bin2hex(random_bytes(20)));;
+        $jsondata = Array(
+            "token" => $token,
+            "authorized_members" => $authorized_members,
+            "authorized_channels" => $authorized_channels,
+            "is_editable" => $is_editable);
+        $df->setPublicAccesInfo($jsondata);
+        $this->em->persist($df);
+        $this->em->flush();
+    }
+
+    public function give_file_private_access($file_id)
+    {
+        $df = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $file_id));
+        $jsondata = Array(
+            "token" => "",
+            "authorized_members" => Array(),
+            "authorized_channels" => Array(),
+            "is_editable" => false
+        );
+        $df->setPublicAccesInfo($jsondata);
+        $this->em->persist($df);
+        $this->em->flush();
+    }
+
 
 }

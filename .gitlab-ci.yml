@@ -2,6 +2,7 @@ image: docker
 
 services:
     - docker:dind
+    #- privileged = true # Needed to run docker:dind
 
 #variables:
 #    CI_DEBUG_TRACE: "true"
@@ -10,33 +11,34 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - apk update && apk add git
     - echo on est laaaaaaaa !! 
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
+    #- apk add --no-cache py-pip
     - echo installation pyThon ok !
     - pip install docker-compose
     - echo installation doCker ok
-    #- apk update && apk add apt-utils -> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
+    #- apk update && apk add apt-utils #-> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
     - docker-compose up -d --build
-
-        
+    #- docker-compose exec -T php composer install #pour eviter l'erreur du TTY sans mettre le -it en option de nos docker-compose
 
 stages:
     - test
-    - build
 
 test:
-    stage: build
-    only: 
-        -dev
-    script:
-        - echo installations faites ! 
     stage: test
     only:
         - dev
     script:
+    
         - echo run tests in this section !!!
-        - docker-compose exec -t php php ./bin/console t:s:u #Update databases
-        - docker-compose exec -t php php ./bin/console twake:init #Init install
-        - docker-compose exec -t php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage 
-        - echo affiche malgré tout
+        - docker ps #To get the name of the existing container (juste pour info)
+        - docker-compose exec -T php composer update
+        - docker-compose exec -T php php /twake-core/bin/console cache:clear
+        - docker-compose exec -T php php /twake-core/bin/console cache:clear --env=prod
+        - docker-compose exec -T php php ./bin/console t:s:u  #Update databases
+        - docker-compose exec -T php php ./bin/console twake:init#Init install
+        
+        - docker-compose exec -T php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
+        - echo affiche malgré tout pourquoi ça ne marche pas !!!
+        - docker-compose down
 
     when: manual
     #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages -> et vu le temps que ça prends, je pense qu'il faut laisser le mode manuel !

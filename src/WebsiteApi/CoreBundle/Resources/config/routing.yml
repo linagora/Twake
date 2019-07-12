@@ -47,7 +47,7 @@ twake_accessmanager:
     defaults: { _controller: TwakeCoreBundle:Access:has_access }
     methods:  [POST]
 
-twake_publicaccess:
-    path:     /publicaccess
-    defaults: { _controller: TwakeCoreBundle:Access:give_file_public_access }
+twake_user_workspace_access:
+    path:     /workspaceaccess
+    defaults: { _controller: TwakeCoreBundle:Access:user_has_workspace_access }
     methods:  [POST]

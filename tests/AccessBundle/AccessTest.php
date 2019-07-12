@@ -235,7 +235,7 @@ class AccessTest extends WebTestCaseExtended
 //        $this->get("app.twake_doctrine")->persist($file);
 //        $this->get("app.twake_doctrine")->flush();
 
-        $result = $this->doPost("/ajax/core/publicaccess", Array(
+        $result = $this->doPost("/ajax/drive/publicaccess", Array(
             "file_id" => $idtofind_shared,
             "is_editable" => false,
             "authorized_members" => Array($user3_id),
@@ -247,7 +247,6 @@ class AccessTest extends WebTestCaseExtended
        // error_log(print_r($publicdata, true));
 
         $this->assertEquals(true,in_array($user3_id,$publicdata["authorized_members"]), "User 3 id is not inside the public data of file shared");
-        $this->assertEquals(true,$file->getShared(), "file shared is not shared, it should");
 
 //// =================================================================================================================================================
 //// =================================================================================================================================================
@@ -261,7 +260,7 @@ class AccessTest extends WebTestCaseExtended
 //// =================================================================================================================================================
 //// =================================================================================================================================================
 
-        // ON VERIFIE ...
+         //ON VERIFIE ...
 
             //test que le user1 a acces au workspace1
         $data = Array("type" => "Workspace", "object_id" => $workspace1_id);
@@ -354,7 +353,6 @@ class AccessTest extends WebTestCaseExtended
 
         $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have access to detached file , he should not");
 
-
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
 
         $result = $this->doPost("/ajax/core/access", Array(
@@ -372,6 +370,11 @@ class AccessTest extends WebTestCaseExtended
 
         $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have access to shared file , he shouldn't");
 
+        $result = $this->doPost("/ajax/core/workspaceaccess", Array(
+            "workspace_id" => $workspace1_id,
+        ));
+
+        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 have access to workspace 1 with special function , he shouldn't");
 
         $data = Array("type" => "Calendar", "object_id" => $id_calendar);
 
@@ -493,13 +496,22 @@ class AccessTest extends WebTestCaseExtended
         $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have access to detached file , he should");
 
 
-//        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
-//
-//        $result = $this->doPost("/ajax/core/access", Array(
-//            "data" => $data
-//        ));
-//
-//        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to shared file , he should");
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have access to shared file , he should not ");
+
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data,
+            "options" => Array("token" => $token)
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User  have access to shared file with token , he shouldn't");
 
         $data = Array("type" => "Calendar", "object_id" => $id_calendar);
 
@@ -641,9 +653,9 @@ class AccessTest extends WebTestCaseExtended
             "options" => Array("token" => "wrongtokenfortest")
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have access to shared file with wrong token , he should");
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have access to shared file with wrong token , he should not");
 
-        $result = $this->doPost("/ajax/core/publicaccess", Array(
+        $result = $this->doPost("/ajax/drive/publicaccess", Array(
             "file_id" => $idtofind_shared,
             "is_editable" => false,
             "authorized_members" => Array(),
@@ -656,7 +668,6 @@ class AccessTest extends WebTestCaseExtended
         $token = $publicdata["token"];
 
         $this->assertEquals(true,in_array($channel1_ID,$publicdata["authorized_channels"]), "User 3 id is not inside the public data of file shared");
-        $this->assertEquals(true,$file->getShared(), "file shared is not shared, it should");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
         //error_log(print_r($publicdata,true));
@@ -685,6 +696,25 @@ class AccessTest extends WebTestCaseExtended
         ));
 
         $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have access to calendar , he should");
+
+        $result = $this->doPost("/ajax/drive/privateaccess", Array(
+            "file_id" => $idtofind_shared,
+        ));
+
+        $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
+        $publicdata = $file->getPublicAccesInfo();
+        $this->assertEquals("",$publicdata["token"], "Token is not empty, it should");
+        $this->assertEquals(Array(),$publicdata["authorized_members"], "Authorized members is not Array(), it should");
+        $this->assertEquals(Array(),$publicdata["authorized_channels"], "Authorized channels is not Array(), it should");
+
+        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
+
+        $result = $this->doPost("/ajax/core/access", Array(
+            "data" => $data,
+            "options" => Array("token" => "")
+        ));
+
+        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have access to shared file with empty token, he should not");
 
 
 //// =================================================================================================================================================
@@ -779,7 +809,7 @@ class AccessTest extends WebTestCaseExtended
         $channel4 = $this->get("app.twake_doctrine")->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel4->getId().""));
         $this->assertEquals(null,$channel4);
 
-//        // pour les worskspaceUser
+        // pour les worskspaceUser
         $workspaceUser1 = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $workspace1_id));
         foreach ($workspaceUser1 as $wp){
             $this->get("app.twake_doctrine")->remove($wp);
