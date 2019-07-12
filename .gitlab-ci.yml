@@ -12,6 +12,10 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - echo on est laaaaaaaa !! 
     - mv Docker/twake-php twake-php
     - mv Docker/docker-compose-test.yml docker-compose.yml
+    
+    - cd Docker/
+    - ls
+    
     - mv Docker/parameters-test.yml app/config/parameters.yml
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
     #- apk add --no-cache py-pip
