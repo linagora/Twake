@@ -6,12 +6,13 @@ parameters:
     MAIL_FROM: noreply@twakeapp.com
     SERVER_NAME: https://twakeapp.com
     DRIVE_SALT: SecretPassword
+    previews: /tmp/
     PUSH_NOTIFICATION_SERVER: http://localhost:8009/server.php
     ELASTIC_SERVER: 
-    websocket_host: 
+    websocket_host: 127.0.0.1
     websocket_port: 8080
-    websocket_pusher_remote_host: 
-    websocket_pusher_host: 
+    websocket_pusher_remote_host: 127.0.0.1
+    websocket_pusher_host: 127.0.0.1
     websocket_pusher_port: 8081
     database_driver: pdo_cassandra
     database_host: scylladb
