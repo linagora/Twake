@@ -212,7 +212,7 @@ class CassandraConnection
             $statement = new Cassandra\SimpleStatement(
                 "CREATE KEYSPACE IF NOT EXISTS " . strtolower($keyspace) . " WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}"
             );
-            $future = $session->executeAsync($statement);
+            $future = $this->session->executeAsync($statement);
             $result = $future->get();
 
             error_log("Did create keyspace");
