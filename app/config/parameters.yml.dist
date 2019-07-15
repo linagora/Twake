@@ -6,6 +6,7 @@ parameters:
     MAIL_FROM: noreply@twakeapp.com
     SERVER_NAME: https://twakeapp.com
     DRIVE_SALT: SecretPassword
+    previews: /tmp/
     PUSH_NOTIFICATION_SERVER: http://localhost:8009/server.php
     ELASTIC_SERVER: elasticsearch_twake:9200
     websocket_host: 127.0.0.1

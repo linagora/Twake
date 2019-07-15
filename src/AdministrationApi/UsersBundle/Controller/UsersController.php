@@ -1,7 +1,7 @@
 <?php
 
 
-namespace AdministrationAPI\UsersBundle\Controller;
+namespace AdministrationApi\UsersBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;

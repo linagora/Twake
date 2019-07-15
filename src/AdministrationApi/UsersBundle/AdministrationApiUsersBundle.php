@@ -1,7 +1,7 @@
 <?php
 
 
-namespace AdministrationAPI\UsersBundle;
+namespace AdministrationApi\UsersBundle;
 
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 
