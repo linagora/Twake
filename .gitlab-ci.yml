@@ -13,6 +13,7 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - mv Docker/twake-php twake-php
     - mv Docker/docker-compose-test.yml docker-compose.yml
     - mv Docker/parameters-test.yml app/config/parameters.yml
+    - mv Docker/cassandra-init.sh ./cassandra-init.sh
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
     #- apk add --no-cache py-pip
     - echo installation pyThon ok !
@@ -33,8 +34,7 @@ test:
     
         - echo run tests in this section !!!
         - docker ps #To get the name of the existing container (juste pour info)
-        - echo "CREATE KEYSPACE twake WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'} AND durable_writes = true;" | docker-compose exec -T  scylladb cqlsh
-
+        - ./cassandra-init.sh
         - docker-compose exec -T php php -dmemory_limit=-1 composer.phar update
         - docker-compose exec -T php php /twake-core/bin/console cache:clear
         - set +e #Do something. If something fails with exit!=0 the script continues anyway
