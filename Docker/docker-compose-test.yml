@@ -9,39 +9,16 @@ services:
         - 9160:9160
         - 9042:9042
       volumes:
-        - ./data/scylladb:/var/lib/scylla
-      restart: "always"
+        - ./scylladb:/var/lib/scylla
       command: '--experimental 1'
     php:
         image: twake-php
         build: twake-php
         volumes:
             - ./cron:/cron
-            - ./src/twake-core:/twake-core:cached
-            - ./src/twake-react:/twake-react
-            - ./data/fpm/:/etc/data/fpm/
+            - ./:/twake-core:cached
+            - ./fpm/:/etc/data/fpm/
         depends_on:
           - scylladb
-#          - mysql
-          - elasticsearch_twake
         links:
-          - websockets
           - scylladb
-    
-    
-    php_push_server:
-        image: twake-php-push-server
-        build: twake-php-push-server
-        volumes:
-            - ./data/twake-push-server:/twake-push-server
-        restart: "unless-stopped"
-    node-exporter:
-        image: prom/node-exporter
-        ports:
-            - 9100:9120
-
-networks:
-  esnet:
-  esnet_backoffice:
-  redis-net:
-  cassandranet:

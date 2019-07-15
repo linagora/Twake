@@ -29,16 +29,18 @@ class DriveFileRefactoController extends Controller
     {
         $options = $request->request->get("options");
         $object = $request->request->get("object");
-        //$file_uploaded = null;
-//        if (isset($_FILES["file"])) {
-//            $options = json_decode($options, true);
-//            $object = json_decode($object, true);
-//            $file_uploaded = $_FILES["file"];
-//        } else {
-//            $file_uploaded = $object["file_url"] ? $object["file_url"] : $request->request->get("file_url");
-//        }
-        //$res = $this->get("app.drive_refacto")->save($object, $options, $this->getUser());
-        $res = $this->get("app.drive_refacto")->save($object, $options);
+        $current_user = $this->getUser();
+        if(!(isset($current_user)))
+        {
+            $current_user_id = "d8a1136c-544e-11e9-9f85-0242ac120005";
+        }
+        else
+        {
+            $current_user_id= $current_user->getId();
+        }
+
+
+        $res = $this->get("app.drive_refacto")->save($object, $options,$current_user_id);
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }

@@ -88,12 +88,13 @@ class DriveFileRefacto
         return $fileordirectory;
     }
 
-    public function versionning($fileordirectory, $data = null , $current_user = null, $new = false){
+    public function versionning($fileordirectory, $current_user, $data = null , $new = false){
 
         //on recupere la derniere version pour le fichier en cours
-        $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $fileordirectory->getId()));
-
-        if(!isset($version) || (isset($version) && $new = true)){ // on crée une nouvelle version pour le fichier en question
+        if(isset($current_user)){
+            $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $fileordirectory->getId()));
+        }
+        if((!isset($version) || (isset($version) && $new = true))){ // on crée une nouvelle version pour le fichier en question
             $version = new DriveFileVersion($fileordirectory,$current_user);
             if(isset($data)){
                 $version->setData($data);
@@ -130,11 +131,13 @@ class DriveFileRefacto
         if (!$this->hasAccess($options, $current_user)) {
             return false;
         }
+
         $did_create = false;
         $fileordirectory = null;
         if(isset($object["id"])) { // on recoit un identifiant donc c'est un modification
             $fileordirectory = $this->em->getRepository("TwakeDriveBundle:DriveFile")
                 ->findOneBy(Array("id" => $object["id"].""));
+            $fileordirectory->setLastModified();
             if(!$fileordirectory){
                 return false;
             }
@@ -212,6 +215,9 @@ class DriveFileRefacto
             $fileordirectory->setName($object["name"]);
         }
 
+        $fileordirectory->setLastUser($current_user);
+
+
         if(isset($fileordirectory)){
             $this->em->persist($fileordirectory);
             $this->em->flush();
@@ -226,7 +232,7 @@ class DriveFileRefacto
         }
 
         if(isset($options["version"]) && $options["version"]) {
-           $this->versionning($fileordirectory, $options["data"], $current_user, $new);
+           $this->versionning($fileordirectory, $current_user, $options["data"], $new);
         }
 
 
