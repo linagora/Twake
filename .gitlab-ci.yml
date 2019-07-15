@@ -2,26 +2,16 @@ image: docker
 
 services:
     - docker:dind
-    #- privileged = true # Needed to run docker:dind
-
-#variables:
-#    CI_DEBUG_TRACE: "true"
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
     - apk update && apk add git
-    - echo on est laaaaaaaa !!
     - mv Docker/twake-php twake-php
     - mv Docker/docker-compose-test.yml docker-compose.yml
     - mv Docker/parameters-test.yml app/config/parameters.yml
     - mv Docker/cassandra-init.sh ./cassandra-init.sh
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
-    #- apk add --no-cache py-pip
-    - echo installation pyThon ok !
     - pip install docker-compose
-    - echo installation doCker ok
-    #- apk update && apk add apt-utils #-> apparament ce package n'est pas nécessaire pour le fonctionnement du docker ....
     - docker-compose up -d --build
-    #- docker-compose exec -T php composer install #pour eviter l'erreur du TTY sans mettre le -it en option de nos docker-compose
 
 stages:
     - test
@@ -32,7 +22,6 @@ test:
         - dev
     script:
     
-        - echo run tests in this section !!!
         - docker ps #To get the name of the existing container (juste pour info)
         - docker-compose exec -T php php -dmemory_limit=-1 composer.phar update
         - docker-compose exec -T php php /twake-core/bin/console cache:clear
@@ -43,11 +32,7 @@ test:
         - docker-compose exec -T php php ./bin/console twake:init #Init install
         
         - docker-compose exec -T php  ./vendor/bin/phpunit
-        - echo affiche malgré tout pourquoi ça ne marche pas !!!
-        - docker-compose down
-        - set e- #Do something. If something fails with exit!=0 the script stops
 
     when: manual
-    #"when: always", if you want to execute job automatically regardless of the status of jobs from prior stages -> et vu le temps que ça prends, je pense qu'il faut laisser le mode manuel !
 
 

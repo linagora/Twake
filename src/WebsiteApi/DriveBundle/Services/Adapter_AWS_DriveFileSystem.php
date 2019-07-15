@@ -40,7 +40,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
                 'secret' => $this->aws_credentials_secret
             ]
         ];
-        if ($s3_config["base_url"]) {
+        if (isset($s3_config["base_url"]) && $s3_config["base_url"]) {
             $options["endpoint"] = $s3_config["base_url"];
         }
 
