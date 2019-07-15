@@ -57,10 +57,6 @@ calendar:
     resource: "@TwakeCalendarBundle/Resources/config/routing.yml"
     prefix:   /ajax/calendar/
 
-project:
-    resource: "@TwakeProjectBundle/Resources/config/routing.yml"
-    prefix:   /ajax/project/
-
 twake_discussion:
     resource: "@TwakeDiscussionBundle/Resources/config/routing.yml"
     prefix:   /ajax/discussion/
@@ -126,6 +122,11 @@ twake_drive:
     resource: "@TwakeDriveBundle/Resources/config/routing.yml"
     prefix:   ajax/drive/
     methods: [POST, GET]
+
+twake_drive:
+    resource: "@TwakeTasksBundle/Resources/config/routing.yml"
+    prefix:   ajax/tasks/
+    methods: [POST]
 
 twake_notifications:
     resource: "@TwakeNotificationsBundle/Resources/config/routing.yml"

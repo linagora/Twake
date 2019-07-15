@@ -106,10 +106,7 @@ class AdministrationServerStats
             ->select('count(U)');
         $messagesnumber = $req5->getQuery()->getSingleScalarResult();
 
-        $req6 = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")
-            ->createQueryBuilder('U')
-            ->select('count(U)');
-        $tasksnumber = $req6->getQuery()->getSingleScalarResult();
+        $tasksnumber = 0;
 
         $em = $this->doctrine;
 
@@ -176,14 +173,6 @@ class AdministrationServerStats
     public function getNumberFiles()
     {
         $req1 = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")
-            ->createQueryBuilder('F')
-            ->select('count(F)');
-        return $req1->getQuery()->getSingleScalarResult();
-    }
-
-    public function getNumberTasks()
-    {
-        $req1 = $this->doctrine->getRepository("TwakeProjectBundle:BoardTask")
             ->createQueryBuilder('F')
             ->select('count(F)');
         return $req1->getQuery()->getSingleScalarResult();

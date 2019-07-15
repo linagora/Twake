@@ -1,0 +1,13 @@
+services:
+
+    app.board.task:
+        class: WebsiteApi\TasksBundle\Services\BoardTask
+        arguments: ["@app.twake_doctrine", "@app.websockets", "@app.applications_api", "@app.notifications", "@app.board.export"]
+
+    app.board.board:
+        class: WebsiteApi\TasksBundle\Services\BoardBoard
+        arguments: ["@app.twake_doctrine", "@app.applications_api"]
+
+    app.board.export:
+        class: WebsiteApi\TasksBundle\Services\BoardExport
+        arguments: ["@app.twake_doctrine"]

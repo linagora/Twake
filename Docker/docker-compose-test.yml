@@ -8,8 +8,10 @@ services:
         - 9100:9100
         - 9160:9160
         - 9042:9042
+      command: "sh /docker_dir/cassandra-init.sh"
       volumes:
         - ./scylladb:/var/lib/scylla
+        - ./Docker:/docker_dir/
       command: '--experimental 1'
     php:
         image: twake-php
