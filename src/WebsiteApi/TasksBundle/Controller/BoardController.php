@@ -14,7 +14,7 @@ class BoardController extends Controller
     {
         $options = $request->request->get("options");
         $object = $request->request->get("object");
-        $res = $this->get("app.board.board")->remove($object, $options, $this->getUser());
+        $res = $this->get("app.tasks.board")->remove($object, $options, $this->getUser());
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }
@@ -25,7 +25,7 @@ class BoardController extends Controller
     {
         $options = $request->request->get("options");
         $object = $request->request->get("object");
-        $res = $this->get("app.board.board")->save($object, $options, $this->getUser());
+        $res = $this->get("app.tasks.board")->save($object, $options, $this->getUser());
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }
@@ -35,7 +35,7 @@ class BoardController extends Controller
     public function getAction(Request $request)
     {
         $options = $request->request->get("options");
-        $objects = $this->get("app.board.board")->get($options, $this->getUser());
+        $objects = $this->get("app.tasks.board")->get($options, $this->getUser());
         if ($objects === false) {
             return new JsonResponse(Array("status" => "error"));
         }

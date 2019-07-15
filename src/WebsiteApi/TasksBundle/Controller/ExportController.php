@@ -13,7 +13,7 @@ class ExportController extends Controller
     {
         $token = $request->query->get("token");
         if ($token) {
-            return $this->get("app.board.export")->exportBoard($token, $this->get("app.board.task"));
+            return $this->get("app.tasks.export")->exportBoard($token, $this->get("app.tasks.task"));
         } else
             return new JsonResponse("Errors : Token not found");
     }
@@ -22,6 +22,6 @@ class ExportController extends Controller
     public function generateTokenAction(Request $request)
     {
         $user = $this->getUser();
-        return new JsonResponse(Array("token" => $this->get("app.board.export")->generateToken($request, $user)));
+        return new JsonResponse(Array("token" => $this->get("app.tasks.export")->generateToken($request, $user)));
     }
 }
