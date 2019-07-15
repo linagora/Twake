@@ -1,0 +1,5 @@
+services:
+
+  administration.groups:
+    class: AdministrationApi\WorkspacesBundle\Services\AdministrationGroups
+    arguments: [ "@app.twake_doctrine" ]
