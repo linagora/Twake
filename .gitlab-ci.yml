@@ -34,6 +34,7 @@ test:
     
         - echo run tests in this section !!!
         - docker ps #To get the name of the existing container (juste pour info)
+        - chmood 777 cassandra-init.sh
         - ./cassandra-init.sh
         - docker-compose exec -T php php -dmemory_limit=-1 composer.phar update
         - docker-compose exec -T php php /twake-core/bin/console cache:clear
