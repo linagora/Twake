@@ -40,7 +40,7 @@ test:
         - docker-compose exec -T php php ./bin/console t:s:u  #Update databases
         - docker-compose exec -T php php ./bin/console twake:init #Init install
         
-        - docker-compose exec -T php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
+        - docker-compose exec -T php  ./vendor/bin/phpunit
         - echo affiche malgré tout pourquoi ça ne marche pas !!!
         - docker-compose down
         - set e- #Do something. If something fails with exit!=0 the script stops
