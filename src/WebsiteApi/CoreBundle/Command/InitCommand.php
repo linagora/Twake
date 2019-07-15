@@ -149,7 +149,27 @@ class InitCommand extends ContainerAwareCommand
             '{"app":true}', true));
         $app->setDefault(true);
         $manager->persist($app);
+        $manager->flush();
 
+        $app = null;
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "twake_tasks"));
+        if (!$app) {
+            $app = new Application(new FakeCassandraTimeuuid(), "Tasks");
+            $app->setApiPrivateKey($app->generatePrivateApiKey());
+        }
+        $app->setEsIndexed(false);
+        $app->setIconUrl("/public/img/twake-emoji/twake-tasks.png");
+        $app->setWebsite("https://twakeapp.com");
+        $app->setDescription("Application gestion de tâches de Twake.");
+        $app->setSimpleName("twake_tasks");
+        $app->setAppGroupName("twake");
+        $app->setPublic(true);
+        $app->setIsAvailableToPublic(true);
+        $app->setTwakeTeamValidation(true);
+        $app->setDisplayConfiguration(json_decode(/*'{"messages_module":{"in_plus":true},*/
+            '{"channel_tab":true, "app":true}', true));
+        $app->setDefault(true);
+        $manager->persist($app);
         $manager->flush();
 
         /*

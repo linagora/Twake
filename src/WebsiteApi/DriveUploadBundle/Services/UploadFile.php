@@ -29,8 +29,8 @@ class UploadFile
     public function TestUpload($request, $response, $current_user)
     {
 
-//        @unlink("uploads/74726574343666676466617a65.chunk_1");
-//        @unlink("uploads/74726574343666676466617a65.chunk_2");
+        //@unlink("uploads/74726574343666676466617a65.chunk_1");
+        //@unlink("uploads/74726574343666676466617a65.chunk_2");
 
         $request = new SimpleRequest($request);
         $response = new SimpleResponse($response);
@@ -39,9 +39,6 @@ class UploadFile
         $this->resumable->process($current_user);
 
         //error_log(print_r($chunkFile,true));
-
-
-
 
    }
 }

@@ -33,7 +33,7 @@ test:
     
         - echo run tests in this section !!!
         - docker ps #To get the name of the existing container (juste pour info)
-        - docker-compose exec -T php composer update
+        - docker-compose exec -T php php -dmemory_limit=-1 composer.phar update
         - docker-compose exec -T php php /twake-core/bin/console cache:clear
         - docker-compose exec -T php php /twake-core/bin/console cache:clear --env=prod
         - docker-compose exec -T php php ./bin/console t:s:u  #Update databases
