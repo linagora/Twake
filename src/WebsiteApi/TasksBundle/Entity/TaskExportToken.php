@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * TaskExportToken
  *
  * @ORM\Table(name="task_export_token",options={"engine":"MyISAM", "scylladb_keys": {{"user_id": "ASC", "id": "ASC"},{"user_token": "ASC"}} })
- * @ORM\Entity(repositoryClass="WebsiteApi\TasksBundle\Repository\ExportTokenRepository")
+ * @ORM\Entity(repositoryClass="WebsiteApi\TasksBundle\Repository\TasksTasksExportTokenRepository")
  */
 class TaskExportToken
 {
