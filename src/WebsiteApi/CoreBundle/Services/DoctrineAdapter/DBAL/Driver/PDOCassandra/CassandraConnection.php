@@ -202,6 +202,11 @@ class CassandraConnection
             ->build();
         $this->session = $this->cluster->connect(strtolower($keyspace));
 
+        $statement = new Cassandra\SimpleStatement(
+            "CREATE KEYSPACE IF NOT EXISTS twake WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}"
+        );
+        $session->executeAsync($statement);
+
         $this->keyspace = $keyspace;
         $this->view_to_use = null;
     }
