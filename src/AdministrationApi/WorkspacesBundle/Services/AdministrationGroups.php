@@ -17,7 +17,13 @@ class AdministrationGroups
     public function getAllGroups($limit, $offset) {
         $groupsRepository = $this->em->getRepository("TwakeWorkspacesBundle:Group");
 
-        $groups = $groupsRepository->findBy(Array(),Array(),$limit, $offset);
+        $groupsEntity = $groupsRepository->findBy(Array(),Array(),$limit, $offset);
+
+        $groups = Array();
+
+        foreach($groupsEntity as $group) {
+            $groups[] = $group->getAsArray();
+        }
 
         return $groups;
     }

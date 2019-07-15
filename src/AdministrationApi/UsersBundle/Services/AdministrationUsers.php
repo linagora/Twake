@@ -17,7 +17,13 @@ class AdministrationUsers
     public function getAllUsers($limit, $offset) {
         $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-        $users = $usersRepository->findBy(Array(),Array(),$limit,$offset);
+        $usersEnitity = $usersRepository->findBy(Array(),Array(),$limit,$offset);
+
+        $users = Array();
+
+        foreach ($usersEnitity as $user) {
+            $users[] = $user->getAsArray();
+        }
 
         return $users;
     }
