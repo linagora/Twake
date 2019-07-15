@@ -17,7 +17,7 @@ class DrivePreview
 
     public function __construct($doctrine){
         $this->doctrine = $doctrine;
-        $this->img_height = 130 ;
+        $this->img_height = 300 ;
         $this->img_width = 300 ;
     }
 
@@ -256,19 +256,34 @@ END;
         }
 
         $im = $this->autorotate($im);
+        $im->setBackgroundColor(new \ImagickPixel('transparent'));
+        $geo = $im->getImageGeometry();
+
+        $min_size = min((int)($geo['width']), (int)($geo['height']));
+
+        if($min_size > $this->img_width){
+            $ox = 0;
+            $oy = (int)( ($geo['height'] - $min_size) / 2 );
+            if($min_size == (int)($geo['height'])){
+                $ox = (int)( ($geo['width'] - $min_size) / 2 );
+                $oy = 0;
+            }
+            $im->cropImage($min_size, $min_size, $ox, $oy);
+        }
 
         // get the current image dimensions
         $im->ThumbnailImage($width, $height, true);
-        $geo = $im->getImageGeometry();
 
+        /*
+                $canvas = new \Imagick();
+                $canvas->newImage($width, $height, 'white', 'png');
+                $canvas->setBackgroundColor(new \ImagickPixel('transparent'));
+                $offsetX = (int)($width / 2) - (int)($geo['width'] / 2);
+                $offsetY = (int)($height / 2) - (int)($geo['height'] / 2);
+                $canvas->compositeImage($im, \Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
 
-        $canvas = new \Imagick();
-        $canvas->newImage($width, $height, 'white', 'png');
-        $offsetX = (int)($width / 2) - (int)($geo['width'] / 2);
-        $offsetY = (int)($height / 2) - (int)($geo['height'] / 2);
-        $canvas->compositeImage($im, \Imagick::COMPOSITE_OVER, $offsetX, $offsetY);
-
-        $im = $canvas;
+                $im = $canvas;
+        */
 
         // thumbnail the image
 

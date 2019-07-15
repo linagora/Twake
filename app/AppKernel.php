@@ -54,13 +54,16 @@ class AppKernel extends Kernel
             new DevelopersApiV1\GeneralBundle\DevelopersApiV1GeneralBundle(),
             new DevelopersApiV1\CalendarBundle\DevelopersApiV1CalendarBundle(),
             new DevelopersApiV1\DriveBundle\DevelopersApiV1DriveBundle(),
+
+            new AdministrationApi\CoreBundle\AdministrationApiCoreBundle(),
+            new AdministrationApi\UsersBundle\AdministrationApiUsersBundle(),
+            new AdministrationApi\WorkspacesBundle\AdministrationApiWorkspacesBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
-            $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
         }
 
         return $bundles;

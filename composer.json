@@ -57,12 +57,13 @@
         "emojione/emojione": "3.1",
         "twakeapp/prometheus-bundle": "dev-master",
         "spatie/pdf-to-text": "*",
-        "dilab/resumable.php": "0.1.4"
+        "dilab/resumable.php": "0.1.4",
+        "ci/restclientbundle": "^2.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
         "symfony/phpunit-bridge": "^4.0",
-      "ci/restclientbundle": "^2.0"
+        "ci/restclientbundle": "^2.0"
     },
     "scripts": {
         "symfony-scripts": [
