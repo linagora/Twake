@@ -8,19 +8,18 @@ services:
         - 9100:9100
         - 9160:9160
         - 9042:9042
-      command: "sh /docker_dir/cassandra-init.sh"
       volumes:
         - ./scylladb:/var/lib/scylla
         - ./Docker:/docker_dir/
       command: '--experimental 1'
-    php:
-        image: twake-php
-        build: twake-php
-        volumes:
-            - ./cron:/cron
-            - ./:/twake-core:cached
-            - ./fpm/:/etc/data/fpm/
-        depends_on:
-          - scylladb
-        links:
-          - scylladb
+#    php:
+#        image: twake-php
+#        build: twake-php
+#        volumes:
+#            - ./cron:/cron
+#            - ./:/twake-core:cached
+#            - ./fpm/:/etc/data/fpm/
+#        depends_on:
+#          - scylladb
+#        links:
+#          - scylladb

@@ -33,6 +33,8 @@ test:
     
         - echo run tests in this section !!!
         - docker ps #To get the name of the existing container (juste pour info)
+        - echo "CREATE KEYSPACE twake WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'} AND durable_writes = true;" | docker-compose exec -T  scylladb cqlsh
+
         - docker-compose exec -T php php -dmemory_limit=-1 composer.phar update
         - docker-compose exec -T php php /twake-core/bin/console cache:clear
         - set +e #Do something. If something fails with exit!=0 the script continues anyway
