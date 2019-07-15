@@ -38,7 +38,7 @@ test:
         - set +e #Do something. If something fails with exit!=0 the script continues anyway
         - docker-compose exec -T php php /twake-core/bin/console cache:clear --env=prod
         - docker-compose exec -T php php ./bin/console t:s:u  #Update databases
-        - docker-compose exec -T php php ./bin/console twake:init#Init install
+        - docker-compose exec -T php php ./bin/console twake:init #Init install
         
         - docker-compose exec -T php  ./vendor/bin/phpunit --coverage-html ./tests/code_coverage
         - echo affiche malgré tout pourquoi ça ne marche pas !!!
