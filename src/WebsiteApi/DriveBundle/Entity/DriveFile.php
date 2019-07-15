@@ -168,9 +168,18 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
      */
     private $content_keywords;
 
+    /**
+     * @ORM\Column(name ="public_access_info", type="twake_text", nullable=true)
+     */
+    private $public_acces_info;
+
+    /**
+     * @ORM\Column(name="last_user", type="twake_text", nullable=true)
+     * @Encrypted
+     */
+    private $last_user;
 
     protected $es_type = "drive_file";
-
 
     public function __construct($workspace_id, $parent_id, $isdirectory = false)
     {
@@ -190,6 +199,23 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
         $this->default_web_app = null;
         $this->setPreviewHasBeenGenerated(false);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getPublicAccesInfo()
+    {
+        return json_decode($this->public_acces_info,true);
+    }
+
+    /**
+     * @param mixed $public_acces_info
+     */
+    public function setPublicAccesInfo($public_acces_info)
+    {
+        $this->public_acces_info = json_encode($public_acces_info);
+    }
+
 
     public function getIndexationArray()
     {
@@ -211,6 +237,22 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastUser()
+    {
+        return $this->last_user;
+    }
+
+    /**
+     * @param mixed $last_user
+     */
+    public function setLastUser($last_user)
+    {
+        $this->last_user = $last_user;
     }
 
     /**
@@ -259,7 +301,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     public function setParentId($parent_id)
     {
         $this->parent_id = $parent_id . "";
-        if ($parent) {
+        if ($parent_id) {
             $this->root_group_folder = NULL;
         } else {
             $this->root_group_folder = $this->getWorkspaceId() . "";
@@ -615,7 +657,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
 
             'name' => $this->getName(),
             'description' => $this->getDescription(),
-
+            "last_user" => $this->getLastUser(),
             'size' => $this->getSize()?$this->getSize():0,
             'added' => $this->getAdded() ? $this->getAdded()->getTimestamp() : null,
             'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
@@ -632,6 +674,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null,
             "object_link_cache" => $this->getObjectLinkCache(),
             //"keywords" => $this->getContentKeywords()
+            "public_acces_info" => $this->getPublicAccesInfo()
 
         );
     }

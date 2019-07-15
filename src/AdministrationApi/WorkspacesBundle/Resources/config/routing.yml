@@ -1,0 +1,9 @@
+administration_api_groups_get_all:
+  path: /get
+  defaults: { _controller: AdministrationApiWorkspacesBundle:Groups:getAllGroups }
+  methods: [POST]
+
+administration_api_groups_get_one:
+  path: /get/{id}
+  defaults: { _controller: AdministrationApiWorkspacesBundle:Groups:getOneGroup }
+  methods: [POST]

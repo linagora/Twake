@@ -5,7 +5,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 class SimpleRequest
 {
-    private $symfonyrequest;
+    public $symfonyrequest;
 
     public function __construct($request)
     {

@@ -55,6 +55,11 @@ class UploadState
      */
     protected $chunklist;
 
+    /**
+     * @ORM\Column(name ="encryption_key", type="twake_text", nullable=true)
+     */
+    protected $encryption_key;
+
     public function __construct($identifier, $filename, $extension, $chunklist)
     {
         $this->identifier = $identifier;
@@ -63,6 +68,7 @@ class UploadState
         $this->chunk = 1;
         $this->chunklist = json_encode($chunklist);
         $this->success = false;
+        $this->encryption_key = "testkey";
 
     }
 
@@ -87,6 +93,8 @@ class UploadState
         $chunklist = $this->getChunklist();
         array_push($chunklist ,$chunk);
         $this->setChunklist($chunklist);
+        //error_log(print_r($this->chunklist,true));
+
         $this->setChunk(count($this->getChunklist()));
     }
 
@@ -99,7 +107,7 @@ class UploadState
             "extension" => $this->getExtension(),
             "chunk" => $this->getChunk(),
             "chunklist" => $this->getChunklist(),
-            "succes" => $this->getSucces()
+            "succes" => $this->getSuccess()
         );
         return $return;
     }
@@ -120,6 +128,21 @@ class UploadState
         $this->chunk = $chunk;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getEncryptionKey()
+    {
+        return $this->encryption_key;
+    }
+
+    /**
+     * @param mixed $encryption_key
+     */
+    public function setEncryptionKey($encryption_key)
+    {
+        $this->encryption_key = $encryption_key;
+    }
 
     /**
      * @return int

@@ -22,45 +22,63 @@ class DriveFileRefactoController extends Controller
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new JsonResponse(Array("data" => Array("object" => $res->getAsArray())));
     }
 
     public function saveAction(Request $request)
     {
         $options = $request->request->get("options");
         $object = $request->request->get("object");
-        $file_uploaded = null;
-        if (isset($_FILES["file"])) {
-            $options = json_decode($options, true);
-            $object = json_decode($object, true);
-            $file_uploaded = $_FILES["file"];
-        } else {
-            $file_uploaded = $object["file_url"] ? $object["file_url"] : $request->request->get("file_url");
+        $current_user = $this->getUser();
+        if(!(isset($current_user)))
+        {
+            $current_user_id = "d8a1136c-544e-11e9-9f85-0242ac120005";
         }
-        $res = $this->get("app.drive_refacto")->save($object, $options, $this->getUser(), null, $file_uploaded);
+        else
+        {
+            $current_user_id= $current_user->getId();
+        }
+
+
+        $res = $this->get("app.drive_refacto")->save($object, $options,$current_user_id);
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new JsonResponse(Array("data" => Array("object" => $res->getAsArray())));
     }
 
     public function getAction(Request $request)
     {
         $options = $request->request->get("options");
         $objects = $this->get("app.drive_refacto")->get($options, $this->getUser());
+
         if ($objects === false) {
             return new JsonResponse(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => $objects));
+        return new JsonResponse(Array("data" => $objects->getAsArray()));
     }
 
-    public function printAction(Request $request){
+    public function give_file_public_accessAction(Request $request)
+    {
 
-         $this->get("app.drive_refacto")->printfunction();
+        $file_id = $request->request->get("file_id");
+        $is_editable = $request->request->get("is_editable");
+        $authorized_members = $request->request->get("authorized_members");
+        $authorized_channels = $request->request->get("authorized_channels");
 
-        return new JsonResponse("hello");
+        $publicaccess = $this->get('app.drive_refacto')->give_file_public_access($file_id,$is_editable,$authorized_members,$authorized_channels);
+        $data = Array("data" => $publicaccess);
 
+        return new JsonResponse($data);
+    }
 
+    public function give_file_private_accessAction(Request $request)
+    {
+        $file_id = $request->request->get("file_id");
 
+        $publicaccess = $this->get('app.drive_refacto')->give_file_private_access($file_id);
+        $data = Array("data" => $publicaccess);
+
+        return new JsonResponse($data);
     }
 }

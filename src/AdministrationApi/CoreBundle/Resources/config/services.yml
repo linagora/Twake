@@ -1,0 +1,5 @@
+services:
+
+  administration.validation:
+    class: AdministrationApi\CoreBundle\Services\ValidationService
+    arguments: [ "ABCDEF" ]

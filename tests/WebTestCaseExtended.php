@@ -100,7 +100,6 @@ class WebTestCaseExtended extends WebTestCase
         $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
 
         if ($user) {
-            error_log("Removed already existing user " . $name);
             $this->removeUserByName($name);
         }
 
@@ -115,8 +114,8 @@ class WebTestCaseExtended extends WebTestCase
         $mails = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findBy(Array("mail" => $mail));
         foreach ($mails as $mail) {
             $this->get("app.twake_doctrine")->remove($mail);
+            $this->get("app.twake_doctrine")->flush();
         }
-
 
         $token = $this->get("app.user")->subscribeMail($mail, $name, $name, "", "", "", "en", false);
         $this->get("app.user")->verifyMail($mail, $token, "", true);

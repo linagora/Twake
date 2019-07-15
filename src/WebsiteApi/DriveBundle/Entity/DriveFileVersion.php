@@ -8,17 +8,17 @@ use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\UsersBundle\Entity\User;
 
 /**
- * DriveFile
+ * DriveFileVersion
  *
- * @ORM\Table(name="drive_file_version",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileRepository")
+ * @ORM\Table(name="drive_file_version",options={"engine":"MyISAM" , "scylladb_keys": { {"id": "DESC"}, {"file_id": "DESC"} } })
+ * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileVersionRepository")
  */
 class DriveFileVersion
 {
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-    s*/
+    */
     private $id;
 
 	/**
@@ -65,6 +65,13 @@ class DriveFileVersion
      */
     private $filename;
 
+    /**
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
+     */
+    private $data;
+
+
 
     public function __construct(DriveFile $file, $user_id)
 	{
@@ -76,6 +83,22 @@ class DriveFileVersion
 		$this->setFileName($file->getName());
         $this->setUserId($user_id);
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        return json_decode($this->data,true);
+    }
+
+    /**
+     * @param mixed $data
+     */
+    public function setData($data)
+    {
+        $this->data = json_encode($data);
+    }
 
 	/**
 	 * @return mixed
@@ -153,9 +176,12 @@ class DriveFileVersion
 	    return Array(
 	        "id" => $this->id,
             "name" => $this->getFileName(),
+            "file_id" => $this->getFileId(),
             "added" => $this->date_added->getTimestamp(),
             "size" => $this->size,
-            "user" => $this->user!=null ? $this->user->getId() != 0 ? $this->user->getAsArray() : "" : ""
+            //"user" => $this->user!=null ? $this->user->getId() != 0 ? $this->user->getAsArray() : "" : "",
+            "creator" => $this->getUserId(),
+            "data" => $this->getData()
             );
     }
 
