@@ -49,7 +49,8 @@ class WebTestCaseExtended extends WebTestCase
 
     public function __construst(){
       parent::__construct();
-      error_reporting(E_ERROR | E_PARSE); // Rapporte les erreurs d'exécution de script
+      //error_reporting(E_ERROR | E_PARSE); // Rapporte les erreurs d'exécution de script
+      error_reporting(E_ALL ^ E_NOTICE);
     }
 
     protected function getDoctrine()
