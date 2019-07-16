@@ -19,7 +19,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
         $s3_config = $aws_config["S3"];
         $this->aws_version = $s3_config["version"];
         $this->aws_buckets = $s3_config["buckets"];
-        $this->aws_buckets_prefix = $s3_config["buckets_prefix"];
+        $this->aws_buckets_prefix = isset($s3_config["buckets_prefix"]) ? $s3_config["buckets_prefix"] : "";
         $this->aws_credentials_key = $s3_config["credentials"]["key"];
         $this->aws_credentials_secret = $s3_config["credentials"]["secret"];
 
