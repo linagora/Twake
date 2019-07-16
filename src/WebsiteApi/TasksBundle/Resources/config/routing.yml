@@ -14,6 +14,23 @@ board_task_remove:
     defaults: { _controller: TwakeTasksBundle:Task:remove}
     methods: [POST]
 
+#Lists
+board_list_get:
+    path:     /list/get
+    defaults: { _controller: TwakeTasksBundle:BoardList:get}
+    methods: [POST]
+
+board_list_save:
+    path:     /list/save
+    defaults: { _controller: TwakeTasksBundle:BoardList:save}
+    methods: [POST]
+
+board_list_remove:
+    path:     /list/remove
+    defaults: { _controller: TwakeTasksBundle:BoardList:remove}
+    methods: [POST]
+
+
 #Boards
 board_board_get:
     path:     /board/get

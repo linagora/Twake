@@ -48,10 +48,8 @@ class WebTestCaseExtended extends WebTestCase
         }*/
 
     public function setUp(){
-      error_log("Execute setup");
       # Warning:
       \PHPUnit_Framework_Error_Warning::$enabled = FALSE;
-
       # notice, strict:
       \PHPUnit_Framework_Error_Notice::$enabled = FALSE;
     }

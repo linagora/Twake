@@ -37,7 +37,8 @@ class ManagerAdapter
         $this->es_removes = Array();
         $this->generator = null;
 
-        if (!$this->es_server) {
+        if (!$this->es_server && !defined("ELASTICSEARCH_INSTALL_MESSAGE_SHOWED")) {
+            define("ELASTICSEARCH_INSTALL_MESSAGE_SHOWED", true);
             error_log("INFO: Installation configured without elastic search");
         }
     }

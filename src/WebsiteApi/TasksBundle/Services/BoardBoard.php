@@ -38,13 +38,16 @@ class BoardBoard
         if (count($boards) == 0) {
             $cal = $this->save(Array(
                 "workspace_id" => $workspace_id,
-                "title" => "General",
+                "title" => "First Board",
                 "color" => "#33b679",
-                "auto_participants" => Array()
             ), Array(), null);
+
+            //TODO Add example tasks in board
+
             if ($cal) {
                 return [$cal];
             }
+
         }
 
         $ret = [];
@@ -71,8 +74,6 @@ class BoardBoard
         $this->doctrine->remove($board);
         $this->doctrine->flush();
 
-        $this->doctrine->getRepository("TwakeTasksBundle:TaskBoard")->removeBy(Array("workspace_id" => $board->getWorkspaceId(), "board_id" => $id));
-
         return $object;
     }
 
@@ -97,7 +98,6 @@ class BoardBoard
 
         $board->setTitle($object["title"]);
         $board->setColor($object["color"]);
-        $board->setAutoParticipants($object["auto_participants"]);
         $this->doctrine->persist($board);
         $this->doctrine->flush();
 
@@ -164,4 +164,5 @@ class BoardBoard
         }
 
     }
+
 }
