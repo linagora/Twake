@@ -88,10 +88,12 @@ class UserAccountTest extends WebTestCaseExtended
         $this->removeUserByName("newpseudo");
 
 
+        $user = $this->newUserByName("usertest002");
         $user = $this->newUserByName("usertest001");
         $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
-        $result = $this->get("app.user")->changePseudo($user->getId(), "invite");
+        $result = $this->get("app.user")->changePseudo($user->getId(), "usertest002");
         $this->assertEquals(false, $result);
+        $this->removeUserByName("usertest002");
 
         $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
         $result = $this->get("app.user")->changePseudo($user->getId(), null);
