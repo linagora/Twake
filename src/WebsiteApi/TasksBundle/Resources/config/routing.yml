@@ -1,0 +1,42 @@
+#Tasks
+board_task_get:
+    path:     /task/get
+    defaults: { _controller: TwakeTasksBundle:Task:get}
+    methods: [POST]
+
+board_task_save:
+    path:     /task/save
+    defaults: { _controller: TwakeTasksBundle:Task:save}
+    methods: [POST]
+
+board_task_remove:
+    path:     /task/remove
+    defaults: { _controller: TwakeTasksBundle:Task:remove}
+    methods: [POST]
+
+#Boards
+board_board_get:
+    path:     /board/get
+    defaults: { _controller: TwakeTasksBundle:Board:get}
+    methods: [POST]
+
+board_board_save:
+    path:     /board/save
+    defaults: { _controller: TwakeTasksBundle:Board:save}
+    methods: [POST]
+
+board_board_remove:
+    path:     /board/remove
+    defaults: { _controller: TwakeTasksBundle:Board:remove}
+    methods: [POST]
+
+#Export
+board_export:
+    path:     /export
+    defaults: { _controller: TwakeTasksBundle:Export:export}
+    methods: [POST,GET]
+
+board_token_export:
+    path:     /token_export
+    defaults: { _controller: TwakeTasksBundle:Export:generateToken}
+    methods: [POST]

@@ -13,12 +13,10 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 class WorkspaceUserByMail
 {
 	/**
-	 * @var int
-	 *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      */
-	protected $id;
+    private $id;
 
 	/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")

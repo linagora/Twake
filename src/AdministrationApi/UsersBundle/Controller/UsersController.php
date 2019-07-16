@@ -25,12 +25,11 @@ class UsersController extends Controller
 
             $page = $request->request->get("page");
             $limit = $request->request->get("limit");
-            $offset = $page * $limit;
 
-            $validate_struct = $validation->validateStructure(Array(), Array(), $limit, $offset);
+            $validate_struct = $validation->validateStructure(Array(), Array(), $limit, $page);
 
             if ($validate_struct) {
-                $users = $this->get("administration.users")->getAllUsers($limit, $offset);
+                $users = $this->get("administration.users")->getAllUsers($limit, $page);
 
                 $data["data"] = $users;
             } else {

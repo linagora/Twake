@@ -30,6 +30,9 @@ class Websockets
             "drive" => "app.drive",
             "event" => "app.calendar.event",
             "calendar" => "app.calendar.calendar",
+            "board" => "app.tasks.board",
+            "list" => "app.tasks.list",
+            "task" => "app.tasks.task",
             "updates" => "app.user_updates"
         );
 

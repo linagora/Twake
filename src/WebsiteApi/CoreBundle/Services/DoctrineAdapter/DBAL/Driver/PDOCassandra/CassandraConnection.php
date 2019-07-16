@@ -200,7 +200,25 @@ class CassandraConnection
         $this->cluster = Cassandra::cluster()
             ->withContactPoints($driverOptions["host"])
             ->build();
-        $this->session = $this->cluster->connect(strtolower($keyspace));
+
+        try {
+            error_log("Try to connect to keyspace " . $keyspace);
+            $this->session = $this->cluster->connect(strtolower($keyspace));
+        } catch (\Exception $e) {
+            $this->session = $this->cluster->connect();
+
+            error_log("Prepare keyspace creation");
+
+            $statement = new Cassandra\SimpleStatement(
+                "CREATE KEYSPACE IF NOT EXISTS " . strtolower($keyspace) . " WITH replication = {'class': 'SimpleStrategy', 'replication_factor': '1'}"
+            );
+            $future = $this->session->executeAsync($statement);
+            $result = $future->get();
+
+            error_log("Did create keyspace");
+
+            $this->session = $this->cluster->connect(strtolower($keyspace));
+        }
 
         $this->keyspace = $keyspace;
         $this->view_to_use = null;

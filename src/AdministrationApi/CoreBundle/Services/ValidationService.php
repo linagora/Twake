@@ -34,11 +34,11 @@ class ValidationService
     /**
      * @return bool
      */
-    public function validateStructure($filter, $sort, $limit, $offset) {
+    public function validateStructure($filter, $sort, $limit, $page) {
         if ($limit <= 0) {
             return false;
         }
-        if ($offset < 0) {
+        if ($page < 0) {
             return false;
         }
         return true;
