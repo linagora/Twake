@@ -14,7 +14,6 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
 
 stages:
     - test
-    - trigger
 
 test:
     stage: test
@@ -37,10 +36,11 @@ test:
         - echo testons ce trigger
 
     when: always
-    
-trigger:
-    project: https://gitlab.com/Twake/Twake-react.git
-    branch: 1.2
+
+staging:    
+    trigger:
+        project: https://gitlab.com/Twake/Twake-react.git
+        branch: 1.2
     
 
 
