@@ -16,13 +16,11 @@ class AdministrationUsers
 
     public function getAllUsers($limit, $page) {
 
-        $offset = $page * $limit;
-
-        $true_limit = ($page + 1) * $limit;
+        $offset = 0;
 
         $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-        $usersEnitity = $usersRepository->findBy(Array(),Array(),$true_limit,$offset);
+        $usersEnitity = $usersRepository->findBy(Array(),Array(),$limit,$offset);
 
         $users = Array();
 
@@ -36,12 +34,16 @@ class AdministrationUsers
     public function getOneUser($user_id) {
         $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-        $user = $usersRepository->find($user_id);
+        try {
+            $user = $usersRepository->findBy(Array('id'=>$user_id));
 
-        if ($user) {
-            return $user->getAsArray();
+            if ($user) {
+                return $user->getAsArray();
+            }
+            return false;
+        } catch (Exception $e) {
+            return false;
         }
-        return false;
     }
 
     public function getUserDevices($user_id) {
