@@ -47,9 +47,13 @@ class WebTestCaseExtended extends WebTestCase
             return $res;
         }*/
 
-    public function __construst(){
-      parent::__construct();
-      error_reporting(E_ERROR | E_PARSE); // Rapporte les erreurs d'exécution de script
+    public function setUp(){
+      error_log("Execute setup");
+      # Warning:
+      \PHPUnit_Framework_Error_Warning::$enabled = FALSE;
+
+      # notice, strict:
+      \PHPUnit_Framework_Error_Notice::$enabled = FALSE;
     }
 
     protected function getDoctrine()
