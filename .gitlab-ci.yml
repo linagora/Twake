@@ -37,10 +37,10 @@ test:
 
     when: always
 
-staging:    
-    trigger:
-        project: https://gitlab.com/Twake/Twake-react.git
-        branch: "1.2"
+
+trigger:
+    project: https://gitlab.com/Twake/Twake-react.git
+    branch: "1.2"
     
 
 
