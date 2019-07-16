@@ -18,7 +18,7 @@ stages:
 test:
     stage: test
     only:
-        - refs:
+        refs:
             - dev
             - schedules #permet d'executer le test selon le schedule
     script:
@@ -34,6 +34,6 @@ test:
         
         - docker-compose exec -T php  ./vendor/bin/phpunit
 
-    when: manual #permet d'eviter que le test se lance automatiquement
+    #when: manual #permet d'eviter que le test se lance automatiquement
 
 
