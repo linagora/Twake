@@ -40,7 +40,7 @@ test:
 staging:    
     trigger:
         project: https://gitlab.com/Twake/Twake-react.git
-        branch: 1.2
+        branch: "1.2"
     
 
 
