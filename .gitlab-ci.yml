@@ -8,7 +8,6 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - mv Docker/twake-php twake-php
     - mv Docker/docker-compose-test.yml docker-compose.yml
     - mv Docker/parameters-test.yml app/config/parameters.yml
-    - mv Docker/cassandra-init.sh ./cassandra-init.sh
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
     - pip install docker-compose
     - docker-compose up -d --build
