@@ -47,7 +47,10 @@ class WebTestCaseExtended extends WebTestCase
             return $res;
         }*/
 
-
+    public function __construst(){
+      parent::__construct();
+      error_reporting(E_ERROR | E_PARSE); // Rapporte les erreurs d'exécution de script
+    }
 
     protected function getDoctrine()
     {
