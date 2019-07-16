@@ -19,6 +19,7 @@ test:
     stage: test
     only:
         - dev
+        - schedules
     script:
     
         - docker ps #To get the name of the existing container (juste pour info)
@@ -32,6 +33,6 @@ test:
         
         - docker-compose exec -T php  ./vendor/bin/phpunit
 
-    when: manual
+    #when: manual
 
 
