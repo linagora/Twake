@@ -32,17 +32,19 @@ class AdministrationUsers
     }
 
     public function getOneUser($user_id) {
-        $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
-
         try {
+            $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
+
             $user = $usersRepository->findBy(Array('id'=>$user_id));
 
+            $rep = false;
+
             if ($user) {
-                return $user->getAsArray();
+                $rep = $user->getAsArray();
             }
-            return false;
+            return $rep;
         } catch (Exception $e) {
-            return false;
+            return "Error";
         }
     }
 
