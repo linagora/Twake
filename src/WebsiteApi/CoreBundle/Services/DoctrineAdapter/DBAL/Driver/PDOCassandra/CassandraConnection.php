@@ -202,7 +202,6 @@ class CassandraConnection
             ->build();
 
         try {
-            error_log("Try to connect to keyspace " . $keyspace);
             $this->session = $this->cluster->connect(strtolower($keyspace));
         } catch (\Exception $e) {
             $this->session = $this->cluster->connect();

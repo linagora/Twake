@@ -36,6 +36,11 @@ class ManagerAdapter
         $this->es_updates = Array();
         $this->es_removes = Array();
         $this->generator = null;
+
+        if (!$this->es_server && !defined("ELASTICSEARCH_INSTALL_MESSAGE_SHOWED")) {
+            define("ELASTICSEARCH_INSTALL_MESSAGE_SHOWED", true);
+            error_log("INFO: Installation configured without elastic search");
+        }
     }
 
     public function getEntityManager()
@@ -220,6 +225,10 @@ class ManagerAdapter
     public function es_put($entity, $index, $server = "twake")
     {
 
+        if (!$this->es_server) {
+            return;
+        }
+
         if (is_array($entity)) {
             $id = $entity["id"];
             $data = $entity["data"];
@@ -265,6 +274,10 @@ class ManagerAdapter
     public function es_remove($entity, $index, $server = "twake")
     {
 
+        if (!$this->es_server) {
+            return;
+        }
+
         if (is_array($entity)) {
             $id = $entity["id"];
         } else {
@@ -282,6 +295,10 @@ class ManagerAdapter
 
     public function es_search($options = Array(), $index = null, $server = "twake")
     {
+
+        if (!$this->es_server) {
+            return [];
+        }
 
         if (isset($options["index"]) && !$type) {
             $index = $options["index"];

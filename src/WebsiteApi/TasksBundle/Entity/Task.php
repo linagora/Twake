@@ -10,7 +10,7 @@ use WebsiteApi\CoreBundle\Entity\FrontObject;
 /**
  * Task
  *
- * @ORM\Table(name="task",options={"engine":"MyISAM", "scylladb_keys": {{"id":"ASC"}} })
+ * @ORM\Table(name="task",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "list_id":"ASC", "id":"ASC"}, {"id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\TasksBundle\Repository\TaskRepository")
  */
 class Task extends FrontObject
@@ -21,6 +21,19 @@ class Task extends FrontObject
      * @ORM\Id
      */
     private $id;
+
+
+    /**
+     * @ORM\Column(name="board_id", type="twake_timeuuid")
+     * @ORM\Id
+     */
+    private $board_id;
+
+    /**
+     * @ORM\Column(name="list_id", type="twake_timeuuid")
+     * @ORM\Id
+     */
+    private $list_id;
 
     /**
      * @ORM\Column(name="from_ts", type="twake_bigint")
@@ -103,11 +116,9 @@ class Task extends FrontObject
     private $task_last_modified;
 
 
-    public function __construct($title, $from, $to)
+    public function __construct($board_id, $list_id, $title)
     {
         $this->setTitle($title);
-        $this->setFrom($from);
-        $this->setTo($to);
         $this->setTaskLastModified();
     }
 
