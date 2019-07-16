@@ -4,6 +4,6 @@ administration_api_users_get_all:
   methods: [POST]
 
 administration_api_users_get_one:
-  path: /get/{id}
+  path: /getOne
   defaults: { _controller: AdministrationApiUsersBundle:Users:getOneUser }
   methods: [POST]

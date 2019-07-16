@@ -42,7 +42,7 @@ class UsersController extends Controller
         return new JsonResponse($data);
     }
 
-    public function getOneUserAction(Request $request, $id) {
+    public function getOneUserAction(Request $request) {
 
         $data = Array(
             "data" => Array(),
@@ -54,25 +54,28 @@ class UsersController extends Controller
         $validate_token = $validation->validateAuthentication($token);
 
         if ($validate_token) {
+
+            $user_id = $request->request->get("id");
+
             $user_service = $this->get("administration.users");
 
-            $user = $user_service->getOneUser($id);
+            $user = $user_service->getOneUser($user_id);
 
             if ($user) {
 
-                $user_id = $user["id"];
+                //$user_id = $user["id"];
 
-                $devices = $user_service->getUserDevices($user_id);
-                $mails = $user_service->getUserMails($user_id);
-                $workspaces = $user_service->getUserWorkspaces($user_id);
-                $groups = $user_service->getUserGroups($user_id);
+                //$devices = $user_service->getUserDevices($user_id);
+                //$mails = $user_service->getUserMails($user_id);
+                //$workspaces = $user_service->getUserWorkspaces($user_id);
+                //$groups = $user_service->getUserGroups($user_id);
 
 
                 $data["data"]["user"] = $user;
-                $data["data"]["devices"] = $devices;
-                $data["data"]["mails"] = $mails;
-                $data["data"]["workspace"] = $workspaces;
-                $data["data"]["groups"] = $groups;
+                //$data["data"]["devices"] = $devices;
+                //$data["data"]["mails"] = $mails;
+                //$data["data"]["workspace"] = $workspaces;
+                //$data["data"]["groups"] = $groups;
 
             } else {
                 $data["errors"][] = "user_not_found";
