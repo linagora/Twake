@@ -49,6 +49,7 @@ manual_test:
         #deuxieme methode on pull, on se place au bon endroit et on execute le .gitlab-ci.yml si c'est possible
         - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
         - echo on a accès au repo twake-react
+        - ls
     when: manual
     
 
