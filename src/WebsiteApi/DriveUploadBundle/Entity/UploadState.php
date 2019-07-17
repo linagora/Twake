@@ -30,6 +30,11 @@ class UploadState
     protected $identifier;
 
     /**
+     * @ORM\Column(name ="workspace_id", type="twake_text")
+     */
+    protected $workspace_id;
+
+    /**
      * @ORM\Column(name ="filename", type="twake_text")
      * @ORM\Id
      */
@@ -56,12 +61,18 @@ class UploadState
     protected $chunklist;
 
     /**
+     * @ORM\Column(name ="has_preview", type="twake_boolean")
+     */
+    protected $has_preview;
+
+    /**
      * @ORM\Column(name ="encryption_key", type="twake_text", nullable=true)
      */
     protected $encryption_key;
 
-    public function __construct($identifier, $filename, $extension, $chunklist)
+    public function __construct($workspace_id, $identifier, $filename, $extension, $chunklist)
     {
+        $this->workspace_id = $workspace_id;
         $this->identifier = $identifier;
         $this->filename = $filename;
         $this->extension = $extension;
@@ -69,7 +80,6 @@ class UploadState
         $this->chunklist = json_encode($chunklist);
         $this->success = false;
         $this->encryption_key = "testkey";
-
     }
 
     /**
@@ -224,6 +234,36 @@ class UploadState
         $this->success = $success;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getWorkspaceId()
+    {
+        return $this->workspace_id;
+    }
 
+    /**
+     * @param mixed $workspace_id
+     */
+    public function setWorkspaceId($workspace_id)
+    {
+        $this->workspace_id = $workspace_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHasPreview()
+    {
+        return $this->has_preview;
+    }
+
+    /**
+     * @param mixed $has_preview
+     */
+    public function setHasPreview($has_preview)
+    {
+        $this->has_preview = $has_preview;
+    }
 
 }

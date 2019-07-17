@@ -1,10 +1,10 @@
 services:
   driveupload.upload:
     class: WebsiteApi\DriveUploadBundle\Services\UploadFile
-    arguments: ["@driveupload.resumable"]
+    arguments: ["@driveupload.resumable", %DRIVE_SALT%]
 
   driveupload.storemanager:
-    class: WebsiteApi\DriveUploadBundle\Services\Storage\Adapter_OpenStack
+    class: WebsiteApi\DriveUploadBundle\Services\Storage\StorageManager
     arguments: [%aws%, %openstack%, %kernel.root_dir%]
 
   driveupload.download:
@@ -13,12 +13,8 @@ services:
 
   driveupload.resumable:
     class: WebsiteApi\DriveUploadBundle\Services\Resumable\Resumable
-    arguments: ["@app.twake_doctrine","@driveupload.storemanager", "@app.drive_refacto", %previews%]
+    arguments: ["@app.twake_doctrine","@driveupload.storemanager", "@app.drive_refacto", %drive_previews_tmp_folder%, %drive_tmp_folder%, "@app.drive.adapter_selector"]
 
   driveupload.preview:
       class: WebsiteApi\DriveUploadBundle\Services\DrivePreview
       arguments: ["@app.twake_doctrine"]
-
-  driveupload.previewmanager:
-    class: WebsiteApi\DriveUploadBundle\Services\PreviewManager
-    arguments: ["driveupload.preview"]

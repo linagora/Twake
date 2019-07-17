@@ -17,18 +17,16 @@ class StorageManager{
         $this->aws = $aws;
         $this->openstack = $openstack;
         $this->root = $root;
-        $this->adapter = $this->BindAdapter();
     }
 
     public function BindAdapter(){
 
         if (isset($this->aws["S3"]["use"]) && $this->aws["S3"]["use"]) {
-            return new Adapter_AWS();
+            return new Adapter_AWS($this->aws);
         }
         elseif (isset($this->openstack["use"]) && $this->openstack["use"]) {
-            return new Adapter_OpenStack($this->root,$this->openstack);
+            return new Adapter_OpenStack($this->openstack);
         }
-
 
     }
 
@@ -53,6 +51,9 @@ class StorageManager{
      */
     public function getAdapter()
     {
+        if (!$this->adapter) {
+            $this->adapter = $this->BindAdapter();
+        }
         return $this->adapter;
     }
 

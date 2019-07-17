@@ -15,6 +15,11 @@ web_profiler:
 
 monolog:
     handlers:
+        websocket:
+            type:         fingers_crossed
+            action_level: error
+            handler:      main
+            channels: [websocket]
         main:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"

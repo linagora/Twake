@@ -51,3 +51,8 @@ twake_user_workspace_access:
     path:     /workspaceaccess
     defaults: { _controller: TwakeCoreBundle:Access:user_has_workspace_access }
     methods:  [POST]
+
+twake_export_version:
+    path:     /exportversion
+    defaults: { _controller: TwakeCoreBundle:ImportExport:export_version }
+    methods:  [POST]

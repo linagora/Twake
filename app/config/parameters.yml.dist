@@ -6,7 +6,8 @@ parameters:
     MAIL_FROM: noreply@twakeapp.com
     SERVER_NAME: https://twakeapp.com
     DRIVE_SALT: SecretPassword
-    previews: /tmp/
+    drive_previews_tmp_folder: /tmp/
+    drive_tmp_folder: /tmp/
     PUSH_NOTIFICATION_SERVER: http://localhost:8009/server.php
     ELASTIC_SERVER: elasticsearch_twake:9200
     websocket_host: 127.0.0.1
@@ -61,6 +62,3 @@ parameters:
             credentials:
                 key: 1234567890
                 secret: 1234567890
-
-    previews:
-         path: "previews"

@@ -1,16 +1,19 @@
+image: node:9.4.0
 image: docker
+        
+
 
 services:
     - docker:dind
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
     - apk update && apk add git
-    - mv Docker/twake-php twake-php
-    - mv Docker/docker-compose-test.yml docker-compose.yml
-    - mv Docker/parameters-test.yml app/config/parameters.yml
-    - apk add python python-dev py-pip build-base libffi-dev openssl-dev
-    - pip install docker-compose
-    - docker-compose up -d --build
+    #- mv Docker/twake-php twake-php
+    #- mv Docker/docker-compose-test.yml docker-compose.yml
+    #- mv Docker/parameters-test.yml app/config/parameters.yml
+    #- apk add python python-dev py-pip build-base libffi-dev openssl-dev
+    #- pip install docker-compose
+    #- docker-compose up -d --build
 
 stages:
     - test
@@ -35,6 +38,35 @@ test:
 
     when: always
 
+
+manual_test:
+    stage: test
+    only:
+        refs:
+            - dev 
+    script:
     
+        - docker-compose exec -T php  ./vendor/bin/phpunit
+        
+    when: manual
 
 
+
+front_test:
+
+    stage: test
+
+    script:
+    
+        - echo on met en place le FRONT- echo on met en place le FRONT
+        - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
+        - cd Twake-react
+        - apk update && apk add yarn
+        - apk add npm
+        #- apk update && apk install --no-install-recommends yarn -> if I use nvm
+        - yarn install 
+        - yarn run dev-build
+        
+    when: manual    
+
+    

@@ -11,34 +11,29 @@ class UploadFile
 {
     private $resumable;
 
-    public function __construct($resumable)
+    public function __construct($resumable, $parameter_drive_salt)
     {
         $this->resumable = $resumable;
+        $this->parameter_drive_salt = $parameter_drive_salt;
     }
 
-    public function Preprocess($request){
+    public function preprocess($request)
+    {
+        $workspace_id = $request->request->get("workspace_id", "");
         $identifier = $request->request->all()["identifier"];
         $name = $request->request->all()["name"];
         $extension = $request->request->all()["extension"];
-        //$size = $request->request->all()["size"];
-        //error_log(print_r($size,true));
-        $this->resumable->CreateObject($identifier,$name,$extension);
-
+        $this->resumable->createObject($workspace_id, $identifier, $name, $extension);
     }
 
-    public function TestUpload($request, $response, $current_user)
+    public function upload($request, $response, $current_user)
     {
-
-        //@unlink("uploads/74726574343666676466617a65.chunk_1");
-        //@unlink("uploads/74726574343666676466617a65.chunk_2");
-
         $request = new SimpleRequest($request);
         $response = new SimpleResponse($response);
-        //$name= bin2hex(random_bytes(20));
-        $this->resumable->Updateparam($request,$response);
-        $this->resumable->process($current_user);
-
-        //error_log(print_r($chunkFile,true));
-
+        $this->resumable->updateParam($request, $response, $this->parameter_drive_salt);
+        $res = $this->resumable->process($current_user);
+        if (is_array($res)) {
+            return $res;
+        }
    }
 }
