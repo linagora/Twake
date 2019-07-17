@@ -38,7 +38,7 @@ class DriveFileSystem
 
     var $objectLinkSystem;
 
-    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem)
+    public function __construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem, $drive_previews_tmp_folder)
     {
         $this->doctrine = $doctrine;
         $this->root = $rootDirectory;
@@ -52,6 +52,7 @@ class DriveFileSystem
         $this->workspacesApps = $workspacesApps;
         $this->workspacesActivities = $workspacesActivities;
         $this->objectLinkSystem = $objectLinkSystem;
+        $this->drive_previews_tmp_folder = $drive_previews_tmp_folder;
 
         $this->previewableExt = Array("png", "jpeg", "jpg", "gif", "tiff", "ai", "svg", "pdf", "txt", "rtf", "csv", "docx", "doc", "odt", "xls", "xlsx", "ods", "ppt", "pptx", "odp");
     }
@@ -1812,6 +1813,19 @@ class DriveFileSystem
         return true;
     }
 
+    public function checkLocalFileForPreview(DriveFile $file)
+    {
+        $tmppath = null;
+        $version = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("id" => $file->getLastVersionId()));
+        if (isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
+            $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $version->getData()["identifier"]));
+            if ($uploadstate && $uploadstate->getHasPreview()) {
+                $tmppath = $this->drive_previews_tmp_folder . "/preview_" . $uploadstate->getIdentifier() . ".chunk_1";
+            }
+        }
+        return $tmppath;
+    }
+
     public function genPreview(DriveFile $file)
     {
         $res = false;
@@ -1827,15 +1841,9 @@ class DriveFileSystem
 
             $ext = $file->getExtension();
 
-            //TODO use local file if exists
-
-            $version = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("id" => $file->getLastVersionId()));
-            $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $version->getData()["identifier"]));
-            if($uploadstate->getHasPreview()) {
-                $tmppath = $this->preview . "/" . $uploadstate->getIdentifier() . "chunk1";
-                if(!file_exists($tmppath)) {
-                    $tmppath = $this->decode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
-                }
+            $tmppath = $this->checkLocalFileForPreview($file);
+            if (!$tmppath || !file_exists($tmppath)) {
+                $tmppath = $this->decode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
             }
 
             if ($tmppath) {
@@ -1846,6 +1854,12 @@ class DriveFileSystem
                     $res = $this->preview->generatePreview(basename($path), $tmppath, dirname($path), $ext, $file);
                     if ($this->file_exists($path . ".png", null)) {
                         rename($path . ".png", $previewPath);
+
+                        $file->setPreviewHasBeenGenerated(true);
+                        $file->setHasPreview(true);
+                        $this->doctrine->persist($file);
+                        $this->doctrine->flush();
+
                         $res = true;
                     } else {
                         error_log("FILE NOT GENERATED !");

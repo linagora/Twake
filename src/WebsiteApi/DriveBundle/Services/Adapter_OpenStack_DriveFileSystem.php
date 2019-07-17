@@ -17,9 +17,9 @@ use OpenStack\Identity\v2\Service;
 class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 {
 
-    public function __construct($openstack_config, $doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem)
+    public function __construct($openstack_config, $doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem, $drive_previews_tmp_folder)
     {
-        parent::__construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem);
+        parent::__construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem, $drive_previews_tmp_folder);
 
         $this->openstack_buckets = $openstack_config["buckets"];
         $this->openstack_buckets_prefix = isset($openstack_config["buckets_prefix"]) ? $openstack_config["buckets_prefix"] : "";
@@ -414,7 +414,11 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
             if (!$file->getIsDirectory() && $file->getLastVersion($this->doctrine)) {
 
                 $ext = $file->getExtension();
-                $tmppath = $this->decode($file->getPath(), $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
+
+                $tmppath = $this->checkLocalFileForPreview($file);
+                if (!$tmppath || !file_exists($tmppath)) {
+                    $tmppath = $this->decode($file->getPath(), $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
+                }
 
                 if ($tmppath) {
 
@@ -455,6 +459,10 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                                     ->createObject($options);
 
                                 $file->setPreviewLink($result->getPublicUri() . "");
+                                $file->setPreviewHasBeenGenerated(true);
+                                $file->setHasPreview(true);
+                                $this->doctrine->persist($file);
+                                $this->doctrine->flush();
                                 $res = true;
 
                             } catch (\Exception $e) {

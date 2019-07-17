@@ -50,14 +50,14 @@ class Resumable
 
     const WITHOUT_EXTENSION = true;
 
-    public function __construct($doctrine, $storagemanager, $driverefacto, $drive_preview_tmp_folder, $drive_tmp_folder, $file_system)
+    public function __construct($doctrine, $storagemanager, $driverefacto, $drive_previews_tmp_folder, $drive_tmp_folder, $file_system)
     {
         $this->doctrine = $doctrine;
         $this->storagemanager = $storagemanager;
         $this->driverefacto = $driverefacto;
         $this->log = new Logger('debug');
         $this->log->pushHandler(new StreamHandler('debug.log', Logger::DEBUG));
-        $this->previews = $drive_preview_tmp_folder;
+        $this->previews = $drive_previews_tmp_folder;
         $this->tempFolder = $drive_tmp_folder;
         $this->file_system = $file_system;
 
@@ -203,11 +203,11 @@ class Resumable
 
             //Preview if only one chunk
             if ($numOfChunks == 1 && $chunkNumber == 1) {
-                error_log("COPY FOR PREVIEW");
                 $previewDestination = $this->previews . DIRECTORY_SEPARATOR . "preview_" . $finalname;
                 $this->copy($chunkFile, $previewDestination);
                 $uploadstate->setHasPreview(true);
-
+                $this->doctrine->persist($uploadstate);
+                $this->doctrine->flush();
             }
 
 
@@ -257,8 +257,9 @@ class Resumable
 
             $fileordirectory = $this->driverefacto->save($object, $options, $current_user, Array("data" => $data, "size" => $totalSize), true);
 
-           $this->file_system->genPreview($fileordirectory);
-
+            if ($uploadstate->getHasPreview()) {
+                $this->file_system->getFileSystem()->genPreview($fileordirectory);
+            }
 
             return $fileordirectory->getAsArray();
 
