@@ -33,7 +33,7 @@ test:
         
         - docker-compose exec -T php  ./vendor/bin/phpunit
 
-    when: manual
+    when: always
 
     
 
