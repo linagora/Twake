@@ -43,7 +43,7 @@ manual_test:
             - dev 
     script:
     
-        #- docker-compose exec -T php  ./vendor/bin/phpunit
+        - docker-compose exec -T php  ./vendor/bin/phpunit
         
     when: manual
     
@@ -58,3 +58,5 @@ front_test:
         - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
         - yarn install 
         - yarn run dev-build
+        
+    when: manual    
