@@ -60,9 +60,9 @@ front_test:
     
         - echo on met en place le FRONT- echo on met en place le FRONT
         - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
-        #- apk update && apk install yarn -> normal case
-        - apk update && apk install --no-install-recommends yarn -> if I use nvm
-        - yarn install 
+        - apk update && apk install yarn
+        #- apk update && apk install --no-install-recommends yarn -> if I use nvm
+        #- yarn install 
         - yarn run dev-build
         
     when: manual    
