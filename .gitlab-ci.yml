@@ -24,7 +24,9 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     #- docker-compose exec -T php chmod -R 777 /tmp/
 
 stages:
-    - test
+    - schedule_test
+    - manual_test
+    - front_test
 
 schedule_test:
     stage: test
