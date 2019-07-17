@@ -126,3 +126,5 @@ fabric.properties
 
 ### Test ###
 /tests/code_coverage/
+/web/detached/*
+/drive/*

@@ -47,7 +47,12 @@ class WebTestCaseExtended extends WebTestCase
             return $res;
         }*/
 
-
+    public function setUp(){
+      # Warning:
+      \PHPUnit_Framework_Error_Warning::$enabled = FALSE;
+      # notice, strict:
+      \PHPUnit_Framework_Error_Notice::$enabled = FALSE;
+    }
 
     protected function getDoctrine()
     {

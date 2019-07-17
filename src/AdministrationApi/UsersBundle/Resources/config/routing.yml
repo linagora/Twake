@@ -1,0 +1,9 @@
+administration_api_users_get_all:
+  path: /getUsers
+  defaults: { _controller: AdministrationApiUsersBundle:Users:getAllUsers }
+  methods: [POST]
+
+administration_api_users_get_one:
+  path: /getOne
+  defaults: { _controller: AdministrationApiUsersBundle:Users:getOneUser }
+  methods: [POST]

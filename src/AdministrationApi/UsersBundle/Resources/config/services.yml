@@ -1,0 +1,5 @@
+services:
+
+  administration.users:
+    class: AdministrationApi\UsersBundle\Services\AdministrationUsers
+    arguments: [ "@app.twake_doctrine" ]

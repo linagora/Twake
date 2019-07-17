@@ -57,10 +57,6 @@ calendar:
     resource: "@TwakeCalendarBundle/Resources/config/routing.yml"
     prefix:   /ajax/calendar/
 
-project:
-    resource: "@TwakeProjectBundle/Resources/config/routing.yml"
-    prefix:   /ajax/project/
-
 twake_discussion:
     resource: "@TwakeDiscussionBundle/Resources/config/routing.yml"
     prefix:   /ajax/discussion/
@@ -127,6 +123,11 @@ twake_drive:
     prefix:   ajax/drive/
     methods: [POST, GET]
 
+twake_drive:
+    resource: "@TwakeTasksBundle/Resources/config/routing.yml"
+    prefix:   ajax/tasks/
+    methods: [POST]
+
 twake_notifications:
     resource: "@TwakeNotificationsBundle/Resources/config/routing.yml"
     prefix:   /ajax/notifications/
@@ -177,6 +178,14 @@ developers_api_v1_drive:
 developers_api_v1_core:
     resource: "@DevelopersApiV1CoreBundle/Resources/config/routing.yml"
     prefix:   /api/v1/core/
+
+administration_users:
+    resource: "@AdministrationApiUsersBundle/Resources/config/routing.yml"
+    prefix:   /api/backend/users/
+
+administration_workspaces:
+    resource: "@AdministrationApiWorkspacesBundle/Resources/config/routing.yml"
+    prefix:   /api/backend/workspaces/
 
 developers_api_error:
     path:     /api/{req}

@@ -22,7 +22,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
         parent::__construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem);
 
         $this->openstack_buckets = $openstack_config["buckets"];
-        $this->openstack_buckets_prefix = $openstack_config["buckets_prefix"];
+        $this->openstack_buckets_prefix = isset($openstack_config["buckets_prefix"]) ? $openstack_config["buckets_prefix"] : "";
         $this->openstack_credentials_key = $openstack_config["user"]["id"];
         $this->openstack_credentials_secret = $openstack_config["user"]["password"];
         $this->openstack_project_id = $openstack_config["project_id"];

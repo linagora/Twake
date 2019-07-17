@@ -36,6 +36,11 @@ class ManagerAdapter
         $this->es_updates = Array();
         $this->es_removes = Array();
         $this->generator = null;
+
+        if (!$this->es_server && !defined("ELASTICSEARCH_INSTALL_MESSAGE_SHOWED")) {
+            define("ELASTICSEARCH_INSTALL_MESSAGE_SHOWED", true);
+            error_log("INFO: Installation configured without elastic search");
+        }
     }
 
     public function getEntityManager()
@@ -220,6 +225,10 @@ class ManagerAdapter
     public function es_put($entity, $index, $server = "twake")
     {
 
+        if (!$this->es_server) {
+            return;
+        }
+
         if (is_array($entity)) {
             $id = $entity["id"];
             $data = $entity["data"];
@@ -257,7 +266,6 @@ class ManagerAdapter
         try {
             $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         } catch (\Exception $e) {
-            error_log(print_r($e,true));
             error_log("Unable to put on ElasticSearch.");
         }
 
@@ -265,6 +273,10 @@ class ManagerAdapter
 
     public function es_remove($entity, $index, $server = "twake")
     {
+
+        if (!$this->es_server) {
+            return;
+        }
 
         if (is_array($entity)) {
             $id = $entity["id"];
@@ -283,6 +295,10 @@ class ManagerAdapter
 
     public function es_search($options = Array(), $index = null, $server = "twake")
     {
+
+        if (!$this->es_server) {
+            return [];
+        }
 
         if (isset($options["index"]) && !$type) {
             $index = $options["index"];

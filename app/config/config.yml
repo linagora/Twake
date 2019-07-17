@@ -5,7 +5,6 @@ imports:
     - { resource: ws_routing.yml }
     - { resource: admin_config.yml }
     - { resource: "@TwakeCalendarBundle/Resources/config/services.yml" }
-    - { resource: "@TwakeProjectBundle/Resources/config/services.yml" }
     - { resource: "@TwakeUsersBundle/Resources/config/services.yml" }
     - { resource: "@TwakeCoreBundle/Resources/config/services.yml" }
     - { resource: "@TwakeDiscussionBundle/Resources/config/services.yml" }
@@ -16,6 +15,10 @@ imports:
     - { resource: "@TwakeUploadBundle/Resources/config/services.yml" }
     - { resource: "@TwakeGlobalSearchBundle/Resources/config/services.yml" }
     - { resource: "@TwakeDriveUploadBundle/Resources/config/services.yml" }
+    - { resource: "@TwakeTasksBundle/Resources/config/services.yml" }
+    - { resource: "@AdministrationApiCoreBundle/Resources/config/services.yml" }
+    - { resource: "@AdministrationApiUsersBundle/Resources/config/services.yml" }
+    - { resource: "@AdministrationApiWorkspacesBundle/Resources/config/services.yml" }
 #[REMOVE_ONPREMISE]
     - { resource: "@AdministrationAuthenticationBundle/Resources/config/services.yml" }
 #[/REMOVE_ONPREMISE]

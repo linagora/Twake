@@ -9,9 +9,6 @@ use WebsiteApi\_old_CalendarBundle\Entity\LinkCalendarWorkspace;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\ChannelsBundle\Entity\Channel;
 use WebsiteApi\DriveBundle\Entity\DriveLabel;
-use WebsiteApi\ProjectBundle\Entity\Board;
-use WebsiteApi\ProjectBundle\Entity\LinkBoardWorkspace;
-use WebsiteApi\ProjectBundle\Entity\ListOfTasks;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceApp;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
@@ -447,7 +444,7 @@ class Workspaces implements WorkspacesInterface
                 }
 
                 //Duplicate boards
-                if ($config["boards"]) {
+                /*if ($config["boards"]) {
                     $old_boardLinks = $this->doctrine->getRepository("TwakeProjectBundle:LinkBoardWorkspace")->findBy(Array("workspace" => $original_workspace));
                     foreach ($old_boardLinks as $boardLink) {
                         $board = $boardLink->getBoard();
@@ -470,7 +467,7 @@ class Workspaces implements WorkspacesInterface
                         $this->doctrine->persist($new_link);
                     }
                     $this->doctrine->flush();
-                }
+                }*/
 
             }
 

@@ -27,7 +27,6 @@ class ObjectLinksSystem
         if (count(self::$keyMap) == 0) {
             self::$keyMap["file"] = "TwakeDriveBundle:DriveFile";
             self::$keyMap["event"] = "TwakeCalendarBundle:CalendarEvent";
-            self::$keyMap["task"] = "TwakeProjectBundle:BoardTask";
             self::$keyMap["call"] = "TwakeDiscussionBundle:Call";
         }
     }
