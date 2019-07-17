@@ -55,10 +55,6 @@ front_test:
     script:
         - echo on met en place le FRONT- echo on met en place le FRONT
         - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
-        #- curl-sL https://deb.nodesource.com/setup_8.x |sudo-Ebash-
-        #- apk install -y nodejs
-        - npm install
-        #- node -v
         - yarn install 
         - yarn run dev-build
         
