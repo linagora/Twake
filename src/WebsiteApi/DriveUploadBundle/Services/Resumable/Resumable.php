@@ -238,22 +238,28 @@ class Resumable
             $parent_id = $object['parent_id'];
             $is_directory = $object['is_directory'];
             $name = $object['name'];
-            $is_detached = $object['detached'];
+            $detached = $object['detached'];
             $workspace_id = $object['workspace_id'];
             $front_id = $object['front_id'];
 
+            $object = Array(
+                "parent_id" => $parent_id,
+                "is_directory" => $is_directory,
+                "detached" => $detached,
+                "workspace_id" => $workspace_id,
+                "front_id" => $front_id,
+                "name" => $name
+            );
+
             $data = Array("upload_mode" => "chunk", "identifier" => $identifier, "nb_chunk" => $chunkNumber);
 
-            //$object = Array("parent_id" => $parent_id, "workspace_id" => $workspace_id, "front_id" => $front_id, "name" => "filefortest");
-            //$options = Array("new" => true, "data" => $data);
-
-            //on cree le drive file, son versinnig et on set la taille
+            $fileordirectory = $this->driverefacto->save($object, $options, $current_user, Array("data" => $data, "size" => $totalSize), true);
 
 
-//            $fileordirectory = $this->driverefacto->save($object,$options,$current_user);
-//            $fileordirectory->setSize($totalSize);
-//            $this->doctrine->persist($fileordirectory);
-//            $this->doctrine->flush();
+            //TODO generate preview if type is image and size is < 5mo
+
+
+            return $fileordirectory->getAsArray();
 
         }
         return $chunkFile;
