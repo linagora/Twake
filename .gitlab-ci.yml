@@ -1,5 +1,6 @@
+image: node:9.4.0
 image: docker
-        node:9.4.0
+        
 
 
 services:
