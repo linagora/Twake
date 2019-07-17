@@ -2,10 +2,8 @@ image: docker
 
 services:
     - docker:dind
-    
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
-
     - apk update && apk add git
     - mv Docker/twake-php twake-php
     - mv Docker/docker-compose-test.yml docker-compose.yml
@@ -13,50 +11,28 @@ before_script: #permet de lancer une série de commandes à executer pour prépa
     - apk add python python-dev py-pip build-base libffi-dev openssl-dev
     - pip install docker-compose
     - docker-compose up -d --build
-    
-    #- docker ps #To get the name of the existing container (juste pour info)
-    #- docker-compose exec -T php php -dmemory_limit=-1 composer.phar update
-    #- docker-compose exec -T php php /twake-core/bin/console cache:clear
-    #- set +e #Do something. If something fails with exit!=0 the script continues anyway
-    #- docker-compose exec -T php php ./bin/console twake:init #Init install
-    #- docker-compose exec -T php php /twake-core/bin/console cache:clear --env=prod
-    #- docker-compose exec -T php chmod -R 777 /twake-core/var/
-    #- docker-compose exec -T php chmod -R 777 /tmp/
 
 stages:
     - test
 
-schedule_test:
+test:
     stage: test
     only:
         refs:
             - schedules #permet d'executer le test selon le schedule
     script:
+    
+        - docker ps #To get the name of the existing container (juste pour info)
+        - docker-compose exec -T php php -dmemory_limit=-1 composer.phar update
+        - docker-compose exec -T php php /twake-core/bin/console cache:clear
+        - set +e #Do something. If something fails with exit!=0 the script continues anyway
+        - docker-compose exec -T php php /twake-core/bin/console cache:clear --env=prod
+        - docker-compose exec -T php chmod -R 777 /twake-core/var/
+        - docker-compose exec -T php chmod -R 777 /tmp/
+        - docker-compose exec -T php php ./bin/console twake:init #Init install
+        
         - docker-compose exec -T php  ./vendor/bin/phpunit
+
     when: always
 
-
-manual_test:
-    stage: test
-    only:
-        refs:
-            - dev 
-    script:
     
-        - docker-compose exec -T php  ./vendor/bin/phpunit
-        
-    when: manual
-    
-front_test:
-
-    image: node:9.4.0
-
-    stage: test
-
-    script:
-        - echo on met en place le FRONT- echo on met en place le FRONT 
-        - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
-        - yarn install 
-        - yarn run dev-build
-        
-    when: manual    
