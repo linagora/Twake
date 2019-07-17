@@ -51,8 +51,9 @@ manual_test:
         - echo on a accès au repo twake-react
         - ls
         - cd Twake-react
+    
         - ls -a
-        #- docker-compose -f .gitlab-ci.yml up
+        - docker-compose -f .gitlab-ci.yml up
     when: manual
     
 
