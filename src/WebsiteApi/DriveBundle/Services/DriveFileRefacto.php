@@ -57,7 +57,7 @@ class DriveFileRefacto
         $this->em->flush();
     }
 
-    public function remove($object, $options, $current_user)
+    public function remove($object, $options, $current_user = null, $return_entity = false)
     {
         if (!$this->hasAccess($options, $current_user)) {
             return false;
@@ -85,47 +85,34 @@ class DriveFileRefacto
                 return false;
             }
         }
-        return $fileordirectory;
+
+        if ($return_entity) {
+            return $fileordirectory;
+        }
+        return $fileordirectory->getAsArray();
     }
 
-    public function versionning($fileordirectory, $current_user, $data = null , $new = false){
+    public function versionning($fileordirectory, $current_user, $upload_data = null, $create_new_version = false)
+    {
 
         //on recupere la derniere version pour le fichier en cours
-        if(isset($current_user)){
-            $version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $fileordirectory->getId()));
-        }
-        if((!isset($version) || (isset($version) && $new = true))){ // on crée une nouvelle version pour le fichier en question
-            $version = new DriveFileVersion($fileordirectory,$current_user);
-            if(isset($data)){
-                $version->setData($data);
-            }
-        }
-//        error_log(print_r($version->getFileId()."",true));
-//        error_log(print_r($version->getData(),true));
+        $last_version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("id" => $fileordirectory->getLastVersionId()));
 
+        if (!$last_version || $create_new_version) { // on crée une nouvelle version pour le fichier en question
+            $last_version = new DriveFileVersion($fileordirectory, $current_user);
+        }
 
-//        elseif($version != null && $new = false){ //on modifie la version actuelle
-//            $version->setDateAdded(new \DateTime());
-//            $old_id = $version->getFileId()."";
-//
-//            // on supprime l'ancienne version du fichier ?
-////            $filedelete = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("id" => $old_id ));
-////            $this->em->persist($filedelete);
-////            $this->em->flush();
-//
-//            //IL FAUT DELETE LE FICHIER SUR OPENSTACK SI BESOIN
-//
-//
-//            $version->setFileId($fileordirectory->getId());
-//
-//        }
+        $last_version->setData(isset($upload_data["data"]) ? $upload_data["data"] : Array());
+        $last_version->setSize(isset($upload_data["size"]) ? $upload_data["size"] : 0);
+
+        $fileordirectory->setSize($last_version->getSize());
 
         $this->em->persist($version);
         $this->em->flush();
 
     }
 
-    public function save($object, $options, $current_user = null)
+    public function save($object, $options, $current_user = null, $upload_data = Array(), $return_entity = false)
     {
 
         if (!$this->hasAccess($options, $current_user)) {
@@ -148,7 +135,7 @@ class DriveFileRefacto
             }
             $front_id = $object["front_id"];
             $workspace_id = $object["workspace_id"];
-            $fileordirectory = new DriveFile($workspace_id,"create");
+            $fileordirectory = new DriveFile($workspace_id, "defined_later", $object["is_directory"]);
             $fileordirectory->setFrontId($front_id);
             //$fileordirectory->setIsInTrash(false);
             if (isset($object["detached"]) && $object["detached"]) {
@@ -186,6 +173,7 @@ class DriveFileRefacto
 
         }
 
+
         if(isset($object["parent_id"]) && $object["parent_id"] != ""){
             $parent_id = $object["parent_id"]."";
 
@@ -198,7 +186,7 @@ class DriveFileRefacto
             else{ // on a un parent ce n'est pas une creation c'est un déplacement
                 $fileordirectory_parent_id = $fileordirectory->getParentId()."";
                 if ($fileordirectory_parent_id != $parent_id) { //changement de parent id donc le fichier a été déplacé.
-                    $this->move($fileordirectory,$fileordirectory_parent_id,$parent_id);
+                    $this->move($fileordirectory, $fileordirectory_parent_id, $parent_id);
                 }
             }
         }
@@ -211,9 +199,11 @@ class DriveFileRefacto
             $fileordirectory->setParentId($parent_id);
         }
 
+
         if(isset($object["name"])){
             $fileordirectory->setName($object["name"]);
         }
+
 
         $fileordirectory->setLastUser($current_user);
 
@@ -224,19 +214,28 @@ class DriveFileRefacto
         }
 
 
-        if(isset($options["new"])){
-            $new = $options["new"];
+        if (isset($object["_once_new_version"])) {
+            $new = $object["_once_new_version"];
         }
         else{
             $new = true;
         }
 
-        if(isset($options["version"]) && $options["version"]) {
-           $this->versionning($fileordirectory, $current_user, $options["data"], $new);
+        //Update size if file was created AFTER versionning
+        if (!$fileordirectory->getIsDirectory()) {
+            $size_before = $fileordirectory->getSize();
+            $this->versionning($fileordirectory, $current_user, $upload_data, $new);
+            $size_after = $fileordirectory->getSize();
+            if ($size_after - $size_before != 0) {
+                $this->updateSize($fileordirectory->getId(), $size_after - $size_before, false);
+            }
         }
 
 
-        return $fileordirectory;
+        if ($return_entity) {
+            return $fileordirectory;
+        }
+        return $fileordirectory->getAsArray();
     }
 
     public function recursetrash($directory){ // permet de changer tous les in trash d'une arborescence

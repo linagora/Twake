@@ -31,6 +31,9 @@ class UploadFile
         $request = new SimpleRequest($request);
         $response = new SimpleResponse($response);
         $this->resumable->updateParam($request, $response, $this->parameter_drive_salt);
-        $this->resumable->process($current_user);
+        $res = $this->resumable->process($current_user);
+        if (is_array($res)) {
+            return $res;
+        }
    }
 }
