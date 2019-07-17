@@ -41,7 +41,7 @@ class ExportCommand extends ContainerAwareCommand
         $doctrine = $this->getContainer()->get('doctrine');
         $manager = $doctrine->getManager();
         $group_name = $input->getArgument('name');
-        error_log(print_r($group_name,true));
+        //error_log(print_r($group_name,true));
         $export_user = true;
 
 // =================================================================================================================================================
@@ -119,56 +119,57 @@ class ExportCommand extends ContainerAwareCommand
             mkdir("users");
             chdir("users");
             foreach($group_admin as $ga) {
-                $user = $ga->getUser();
-                $url = $user->getThumbnail()->getName();
-                $user_array = $user->getAsArray();
-                //si le membre du workspace n'est pas référencé comme user on doit le créer
-                $path = "";
-                $data = "";
-                $type = "";
-                if ($user_array["thumbnail"] != "") {
-                    if (strpos($user_array["thumbnail"], "://")) {
-                        $path = $user_array["thumbnail"];
+                if (!$ga->getUser()->getIsRobot()) {
+                    $user = $ga->getUser();
+                    $url = $user->getThumbnail()->getName();
+                    $user_array = $user->getAsArray();
+                    //si le membre du workspace n'est pas référencé comme user on doit le créer
+                    $path = "";
+                    $data = "";
+                    $type = "";
+                    if ($user_array["thumbnail"] != "") {
+                        if (strpos($user_array["thumbnail"], "://")) {
+                            $path = $user_array["thumbnail"];
+                        } else {
+                            $path = $upper_path . $user_array["thumbnail"];
+                        }
+                        $type = pathinfo($path, PATHINFO_EXTENSION);
+                        $data = file_get_contents($path);
+
+                        $logo64 = Array(
+                            "logo_type" => $type,
+                            "base64_data" => base64_encode($data),
+                            "url" => $url
+                        );
                     } else {
-                        $path = $upper_path . $user_array["thumbnail"];
+                        $logo64 = "";
                     }
-                    $type = pathinfo($path, PATHINFO_EXTENSION);
-                    $data = file_get_contents($path);
 
-                    $logo64 = Array(
-                        "logo_type" => $type,
-                        "base64_data" => base64_encode($data),
-                        "url" => $url
+                    $mails = $manager->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user" => $user_array["id"]));
+                    $secondarymail = Array();
+                    foreach ($mails as $mail) {
+                        $secondarymail[] = $mail->getMail();
+                    }
+                    if (($key = array_search($user->getemailCanonical(), $secondarymail)) !== false) {
+                        unset($secondarymail[$key]);
+                    }
+
+                    $users = Array(
+                        "firstname" => $user_array["firstname"],
+                        "lastname" => $user_array["lastname"],
+                        "language" => $user_array["language"],
+                        "username" => $user_array["username"],
+                        "emailcanonical" => $user->getemailCanonical(),
+                        "logo" => json_encode($logo64, JSON_PRETTY_PRINT),
+                        "password" => $user->getPassword(),
+                        "salt" => $user->getSalt(),
+                        "secondary_email" => $secondarymail,
                     );
+                    $user_file = "user_" . $user_array["id"] . ".json";
+                    $handle_user = fopen($user_file, 'w') or die('Cannot open file:  ' . $user_file);
+                    fwrite($handle_user, json_encode($users, JSON_PRETTY_PRINT));
+                    fclose($handle_user);
                 }
-                else{
-                    $logo64 = "";
-                }
-
-                $mails = $manager->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user" => $user_array["id"]));
-                $secondarymail = Array();
-                foreach ($mails as $mail) {
-                    $secondarymail[] = $mail->getMail();
-                }
-                if (($key = array_search($user->getemailCanonical(), $secondarymail)) !== false) {
-                    unset($secondarymail[$key]);
-                }
-
-                $users = Array(
-                    "firstname" => $user_array["firstname"],
-                    "lastname" => $user_array["lastname"],
-                    "language" => $user_array["language"],
-                    "username" => $user_array["username"],
-                    "emailcanonical" => $user->getemailCanonical(),
-                    "logo" => json_encode($logo64, JSON_PRETTY_PRINT),
-                    "password" => $user->getPassword(),
-                    "salt" => $user->getSalt(),
-                    "secondary_email" => $secondarymail,
-                );
-                $user_file = "user_" . $user_array["id"] . ".json";
-                $handle_user = fopen($user_file, 'w') or die('Cannot open file:  ' . $user_file);
-                fwrite($handle_user, json_encode($users, JSON_PRETTY_PRINT));
-                fclose($handle_user);
             }
             chdir("..");
         }
@@ -225,11 +226,13 @@ class ExportCommand extends ContainerAwareCommand
             $members = Array();
             foreach($workspaces_user as $wp_user) {
                 //on cree la liste des membres du workspace
-                $members[] = Array(
-                    "user_id" => $wp_user->getUser()->getId(),
-                    "level" => $wp_user->getLevelId(),
-                    "externe" => $wp_user->getExterne()
-                );
+                if (!$wp_user->getUser()->getIsRobot()) {
+                    $members[] = Array(
+                        "user_id" => $wp_user->getUser()->getId(),
+                        "level" => $wp_user->getLevelId(),
+                        "externe" => $wp_user->getExterne()
+                    );
+                }
             }
 
             //ON ECRIT LES MEMBRES DU WORKSPACE DANS LE FICHIER ET ON DEPLACE LE FICHIER
