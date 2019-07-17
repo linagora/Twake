@@ -61,12 +61,13 @@ class GroupsController extends Controller
             $group = $group_service->getOneGroup($id);
 
             if ($group) {
-                //TODO Get group data (workspaces, members, applications, Drive size)
                 $group_id = $group["id"];
 
                 $workspaces = $group_service->getGroupWorkspaces($group_id);
                 $members = $group_service->getGroupMembers($group_id);
                 $apps = $group_service->getGroupApps($group_id);
+
+                //TODO Get group Drive size
 
                 $data["data"]["group"] = $group;
                 $data["data"]["workspaces"] = $workspaces;
