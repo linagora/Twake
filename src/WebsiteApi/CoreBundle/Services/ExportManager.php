@@ -54,11 +54,15 @@ class ExportManager
             }
             $type = pathinfo($path, PATHINFO_EXTENSION);
             $data = file_get_contents($path);
+
+            $logo64 = Array(
+                "logo_type" => $type,
+                "base64_data" => base64_encode($data)
+            );
         }
-        $logo64 = Array(
-            "logo_type" => $type,
-            "base64_data" => base64_encode($data)
-        );
+        else{
+            $logo64 = "";
+        }
 
         $data = Array(
             "name" => $group["unique_name"],
@@ -111,7 +115,7 @@ class ExportManager
                 $users = Array(
                     "firstname" => $user_array["firstname"],
                     "lastname" => $user_array["lastname"],
-                    "langauge" => $user_array["language"],
+                    "language" => $user_array["language"],
                     "username" => $user_array["username"],
                     "emailcanonical" => $user->getemailCanonical(),
                     "logo" => json_encode($logo64, JSON_PRETTY_PRINT),
@@ -145,11 +149,9 @@ class ExportManager
             if($wp["logo"] != "" ) {
                 if (strpos($wp["logo"],"://")) {
                     $path = $wp["logo"];
-
                 }
                 else {
                     $path = $upper_path . $wp["logo"];
-
                 }
                 $type = pathinfo($path, PATHINFO_EXTENSION);
                 $data = file_get_contents($path);
@@ -176,12 +178,10 @@ class ExportManager
            $members = Array();
            foreach($workspaces_user as $wp_user) {
                //on cree la liste des membres du workspace
-               $user = $wp_user->getUser();
-               $user_array = $user->getAsArray();
                $members[] = Array(
-                  "user_id" => $user_array ["id"],
-                   "level" => $user_array["level_id"],
-                   "externe" => $user_array["externe"]
+                  "user_id" => $wp_user->getUser()->getId(),
+                   "level" => $wp_user->getLevelId(),
+                   "externe" => $wp_user->getExterne()
                );
            }
 

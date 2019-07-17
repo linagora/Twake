@@ -247,11 +247,11 @@ class DriveFileRefacto
                 $this->recursetrash($file);
             }
         }
-        $file = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory->getId()));
-        if(isset($file)){
-            $this->em->remove($directory);
-            $this->em->flush();
-        }
+//        $file = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory->getId()));
+//        if(isset($file)){
+//            $this->em->remove($file);
+//            $this->em->flush();
+//        }
         $directory->setIsInTrash(!($directory->getIsInTrash()));
         $this->em->persist($directory);
         $this->em->flush();
