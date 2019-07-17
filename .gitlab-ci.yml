@@ -48,10 +48,10 @@ manual_test:
         
     when: manual
 
-image: node:9.4.0
+
 
 front_test:
-    
+    image: node:9.4.0
     stage: test
 
     script:
