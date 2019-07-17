@@ -13,7 +13,7 @@ services:
 
   driveupload.resumable:
     class: WebsiteApi\DriveUploadBundle\Services\Resumable\Resumable
-    arguments: ["@app.twake_doctrine","@driveupload.storemanager", "@app.drive_refacto", %drive_previews_tmp_folder%, %drive_tmp_folder%, "app.drive.FileSystem"]
+    arguments: ["@app.twake_doctrine","@driveupload.storemanager", "@app.drive_refacto", %drive_previews_tmp_folder%, %drive_tmp_folder%, "@app.drive.adapter_selector"]
 
   driveupload.preview:
       class: WebsiteApi\DriveUploadBundle\Services\DrivePreview

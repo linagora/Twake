@@ -113,6 +113,10 @@ class DriveFileRefacto
         $this->em->persist($last_version);
         $this->em->flush();
 
+        $fileordirectory->setLastVersionId($last_version->getId());
+        $this->em->persist($fileordirectory);
+        $this->em->flush();
+
     }
 
     public function save($object, $options, $current_user = null, $upload_data = Array(), $return_entity = false)
@@ -140,6 +144,8 @@ class DriveFileRefacto
             $workspace_id = $object["workspace_id"];
             $fileordirectory = new DriveFile($workspace_id, "defined_later", $object["is_directory"]);
             $fileordirectory->setFrontId($front_id);
+            $fileordirectory->setPreviewHasBeenGenerated(false);
+            $fileordirectory->setHasPreview(false);
             //$fileordirectory->setIsInTrash(false);
             if (isset($object["detached"]) && $object["detached"]) {
                 $fileordirectory->setDetachedFile(true);
@@ -223,6 +229,7 @@ class DriveFileRefacto
         else{
             $new = true;
         }
+
 
         //Update size if file was created AFTER versionning
         if (!$fileordirectory->getIsDirectory()) {

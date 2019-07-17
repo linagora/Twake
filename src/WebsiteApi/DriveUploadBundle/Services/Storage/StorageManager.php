@@ -28,7 +28,6 @@ class StorageManager{
             return new Adapter_OpenStack($this->openstack);
         }
 
-
     }
 
     /**
