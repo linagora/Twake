@@ -45,17 +45,19 @@ class Resumable
     protected $driverefacto;
     protected $current_user;
     protected $previews;
+    protected $parameter_drive_salt;
 
     const WITHOUT_EXTENSION = true;
 
-    public function __construct($doctrine, $storagemanager, $driverefacto, $previews)
+    public function __construct($doctrine, $storagemanager, $driverefacto, $drive_preview_tmp_folder, $drive_tmp_folder)
     {
         $this->doctrine = $doctrine;
         $this->storagemanager = $storagemanager;
         $this->driverefacto = $driverefacto;
         $this->log = new Logger('debug');
         $this->log->pushHandler(new StreamHandler('debug.log', Logger::DEBUG));
-        $this->previews = $previews;
+        $this->previews = $drive_preview_tmp_folder;
+        $this->tempFolder = $drive_tmp_folder;
 
         //$this->preProcess();
     }
@@ -144,16 +146,11 @@ class Resumable
         return $this->extension;
     }
 
-    public function CreateObject($identifier,$filename,$extension){
-
-//        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findBy(Array());
-//        foreach ($uploadstate as $u){
-//            $this->doctrine->remove($u);
-//            $this->doctrine->flush();
-//        }
+    public function createObject($workspace_id, $identifier, $filename, $extension)
+    {
 
         $chunklist = Array();
-        $uploadstate = new UploadState($identifier,$filename,$extension,$chunklist);
+        $uploadstate = new UploadState($workspace_id, $identifier, $filename, $extension, $chunklist);
         $new_key = hash('sha256', $identifier);
         $uploadstate->setEncryptionKey($new_key);
         $this->doctrine->persist($uploadstate);
@@ -187,7 +184,11 @@ class Resumable
 
         $finalname = $identifier.".chunk_".$chunkNumber;
 
+        error_log("->handleChunk");
+
         if (!$this->isChunkUploaded($identifier, $finalname, $chunkNumber)) {
+
+            error_log("->notFinished");
 
             $chunkFile = $this->tmpChunkDir() . DIRECTORY_SEPARATOR . $finalname;
             $this->moveUploadedFile($file['tmp_name'], $chunkFile);
@@ -199,39 +200,42 @@ class Resumable
             $key = $uploadstate->getEncryptionKey();
             //error_log(print_r($key,true));
 
-            $param_bag = new EncryptionBag($key, "let's try a salt", "OpenSSL-2");
-            $this->storagemanager->write($chunkFile, $param_bag);
+
+            //Preview if only one chunk
+            $numOfChunks = intval($totalSize / $chunkSize);
+            if ($numOfChunks == 1 && $chunkNumber == 1) {
+                error_log("COPY FOR PREVIEW");
+                $previewDestination = $this->previews . DIRECTORY_SEPARATOR . "preview_" . $finalname;
+                $this->copy($chunkFile, $previewDestination);
+            }
+
+
+            $param_bag = new EncryptionBag($key, $this->parameter_drive_salt, "OpenSSL-2");
+            $this->storagemanager->getAdapter()->write($chunkFile, $chunkNumber, $param_bag, $uploadstate);
             $this->doctrine->clear();
+
             $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
             $uploadstate->addChunk($chunktoadd);
             $this->doctrine->persist($uploadstate);
             $this->doctrine->flush();
+
             error_log(print_r($uploadstate->getChunklist(), true));
 
-            $numOfChunks = intval($totalSize / $chunkSize);
-            if($numOfChunks == 1 && $chunkNumber ==1 ){
-//            //on doit reconstituer le fichier pour pouvoir en faire une preview.
-//
-//            $path = $this->createFileAndDeleteTmp($this->previews["path"], $filename);
-//            for ($i = 1; $i <= $numOfChunks; $i++) {
-//                $name = $uploadstate->getIdentifier() . ".chunk_" . $i;
-//                $chunkFile = $this->previews["path"] . DIRECTORY_SEPARATOR . $name;
-//                //error_log(print_r($chunkFile,true));
-//                $this->createFileFromChunks($chunkFile,$path);
-//            }
-                // 1 chunk on genere la preview dans le dossier
-                $chunkFile = $this->previews["path"] . DIRECTORY_SEPARATOR . $finalname;
-                $this->moveUploadedFile($file['tmp_name'], $chunkFile);
-            }
         }
 
         if ( isset($uploadstate) && $uploadstate->getChunk() == $numOfChunks && count($uploadstate->getChunklist()) == $numOfChunks ) {
-            error_log("fin upload");
+
+            error_log("->finished");
+
             $this->isUploadComplete = true;
             $uploadstate->setSuccess(true);
             $uploadstate->setChunk($chunkNumber);
             $this->doctrine->persist($uploadstate);
             $this->doctrine->flush();
+
+            $object = $_POST['object'];
+
+            error_log(json_encode($object));
 
             //error_log(print_r($this->current_user,true));
 
@@ -303,15 +307,25 @@ class Resumable
         return false;
     }
 
+    public function copy($file, $destFile)
+    {
+        $file = new File($file);
+        if ($file->exists()) {
+            return $file->copy($destFile);
+        }
+        return false;
+    }
+
     public function tmpChunkFilename($filename, $chunkNumber)
     {
         return $filename . '.' . str_pad($chunkNumber, 4, 0, STR_PAD_LEFT);
     }
 
-    public function Updateparam($request, $response){
+    public function updateParam($request, $response, $parameter_drive_salt)
+    {
+        $this->parameter_drive_salt = $parameter_drive_salt;
         $this->setRequest($request);
         $this->setResponse($response);
-        $this->setTempFolder("uploads");
         $this->preProcess();
     }
 
@@ -332,7 +346,7 @@ class Resumable
 
         for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
             $chunkFile = $uploadstate->getIdentifier() . ".chunk_" . $i;
-            $this->storagemanager->read($chunkFile,$param_bag);
+            $this->storagemanager->getAdapter()->read($chunkFile, $i, $param_bag, $uploadstate);
             $chunkFile = "uploads" . DIRECTORY_SEPARATOR . $chunkFile . ".decrypt";
             $this->createFileFromChunks($chunkFile,$path);
         }
@@ -430,6 +444,7 @@ class Resumable
     {
         //$tmpChunkDir = $this->tempFolder . DIRECTORY_SEPARATOR . $identifier;
         $tmpChunkDir = $this->tempFolder;
+        error_log($tmpChunkDir);
         if (!file_exists($tmpChunkDir)) {
             mkdir($tmpChunkDir);
         }
@@ -443,11 +458,6 @@ class Resumable
     public function setResponse($response)
     {
         $this->response = $response;
-    }
-
-    public function setTempFolder($tempFolder)
-    {
-        $this->tempFolder = $tempFolder;
     }
 
     private function log($msg, $ctx = array())

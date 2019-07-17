@@ -5,24 +5,19 @@ namespace WebsiteApi\DriveUploadBundle\Services;
 use WebsiteApi\DriveUploadBundle\Services\DrivePreview;
 
 class PreviewManager
-
 {
-   public function generatePreviewFromFolder(){
+    private $previews;
+    private $preview_service;
 
-       $path = "previews";
-       $scanned_directory = array_diff(scandir($path), array('..', '.'));
-       foreach ($scanned_directory as $file){
-           $filename = $file;
-           $filepath = $path . DIRECTORY_SEPARATOR . $filename;
+    public function __construct($preview_service, $previews)
+    {
+        $this->previews = $previews;
+        $this->preview_service = $preview_service;
+    }
 
-//           $stream = fopen($filepath,"r");
-//           $meta_data = stream_get_meta_data($stream);
-//           $filename = $meta_data["uri"];
-           $ext = pathinfo ($filepath,PATHINFO_EXTENSION );
+    public function generatePreviewFromFolder()
+    {
+        //TODO
+    }
 
-           //var_dump($ext);
-           //DrivePreview::generatePreview($filename,$filename,$path,$ext);
-//           fclose($filepath);
-       }
-   }
 }

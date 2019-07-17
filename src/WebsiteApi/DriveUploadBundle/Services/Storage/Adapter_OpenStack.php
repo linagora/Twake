@@ -14,16 +14,14 @@ use WebsiteApi\DriveBundle\Services\MCryptAES256Implementation;
 use GuzzleHttp\Psr7\Stream;
 
 use OpenStack\Identity\v2\Service;
+use WebsiteApi\DriveUploadBundle\Entity\UploadState;
 
 class Adapter_OpenStack implements AdapterInterface{
 
-    protected $root ;
     protected $openstack;
 
-    public function __construct($root,$openstack)
+    public function __construct($openstack)
     {
-        $this->root = $root;
-        //error_log(print_r($openstack,true));
 
         $this->openstack_buckets = $openstack["buckets"];
         $this->openstack_buckets_prefix = $openstack["buckets_prefix"];
@@ -33,7 +31,7 @@ class Adapter_OpenStack implements AdapterInterface{
         $this->openstack_auth_url = $openstack["auth_url"];
 
         $httpClient = new Client([
-            'base_uri' => TransportUtils::normalizeUrl($this->openstack_auth_url),
+            'base_uri' => TransportUtils::normalizeUrl($this->openstack_auth_url ? $this->openstack_auth_url : ""),
             'handler' => HandlerStack::create(),
         ]);
 
@@ -65,13 +63,7 @@ class Adapter_OpenStack implements AdapterInterface{
 
     }
 
-    protected function getRoot()
-    {
-        //error_log(print_r($this->root,true));
-        return dirname($this->root) . "/" . "drive" . "/";
-    }
-
-    public function write($chunkFile,$param_bag)
+    public function write($chunkFile, $chunkNo, $param_bag, UploadState $uploadState)
     {
         //error_log(print_r($chunkFile,true));
         //error_log("cc open stack");
@@ -86,7 +78,7 @@ class Adapter_OpenStack implements AdapterInterface{
         try {
 
             $options = [
-                'name' => "drive/workspace_id/file_id/" . $key_path,
+                'name' => "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo,
                 'stream' => new Stream(fopen($chunkFile, 'rb')),
             ];
 
@@ -101,7 +93,7 @@ class Adapter_OpenStack implements AdapterInterface{
         }
     }
 
-    public function read($chunkFile,$param_bag)
+    public function read($chunkFile, $chunkNo, $param_bag, UploadState $uploadState)
     {
         $key = "OpenStack" . $param_bag->getSalt(). $param_bag->getKey();
         $key = md5($key);
@@ -109,7 +101,7 @@ class Adapter_OpenStack implements AdapterInterface{
         try {
             $stream = $this->openstack->objectStoreV1()
                 ->getContainer($this->openstack_bucket_name)
-                ->getObject("drive/workspace_id/file_id/" . $chunkFile)
+                ->getObject("drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo)
                 ->download();
 
             $tmpPath = "uploads" . DIRECTORY_SEPARATOR . $chunkFile;
@@ -118,7 +110,7 @@ class Adapter_OpenStack implements AdapterInterface{
 
             $decodedPath = $this->decode($tmpPath, $param_bag);
 
-            return $tmpPath;
+            return $decodedPath;
 
         } catch (Exception $e) {
             error_log("Error accessing aws file.");
