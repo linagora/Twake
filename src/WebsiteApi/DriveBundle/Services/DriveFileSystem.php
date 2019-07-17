@@ -1828,7 +1828,15 @@ class DriveFileSystem
             $ext = $file->getExtension();
 
             //TODO use local file if exists
-            $tmppath = $this->decode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
+
+            $version = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("id" => $file->getLastVersionId()));
+            $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $version->getData()["identifier"]));
+            if($uploadstate->getHasPreview()) {
+                $tmppath = $this->preview . "/" . $uploadstate->getIdentifier() . "chunk1";
+                if(!file_exists($tmppath)) {
+                    $tmppath = $this->decode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
+                }
+            }
 
             if ($tmppath) {
                 rename($tmppath, $tmppath . ".tw");

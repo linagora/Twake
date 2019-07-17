@@ -288,7 +288,6 @@ class DriveFileRefacto
             }
             if($directory != null){
 
-
                 if(!($directory->getParentId() == "" && (($to_or_out_trash === 1 && $delta > 0) || ($to_or_out_trash === 2 && $delta < 0)))){
                     $currentSize = $directory->getSize();
                     $directory->setSize($currentSize + $delta);

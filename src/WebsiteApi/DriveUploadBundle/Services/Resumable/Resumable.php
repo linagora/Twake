@@ -46,10 +46,11 @@ class Resumable
     protected $current_user;
     protected $previews;
     protected $parameter_drive_salt;
+    protected $file_system;
 
     const WITHOUT_EXTENSION = true;
 
-    public function __construct($doctrine, $storagemanager, $driverefacto, $drive_preview_tmp_folder, $drive_tmp_folder)
+    public function __construct($doctrine, $storagemanager, $driverefacto, $drive_preview_tmp_folder, $drive_tmp_folder, $file_system)
     {
         $this->doctrine = $doctrine;
         $this->storagemanager = $storagemanager;
@@ -58,6 +59,8 @@ class Resumable
         $this->log->pushHandler(new StreamHandler('debug.log', Logger::DEBUG));
         $this->previews = $drive_preview_tmp_folder;
         $this->tempFolder = $drive_tmp_folder;
+        $this->file_system = $file_system;
+
 
         //$this->preProcess();
     }
@@ -202,6 +205,7 @@ class Resumable
                 $previewDestination = $this->previews . DIRECTORY_SEPARATOR . "preview_" . $finalname;
                 $this->copy($chunkFile, $previewDestination);
                 $uploadstate->setHasPreview(true);
+
             }
 
 
