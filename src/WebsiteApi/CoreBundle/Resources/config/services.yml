@@ -45,6 +45,12 @@ services:
         class: WebsiteApi\CoreBundle\Services\AccessManager
         arguments: ["@app.twake_doctrine", "@app.workspace_members"]
 
+    #EXPORT AND IMPORT VERSION
+
+    app.exportversion:
+        class: WebsiteApi\CoreBundle\Services\ExportManager
+        arguments: ["@app.twake_doctrine"]
+
     #MONITORING
 
     app.monitoring_collector_registry:

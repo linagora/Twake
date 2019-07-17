@@ -58,7 +58,4 @@ class AccessController extends Controller
 
         return new JsonResponse($data);
     }
-
-
-
 }
