@@ -1,0 +1,4 @@
+administration_api_apps_get_all:
+  path: /getApps
+  defaults: { _controller: AdministrationApiAppsBundle}
+  methods: [POST]

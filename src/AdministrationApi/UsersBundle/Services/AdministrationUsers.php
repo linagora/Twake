@@ -35,12 +35,14 @@ class AdministrationUsers
         try {
             $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-            $user = $usersRepository->findBy(Array('id'=>$user_id));
+            $user_tab = $usersRepository->findBy(Array('id'=>$user_id));
 
             $rep = false;
 
-            if ($user) {
-                $rep = $user->getAsArray();
+            if (count($user_tab) == 1) {
+                foreach ($user_tab as $user) {
+                    $rep = $user->getAsArray();
+                }
             }
             return $rep;
         } catch (Exception $e) {
