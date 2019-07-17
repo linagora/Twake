@@ -96,7 +96,10 @@ class DriveFileRefacto
     {
 
         //on recupere la derniere version pour le fichier en cours
-        $last_version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("id" => $fileordirectory->getLastVersionId()));
+        $last_version = null;
+        if ($fileordirectory->getLastVersionId()) {
+            $last_version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("id" => $fileordirectory->getLastVersionId()));
+        }
 
         if (!$last_version || $create_new_version) { // on crée une nouvelle version pour le fichier en question
             $last_version = new DriveFileVersion($fileordirectory, $current_user);
@@ -107,7 +110,7 @@ class DriveFileRefacto
 
         $fileordirectory->setSize($last_version->getSize());
 
-        $this->em->persist($version);
+        $this->em->persist($last_version);
         $this->em->flush();
 
     }
@@ -227,7 +230,7 @@ class DriveFileRefacto
             $this->versionning($fileordirectory, $current_user, $upload_data, $new);
             $size_after = $fileordirectory->getSize();
             if ($size_after - $size_before != 0) {
-                $this->updateSize($fileordirectory->getId(), $size_after - $size_before, false);
+                $this->updateSize($fileordirectory->getId() . "", $size_after - $size_before, false);
             }
         }
 

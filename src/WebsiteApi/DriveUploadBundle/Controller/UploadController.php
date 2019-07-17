@@ -15,7 +15,7 @@ class UploadController extends Controller
     {
         $current_user_id = $this->getUser()->getId();
         $res = $this->get('driveupload.upload')->upload($request, $response, $current_user_id);
-        return new JsonResponse($res);
+        return new JsonResponse(Array("data" => Array("object" => $res)));
     }
 
     public function downloadfileAction(Request $request)

@@ -179,7 +179,9 @@ class Resumable
         $identifier = $this->resumableParam($this->resumableOption['identifier']);
         $filename = $this->resumableParam($this->resumableOption['filename']);
         $chunkNumber = $this->resumableParam($this->resumableOption['chunkNumber']);
+        $totalSize = intval($_POST["resumableTotalSize"]);
         $numOfChunks = intval($_POST["resumableTotalChunks"]);
+
 
         $finalname = $identifier.".chunk_".$chunkNumber;
 
@@ -224,7 +226,7 @@ class Resumable
             $this->doctrine->persist($uploadstate);
             $this->doctrine->flush();
 
-            $object = json_decode($_POST['object']);
+            $object = json_decode($_POST['object'], 1);
 
             //error_log(print_r($this->current_user,true));
 
