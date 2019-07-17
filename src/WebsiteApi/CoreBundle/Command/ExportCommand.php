@@ -23,13 +23,7 @@ class ExportCommand extends ContainerAwareCommand
     {
         $this
             ->setName("twake:export_group")
-            ->setDescription("Command to initialize the server, notably filling the database with crucial data")
-            ->addOption(
-                "ignore",
-                "i",
-                InputOption::VALUE_NONE,
-                "Ignore errors from doctrine schema update, use only if doctrine is broken"
-            )
+            ->setDescription("Command to export a group from Twake")
             ->addArgument('name', InputArgument::REQUIRED, 'What group do you want to export?');
     }
 
