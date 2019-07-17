@@ -1,4 +1,5 @@
 image: docker
+image: node:9.4.0
 
 services:
     - docker:dind
