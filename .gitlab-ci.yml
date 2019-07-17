@@ -50,9 +50,7 @@ manual_test:
         - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
         - echo on a accès au repo twake-react
         - ls
-        - cd ..
-        - ls
-        - cd Twake-code.tmp
+        - cd Twake-react
         - ls -a
         #- docker-compose -f .gitlab-ci.yml up
     when: manual
