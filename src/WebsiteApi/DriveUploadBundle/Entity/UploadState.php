@@ -30,6 +30,11 @@ class UploadState
     protected $identifier;
 
     /**
+     * @ORM\Column(name ="workspace_id", type="twake_text")
+     */
+    protected $workspace_id;
+
+    /**
      * @ORM\Column(name ="filename", type="twake_text")
      * @ORM\Id
      */
@@ -60,8 +65,9 @@ class UploadState
      */
     protected $encryption_key;
 
-    public function __construct($identifier, $filename, $extension, $chunklist)
+    public function __construct($workspace_id, $identifier, $filename, $extension, $chunklist)
     {
+        $this->workspace_id = $workspace_id;
         $this->identifier = $identifier;
         $this->filename = $filename;
         $this->extension = $extension;
@@ -69,7 +75,6 @@ class UploadState
         $this->chunklist = json_encode($chunklist);
         $this->success = false;
         $this->encryption_key = "testkey";
-
     }
 
     /**
@@ -224,6 +229,21 @@ class UploadState
         $this->success = $success;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getWorkspaceId()
+    {
+        return $this->workspace_id;
+    }
+
+    /**
+     * @param mixed $workspace_id
+     */
+    public function setWorkspaceId($workspace_id)
+    {
+        $this->workspace_id = $workspace_id;
+    }
 
 
 }

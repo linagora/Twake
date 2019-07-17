@@ -31,7 +31,7 @@ class WebsocketsController extends Controller
             ));
         }
 
-        return new JsonResponse(Array("status" => "error"));
+        return new JsonResponse(Array("status" => "error_service_not_found_or_not_allowed"));
 
     }
 

@@ -149,8 +149,6 @@ class UsersConnectionsController extends Controller
 
         $colors = $colors[rand(0, count($colors) - 1)];
 
-        error_log(json_encode($colors));
-
         /*$choosenColors = Array();
         for ($i = 0; $i < 4; $i++) {
             $choosenColors[] = $colors[rand(0, count($colors) - 1)];

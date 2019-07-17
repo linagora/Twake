@@ -15,7 +15,7 @@ class DownloadFile
         $this->resumable = $resumable;
     }
 
-    public function TestDownload()
+    public function download()
     {
         $this->resumable->downloadFile();
     }
