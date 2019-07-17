@@ -51,6 +51,7 @@ manual_test:
         - echo on a accès au repo twake-react
         - ls
         - cd ..
+        - ls
     when: manual
     
 
