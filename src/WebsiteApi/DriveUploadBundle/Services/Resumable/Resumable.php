@@ -257,7 +257,7 @@ class Resumable
 
             $fileordirectory = $this->driverefacto->save($object, $options, $current_user, Array("data" => $data, "size" => $totalSize), true);
 
-            if ($uploadstate->getHasPreview()) {
+            if ($uploadstate->getHasPreview() && $totalSize < 20000000) {
                 $this->file_system->getFileSystem()->genPreview($fileordirectory);
             }
 

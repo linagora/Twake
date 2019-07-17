@@ -91,7 +91,7 @@ class Adapter_AWS implements AdapterInterface{
 
             // Upload data.
             $result = $this->aws_s3_client->putObject($data);
-            @unlink($path);
+            @unlink($chunkFile);
 
         } catch (S3Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
