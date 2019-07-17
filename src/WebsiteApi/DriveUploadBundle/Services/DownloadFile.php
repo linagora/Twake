@@ -15,8 +15,10 @@ class DownloadFile
         $this->resumable = $resumable;
     }
 
-    public function download()
+    public function download($workspace_id, $files_ids, $download, $versionId)
     {
+
+
         $this->resumable->downloadFile();
     }
 }

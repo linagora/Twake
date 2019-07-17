@@ -9,7 +9,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * UploadState
  *
- * @ORM\Table(name="uploadstate",options={"engine":"MyISAM", "scylladb_keys": {{"filename": "ASC", "id": "DESC"}, {"identifier": "ASC"}, {"id": "ASC"}} })
+ * @ORM\Table(name="uploadstate",options={"engine":"MyISAM", "scylladb_keys": {{"id": "ASC"}, {"identifier": "ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveUploadBundle\Repository\UploadStateRepository")
  */
 
@@ -30,13 +30,17 @@ class UploadState
     protected $identifier;
 
     /**
+     * @ORM\Column(name ="user_id", type="twake_text")
+     */
+    protected $user_id;
+
+    /**
      * @ORM\Column(name ="workspace_id", type="twake_text")
      */
     protected $workspace_id;
 
     /**
      * @ORM\Column(name ="filename", type="twake_text")
-     * @ORM\Id
      */
     protected $filename;
 
@@ -264,6 +268,22 @@ class UploadState
     public function setHasPreview($has_preview)
     {
         $this->has_preview = $has_preview;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getUserId()
+    {
+        return $this->user_id;
+    }
+
+    /**
+     * @param mixed $user_id
+     */
+    public function setUserId($user_id)
+    {
+        $this->user_id = $user_id;
     }
 
 }

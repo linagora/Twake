@@ -19,7 +19,7 @@ class FrontObject
 
     public function __construct()
     {
-        $this->front_id = bin2hex(random_bytes(20));
+        $this->front_id = date("U") . bin2hex(random_bytes(20));
     }
 
     public function getId()

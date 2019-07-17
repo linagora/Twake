@@ -81,9 +81,10 @@ class Resumable
 
     public function process($current_user)
     {
+
         if (!empty($this->resumableParams())) {
             if (!empty($this->request->file())) {
-                $this->current_user = $current_user;
+                $this->current_user_id = $current_user;
                 return $this->handleChunk();
             } else {
                 $this->handleTestChunk();
@@ -149,15 +150,20 @@ class Resumable
         return $this->extension;
     }
 
-    public function createObject($workspace_id, $identifier, $filename, $extension)
+    public function createObject($workspace_id, $filename, $extension, $user_id)
     {
+
+        $identifier = $workspace_id . date("U") . bin2hex(random_bytes(20));
 
         $chunklist = Array();
         $uploadstate = new UploadState($workspace_id, $identifier, $filename, $extension, $chunklist);
         $new_key = hash('sha256', $identifier);
         $uploadstate->setEncryptionKey($new_key);
+        $uploadstate->setUserId($user_id);
         $this->doctrine->persist($uploadstate);
         $this->doctrine->flush();
+
+        return $identifier;
     }
 
     public function handleTestChunk()
@@ -200,6 +206,13 @@ class Resumable
             $key = $uploadstate->getEncryptionKey();
             //error_log(print_r($key,true));
 
+            error_log("----");
+            error_log($uploadstate->getUserId());
+            error_log($this->current_user_id);
+
+            if ($this->current_user_id != $uploadstate->getUserId()) {
+                return false;
+            }
 
             //Preview if only one chunk
             if ($numOfChunks == 1 && $chunkNumber == 1) {
@@ -232,7 +245,7 @@ class Resumable
 
             $object = json_decode($_POST['object'], 1);
 
-            //error_log(print_r($this->current_user,true));
+            //error_log(print_r($this->current_user_id,true));
 
 
             //recupere les données dans la requete pour connaitre l'id, le parent, le workspace etc
@@ -337,15 +350,7 @@ class Resumable
     public function downloadFile()
     {
 
-        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findBy(Array());
-        //var_dump(count($uploadstate));
-        //var_dump($uploadstate);
-        foreach ($uploadstate as $upload){
-            $this->doctrine->remove($upload);
-        }
-        $this->doctrine->flush();
-
-        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("filename" => "fichier1go.txt"));
+        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => "fichier1go.txt"));
         $param_bag = new EncryptionBag("testkey","let's try a salt", "OpenSSL-2");
         $path = $this->createFileAndDeleteTmp("uploads", "fichier1go.txt");
 

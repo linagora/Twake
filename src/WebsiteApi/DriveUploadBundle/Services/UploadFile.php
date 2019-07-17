@@ -17,13 +17,13 @@ class UploadFile
         $this->parameter_drive_salt = $parameter_drive_salt;
     }
 
-    public function preprocess($request)
+    public function preprocess($request, $current_user_id)
     {
         $workspace_id = $request->request->get("workspace_id", "");
         $identifier = $request->request->all()["identifier"];
         $name = $request->request->all()["name"];
         $extension = $request->request->all()["extension"];
-        $this->resumable->createObject($workspace_id, $identifier, $name, $extension);
+        return $this->resumable->createObject($workspace_id, $name, $extension, $current_user_id);
     }
 
     public function upload($request, $response, $current_user)
