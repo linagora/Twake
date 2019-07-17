@@ -52,6 +52,9 @@ manual_test:
         - ls
         - cd ..
         - ls
+        - cd Twake-code.tmp
+        - ls -a
+        #- docker-compose -f .gitlab-ci.yml up
     when: manual
     
 
