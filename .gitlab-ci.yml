@@ -48,13 +48,15 @@ manual_test:
     when: manual
     
 front_test:
-    image: node:9.4.0
+    
     stage: test
 
         script:
             - echo on met en place le FRONT- echo on met en place le FRONT
-            #INSTALLER LE NODE PUIS YARN
             - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
+            - curl-sL https://deb.nodesource.com/setup_8.x |sudo-Ebash- 
+            - apk install -y nodejs
+            - node -v
             - yarn install 
             - yarn run dev-build
         
