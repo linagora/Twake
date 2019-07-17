@@ -9,9 +9,3 @@ driveupload_download:
 driveupload_preprocess:
   path:       /preprocess
   defaults: { _controller: TwakeDriveUploadBundle:Upload:Preprocess}
-
-driveupload_previewmanager:
-  path:       /preview
-  defaults: { _controller: TwakeDriveUploadBundle:Upload:Preview}
-
-

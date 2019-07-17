@@ -61,6 +61,11 @@ class UploadState
     protected $chunklist;
 
     /**
+     * @ORM\Column(name ="has_preview", type="twake_boolean")
+     */
+    protected $has_preview;
+
+    /**
      * @ORM\Column(name ="encryption_key", type="twake_text", nullable=true)
      */
     protected $encryption_key;
@@ -245,5 +250,20 @@ class UploadState
         $this->workspace_id = $workspace_id;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getHasPreview()
+    {
+        return $this->has_preview;
+    }
+
+    /**
+     * @param mixed $has_preview
+     */
+    public function setHasPreview($has_preview)
+    {
+        $this->has_preview = $has_preview;
+    }
 
 }

@@ -179,16 +179,11 @@ class Resumable
         $identifier = $this->resumableParam($this->resumableOption['identifier']);
         $filename = $this->resumableParam($this->resumableOption['filename']);
         $chunkNumber = $this->resumableParam($this->resumableOption['chunkNumber']);
-        $chunkSize = $this->resumableParam($this->resumableOption['chunkSize']);
-        $totalSize = $this->resumableParam($this->resumableOption['totalSize']);
+        $numOfChunks = intval($_POST["resumableTotalChunks"]);
 
         $finalname = $identifier.".chunk_".$chunkNumber;
 
-        error_log("->handleChunk");
-
         if (!$this->isChunkUploaded($identifier, $finalname, $chunkNumber)) {
-
-            error_log("->notFinished");
 
             $chunkFile = $this->tmpChunkDir() . DIRECTORY_SEPARATOR . $finalname;
             $this->moveUploadedFile($file['tmp_name'], $chunkFile);
@@ -202,11 +197,11 @@ class Resumable
 
 
             //Preview if only one chunk
-            $numOfChunks = intval($totalSize / $chunkSize);
             if ($numOfChunks == 1 && $chunkNumber == 1) {
                 error_log("COPY FOR PREVIEW");
                 $previewDestination = $this->previews . DIRECTORY_SEPARATOR . "preview_" . $finalname;
                 $this->copy($chunkFile, $previewDestination);
+                $uploadstate->setHasPreview(true);
             }
 
 
@@ -219,13 +214,9 @@ class Resumable
             $this->doctrine->persist($uploadstate);
             $this->doctrine->flush();
 
-            error_log(print_r($uploadstate->getChunklist(), true));
-
         }
 
         if ( isset($uploadstate) && $uploadstate->getChunk() == $numOfChunks && count($uploadstate->getChunklist()) == $numOfChunks ) {
-
-            error_log("->finished");
 
             $this->isUploadComplete = true;
             $uploadstate->setSuccess(true);
@@ -233,21 +224,21 @@ class Resumable
             $this->doctrine->persist($uploadstate);
             $this->doctrine->flush();
 
-            $object = $_POST['object'];
-
-            error_log(json_encode($object));
+            $object = json_decode($_POST['object']);
 
             //error_log(print_r($this->current_user,true));
 
 
             //recupere les données dans la requete pour connaitre l'id, le parent, le workspace etc
 
+            $parent_id = $object['parent_id'];
+            $is_directory = $object['is_directory'];
+            $name = $object['name'];
+            $is_detached = $object['detached'];
+            $workspace_id = $object['workspace_id'];
+            $front_id = $object['front_id'];
 
-            $parent_id = $_POST['parent_id'];
-            $workspace_id = $_POST['workspace_id'];
-            $front_id = $_POST['front_id'];
-
-            $data = Array("upload mode" => "chunk", "identifier" => $identifier ,"nb chunk" => $chunkNumber);
+            $data = Array("upload_mode" => "chunk", "identifier" => $identifier, "nb_chunk" => $chunkNumber);
 
             //$object = Array("parent_id" => $parent_id, "workspace_id" => $workspace_id, "front_id" => $front_id, "name" => "filefortest");
             //$options = Array("new" => true, "data" => $data);

@@ -18,7 +18,3 @@ services:
   driveupload.preview:
       class: WebsiteApi\DriveUploadBundle\Services\DrivePreview
       arguments: ["@app.twake_doctrine"]
-
-  driveupload.previewmanager:
-    class: WebsiteApi\DriveUploadBundle\Services\PreviewManager
-    arguments: ["driveupload.preview", %drive_previews_tmp_folder%]

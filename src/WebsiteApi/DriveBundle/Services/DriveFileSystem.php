@@ -1826,6 +1826,8 @@ class DriveFileSystem
             $this->verifyPath($previewPath);
 
             $ext = $file->getExtension();
+
+            //TODO use local file if exists
             $tmppath = $this->decode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
 
             if ($tmppath) {
