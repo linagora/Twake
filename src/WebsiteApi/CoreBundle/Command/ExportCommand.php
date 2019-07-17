@@ -1,27 +1,61 @@
 <?php
+namespace WebsiteApi\CoreBundle\Command;
 
-namespace WebsiteApi\CoreBundle\Services;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Output\OutputInterface;
+use WebsiteApi\DiscussionBundle\Entity\Channel;
+use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
+use WebsiteApi\WorkspacesBundle\Entity\Level;
 
-class ExportManager
+class ExportCommand extends ContainerAwareCommand
 {
+    var $leveladmin;
+    var $output;
+    var $force;
+    var $twake;
 
-    public function __construct($doctrine)
+    var $newApps = Array('all' => Array(), 'notall' => Array());
+
+    protected function configure()
     {
-        $this->doctrine = $doctrine;
+        $this
+            ->setName("twake:export_group")
+            ->setDescription("Command to initialize the server, notably filling the database with crucial data")
+            ->addOption(
+                "ignore",
+                "i",
+                InputOption::VALUE_NONE,
+                "Ignore errors from doctrine schema update, use only if doctrine is broken"
+            )
+            ->addArgument('name', InputArgument::REQUIRED, 'What group do you want to export?');
     }
 
-    public function export_version($group_id, $export_user = false){
+    protected function execute(InputInterface $input, OutputInterface $output)
+    {
+
+
+        $services = $this->getApplication()->getKernel()->getContainer();
+        $doctrine = $this->getContainer()->get('doctrine');
+        $manager = $doctrine->getManager();
+        $group_name = $input->getArgument('name');
+        error_log(print_r($group_name,true));
+        $export_user = true;
 
 // =================================================================================================================================================
 // =================================================================================================================================================
 
         //PARTIE CONCERNANT LE GROUP
-
         $upper_path = getcwd();
-        $group = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group")->findOneBy(Array("id" => $group_id));
+
+        $group = $manager->getRepository("TwakeWorkspacesBundle:Group")->findOneBy(Array("name" => $group_name));
+        $group_id = $group->getId();
 
         //ON CREER LES DIFFERENTS DOSSIER A LA RACINE DU DOSSIER D EXPORTATION
-
+        mkdir("Export_Folder");
+        chdir("Export_Folder");
         mkdir($group_id."");
         chdir($group_id."");
         chmod(getcwd(), 0777);
@@ -44,7 +78,7 @@ class ExportManager
         //var_dump($group_members);
         fwrite($handle_group_members, json_encode($group_members,JSON_PRETTY_PRINT));
         fclose($handle_group_members);
-
+        $url = $group->getLogo()->getName();
         $group = $group->getAsArray();
         if($group["logo"] != "" ) {
             if (strpos($group["logo"], "://")) {
@@ -57,7 +91,8 @@ class ExportManager
 
             $logo64 = Array(
                 "logo_type" => $type,
-                "base64_data" => base64_encode($data)
+                "base64_data" => base64_encode($data),
+                "url" => $url
             );
         }
         else{
@@ -85,6 +120,7 @@ class ExportManager
             chdir("users");
             foreach($group_admin as $ga) {
                 $user = $ga->getUser();
+                $url = $user->getThumbnail()->getName();
                 $user_array = $user->getAsArray();
                 //si le membre du workspace n'est pas référencé comme user on doit le créer
                 $path = "";
@@ -98,12 +134,18 @@ class ExportManager
                     }
                     $type = pathinfo($path, PATHINFO_EXTENSION);
                     $data = file_get_contents($path);
+
+                    $logo64 = Array(
+                        "logo_type" => $type,
+                        "base64_data" => base64_encode($data),
+                        "url" => $url
+                    );
                 }
-                $logo64 = Array(
-                    "logo_type" => $type,
-                    "base64_data" => base64_encode($data)
-                );
-                $mails = $this->doctrine->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user" => $user_array["id"]));
+                else{
+                    $logo64 = "";
+                }
+
+                $mails = $manager->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user" => $user_array["id"]));
                 $secondarymail = Array();
                 foreach ($mails as $mail) {
                     $secondarymail[] = $mail->getMail();
@@ -139,9 +181,10 @@ class ExportManager
         foreach ($workspaces as $wp){
             //ON CREE LE DOSSIER POUR LE WORKSPACE EN QUESTION ET ON MET LES DONNES DANS UN FICHIER WORKSPACE.JSON
             mkdir("ws_" . $wp->getId()."");
-           $workspace_file = "workspace.json";
-           $handle_workspace_file = fopen($workspace_file, 'w') or die('Cannot open file:  '.$workspace_file);
-           $workspaces_user = $wp->getMembers();
+            $workspace_file = "workspace.json";
+            $handle_workspace_file = fopen($workspace_file, 'w') or die('Cannot open file:  '.$workspace_file);
+            $workspaces_user = $wp->getMembers();
+            $url = $wp->getLogo()->getName();
             $wp = $wp->getAsArray();
             $path="";
             $data="";
@@ -155,19 +198,23 @@ class ExportManager
                 }
                 $type = pathinfo($path, PATHINFO_EXTENSION);
                 $data = file_get_contents($path);
+                $logo64 = Array(
+                    "logo_type" => $type,
+                    "base64_data" => base64_encode($data),
+                    "url" => $url
+                );
             }
-            $logo64 = Array(
-                "logo_type" => $type,
-                "base64_data" => base64_encode($data)
-            );
+            else{
+                $logo64 = "";
+            }
 
-           $data_ws = Array(
-               "name" => $wp["name"],
-               "uniquename" => $wp["uniqueName"],
-               "color" => $wp["color"],
-               "logo" => json_encode($logo64,JSON_PRETTY_PRINT)
-           );
-           fwrite($handle_workspace_file, json_encode($data_ws,JSON_PRETTY_PRINT));
+            $data_ws = Array(
+                "name" => $wp["name"],
+                "uniquename" => $wp["uniqueName"],
+                "color" => $wp["color"],
+                "logo" => json_encode($logo64,JSON_PRETTY_PRINT)
+            );
+            fwrite($handle_workspace_file, json_encode($data_ws,JSON_PRETTY_PRINT));
             fclose($handle_workspace_file);
             rename('workspace.json', "ws_".$wp["id"]."" . DIRECTORY_SEPARATOR . "workspace.json");
 
@@ -175,17 +222,17 @@ class ExportManager
 // =================================================================================================================================================
 
             //PARTIE SUR LES MEMBRES D UN WORKSPACE DANS LE FICHIER MEMBERS.JSON
-           $members = Array();
-           foreach($workspaces_user as $wp_user) {
-               //on cree la liste des membres du workspace
-               $members[] = Array(
-                  "user_id" => $wp_user->getUser()->getId(),
-                   "level" => $wp_user->getLevelId(),
-                   "externe" => $wp_user->getExterne()
-               );
-           }
+            $members = Array();
+            foreach($workspaces_user as $wp_user) {
+                //on cree la liste des membres du workspace
+                $members[] = Array(
+                    "user_id" => $wp_user->getUser()->getId(),
+                    "level" => $wp_user->getLevelId(),
+                    "externe" => $wp_user->getExterne()
+                );
+            }
 
-           //ON ECRIT LES MEMBRES DU WORKSPACE DANS LE FICHIER ET ON DEPLACE LE FICHIER
+            //ON ECRIT LES MEMBRES DU WORKSPACE DANS LE FICHIER ET ON DEPLACE LE FICHIER
             $workspace_members_file = "members.json";
             $handle_workspace_members = fopen($workspace_members_file, 'w') or die('Cannot open file:  '. $workspace_members_file);
             fwrite($handle_workspace_members, json_encode($members,JSON_PRETTY_PRINT));
@@ -195,8 +242,8 @@ class ExportManager
 // =================================================================================================================================================
 // =================================================================================================================================================
 
-        //PARTIE SUR LES CHANNELS ET LES MESSAGES D UN WORKSPACE DANS LES SOUS DOSSIER CHANNEL ET MESSAGE
-            $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array("direct"=>false, "original_workspace_id" => $wp["id"]));
+            //PARTIE SUR LES CHANNELS ET LES MESSAGES D UN WORKSPACE DANS LES SOUS DOSSIER CHANNEL ET MESSAGE
+            $channels = $$manager->getRepository("TwakeChannelsBundle:Channel")->findBy(Array("direct"=>false, "original_workspace_id" => $wp["id"]));
             chdir("ws_".$wp["id"]."");
             mkdir("channels");
             chdir("channels");
@@ -251,23 +298,23 @@ class ExportManager
 // =================================================================================================================================================
 // =================================================================================================================================================
 
-        //PARTIE SUR LES DRIVE FILES ET LES CALENDARS
+            //PARTIE SUR LES DRIVE FILES ET LES CALENDARS
             chdir("..");
             mkdir("calendars");
             chdir("calendars");
-            $calendars = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findBy(Array("workspace_id" => $wp["id"]));
+            $calendars = $manager->getRepository("TwakeCalendarBundle:Calendar")->findBy(Array("workspace_id" => $wp["id"]));
             $calendar = Array();
             foreach($calendars as $c){
                 $c = $c->getAsArray();
                 $calendar_file = "calendar_" . $c["id"]. ".json";
                 $handle_calendar_file = fopen($calendar_file, 'w') or die('Cannot open file:  ' . $calendar_file);
                 $events = Array();
-                $eventcalendar = $this->doctrine->getRepository("TwakeCalendarBundle:EventCalendar")->findBy(Array("calendar_id" => $c["id"]));
+                $eventcalendar = $manager->getRepository("TwakeCalendarBundle:EventCalendar")->findBy(Array("calendar_id" => $c["id"]));
                 foreach ($eventcalendar as $ec){
-                    $event = $this->doctrine->getRepository("TwakeCalendarBundle:Event")->findOneBy(Array("id" => $ec->getEventId()));
+                    $event = $manager->getRepository("TwakeCalendarBundle:Event")->findOneBy(Array("id" => $ec->getEventId()));
                     $events[] = Array(
-                      "date" => $ec->getSortDate(),
-                      "event" => Array(
+                        "date" => $ec->getSortDate(),
+                        "event" => Array(
                             "from" => $event->getFrom(),
                             "to" => $event->getTo(),
                             "all_day" => $event->getAllDay(),
@@ -281,7 +328,7 @@ class ExportManager
                             "participants" => $event->getParticipants(),
                             "notification" => $event->getNotifications(),
 
-                      )
+                        )
                     );
                 }
                 $calendar[] = Array(
@@ -298,12 +345,12 @@ class ExportManager
             chdir("..");
             mkdir("drive_files");
             chdir("drive_files");
-            $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $wp["id"]));
+            $files = $manager->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $wp["id"]));
             foreach ($files as $file){
                 $path = $file->getPath();
                 $version_array = Array();
                 $file = $file->getAsArray();
-                $version = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $file["id"]));
+                $version = $manager->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $file["id"]));
                 foreach($version as $v){
                     $v = $v->getAsArray();
                     //ar_dump("file id in version: " . $file["id"]);

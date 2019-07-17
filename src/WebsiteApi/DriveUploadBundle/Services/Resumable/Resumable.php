@@ -235,9 +235,7 @@ class Resumable
 
             //error_log(print_r($this->current_user,true));
 
-
             //recupere les données dans la requete pour connaitre l'id, le parent, le workspace etc
-
 
             $parent_id = $_POST['parent_id'];
             $workspace_id = $_POST['workspace_id'];
