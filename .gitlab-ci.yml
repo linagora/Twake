@@ -4,6 +4,7 @@ services:
     - docker:dind
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
+    - echo le before script se lance
     - apk update && apk add git
     - mv Docker/twake-php twake-php
     - mv Docker/docker-compose-test.yml docker-compose.yml
@@ -40,6 +41,7 @@ manual_test:
             - dev #permet d'executer le test selon le schedule
     script:
         - docker-compose exec -T php  ./vendor/bin/phpunit
+        - echo est-ce que on relance tout le before-script
     when: manual
     
 
