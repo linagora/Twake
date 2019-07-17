@@ -62,6 +62,7 @@ front_test:
         - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
         - cd Twake-react
         - apk update && apk add yarn
+        - npm add --d
         #- apk update && apk install --no-install-recommends yarn -> if I use nvm
         #- yarn install 
         - yarn run dev-build
