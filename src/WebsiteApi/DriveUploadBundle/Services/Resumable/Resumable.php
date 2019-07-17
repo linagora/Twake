@@ -257,8 +257,7 @@ class Resumable
 
             $fileordirectory = $this->driverefacto->save($object, $options, $current_user, Array("data" => $data, "size" => $totalSize), true);
 
-
-            //TODO generate preview if type is image and size is < 5mo
+           $this->file_system->genPreview($fileordirectory);
 
 
             return $fileordirectory->getAsArray();
