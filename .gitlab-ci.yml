@@ -47,18 +47,18 @@ manual_test:
         
     when: manual
     
-#front_test:
+front_test:
 
- #   image: node:9.4.0
+   image: node:9.4.0
 
-#    stage: test
+    stage: test
 
-#    script:
-#        - echo on met en place le FRONT- echo on met en place le FRONT 
-#        - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
-#        - yarn install 
-#        - yarn run dev-build
+    script:
+        - echo on met en place le FRONT- echo on met en place le FRONT 
+        - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
+        - yarn install 
+        - yarn run dev-build
         
-#    when: manual    
+    when: manual    
 
     
