@@ -40,21 +40,21 @@ manual_test:
     stage: test
     only:
         refs:
-            - dev #permet d'executer le test selon le schedule
+            - dev 
     script:
-        #- docker-compose exec -T php  ./vendor/bin/phpunit
-        - echo on met en place le FRONT #ici soit on execute toutes les commandes pour le front mais ça risuqe un, d'être long et deux, on ne pourra jamais executer le back seul
-        #- yarn install -> erreur yarn not found
-        #- yarn run dev-build
-        #deuxieme methode on pull, on se place au bon endroit et on execute le .gitlab-ci.yml si c'est possible
-        - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
-        - echo on a accès au repo twake-react
-        - ls
-        - cd Twake-react
     
-        - ls -a
-        - docker-compose -f .gitlab-ci.yml up
+        #- docker-compose exec -T php  ./vendor/bin/phpunit
+        
     when: manual
     
+front_test:
 
+    image: node:9.4.0
 
+    stage: test
+
+    script:
+        - echo on met en place le FRONT- echo on met en place le FRONT 
+        - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
+        - yarn install 
+        - yarn run dev-build
