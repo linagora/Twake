@@ -2,16 +2,17 @@ image: docker
 
 services:
     - docker:dind
+    
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
 
     - apk update && apk add git
-    - mv Docker/twake-php twake-php
-    - mv Docker/docker-compose-test.yml docker-compose.yml
-    - mv Docker/parameters-test.yml app/config/parameters.yml
-    - apk add python python-dev py-pip build-base libffi-dev openssl-dev
-    - pip install docker-compose
-    - docker-compose up -d --build
+    #- mv Docker/twake-php twake-php
+    #- mv Docker/docker-compose-test.yml docker-compose.yml
+    #- mv Docker/parameters-test.yml app/config/parameters.yml
+    #- apk add python python-dev py-pip build-base libffi-dev openssl-dev
+    #- pip install docker-compose
+    #- docker-compose up -d --build
     
     #- docker ps #To get the name of the existing container (juste pour info)
     #- docker-compose exec -T php php -dmemory_limit=-1 composer.phar update
@@ -42,10 +43,12 @@ manual_test:
             - dev #permet d'executer le test selon le schedule
     script:
         #- docker-compose exec -T php  ./vendor/bin/phpunit
-        - echo on met en place le FRONT
-        - yarn install
-        - yarn run dev-build
-        - echo le seul probleme de cette methode cest quon ne pourra jamais executer le back seul mais est-ce vraiment un probleme
+        - echo on met en place le FRONT #ici soit on execute toutes les commandes pour le front mais ça risuqe un, d'être long et deux, on ne pourra jamais executer le back seul
+        #- yarn install -> erreur yarn not found
+        #- yarn run dev-build
+        #deuxieme methode on pull, on se place au bon endroit et on execute le .gitlab-ci.yml si c'est possible
+        - git clone https://gitlab.com/Twake/Twake-react.git
+        - echo on a accès au repo twake-react
     when: manual
     
 
