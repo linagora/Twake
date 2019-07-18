@@ -68,7 +68,7 @@ class AdministrationUsers
         $workspaces = array();
 
         foreach ($workspaces_tab as $workspace) {
-            $workspaces[] = $workspace->getAsArray();
+            $workspaces[] = $workspace->getWorkspace()->getAsArray();
         }
 
         return $workspaces;
@@ -98,9 +98,7 @@ class AdministrationUsers
         $groups = array();
 
         foreach ($groups_tab as $group) {
-            $groups[] = Array(
-                "id" => $group->getId()
-            );
+            $groups[] = $group->getGroup()->getAsArray();
         }
 
         return $groups;
