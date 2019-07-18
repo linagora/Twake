@@ -69,12 +69,13 @@ front_test:
         - yarn run dev-build
         - yarn add puppeteer --only=dev #installation de la librairie puppeter
 
-        - ls
-        - cd src
-        - ls
-        - cd test
-        - ls
         - mv src/test/navigatingToTwakeTest.js navigatingToTwakeTest.js #si ça marche il vaudra mieux déplacer ou dupliquer le package.json plutot que tous les tests... 
+        
+        #ce que j'entre dans mon terminal pour que node <fichier.js> fonctionne
+        #npm i puppeteer
+        #npm install puppeteer
+        #ces lignes sont peut-être inutiles car j'ai push sur le git
+        
         - node navigatingToTwakeTest.js
 
         
