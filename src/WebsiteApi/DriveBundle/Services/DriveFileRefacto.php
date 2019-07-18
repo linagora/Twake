@@ -35,13 +35,12 @@ class DriveFileRefacto
         if (!$this->hasAccess($options, $current_user)) {
             return false;
         }
-
         if(isset($options["id"])) {
             $fileordirectory = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $options["id"].""));
-            return $fileordirectory;
+            return $fileordirectory->getAsArray();
         }
         elseif(isset($options["workspace_id"])){
-            return $this->getRootEntity($options["workspace_id"]);
+            return ($this->getRootEntity($options["workspace_id"]))->getAsArray();
         }
     }
 
