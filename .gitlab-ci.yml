@@ -61,20 +61,14 @@ front_test:
         - echo on met en place le FRONT- echo on met en place le FRONT
         - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git 
         - cd Twake-react
-        - apk update && apk add yarn
-        - apk add npm
-        - yarn install 
-        - yarn run dev-build
-        
         - git fetch
         - git checkout 1.2
         
-        
-        - npm install
-        - npm audit fix
-        - npm install puppeteer --only=dev #installation de la librairie puppeter
-        - npm audit fix
-        
+        - apk update && apk add yarn
+        - yarn install 
+        - yarn run dev-build
+        - yarn add puppeteer --only=dev #installation de la librairie puppeter
+
         - ls
         - cd src
         - ls
