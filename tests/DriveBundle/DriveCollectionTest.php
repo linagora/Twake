@@ -51,14 +51,20 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         //ON CREE UN FICHIER QUI VA SE TROUVER A LA RACINE DU WORKSPACE EN SPECIFIANT UN PARENT
 
-        $object = Array("parent_id" => $root_id, "workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest");
+        $data = Array("upload_mode" => "chunk", "identifier" => "identifier", "nb_chunk" => 1);
+        $upload_data = Array("data" => $data, "size" => 100000);
+
+        $object = Array("parent_id" => $root_id, "workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
         $data = Array("upload_mode" => "chunk", "identifier" => "identifier" ,"nb_chunk" => 1);
         $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
-            "options" => $options
+            "options" => $options,
+            "upload_data" => $upload_data
         ));
         $idtofind_parent = json_decode($result->getContent(),true)["data"]["object"]["id"];
+
+        error_log(print_r(json_decode($result->getContent(),true),true));
 
         $this->assertEquals($workspace_id,json_decode($result->getContent(),true)["data"]["object"]["workspace_id"], "Wrong workspace id for file create with a parent");
         $this->assertEquals($root_id,json_decode($result->getContent(),true)["data"]["object"]["parent_id"],"Wrong parent id for file create with a parent");
@@ -66,6 +72,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("filefortest",json_decode($result->getContent(),true)["data"]["object"]["name"], "Wrong name for file create with a parent");
         $this->assertEquals(false,json_decode($result->getContent(),true)["data"]["object"]["trash"], "Wrong is in trash attribut for file create with a parent");
         $this->assertEquals($user1_id,json_decode($result->getContent(),true)["data"]["object"]["last_user"], "Wrong last user for file create with a parent");
+        $this->assertEquals(100000,json_decode($result->getContent(),true)["data"]["object"]["size"], "Wrong size user for file create with a parent");
 
         $added_parent = json_decode($result->getContent(),true)["data"]["object"]["added"];
         $modified_parent = json_decode($result->getContent(),true)["data"]["object"]["modified"];
@@ -82,7 +89,6 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals(false,$fileordirectory->getIsInTrash(), "Wrong is in trash attribut for file create with a parent in database");
 
         //test sur le versionning de ce fichier
-
         $version = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("file_id" => $idtofind_parent));
         $this->assertEquals("filefortest",$version->getFileName(), "Wrong name for the version");
         $this->assertEquals($idtofind_parent,$version->getFileId(), "Wrong file id for the version");
@@ -100,11 +106,12 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         // ON CREE UN FICHIER QUI VA SE TROUVER A LA RACINE DU WORKSPACE SANS SPECIFIER UN PARENT
 
-        $object = Array("workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest");
+        $object = Array("workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
         $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
-            "options" => $options
+            "options" => $options,
+            "upload_data" => $upload_data
         ));
         $idtofind_root = json_decode($result->getContent(),true)["data"]["object"]["id"];
 
@@ -114,6 +121,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("filefortest",json_decode($result->getContent(),true)["data"]["object"]["name"], "Wrong name for file create without a parent");
         $this->assertEquals(false,json_decode($result->getContent(),true)["data"]["object"]["trash"], "Wrong is in trash attribut for file create without a parent");
         $this->assertEquals($user1_id,json_decode($result->getContent(),true)["data"]["object"]["last_user"], "Wrong last user for file create without a parent");
+        $this->assertEquals(100000,json_decode($result->getContent(),true)["data"]["object"]["size"], "Wrong size user for file create without a parent");
 
         $added = json_decode($result->getContent(),true)["data"]["object"]["added"];
         $modified = json_decode($result->getContent(),true)["data"]["object"]["modified"];
@@ -146,11 +154,13 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         // ON CREE UN FICHIER DETACHED
 
-        $object = Array("workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true);
+        $object = Array("workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true, "is_directory" => false);
         $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
-            "options" => $options
+            "options" => $options,
+            "upload_data" => $upload_data
+
         ));
         $idtofind_detached = json_decode($result->getContent(),true)["data"]["object"]["id"];
 
@@ -161,6 +171,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("filefortest",json_decode($result->getContent(),true)["data"]["object"]["name"], "Wrong name for file create detached");
         $this->assertEquals(false,json_decode($result->getContent(),true)["data"]["object"]["trash"], "Wrong is in trash attribut for file create detached");
         $this->assertEquals($user1_id,json_decode($result->getContent(),true)["data"]["object"]["last_user"], "Wrong last user for file create detached");
+        $this->assertEquals(100000,json_decode($result->getContent(),true)["data"]["object"]["size"], "Wrong size user for file create detached");
 
         $added = json_decode($result->getContent(),true)["data"]["object"]["added"];
         $modified = json_decode($result->getContent(),true)["data"]["object"]["modified"];
@@ -213,6 +224,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("filefortest",$fileordirectory->getName(), "Wrong name for file create reatached");
         $this->assertEquals(false,$fileordirectory->getIsInTrash(), "Wrong is in trash attribut for file create with a parent in database");
 
+        error_log("passage");
 
 // =================================================================================================================================================
 // =================================================================================================================================================
@@ -256,6 +268,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals(150000,$fileordirectory->getSize(), "Wrong size for the file root");
         $fileordirectory = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_detached));
         $this->assertEquals($idtofind_parent,$fileordirectory->getParentId()."", "Wrong parent ID after the parent of the parent change. The son didn't got a update on his parent id");
+
 
 // =================================================================================================================================================
 // =================================================================================================================================================

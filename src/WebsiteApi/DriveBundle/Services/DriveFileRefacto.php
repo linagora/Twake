@@ -241,7 +241,6 @@ class DriveFileRefacto
             }
         }
 
-
         if ($return_entity) {
             return $fileordirectory;
         }
