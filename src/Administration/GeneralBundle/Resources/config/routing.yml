@@ -1,6 +1,0 @@
-#Handle all url except special prefixs (see /app/config/routing.yml for more details)
-website_administration_all:
-    path:     /{req}
-    defaults: { _controller: AdministrationGeneralBundle:Default:all }
-    requirements:
-      req: ".*"

@@ -167,7 +167,7 @@ class DriveFileSystem
     }
 
 
-    protected function getRoot()
+    public function getRoot()
     {
         return dirname($this->root) . "/" . "drive" . "/";
     }
@@ -1410,6 +1410,10 @@ class DriveFileSystem
 
             $newFile->setSize($size);
 
+            $version = $newFile->getLastVersion($this->doctrine);
+            $version->setData(Array());
+            $this->doctrine->persist($version);
+
             $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion($this->doctrine)->getKey(), $newFile->getLastVersion($this->doctrine)->getMode());
 
             $this->setRawContent($newFile, null, false, $user);
@@ -1524,7 +1528,7 @@ class DriveFileSystem
 
     }
 
-    public function download($workspace, $file, $download, $versionId=0)
+    public function disabled_old_download($workspace, $file, $download, $versionId = 0)
     {
 
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");

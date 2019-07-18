@@ -65,13 +65,7 @@ class Adapter_OpenStack implements AdapterInterface{
 
     public function write($chunkFile, $chunkNo, $param_bag, UploadState $uploadState)
     {
-        //error_log(print_r($chunkFile,true));
-        //error_log("cc open stack");
-        $key = "OpenStack" . $param_bag->getSalt() . $param_bag->getKey();
-        $key = md5($key);
         $this->encode($chunkFile,$param_bag);
-
-        $key_path = explode("/", $chunkFile)[1];
 
         $chunkFile = $chunkFile.".encrypt";
 
@@ -93,10 +87,8 @@ class Adapter_OpenStack implements AdapterInterface{
         }
     }
 
-    public function read($chunkFile, $chunkNo, $param_bag, UploadState $uploadState)
+    public function read($destination, $chunkNo, $param_bag, UploadState $uploadState)
     {
-        $key = "OpenStack" . $param_bag->getSalt(). $param_bag->getKey();
-        $key = md5($key);
 
         try {
             $stream = $this->openstack->objectStoreV1()
@@ -104,11 +96,23 @@ class Adapter_OpenStack implements AdapterInterface{
                 ->getObject("drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo)
                 ->download();
 
-            $tmpPath = "uploads" . DIRECTORY_SEPARATOR . $chunkFile;
-            //$this->verifyPath($tmpPath);
-            file_put_contents($tmpPath, $stream->getContents());
+            file_put_contents($destination, $stream->getContents());
+            $decodedPath = $this->decode($destination, $param_bag);
 
-            $decodedPath = $this->decode($tmpPath, $param_bag);
+            if ($destination == "stream") {
+
+                if ($stream = fopen($decodedPath, 'r')) {
+                    // While the stream is still open
+                    while (!feof($stream)) {
+                        // Read 1,024 bytes from the stream
+                        echo fread($stream, 1024);
+                    }
+                    // Be sure to close the stream resource when you're done with it
+                    fclose($stream);
+                }
+
+                return true;
+            }
 
             return $decodedPath;
 
@@ -169,6 +173,11 @@ class Adapter_OpenStack implements AdapterInterface{
         @unlink($chunkFile);
         return $finalpath;
 
+    }
+
+    public function streamModeIsAvailable()
+    {
+        return false;
     }
 
 

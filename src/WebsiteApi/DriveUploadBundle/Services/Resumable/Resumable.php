@@ -50,7 +50,7 @@ class Resumable
 
     const WITHOUT_EXTENSION = true;
 
-    public function __construct($doctrine, $storagemanager, $driverefacto, $drive_previews_tmp_folder, $drive_tmp_folder, $file_system)
+    public function __construct($doctrine, $storagemanager, $driverefacto, $drive_previews_tmp_folder, $drive_tmp_folder, $file_system, $parameter_drive_salt)
     {
         $this->doctrine = $doctrine;
         $this->storagemanager = $storagemanager;
@@ -60,6 +60,7 @@ class Resumable
         $this->previews = $drive_previews_tmp_folder;
         $this->tempFolder = $drive_tmp_folder;
         $this->file_system = $file_system;
+        $this->parameter_drive_salt = $parameter_drive_salt;
 
 
         //$this->preProcess();
@@ -157,7 +158,7 @@ class Resumable
 
         $chunklist = Array();
         $uploadstate = new UploadState($workspace_id, $identifier, $filename, $extension, $chunklist);
-        $new_key = hash('sha256', $identifier);
+        $new_key = bin2hex(random_bytes(20));
         $uploadstate->setEncryptionKey($new_key);
         $uploadstate->setUserId($user_id);
         $this->doctrine->persist($uploadstate);
@@ -196,38 +197,39 @@ class Resumable
 
         if (!$this->isChunkUploaded($identifier, $finalname, $chunkNumber)) {
 
-            $chunkFile = $this->tmpChunkDir() . DIRECTORY_SEPARATOR . $finalname;
-            $this->moveUploadedFile($file['tmp_name'], $chunkFile);
-            //error_log(print_r($this->tmpChunkDir($identifier),true));
-            //error_log(print_r(posix_getcwd() ,true));
-            $chunktoadd = "chunk_" . $chunkNumber;
-
             $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
             $key = $uploadstate->getEncryptionKey();
-            //error_log(print_r($key,true));
-
-            error_log("----");
-            error_log($uploadstate->getUserId());
-            error_log($this->current_user_id);
+            $param_bag = new EncryptionBag($key, $this->parameter_drive_salt, "OpenSSL-2");
 
             if ($this->current_user_id != $uploadstate->getUserId()) {
                 return false;
             }
 
-            //Preview if only one chunk
-            if ($numOfChunks == 1 && $chunkNumber == 1) {
-                $previewDestination = $this->previews . DIRECTORY_SEPARATOR . "preview_" . $finalname;
-                $this->copy($chunkFile, $previewDestination);
-                $uploadstate->setHasPreview(true);
-                $this->doctrine->persist($uploadstate);
-                $this->doctrine->flush();
+            $chunkFile = $this->tmpChunkDir() . DIRECTORY_SEPARATOR . $finalname;
+
+            $do_preview = ($numOfChunks == 1 && $chunkNumber == 1 && $totalSize < 50000000);
+
+            if (!$this->storagemanager->getAdapter()->streamModeIsAvailable() || $do_preview) {
+                $this->moveUploadedFile($file['tmp_name'], $chunkFile);
+
+                //Preview if only one chunk
+                if ($do_preview) {
+                    $previewDestination = $this->previews . DIRECTORY_SEPARATOR . "preview_" . $finalname;
+                    $this->copy($chunkFile, $previewDestination);
+                    $uploadstate->setHasPreview(true);
+                    $this->doctrine->persist($uploadstate);
+                    $this->doctrine->flush();
+                }
+
+            } else {
+                $chunkFile = $file['tmp_name'];
             }
 
 
-            $param_bag = new EncryptionBag($key, $this->parameter_drive_salt, "OpenSSL-2");
             $this->storagemanager->getAdapter()->write($chunkFile, $chunkNumber, $param_bag, $uploadstate);
             $this->doctrine->clear();
 
+            $chunktoadd = "chunk_" . $chunkNumber;
             $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
             $uploadstate->addChunk($chunktoadd);
             $this->doctrine->persist($uploadstate);
@@ -277,7 +279,7 @@ class Resumable
             return $fileordirectory->getAsArray();
 
         }
-        return $chunkFile;
+        return true;
     }
 
     public function isChunkUploaded($identifier, $filename, $chunkNumber)
@@ -339,27 +341,22 @@ class Resumable
         return $filename . '.' . str_pad($chunkNumber, 4, 0, STR_PAD_LEFT);
     }
 
-    public function updateParam($request, $response, $parameter_drive_salt)
+    public function updateParam($request, $response)
     {
-        $this->parameter_drive_salt = $parameter_drive_salt;
         $this->setRequest($request);
         $this->setResponse($response);
         $this->preProcess();
     }
 
-    public function downloadFile()
+    public function downloadFile($identifier)
     {
-
-        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => "fichier1go.txt"));
-        $param_bag = new EncryptionBag("testkey","let's try a salt", "OpenSSL-2");
-        $path = $this->createFileAndDeleteTmp("uploads", "fichier1go.txt");
+        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
+        $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $this->parameter_drive_salt, "OpenSSL-2");
 
         for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
-            $chunkFile = $uploadstate->getIdentifier() . ".chunk_" . $i;
-            $this->storagemanager->getAdapter()->read($chunkFile, $i, $param_bag, $uploadstate);
-            $chunkFile = "uploads" . DIRECTORY_SEPARATOR . $chunkFile . ".decrypt";
-            $this->createFileFromChunks($chunkFile,$path);
+            $this->storagemanager->getAdapter()->read("stream", $i, $param_bag, $uploadstate);
         }
+
     }
 
     public function createFileFromChunks($chunkFile, $destFile)

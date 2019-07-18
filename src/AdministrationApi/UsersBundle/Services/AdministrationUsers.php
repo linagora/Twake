@@ -35,49 +35,73 @@ class AdministrationUsers
         try {
             $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-            $user_tab = $usersRepository->findBy(Array('id'=>$user_id));
+            $user = $usersRepository->find($user_id);
 
-            $rep = false;
+            return $user;
 
-            if (count($user_tab) == 1) {
-                foreach ($user_tab as $user) {
-                    $rep = $user->getAsArray();
-                }
-            }
-            return $rep;
         } catch (Exception $e) {
             return "Error";
         }
     }
 
-    public function getUserDevices($user_id) {
+    public function getUserDevices($user)
+    {
         $devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
 
-        $devices = $devicesRepository->findBy(Array("user_id"=>$user_id));
+        $devices_tab = $devicesRepository->findBy(Array("user" => $user));
+
+        $devices = array();
+
+        foreach ($devices_tab as $device) {
+            $devices[] = $device->getAsArray();
+        }
 
         return $devices;
     }
 
-    public function getUserWorkspaces($user_id) {
+    public function getUserWorkspaces($user)
+    {
         $workspacesRepository = $this->em->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
-        $workspaces = $workspacesRepository->findBy(Array("user_id"=>$user_id));
+        $workspaces_tab = $workspacesRepository->findBy(Array("user" => $user));
+
+        $workspaces = array();
+
+        foreach ($workspaces_tab as $workspace) {
+            $workspaces[] = $workspace->getAsArray();
+        }
 
         return $workspaces;
     }
 
-    public function getUserMails($user_id) {
+    public function getUserMails($user)
+    {
         $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
 
-        $mails = $mailsRepository->findBy(Array("user_id"=>$user_id));
+        $mails_tab = $mailsRepository->findBy(Array("user" => $user));
+
+        $mails = array();
+
+        foreach ($mails_tab as $mail) {
+            $mails[] = $mail->getMail();
+        }
 
         return $mails;
     }
 
-    public function getUserGroups($user_id) {
+    public function getUserGroups($user)
+    {
         $groupsRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
 
-        $groups = $groupsRepository->findBy(Array("user_id"=>$user_id));
+        $groups_tab = $groupsRepository->findBy(Array("user" => $user));
+
+        $groups = array();
+
+        foreach ($groups_tab as $group) {
+            $groups[] = Array(
+                "id" => $group->getId()
+            );
+        }
 
         return $groups;
     }

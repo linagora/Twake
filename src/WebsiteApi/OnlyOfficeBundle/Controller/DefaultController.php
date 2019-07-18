@@ -220,7 +220,7 @@ class DefaultController extends Controller
                 $response->headers->set('Content-Disposition', $disposition);
                 $response->sendHeaders();
 
-                $this->get("app.drive.adapter_selector")->getFileSystem()->download($file->getWorkspaceId(), $file->getFileId(), false);
+                //$this->get("app.drive.adapter_selector")->getFileSystem()->download($file->getWorkspaceId(), $file->getFileId(), false);
                 die();
 
 

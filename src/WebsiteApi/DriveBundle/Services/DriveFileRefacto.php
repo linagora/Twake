@@ -108,8 +108,6 @@ class DriveFileRefacto
         $last_version->setData(isset($upload_data["data"]) ? $upload_data["data"] : Array());
         $last_version->setSize(isset($upload_data["size"]) ? $upload_data["size"] : 0);
 
-        $fileordirectory->setSize($last_version->getSize());
-
         $this->em->persist($last_version);
         $this->em->flush();
 
@@ -235,7 +233,7 @@ class DriveFileRefacto
         if (!$fileordirectory->getIsDirectory()) {
             $size_before = $fileordirectory->getSize();
             $this->versionning($fileordirectory, $current_user, $upload_data, $new);
-            $size_after = $fileordirectory->getSize();
+            $size_after = $upload_data["size"];
             if ($size_after - $size_before != 0) {
                 $this->updateSize($fileordirectory->getId() . "", $size_after - $size_before, false);
             }

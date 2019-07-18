@@ -42,27 +42,31 @@ class Adapter_AWS implements AdapterInterface{
         $this->aws_s3_client = new S3Client($options);
     }
 
-    public function read($chunkFile, $chunkNo, $param_bag, UploadState $uploadState)
+    public function read($destination, $chunkNo, $param_bag, UploadState $uploadState)
     {
 
         $key = "AWS" . $param_bag->getSalt() . $param_bag->getKey();
         $key = md5($key);
 
+        $file_path = "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo;
+
         try {
 
             $object = $this->aws_s3_client->getObject([
                 'Bucket' => $this->aws_bucket_name,
-                'Key' => "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo,
+                'Key' => $file_path,
                 'SSECustomerAlgorithm' => 'AES256',
                 'SSECustomerKey' => $key,
                 'SSECustomerKeyMD5' => md5($key, true)
             ]);
 
-            $tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
-            $this->verifyPath($tmpPath);
-            file_put_contents($tmpPath, $object["Body"]);
+            if ($destination == "stream") {
+                echo $object["Body"];
+                return true;
+            }
 
-            return $tmpPath;
+            file_put_contents($destination, $object["Body"]);
+            return $destination;
 
         } catch (S3Exception $e) {
             error_log("Error accessing aws file.");
@@ -77,12 +81,14 @@ class Adapter_AWS implements AdapterInterface{
         $key = "AWS" . $param_bag->getSalt() . $param_bag->getKey();
         $key = md5($key);
 
+        $file_path = "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo;
+
         try {
 
             $data = [
                 'Bucket' => $this->aws_bucket_name,
-                'Key' => "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo,
-                'Body' => fopen($chunkFile, 'rb'),
+                'Key' => $file_path,
+                'Body' => fopen($chunkFile, 'r'),
                 'ACL' => 'private',
                 'SSECustomerAlgorithm' => 'AES256',
                 'SSECustomerKey' => $key,
@@ -91,6 +97,7 @@ class Adapter_AWS implements AdapterInterface{
 
             // Upload data.
             $result = $this->aws_s3_client->putObject($data);
+
             @unlink($chunkFile);
 
         } catch (S3Exception $e) {
@@ -99,6 +106,11 @@ class Adapter_AWS implements AdapterInterface{
 
         return $result;
 
+    }
+
+    public function streamModeIsAvailable()
+    {
+        return false;
     }
 
 }

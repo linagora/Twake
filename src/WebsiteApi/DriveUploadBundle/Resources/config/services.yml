@@ -1,7 +1,7 @@
 services:
   driveupload.upload:
     class: WebsiteApi\DriveUploadBundle\Services\UploadFile
-    arguments: ["@driveupload.resumable", %DRIVE_SALT%]
+    arguments: ["@driveupload.resumable"]
 
   driveupload.storemanager:
     class: WebsiteApi\DriveUploadBundle\Services\Storage\StorageManager
@@ -9,12 +9,8 @@ services:
 
   driveupload.download:
     class: WebsiteApi\DriveUploadBundle\Services\DownloadFile
-    arguments: ["@driveupload.resumable"]
+    arguments: ["@driveupload.resumable", "@app.twake_doctrine"]
 
   driveupload.resumable:
     class: WebsiteApi\DriveUploadBundle\Services\Resumable\Resumable
-    arguments: ["@app.twake_doctrine","@driveupload.storemanager", "@app.drive_refacto", %drive_previews_tmp_folder%, %drive_tmp_folder%, "@app.drive.adapter_selector"]
-
-  driveupload.preview:
-      class: WebsiteApi\DriveUploadBundle\Services\DrivePreview
-      arguments: ["@app.twake_doctrine"]
+    arguments: ["@app.twake_doctrine","@driveupload.storemanager", "@app.drive_refacto", %drive_previews_tmp_folder%, %drive_tmp_folder%, "@app.drive.adapter_selector", %DRIVE_SALT%]

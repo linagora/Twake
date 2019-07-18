@@ -66,15 +66,13 @@ class UsersController extends Controller
                 if ($user == "Error") {
                     $data["errors"][] = "unknown_error";
                 } else {
-                    $user_id = $user["id"];
 
-                    $devices = $user_service->getUserDevices($user_id);
-                    $mails = $user_service->getUserMails($user_id);
-                    $workspaces = $user_service->getUserWorkspaces($user_id);
-                    $groups = $user_service->getUserGroups($user_id);
+                    $devices = $user_service->getUserDevices($user);
+                    $mails = $user_service->getUserMails($user);
+                    $workspaces = $user_service->getUserWorkspaces($user);
+                    $groups = $user_service->getUserGroups($user);
 
-
-                    $data["data"]["user"] = $user;
+                    $data["data"]["user"] = $user->getAsArray();
                     $data["data"]["devices"] = $devices;
                     $data["data"]["mails"] = $mails;
                     $data["data"]["workspace"] = $workspaces;

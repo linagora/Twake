@@ -59,13 +59,30 @@ front_test:
     script:
     
         - echo on met en place le FRONT- echo on met en place le FRONT
-        - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
+        - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git 
         - cd Twake-react
         - apk update && apk add yarn
         - apk add npm
-        #- apk update && apk install --no-install-recommends yarn -> if I use nvm
         - yarn install 
         - yarn run dev-build
+        
+        - git fetch
+        - git checkout 1.2
+        
+        
+        - npm install
+        - npm audit fix
+        - npm install puppeteer --only=dev #installation de la librairie puppeter
+        - npm audit fix
+        
+        - ls
+        - cd src
+        - ls
+        - cd test
+        - ls
+        - mv src/test/navigatingToTwakeTest.js navigatingToTwakeTest.js #si ça marche il vaudra mieux déplacer ou dupliquer le package.json plutot que tous les tests... 
+        - node navigatingToTwakeTest.js
+
         
     when: manual    
 
