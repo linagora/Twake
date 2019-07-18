@@ -36,16 +36,16 @@ class BoardBoard
         }
 
         if (count($boards) == 0) {
-            $cal = $this->save(Array(
+            $board = $this->save(Array(
                 "workspace_id" => $workspace_id,
                 "title" => "First Board",
-                "color" => "#33b679",
+                "emoji" => ":clipboard:",
             ), Array(), null);
 
             //TODO Add example tasks in board
 
-            if ($cal) {
-                return [$cal];
+            if ($board) {
+                return [$board];
             }
 
         }
@@ -92,12 +92,13 @@ class BoardBoard
             }
         } else {
             $did_create = true;
-            $board = new Board($object["workspace_id"], "", "");
+            $board = new Board($object["workspace_id"], "");
             $board->setFrontId($object["front_id"]);
         }
 
         $board->setTitle($object["title"]);
-        $board->setColor($object["color"]);
+        $board->setEmoji($object["emoji"]);
+        $board->setGroupName($object["group_name"]);
         $this->doctrine->persist($board);
         $this->doctrine->flush();
 
