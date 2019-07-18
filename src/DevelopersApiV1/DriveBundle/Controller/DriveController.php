@@ -125,7 +125,7 @@ class DriveController extends Controller
         $fileId = $request->request->get("file_id", null);
 
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
-        @$response = $fileSystem->download($workspace_id, $fileId, true);
+        @$response = $this->get('driveupload.download')->download($workspace_id, $fileId, true, null, $fileSystem);
 
         return $response;
     }

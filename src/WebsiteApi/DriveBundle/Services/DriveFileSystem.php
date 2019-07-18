@@ -167,7 +167,7 @@ class DriveFileSystem
     }
 
 
-    protected function getRoot()
+    public function getRoot()
     {
         return dirname($this->root) . "/" . "drive" . "/";
     }
@@ -1524,7 +1524,7 @@ class DriveFileSystem
 
     }
 
-    public function download($workspace, $file, $download, $versionId=0)
+    public function disabled_old_download($workspace, $file, $download, $versionId = 0)
     {
 
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");

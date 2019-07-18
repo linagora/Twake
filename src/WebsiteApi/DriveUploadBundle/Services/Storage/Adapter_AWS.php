@@ -42,27 +42,31 @@ class Adapter_AWS implements AdapterInterface{
         $this->aws_s3_client = new S3Client($options);
     }
 
-    public function read($chunkFile, $chunkNo, $param_bag, UploadState $uploadState)
+    public function read($destination, $chunkNo, $param_bag, UploadState $uploadState)
     {
 
         $key = "AWS" . $param_bag->getSalt() . $param_bag->getKey();
         $key = md5($key);
 
+        $file_path = "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo;
+
         try {
 
             $object = $this->aws_s3_client->getObject([
                 'Bucket' => $this->aws_bucket_name,
-                'Key' => "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo,
+                'Key' => $file_path,
                 'SSECustomerAlgorithm' => 'AES256',
                 'SSECustomerKey' => $key,
                 'SSECustomerKeyMD5' => md5($key, true)
             ]);
 
-            $tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
-            $this->verifyPath($tmpPath);
-            file_put_contents($tmpPath, $object["Body"]);
+            if ($destination == "stream") {
+                echo $object["Body"];
+                return true;
+            }
 
-            return $tmpPath;
+            file_put_contents($destination, $object["Body"]);
+            return $destination;
 
         } catch (S3Exception $e) {
             error_log("Error accessing aws file.");
@@ -84,7 +88,7 @@ class Adapter_AWS implements AdapterInterface{
             $data = [
                 'Bucket' => $this->aws_bucket_name,
                 'Key' => $file_path,
-                'Body' => "",
+                'Body' => fopen($chunkFile, 'r'),
                 'ACL' => 'private',
                 'SSECustomerAlgorithm' => 'AES256',
                 'SSECustomerKey' => $key,
@@ -93,26 +97,8 @@ class Adapter_AWS implements AdapterInterface{
 
             // Upload data.
             $result = $this->aws_s3_client->putObject($data);
-            $this->aws_s3_client->registerStreamWrapper();
 
-            $hDest = fopen('s3://' . $this->aws_bucket_name . '/' . $file_path, 'w');
-
-            $hSource = fopen($chunkFile, 'r');
-            $hDest = fopen(UPLOADS_DIR . '/' . $MyTempName . '.tmp', 'w');
-            while (!feof($hSource)) {
-                /*
-                 *  I'm going to read in 1K chunks. You could make this
-                 *  larger, but as a rule of thumb I'd keep it to 1/4 of
-                 *  your php memory_limit.
-                 */
-                $chunk = fread($hSource, 1024);
-                fwrite($hDest, $chunk);
-            }
-            fclose($hSource);
-            fclose($hDest);
-
-
-//            @unlink($chunkFile);
+            @unlink($chunkFile);
 
         } catch (S3Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
@@ -124,7 +110,7 @@ class Adapter_AWS implements AdapterInterface{
 
     public function streamModeIsAvailable()
     {
-        return true;
+        return false;
     }
 
 }

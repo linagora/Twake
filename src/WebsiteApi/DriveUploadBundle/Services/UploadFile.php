@@ -11,10 +11,9 @@ class UploadFile
 {
     private $resumable;
 
-    public function __construct($resumable, $parameter_drive_salt)
+    public function __construct($resumable)
     {
         $this->resumable = $resumable;
-        $this->parameter_drive_salt = $parameter_drive_salt;
     }
 
     public function preprocess($request, $current_user_id)
@@ -30,7 +29,7 @@ class UploadFile
     {
         $request = new SimpleRequest($request);
         $response = new SimpleResponse($response);
-        $this->resumable->updateParam($request, $response, $this->parameter_drive_salt);
+        $this->resumable->updateParam($request, $response);
         $res = $this->resumable->process($current_user);
         if (is_array($res)) {
             return $res;
