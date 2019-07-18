@@ -35,49 +35,47 @@ class AdministrationUsers
         try {
             $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-            $user_tab = $usersRepository->findBy(Array('id'=>$user_id));
+            $user = $usersRepository->find($user_id);
 
-            $rep = false;
+            return $user;
 
-            if (count($user_tab) == 1) {
-                foreach ($user_tab as $user) {
-                    $rep = $user->getAsArray();
-                }
-            }
-            return $rep;
         } catch (Exception $e) {
             return "Error";
         }
     }
 
-    public function getUserDevices($user_id) {
+    public function getUserDevices($user)
+    {
         $devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
 
-        $devices = $devicesRepository->findBy(Array("user_id"=>$user_id));
+        $devices = $devicesRepository->findBy(Array("user" => $user));
 
         return $devices;
     }
 
-    public function getUserWorkspaces($user_id) {
+    public function getUserWorkspaces($user)
+    {
         $workspacesRepository = $this->em->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
-        $workspaces = $workspacesRepository->findBy(Array("user_id"=>$user_id));
+        $workspaces = $workspacesRepository->findBy(Array("user" => $user));
 
         return $workspaces;
     }
 
-    public function getUserMails($user_id) {
+    public function getUserMails($user)
+    {
         $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
 
-        $mails = $mailsRepository->findBy(Array("user_id"=>$user_id));
+        $mails = $mailsRepository->findBy(Array("user" => $user));
 
         return $mails;
     }
 
-    public function getUserGroups($user_id) {
+    public function getUserGroups($user)
+    {
         $groupsRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
 
-        $groups = $groupsRepository->findBy(Array("user_id"=>$user_id));
+        $groups = $groupsRepository->findBy(Array("user" => $user));
 
         return $groups;
     }

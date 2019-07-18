@@ -171,5 +171,10 @@ class Adapter_OpenStack implements AdapterInterface{
 
     }
 
+    public function streamModeIsAvailable()
+    {
+        return false;
+    }
+
 
 }

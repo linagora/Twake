@@ -77,12 +77,14 @@ class Adapter_AWS implements AdapterInterface{
         $key = "AWS" . $param_bag->getSalt() . $param_bag->getKey();
         $key = md5($key);
 
+        $file_path = "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo;
+
         try {
 
             $data = [
                 'Bucket' => $this->aws_bucket_name,
-                'Key' => "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo,
-                'Body' => fopen($chunkFile, 'rb'),
+                'Key' => $file_path,
+                'Body' => "",
                 'ACL' => 'private',
                 'SSECustomerAlgorithm' => 'AES256',
                 'SSECustomerKey' => $key,
@@ -91,7 +93,26 @@ class Adapter_AWS implements AdapterInterface{
 
             // Upload data.
             $result = $this->aws_s3_client->putObject($data);
-            @unlink($chunkFile);
+            $this->aws_s3_client->registerStreamWrapper();
+
+            $hDest = fopen('s3://' . $this->aws_bucket_name . '/' . $file_path, 'w');
+
+            $hSource = fopen($chunkFile, 'r');
+            $hDest = fopen(UPLOADS_DIR . '/' . $MyTempName . '.tmp', 'w');
+            while (!feof($hSource)) {
+                /*
+                 *  I'm going to read in 1K chunks. You could make this
+                 *  larger, but as a rule of thumb I'd keep it to 1/4 of
+                 *  your php memory_limit.
+                 */
+                $chunk = fread($hSource, 1024);
+                fwrite($hDest, $chunk);
+            }
+            fclose($hSource);
+            fclose($hDest);
+
+
+//            @unlink($chunkFile);
 
         } catch (S3Exception $e) {
             error_log($e->getMessage() . PHP_EOL);
@@ -99,6 +120,11 @@ class Adapter_AWS implements AdapterInterface{
 
         return $result;
 
+    }
+
+    public function streamModeIsAvailable()
+    {
+        return true;
     }
 
 }

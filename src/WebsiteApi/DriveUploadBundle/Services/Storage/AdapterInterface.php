@@ -10,4 +10,6 @@ interface AdapterInterface{
 
     public function write($chunkFile, $chunkNo, $param_bag, UploadState $uploadState);
 
+    public function streamModeIsAvailable();
+
 }
