@@ -71,8 +71,10 @@ front_test:
         # si error while loading shared libraries: libX11-xcb.so.1 cannot ...
         
         - npm install
+        - npm audit fix
         #- yarn add puppeter
         - npm install puppeteer --only=dev #installation de la librairie puppeter
+        - npm audit fix
         - node navigatingToTwakeTest.js
 
         
