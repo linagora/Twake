@@ -59,22 +59,25 @@ front_test:
     script:
     
         - echo on met en place le FRONT- echo on met en place le FRONT
-        - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git
+        - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git 
         - cd Twake-react
-        - apk update && apk add yarn
-        - apk add npm
-        #- apk update && apk install --no-install-recommends yarn -> if I use nvm
-        - yarn install 
-        - yarn run dev-build
+        #- apk update && apk add yarn
+        #- apk add npm
+        #- yarn install 
+        #- yarn run dev-build
         
-        #- apk add gconf-service libasound2 libatk1.0–0 libc6 libcairo2 libcups2 libdbus-1–3 libexpat1 libfontconfig1 libgcc1 libgconf-2–4 libgdk-pixbuf2.0–0 libglib2.0–0 libgtk-3–0 libnspr4 libpango-1.0–0 libpangocairo-1.0–0 libstdc++6 libx11–6 libx11-xcb1 libxcb1 libxcomposite1 libxcursor1 libxdamage1 libxext6 libxfixes3 libxi6 libxrandr2 libxrender1 libxss1 libxtst6 ca-certificates fonts-liberation libappindicator1 libnss3 lsb-release xdg-utils wget
-        # si error while loading shared libraries: libX11-xcb.so.1 cannot ...
         
-        - npm install
-        - npm audit fix
-        #- yarn add puppeter
-        - npm install puppeteer --only=dev #installation de la librairie puppeter
-        - npm audit fix
+        #- npm install
+        #- npm audit fix
+        #- npm install puppeteer --only=dev #installation de la librairie puppeter
+        #- npm audit fix
+        - git fetch
+        - git checkout 1.2
+        - ls
+        - cd src
+        - ls
+        - cd test
+        - ls
         - mv src/test/navigatingToTwakeTest.js navigatingToTwakeTest.js #si ça marche il vaudra mieux déplacer ou dupliquer le package.json plutot que tous les tests... 
         - node navigatingToTwakeTest.js
 
