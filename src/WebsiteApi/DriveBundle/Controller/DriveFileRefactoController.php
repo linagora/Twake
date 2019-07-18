@@ -22,13 +22,15 @@ class DriveFileRefactoController extends Controller
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res->getAsArray())));
+        return new JsonResponse(Array("data" => Array("object" => $res)));
     }
 
     public function saveAction(Request $request)
     {
         $options = $request->request->get("options");
         $object = $request->request->get("object");
+        $upload_data = $request->request->get("upload_data");
+
         $current_user = $this->getUser();
         if(!(isset($current_user)))
         {
@@ -40,11 +42,11 @@ class DriveFileRefactoController extends Controller
         }
 
 
-        $res = $this->get("app.drive_refacto")->save($object, $options,$current_user_id);
+        $res = $this->get("app.drive_refacto")->save($object, $options,$current_user_id,$upload_data);
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => Array("object" => $res->getAsArray())));
+        return new JsonResponse(Array("data" => Array("object" => $res)));
     }
 
     public function getAction(Request $request)
@@ -55,7 +57,7 @@ class DriveFileRefactoController extends Controller
         if ($objects === false) {
             return new JsonResponse(Array("status" => "error"));
         }
-        return new JsonResponse(Array("data" => $objects->getAsArray()));
+        return new JsonResponse(Array("data" => $objects));
     }
 
     public function give_file_public_accessAction(Request $request)

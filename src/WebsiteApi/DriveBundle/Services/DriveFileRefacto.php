@@ -35,13 +35,12 @@ class DriveFileRefacto
         if (!$this->hasAccess($options, $current_user)) {
             return false;
         }
-
         if(isset($options["id"])) {
             $fileordirectory = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $options["id"].""));
-            return $fileordirectory;
+            return $fileordirectory->getAsArray();
         }
         elseif(isset($options["workspace_id"])){
-            return $this->getRootEntity($options["workspace_id"]);
+            return ($this->getRootEntity($options["workspace_id"]))->getAsArray();
         }
     }
 
@@ -228,17 +227,21 @@ class DriveFileRefacto
             $new = true;
         }
 
-
         //Update size if file was created AFTER versionning
-        if (!$fileordirectory->getIsDirectory()) {
+        if (!$fileordirectory->getIsDirectory() && $upload_data) {
             $size_before = $fileordirectory->getSize();
             $this->versionning($fileordirectory, $current_user, $upload_data, $new);
             $size_after = $upload_data["size"];
+
             if ($size_after - $size_before != 0) {
-                $this->updateSize($fileordirectory->getId() . "", $size_after - $size_before, false);
+                if($fileordirectory->getDetachedFile()){
+                    $fileordirectory->setSize($size_after);
+                }
+                else {
+                    $this->updateSize($fileordirectory->getId() . "", $size_after - $size_before, false);
+                }
             }
         }
-
 
         if ($return_entity) {
             return $fileordirectory;

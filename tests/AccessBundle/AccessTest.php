@@ -203,7 +203,7 @@ class AccessTest extends WebTestCaseExtended
         $root =  $this->get("app.drive_refacto")->getRootEntity($workspace1_id);
         $root_id = $root->getId()."";
 
-        $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest");
+        $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
         $data = Array("upload_mode" => "chunk", "identifier" => "identifier" ,"nb_chunk" => 1);
         $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
@@ -212,7 +212,7 @@ class AccessTest extends WebTestCaseExtended
         ));
         $idtofind_parent = json_decode($result->getContent(),true)["data"]["object"]["id"];
 
-        $object = Array("workspace_id" => $workspace2_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true);
+        $object = Array("workspace_id" => $workspace2_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true, "is_directory" => false);
         $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(
             "object" => $object,
@@ -220,7 +220,7 @@ class AccessTest extends WebTestCaseExtended
         ));
         $idtofind_detached = json_decode($result->getContent(),true)["data"]["object"]["id"];
 
-        $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest");
+        $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
         $data = Array("upload_mode" => "chunk", "identifier" => "identifier" ,"nb_chunk" => 1);
         $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/saverefacto", Array(

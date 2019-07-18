@@ -145,31 +145,6 @@ class UserAccountTest extends WebTestCaseExtended
 
     }
 
-//   public function testUpdateUserBasicData()  {
-//
-//       $this->removeUserByName("usertest001");
-//       $user = $this->newUserByName("usertest001");
-//       $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
-//       $result = $this->get("app.user")->updateUserBasicData($user->getId(), "firstnametestphpunit", "lastnametestphpunit", null, null);
-//
-//       $this->assertEquals($user->getFirstName(),"firstnametestphpunit");
-//       $this->assertEquals($user->getLastName(),"lastnametestphpunit");
-//
-//       $result = $this->get("app.user")->updateUserBasicData($user->getId(), "firstnametestphpunit2", "lastnametestphpunit2", 'null', null);
-//
-//       $this->assertEquals($user->getFirstName(),"firstnametestphpunit2");
-//       $this->assertEquals($user->getLastName(),"lastnametestphpunit2");
-//
-//       $result = $this->get("app.user")->updateUserBasicData($user->getId(), "firstnametestphpunit3", "lastnametestphpunit3", 3, null);
-//
-//       $this->assertEquals($user->getFirstName(),"firstnametestphpunit3");
-//       $this->assertEquals($user->getLastName(),"lastnametestphpunit3");
-//       $this->assertEquals($user->getThumbnail(), 3);
-//
-//
-//
-//   }
-
     public function testSetNotificationPreferences()
     {
 
@@ -301,34 +276,6 @@ class UserAccountTest extends WebTestCaseExtended
 
     }
 
-//    public function testUpdateTimezone(){
-//
-//        $this->removeUserByName("usertest001");
-//        $user = $this->newUserByName("usertest001");
-//        $result = $this->doPost("/ajax/users/login", Array(
-//            "_username" => "usertest001",
-//            "_password" => "usertest001"
-//        ));
-//
-//        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
-//
-//
-//        //$timezone = new \DateTimeZone("Etc/UTC");
-//        //$timezone = $user->getTimezone();
-////
-//        //error_log(print_r($timezone,true));
-////
-////
-//        $result = $this->doPost("/ajax/users/current/get", Array
-//        (
-//            "_timezone" => 2
-//        ));
-//        error_log(print_r($result),true);
-////
-////        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
-////        error_log(print_r($user->getTimezone(),true));
-//    }
-
     public function testRemoveUserByUsername()
     {
 
@@ -349,20 +296,6 @@ class UserAccountTest extends WebTestCaseExtended
 
     }
 
-//    public function testUpdateStatus(){
-//
-//        $this->removeUserByName("usertest001");
-//        $user = $this->newUserByName("usertest001");
-//        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
-//
-//        $result = $this->get("app.user")->updateStatus($user->getId(), "new status");
-//        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
-//
-//        error_log(print_r($user->getStatus()));
-//        //$this->assertEquals("new status", $user->getTutorialStatus());
-//
-//    }
-
     public function testThreeNewPassword()
     {
 
@@ -373,7 +306,6 @@ class UserAccountTest extends WebTestCaseExtended
             "email" => "usertest001@twake_phpunit.fr"
         ));
         $token = json_decode($result->getContent(), true)["data"]["token"];
-
         $boolean = false;
         if (is_string($token) && strlen(json_decode($result->getContent(), true)["data"]["token"]) > 5) {
             $boolean = true;
