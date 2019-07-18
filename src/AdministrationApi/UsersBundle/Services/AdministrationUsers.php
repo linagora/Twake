@@ -83,7 +83,7 @@ class AdministrationUsers
         $mails = array();
 
         foreach ($mails_tab as $mail) {
-            $mails[] = $mail->getAsArray();
+            $mails[] = $mail->getMail();
         }
 
         return $mails;
@@ -98,7 +98,9 @@ class AdministrationUsers
         $groups = array();
 
         foreach ($groups_tab as $group) {
-            $groups[] = $group->getAsArray();
+            $groups[] = Array(
+                "id" => $group->getId()
+            );
         }
 
         return $groups;

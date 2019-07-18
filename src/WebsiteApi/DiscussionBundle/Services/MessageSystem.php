@@ -418,7 +418,7 @@ class MessageSystem
             $this->em->flush();
 
             if ($channel && $did_create) {
-                $this->message_notifications_center_service->newElement($channel, $application, $user, $this->mdToText($message->getContent()), $message->getId());
+                $this->message_notifications_center_service->newElement($channel, $application, $user, $this->mdToText($message->getContent()), $message);
             }
 
 

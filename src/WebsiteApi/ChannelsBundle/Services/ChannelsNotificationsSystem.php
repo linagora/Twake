@@ -24,7 +24,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
         $this->pusher = $pusher;
     }
 
-    public function newElement($channel, $sender_application = null, $sender_user = null, $message_as_text = "", $message_id = "")
+    public function newElement($channel, $sender_application = null, $sender_user = null, $message_as_text = "", $message = null)
     {
 
         if (is_string($channel)) {
@@ -48,8 +48,12 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
 
         foreach ($members as $member) {
 
+            $muted = $member->getMuted();
+            if ($muted && strpos(json_encode($message->getContent()), $member->getUserId()) !== false) {
+                $muted = false;
+            }
 
-            if (!$member->getMuted() && (!$sender_user || $member->getUserId() != $sender_user->getId())) {
+            if (!$muted && (!$sender_user || $member->getUserId() != $sender_user->getId())) {
 
                 $user = $userRepo->find($member->getUserId());
 
@@ -82,7 +86,7 @@ class ChannelsNotificationsSystem extends ChannelSystemAbstract
             $users_to_notify,
             "channel_" . $channel->getId(),
             $message_as_text,
-            $message_id,
+            $message ? $message->getId() : "",
             Array(),
             Array("push"),
             true
