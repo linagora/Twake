@@ -73,6 +73,7 @@ front_test:
         - npm audit fix
         
         - git fetch
+        - git config user.email "mahaut.dherent@telecomnancy.eu"
         - git config --global user.name "mahaut"
         - git add -f
         - git commit -m "Install some tools"
