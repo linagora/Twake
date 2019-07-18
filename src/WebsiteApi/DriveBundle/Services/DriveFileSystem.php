@@ -1410,6 +1410,10 @@ class DriveFileSystem
 
             $newFile->setSize($size);
 
+            $version = $newFile->getLastVersion($this->doctrine);
+            $version->setData(Array());
+            $this->doctrine->persist($version);
+
             $this->encode($this->getRoot() . $newFile->getPath(), $newFile->getLastVersion($this->doctrine)->getKey(), $newFile->getLastVersion($this->doctrine)->getMode());
 
             $this->setRawContent($newFile, null, false, $user);
