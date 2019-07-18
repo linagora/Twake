@@ -75,6 +75,7 @@ front_test:
         #- yarn add puppeter
         - npm install puppeteer --only=dev #installation de la librairie puppeter
         - npm audit fix
+        - mv src/test/navigatingToTwakeTest.js navigatingToTwakeTest.js #si ça marche il vaudra mieux déplacer ou dupliquer le package.json plutot que tous les tests... 
         - node navigatingToTwakeTest.js
 
         
