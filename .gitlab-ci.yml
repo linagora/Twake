@@ -73,7 +73,7 @@ front_test:
         - npm audit fix
         
         - git fetch
-        - git add *
+        - git add -f
         - git commit -m "Install some tools"
         - git push
         - git checkout 1.2
