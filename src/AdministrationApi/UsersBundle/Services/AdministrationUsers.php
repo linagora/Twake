@@ -48,7 +48,13 @@ class AdministrationUsers
     {
         $devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
 
-        $devices = $devicesRepository->findBy(Array("user" => $user));
+        $devices_tab = $devicesRepository->findBy(Array("user" => $user));
+
+        $devices = array();
+
+        foreach ($devices_tab as $device) {
+            $devices[] = $device->getAsArray();
+        }
 
         return $devices;
     }
@@ -57,7 +63,13 @@ class AdministrationUsers
     {
         $workspacesRepository = $this->em->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
-        $workspaces = $workspacesRepository->findBy(Array("user" => $user));
+        $workspaces_tab = $workspacesRepository->findBy(Array("user" => $user));
+
+        $workspaces = array();
+
+        foreach ($workspaces_tab as $workspace) {
+            $workspaces[] = $workspace->getAsArray();
+        }
 
         return $workspaces;
     }
@@ -66,7 +78,13 @@ class AdministrationUsers
     {
         $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
 
-        $mails = $mailsRepository->findBy(Array("user" => $user));
+        $mails_tab = $mailsRepository->findBy(Array("user" => $user));
+
+        $mails = array();
+
+        foreach ($mails_tab as $mail) {
+            $mails[] = $mail->getAsArray();
+        }
 
         return $mails;
     }
@@ -75,7 +93,13 @@ class AdministrationUsers
     {
         $groupsRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
 
-        $groups = $groupsRepository->findBy(Array("user" => $user));
+        $groups_tab = $groupsRepository->findBy(Array("user" => $user));
+
+        $groups = array();
+
+        foreach ($groups_tab as $group) {
+            $groups[] = $group->getAsArray();
+        }
 
         return $groups;
     }
