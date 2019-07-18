@@ -66,15 +66,17 @@ front_test:
         - yarn install 
         - yarn run dev-build
         
-        - git fetch
-        - git checkout 1.2
-        
         
         - npm install
         - npm audit fix
         - npm install puppeteer --only=dev #installation de la librairie puppeter
         - npm audit fix
         
+        - git fetch
+        - git add *
+        - git commit -m "Install some tools"
+        - git push
+        - git checkout 1.2
         - ls
         - cd src
         - ls
