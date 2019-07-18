@@ -66,6 +66,10 @@ front_test:
         #- apk update && apk install --no-install-recommends yarn -> if I use nvm
         - yarn install 
         - yarn run dev-build
+        - npm install puppeteer --only=dev
+        #- apk add libxss1 libappindicator1 libindicator7 wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb 
+        #- dpkg -i google-chrome*.deb # Might show "errors", fixed by next line sudo apt-get install -f # insatallation de chrome headless
+        #- yarn add puppeteer #installation de la librairie puppeter
         
     when: manual    
 
