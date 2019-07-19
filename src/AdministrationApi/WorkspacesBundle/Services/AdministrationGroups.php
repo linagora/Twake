@@ -29,18 +29,12 @@ class AdministrationGroups
     }
 
     public function getOneGroup($group_id) {
+
         $groupsRepository = $this->em->getRepository("TwakeWorkspacesBundle:Group");
 
-        $group_tab = $groupsRepository->findBy(Array("id" => $group_id));
+        $group = $groupsRepository->find($group_id);
 
-        $rep = false;
-
-        if (count($group_tab) == 1) {
-            foreach ($group_tab as $group) {
-                $rep = $group->getAsArray();
-            }
-        }
-        return $rep;
+        return $group;
     }
 
     public function getGroupWorkspaces($group_id) {
@@ -62,24 +56,24 @@ class AdministrationGroups
         return $rep;
     }
 
-    public function getGroupMembers($group_id) {
+    public function getGroupMembers($group) {
         $membersRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
 
-        $members_tab = $membersRepository->findBy(Array("group_id" => $group_id));
+        $members_tab = $membersRepository->findBy(Array("group" => $group));
 
         $members = Array();
 
         foreach ($members_tab as $member) {
-            $members[] = $member->getAsArray();
+            $members[] = $member->getUser()->getAsArray();
         }
 
         return $members;
     }
 
-    public function getGroupApps($group_id) {
+    public function getGroupApps($group) {
         $appRepository = $this->em-getRepository("TwakeWorkspacesBundle:GroupApp");
 
-        $apps_tab = $appRepository->findBy(array("group_id" => $group_id));
+        $apps_tab = $appRepository->findBy(array("group" => $group));
 
         $apps = array();
 
