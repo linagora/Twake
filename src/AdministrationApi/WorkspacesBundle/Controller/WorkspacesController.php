@@ -28,19 +28,17 @@ class WorkspacesController extends Controller
             $workspace = $workspace_service->getOneWorkspace($id);
 
             if ($workspace) {
-                $members = $workspace_service->getWorkspaceMembers($id);
-                $apps = $workspace_service->getWorkspaceApps($id);
+                $members = $workspace_service->getWorkspaceMembers($workspace);
+                $apps = $workspace_service->getWorkspaceApps($workspace);
 
-                $data["data"]["workspace"] = $workspace;
+                $data["data"]["workspace"] = $workspace->getAsArray();
                 $data["data"]["members"] = $members;
                 $data["data"]["apps"] = $apps;
 
+                //TODO Infos du workspace a recuperer : taille du Drive
             } else {
                 $data["errors"][] = "workspace_not_found";
             }
-            //Si on a recupere un workspace, on recupere les info qu'on veut du workspace
-
-            //TODO Infos du workspace a recuperer : Liste des membres, des applis, taille du Drive
         } else {
             $data["errors"][] = "invalid_authentication_token";
         }
