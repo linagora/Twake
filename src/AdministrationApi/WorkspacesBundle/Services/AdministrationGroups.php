@@ -71,7 +71,7 @@ class AdministrationGroups
     }
 
     public function getGroupApps($group) {
-        $appRepository = $this->em-getRepository("TwakeWorkspacesBundle:GroupApp");
+        $appRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupApp");
 
         $apps_tab = $appRepository->findBy(array("group" => $group));
 
