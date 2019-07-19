@@ -45,17 +45,19 @@ class BoardBoard
             ), Array(), null);
 
             $list_todo = $this->list_service->save(Array(
-                "board_id" => $board->getId(),
+                "board_id" => $board["id"],
                 "title" => "Not done",
                 "emoji" => ":vertical_traffic_light:",
-                "color" => "#0b8043"
+                "color" => "#f4511e",
+                "order" => "a"
             ), Array(), null);
 
             $list_done = $this->list_service->save(Array(
-                "board_id" => $board->getId(),
+                "board_id" => $board["id"],
                 "title" => "Done",
                 "emoji" => ":white_check_mark:",
-                "color" => "#f4511e"
+                "color" => "#0b8043",
+                "order" => "b"
             ), Array(), null);
 
             //TODO Add example tasks in board
@@ -120,7 +122,7 @@ class BoardBoard
         $this->doctrine->persist($board);
         $this->doctrine->flush();
 
-        $this->updateConnectors($board, $object["connectors"], $current_user->getId());
+        $this->updateConnectors($board, $object["connectors"], $current_user ? $current_user->getId() : null);
 
         //Notify connectors
         $workspace_id = $board->getWorkspaceId();
