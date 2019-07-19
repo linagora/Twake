@@ -91,7 +91,7 @@ twake_drive:
     prefix:   ajax/drive/
     methods: [POST, GET]
 
-twake_drive:
+twake_tasks:
     resource: "@TwakeTasksBundle/Resources/config/routing.yml"
     prefix:   ajax/tasks/
     methods: [POST]
