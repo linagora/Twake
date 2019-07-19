@@ -26,6 +26,14 @@ class Reindex
 //            //$this->doctrine->es_put($workspace,$workspace->getEsType());
 //        }
 
+
+        $apps = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findBy(Array());
+        foreach ($apps as $app) {
+            $this->doctrine->es_put($app, $app->getEsType());
+        }
+
+        /*
+
         $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
         foreach ($files as $file){
             $keywords = $file->getContentKeywords();
@@ -77,6 +85,7 @@ class Reindex
                 $this->doctrine->es_put($channel,$channel->getEsType());
             }
         }
+        */
 
     }
 

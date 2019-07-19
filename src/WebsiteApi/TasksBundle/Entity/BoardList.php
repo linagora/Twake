@@ -10,7 +10,7 @@ use WebsiteApi\CoreBundle\Entity\FrontObject;
 /**
  * Board
  *
- * @ORM\Table(name="board_list",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "id":"ASC"}, {"id":"ASC"}} })
+ * @ORM\Table(name="tasks_list",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "id":"ASC"}, {"id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\TasksBundle\Repository\BoardListRepository")
  */
 class BoardList extends FrontObject
@@ -40,14 +40,19 @@ class BoardList extends FrontObject
     private $color;
 
     /**
-     * @ORM\Column(name="auto_participants", type="twake_text", nullable=false)
-     */
-    private $auto_participants = "[]";
-
-    /**
      * @ORM\Column(name="emoji", type="string", nullable=true)
      */
     private $emoji;
+
+    /**
+     * @ORM\Column(name="order_pos", type="twake_text", nullable=true)
+     */
+    private $order;
+
+    /**
+     * @ORM\Column(name="auto_participants", type="twake_text", nullable=false)
+     */
+    private $auto_participants = "[]";
 
 
     public function __construct($board_id, $title, $color)
@@ -154,6 +159,21 @@ class BoardList extends FrontObject
         $this->emoji = $emoji;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param mixed $order
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+    }
 
     public function getAsArray()
     {
@@ -163,6 +183,7 @@ class BoardList extends FrontObject
             "title" => $this->getTitle(),
             "color" => $this->getColor(),
             "emoji" => $this->getEmoji(),
+            "order" => $this->getOrder(),
             "board_id" => $this->getBoardId(),
             "auto_participants" => $this->getAutoParticipants()
         );

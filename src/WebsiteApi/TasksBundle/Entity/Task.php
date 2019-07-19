@@ -36,6 +36,11 @@ class Task extends FrontObject
     private $list_id;
 
     /**
+     * @ORM\Column(name="order_pos", type="twake_text", nullable=true)
+     */
+    private $order;
+
+    /**
      * @ORM\Column(name="from_ts", type="twake_bigint")
      */
     private $from;
