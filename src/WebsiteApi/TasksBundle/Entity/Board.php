@@ -50,6 +50,11 @@ class Board extends FrontObject
     private $active_tasks;
 
     /**
+     * @ORM\Column(name="view_mode", type="integer", nullable=true)
+     */
+    private $view_mode = "grid";
+
+    /**
      * @ORM\Column(name="connectors", type="twake_text", nullable=true)
      */
     private $connectors = "[]";
@@ -173,6 +178,22 @@ class Board extends FrontObject
         $this->group_name = $group_name;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getViewMode()
+    {
+        return $this->view_mode;
+    }
+
+    /**
+     * @param mixed $view_mode
+     */
+    public function setViewMode($view_mode)
+    {
+        $this->view_mode = $view_mode;
+    }
+
     public function getAsArray()
     {
         return Array(
@@ -181,6 +202,7 @@ class Board extends FrontObject
             "title" => $this->getTitle(),
             "emoji" => $this->getEmoji(),
             "group_name" => $this->getGroupName(),
+            "view_mode" => $this->getViewMode(),
             "active_tasks" => $this->getActiveTasks(),
             "connectors" => $this->getConnectors(),
             "workspace_id" => $this->getWorkspaceId()

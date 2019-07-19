@@ -10,7 +10,7 @@ services:
 
     app.tasks.board:
         class: WebsiteApi\TasksBundle\Services\BoardBoard
-        arguments: ["@app.twake_doctrine", "@app.applications_api"]
+        arguments: ["@app.twake_doctrine", "@app.applications_api", "@app.tasks.list", "@app.tasks.task"]
 
     app.tasks.export:
         class: WebsiteApi\TasksBundle\Services\BoardExport

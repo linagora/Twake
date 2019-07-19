@@ -83,9 +83,11 @@ class BoardList
             $board_list->setFrontId($object["front_id"]);
         }
 
-        $board_list->setTitle($object["title"]);
-        $board_list->setColor($object["color"]);
-        $board_list->setAutoParticipants($object["auto_participants"]);
+        if (isset($object["title"])) $board_list->setTitle($object["title"]);
+        if (isset($object["color"])) $board_list->setColor($object["color"]);
+        if (isset($object["emoji"])) $board_list->setEmoji($object["emoji"]);
+        if (isset($object["auto_participants"])) $board_list->setAutoParticipants($object["auto_participants"]);
+
         $this->doctrine->persist($board_list);
         $this->doctrine->flush();
 
