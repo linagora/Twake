@@ -44,6 +44,11 @@ class BoardList extends FrontObject
      */
     private $auto_participants = "[]";
 
+    /**
+     * @ORM\Column(name="emoji", type="string", nullable=true)
+     */
+    private $emoji;
+
 
     public function __construct($board_id, $title, $color)
     {
@@ -133,6 +138,22 @@ class BoardList extends FrontObject
         $this->auto_participants = json_encode($auto_participants);
     }
 
+    /**
+     * @return mixed
+     */
+    public function getEmoji()
+    {
+        return $this->emoji;
+    }
+
+    /**
+     * @param mixed $emoji
+     */
+    public function setEmoji($emoji)
+    {
+        $this->emoji = $emoji;
+    }
+
 
     public function getAsArray()
     {
@@ -141,6 +162,7 @@ class BoardList extends FrontObject
             "front_id" => $this->getFrontId(),
             "title" => $this->getTitle(),
             "color" => $this->getColor(),
+            "emoji" => $this->getEmoji(),
             "board_id" => $this->getBoardId(),
             "auto_participants" => $this->getAutoParticipants()
         );

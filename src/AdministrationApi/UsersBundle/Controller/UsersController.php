@@ -75,7 +75,7 @@ class UsersController extends Controller
                     $data["data"]["user"] = $user->getAsArray();
                     $data["data"]["devices"] = $devices;
                     $data["data"]["mails"] = $mails;
-                    $data["data"]["workspace"] = $workspaces;
+                    $data["data"]["workspaces"] = $workspaces;
                     $data["data"]["groups"] = $groups;
                 }
             } else {

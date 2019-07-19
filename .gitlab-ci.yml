@@ -8,12 +8,6 @@ services:
 
 before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
     - apk update && apk add git
-    #- mv Docker/twake-php twake-php
-    #- mv Docker/docker-compose-test.yml docker-compose.yml
-    #- mv Docker/parameters-test.yml app/config/parameters.yml
-    #- apk add python python-dev py-pip build-base libffi-dev openssl-dev
-    #- pip install docker-compose
-    #- docker-compose up -d --build
 
 stages:
     - test
@@ -24,7 +18,12 @@ test:
         refs:
             - schedules #permet d'executer le test selon le schedule
     script:
-    
+        - mv Docker/twake-php twake-php
+        - mv Docker/docker-compose-test.yml docker-compose.yml
+        - mv Docker/parameters-test.yml app/config/parameters.yml
+        - apk add python python-dev py-pip build-base libffi-dev openssl-dev
+        - pip install docker-compose
+        - docker-compose up -d --build
         - docker ps #To get the name of the existing container (juste pour info)
         - docker-compose exec -T php php -dmemory_limit=-1 composer.phar update
         - docker-compose exec -T php php /twake-core/bin/console cache:clear
@@ -67,15 +66,11 @@ front_test:
         - apk update && apk add yarn
         - yarn install 
         - yarn run dev-build
-        - yarn add puppeteer --only=dev #installation de la librairie puppeter
-
-        - ls
-        - cd src
-        - ls
-        - cd test
-        - ls
-        - mv src/test/navigatingToTwakeTest.js navigatingToTwakeTest.js #si ça marche il vaudra mieux déplacer ou dupliquer le package.json plutot que tous les tests... 
-        - node navigatingToTwakeTest.js
+        #- yarn add puppeteer --only=dev -> installation de la librairie puppeter et installation des dépendances pour le serveur localhost8080 -> pas besoin de cette ligne car déja prise en compte quand j'ai push
+        - node run_server.js & #permet de lancer le code permettant de générer le serveur
+        
+        #execution des test que je souhaite faire
+        - node src/test/screenshot.js
 
         
     when: manual    

@@ -8,10 +8,12 @@ use WebsiteApi\TasksBundle\Entity\Board;
 class BoardBoard
 {
 
-    function __construct($entity_manager, $application_api)
+    function __construct($entity_manager, $application_api, $list_service, $task_service)
     {
         $this->doctrine = $entity_manager;
         $this->applications_api = $application_api;
+        $this->list_service = $list_service;
+        $this->task_service = $task_service;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -36,16 +38,30 @@ class BoardBoard
         }
 
         if (count($boards) == 0) {
-            $cal = $this->save(Array(
+            $board = $this->save(Array(
                 "workspace_id" => $workspace_id,
                 "title" => "First Board",
-                "color" => "#33b679",
+                "emoji" => ":clipboard:",
+            ), Array(), null);
+
+            $list_todo = $this->list_service->save(Array(
+                "board_id" => $board->getId(),
+                "title" => "Not done",
+                "emoji" => ":vertical_traffic_light:",
+                "color" => "#0b8043"
+            ), Array(), null);
+
+            $list_done = $this->list_service->save(Array(
+                "board_id" => $board->getId(),
+                "title" => "Done",
+                "emoji" => ":white_check_mark:",
+                "color" => "#f4511e"
             ), Array(), null);
 
             //TODO Add example tasks in board
 
-            if ($cal) {
-                return [$cal];
+            if ($board) {
+                return [$board];
             }
 
         }
@@ -92,12 +108,15 @@ class BoardBoard
             }
         } else {
             $did_create = true;
-            $board = new Board($object["workspace_id"], "", "");
+            $board = new Board($object["workspace_id"], "");
             $board->setFrontId($object["front_id"]);
         }
 
-        $board->setTitle($object["title"]);
-        $board->setColor($object["color"]);
+        if (isset($object["title"])) $board->setTitle($object["title"]);
+        if (isset($object["emoji"])) $board->setEmoji($object["emoji"]);
+        if (isset($object["group_name"])) $board->setGroupName($object["group_name"]);
+        if (isset($object["view_mode"])) $board->setViewMode($object["view_mode"]);
+
         $this->doctrine->persist($board);
         $this->doctrine->flush();
 
