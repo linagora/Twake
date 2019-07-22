@@ -714,51 +714,6 @@ class CalendarEvent
             }
         }
 
-        /*
-
-        $linkRepo = $this->doctrine->getRepository("TwakeCalendarBundle:LinkEventUser");
-
-        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "calendar"));
-
-        foreach ($events as $event) {
-
-            $date = $event->getFrom();
-            $in = $date - date("U");
-            $in = $in / 60;
-            if ($in < 60) {
-                $in = intval($in) . " minute(s) ";
-            } else if ($in / 60 < 24) {
-                $in = intval($in / 60) . " hour(s) ";
-            } else {
-                $in = intval($in / (60 * 24)) . " day(s) ";
-            }
-
-            $title = "Event";
-            if (isset($event->getEvent()["title"])) {
-                $title = $event->getEvent()["title"];
-            }
-            $text = $title . " in " . $in;
-
-            $_users = $linkRepo->findBy(Array("event" => $event));
-            if (count($_users) > 0) {
-                $users = Array();
-                foreach ($_users as $user) {
-                    $users[] = $user->getUser()->getId();
-                }
-                $this->notifications->pushNotification($app, null, $users, null, "event_" . $event->getId(), $text, Array("push"), null, false);
-            }
-
-
-            $event->setNextReminder(0);
-            $this->doctrine->persist($event);
-
-        }
-
-        $this->doctrine->flush();
-        return true;
-
-        */
-
     }
 
 }

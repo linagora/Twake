@@ -574,6 +574,7 @@ class Application extends SearchableObject
             "channels", //Lister les channels et leur configuration (tabulations etc)
             "workspace", //Information sur l’espace de travail
             "workspace_calendar", //Information sur le calendrier de l’espace de travail
+            "workspace_board", //Information sur le calendrier de l’espace de travail
             "workspace_drive", //Information sur le drive de l’espace de travail
             "drive_list", //Lister documents dans le Drive
             //"drive_tree", //Liste des fichiers, noms et autres metadatas
@@ -592,6 +593,8 @@ class Application extends SearchableObject
             "drive_remove",
             "calendar_event_save",
             "calendar_event_remove",
+            "calendar_task_save",
+            "calendar_task_remove",
             //"drive_add", //Ajouter un fichiers
             //"drive_remove", //Supprimer un fichier existant
             //"drive_modify", //Modifier un fichier existant
@@ -608,6 +611,7 @@ class Application extends SearchableObject
             "message_in_workspace", //Nouveau message hook dans tous le workspace
             "calendar",
             "event",
+            "task",
             "file"
         );
         $return["available_categories"] = Array(

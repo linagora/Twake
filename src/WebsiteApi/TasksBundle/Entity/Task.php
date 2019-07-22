@@ -10,7 +10,7 @@ use WebsiteApi\CoreBundle\Entity\FrontObject;
 /**
  * Task
  *
- * @ORM\Table(name="task",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "list_id":"ASC", "id":"ASC"}, {"id":"ASC"}} })
+ * @ORM\Table(name="task",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "id":"ASC"}, {"id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\TasksBundle\Repository\TaskRepository")
  */
 class Task extends FrontObject
@@ -41,29 +41,9 @@ class Task extends FrontObject
     private $order;
 
     /**
-     * @ORM\Column(name="from_ts", type="twake_bigint")
+     * @ORM\Column(name="before", type="twake_bigint")
      */
-    private $from;
-
-    /**
-     * @ORM\Column(name="to_ts", type="twake_bigint")
-     */
-    private $to;
-
-    /**
-     * @ORM\Column(name="all_day", type="twake_boolean")
-     */
-    private $all_day = false;
-
-    /**
-     * @ORM\Column(name="type", type="twake_text")
-     */
-    private $type = "task";
-
-    /**
-     * @ORM\Column(name="repetition_definition", type="twake_text")
-     */
-    private $repetition_definition = "{}";
+    private $before = "";
 
     /**
      * @ORM\Column(name="title", type="twake_text")
@@ -76,34 +56,24 @@ class Task extends FrontObject
     private $description = "";
 
     /**
-     * @ORM\Column(name="location", type="twake_text", nullable=true)
-     */
-    private $location = "";
-
-    /**
-     * @ORM\Column(name="private", type="twake_boolean")
-     */
-    private $private = false;
-
-    /**
-     * @ORM\Column(name="available", type="twake_boolean")
-     */
-    private $available = false;
-
-    /**
      * @ORM\Column(name="owner", type="twake_text")
      */
     private $owner;
 
     /**
+     * @ORM\Column(name="task_created_at", type="twake_bigint")
+     */
+    private $task_created_at;
+
+    /**
+     * @ORM\Column(name="check_list", type="twake_text")
+     */
+    private $check_list = "{}";
+
+    /**
      * @ORM\Column(name="participants", type="twake_text")
      */
     private $participants = "{}";
-
-    /**
-     * @ORM\Column(name="workspaces_boards", type="twake_text")
-     */
-    private $workspaces_boards = "{}";
 
     /**
      * @ORM\Column(name="notifications", type="twake_text")
@@ -120,11 +90,19 @@ class Task extends FrontObject
      */
     private $task_last_modified;
 
+    /**
+     * @ORM\Column(name="archived", type="twake_boolean")
+     */
+    private $archived;
+
 
     public function __construct($board_id, $list_id, $title)
     {
         $this->setTitle($title);
+        $this->setBoardId($board_id);
+        $this->setListId($list_id);
         $this->setTaskLastModified();
+        $this->setTaskCreatedAt(date("U"));
     }
 
     /**
@@ -141,86 +119,6 @@ class Task extends FrontObject
     public function setId($id)
     {
         $this->id = $id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getFrom()
-    {
-        return $this->from;
-    }
-
-    /**
-     * @param mixed $from
-     */
-    public function setFrom($from)
-    {
-        $this->from = $from;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getTo()
-    {
-        return $this->to;
-    }
-
-    /**
-     * @param mixed $to
-     */
-    public function setTo($to)
-    {
-        $this->to = $to;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAllDay()
-    {
-        return $this->all_day;
-    }
-
-    /**
-     * @param mixed $all_day
-     */
-    public function setAllDay($all_day)
-    {
-        $this->all_day = $all_day;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getType()
-    {
-        return $this->type;
-    }
-
-    /**
-     * @param mixed $type
-     */
-    public function setType($type)
-    {
-        $this->type = $type;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRepetitionDefinition()
-    {
-        return json_decode($this->repetition_definition, true);
-    }
-
-    /**
-     * @param mixed $repetition_definition
-     */
-    public function setRepetitionDefinition($repetition_definition)
-    {
-        $this->repetition_definition = json_encode($repetition_definition);
     }
 
     /**
@@ -258,54 +156,6 @@ class Task extends FrontObject
     /**
      * @return mixed
      */
-    public function getLocation()
-    {
-        return $this->location;
-    }
-
-    /**
-     * @param mixed $location
-     */
-    public function setLocation($location)
-    {
-        $this->location = $location;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getPrivate()
-    {
-        return $this->private;
-    }
-
-    /**
-     * @param mixed $private
-     */
-    public function setPrivate($private)
-    {
-        $this->private = $private;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getAvailable()
-    {
-        return $this->available;
-    }
-
-    /**
-     * @param mixed $available
-     */
-    public function setAvailable($available)
-    {
-        $this->available = $available;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getOwner()
     {
         return $this->owner;
@@ -333,22 +183,6 @@ class Task extends FrontObject
     public function setParticipants($participants)
     {
         $this->participants = json_encode($participants);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getWorkspacesBoards()
-    {
-        return json_decode($this->workspaces_boards, true);
-    }
-
-    /**
-     * @param mixed $workspaces_boards
-     */
-    public function setWorkspacesBoards($workspaces_boards)
-    {
-        $this->workspaces_boards = json_encode($workspaces_boards);
     }
 
     /**
@@ -383,17 +217,6 @@ class Task extends FrontObject
         $this->tags = json_encode($tags);
     }
 
-    public function getSortKey()
-    {
-        $after_sort_date = floor($this->getFrom() / (60 * 60 * 24 * 7));
-        $before_sort_date = floor($this->getTo() / (60 * 60 * 24 * 7));
-        $sort_key = [$after_sort_date];
-        if ($after_sort_date != $before_sort_date) {
-            $sort_key = [$after_sort_date, $before_sort_date];
-        }
-        return $sort_key;
-    }
-
     /**
      * @return mixed
      */
@@ -410,28 +233,137 @@ class Task extends FrontObject
         $this->task_last_modified = date("U");
     }
 
+    /**
+     * @return mixed
+     */
+    public function getBoardId()
+    {
+        return $this->board_id;
+    }
+
+    /**
+     * @param mixed $board_id
+     */
+    public function setBoardId($board_id)
+    {
+        $this->board_id = $board_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getListId()
+    {
+        return $this->list_id;
+    }
+
+    /**
+     * @param mixed $list_id
+     */
+    public function setListId($list_id)
+    {
+        $this->list_id = $list_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getOrder()
+    {
+        return $this->order;
+    }
+
+    /**
+     * @param mixed $order
+     */
+    public function setOrder($order)
+    {
+        $this->order = $order;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getBefore()
+    {
+        return $this->before;
+    }
+
+    /**
+     * @param mixed $before
+     */
+    public function setBefore($before)
+    {
+        $this->before = $before;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTaskCreatedAt()
+    {
+        return $this->task_created_at;
+    }
+
+    /**
+     * @param mixed $task_created_at
+     */
+    public function setTaskCreatedAt($task_created_at)
+    {
+        $this->task_created_at = $task_created_at;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCheckList()
+    {
+        return $this->check_list;
+    }
+
+    /**
+     * @param mixed $check_list
+     */
+    public function setCheckList($check_list)
+    {
+        $this->check_list = $check_list;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getArchived()
+    {
+        return $this->archived;
+    }
+
+    /**
+     * @param mixed $archived
+     */
+    public function setArchived($archived)
+    {
+        $this->archived = $archived;
+    }
 
     public function getAsArray()
     {
         return Array(
             "id" => $this->getId(),
             "front_id" => $this->getFrontId(),
-            "from" => $this->getFrom(),
-            "to" => $this->getTo(),
-            "all_day" => $this->getAllDay(),
-            "repetition_definition" => $this->getRepetitionDefinition(),
-            "type" => $this->getType(),
+            "board_id" => $this->getBoardId(),
+            "list_id" => $this->getListId(),
+            "owner" => $this->getOwner(),
+            "task_created_at" => $this->getTaskCreatedAt(),
+            "task_last_modified" => $this->getTaskLastModified(),
+            "archived" => $this->getArchived(),
+            "before" => $this->getBefore(),
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
-            "location" => $this->getLocation(),
-            "private" => $this->getPrivate(),
-            "available" => $this->getAvailable(),
-            "owner" => $this->getOwner(),
+            "checklist" => $this->getCheckList(),
+            "order" => $this->getOrder(),
             "participants" => $this->getParticipants(),
-            "workspaces_boards" => $this->getWorkspacesBoards(),
             "notifications" => $this->getNotifications(),
             "tags" => $this->getTags(),
-            "task_last_modified" => $this->getTaskLastModified()
         );
     }
 
