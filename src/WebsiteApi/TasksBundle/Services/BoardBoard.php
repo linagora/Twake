@@ -60,6 +60,27 @@ class BoardBoard
                 "order" => "b"
             ), Array(), null);
 
+            $this->task_service->save(Array(
+                "board_id" => $board["id"],
+                "list_id" => $list_todo["id"],
+                "title" => "Invite collaborators",
+                "order" => "a"
+            ), Array(), null);
+
+            $this->task_service->save(Array(
+                "board_id" => $board["id"],
+                "list_id" => $list_todo["id"],
+                "title" => "Customize my workspace",
+                "order" => "b"
+            ), Array(), null);
+
+            $this->task_service->save(Array(
+                "board_id" => $board["id"],
+                "list_id" => $list_done["id"],
+                "title" => "Create my Twake workspace",
+                "order" => "a"
+            ), Array(), null);
+
             //TODO Add example tasks in board
 
             if ($board) {
@@ -89,6 +110,9 @@ class BoardBoard
             return false;
         }
 
+        $this->doctrine->getRepository("TwakeTasksBundle:Task")->removeBy(Array("board_id" => $id));
+        $this->doctrine->getRepository("TwakeTasksBundle:BoardList")->removeBy(Array("board_id" => $id));
+
         $this->doctrine->remove($board);
         $this->doctrine->flush();
 
@@ -97,6 +121,8 @@ class BoardBoard
 
     public function save($object, $options, $current_user)
     {
+
+        //TODO add access restriction option like for directories
 
         if (!$this->hasAccess($object, $current_user)) {
             return false;
