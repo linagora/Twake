@@ -354,7 +354,7 @@ class Task extends FrontObject
             "owner" => $this->getOwner(),
             "task_created_at" => $this->getTaskCreatedAt(),
             "task_last_modified" => $this->getTaskLastModified(),
-            "archived" => $this->getArchived(),
+            "archived" => !!$this->getArchived(),
             "before" => $this->getBefore(),
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
