@@ -58,7 +58,8 @@ front_test:
     script:
     
         - echo on met en place le FRONT- echo on met en place le FRONT
-        - git clone https://mahaut:Mahaut59200@gitlab.com/Twake/Twake-react.git 
+        - git clone https://oauth2:sU6C_fg6M6HRowGQYCr5@gitlab.com/Twake/Twake-react.git #attention, ce token expire le 30/09 et il est sur mon compte gitlab donc je suppose que si je n'ai plus accès au git de Twake cette commande ne fonctionnera plus....
+
         - cd Twake-react
         - git fetch
         - git checkout 1.2
