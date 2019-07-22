@@ -12,13 +12,6 @@ NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
 
-#[REMOVE_ONPREMISE]
-#Administration
-administration_general:
-    resource: "@AdministrationGeneralBundle/Resources/config/routing.yml"
-    prefix:   /administration/
-#[/REMOVE_ONPREMISE]
-
 
 #API pour le site (et pas les developpeurs)
 calendar:

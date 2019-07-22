@@ -34,7 +34,6 @@ class AppKernel extends Kernel
             new WebsiteApi\ChannelsBundle\TwakeChannelsBundle(),
 	        new WebsiteApi\CallsBundle\TwakeCallsBundle(),
             new WebsiteApi\ObjectLinksBundle\TwakeObjectLinksBundle(),
-			new Administration\GeneralBundle\AdministrationGeneralBundle(),
 			new Gos\Bundle\WebSocketBundle\GosWebSocketBundle(),
 			new Gos\Bundle\PubSubRouterBundle\GosPubSubRouterBundle(),
 	        new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
