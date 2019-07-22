@@ -28,12 +28,6 @@ class TaskUser
     private $id;
 
     /**
-     * @ORM\Column(name="sort_date", type="twake_bigint")
-     * @ORM\Id
-     */
-    private $sort_date;
-
-    /**
      * @ORM\Column(name="task_id", type="twake_timeuuid")
      */
     private $task_id;
@@ -43,18 +37,11 @@ class TaskUser
      */
     private $email = "";
 
-    /**
-     * @ORM\Column(name="accept_status", type="twake_text")
-     */
-    private $accept_status = "pending";
 
-
-    public function __construct($user_id_or_mail, $task_id, $sort_date, $accept_status = "pending")
+    public function __construct($user_id_or_mail, $task_id)
     {
         $this->user_id_or_mail = $user_id_or_mail;
         $this->task_id = $task_id;
-        $this->sort_date = $sort_date;
-        $this->accept_status = $accept_status;
     }
 
     /**
@@ -84,35 +71,10 @@ class TaskUser
     /**
      * @return mixed
      */
-    public function getSortDate()
-    {
-        return $this->sort_date;
-    }
-
-    /**
-     * @return mixed
-     */
     public function getTaskId()
     {
         return $this->task_id;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getAcceptStatus()
-    {
-        return $this->accept_status;
-    }
-
-    /**
-     * @param mixed $accept_status
-     */
-    public function setAcceptStatus($accept_status)
-    {
-        $this->accept_status = $accept_status;
-    }
-
     /**
      * @return mixed
      */

@@ -50,7 +50,7 @@ class Board extends FrontObject
     private $active_tasks;
 
     /**
-     * @ORM\Column(name="view_mode", type="integer", nullable=true)
+     * @ORM\Column(name="view_mode", type="twake_text", nullable=true)
      */
     private $view_mode = "grid";
 

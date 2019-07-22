@@ -45,17 +45,40 @@ class BoardBoard
             ), Array(), null);
 
             $list_todo = $this->list_service->save(Array(
-                "board_id" => $board->getId(),
+                "board_id" => $board["id"],
                 "title" => "Not done",
                 "emoji" => ":vertical_traffic_light:",
-                "color" => "#0b8043"
+                "color" => "#f4511e",
+                "order" => "a"
             ), Array(), null);
 
             $list_done = $this->list_service->save(Array(
-                "board_id" => $board->getId(),
+                "board_id" => $board["id"],
                 "title" => "Done",
                 "emoji" => ":white_check_mark:",
-                "color" => "#f4511e"
+                "color" => "#0b8043",
+                "order" => "b"
+            ), Array(), null);
+
+            $this->task_service->save(Array(
+                "board_id" => $board["id"],
+                "list_id" => $list_todo["id"],
+                "title" => "Invite collaborators",
+                "order" => "a"
+            ), Array(), null);
+
+            $this->task_service->save(Array(
+                "board_id" => $board["id"],
+                "list_id" => $list_todo["id"],
+                "title" => "Customize my workspace",
+                "order" => "b"
+            ), Array(), null);
+
+            $this->task_service->save(Array(
+                "board_id" => $board["id"],
+                "list_id" => $list_done["id"],
+                "title" => "Create my Twake workspace",
+                "order" => "a"
             ), Array(), null);
 
             //TODO Add example tasks in board
@@ -87,6 +110,9 @@ class BoardBoard
             return false;
         }
 
+        $this->doctrine->getRepository("TwakeTasksBundle:Task")->removeBy(Array("board_id" => $id));
+        $this->doctrine->getRepository("TwakeTasksBundle:BoardList")->removeBy(Array("board_id" => $id));
+
         $this->doctrine->remove($board);
         $this->doctrine->flush();
 
@@ -95,6 +121,8 @@ class BoardBoard
 
     public function save($object, $options, $current_user)
     {
+
+        //TODO add access restriction option like for directories
 
         if (!$this->hasAccess($object, $current_user)) {
             return false;
@@ -120,7 +148,7 @@ class BoardBoard
         $this->doctrine->persist($board);
         $this->doctrine->flush();
 
-        $this->updateConnectors($board, $object["connectors"], $current_user->getId());
+        $this->updateConnectors($board, $object["connectors"], $current_user ? $current_user->getId() : null);
 
         //Notify connectors
         $workspace_id = $board->getWorkspaceId();

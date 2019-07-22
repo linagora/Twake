@@ -73,19 +73,22 @@ class BoardList
 
         $did_create = false;
         if (isset($object["id"])) {
-            $board_list = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $object["id"]));
+            $board_list = $this->doctrine->getRepository("TwakeTasksBundle:BoardList")->findOneBy(Array("id" => $object["id"]));
             if (!$board_list) {
                 return false;
             }
         } else {
             $did_create = true;
-            $board_list = new Board($object["board_id"], "", "");
+            $board_list = new \WebsiteApi\TasksBundle\Entity\BoardList($object["board_id"], "", "");
             $board_list->setFrontId($object["front_id"]);
         }
 
         if (isset($object["title"])) $board_list->setTitle($object["title"]);
         if (isset($object["color"])) $board_list->setColor($object["color"]);
         if (isset($object["emoji"])) $board_list->setEmoji($object["emoji"]);
+
+        if (isset($object["order"])) $board_list->setOrder($object["order"]);
+
         if (isset($object["auto_participants"])) $board_list->setAutoParticipants($object["auto_participants"]);
 
         $this->doctrine->persist($board_list);
