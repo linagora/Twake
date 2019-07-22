@@ -53,6 +53,8 @@ class BoardTask
             $ret[] = $task->getAsArray();
         }
 
+        //TODO get tasks by user or users
+
         return $ret;
     }
 
@@ -88,9 +90,6 @@ class BoardTask
             return false;
         }
 
-        /* @var Board $board */
-        $board = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $task->getBoardId()));
-
         if (isset($object["id"]) && $object["id"]) {
             $task = $this->doctrine->getRepository("TwakeTasksBundle:Task")->find($object["id"]);
             if (!$task) {
@@ -104,6 +103,8 @@ class BoardTask
             $did_create = true;
         }
 
+        /* @var Board $board */
+        $board = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $task->getBoardId()));
 
         //Manage infos
         if (isset($object["title"])) $task->setTitle($object["title"]);
@@ -139,6 +140,7 @@ class BoardTask
             $this->updateParticipants($task, $object["participants"] ? $object["participants"] : Array());
         }
 
+        //TODO notify participants for the "by user" task view
 
         //Notify connectors
         $resources = [];

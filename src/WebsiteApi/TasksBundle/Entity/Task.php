@@ -10,7 +10,7 @@ use WebsiteApi\CoreBundle\Entity\FrontObject;
 /**
  * Task
  *
- * @ORM\Table(name="task",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "id":"ASC"}, {"id":"ASC"}} })
+ * @ORM\Table(name="tasks_task",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "id":"ASC"}, {"id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\TasksBundle\Repository\TaskRepository")
  */
 class Task extends FrontObject
@@ -31,7 +31,6 @@ class Task extends FrontObject
 
     /**
      * @ORM\Column(name="list_id", type="twake_timeuuid")
-     * @ORM\Id
      */
     private $list_id;
 
@@ -43,7 +42,7 @@ class Task extends FrontObject
     /**
      * @ORM\Column(name="before", type="twake_bigint")
      */
-    private $before = "";
+    private $before = 0;
 
     /**
      * @ORM\Column(name="title", type="twake_text")
