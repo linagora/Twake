@@ -147,7 +147,6 @@ class ManagerAdapter
     public function persist($object)
     {
 
-
         if (!$this->generator) {
             $this->generator = new UuidOrderedTimeGenerator();
         }

@@ -36,14 +36,22 @@ class AdministrationWorkspaces
     }
 
     public function getWorkspaceApps($workspace) {
-        $appsRepository = $this->em->getrepository("TwakeWorkspacesBundle:WorkspaceApp");
+        $workspaceAppsRepository = $this->em->getrepository("TwakeWorkspacesBundle:WorkspaceApp");
 
-        $apps_tab = $appsRepository->findBy(array("workspace" => $workspace));
+        $apps_tab = $workspaceAppsRepository->findBy(array("workspace" => $workspace));
 
         $apps = array();
 
-        foreach ($apps_tab as $app) {
-            $apps[] = $app->getAppId();
+        $appsRepository = $this->em->getRepository("TwakeMarketBundle:Application");
+
+        foreach ($apps_tab as $appWksp) {
+            $app_id = $appWksp->getAppId();
+
+            $app = $appsRepository->find($app_id);
+
+            if ($app) {
+                $apps[] = $app->getAsArray();
+            }
         }
 
         return $apps;

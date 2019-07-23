@@ -56,6 +56,7 @@ class AppKernel extends Kernel
             new AdministrationApi\CoreBundle\AdministrationApiCoreBundle(),
             new AdministrationApi\UsersBundle\AdministrationApiUsersBundle(),
             new AdministrationApi\WorkspacesBundle\AdministrationApiWorkspacesBundle(),
+            new AdministrationApi\AppsBundle\AdministrationApiAppsBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

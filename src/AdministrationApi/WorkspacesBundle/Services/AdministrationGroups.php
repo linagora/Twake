@@ -71,14 +71,23 @@ class AdministrationGroups
     }
 
     public function getGroupApps($group) {
-        $appRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupApp");
+        $groupAppRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupApp");
 
-        $apps_tab = $appRepository->findBy(array("group" => $group));
+        $apps_tab = $groupAppRepository->findBy(array("group" => $group));
 
         $apps = array();
 
-        foreach ($apps_tab as $app) {
-            $apps[] = $app->getAsArray();
+        $appsRepository = $this->em->getRepository("TwakeMarketBundle:Application");
+
+        foreach ($apps_tab as $grpApp) {
+            $app_id = $grpApp->getAppId();
+
+            $app = $appsRepository->find($app_id);
+
+            if ($app) {
+                $apps[] = $app->getAsArray();
+            }
+
         }
 
         return $apps;

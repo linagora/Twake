@@ -148,6 +148,10 @@ administration_workspaces:
     resource: "@AdministrationApiWorkspacesBundle/Resources/config/routing.yml"
     prefix:   /api/backend/workspaces/
 
+administration_apps:
+    resource: "@AdministrationApiAppsBundle/Resources/config/routing.yml"
+    prefix:   /api/backend/apps/
+
 developers_api_error:
     path:     /api/{req}
     defaults: { _controller: DevelopersApiV1CoreBundle:Default:BadRequest }
