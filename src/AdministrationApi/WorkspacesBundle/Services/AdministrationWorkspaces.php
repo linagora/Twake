@@ -47,10 +47,10 @@ class AdministrationWorkspaces
         foreach ($apps_tab as $appWksp) {
             $app_id = $appWksp->getAppId();
 
-            $app = $appsRepository->find($app_id);
+            $app = $appsRepository->findBy(array('id' => $app_id));
 
-            if ($app) {
-                $apps[] = $app->getAsArray();
+            if (count($app) == 1) {
+                $apps[] = $app[0]->getAsArray();
             }
         }
 

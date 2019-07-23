@@ -82,10 +82,10 @@ class AdministrationGroups
         foreach ($apps_tab as $grpApp) {
             $app_id = $grpApp->getAppId();
 
-            $app = $appsRepository->find($app_id);
+            $app = $appsRepository->findby(array('id'=> $app_id));
 
-            if ($app) {
-                $apps[] = $app->getAsArray();
+            if (count($app) == 1) {
+                $apps[] = $app[0]->getAsArray();
             }
 
         }
