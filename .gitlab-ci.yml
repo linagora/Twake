@@ -72,8 +72,9 @@ front_test:
         
         #execution des test que je souhaite faire
         - node src/test/screenshot.js
-        - node src/test/loginTest.js
-        - node src/test/creationAccount.js
+        #- node src/test/loginTest.js
+        #- node src/test/creationAccount.js
+        #- node src/test/pwdForgottenTest.js
 
         
     when: manual    
