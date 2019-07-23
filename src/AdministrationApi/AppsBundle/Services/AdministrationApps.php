@@ -21,7 +21,13 @@ class AdministrationApps
     public function getOneApp($id) {
         $appsRepository = $this->em->getRepository("TwakeMarketBundle:Application");
 
-        $app = $appsRepository->find($id);
+        $app_tab = $appsRepository->findBy(array("id"=>$id));
+
+        $app = false;
+
+        if (count($app_tab) == 1) {
+            $app = $app_tab[0];
+        }
 
         return $app;
     }
