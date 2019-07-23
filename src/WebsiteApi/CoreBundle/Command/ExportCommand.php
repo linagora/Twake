@@ -64,7 +64,7 @@ class ExportCommand extends ContainerAwareCommand
         $group_members = Array();
         foreach ($group_admin as $ga){
             $group_members[] = Array(
-                "user_id" => $ga->getId(),
+                "user_id" => $ga->getUser()->getId(),
                 "level" => $ga->getLevel(),
                 "externe" => $ga->getExterne()
             );
@@ -324,19 +324,18 @@ class ExportCommand extends ContainerAwareCommand
                             "owner" => $event->getOwner()(),
                             "participants" => $event->getParticipants(),
                             "notification" => $event->getNotifications(),
-
                         )
                     );
+                    $calendar[] = Array(
+                        "color" => $c["color"],
+                        "title" => $c["title"],
+                        "auto_participant" => $c["auto_participant"],
+                        "connectors" => $c["connectors"],
+                        "events" => $events
+                    );
+                    fwrite($handle_calendar_file, json_encode($calendar, JSON_PRETTY_PRINT));
+                    fclose($handle_calendar_file);
                 }
-                $calendar[] = Array(
-                    "color" => $c["color"],
-                    "title" => $c["title"],
-                    "auto_participant" => $c["auto_participant"],
-                    "connectors" => $c["connectors"],
-                    "events" => $events
-                );
-                fwrite($handle_calendar_file, json_encode($calendar, JSON_PRETTY_PRINT));
-                fclose($handle_calendar_file);
             }
 
             chdir("..");
@@ -355,8 +354,7 @@ class ExportCommand extends ContainerAwareCommand
                         "creator" => $v["creator"],
                         "name" => $v["name"],
                         "date_added" => $v["added"],
-                        "data" => $v["data"],
-
+                        "data" => json_encode($v["data"],JSON_PRETTY_PRINT),
                     );
                     //var_dump($version_array);
 
