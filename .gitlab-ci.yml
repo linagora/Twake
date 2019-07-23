@@ -74,7 +74,7 @@ front_test:
         #- node src/test/screenshot.js
         #- node src/test/loginTest.js
         #- echo test du login
-        - node src/test/creationAccount.js
+        - node src/test/creationAccountTest.js
         - echo test de la creation d'un nouveau compte
         #- node src/test/pwdForgottenTest.js
         #- echo test de l'oubli de mot de passe
