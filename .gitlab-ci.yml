@@ -71,13 +71,10 @@ front_test:
         - node run_server.js & #permet de lancer le code permettant de générer le serveur
         
         #execution des test que je souhaite faire
-        #- node src/test/screenshot.js
+        - node src/test/screenshot.js
         #- node src/test/loginTest.js
-        #- echo test du login
-        - node src/test/creationAccountTest.js
-        - echo test de la creation d'un nouveau compte
+        #- node src/test/creationAccountTest.js
         #- node src/test/pwdForgottenTest.js
-        #- echo test de l'oubli de mot de passe
 
         
     when: manual    
