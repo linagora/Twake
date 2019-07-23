@@ -91,7 +91,7 @@ class BoardTask
         }
 
         if (isset($object["id"]) && $object["id"]) {
-            $task = $this->doctrine->getRepository("TwakeTasksBundle:Task")->find($object["id"]);
+            $task = $this->doctrine->getRepository("TwakeTasksBundle:Task")->findOneBy(Array("id" => $object["id"]));
             if (!$task) {
                 return false;
             }
