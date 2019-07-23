@@ -81,7 +81,7 @@ class BoardBoard
                 "order" => "a"
             ), Array(), null);
 
-            //TODO Add example tasks in board
+            $board["active_tasks"] = 3;
 
             if ($board) {
                 return [$board];

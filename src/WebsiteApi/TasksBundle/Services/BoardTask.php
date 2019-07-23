@@ -126,6 +126,11 @@ class BoardTask
             $this->doctrine->persist($board);
             $this->doctrine->flush();
         }
+        if ($did_create) {
+            $board->setActiveTasks($board->getActiveTasks() + 1);
+            $this->doctrine->persist($board);
+            $this->doctrine->flush();
+        }
 
         $task->setTaskLastModified();
 
