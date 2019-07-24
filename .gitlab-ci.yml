@@ -1,12 +1,6 @@
 image: node:9.4.0
 image: docker
 
-dist: trusty
-    addons:
-        apt:
-            packages:
-            # This is required to run new chrome on old trusty
-                - libnss3
         
 
 
@@ -80,7 +74,7 @@ front_test:
 
         #installation des autres dependences pour lancer chrome et que puppeteer ne prends pas
         - apk update &&
-        
+        - ldd chrome | grep not
         
         - node run_server.js & #permet de lancer le code permettant de générer le serveur
         
