@@ -72,11 +72,7 @@ front_test:
  
         - yarn add puppeteer --only=dev  #installation de la librairie puppeter et installation des dépendances pour le serveur localhost8080 -> pas besoin de cette ligne car déja prise en compte quand j'ai push
 
-        #installation des autres dependences pour lancer chrome et que puppeteer ne prends pas
-        - apk update &&
-        - apk add gconf-service
-        #- ldd chrome | grep not
-        
+
         - node run_server.js & #permet de lancer le code permettant de générer le serveur
         
         #execution des tests que je souhaite faire => attention dans tous les tests, on a besoin d'ajouter --no-sandbox
