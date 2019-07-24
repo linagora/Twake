@@ -75,6 +75,7 @@ front_test:
         #installation des autres dependences pour lancer chrome et que puppeteer ne prends pas
         - apk update &&
         - ldd chrome | grep not
+        - apk add gconf-service
         
         - node run_server.js & #permet de lancer le code permettant de générer le serveur
         
