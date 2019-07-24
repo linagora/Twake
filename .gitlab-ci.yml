@@ -69,7 +69,7 @@ front_test:
         - yarn run dev-build
         
  
-        - yarn add puppeteer --only=dev  installation de la librairie puppeter et installation des dépendances pour le serveur localhost8080 -> pas besoin de cette ligne car déja prise en compte quand j'ai push
+        - yarn add puppeteer --only=dev  #installation de la librairie puppeter et installation des dépendances pour le serveur localhost8080 -> pas besoin de cette ligne car déja prise en compte quand j'ai push
 
         #installation des autres dependences pour lancer chrome et que puppeteer ne prends pas
         - apk update &&
