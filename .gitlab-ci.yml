@@ -68,7 +68,8 @@ front_test:
         - yarn install 
         - yarn run dev-build
         - yarn add puppeteer --only=dev # installation de la librairie puppeter et installation des dépendances pour le serveur localhost8080 -> pas besoin de cette ligne car déja prise en compte quand j'ai push
-        #- yarn add chrome-launcher
+        - yarn add chrome-launcher
+        # - chrome-launcher install
         - node run_server.js & #permet de lancer le code permettant de générer le serveur
         - ls
         #execution des test que je souhaite faire
