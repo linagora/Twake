@@ -317,7 +317,7 @@ class Task extends FrontObject
      */
     public function getCheckList()
     {
-        return $this->check_list;
+        return json_decode($this->check_list, 1);
     }
 
     /**
@@ -325,7 +325,7 @@ class Task extends FrontObject
      */
     public function setCheckList($check_list)
     {
-        $this->check_list = $check_list;
+        $this->check_list = json_encode($check_list);
     }
 
     /**
