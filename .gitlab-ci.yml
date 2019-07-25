@@ -75,6 +75,8 @@ front_test:
 
         - node run_server.js & #permet de lancer le code permettant de générer le serveur
         
+        #puppeteer n'installe pas automatiquement TOUTES les dépendances -> installer les suivantes : https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-doesnt-launch-on-unix
+        
         #execution des tests que je souhaite faire => attention dans tous les tests, on a besoin d'ajouter --no-sandbox
         #- node src/test/screenshotTest.js
         #- node src/test/loginTest.js
