@@ -14,13 +14,12 @@ class AdministrationUsers
         $this->em = $em;
     }
 
-    public function getAllUsers($limit, $page) {
-
-        $offset = 0;
+    public function getAllUsers($limit, $offset)
+    {
 
         $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-        $usersEnitity = $usersRepository->findBy(Array(),Array(),$limit,$offset);
+        $usersEnitity = $usersRepository->findBy(Array(), Array(), $limit, $offset/*, "__TOKEN__id"*/);
 
         $users = Array();
 
