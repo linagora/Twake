@@ -67,9 +67,6 @@ front_test:
         
         - apk update && apk add yarn
         - yarn install
-        - ls
-        - cd node_modules/puppeteer/.local-chromium/linux-672088/chrome-linux
-        - ls
         - yarn run dev-build
         
  
