@@ -104,4 +104,42 @@ class AdministrationUsers
         return $groups;
     }
 
+    public function findUserByUsername($username) {
+
+        $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
+
+        $users = $usersRepository->findBy(Array("username_canonical" => $username));
+
+        $rep = false;
+
+        if (count($users) >= 1) {
+            $rep = array();
+
+            foreach ($users as $user) {
+                $rep[] = $user->getAsArray();
+            }
+        }
+
+        return $rep;
+
+    }
+
+    public function findUserByEmail($email) {
+        $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+
+        $usersMails = $mailsRepository->findBy(array("mail" => $email));
+
+        $rep = false;
+
+        if (count($usersMails) >= 1) {
+            $rep = array();
+
+            foreach ($usersMails as $mail) {
+                $rep[] = $mail->getUser()->getAsArray();
+            }
+        }
+
+        return $rep;
+    }
+
 }
