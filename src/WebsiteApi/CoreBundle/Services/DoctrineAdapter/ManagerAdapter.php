@@ -116,11 +116,14 @@ class ManagerAdapter
         foreach ($this->es_removes as $es_remove) {
             $this->es_remove($es_remove, $es_remove->getEsType(), $es_remove->getEsIndex());
         }
+
         $this->es_removes = Array();
         foreach ($this->es_updates as $id => $es_update) {
             $this->es_put($es_update, $es_update->getEsType(), $es_update->getEsIndex());
             $es_update->updatePreviousIndexationArray();
+
         }
+
         $this->es_updates = Array();
 
         try {
@@ -150,7 +153,6 @@ class ManagerAdapter
         if (!$this->generator) {
             $this->generator = new UuidOrderedTimeGenerator();
         }
-
         if (method_exists($object, "getId") && (!$object->getId() || (is_object($object->getId()) && method_exists($object->getId(), "isNull") && $object->getId()->isNull()))) {
             $object->setId($this->generator->generate($this->getEntityManager(), $object));
             //error_log($object->getId());
@@ -175,7 +177,6 @@ class ManagerAdapter
             }
         }
 
-
         $res = null;
         try {
             $res = $this->getEntityManager()->persist($object);
@@ -185,6 +186,7 @@ class ManagerAdapter
         }
 
         return $res;
+
     }
 
     public function getRepository($name)
@@ -235,13 +237,10 @@ class ManagerAdapter
                 $data = Array("content" => $data);
             }
         } else {
-
-            $id = $entity->getId();
-
+            $id = $entity->getId()."";
             if (method_exists($entity, "getIndexationArray")) {
                 $data = $entity->getIndexationArray();
             }
-
             if (method_exists($entity,"getContentKeywords")){
                 $keywords = $entity->getContentKeywords();
                 if ($keywords == null){
