@@ -1,6 +1,7 @@
 <?php
 namespace WebsiteApi\CoreBundle\Command;
 
+use mageekguy\atoum\asserters\error;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -10,6 +11,7 @@ use WebsiteApi\CalendarBundle\Entity\Calendar;
 use WebsiteApi\CalendarBundle\Entity\Event;
 use WebsiteApi\CalendarBundle\Entity\EventCalendar;
 use WebsiteApi\ChannelsBundle\Entity\Channel;
+use WebsiteApi\ChannelsBundle\Entity\ChannelMember;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\DriveBundle\Entity\DriveFile;
 use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
@@ -21,8 +23,10 @@ use WebsiteApi\UploadBundle\Entity\File;
 use WebsiteApi\UsersBundle\Entity\Mail;
 use WebsiteApi\UsersBundle\Entity\User;
 use WebsiteApi\WorkspacesBundle\Entity\Group;
+use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
 use WebsiteApi\WorkspacesBundle\Entity\GroupUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceApp;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 
@@ -101,6 +105,7 @@ class ImportCommand extends ContainerAwareCommand
 
             $group = new Group($contents["name"]);
             $group->setDisplayName($contents["display_name"]);
+            $group->setPricingPlan($manager->getRepository("TwakeWorkspacesBundle:PricingPlan")->findOneBy(Array("id" => "947b6b34-4746-11e9-9034-0242ac120005")));
 
             $logo = $contents["logo"];
             if ($logo !== '') {
@@ -115,6 +120,18 @@ class ImportCommand extends ContainerAwareCommand
             $group_id = $group->getId();
             $manager->flush();
         }
+
+        $appRepository = $manager->getRepository("TwakeMarketBundle:Application");
+        $list_default_apps = $appRepository->findBy(Array("is_default" => true));
+        $groupapp_apps = [];
+        foreach ($list_default_apps as $app) {
+            $groupapp = new GroupApp($group, $app->getId());
+            $groupapp->setWorkspaceDefault(true);
+            $manager->persist($groupapp);
+
+            $groupapp_apps[] = $groupapp;
+        }
+        $manager->flush();
 
 // =================================================================================================================================================
 // =================================================================================================================================================
@@ -133,7 +150,7 @@ class ImportCommand extends ContainerAwareCommand
             // on regarde si le compte du user existe déjà avec son mail
             $new_user = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("emailcanonical" => $mail));
             if (!$new_user) {
-                $other_new_users_mails = $manager->getRepository("TwakeUsersBundle:Mail")->findBy(Array("mail" => $mail));
+                $other_new_users_mails = $manager->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail" => $mail));
                 if ($other_new_users_mails) {
                     $new_user = $other_new_users_mails->getUser();
                 }
@@ -241,6 +258,7 @@ class ImportCommand extends ContainerAwareCommand
                         $manager->flush();
                     }
                 }
+
                 $workspace_members_file = "members.json";
                 if (filesize($workspace_members_file) > 0) {
                     $handle_workspace_members = fopen($workspace_members_file, 'r') or die('Cannot open file:  ' . $workspace_members_file);
@@ -270,10 +288,17 @@ class ImportCommand extends ContainerAwareCommand
                                     $workspaceuser->setLevelId($level_admin_id);
                                 }
                                 $manager->persist($workspaceuser);
-                                $manager->flush();
                             }
                         }
+                        $workspace_bdd->setMemberCount(count($contents));
+                        $manager->persist($workspace_bdd);
+                        $manager->flush();
                     }
+                }
+
+
+                foreach ($groupapp_apps as $groupapp_app) {
+                    $services->get("app.workspaces_apps")->enableApp($workspace_id, $groupapp_app->getAppId());
                 }
 
 // =================================================================================================================================================
@@ -293,7 +318,21 @@ class ImportCommand extends ContainerAwareCommand
                         $name = $channel;
                         chdir($channel);
                         $channel_bdd = new Channel();
-                        $channel_bdd->setName($name);
+
+                        $name = explode(":", $name);
+
+                        if (count($name) > 1) {
+                            $channel_bdd->setName($name[1]);
+                            if (trim($name[0])) {
+                                $channel_bdd->setChannelGroupName($name[0]);
+                            }
+                        } else {
+                            $channel_bdd->setName($name[0]);
+                        }
+                        $name = join($name);
+
+                        $channel_bdd->setIcon(":small_blue_diamond:");
+
                         $channel_file = "channel.json";
                         $handle_channel_file = fopen($channel_file, 'r') or die('Cannot open file:  ' . $channel_file);
                         if (filesize($channel_file) > 0) {
@@ -302,8 +341,10 @@ class ImportCommand extends ContainerAwareCommand
                             if (isset($contents)) {
                                 error_log(print_r("NEW CHANNEL : ". $name . " ID : ". $contents["id"],true));
                                 $channel_bdd->setPrivate($contents["is_private"]);
+                                $channel_bdd->setDirect(false);
                                 $channel_bdd->setDescription($contents["description"]);
                                 $channel_bdd->setOriginalWorkspaceId($workspace_id);
+                                $channel_bdd->setOriginalGroup($group);
                                 $member_list = Array();
                                 foreach ($contents["members"] as $channel_member){
                                     if(array_key_exists($channel_member["id"],$match_table)){
@@ -316,7 +357,16 @@ class ImportCommand extends ContainerAwareCommand
                             fclose($handle_channel_file);
                             $manager->persist($channel_bdd);
                             $manager->flush();
+
                             $channel_bdd_id = $channel_bdd->getId();
+
+
+                            foreach ($member_list as $id) {
+                                $ch_member = new ChannelMember($id, $channel_bdd);
+                                $manager->persist($ch_member);
+                            }
+                            $manager->flush();
+
                         }
 
                         $message_file = "messages.json";
@@ -373,6 +423,15 @@ class ImportCommand extends ContainerAwareCommand
 
                 //PARTIE SUR LA CREATION DE TOUT LES DRIVE FILES
                 if (file_exists("drive_files")) {
+
+                    $root_directory = $manager->getRepository("TwakeDriveBundle:DriveFile")
+                        ->findOneBy(Array("workspace_id" => $workspace_id . "", "isintrash" => false, "parent_id" => ""));
+                    if (!$root_directory) {
+                        $root_directory = new DriveFile($workspace_id . "", "", true);
+                        $manager->persist($root_directory);
+                        $manager->flush();
+                    }
+
                     chdir("drive_files");
                     $allfiles = scandir("./");
                     $file = "drive_file.json";
@@ -381,8 +440,34 @@ class ImportCommand extends ContainerAwareCommand
                         $contents = json_decode(fread($handle_drive_file, filesize($file)), true);
                         if(isset($contents) && $contents != Array()){
                             $match_file = Array();
-                            foreach ($contents as $file) {
+
+                            $all_files_to_sort = $contents;
+                            $all_files_sorted = [];
+                            $known_parents = [];
+                            $i_while = 0;
+                            while (count($all_files_to_sort) > 0 && $i_while < 1000) {
+                                $next_all_files_to_sort = Array();
+                                foreach ($all_files_to_sort as $file) {
+                                    if ($file["parent_id"] > 0) {
+                                        if (in_array($file["parent_id"], $known_parents)) {
+                                            $all_files_sorted[] = $file;
+                                            $known_parents[] = $file["id"];
+                                        } else {
+                                            $next_all_files_to_sort[] = $file;
+                                        }
+                                    } else {
+                                        $all_files_sorted[] = $file;
+                                        $known_parents[] = $file["id"];
+                                    }
+                                }
+                                $all_files_to_sort = $next_all_files_to_sort;
+                                $i_while++;
+                            }
+
+
+                            foreach ($all_files_sorted as $file) {
                                 error_log(print_r("NEW DRIVE FILE : " . $file["name"] . " ID : " . $file["id"],true));
+
                                 $drive_file_bdd = new DriveFile($workspace_id."", "", $file["is_directory"]);
                                 $drive_file_bdd->setDetachedFile($file["detached"]);
                                 //$drive_file_bdd->setIsInTrash($file["trash"]);
@@ -390,14 +475,15 @@ class ImportCommand extends ContainerAwareCommand
                                 $drive_file_bdd->setDescription($file["description"]);
                                 $drive_file_bdd->setSize($file["size"]);
                                 $drive_file_bdd->setExtension($file["extension"]);
+                                $drive_file_bdd->setWorkspaceId($workspace_id . "");
                                 //$drive_file_bdd->setPublicAccesInfo($file["public_acces_info"]);
                                 $drive_file_bdd->setUrl($file["url"]);
                                 $manager->persist($drive_file_bdd);
-                                if ($file["parent_id"] != 0) {
-                                    if (array_key_exists($file["parent_id"], $match_file)) {
-                                        $drive_file_bdd->setParentId($match_file[$file["parent_message_id"]]);
-                                        $manager->persist($drive_file_bdd);
-                                    }
+                                if ($file["parent_id"] != 0 && array_key_exists($file["parent_id"], $match_file)) {
+                                    $drive_file_bdd->setParentId($match_file[$file["parent_message_id"]] . "");
+                                    $manager->persist($drive_file_bdd);
+                                } else {
+                                    $drive_file_bdd->setParentId($root_directory->getId() . "");
                                 }
                                 $manager->flush();
 
@@ -406,7 +492,7 @@ class ImportCommand extends ContainerAwareCommand
                                     $version_bdd->setFileName($file["version"][0]["name"]);
                                     $version_bdd->setDateAdded(new \DateTime("@".intval($file["version"][0]["date_added"])));
 
-                                  //  error_log(print_r($version_bdd->getAsArray()));
+                                    //  error_log(print_r($version_bdd->getAsArray()));
 
                                     $manager->persist($version_bdd);
                                     $manager->flush();
@@ -424,77 +510,76 @@ class ImportCommand extends ContainerAwareCommand
 // =================================================================================================================================================
 // =================================================================================================================================================
 
-        //  PARTIE SUR LA CREATION DE TOUT DES CALENDARS
-            if (file_exists("calendars")) {
-                chdir("calendars");
-                $allcalendar= scandir("./");
-                $calendars = array_values(array_diff($allcalendar, array('.', '..')));
-                foreach($calendars as $calendar) {
-                    $handle_calendar_file = fopen($calendar, 'r') or die('Cannot open file:  ' . $calendar);
-                    if (filesize($calendar) > 0) {
-                        $contents = json_decode(fread($handle_calendar_file, filesize($calendar)), true);
-                        error_log(print_r("NEW CALENDAR : " . $contents[0]["title"] . " ID : " . $contents[0]["id"],true));
+                //  PARTIE SUR LA CREATION DE TOUT DES CALENDARS
+                if (file_exists("calendars")) {
+                    chdir("calendars");
+                    $allcalendar= scandir("./");
+                    $calendars = array_values(array_diff($allcalendar, array('.', '..')));
+                    foreach($calendars as $calendar) {
+                        $handle_calendar_file = fopen($calendar, 'r') or die('Cannot open file:  ' . $calendar);
+                        if (filesize($calendar) > 0) {
+                            $contents = json_decode(fread($handle_calendar_file, filesize($calendar)), true);
+                            error_log(print_r("NEW CALENDAR : " . $contents[0]["title"] . " ID : " . $contents[0]["id"],true));
 
-                        $calendar_bdd = new Calendar($workspace_id, $contents[0]["title"], $contents[0]["color"]);
-                        if(isset($contents[0]["auto_participant"]) && $contents[0]["auto_participant"] != Array()){
-                            $participants = Array();
-                            foreach($contents[0]["auto_participant"] as $p){
-                                $participants[] = $match_table[$p];
+                            $calendar_bdd = new Calendar($workspace_id, $contents[0]["title"], $contents[0]["color"]);
+                            if(isset($contents[0]["auto_participant"]) && $contents[0]["auto_participant"] != Array()){
+                                $participants = Array();
+                                foreach($contents[0]["auto_participant"] as $p){
+                                    $participants[] = $match_table[$p];
+                                }
+                                $calendar_bdd->setAutoParticipants($participants);
                             }
-                            $calendar_bdd->setAutoParticipants($participants);
-                        }
 
-                        $manager->persist($calendar_bdd);
-                        $manager->flush();
-                        $calendar_id = $calendar_bdd->getId();
-                        //TODO CREER LES EVENTS AVEC LES BONNES INFO ET LES EVENT CALENDAR POUR LIER LES DEUX
+                            $manager->persist($calendar_bdd);
+                            $manager->flush();
+                            $calendar_id = $calendar_bdd->getId();
+                            //TODO CREER LES EVENTS AVEC LES BONNES INFO ET LES EVENT CALENDAR POUR LIER LES DEUX
 
-                        $events = $contents[0]["events"];
-                        if (isset($events)) {
-                            foreach ($events as $event) {
+                            $events = $contents[0]["events"];
+                            if (isset($events)) {
+                                foreach ($events as $event) {
 //                                error_log(print_r($event["event"]["id"]));
-                                $title = "";
-                                if(isset($event["event"]["event"]["title"]) && is_string(($event["event"]["event"]["title"]))){
-                                    $title = $event["event"]["event"]["title"];
-                                }
-                                $event_bdd = new Event($title, $event["event"]["from"], $event["event"]["to"]);
-                                $event_bdd->setWorkspacesCalendars($workspace_id . "");
-                                if(isset($event["event"]["participants"]) && $event["event"]["participants"] != Array()){
-                                    $participants = Array();
-                                    foreach($event["event"]["participants"] as $p){
-                                        if(is_int($p)){
-                                            $participants[] = $match_table[$p];
-                                        }
-                                        else{
-                                            $participants[] = $match_table[$p["id"]];
-                                        }
+                                    $title = "";
+                                    if(isset($event["event"]["event"]["title"]) && is_string(($event["event"]["event"]["title"]))){
+                                        $title = $event["event"]["event"]["title"];
                                     }
-                                    $event_bdd->setParticipants($participants);
-                                }
-                                if(isset($event["event"]["event"]["typeEvent"]) && is_string($event["event"]["event"]["typeEvent"])){
-                                    $event_bdd->setType($event["event"]["event"]["typeEvent"]);
-                                }
-                                $manager->persist($event_bdd);
-                                $event_id = $event_bdd->getId();
-                                $manager->flush();
+                                    $event_bdd = new Event($title, $event["event"]["from"], $event["event"]["to"]);
+                                    $event_bdd->setWorkspacesCalendars($workspace_id . "");
+                                    if(isset($event["event"]["participants"]) && $event["event"]["participants"] != Array()){
+                                        $participants = Array();
+                                        foreach($event["event"]["participants"] as $p){
+                                            if(is_int($p)){
+                                                $participants[] = $match_table[$p];
+                                            } else{
+                                                $participants[] = $match_table[$p["id"]];
+                                            }
+                                        }
+                                        $event_bdd->setParticipants($participants);
+                                    }
+                                    if(isset($event["event"]["event"]["typeEvent"]) && is_string($event["event"]["event"]["typeEvent"])){
+                                        $event_bdd->setType($event["event"]["event"]["typeEvent"]);
+                                    }
+                                    $manager->persist($event_bdd);
+                                    $event_id = $event_bdd->getId();
+                                    $manager->flush();
 
-                                //error_log(print_r(gettype($event["event"]["event"]["start"]["date"]),true));
-                                $date = new \DateTime("@".intval($event["event"]["from"]));
+                                    //error_log(print_r(gettype($event["event"]["event"]["start"]["date"]),true));
+                                    $date = new \DateTime("@".intval($event["event"]["from"]));
 //                                error_log(print_r($date->getTimestamp(),true));
-                                $event_calendar_bdd = new EventCalendar($workspace_id, $calendar_id, $event_id, $date->getTimestamp());
-                                $manager->persist($event_calendar_bdd);
-                                $manager->flush();
+                                    $event_calendar_bdd = new EventCalendar($workspace_id, $calendar_id, $event_id, $date->getTimestamp());
+                                    $manager->persist($event_calendar_bdd);
+                                    $manager->flush();
+                                }
                             }
                         }
                     }
+                    chdir("..");
                 }
-                chdir("..");
-            }
 
 // =================================================================================================================================================
 // =================================================================================================================================================
 
-            //  PARTIE SUR LA CREATION DES TACHES
+                //  PARTIE SUR LA CREATION DES TACHES
                 if(file_exists("tasks")){
                     chdir("tasks");
                     $allboard= scandir("./");
@@ -562,10 +647,10 @@ class ImportCommand extends ContainerAwareCommand
                         foreach ($contents as $channel) {
                             error_log(print_r("NEW PRIVATE CHANNEL : " . $channel["id"],true));
                             $name = "";
-                            $member_list = Array();
+                            $member_list_id = Array();
                             foreach ($channel["members"] as $channel_member){
                                 if(array_key_exists($channel_member["id"],$match_table)){
-                                    array_push($member_list,$match_table[$channel_member["id"]]);
+                                    array_push($member_list_id, $match_table[$channel_member["id"]]);
                                     $name = $name . $channel_member["username"]. " ";
                                 }
                             }
@@ -573,9 +658,19 @@ class ImportCommand extends ContainerAwareCommand
 
 //                            $private_channel = $manager->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("drirect" => true));
 
-                            $channel_bdd = new Channel($name);
+                            $channel_bdd = new Channel();
+                            $channel_bdd->setName($name);
+                            $channel_bdd->setDirect(true);
+                            $channel_bdd->setIdentifier(join("+", $member_list_id));
                             $manager->persist($channel_bdd);
                             $manager->flush();
+
+                            foreach ($member_list_id as $id) {
+                                $ch_member = new ChannelMember($id, $channel_bdd);
+                                $manager->persist($ch_member);
+                            }
+                            $manager->flush();
+
                             $channel_bdd_id = $channel_bdd->getId();
                             usort($channel["message"], "self::cmpMessage");
                             $no_parent_yet = Array();
