@@ -127,10 +127,20 @@ class ImportCommand extends ContainerAwareCommand
         $contents = json_decode(fread($handle_user, filesize($user_file)), true);
         foreach ($contents as $user) {
             $old_id = $user["id"];
-            $mail = $user["emailcanonical"];
+            $mail = strtolower(trim($user["emailcanonical"]));
+            $username = trim($user["username"]);
 
             // on regarde si le compte du user existe déjà avec son mail
             $new_user = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("emailcanonical" => $mail));
+            if (!$new_user) {
+                $other_new_users_mails = $manager->getRepository("TwakeUsersBundle:Mail")->findBy(Array("mail" => $mail));
+                if ($other_new_users_mails) {
+                    $new_user = $other_new_users_mails->getUser();
+                }
+            }
+            if (!$new_user) {
+                $new_user = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $username));
+            }
 
             if (!isset($new_user)) {
                 //si le compte de n'existe pas on ne le crée pas a nouveau
