@@ -26,6 +26,8 @@ use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 
+use DateTime;
+
 class ImportCommand extends ContainerAwareCommand
 {
     var $leveladmin;
@@ -53,6 +55,17 @@ class ImportCommand extends ContainerAwareCommand
 
 // =================================================================================================================================================
 // =================================================================================================================================================
+
+        error_log("========================================================================================");
+        error_log("========================================================================================");
+        error_log("\n");
+        error_log("DO NO STOP THIS PROCESS IT COULD TAKE A REALLY LONG TIME !!");
+        error_log("\n");
+        error_log("========================================================================================");
+        error_log("========================================================================================");
+
+        sleep(5);
+
 
         $services = $this->getApplication()->getKernel()->getContainer();
         $manager = $services->get('app.twake_doctrine');
@@ -193,7 +206,6 @@ class ImportCommand extends ContainerAwareCommand
             $allworkspace = scandir("./");
             $workspaces = array_values(array_diff($allworkspace, array('.', '..')));
             foreach ($workspaces as $workspace) {
-//                error_log(print_r(getcwd()));
                 chdir($workspace);
                 $workspace_file = "workspace.json";
                 if (filesize($workspace_file) > 0) {
@@ -201,7 +213,7 @@ class ImportCommand extends ContainerAwareCommand
                     $contents = json_decode(fread($handle_workspace_file, filesize($workspace_file)), true);
                     if(isset($contents)){
                         $old_wp_id = $contents["id"];
-                        error_log(print_r("DEBUT WP : " . $old_wp_id));
+                        error_log(print_r("DEBUT WP : " . $contents["name"] ." ID : " . $old_wp_id));
                         $workspace_bdd = new Workspace($contents["name"]);
                         $workspace_bdd->setUniqueName($contents["uniquename"]);
                         $workspace_bdd->setColor($contents["color"]);
@@ -256,205 +268,224 @@ class ImportCommand extends ContainerAwareCommand
 
 // =================================================================================================================================================
 // =================================================================================================================================================
-//
-//                //  PARTIE SUR LA CREATION DE TOUT LES CHANNELS
-//                if (file_exists("channels")) {
-//                    chdir("channels");
-//                    $allchannel = scandir("./");
-//                    $channels = array_values(array_diff($allchannel, array('.', '..')));
-//                    //error_log(print_r($channels,true));
-//                    foreach ($channels as $channel) {
-//                        $match_messages = Array();
-////                        error_log(print_r("old wp id  : " . $old_wp_id));
-////                        error_log(print_r("nb channel  : " . sizeof($channels)));
-////                        error_log(print_r("match message au debut : " . sizeof($match_messages)));
-//                        $name = $channel;
-//                        chdir($channel);
-//                        $channel_bdd = new Channel();
-//                        $channel_bdd->setName($name);
-//                        $channel_file = "channel.json";
-//                        $handle_channel_file = fopen($channel_file, 'r') or die('Cannot open file:  ' . $channel_file);
-//                        if (filesize($channel_file) > 0) {
-//                            $contents = json_decode(fread($handle_channel_file, filesize($channel_file)), true);
-//                            //error_log(print_r($contents,true));
-//                            if (isset($contents)) {
-//                                $channel_bdd->setPrivate($contents["is_private"]);
-//                                $channel_bdd->setDescription($contents["description"]);
-//                                $channel_bdd->setOriginalWorkspaceId($workspace_id);
-//                                $member_list = Array();
-//                                foreach ($contents["members"] as $channel_member){
-//                                    if(array_key_exists($channel_member["id"],$member_list)){
-//                                        array_push($member_list,$match_table[$channel_member["id"]]);
-//                                    }
-//                                }
-////                                error_log(print_r($member_list,true));
-//                                $channel_bdd->setMembers($member_list);
-//                            }
-//                            fclose($handle_channel_file);
-//                            $manager->persist($channel_bdd);
-//                            $manager->flush();
-//                            $channel_bdd_id = $channel_bdd->getId();
-//                        }
-//
-//                        $message_file = "messages.json";
-//                        $handle_message_file = fopen($message_file, 'r') or die('Cannot open file:  ' . $message_file);
-//                        error_log(print_r($name,true));
-//                        error_log(print_r($channel_bdd_id."",true));
-//
-//                        $contents = json_decode(fread($handle_message_file, filesize($message_file)), true);
-//                        if (isset($contents) && $contents != Array()) {
-//                            usort($contents, "self::cmpMessage");
-//                            //error_log(print_r($contents,true));
-//                            $no_parent_yet = Array();
-//                            foreach ($contents as $message) {
-//                                $message_bdd = new Message($channel_bdd_id, "");
-//                                $manager->persist($message_bdd);
-//                                $match_messages[$message["id"]] = $message_bdd->getId() . "";
-//                                $message_bdd->setContent($message["content"]);
-//                                if ($message["parent_message_id"] != null) {
-//                                    if (array_key_exists($message["parent_message_id"], $match_messages)) {
-//                                        $message_bdd->setParentMessageId($match_messages[$message["parent_message_id"]]);
-//                                    } else {
-//                                        // le parent n'existe pas encore on doit creer le message plus tard
-//                                        $no_parent_yet[$message_bdd->getId() . ""] = $message;
-//                                    }
-//                                }
-//                                if ($message["sender"] != null) {
-//                                    if(array_key_exists($message["sender"],$match_table)){
-//                                        $user = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $match_table[$message["sender"]]));
-//                                        //error_log(print_r($user->getUsername()));
-//                                        $message_bdd->setSender($user);
-//                                    }
-//                                }
-//                                $message_bdd->setCreationDate(\DateTime("@". intval($message["creation_date"]/1000)));
-//                                $manager->persist($message_bdd);
-//                                $manager->flush();
-//                            }
-//                            foreach ($no_parent_yet as $key => $value){
-//                                $message =  $manager->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $key));
-//                                $manager->remove($message);
-//                                $manager->flush();
-//                                $message->setParentMessageId($value["parent_message_id"]);
-//                                $manager->persist($message);
-//                                $manager->flush();
-//                            }
-//                        }
-//                        chdir("..");//on sort du channel en question
-//////                        error_log(print_r($workspace_bdd->getName(),true));
-//////                        error_log(print_r($name,true));
-////                        error_log(print_r("size a la fin: " . sizeof($match_table),true));
-//                    }
-//                    chdir(".."); //on sort des channels
-//                }
+
+                //  PARTIE SUR LA CREATION DE TOUT LES CHANNELS
+                if (file_exists("channels")) {
+                    chdir("channels");
+                    $allchannel = scandir("./");
+                    $channels = array_values(array_diff($allchannel, array('.', '..')));
+                    //error_log(print_r($channels,true));
+                    foreach ($channels as $channel) {
+                        $match_messages = Array();
+//                        error_log(print_r("old wp id  : " . $old_wp_id));
+//                        error_log(print_r("nb channel  : " . sizeof($channels)));
+//                        error_log(print_r("match message au debut : " . sizeof($match_messages)));
+                        $name = $channel;
+                        chdir($channel);
+                        $channel_bdd = new Channel();
+                        $channel_bdd->setName($name);
+                        $channel_file = "channel.json";
+                        $handle_channel_file = fopen($channel_file, 'r') or die('Cannot open file:  ' . $channel_file);
+                        if (filesize($channel_file) > 0) {
+                            $contents = json_decode(fread($handle_channel_file, filesize($channel_file)), true);
+                            //error_log(print_r($contents,true));
+                            if (isset($contents)) {
+                                error_log(print_r("NEW CHANNEL : ". $name . " ID : ". $contents["id"],true));
+                                $channel_bdd->setPrivate($contents["is_private"]);
+                                $channel_bdd->setDescription($contents["description"]);
+                                $channel_bdd->setOriginalWorkspaceId($workspace_id);
+                                $member_list = Array();
+                                foreach ($contents["members"] as $channel_member){
+                                    if(array_key_exists($channel_member["id"],$match_table)){
+                                        array_push($member_list,$match_table[$channel_member["id"]]);
+                                    }
+                                }
+//                                error_log(print_r($member_list,true));
+                                $channel_bdd->setMembers($member_list);
+                            }
+                            fclose($handle_channel_file);
+                            $manager->persist($channel_bdd);
+                            $manager->flush();
+                            $channel_bdd_id = $channel_bdd->getId();
+                        }
+
+                        $message_file = "messages.json";
+                        $handle_message_file = fopen($message_file, 'r') or die('Cannot open file:  ' . $message_file);
+
+                        $contents = json_decode(fread($handle_message_file, filesize($message_file)), true);
+                        if (isset($contents) && $contents != Array()) {
+                            usort($contents, "self::cmpMessage");
+                            //error_log(print_r($contents,true));
+                            $no_parent_yet = Array();
+                            foreach ($contents as $message) {
+                                $message_bdd = new Message($channel_bdd_id, "");
+                                $manager->persist($message_bdd);
+                                $match_messages[$message["id"]] = $message_bdd->getId() . "";
+                                $message_bdd->setContent($message["content"]);
+                                if ($message["parent_message_id"] != null) {
+                                    if (array_key_exists($message["parent_message_id"], $match_messages)) {
+                                        $message_bdd->setParentMessageId($match_messages[$message["parent_message_id"]]);
+                                    } else {
+                                        // le parent n'existe pas encore on doit creer le message plus tard
+                                        $no_parent_yet[$message_bdd->getId() . ""] = $message;
+                                    }
+                                }
+                                if ($message["sender"] != null) {
+                                    if(array_key_exists($message["sender"],$match_table)){
+                                        $user = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $match_table[$message["sender"]]));
+                                        //error_log(print_r($user->getUsername()));
+                                        $message_bdd->setSender($user);
+                                    }
+                                }
+                                $message_bdd->setCreationDate(new DateTime("@". intval($message["creation_date"]/1000)));
+                                $manager->persist($message_bdd);
+                                $manager->flush();
+                            }
+                            foreach ($no_parent_yet as $key => $value){
+                                $message =  $manager->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $key));
+                                $manager->remove($message);
+                                $manager->flush();
+                                $message->setParentMessageId($value["parent_message_id"]);
+                                $manager->persist($message);
+                                $manager->flush();
+                            }
+                        }
+                        chdir("..");//on sort du channel en question
+////                        error_log(print_r($workspace_bdd->getName(),true));
+////                        error_log(print_r($name,true));
+//                        error_log(print_r("size a la fin: " . sizeof($match_table),true));
+                    }
+                    chdir(".."); //on sort des channels
+                }
 
 // =================================================================================================================================================
 // =================================================================================================================================================
 
-//                //PARTIE SUR LA CREATION DE TOUT LES DRIVE FILES
-//                if (file_exists("drive_files")) {
-//                    chdir("drive_files");
-//                    $allfiles = scandir("./");
-//                    $file = "drive_file.json";
-//                    $handle_drive_file = fopen($file, 'r') or die('Cannot open file:  ' . $file);
-//                    if (filesize($file) > 0) {
-//                        $contents = json_decode(fread($handle_drive_file, filesize($file)), true);
-//                        if(isset($contents) && $contents != Array()){
-//                            $match_file = Array();
-//                            error_log(print_r($old_wp_id));
-//                            foreach ($contents as $file) {
-//                                $drive_file_bdd = new DriveFile($workspace_id."", "", $file["is_directory"]);
-//                                $drive_file_bdd->setDetachedFile($file["detached"]);
-//                                //$drive_file_bdd->setIsInTrash($file["trash"]);
-//                                $drive_file_bdd->setName($file["name"]);
-//                                $drive_file_bdd->setDescription($file["description"]);
-//                                $drive_file_bdd->setSize($file["size"]);
-//                                $drive_file_bdd->setExtension($file["extension"]);
-//                                //$drive_file_bdd->setPublicAccesInfo($file["public_acces_info"]);
-//                                $drive_file_bdd->setUrl($file["url"]);
-//                                $manager->persist($drive_file_bdd);
-//                                if ($file["parent_id"] != 0) {
-//                                    if (array_key_exists($file["parent_id"], $match_file)) {
-//                                        $drive_file_bdd->setParentId($match_file[$file["parent_message_id"]]);
-//                                        $manager->persist($drive_file_bdd);
-//                                    }
-//                                }
-//                                $manager->flush();
-//
-//                                if($file["version"] != Array() && !$file["is_directory"]){
-//                                    $version_bdd = new DriveFileVersion($drive_file_bdd,$file["version"][0]["creator"]?$file["version"][0]["creator"]["id"]:"");
-//                                    $version_bdd->setFileName($file["version"][0]["name"]);
-//                                    $version_bdd->setDateAdded(new \DateTime("@".intval($file["version"][0]["date_added"])));
-//
-//                                  //  error_log(print_r($version_bdd->getAsArray()));
-//
-//                                    $manager->persist($version_bdd);
-//                                    $manager->flush();
-//                                    $drive_file_bdd->setLastVersionId($version_bdd->getId());
-//                                    $manager->persist($drive_file_bdd);
-//                                    $manager->flush();
-//                                }
-//                            }
-//                        }
-//                        fclose($handle_drive_file);
-//                    }
-//                    chdir("..");
-//                }
+                //PARTIE SUR LA CREATION DE TOUT LES DRIVE FILES
+                if (file_exists("drive_files")) {
+                    chdir("drive_files");
+                    $allfiles = scandir("./");
+                    $file = "drive_file.json";
+                    $handle_drive_file = fopen($file, 'r') or die('Cannot open file:  ' . $file);
+                    if (filesize($file) > 0) {
+                        $contents = json_decode(fread($handle_drive_file, filesize($file)), true);
+                        if(isset($contents) && $contents != Array()){
+                            $match_file = Array();
+                            foreach ($contents as $file) {
+                                error_log(print_r("NEW DRIVE FILE : " . $file["name"] . " ID : " . $file["id"],true));
+                                $drive_file_bdd = new DriveFile($workspace_id."", "", $file["is_directory"]);
+                                $drive_file_bdd->setDetachedFile($file["detached"]);
+                                //$drive_file_bdd->setIsInTrash($file["trash"]);
+                                $drive_file_bdd->setName($file["name"]);
+                                $drive_file_bdd->setDescription($file["description"]);
+                                $drive_file_bdd->setSize($file["size"]);
+                                $drive_file_bdd->setExtension($file["extension"]);
+                                //$drive_file_bdd->setPublicAccesInfo($file["public_acces_info"]);
+                                $drive_file_bdd->setUrl($file["url"]);
+                                $manager->persist($drive_file_bdd);
+                                if ($file["parent_id"] != 0) {
+                                    if (array_key_exists($file["parent_id"], $match_file)) {
+                                        $drive_file_bdd->setParentId($match_file[$file["parent_message_id"]]);
+                                        $manager->persist($drive_file_bdd);
+                                    }
+                                }
+                                $manager->flush();
+
+                                if($file["version"] != Array() && !$file["is_directory"]){
+                                    $version_bdd = new DriveFileVersion($drive_file_bdd,$file["version"][0]["creator"]?$file["version"][0]["creator"]["id"]:"");
+                                    $version_bdd->setFileName($file["version"][0]["name"]);
+                                    $version_bdd->setDateAdded(new \DateTime("@".intval($file["version"][0]["date_added"])));
+
+                                  //  error_log(print_r($version_bdd->getAsArray()));
+
+                                    $manager->persist($version_bdd);
+                                    $manager->flush();
+                                    $drive_file_bdd->setLastVersionId($version_bdd->getId());
+                                    $manager->persist($drive_file_bdd);
+                                    $manager->flush();
+                                }
+                            }
+                        }
+                        fclose($handle_drive_file);
+                    }
+                    chdir("..");
+                }
 
 // =================================================================================================================================================
 // =================================================================================================================================================
 
-//        //  PARTIE SUR LA CREATION DE TOUT DES CALENDARS
-//            if (file_exists("calendars")) {
-//                chdir("calendars");
-//                $allcalendar= scandir("./");
-//                $calendars = array_values(array_diff($allcalendar, array('.', '..')));
-//                foreach($calendars as $calendar) {
-//                    $handle_calendar_file = fopen($calendar, 'r') or die('Cannot open file:  ' . $calendar);
-//                    if (filesize($calendar) > 0) {
-//                        $contents = json_decode(fread($handle_calendar_file, filesize($calendar)), true);
-//                        $calendar_bdd = new Calendar($workspace_id, $contents[0]["title"], $contents[0]["color"]);
-//                        $calendar_bdd->setAutoParticipants($contents[0]["auto_participant"]);
-//                        $manager->persist($calendar_bdd);
-//                        $manager->flush();
-//                        $calendar_id = $calendar_bdd->getId();
-//                        //TODO CREER LES EVENTS AVEC LES BONNES INFO ET LES EVENT CALENDAR POUR LIER LES DEUX
-//
-//                        $events = $contents[0]["events"];
-//                        if (isset($events)) {
-//                            foreach ($events as $event) {
-//                                $title = "";
-//                                if(isset($event["event"]["event"]["title"]) && is_string(($event["event"]["event"]["title"]))){
-//                                    $title = $event["event"]["event"]["title"];
-//                                }
-//                                $event_bdd = new Event($title, $event["event"]["from"], $event["event"]["to"]);
-//                                $event_bdd->setWorkspacesCalendars($workspace_id . "");
-//                                $event_bdd->setParticipants($event["event"]["participants"]);
-//                                if(isset($event["event"]["event"]["typeEvent"]) && is_string($event["event"]["event"]["typeEvent"])){
-//                                    $event_bdd->setType($event["event"]["event"]["typeEvent"]);
-//                                }
-//                                $manager->persist($event_bdd);
-//                                $event_id = $event_bdd->getId();
-//                                $manager->flush();
-//
-//                                //error_log(print_r(gettype($event["event"]["event"]["start"]["date"]),true));
-//                                $date = new \DateTime("@".intval($event["event"]["from"]));
-////                                error_log(print_r($date->getTimestamp(),true));
-//                                $event_calendar_bdd = new EventCalendar($workspace_id, $calendar_id, $event_id, $date->getTimestamp());
-//                                $manager->persist($event_calendar_bdd);
-//                                $manager->flush();
-//                            }
-//                        }
-//                    }
-//                }
-//                chdir("..");
-//            }
+        //  PARTIE SUR LA CREATION DE TOUT DES CALENDARS
+            if (file_exists("calendars")) {
+                chdir("calendars");
+                $allcalendar= scandir("./");
+                $calendars = array_values(array_diff($allcalendar, array('.', '..')));
+                foreach($calendars as $calendar) {
+                    $handle_calendar_file = fopen($calendar, 'r') or die('Cannot open file:  ' . $calendar);
+                    if (filesize($calendar) > 0) {
+                        $contents = json_decode(fread($handle_calendar_file, filesize($calendar)), true);
+                        error_log(print_r("NEW CALENDAR : " . $contents[0]["title"] . " ID : " . $contents[0]["id"],true));
+
+                        $calendar_bdd = new Calendar($workspace_id, $contents[0]["title"], $contents[0]["color"]);
+                        if(isset($contents[0]["auto_participant"]) && $contents[0]["auto_participant"] != Array()){
+                            $participants = Array();
+                            foreach($contents[0]["auto_participant"] as $p){
+                                $participants[] = $match_table[$p];
+                            }
+                            $calendar_bdd->setAutoParticipants($participants);
+                        }
+
+                        $manager->persist($calendar_bdd);
+                        $manager->flush();
+                        $calendar_id = $calendar_bdd->getId();
+                        //TODO CREER LES EVENTS AVEC LES BONNES INFO ET LES EVENT CALENDAR POUR LIER LES DEUX
+
+                        $events = $contents[0]["events"];
+                        if (isset($events)) {
+                            foreach ($events as $event) {
+//                                error_log(print_r($event["event"]["id"]));
+                                $title = "";
+                                if(isset($event["event"]["event"]["title"]) && is_string(($event["event"]["event"]["title"]))){
+                                    $title = $event["event"]["event"]["title"];
+                                }
+                                $event_bdd = new Event($title, $event["event"]["from"], $event["event"]["to"]);
+                                $event_bdd->setWorkspacesCalendars($workspace_id . "");
+                                if(isset($event["event"]["participants"]) && $event["event"]["participants"] != Array()){
+                                    $participants = Array();
+                                    foreach($event["event"]["participants"] as $p){
+                                        if(is_int($p)){
+                                            $participants[] = $match_table[$p];
+                                        }
+                                        else{
+                                            $participants[] = $match_table[$p["id"]];
+                                        }
+                                    }
+                                    $event_bdd->setParticipants($participants);
+                                }
+                                if(isset($event["event"]["event"]["typeEvent"]) && is_string($event["event"]["event"]["typeEvent"])){
+                                    $event_bdd->setType($event["event"]["event"]["typeEvent"]);
+                                }
+                                $manager->persist($event_bdd);
+                                $event_id = $event_bdd->getId();
+                                $manager->flush();
+
+                                //error_log(print_r(gettype($event["event"]["event"]["start"]["date"]),true));
+                                $date = new \DateTime("@".intval($event["event"]["from"]));
+//                                error_log(print_r($date->getTimestamp(),true));
+                                $event_calendar_bdd = new EventCalendar($workspace_id, $calendar_id, $event_id, $date->getTimestamp());
+                                $manager->persist($event_calendar_bdd);
+                                $manager->flush();
+                            }
+                        }
+                    }
+                }
+                chdir("..");
+            }
 
 // =================================================================================================================================================
 // =================================================================================================================================================
 
             //  PARTIE SUR LA CREATION DES TACHES
                 if(file_exists("tasks")){
-                    error_log("NOUVELLE TACHES");
                     chdir("tasks");
                     $allboard= scandir("./");
                     $boards = array_values(array_diff($allboard, array('.', '..')));
@@ -462,56 +493,119 @@ class ImportCommand extends ContainerAwareCommand
                         $handle_board_file = fopen($board, 'r') or die('Cannot open file:  ' . $board);
                         if (filesize($board) > 0) {
                             $contents = json_decode(fread($handle_board_file, filesize($board)), true);
+                            error_log(print_r("NEW TASK : " . $contents["title"] . " ID : " . $contents["id"],true));
                             if (isset($contents)) {
                                 $board_bdd = new Board($workspace_id,$contents["title"]);
                                 $board_bdd->setGroupName($group->getName());
-                                error_log(print_r($board_bdd->getAsArray(),true));
                                 $manager->persist($board_bdd);
                                 $manager->flush();
-//                                error_log("ici");
-//                                $board_id = $board_bdd->getId();
-//                                $lists = $board["lists"];
-//                                error_log("la");
-//                                if(isset($board["lists"]) && $board["lists"] != Array()){
-//                                    foreach ($lists as $list){
-//                                        $board_list = new BoardList($board_id,$list["title"],$list["color"]);
-//                                        $manager->persist($board_list);
-//                                        $manager->flush();
-//                                        $list_id = $board_list->getId();
-//                                        $tasks = $list["tasks"];
-//                                        if(isset($list["tasks"]) && $list["tasks"] != Array()){
-//                                            foreach ($tasks as $task){
-//                                                $task_bdd = new Task($board_id,$list_id,$task["name"]);
-//                                                $task_bdd->setDescription($task["description"]);
-//                                                $task_bdd->setOrder($task["order"]);
-//                                                $task_bdd->setOwner($match_table[$task["user"]]);
-//                                                $task_bdd->setCheckList($task["checklist"]);
-//                                                if(isset($task["participant"]) && $task["participant"] != Array()){
-//                                                    $participants = Array();
-//                                                    foreach($task["participant"] as $p){
-//                                                        $participants[] = $match_table[$p];
-//                                                    }
-//                                                    $task_bdd->setParticipants($participants);
-//
-//                                                }
-//                                                $manager->persist($task_bdd);
-//                                                $manager->flush();
-//                                            }
-//                                        }
-//                                    }
-//                                }
+                                $board_id = $board_bdd->getId();
+                                $lists = $contents["lists"];
+                                if(isset($contents["lists"]) && $contents["lists"] != Array()){
+                                    foreach ($lists as $list){
+                                        $board_list = new BoardList($board_id,$list["title"],$list["color"]);
+                                        $manager->persist($board_list);
+                                        $manager->flush();
+                                        $list_id = $board_list->getId();
+                                        $tasks = $list["tasks"];
+                                        if(isset($list["tasks"]) && $list["tasks"] != Array()){
+                                            foreach ($tasks as $task){
+                                                $task_bdd = new Task($board_id,$list_id,$task["name"]);
+                                                $task_bdd->setDescription($task["description"]);
+                                                $task_bdd->setOrder($task["order"]);
+                                                $task_bdd->setOwner($match_table[$task["user"]]);
+                                                $task_bdd->setCheckList($task["checklist"]);
+                                                if(isset($task["participant"]) && $task["participant"] != Array()){
+                                                    $participants = Array();
+                                                    foreach($task["participant"] as $p){
+                                                        $participants[] = $match_table[$p];
+                                                    }
+                                                    $task_bdd->setParticipants($participants);
+                                                }
+                                                $manager->persist($task_bdd);
+                                                $manager->flush();
+                                            }
+                                        }
+                                    }
+                                }
                             }
                             fclose($handle_board_file);
                         }
                     }
                     chdir("..");
                 }
-
                 chdir(".."); // on sort du workspace
             }
 // =================================================================================================================================================
 // =================================================================================================================================================
 
+            //PARTIE SUR LES CHANNEL PRIVES
+            error_log(print_r(getcwd()));
+            //chdir("..");
+            if(file_exists("private_channel")) {
+                chdir("private_channel");
+                $channel_file = "channel_private.json";
+                $handle_channel_file = fopen($channel_file, 'r') or die('Cannot open file:  ' . $channel_file);
+                if (filesize($channel_file) > 0) {
+                    $contents = json_decode(fread($handle_channel_file, filesize($channel_file)), true);
+                    if (isset($contents)) {
+                        foreach ($contents as $channel) {
+                            error_log(print_r("NEW PRIVATE CHANNEL : " . $channel["id"],true));
+                            $name = "";
+                            $member_list = Array();
+                            foreach ($channel["members"] as $channel_member){
+                                if(array_key_exists($channel_member["id"],$match_table)){
+                                    array_push($member_list,$match_table[$channel_member["id"]]);
+                                    $name = $name . $channel_member["username"]. " ";
+                                }
+                            }
+
+
+//                            $private_channel = $manager->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("drirect" => true));
+
+                            $channel_bdd = new Channel($name);
+                            $manager->persist($channel_bdd);
+                            $manager->flush();
+                            $channel_bdd_id = $channel_bdd->getId();
+                            usort($channel["message"], "self::cmpMessage");
+                            $no_parent_yet = Array();
+                            foreach ($channel["message"] as $message) {
+                                $message_bdd = new Message($channel_bdd_id, "");
+                                $manager->persist($message_bdd);
+                                $match_messages[$message["id"]] = $message_bdd->getId() . "";
+                                $message_bdd->setContent($message["content"]);
+                                if ($message["parent_message_id"] != null) {
+                                    if (array_key_exists($message["parent_message_id"], $match_messages)) {
+                                        $message_bdd->setParentMessageId($match_messages[$message["parent_message_id"]]);
+                                    } else {
+                                        // le parent n'existe pas encore on doit creer le message plus tard
+                                        $no_parent_yet[$message_bdd->getId() . ""] = $message;
+                                    }
+                                }
+                                if ($message["sender"] != null) {
+                                    if(array_key_exists($message["sender"],$match_table)){
+                                        $user = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $match_table[$message["sender"]]));
+                                        //error_log(print_r($user->getUsername()));
+                                        $message_bdd->setSender($user);
+                                    }
+                                }
+                                $message_bdd->setCreationDate(new DateTime("@". intval($message["creation_date"]/1000)));
+                                $manager->persist($message_bdd);
+                                $manager->flush();
+                            }
+                            foreach ($no_parent_yet as $key => $value){
+                                $message =  $manager->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $key));
+                                $manager->remove($message);
+                                $manager->flush();
+                                $message->setParentMessageId($value["parent_message_id"]);
+                                $manager->persist($message);
+                                $manager->flush();
+                            }
+                        }
+                    }
+                    fclose($handle_channel_file);
+                }
+            }
         }
     }
 }
