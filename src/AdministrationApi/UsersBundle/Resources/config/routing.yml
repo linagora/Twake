@@ -7,3 +7,8 @@ administration_api_users_get_one:
   path: /getOne
   defaults: { _controller: AdministrationApiUsersBundle:Users:getOneUser }
   methods: [POST]
+
+administration_api_users_find_one:
+  path: /findUser
+  defaults: { _controller: AdministrationApiUsersBundle:Users:findUser }
+  methods: [POST]

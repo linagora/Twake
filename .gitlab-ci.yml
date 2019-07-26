@@ -66,14 +66,16 @@ front_test:
         - git checkout 1.2
         
         - apk update && apk add yarn
-        - yarn install 
+        - yarn install
         - yarn run dev-build
         
  
-        - yarn add puppeteer --only=dev  #installation de la librairie puppeter et installation des dépendances pour le serveur localhost8080 -> pas besoin de cette ligne car déja prise en compte quand j'ai push
+        #- yarn add puppeteer --only=dev  #installation de la librairie puppeter et installation des dépendances pour le serveur localhost8080 -> pas besoin de cette ligne car déja prise en compte quand j'ai push
 
 
         - node run_server.js & #permet de lancer le code permettant de générer le serveur
+        
+        #puppeteer n'installe pas automatiquement TOUTES les dépendances -> installer les suivantes : https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-doesnt-launch-on-unix
         
         #execution des tests que je souhaite faire => attention dans tous les tests, on a besoin d'ajouter --no-sandbox
         #- node src/test/screenshotTest.js

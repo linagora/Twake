@@ -88,4 +88,40 @@ class UsersController extends Controller
         return new JsonResponse($data);
     }
 
+    public function findUserAction(Request $request) {
+
+        $data = array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $validation = $this->get("administration.validation");
+        $token = $request->request->get("token");
+        $validate_token = $validation->validateAuthentication($token);
+
+        if ($validate_token) {
+            $search_string = $request->request->get("search");
+
+            $users_service = $this->get("administration.users");
+
+            $users = $users_service->findUserByUsername($search_string);
+
+            if (!$users) {
+                $users = $users_service->findUserByEmail($search_string);
+
+                if (!$users) {
+                    $data['errors'] = "user_not_found";
+                } else {
+                    $data['data'] = $users;
+                }
+            } else {
+                $data['data'] = $users;
+            }
+        } else {
+            $data["errors"][] = "invalid_authentication_token";
+        }
+
+        return new JsonResponse($data);
+    }
+
 }
