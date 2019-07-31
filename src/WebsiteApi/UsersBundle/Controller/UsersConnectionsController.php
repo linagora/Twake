@@ -262,6 +262,7 @@ class UsersConnectionsController extends Controller
 
             $mails = $this->get("app.user")->getSecondaryMails($this->getUser());
 
+            $data["data"]["mails"] = Array();
             foreach ($mails as $mail){
                 $data["data"]["mails"][] = Array(
                     "id" => $mail->getId(),

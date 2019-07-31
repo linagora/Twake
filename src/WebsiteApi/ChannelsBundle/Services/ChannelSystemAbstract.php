@@ -50,7 +50,7 @@ class ChannelSystemAbstract
 
         foreach ($members_ids as $member_id) {
             if (!in_array($member_id, $current_members)) {
-                $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($member_id, $channel_entity);
+                $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($member_id . "", $channel_entity);
                 $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
                 $this->entity_manager->persist($member);
             }

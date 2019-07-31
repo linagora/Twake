@@ -232,7 +232,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             if ($workspace->getGroup() != null) {
                 $groupUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
-                $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup(),));
+                $nbuserGroup = $groupUserRepository->findBy(Array("group" => $workspace->getGroup()));
                 $limit = $this->pricing->getLimitation($workspace->getGroup()->getId(), "maxUser", PHP_INT_MAX);
 
                 if (count($nbuserGroup) >= $limit) { // Margin of 1 to be sure we do not count twakebot

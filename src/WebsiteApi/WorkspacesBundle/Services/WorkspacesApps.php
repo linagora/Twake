@@ -113,6 +113,8 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
     public function enableApp($workspaceId, $applicationId, $currentUserId = null)
     {
+        $current_user_id = $currentUserId;
+
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
         $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
 
@@ -191,6 +193,8 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
     public function disableApp($workspaceId, $applicationId, $currentUserId = null)
     {
+        $current_user_id = $currentUserId;
+
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
         $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
 
