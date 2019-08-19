@@ -110,7 +110,15 @@ class UsersController extends Controller
                 $users = $users_service->findUserByEmail($search_string);
 
                 if (!$users) {
-                    $data['errors'][] = "user_not_found";
+                    $advanced_search = $this->get("app.users");
+
+                    $users = $advanced_search->search($search_string);
+
+                    if (count($users) == 0) {
+                        $data['errors'][] = "user_not_found";
+                    } else {
+                        $data['data'] = $users;
+                    }
                 } else {
                     $data['data'] = $users;
                 }
