@@ -112,7 +112,9 @@ class UsersController extends Controller
                 if (!$users) {
                     $advanced_search = $this->get("app.users");
 
-                    $users = $advanced_search->search($search_string);
+                    $search_words = explode(" ", $search_string);
+
+                    $users = $advanced_search->search($search_words);
 
                     if (count($users) == 0) {
                         $data['errors'][] = "user_not_found";
