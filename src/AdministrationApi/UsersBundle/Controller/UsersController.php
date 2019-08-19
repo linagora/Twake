@@ -26,7 +26,7 @@ class UsersController extends Controller
             $offset = $request->request->get("offset");
             $limit = $request->request->get("limit");
 
-            $validate_struct = $validation->validateStructure(Array(), Array(), $limit, $page);
+            $validate_struct = $validation->validateStructure(Array(), Array(), $limit, $offset);
 
             if ($validate_struct) {
                 $users = $this->get("administration.users")->getAllUsers($limit, $offset);
@@ -110,7 +110,7 @@ class UsersController extends Controller
                 $users = $users_service->findUserByEmail($search_string);
 
                 if (!$users) {
-                    $data['errors'] = "user_not_found";
+                    $data['errors'][] = "user_not_found";
                 } else {
                     $data['data'] = $users;
                 }

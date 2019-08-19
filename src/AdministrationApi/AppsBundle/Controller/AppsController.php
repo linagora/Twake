@@ -21,7 +21,18 @@ class AppsController extends Controller {
         $validate_token = $validation->validateAuthentication($token);
 
         if ($validate_token) {
-            //TODO Implement listing service
+            $offset = $request->request->get("offset");
+            $limit = $request->request->get("limit");
+
+            $validate_struct = $validation->validateStructure(Array(), Array(), $limit, $offset);
+
+            if ($validate_struct) {
+                $apps = $this->get("administration.apps")->getAllApps($limit, $offset);
+
+                $data["data"] = $apps;
+            } else {
+                $data["errors"][] = "invalid_request_structure";
+            }
         } else {
             $data["errors"][] = "invalid_authentication_token";
         }

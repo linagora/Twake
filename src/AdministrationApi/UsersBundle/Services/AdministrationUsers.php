@@ -107,7 +107,7 @@ class AdministrationUsers
 
         $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-        $users = $usersRepository->findBy(Array("username_canonical" => $username));
+        $users = $usersRepository->findBy(Array("usernamecanonical" => $username));
 
         $rep = false;
 

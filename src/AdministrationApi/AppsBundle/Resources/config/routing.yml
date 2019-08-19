@@ -6,3 +6,4 @@ administration_api_apps_get_all:
 administration_api_apps_get_one:
   path: /getOneApp
   defaults: { _controller: AdministrationApiAppsBundle:Apps:getOneApp }
+  methods: [POST]
