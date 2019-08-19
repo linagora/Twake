@@ -227,7 +227,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         }
 
         if ($channel->getPrivate()) {
-            $this->updateChannelMembers($channel, $members, $current_user->getId());
+            $this->updateChannelMembers($channel, $members);
         }
 
         if ($did_create && !$channel->getPrivate()) {

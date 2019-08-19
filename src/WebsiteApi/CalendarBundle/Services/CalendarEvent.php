@@ -411,7 +411,7 @@ class CalendarEvent
     }
 
     //TODO Not the best to send update email every time, change it to a worker waiting 30 minutes at least
-    private function hasRealChange($old_event, $new_event)
+    public function hasRealChange($old_event, $new_event)
     {
         return ($old_event["from"] != $new_event["from"] || $old_event["to"] != $new_event["to"]
             || strlen(str_replace(" ", "", $old_event["title"] . "")) - strlen(trim($new_event["title"] . "")) > 10
@@ -419,7 +419,7 @@ class CalendarEvent
             || strlen(str_replace(" ", "", $old_event["description"] . "")) - strlen(trim($new_event["description"] . "")) > 10);
     }
 
-    private function updateParticipants(Event $event, $participants = Array(), $replace_all = false)
+    public function updateParticipants(Event $event, $participants = Array(), $replace_all = false)
     {
         $sort_key = $event->getSortKey();
 
@@ -497,7 +497,7 @@ class CalendarEvent
         $this->doctrine->flush();
     }
 
-    private function updateCalendars(Event $event, $calendars = Array(), $replace_all = false)
+    public function updateCalendars(Event $event, $calendars = Array(), $replace_all = false)
     {
         $sort_key = $event->getSortKey();
 
@@ -531,7 +531,7 @@ class CalendarEvent
 
     }
 
-    private function updateNotifications(Event $event, $notifications = Array(), $replace_all = false)
+    public function updateNotifications(Event $event, $notifications = Array(), $replace_all = false)
     {
 
         $notifications = $notifications ? $notifications : [];
@@ -562,7 +562,7 @@ class CalendarEvent
 
     }
 
-    private function getArrayDiffUsingKeys($new_array, $old_array, $keys)
+    public function getArrayDiffUsingKeys($new_array, $old_array, $keys)
     {
         $remove = [];
         $add = [];
@@ -579,7 +579,7 @@ class CalendarEvent
         return Array("del" => $remove, "add" => $add);
     }
 
-    private function inArrayUsingKeys($array, $element, $keys)
+    public function inArrayUsingKeys($array, $element, $keys)
     {
         $in = false;
         foreach ($array as $el) {
@@ -598,7 +598,7 @@ class CalendarEvent
         return $in;
     }
 
-    private function formatArrayInput($array, $id_keys = [])
+    public function formatArrayInput($array, $id_keys = [])
     {
         $updated_array = [];
         $unicity = [];

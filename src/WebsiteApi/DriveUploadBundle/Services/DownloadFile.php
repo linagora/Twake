@@ -29,12 +29,25 @@ class DownloadFile
             return false;
         }
         if (isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
-            error_log($version->getData()["identifier"]);
             $this->resumable->downloadFile($version->getData()["identifier"]);
             return true;
         } else {
             if ($oldFileSystem) {
                 $completePath = $oldFileSystem->getRoot() . $file->getPath();
+
+                //START - Woodpecker files import !
+                $test_old_version = explode("/previews/", $file->getPreviewLink());
+                if (count($test_old_version) == 2) {
+                    $test_old_version = explode("/", $test_old_version[1]);
+                    if ($test_old_version[0] == "detached") {
+                        $test_old_version[0] = $test_old_version[1];
+                    }
+                    if (intval($test_old_version[0]) . "" == $test_old_version[0]) {
+                        $completePath = $oldFileSystem->getRoot() . str_replace(Array("https://s3.eu-west-3.amazonaws.com/twake.eu-west-3/public/uploads/previews/", ".png"), "", $file->getPreviewLink());
+                    }
+                }
+                //END - Woodpecker files import !
+
                 $completePath = $oldFileSystem->decode($completePath, $version->getKey(), $version->getMode());
                 $fp = fopen($completePath, "r");
                 ob_clean();

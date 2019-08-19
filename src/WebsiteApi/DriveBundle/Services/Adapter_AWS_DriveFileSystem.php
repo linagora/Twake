@@ -126,7 +126,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
                 'SSECustomerKeyMD5' => md5($key, true)
             ]);
 
-            $tmpPath = $this->getRoot() . "/tmp/" . bin2hex(random_bytes(16));
+            $tmpPath = "/tmp/" . bin2hex(random_bytes(16));
             $this->verifyPath($tmpPath);
             file_put_contents($tmpPath, $object["Body"]);
 

@@ -164,13 +164,18 @@ class DriveFileVersion
 	/**
 	 * @return mixed
 	 */
-	public function getMode()
-	{
-		if(!$this->mode){
-			return "AES";
-		}
-		return $this->mode;
-	}
+    public function getMode()
+    {
+        if (!$this->mode) {
+            return "AES";
+        }
+        return $this->mode;
+    }
+
+    public function setMode($mode)
+    {
+        $this->mode = $mode;
+    }
 
 	public function getAsArray(){
 	    return Array(

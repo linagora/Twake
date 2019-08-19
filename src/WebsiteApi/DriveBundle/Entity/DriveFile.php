@@ -402,6 +402,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
         if ($this->getLastVersionId() == null) {
             return null;
         }
+
         if($this->getDetachedFile()){
             return "" . $this->workspace_id . "/" . $this->getLastVersionId();
         }

@@ -3,7 +3,6 @@ imports:
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: ws_routing.yml }
-    - { resource: admin_config.yml }
     - { resource: "@TwakeCalendarBundle/Resources/config/services.yml" }
     - { resource: "@TwakeUsersBundle/Resources/config/services.yml" }
     - { resource: "@TwakeCoreBundle/Resources/config/services.yml" }

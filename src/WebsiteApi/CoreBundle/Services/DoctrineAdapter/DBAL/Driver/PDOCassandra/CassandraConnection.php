@@ -174,7 +174,7 @@ class PDOStatementAdapter
         try {
             $this->executor->exec($query, $this);
         } catch (\Exception $e) {
-            error_log("SCYLLADB > AN ERROR OCCURED WITH THIS QUERY : " . $query);
+            error_log("SCYLLADB > AN ERROR OCCURED WITH THIS QUERY : " . preg_replace("/AS .* FROM/", "AS [...] FROM", $query));
             error_log($e);
         }
 
