@@ -631,6 +631,24 @@ class DriveFileSystem
 
         $drive_element->setName($filename);
 
+        if ($application && $object["preview_link"]) {
+            $drive_element->setHasPreview(true);
+            $drive_element->setPreviewHasBeenGenerated(true);
+            $drive_element->setPreviewLink($object["preview_link"]);
+        }
+
+        if ($object["hidden_data"]) {
+            $drive_element->setHiddenData($object["hidden_data"]);
+        }
+
+        if ($object["application_id"]) {
+            $drive_element->setApplicationId($object["application_id"]);
+        }
+
+        if ($object["url"]) {
+            $drive_element->setUrl($object["url"]);
+        }
+
         if (!$detached_file) {
             if ($directory != "detached") {
                 if ($directory != "root") {

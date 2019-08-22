@@ -174,6 +174,16 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     private $public_acces_info;
 
     /**
+     * @ORM\Column(name="application_id", type="twake_text", nullable=true)
+     */
+    private $application_id = null;
+
+    /**
+     * @ORM\Column(name="hidden_data", type="twake_text")
+     */
+    private $hidden_data = "{}";
+
+    /**
      * @ORM\Column(name="last_user", type="twake_text", nullable=true)
      * @Encrypted
      */
@@ -675,7 +685,9 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null,
             "object_link_cache" => $this->getObjectLinkCache(),
             //"keywords" => $this->getContentKeywords()
-            "public_acces_info" => $this->getPublicAccesInfo()
+            "public_acces_info" => $this->getPublicAccesInfo(),
+            "application_id" => $this->getApplicationId(),
+            "hidden_data" => $this->getHiddenData()
 
         );
     }
@@ -806,6 +818,41 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     public function setHasPreview($has_preview)
     {
         $this->has_preview = $has_preview;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getApplicationId()
+    {
+        return $this->application_id;
+    }
+
+    /**
+     * @param mixed $application_id
+     */
+    public function setApplicationId($application_id)
+    {
+        $this->application_id = $application_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHiddenData()
+    {
+        if (!$this->hidden_data) {
+            return Array();
+        }
+        return json_decode($this->hidden_data, 1);
+    }
+
+    /**
+     * @param mixed $hidden_data
+     */
+    public function setHiddenData($hidden_data)
+    {
+        $this->hidden_data = json_encode($hidden_data);
     }
 
 

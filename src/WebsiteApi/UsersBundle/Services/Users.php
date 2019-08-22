@@ -37,9 +37,9 @@ class Users
         $terms = Array();
 
         foreach ($words as $word){
-            $terms[] = Array("match" => Array("firstname" => $word));
-            $terms[] =  Array("match" => Array("lastname" => $word));
-            $terms[] = Array("prefix" => Array("username" => $word));
+            $terms[] = Array("prefix" => Array("firstname" => strtolower($word)));
+            $terms[] = Array("prefix" => Array("lastname" => strtolower($word)));
+            $terms[] = Array("prefix" => Array("username" => strtolower($word)));
         }
 
         $options = Array(

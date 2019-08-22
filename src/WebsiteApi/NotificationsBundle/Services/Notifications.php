@@ -120,6 +120,7 @@ class Notifications implements NotificationsInterface
             "workspace_id"=>($workspace!=null?$workspace->getId():null),
             "channel_id" => ($channel != null ? $channel->getId() : null),
             "title" => $title,
+            "original_text" => $text,
             "text" => $text,
             "code" => $code,
             "type" => $type,
@@ -137,6 +138,8 @@ class Notifications implements NotificationsInterface
 
         $count = count($users);
         for($i = 0; $i < $count; $i++) {
+
+            $data["text"] = $data["original_text"];
 
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($users[$i]);
 

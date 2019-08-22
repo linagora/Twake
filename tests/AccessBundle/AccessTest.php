@@ -206,7 +206,7 @@ class AccessTest extends WebTestCaseExtended
         $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
         $data = Array("upload_mode" => "chunk", "identifier" => "identifier" ,"nb_chunk" => 1);
         $options = Array("new" => true, "data" => $data, "version" => true);
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options
         ));
@@ -214,7 +214,7 @@ class AccessTest extends WebTestCaseExtended
 
         $object = Array("workspace_id" => $workspace2_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true, "is_directory" => false);
         $options = Array("new" => true, "data" => $data, "version" => true);
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options
         ));
@@ -223,7 +223,7 @@ class AccessTest extends WebTestCaseExtended
         $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
         $data = Array("upload_mode" => "chunk", "identifier" => "identifier" ,"nb_chunk" => 1);
         $options = Array("new" => true, "data" => $data, "version" => true);
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options
         ));

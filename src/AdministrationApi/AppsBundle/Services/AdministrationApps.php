@@ -13,9 +13,20 @@ class AdministrationApps
         $this->em = $em;
     }
 
-    public function getAllApps() {
-        //c'est quoi comme Repo pour toutes les apps ?
-        //TODO Faire le listing avec une nouvelle facon de faire
+    public function getAllApps($limit, $offset) {
+
+        $appsRepository = $this->em->getRepository("TwakeMarketBundle:Application");
+
+        $apps_entities = $appsRepository->findBy(array(), array(), $limit, $offset/*, "__TOKEN__id"*/);
+
+        $apps = array();
+
+        foreach ($apps_entities as $app) {
+            $apps[] = $app->getAsArray();
+        }
+
+        return $apps;
+
     }
 
     public function getOneApp($id) {
@@ -30,6 +41,26 @@ class AdministrationApps
         }
 
         return $app;
+    }
+
+    public function toggleAppValidation($id) {
+        $appsRepository = $this->em->getRepository("TwakeMarketBundle:Application");
+
+        $app_tab = $appsRepository->findBy(array("id"=>$id));
+
+        $rep = false;
+
+        if (count($app_tab) == 1) {
+            if ($app_tab[0]->getPublic()) {
+                $app_tab[0]->setIsAvailableToPublic(!$app_tab[0]->getIsAvailableToPublic());
+                $this->em->persist($app_tab[0]);
+                $rep = true;
+            }
+        }
+
+        $this->em->flush();
+
+        return $rep;
     }
 
 }

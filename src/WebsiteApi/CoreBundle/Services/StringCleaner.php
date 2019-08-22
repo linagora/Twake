@@ -91,7 +91,7 @@ END;
                 return false;
             }
         }
-        return preg_match("/^[A-Za-z0-9.\-_]{3,250}@[A-Za-z0-9.\-_]{2,50}\.[A-Za-z0-9]{2,4}$/", $mail);
+        return preg_match("/^[A-Za-z0-9.\-_]{1,250}@[A-Za-z0-9.\-_]{2,250}\.[A-Za-z0-9]{2,16}$/", $mail);
     }
 
     public function verifyPassword($password)

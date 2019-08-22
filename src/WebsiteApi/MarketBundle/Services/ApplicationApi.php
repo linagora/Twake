@@ -285,8 +285,14 @@ class ApplicationApi
     public function getResources($workspace_id, $resource_type, $resource_id)
     {
         $repo = $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource");
-        $list = $repo->findBy(Array("resource_id" => $resource_id, "workspace_id" => $workspace_id));
-        return $list;
+        $list = $repo->findBy(Array("resource_id" => $resource_id));
+        $final_list = [];
+        foreach ($list as $el) {
+            if ($el->getWorkspaceId() == $workspace_id) {
+                $final_list[] = $el;
+            }
+        }
+        return $final_list;
     }
 
     public function addResource($app_id, $workspace_id, $resource_type, $resource_id, $current_user_id = null)
@@ -361,7 +367,7 @@ class ApplicationApi
             $current_user = $repo->findOneBy(Array("id" => $current_user_id));
         }
 
-        //Verify we do not have this resource
+        //Verify we have this resource
         $repo = $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource");
         $candidates = $repo->findBy(Array("application_id" => $app_id, "workspace_id" => $workspace_id));
 

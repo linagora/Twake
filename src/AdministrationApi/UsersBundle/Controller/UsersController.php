@@ -26,7 +26,7 @@ class UsersController extends Controller
             $offset = $request->request->get("offset");
             $limit = $request->request->get("limit");
 
-            $validate_struct = $validation->validateStructure(Array(), Array(), $limit, $page);
+            $validate_struct = $validation->validateStructure(Array(), Array(), $limit, $offset);
 
             if ($validate_struct) {
                 $users = $this->get("administration.users")->getAllUsers($limit, $offset);
@@ -108,15 +108,24 @@ class UsersController extends Controller
 
             if (!$users) {
                 $users = $users_service->findUserByEmail($search_string);
+            }
 
-                if (!$users) {
-                    $data['errors'] = "user_not_found";
-                } else {
-                    $data['data'] = $users;
-                }
+            if (!$users) {
+
+                $advanced_search = $this->get("app.users");
+
+                $search_words = explode(" ", $search_string);
+
+                $users = $advanced_search->search($search_words);
+
+            }
+
+            if (count($users) == 0) {
+                $data['errors'][] = "user_not_found";
             } else {
                 $data['data'] = $users;
             }
+
         } else {
             $data["errors"][] = "invalid_authentication_token";
         }
