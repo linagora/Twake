@@ -645,6 +645,10 @@ class DriveFileSystem
             $drive_element->setApplicationId($object["application_id"]);
         }
 
+        if ($object["url"]) {
+            $drive_element->setUrl($object["url"]);
+        }
+
         if (!$detached_file) {
             if ($directory != "detached") {
                 if ($directory != "root") {

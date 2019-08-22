@@ -57,7 +57,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $object = Array("parent_id" => $root_id, "workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
         $data = Array("upload_mode" => "chunk", "identifier" => "identifier" ,"nb_chunk" => 1);
         $options = Array("new" => true, "data" => $data, "version" => true);
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options,
             "upload_data" => $upload_data
@@ -113,7 +113,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
         $options = Array("new" => true, "data" => $data, "version" => true);
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options,
             "upload_data" => $upload_data
@@ -165,7 +165,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true, "is_directory" => false);
         $options = Array("new" => true, "data" => $data, "version" => true);
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options,
             "upload_data" => $upload_data
@@ -218,7 +218,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("id" => $idtofind_detached, "parent_id" => $root_id);
         $options = Array();
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options
         ));
@@ -251,7 +251,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("id" => $idtofind_parent, "trash" => true);
         $options = Array();
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options
         ));
@@ -278,7 +278,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("id" => $idtofind_parent, "trash" => false);
         $options = Array();
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options
         ));
@@ -304,7 +304,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "folderfortest", "is_directory" => true);
         $options = Array("new" => true, "data" => $data, "version" => true);
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options,
         ));
@@ -333,7 +333,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("id" => $idtofind_detached, "parent_id" => $idtofind_folder);
         $options = Array();
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options
         ));
@@ -364,7 +364,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("id" => $idtofind_folder, "trash" => true);
         $options = Array();
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options
         ));
@@ -396,7 +396,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("id" => $idtofind_detached, "trash" => false);
         $options = Array();
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options
         ));
@@ -432,7 +432,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("id" => $idtofind_detached);
         $options = Array();
-        $result = $this->doPost("/ajax/drive/removerefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/remove", Array(
             "object" => $object,
             "optionss" => $options
         ));
@@ -452,7 +452,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("id" => $idtofind_parent, "parent_id" => $idtofind_folder);
         $options = Array();
-        $result = $this->doPost("/ajax/drive/saverefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options
         ));
@@ -483,7 +483,7 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         $object = Array("id" => $idtofind_parent);
         $options = Array();
-        $result = $this->doPost("/ajax/drive/removerefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/remove", Array(
             "object" => $object,
             "optionss" => $options
         ));
@@ -502,7 +502,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         //ON RECUPERE UN FICHIER A L AIDE DE LA METHODE GET
 
         $options = Array("id" => $root_id);
-        $result = $this->doPost("/ajax/drive/getrefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/get", Array(
             "options" => $options
         ));
         $this->assertEquals($root_id,json_decode($result->getContent(),true)["data"]["id"], "Wrong file found or null");
@@ -512,7 +512,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         //ON RECUPERE LA RACINE D UN WORKSPACE A L AIDE DE LA METHODE GET
 
         $options = Array("workspace_id" => $workspace_id);
-        $result = $this->doPost("/ajax/drive/getrefacto", Array(
+        $result = $this->doPost("/ajax/drive/v2/get", Array(
             "options" => $options
         ));
         $this->assertEquals($root_id,json_decode($result->getContent(),true)["data"]["id"], "The file is not the root of the workspace");
