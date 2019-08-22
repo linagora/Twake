@@ -73,6 +73,8 @@ class UsersController extends Controller
                     $groups = $user_service->getUserGroups($user);
 
                     $data["data"]["user"] = $user->getAsArray();
+                    $data["data"]["user"]["creation_date"] = $user->getCreationDate();
+                    $data["data"]["user"]["last_login"] = $user->getLastLogin();
                     $data["data"]["devices"] = $devices;
                     $data["data"]["mails"] = $mails;
                     $data["data"]["workspaces"] = $workspaces;
