@@ -413,7 +413,10 @@ class MessageSystem
             $this->indexbloc($message,$channel->getOriginalWorkspaceId(),$object["channel_id"]);
         }
         else{
-            $this->updateinbloc($message,$object["content"]["prepared"][0]);
+
+            $content = $this->mdToText($object["content"]);
+
+            $this->updateinbloc($message, $content);
         }
 
         if (!$ephemeral) {
@@ -502,7 +505,10 @@ class MessageSystem
             $blocbdd->setMaxMessageId($message_id);
             $blocbdd->setLock(true);
         }
-        $blocbdd->addmessage($message->getContent()["prepared"][0], $message_id);
+
+        $content = $this->mdToText($message->getContent());
+
+        $blocbdd->addmessage($content, $message_id);
         $this->em->persist($blocbdd);
         $message->setBlockId($blocbdd->getId()."");
         $this->em->persist($message);

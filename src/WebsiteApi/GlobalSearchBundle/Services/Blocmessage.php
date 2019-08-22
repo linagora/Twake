@@ -20,7 +20,7 @@ class Blocmessage
         $final_words = Array();
         foreach($words as $word){
             if(strlen($word) > 3) {
-                $final_words[] = $word;
+                $final_words[] = strtolower($word);
             }
         }
 
@@ -86,7 +86,7 @@ class Blocmessage
                 if (isset($lastbloc)) {
                     foreach ($lastbloc->getContent() as $content) {
                         foreach ($words as $word) {
-                            if (strpos($content, $word) !== false) {
+                            if (strpos(strtolower($content), strtolower($word)) !== false) {
                                 if (in_array($lastbloc->getMessages()[$compt], $id_message) == false) {
                                     $id_message[] = $lastbloc->getMessages()[$compt];
                                     //on peut penser a rajouter un break
@@ -108,7 +108,7 @@ class Blocmessage
                 $compt = 0;
                 foreach ($content as $phrase) {
                     foreach ($words as $word) {
-                        if (strpos($phrase, $word) !== false) {
+                        if (strpos(strtolower($phrase), strtolower($word)) !== false) {
                             if (in_array($bloc->getMessages()[$compt], $id_message) == false) {
                                 $id_message[] = $bloc->getMessages()[$compt];
                             }
