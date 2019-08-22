@@ -21,6 +21,24 @@ class Mapping
             )
         );
 
+        $mapping_message_bloc = Array(
+            "_source" => Array(
+                "includes" => Array("id"),
+                "excludes" => Array(
+                    "workspace_id","channel_id","content"
+                )
+            ),
+            "properties" => Array(
+                "id" => Array("type" => "keyword"),
+                "workspace_id" => Array("type" => "keyword"),
+                "channel_id" => Array("type" => "keyword"),
+                "content" => Array("type" => "text")
+            )
+
+
+        );
+
+
         $mapping_channel = Array(
             "_source" => Array(
                 "includes" => Array("id"),
@@ -62,6 +80,7 @@ class Mapping
         $mapping_channel = json_encode($mapping_channel);
         $mapping_workspace = json_encode($mapping_workspace);
         $mapping_file=json_encode($mapping_file);
+        $mapping_message_bloc = json_encode($mapping_message_bloc);
 
         //var_dump($mapping_channel);
 
@@ -90,17 +109,29 @@ class Mapping
 //        curl_exec($ch);
 //        curl_close($ch);
 
-        $url = "http://51.68.91.127:9200/drive_file/_mapping/_doc";
-//        $url = "http://albatros.twakeapp.com:9200/drive_file/_mapping/_doc";
+//        $url = "http://51.68.91.127:9200/drive_file/_mapping/_doc";
+////        $url = "http://albatros.twakeapp.com:9200/drive_file/_mapping/_doc";
+//
+//        $ch = curl_init();
+//        curl_setopt($ch, CURLOPT_URL, $url);
+//        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_file)));
+//        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+//        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_file);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        curl_exec($ch);
+//        curl_close($ch);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_file)));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_file);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        curl_close($ch);
+        //$url = "http://51.68.91.127:9200/message_bloc/_mapping/_doc";
+        $url = "http://albatros.twakeapp.com:9200/message_bloc/_mapping/_doc";
+
+//        $ch = curl_init();
+//        curl_setopt($ch, CURLOPT_URL, $url);
+//        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_file)));
+//        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+//        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_file);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        curl_exec($ch);
+//        curl_close($ch);
 
     }
 
