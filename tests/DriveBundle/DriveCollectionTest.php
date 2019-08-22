@@ -260,8 +260,8 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals(true,json_decode($result->getContent(),true)["data"]["object"]["trash"], "File should be in trash he is not");
 
         $fileordirectory = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
-        $this->assertEquals($trash_id,$fileordirectory->getParentId(), "File as not trash as parent");
-        $this->assertEquals($root_id,$fileordirectory->getOldParent(), "File as not trash as parent");
+        $this->assertEquals($trash_id, $fileordirectory->getParentId(), "File has nottrash as parent");
+        $this->assertEquals($root_id, $fileordirectory->getOldParent(), "File has nottrash as parent");
 
         $this->assertEquals(100000,json_decode($result->getContent(),true)["data"]["object"]["size"], "Wrong size for the file");
         $fileordirectory = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
@@ -286,7 +286,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals(false,json_decode($result->getContent(),true)["data"]["object"]["trash"], "File should not be in trash he is ");
 
         $fileordirectory = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
-        $this->assertEquals($root_id,$fileordirectory->getParentId(), "File as not root as parent");
+        $this->assertEquals($root_id, $fileordirectory->getParentId(), "File has notroot as parent");
         $this->assertEquals("",$fileordirectory->getOldParent(), "File got old parent he should not");
 
         $this->assertEquals(100000,json_decode($result->getContent(),true)["data"]["object"]["size"], "Wrong size for the file");
@@ -459,8 +459,8 @@ class DriveCollectionTest extends WebTestCaseExtended
 
 
         $fileordirectory = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_parent));
-        $this->assertEquals($idtofind_folder,$fileordirectory->getParentId(), "File as not trash as parent");
-        $this->assertEquals($root_id,$fileordirectory->getOldParent(), "File as not root as old parent");
+        $this->assertEquals($idtofind_folder, $fileordirectory->getParentId(), "File has nottrash as parent");
+        $this->assertEquals($root_id, $fileordirectory->getOldParent(), "File has notroot as old parent");
         $this->assertEquals(true,$fileordirectory->getIsInTrash(), "File is not in trash");
 
         $fileordirectory = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_folder));

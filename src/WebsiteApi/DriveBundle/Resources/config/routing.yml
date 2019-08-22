@@ -211,6 +211,7 @@ drive_activities_getActivityToDisplay:
     defaults: { _controller: TwakeDriveBundle:DriveActivity:getActivityToDisplay}
     methods: [POST]
 
+
 drive_refractor_get:
     path:     /getrefacto
     defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:get}

@@ -285,8 +285,14 @@ class ApplicationApi
     public function getResources($workspace_id, $resource_type, $resource_id)
     {
         $repo = $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource");
-        $list = $repo->findBy(Array("resource_id" => $resource_id, "workspace_id" => $workspace_id));
-        return $list;
+        $list = $repo->findBy(Array("resource_id" => $resource_id));
+        $final_list = [];
+        foreach ($list as $el) {
+            if ($el->getWorkspaceId() == $workspace_id) {
+                $final_list[] = $el;
+            }
+        }
+        return $final_list;
     }
 
     public function addResource($app_id, $workspace_id, $resource_type, $resource_id, $current_user_id = null)
