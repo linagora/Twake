@@ -43,4 +43,24 @@ class AdministrationApps
         return $app;
     }
 
+    public function toggleAppValidation($id) {
+        $appsRepository = $this->em->getRepository("TwakeMarketBundle:Application");
+
+        $app_tab = $appsRepository->findBy(array("id"=>$id));
+
+        $rep = false;
+
+        if (count($app_tab) == 1) {
+            if ($app_tab[0]->getPublic()) {
+                $app_tab[0]->setIsAvailableToPublic(!$app_tab[0]->getIsAvailableToPublic());
+                $this->em->persist($app_tab[0]);
+                $rep = true;
+            }
+        }
+
+        $this->em->flush();
+
+        return $rep;
+    }
+
 }

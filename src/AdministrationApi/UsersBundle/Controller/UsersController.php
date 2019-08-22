@@ -108,25 +108,24 @@ class UsersController extends Controller
 
             if (!$users) {
                 $users = $users_service->findUserByEmail($search_string);
+            }
 
-                if (!$users) {
-                    $advanced_search = $this->get("app.users");
+            if (!$users) {
 
-                    $search_words = explode(" ", $search_string);
+                $advanced_search = $this->get("app.users");
 
-                    $users = $advanced_search->search($search_words);
+                $search_words = explode(" ", $search_string);
 
-                    if (count($users) == 0) {
-                        $data['errors'][] = "user_not_found";
-                    } else {
-                        $data['data'] = $users;
-                    }
-                } else {
-                    $data['data'] = $users;
-                }
+                $users = $advanced_search->search($search_words);
+
+            }
+
+            if (count($users) == 0) {
+                $data['errors'][] = "user_not_found";
             } else {
                 $data['data'] = $users;
             }
+
         } else {
             $data["errors"][] = "invalid_authentication_token";
         }
