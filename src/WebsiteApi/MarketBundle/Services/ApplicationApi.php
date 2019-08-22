@@ -361,7 +361,7 @@ class ApplicationApi
             $current_user = $repo->findOneBy(Array("id" => $current_user_id));
         }
 
-        //Verify we do not have this resource
+        //Verify we have this resource
         $repo = $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource");
         $candidates = $repo->findBy(Array("application_id" => $app_id, "workspace_id" => $workspace_id));
 
