@@ -24,7 +24,9 @@ class AdministrationUsers
         $users = Array();
 
         foreach ($usersEnitity as $user) {
-            $users[] = $user->getAsArray();
+            $user_tab = $user->getAsArray();
+            $user_tab['mails'] = $this->getUserMails($user);
+            $users[] = $user_tab;
         }
 
         return $users;
