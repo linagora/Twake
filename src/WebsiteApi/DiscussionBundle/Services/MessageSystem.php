@@ -10,6 +10,7 @@ use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\DiscussionBundle\Entity\MessageLike;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\DiscussionBundle\Entity\MessageReaction;
+use WebsiteApi\GlobalSearchBundle\Entity\Bloc;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Entity\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -155,6 +156,7 @@ class MessageSystem
         $array_before_delete = $message->getAsArray();
 
         $this->em->remove($message);
+        $this->deleteinbloc($message);
         $this->em->flush();
 
         return $array_before_delete;
@@ -302,7 +304,6 @@ class MessageSystem
 
         //Update message values
         if ($application && isset($object["_once_user_specific_update"])) {
-
             $specific_data = $message->getUserSpecificContent();
             if (!$specific_data) {
                 $specific_data = Array();
@@ -408,6 +409,13 @@ class MessageSystem
 //
         $this->em->persist($message);
 
+        if($did_create){
+            $this->indexbloc($message,$channel->getOriginalWorkspaceId(),$object["channel_id"]);
+        }
+        else{
+            $this->updateinbloc($message,$object["content"]["prepared"][0]);
+        }
+
         if (!$ephemeral) {
 
             if ($channel && $did_create) {
@@ -469,6 +477,95 @@ class MessageSystem
         }
 
         return $array;
+
+    }
+
+    public function indexbloc($message,$workspace_id,$channel_id)
+    {
+        $message_id = $message->getId()."";
+
+//        error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");
+//        error_log(print_r($message_id,true));
+//        error_log(print_r($message->getContent()["prepared"][0],true));
+
+        $lastbloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
+
+        if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
+//            error_log("CREATION NOUVEAU BLOC");
+            $content = Array();
+            $message_array_id = Array();
+            $blocbdd = new Bloc($workspace_id, $channel_id, $content, $message_array_id);
+            $blocbdd->setMinMessageId($message_id);
+        } else
+            $blocbdd = $lastbloc;
+        if($blocbdd->getNbMessage() == 9){
+            $blocbdd->setMaxMessageId($message_id);
+            $blocbdd->setLock(true);
+        }
+        $blocbdd->addmessage($message->getContent()["prepared"][0], $message_id);
+        $this->em->persist($blocbdd);
+        $message->setBlockId($blocbdd->getId()."");
+        $this->em->persist($message);
+        $this->em->flush();
+
+
+        if ($blocbdd->getNbMessage() == 10){
+            //error_log("INDEXATION DU BLOC DE MESSAGE");
+            // indexer le bloc de message
+            $this->em->es_put($blocbdd,$blocbdd->getEsType());
+
+        }
+    }
+
+    public function updateinbloc($message,$new_content){  //this param is a message ENTITY
+        //var_dump($message->getId()."");
+        $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
+        //var_dump($bloc->getMessages());
+        $position = array_search($message->getId()."",$bloc->getMessages());
+        $contents = $bloc->getContent();
+        $contents[$position] = $new_content;
+        $bloc->setContent($contents);
+
+        $this->em->persist($bloc);
+        $this->em->flush();
+
+        // Need to reindex the bloc in ES if he is already indexed
+        if($bloc->getLock() == true){
+            $this->em->es_put($bloc,$bloc->getEsType());
+        }
+
+    }
+
+
+    public function deleteinbloc($message){
+
+        $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
+        $position = array_search($message->getId()."",$bloc->getMessages());
+
+        if($position == 0){ //change id min or max
+            $bloc->setMinMessageId($bloc->getMessages()[1]);
+        }
+        elseif ($position == 9){
+            $bloc->setMaxMessageId($bloc->getMessages()[8]);
+        }
+        $bloc->setNbMessage($bloc->getNbMessage()-1);
+
+        $contents = $bloc->getContent();
+        $ids = $bloc->getMessages();
+        array_splice($contents, $position, 1);
+        array_splice($ids, $position, 1);
+        $bloc->setContent($contents);
+        $bloc->setMessages($ids);
+//        unset($bloc->getContentKeywords()[$position]);
+//        unset($bloc->getMessages()[$position]);
+
+        $this->em->persist($bloc);
+        $this->em->flush();
+        //var_dump($bloc);
+        if($bloc->getLock() == true){
+            $this->em->es_put($bloc,$bloc->getEsType());
+
+        }
 
     }
 

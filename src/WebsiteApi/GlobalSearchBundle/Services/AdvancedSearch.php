@@ -21,65 +21,40 @@ class AdvancedSearch
 
     }
 
-    public function AdvancedSearch($current_user_id,$group_id)
+    public function SearchInBloc($current_user_id,$words,$channels){
+        $channel_acces = Array();
+        //verif l acces au channel
+
+
+        foreach ($channels as $channel){
+            $member = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id"=> $current_user_id, "channel_id" => $channel));
+            if(isset($member)){
+                $channel_acces[] = $channel;
+            }
+        }
+        //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
+        if(isset($channel_acces) && $channel_acces != Array()){
+            $messages = $this->blocservice->search($words, $channel_acces);
+            if (isset($messages))
+            {
+                foreach ($messages as $message) {
+                    $this->globalresult[] = Array("message" => $message);
+                }
+            }
+        }
+    }
+
+    public function AdvancedSearch($current_user_id,$words,$channels)
     {
 
-        //$words = Array("appli", "données", "Thomas", "General", "Space");
-        $words = Array("seule");
         $this->globalresult = Array();
-        $workspaces = $this->workspaceservice->search($group_id);
-        //REVOIR LA PERF C EST PAS OUF LA SUREMENT
-        foreach ($workspaces as $workspace) {
-            // DOMMAGE D AVOIR L OBJET WP ET DE REFAIRE UN HIT DE BASE CAR ON A PLUS QU UN GET AS ARRAY
-            $workspace_user = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace["id"]));
-            $temp = $workspace_user->getMembers();
-            foreach ($temp as $member){
-                $user = $member->getUser();
-                if($user->getAsArray()["id"] == $current_user_id) // on a acces au wp
-                {
-                    //MODIFIER ICI POUR NE PAS A FAIRE TOUS CA MAIS JUSTE RECHERCHER LES MESSAGE DE SES WP
-                    // A TON ACCES A TOUS LES CHANNELS D UN WP? JE CROIS QUE NON SI OUI RETIRER LA BOUCLE SUR LES CHAN
-                    //PENSEZ A VERIF SI ON A ACCES AU CHAN OU PAS
-
-                    // V1 QUI MARCHE
-//                    $channels= $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array("direct"=>false, "original_workspace_id" => $workspace["id"]));
-//                    foreach ($channels as $channel){
-//                        if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false) {
-//                            //remplacer l id du channel par l id de tout les channels du workspace
-//                            $messages = $this->blocservice->search($words, $workspace["id"], $channel->getAsArray()["id"]);
-//                            if (isset($messages))
-//                            {
-//                                foreach ($messages as $message) {
-//                                    //var_dump($message);
-//                                    $this->globalresult[] = Array("message" => $message, "workspace" => $workspace, "channel" => $channel);
-//                                }
-//                            }
-//                        }
-//                    }
-
-                    //V2 AVEC LA VERIF DE L ACCES A LA DONNEE APRES L AVOIR RECU
-                    $messages = $this->blocservice->search($words, $workspace["id"]);
-                    if (isset($messages))
-                        {
-                            foreach ($messages as $message) {
-                                $channel= $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $message["channel_id"]));
-                                if(in_array($current_user_id,$channel->getAsArray()["members"]))
-                                {
-                                    $this->globalresult[] = Array("message" => $message, "workspace" => $workspace, "channel" => $channel);
-                                }
-                            }
-                        }
-                }
-                }
-        }
-
-
-
+        $this->SearchInBloc($current_user_id,$words,$channels);
+        //error_log(print_r("taille result : " . count($this->globalresult),true));
+        //error_log(print_r($this->globalresult,true));
 //        $files = $this->fileservice->search($words);
 //        foreach ($files as $file){
 //            $globalresult[]=Array( $file["id"] => "file");
 //        }
-        //var_dump("cc");
         return $this->globalresult;
     }
 

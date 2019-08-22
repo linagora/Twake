@@ -14,7 +14,7 @@ class ESFile
         $this->doctrine = $doctrine;
     }
 
-    public function index($document){
+    public function index(){
         //need the string with the name of the file
         //check the extension of the file
 //        $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -27,10 +27,13 @@ class ESFile
 ////                ->setPdf($document)
 ////                ->text();
 ///
-        $content = (new \Spatie\PdfToText\Pdf())
-                ->setPdf($document)
-                ->text();
+///
 
+//        $content = (new \Spatie\PdfToText\Pdf())
+//                ->setPdf($document)
+//                ->text();
+        $document = "stage.txt";
+        $content = file_get_contents($document);
         $content = str_replace(array("\\'", "'")," ",$content);
         $size = substr_count($content, ' ');
 
@@ -85,27 +88,25 @@ END;
 
         arsort($keywords); // Sort based on frequency
 
-        $keywords_raw = array_slice($keywords, 0, 10);
+        $keywords_raw = array_slice($keywords, 0, 100);
         $max = array_values(array_slice($keywords, 0, 1))[0];
 
-        $keywords_score= Array();
         foreach ($keywords_raw as $key => $score) {
-            $keywords_raw[$key] = ($score/$max);
+            $keywords_raw[$key] = ($score / $max);
         }
 
+        $keywords_score = Array();
         foreach ($keywords_raw as $key => $score) {
             $keywords_score[] = Array(
                 "keyword" => $key,
                 "score" => $keywords_raw[$key]
             );
         }
+
         $file = new DriveFile("14005200-48b1-11e9-a0b4-0242ac120005","14005200-48b1-11e9-a0b4-0242ac120005");
         $file->setName(explode(".", $document)[0]);
-       // $keywords_score=$this->update_keyword($keywords_score,explode(".", $document)[0]); //change this with document title
-        $file->setExtension("PDF");
         $file->setContentKeywords($keywords_score);
         $this->doctrine->persist($file);
-        //var_dump($file->getIndexationArray());
 
         $this->doctrine->flush();
 
@@ -133,7 +134,7 @@ END;
         foreach($workspaces as $workspace) {
             $should_workspaces[] = Array(
                 "match_phrase" => Array(
-                    "workspace_id" => $workspace["id"]
+                    "workspace_id" => $workspace
                 )
             );
         }
@@ -226,8 +227,10 @@ END;
 //        $this->doctrine->es_put($file,$file->getEsType());
         //var_dump("cc");
 
-//        $words=Array("civ");
-//        $this->search($words,"d975075e-6028-11e9-b206-0242ac120005");
+//        $words=Array("stage","django");
+//        $workspaces = Array("d975075e-6028-11e9-b206-0242ac1200050","14005200-48b1-11e9-a0b4-0242ac120005");
+//        $result = $this->search($words, $workspaces);
+//        var_dump($result);
     }
 
 }

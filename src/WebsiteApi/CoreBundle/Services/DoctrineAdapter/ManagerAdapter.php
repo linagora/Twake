@@ -325,7 +325,6 @@ class ManagerAdapter
 
         $res = $res->getContent();
 
-
         $result = [];
         if ($res) {
             $res = json_decode($res, 1);
@@ -340,7 +339,7 @@ class ManagerAdapter
                     } else {
                         $obj = $object_json["_id"];
                     }
-                    //var_dump($obj->getAsArray());
+
                     if($obj && $object_json["sort"]){
                         $result[] = Array($obj,$object_json["sort"]);
                     }

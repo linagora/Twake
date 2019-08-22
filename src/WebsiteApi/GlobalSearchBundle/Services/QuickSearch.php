@@ -76,7 +76,6 @@ class QuickSearch
                 //$this->history->addSearch(Array("id" => $channel["id"],"type"=> "file", "compteur" => 0));
             }
         }
-
     }
 
     public function SearchFile($words,$workspaces){
@@ -203,8 +202,6 @@ class QuickSearch
 //        foreach ($files as $file){
 //            var_dump($file->getAsArray());
 //        }
-
-
 
         return $this->globalresult;
     }

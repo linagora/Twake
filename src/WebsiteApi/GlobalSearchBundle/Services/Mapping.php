@@ -41,7 +41,7 @@ class Mapping
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "name","type","creation_date","keywords","workspace_id"
+                    "name","type","creation_date","workspace_id","keywords"
                 )
             ),
             "properties" => Array(
@@ -65,33 +65,33 @@ class Mapping
 
         //var_dump($mapping_channel);
 
-        $url = "http://albatros.twakeapp.com:9200/channel/_mapping/_doc";
-        //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";
+//        $url = "http://albatros.twakeapp.com:9200/channel/_mapping/_doc";
+//        //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";
+//
+//        $ch = curl_init();
+//        curl_setopt($ch, CURLOPT_URL, $url);
+//        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_channel)));
+//        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+//        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_channel);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        curl_exec($ch);
+//        curl_close($ch);
+//
+//        //$url = "http://51.68.94.194:9200/workspace/_mapping/_doc";
+//        $url = "http://albatros.twakeapp.com:9200/workspace/_mapping/_doc";
+//
+//
+//        $ch = curl_init();
+//        curl_setopt($ch, CURLOPT_URL, $url);
+//        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_workspace)));
+//        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+//        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_workspace);
+//        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+//        curl_exec($ch);
+//        curl_close($ch);
 
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_channel)));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_channel);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        curl_close($ch);
-
-        //$url = "http://51.68.94.194:9200/workspace/_mapping/_doc";
-        $url = "http://albatros.twakeapp.com:9200/workspace/_mapping/_doc";
-
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_workspace)));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_workspace);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        curl_close($ch);
-
-        $url = "http://51.68.94.194:9200/drive_file/_mapping/_doc";
-        $url = "http://albatros.twakeapp.com:9200/drive_file/_mapping/_doc";
+        $url = "http://51.68.91.127:9200/drive_file/_mapping/_doc";
+//        $url = "http://albatros.twakeapp.com:9200/drive_file/_mapping/_doc";
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -101,11 +101,6 @@ class Mapping
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
-
-
-
-        //curl -XPUT -H "Content-Type: application/json" localhost:9200/movies2 -d @mapping_movies/mapping.json
-
 
     }
 

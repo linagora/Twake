@@ -13,7 +13,7 @@ class MessageController extends Controller
 
     public function ESMessageAction(Request $request)
     {
-        $this->get('globalsearch.message')->TestMessage();
+        $this->get('globalsearch.messagebloc')->TestMessage();
 
         return new Response("Hello !");
 

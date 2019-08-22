@@ -4,7 +4,7 @@ services:
     class: WebsiteApi\GlobalSearchBundle\Services\ESFile
     arguments: ["@app.twake_doctrine"]
 
-  globalsearch.message:
+  globalsearch.messagebloc:
     class: WebsiteApi\GlobalSearchBundle\Services\Blocmessage
     arguments: ["@app.twake_doctrine"]
 
@@ -22,11 +22,11 @@ services:
 
   globalsearch.quicksearch:
     class: WebsiteApi\GlobalSearchBundle\Services\QuickSearch
-    arguments: ["@app.twake_doctrine", "@globalsearch.user", "@globalsearch.workspace", "@globalsearch.channel", "@globalsearch.file","@app.workspace_members"]
+    arguments: ["@app.twake_doctrine", "@globalsearch.user", "@globalsearch.workspace", "@globalsearch.channel", "@globalsearch.file", "@app.workspace_members", "@globalsearch.messagebloc"]
 
   globalsearch.advancedsearch:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedSearch
-    arguments: ["@app.twake_doctrine", "@globalsearch.message", "@globalsearch.file","@globalsearch.workspace"]
+    arguments: ["@app.twake_doctrine", "@globalsearch.messagebloc", "@globalsearch.file","@globalsearch.workspace"]
 
   globalsearch.reindex:
     class: WebsiteApi\GlobalSearchBundle\Services\Reindex

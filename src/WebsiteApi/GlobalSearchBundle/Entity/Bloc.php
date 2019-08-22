@@ -10,13 +10,13 @@ use WebsiteApi\CoreBundle\Entity\SearchableObject;
 /**
  * Bloc
  *
- * @ORM\Table(name="bloc",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id": "ASC", "channel_id": "ASC", "id": "DESC"}, {"id": "ASC"} } })
+ * @ORM\Table(name="bloc",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id": "ASC", "channel_id": "ASC", "id": "DESC"}, {"channel_id": "ASC"} , {"id": "ASC"} } })
  * @ORM\Entity(repositoryClass="WebsiteApi\GlobalSearchBundle\Repository\BlocRepository")
  */
 class Bloc extends SearchableObject
 {
 
-    protected $es_type = "bloc";
+    protected $es_type = "message_bloc";
 
     /**
      * @var int
@@ -48,9 +48,9 @@ class Bloc extends SearchableObject
      */
     protected $nb_message = 0;
     /**
-     * @ORM\Column(name ="content_keywords", type="twake_text", nullable=true)
+     * @ORM\Column(name ="content", type="twake_text", nullable=true)
      */
-    protected $content_keywords;
+    protected $content;
 
     /**
      * @ORM\Column(name ="messages", type="twake_text", nullable=true)
@@ -70,11 +70,11 @@ class Bloc extends SearchableObject
      * @param int $nb_message
      * @param $content_keywords
      */
-    public function __construct($workspace_id, $channel_id, $content_keywords, $messages)
+    public function __construct($workspace_id, $channel_id, $content, $messages)
     {
         $this->workspace_id = $workspace_id;
         $this->channel_id = $channel_id;
-        $this->content_keywords = json_encode($content_keywords);
+        $this->content = json_encode($content);
         $this->messages = json_encode($messages);
 
     }
@@ -89,7 +89,7 @@ class Bloc extends SearchableObject
             "min_message_id" => $this->getMinMessageId(),
             "max_message_id" => $this->getMaxMessageId(),
             "nb_message" => $this->getNbMessage(),
-            "content_keyword" => $this->getContentKeywords(),
+            "content" => $this->getContent(),
         );
         return $return;
     }
@@ -101,7 +101,7 @@ class Bloc extends SearchableObject
                 "id" => $this->getId()."",
                 "channel_id" => $this->getChannelId(),
                 "workspace_id" => $this->getWorkspaceId(),
-                "content_keyword" => $this->getContentKeywords(),
+                "content" => $this->getContent(),
             );
         }
         else
@@ -249,23 +249,23 @@ class Bloc extends SearchableObject
     /**
      * @return mixed
      */
-    public function getContentKeywords()
+    public function getContent()
     {
-        return json_decode($this->content_keywords);
+        return json_decode($this->content);
     }
 
     /**
-     * @param mixed $content_keywords
+     * @param mixed $content
      */
-    public function setContentKeywords($content_keywords)
+    public function setContent($content)
     {
-        $this->content_keywords = json_encode($content_keywords);
+        $this->content = json_encode($content);
     }
 
     public function addmessage($message,$message_id){
-        $content = $this->getContentKeywords();
+        $content = $this->getContent();
         array_push($content ,$message);
-        $this->setContentKeywords($content);
+        $this->setContent($content);
         $this->setNbMessage($this->getNbMessage()+1);
 
         $ids = $this->getMessages();

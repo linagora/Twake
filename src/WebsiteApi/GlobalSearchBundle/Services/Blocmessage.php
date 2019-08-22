@@ -15,192 +15,157 @@ class Blocmessage
         $this->doctrine = $doctrine;
     }
 
-    public function index($message,$workspace_id,$channel_id)
-    {
-        $message_obj = new Message($channel_id, "");
-        $this->doctrine->persist($message_obj);
-        $message_id = $message_obj->getId()."";
-        //var_dump($message_id);
-        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
-        //var_dump($lastbloc);
-//        //var_dump($lastbloc);
-       if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
-           //var_dump("passage");
+    public function search($words,$channels){
 
-            $content = Array();
-            $message_array_id = Array();
-            $blocbdd = new Bloc($workspace_id, $channel_id, $content, $message_array_id);
-            $blocbdd->setMinMessageId($message_id);
-        } else
-            $blocbdd = $lastbloc;
-        if($blocbdd->getNbMessage() == 9){
-            $blocbdd->setMaxMessageId($message_id);
-            $blocbdd->setLock(true);
+        $final_words = Array();
+        foreach($words as $word){
+            if(strlen($word) > 3) {
+                $final_words[] = $word;
+            }
         }
-        $blocbdd->addmessage($message, $message_id);
-        $this->doctrine->persist($blocbdd);
-        $this->doctrine->persist($message_obj);
-        $message_obj->setBlockId($blocbdd->getId()."");
-        $this->doctrine->flush();
 
-//        //mettre a jour le bloc
+        if(isset($final_words) && $final_words != Array()){
+            $terms = Array();
+            foreach ($final_words as $word){
+                $terms[] = Array(
+                    "bool" => Array(
+                        "filter" => Array(
+                            "regexp" => Array(
+                                "content" => ".*" . $word . ".*"
+                            )
+                        )
+                    )
+                );
+            }
 
-        if ($blocbdd->getNbMessage() == 10){
-            //var_dump("PRET A INDEXER LE BLOC DE MESSAGE");
+            $should_channels = Array();
+            foreach($channels as $channel) {
+                $should_channels[] = Array(
+                    "match_phrase" => Array(
+                        "channel_id" => $channel
+                    )
+                );
+            }
 
-            // indexer le bloc de message
-            $this->doctrine->es_put($blocbdd,$blocbdd->getEsType());
-
-        }
-        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
-        //var_dump($lastbloc);
-    }
-
-    public function search($words,$workspace_id){
-
-
-        $terms = Array();
-        foreach ($words as $word){
-            $terms[] = Array(
-                "bool" => Array(
-                    "filter" => Array(
-                        "regexp" => Array(
-                            "content_keyword" => ".*".$word.".*"
+            $options = Array(
+                "repository" => "TwakeGlobalSearchBundle:Bloc",
+                "index" => "message_bloc",
+                "query" => Array(
+                    "bool" => Array(
+                        "must" => Array(
+                            "bool" => Array(
+                                "should" => Array(
+                                    $should_channels
+                                ),
+                                "minimum_should_match" => 1,
+                                "must" => Array(
+                                    "bool" => Array(
+                                        "should" => Array(
+                                            $terms
+                                        ),
+                                        "minimum_should_match" => 1
+                                    )
+                                )
+                            )
                         )
                     )
                 )
             );
-        }
 
-        $options = Array(
-            "repository" => "TwakeGlobalSearchBundle:Bloc",
-            "index" => "bloc",
-            "query" => Array(
-                "bool" => Array(
-                    "match_phrase" => Array(
-                        "workspace_id" => $workspace_id
-                    ),
-                    "should" => $terms
-                )
-            )
-        );
+            $id_message=Array();
 
-        $id_message=Array();
+            // search in ES
+            $result = $this->doctrine->es_search($options);
+            array_slice($result, 0, 5);
+//            error_log(print_r($result,true));
 
-        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
-        // search in ES
-        $result = $this->doctrine->es_search($options);
-        array_slice($result, 0, 5);
+            // on cherche dans le bloc en cours de construction de tout les channels demandés
+            foreach($channels as $channel) {
+                $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("channel_id" => $channel));
+                $compt = 0;
+                if (isset($lastbloc)) {
+                    foreach ($lastbloc->getContent() as $content) {
+                        foreach ($words as $word) {
+                            if (strpos($content, $word) !== false) {
+                                if (in_array($lastbloc->getMessages()[$compt], $id_message) == false) {
+                                    $id_message[] = $lastbloc->getMessages()[$compt];
+                                    //on peut penser a rajouter un break
+                                }
+                            }
 
-        // search in last bloc in database
-        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id));
-        $compt = 0;
-        if(isset($lastbloc)) {
-            foreach ($lastbloc->getContentKeywords() as $content) {
-                foreach ($words as $word) {
-                    if (strpos($content, $word) !== false)
-                        if (in_array($lastbloc->getMessages()[$compt], $id_message) == false)
-                            $id_message[] = $lastbloc->getMessages()[$compt];
+                        }
+                        $compt++;
+                        //var_dump($compt);
+                    }
                 }
-                $compt++;
-                //var_dump($compt);
             }
 
+            //on traite les données recu d'Elasticsearch
 
-            //var_dump($result);
 
-            //var_dump($result);
             foreach ($result as $bloc) {
-                $content = $bloc->getContentKeywords();
+                $content = $bloc->getContent();
                 $compt = 0;
                 foreach ($content as $phrase) {
                     foreach ($words as $word) {
-                        if (strpos($phrase, $word) !== false)
-                            if (in_array($bloc->getMessages()[$compt], $id_message) == false)
+                        if (strpos($phrase, $word) !== false) {
+                            if (in_array($bloc->getMessages()[$compt], $id_message) == false) {
                                 $id_message[] = $bloc->getMessages()[$compt];
+                            }
+                        }
                     }
                     $compt++;
                 }
             }
-            //var_dump($id_message);
-            $messages = Array(); //content all the message object
+            // var_dump($id_message);
+            $result = Array(); //content all the message object
             foreach ($id_message as $id) {
                 $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
-                $messages[] = $message->getAsArray();
+                $channel_entity = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message->getChannelId()));
+                $result[] = Array("message" => $message->getAsArray(), "channel"=> $channel_entity);
             }
         }
-        return $messages ?: null;
+
+    return $result ?: null;
 
     }
 
-    public function Updateinbloc($message){  //this param is a message ENTITY
-        //var_dump($message->getId()."");
-        $bloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
-        //var_dump($bloc->getMessages());
-        $position = array_search($message->getId()."",$bloc->getMessages());
-        $contents = $bloc->getContentKeywords();
-        $contents[$position] = "blabla"; //$message->get;Content()
-        //$bloc->setContentKeywords($contents)
-
-
-        $this->doctrine->persist($bloc);
-        $this->doctrine->flush();
-
-        // Need to reindex the bloc in ES if he is already indexed
-        if($bloc->getLock() == true){
-            $this->doctrine->es_put($bloc,$bloc->getEsType());
-        }
-
-    }
-
-    public function Deleteinbloc($message){
-
-        $bloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
-        $position = array_search($message->getId()."",$bloc->getMessages());
-
-        if($position == 0){ //change id min or max
-            $bloc->setMinMessageId($bloc->getMessages()[1]);
-        }
-        elseif ($position == 9){
-            $bloc->setMaxMessageId($bloc->getMessages()[8]);
-        }
-        $bloc->setNbMessage($bloc->getNbMessage()-1);
-
-        $contents = $bloc->getContentKeywords();
-        $ids = $bloc->getMessages();
-        array_splice($contents, $position, 1);
-        array_splice($ids, $position, 1);
-        $bloc->setContentKeywords($contents);
-        $bloc->setMessages($ids);
-//        unset($bloc->getContentKeywords()[$position]);
-//        unset($bloc->getMessages()[$position]);
-
-
-        $this->doctrine->persist($bloc);
-        $this->doctrine->flush();
-        //var_dump($bloc);
-        if($bloc->getLock() == true){
-            $this->doctrine->es_put($bloc,$bloc->getEsType());
-
-        }
-
-    }
 
     public function TestMessage()
     {
 //        $messagetest="je suis seulement dans la base de données";
 //        //$messagetest="je commence a voir faim ca veut dire que je vais mieux";
-//        $this->index($messagetest,"d975075e-6028-11e9-b206-0242ac120005","e5d085aa-6028-11e9-922a-0242ac120005");
+//        $message = new Message("e5d085aa-6028-11e9-922a-0242ac120005","");
+//        $message->setContent($messagetest);
+//        $this->doctrine->persist($message);
+//        $this->doctrine->flush();
+//        $this->indexbloc($message,"d975075e-6028-11e9-b206-0242ac120005","e5d085aa-6028-11e9-922a-0242ac120005");
 
-//        foreach($lastbloc as $bloc){
-//            $this->doctrine->remove($bloc);
-//            $this->doctrine->flush();
-//        }
+        //$lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => "d975075e-6028-11e9-b206-0242ac120005", "channel_id" => "e5d085aa-6028-11e9-922a-0242ac120005"));
+//        var_dump("BLOC A LA FIN");
+//        var_dump($lastbloc);
+
+//
+        $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
+        foreach($lastbloc as $bloc){
+            $this->doctrine->remove($bloc);
+            $this->doctrine->flush();
+        }
 
 //        $words = Array("commence","données");
 //        $this->search($words);
 
-
+//        $users = $this->doctrine->getRepository("TwakeUsersBundle:User")->findBy(Array());
+//        foreach ($users as $user) {
+//            var_dump($user->getUsername());
+//        }
+//        $channel = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => "db2c2b9e-c357-11e9-933e-0242ac1d0005"));
+//        $channel_id = $channel->getId();
+//        var_dump($channel_id);
+//        $lastblocs = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
+//        foreach ($lastblocs as $lastbloc){
+//            var_dump($lastbloc->getAsArray());
+//        }
         //$this->Updateinbloc($message);
 
     }
