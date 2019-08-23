@@ -243,7 +243,7 @@ class AccessTest extends WebTestCaseExtended
         ));
 
         $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
-        $publicdata = $file->getPublicAccesInfo();
+        $publicdata = $file->getAccesInfo();
        // error_log(print_r($publicdata, true));
 
         $this->assertEquals(true,in_array($user3_id,$publicdata["authorized_members"]), "User 3 id is not inside the public data of file shared");
@@ -663,7 +663,7 @@ class AccessTest extends WebTestCaseExtended
         ));
 
         $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
-        $publicdata = $file->getPublicAccesInfo();
+        $publicdata = $file->getAccesInfo();
 
         $token = $publicdata["token"];
 
@@ -702,7 +702,7 @@ class AccessTest extends WebTestCaseExtended
         ));
 
         $file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
-        $publicdata = $file->getPublicAccesInfo();
+        $publicdata = $file->getAccesInfo();
         $this->assertEquals("",$publicdata["token"], "Token is not empty, it should");
         $this->assertEquals(Array(),$publicdata["authorized_members"], "Authorized members is not Array(), it should");
         $this->assertEquals(Array(),$publicdata["authorized_channels"], "Authorized channels is not Array(), it should");

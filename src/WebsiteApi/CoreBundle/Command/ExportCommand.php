@@ -372,7 +372,7 @@ class ExportCommand extends ContainerAwareCommand
                     "description" => $file["description"],
                     "size" => $file["size"],
                     "extension" => $file["extension"],
-                    "public_acces_info" => $file["public_acces_info"],
+                    "acces_info" => $file["acces_info"],
                     "url" => $file["url"],
                     "path" => $path,
                     "version" => $version_array

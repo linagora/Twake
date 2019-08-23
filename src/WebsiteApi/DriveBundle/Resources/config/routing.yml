@@ -18,6 +18,35 @@ drive_send_as_message:
     path:     /send_message
     defaults: { _controller: TwakeDriveBundle:Files:sendAsMessage }
 
+
+drive_refractor_get:
+    path:     /v2/get
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:get}
+
+drive_refractor_save:
+    path:     /v2/save
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:save }
+
+drive_refractor_remove:
+    path:     /v2/remove
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:remove }
+
+drive_refractor_get_a_file:
+    path:     /v2/find
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:find }
+
+twake_publicaccess:
+    path:     /access/set
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:set_file_access }
+    methods:  [POST]
+
+twake_privateaccess:
+    path:     /access/reset
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:reset_file_access }
+    methods:  [POST]
+
+
+
 # Labels
 
 twake_drive_labels_get:
@@ -210,26 +239,3 @@ drive_activities_getActivityToDisplay:
     path: /driveActivities/getActivityToDisplay
     defaults: { _controller: TwakeDriveBundle:DriveActivity:getActivityToDisplay}
     methods: [POST]
-
-
-drive_refractor_get:
-    path:     /v2/get
-    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:get}
-
-drive_refractor_save:
-    path:     /v2/save
-    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:save }
-
-drive_refractor_remove:
-    path:     /v2/remove
-    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:remove }
-
-twake_publicaccess:
-    path:     /publicaccess
-    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:give_file_public_access }
-    methods:  [POST]
-
-twake_privateaccess:
-    path:     /privateaccess
-    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:give_file_private_access }
-    methods:  [POST]
