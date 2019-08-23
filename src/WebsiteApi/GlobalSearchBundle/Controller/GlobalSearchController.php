@@ -24,7 +24,6 @@ class GlobalSearchController extends Controller
     {
 
         $this->get('globalsearch.file')->index();
-
         return new Response("Hello !");
 
     }
@@ -38,6 +37,22 @@ class GlobalSearchController extends Controller
 
     }
 
+    public function PaginationAction(Request $request)
+    {
+
+        $scroll_id = $request->request->get("scroll_id");
+        $repository = $request->request->get("repository");
+
+        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAAAdpFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHaBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAB2sWeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAAAdsFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHahZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
+        $repository = "TwakeGlobalSearchBundle:Bloc";
+
+        $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+        $data = Array("data" => $globalresult);
+        return new JsonResponse($data);
+
+    }
+
+
     public function MappingAction(Request $request)
     {
 
@@ -46,6 +61,7 @@ class GlobalSearchController extends Controller
         return new Response("Hello !");
 
     }
+
 
     public function QuickSearchAction(Request $request)
     {
@@ -64,9 +80,10 @@ class GlobalSearchController extends Controller
 //            $current_user_id= $current_user->getId();
 //        }
         //$current_user_id= $current_user->getId();
-        $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id, $words, $group_id, $workspace_id);
+        //$globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id, $words, $group_id, $workspace_id);
         $channels = Array("db2c2b9e-c357-11e9-933e-0242ac1d0005");
-        $tests = $this->get('globalsearch.advancedsearch')->AdvancedSearch($current_user_id,$words,$channels);
+        //$tests
+        $globalresult= $this->get('globalsearch.advancedsearch')->AdvancedSearch($current_user_id,$words,$channels);
 
         $data = Array("data" => $globalresult);
         //return new Response("Hello !");
@@ -76,14 +93,21 @@ class GlobalSearchController extends Controller
 
     public function AdvancedSearchAction(Request $request)
     {
-        $words = $identifier = $request->request->get("words");
+        //$words = $identifier = $request->request->get("words");
         //$group_id = $request->request->get("group_id");
-        $channels= $request->request->get("workspace_id");
+        $options =  $request->request->get("options");
+        $channels= $request->request->get("channel_id");
 
         $current_user = $this->getUser();
         $current_user_id = $current_user->getId();
 
-        //error_log(print_r($current_user,true));
+        $options = Array(
+            "words" => Array("test"),
+            "before" => "test",
+            "after" => "test",
+            "reaction" => Array("test"),
+
+        );
 
 //        if(!(isset($current_user)))
 //        {
@@ -95,7 +119,7 @@ class GlobalSearchController extends Controller
 //        }
 //        $channels = Array("db2c2b9e-c357-11e9-933e-0242ac1d0005");
 //        $words = Array("seul");
-        $globalresult = $this->get('globalsearch.advancedsearch')->AdvancedSearch($current_user_id,$words,$channels);
+        $globalresult = $this->get('globalsearch.advancedsearch')->AdvancedSearch($current_user_id,$options,$channels);
         $data = Array("data" => $globalresult);
         return new JsonResponse($data);
 

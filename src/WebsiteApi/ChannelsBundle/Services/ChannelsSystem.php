@@ -338,7 +338,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         $channels = $this->entity_manager->es_search($options);
 
         $result = [];
-        foreach ($channels as $channel) {
+        foreach ($channels["result"] as $channel) {
             $result[]= Array($channel[0]->getAsArray(),$channel[1][0]);
         }
 
@@ -390,7 +390,7 @@ class ChannelsSystem extends ChannelSystemAbstract
         $channels = $this->entity_manager->es_search($options);
 
         $result = [];
-        foreach ($channels as $channel) {
+        foreach ($channels["result"] as $channel) {
             $result[]= Array($channel[0]->getAsArray(),$channel[1][0]);
         }
 

@@ -104,6 +104,7 @@ class Message extends FrontObject
     /**
      * Message constructor.
      */
+
     public function __construct($channel_id, $parent_message_id)
     {
         parent::__construct();
