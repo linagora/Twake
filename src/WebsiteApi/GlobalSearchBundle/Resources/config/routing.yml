@@ -28,3 +28,7 @@ globalsearch_testindex:
 globalsearch_mapping:
   path:       /mapping
   defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:Mapping }
+
+globalsearch_pagination:
+  path:       /pagination
+  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:Pagination }

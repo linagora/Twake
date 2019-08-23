@@ -196,7 +196,7 @@ END;
         $files = $this->doctrine->es_search($options);
         $files_final=Array();
         //var_dump(json_encode($options));
-        foreach ($files as $file){
+        foreach ($files["result"] as $file){
             //var_dump($file->getAsArray());
             $files_final[]= Array($file[0]->getAsArray(),$file[1][0]);
         }
@@ -218,14 +218,15 @@ END;
     public function TestSearch()
     {
 
-       //$this->index("pdftest.pdf");
-        //$file= $this->doctrine->getRepository("TwakeDriveBundle:Drivefile")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
+//        var_dump("cc");
+//       $this->index("pdftest.pdf");
+//        $file= $this->doctrine->getRepository("TwakeDriveBundle:Drivefile")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
 //        $file = new DriveFile("14005200-48b1-11e9-a0b4-0242ac120000","14005200-48b1-11e9-a0b4-0242ac120000");
 //        $file->setName("testbug");
 //        // $keywords_score=$this->update_keyword($keywords_score,explode(".", $document)[0]); //change this with document title
 //        $file->setExtension("PDF");
 //        $this->doctrine->es_put($file,$file->getEsType());
-        //var_dump("cc");
+//        var_dump("cc");
 
 //        $words=Array("stage","django");
 //        $workspaces = Array("d975075e-6028-11e9-b206-0242ac1200050","14005200-48b1-11e9-a0b4-0242ac120005");
