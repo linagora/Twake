@@ -134,7 +134,7 @@ END;
         foreach($workspaces as $workspace) {
             $should_workspaces[] = Array(
                 "match_phrase" => Array(
-                    "workspace_id" => $workspace
+                    "workspace_id" => $workspace["id"]
                 )
             );
         }

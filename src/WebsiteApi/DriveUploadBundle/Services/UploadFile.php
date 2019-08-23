@@ -19,7 +19,6 @@ class UploadFile
     public function preprocess($request, $current_user_id)
     {
         $workspace_id = $request->request->get("workspace_id", "");
-        $identifier = $request->request->all()["identifier"];
         $name = $request->request->all()["name"];
         $extension = $request->request->all()["extension"];
         return $this->resumable->createObject($workspace_id, $name, $extension, $current_user_id);
@@ -34,5 +33,30 @@ class UploadFile
         if (is_array($res)) {
             return $res;
         }
-   }
+    }
+
+    public function uploadDirectly($file_or_url, $object, $options, $current_user_id)
+    {
+        $workspace_id = $object["workspace_id"];
+        $name = $object["name"];
+        if (!isset($object["extension"]) || !$object["extension"]) {
+            preg_match("/(.*)(\.[a-zA-Z0-9]+)+$/i", $name, $matches);
+            $extension = isset($matches[2]) ? $matches[2] : "";
+        } else {
+            $extension = $object["extension"];
+        }
+
+        $identifier = $this->resumable->createObject($workspace_id, $name, $extension, $current_user_id);;
+
+        if ($identifier) {
+            $res = $this->resumable->handleChunk($file_or_url, $object["name"], 0, $identifier, 1, 1, $object);
+            if (is_array($res)) {
+                return $res;
+            }
+        }
+
+        return null;
+
+    }
+
 }

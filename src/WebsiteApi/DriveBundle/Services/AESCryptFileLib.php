@@ -415,7 +415,6 @@ class AESCryptFileLib
 			}
 
 			//Here the HMAC is (probably) used to verify the decrypted data
-			//TODO: Test this using known encrypted files using version 0
 			$this->validateHMAC($enc_key, $decrypted_data, $hmac, "HMAC");
 
 			//Open destination file for writing

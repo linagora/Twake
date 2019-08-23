@@ -182,15 +182,16 @@ class Resumable
         }
     }
 
-    public function handleChunk()
+    public function handleChunk($file_or_url = null, $filename = null, $totalSize = null, $identifier = null, $chunkNumber = 1, $numOfChunks = 1, $object_from_caller = null)
     {
+
         //  VERIFIER IDENTIFIER QU ON A BIEN QUE DES CHIFFRES ET DES LETTRES ET PAS UN REQUETE OU AUTRES.
-        $file = $this->request->file();
-        $identifier = $this->resumableParam($this->resumableOption['identifier']);
-        $filename = $this->resumableParam($this->resumableOption['filename']);
-        $chunkNumber = $this->resumableParam($this->resumableOption['chunkNumber']);
-        $totalSize = intval($_POST["resumableTotalSize"]);
-        $numOfChunks = intval($_POST["resumableTotalChunks"]);
+        $file = $file_or_url !== null ? $file_or_url : $this->request->file();
+        $identifier = $identifier ? $identifier : $this->resumableParam($this->resumableOption['identifier']);
+        $filename = $filename !== null ? $filename : $this->resumableParam($this->resumableOption['filename']);
+        $chunkNumber = $chunkNumber ? $chunkNumber : $this->resumableParam($this->resumableOption['chunkNumber']);
+        $totalSize = $totalSize !== null ? $totalSize : intval($_POST["resumableTotalSize"]);
+        $numOfChunks = $numOfChunks ? $numOfChunks : intval($_POST["resumableTotalChunks"]);
 
 
         $finalname = $identifier.".chunk_".$chunkNumber;
@@ -210,7 +211,14 @@ class Resumable
             $do_preview = ($numOfChunks == 1 && $chunkNumber == 1 && $totalSize < 50000000);
 
             if (!$this->storagemanager->getAdapter()->streamModeIsAvailable() || $do_preview) {
-                $this->moveUploadedFile($file['tmp_name'], $chunkFile);
+
+                if (is_string($file)) {
+                    if (strpos($file, "http://") === 0 || strpos($file, "https://") === 0) {
+                        file_put_contents($chunkFile, fopen($file, 'r'));
+                    }
+                } else {
+                    $this->moveUploadedFile($file['tmp_name'], $chunkFile);
+                }
 
                 //Preview if only one chunk
                 if ($do_preview) {
@@ -245,30 +253,32 @@ class Resumable
             $this->doctrine->persist($uploadstate);
             $this->doctrine->flush();
 
-            $object = json_decode($_POST['object'], 1);
+            $object = Array();
+            if ($object_from_caller) {
+                $object = $object_from_caller;
+            } else {
+                $object = json_decode($_POST['object'], 1);
 
-            //error_log(print_r($this->current_user_id,true));
+                $parent_id = $object['parent_id'];
+                $is_directory = $object['is_directory'];
+                $name = $object['name'];
+                $detached = $object['detached'];
+                $workspace_id = $object['workspace_id'];
+                $front_id = $object['front_id'];
 
-
-            //recupere les données dans la requete pour connaitre l'id, le parent, le workspace etc
-
-            $parent_id = $object['parent_id'];
-            $is_directory = $object['is_directory'];
-            $name = $object['name'];
-            $detached = $object['detached'];
-            $workspace_id = $object['workspace_id'];
-            $front_id = $object['front_id'];
-
-            $object = Array(
-                "parent_id" => $parent_id,
-                "is_directory" => $is_directory,
-                "detached" => $detached,
-                "workspace_id" => $workspace_id,
-                "front_id" => $front_id,
-                "name" => $name
-            );
+                $object = Array(
+                    "parent_id" => $parent_id,
+                    "is_directory" => $is_directory,
+                    "detached" => $detached,
+                    "workspace_id" => $workspace_id,
+                    "front_id" => $front_id,
+                    "name" => $name
+                );
+            }
 
             $data = Array("upload_mode" => "chunk", "identifier" => $identifier, "nb_chunk" => $chunkNumber);
+
+            //TODO What if we uploaded to an existing object (object[id] is set) TODO->REMOVE OLD VERSION IF WE ARE NOT CREATING A NEW ONE (or each time onlyoffice write we add a new copy on S3)
 
             $fileordirectory = $this->driverefacto->save($object, $options, $current_user, Array("data" => $data, "size" => $totalSize), true);
 

@@ -343,7 +343,7 @@ class DriveFileRefacto
             $new = $object["_once_new_version"];
         }
         else{
-            $new = true;
+            $new = false;
         }
 
         //Update size if file was created AFTER versionning
