@@ -86,6 +86,8 @@ class DriveFileRefacto
 
         if (!$data->getDetachedFile() && $element->getParentId() && $element->getParentId() != "trash") {
             $path = $this->getPath($workspace_id, $element_id);
+        } else {
+            $path = [$data->getAsArray()];
         }
 
         $data = $data->getAsArray();
@@ -216,9 +218,10 @@ class DriveFileRefacto
             return false;
         }
 
-
+        $did_move = false;
         if (isset($object["parent_id"]) && $object["parent_id"] != "" && $object["parent_id"] != $fileordirectory->getParentId() . "") {
             $parent_id = $object["parent_id"]."";
+            $did_move = true;
 
             if($did_create) { // on set le fichier avec le bon parent
                 $file_parent = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=> $object["parent_id"].""));
@@ -269,8 +272,43 @@ class DriveFileRefacto
         }
 
 
-        if(isset($object["name"])){
+        $name_changed = false;
+        if (isset($object["name"]) && $object["name"] != $fileordirectory->getName()) {
+            $name_changed = true;
             $fileordirectory->setName($object["name"]);
+        }
+
+        if (($name_changed || $did_create || $did_move) && !$fileordirectory->getIsInTrash()) {
+
+            $repo = $this->em->getRepository("TwakeDriveBundle:DriveFile");
+            $list = $repo->findBy(Array("workspace_id" => $fileordirectory->getWorkspaceId(), "parent_id" => $fileordirectory->getParentId(), "isintrash" => false));
+
+            $present = true;
+            while ($present == true) {
+                $second_present = false;
+                foreach ($list as $el) {
+                    if ($el->getName() == $fileordirectory->getName() && $el->getId() != $fileordirectory->getId()) {
+                        $second_present = true;
+                    }
+                }
+                if (!$second_present) {
+                    $present = false;
+                } else {
+                    $present = true;
+
+                    preg_match("/(.*)(\.[a-zA-Z0-9]+)+$/i", $fileordirectory->getName(), $matches);
+                    $name = isset($matches[1]) ? $matches[1] : "";
+                    $ext = isset($matches[2]) ? $matches[2] : "";
+                    preg_match("/-([0-9]+)$/i", $name, $matches);
+                    $cur_val = intval(isset($matches[1]) ? $matches[1] : 0);
+                    $cur_val_to_replace = isset($matches[0]) ? $matches[0] : "";
+                    $new_name = substr($name, 0, strlen($name) - strlen($cur_val_to_replace)) . "-" . ($cur_val + 1) . $ext;
+
+                    $fileordirectory->setName($new_name);
+
+                }
+            }
+
         }
 
         if ($application && $object["preview_link"]) {
@@ -528,7 +566,7 @@ class DriveFileRefacto
 
         $repo = $this->em->getRepository("TwakeDriveBundle:DriveFile");
 
-        if ($directory_id == "root") {
+        if ($directory_id == "root" || $directory_id == "trash") {
             $child = $this->getRootEntity($workspace_id);
             return [$child->getAsArray()];
         } else {

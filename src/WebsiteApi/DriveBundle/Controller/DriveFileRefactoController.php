@@ -59,6 +59,10 @@ class DriveFileRefactoController extends Controller
             $file_uploaded = $object["file_url"] ? $object["file_url"] : $request->request->get("file_url");
         }
 
+        if ($file_uploaded) {
+            //TODO upload file using move_uploaded or file_get_content then edit upload_data for size update
+        }
+
         $current_user = $this->getUser();
         $current_user_id = $current_user->getId();
 
