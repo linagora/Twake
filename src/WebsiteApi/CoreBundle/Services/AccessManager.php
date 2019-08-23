@@ -14,6 +14,7 @@ class AccessManager
     public function has_access($current_user_id, $data, $options = null){
 
         $type = $data["type"];
+        $edition = $data["edition"]; //TODO test if we have edition access (everybodyhas edition acess for now)
         $id = $data["object_id"];
 
 
@@ -58,7 +59,7 @@ class AccessManager
                 $message = $message->getAsArray();
                 $channel_id = $message["channel_id"];
                 $data = Array("type" => "Channel", "object_id" => $channel_id);
-                if(!$this->has_access($current_user_id,$data)){
+                if (!$this->has_access($current_user_id, $data)) {
                     return false;
                 }
             }
@@ -68,21 +69,27 @@ class AccessManager
         }
 
         else if($type == "DriveFile"){ //pensez au parent id tous ca tous ca et a detached
+
+            if ($id == "root" || $id == "trash") {
+                if (!$data["workspace_id"]) {
+                    return false;
+                }
+                return $this->has_access($current_user_id, Array("type" => "Workspace", "object_id" => $data["workspace_id"]));
+            }
+
             $df = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $id));
 
             if(isset($df)){
                 $df = $df->getAsArray();
                 $workspace_id = $df["workspace_id"];
-                if(isset($df["public_acces_info"]["token"]) && $df["public_acces_info"]["token"] != "" && !isset($options["token"])){
+                if (isset($df["acces_info"]["token"]) && $df["acces_info"]["token"] != "" && !isset($options["token"])) {
                     return false;
-                }
-                elseif( isset($df["public_acces_info"]["token"]) && $df["public_acces_info"]["token"] == "" && isset($options["token"] ) && $options["token"] == ""){
+                } elseif (isset($df["acces_info"]["token"]) && $df["acces_info"]["token"] == "" && isset($options["token"]) && $options["token"] == "") {
                     return false;
-                }
-                elseif(isset($options["token"]) && $options["token"] != "" && $df["public_acces_info"]["token"] != ""){
+                } elseif (isset($options["token"]) && $options["token"] != "" && $df["acces_info"]["token"] != "") {
                     $token = $options["token"];
-                    $members = $df["public_acces_info"]["authorized_members"];
-                    $channels = $df["public_acces_info"]["authorized_channels"];
+                    $members = $df["acces_info"]["authorized_members"];
+                    $channels = $df["acces_info"]["authorized_channels"];
 
                     if(!isset($members) && !isset($channels)) {
                         // si les deux liste sont vide alors l'utilisateur ne peux pas avoir acces au fichier
@@ -106,7 +113,7 @@ class AccessManager
                             return false;
                         }
                     }
-                    if( $token != $df["public_acces_info"]["token"] ){
+                    if ($token != $df["acces_info"]["token"]) {
                         return false;
                     }
                 }
