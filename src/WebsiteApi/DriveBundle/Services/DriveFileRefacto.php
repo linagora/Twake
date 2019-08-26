@@ -119,7 +119,7 @@ class DriveFileRefacto
         if(isset($object["id"])) { // on recoit un identifiant donc on supprime un drive file
             $fileordirectory = $this->em->getRepository("TwakeDriveBundle:DriveFile")
                 ->findOneBy(Array("id" => $object["id"]));
-            if($fileordirectory){
+            if ($fileordirectory && $fileordirectory->getParentId() && $fileordirectory->getParentId() != "trash") {
                 //on change la taille de tous les dossiers parent a celui ci
                 if($fileordirectory->getIsInTrash()){
                     //on delete definitevement de la corbeille donc on modifie pas la racine
@@ -527,6 +527,7 @@ class DriveFileRefacto
             $this->em->persist($trash);
             $this->em->flush();
         }
+
         return $trash;
     }
 
@@ -550,7 +551,7 @@ class DriveFileRefacto
 
         if ($directoryId == $root->getId()) {
             if ($trash) {
-                $list = $repo->findBy(Array("workspace_id" => $workspaceId, "parent_id" => $this->getTrashEntity($workspaceId)->getId()));
+                $list = $repo->findBy(Array("workspace_id" => $workspaceId, "parent_id" => $this->getTrashEntity($workspaceId)->getId() . ""));
             } else {
                 $list = $repo->findBy(Array("workspace_id" => $workspaceId, "parent_id" => $root->getId()));
             }
@@ -579,7 +580,7 @@ class DriveFileRefacto
 
         $list = [$child->getAsArray()];
 
-        while ($child && $child->getParentId() && $child->getParentId() != "root") {
+        while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash") {
             $parent = $repo->findOneBy(Array("id" => $child->getParentId()));
             if ($parent) {
                 $list[] = $parent->getAsArray();
@@ -594,12 +595,25 @@ class DriveFileRefacto
         return $list;
     }
 
-    public function emptyTrash($group_id, $user_id)
+    public function emptyTrash($workspace_id, $current_user)
     {
 
-        //TODO empty the trash
+        $trash = $this->getTrashEntity($workspace_id);
+        $this->updateSize($this->getRootEntity($workspace_id), -$trash->getSize(), 2);
 
-        return false;
+        //We have just to rename the trash, we are not really deleting it
+        $this->em->remove($trash);
+        $this->em->flush();
+
+        $trash->setParentId("removed_trashes");
+        $trash->setName("removed_trash_" . date("U"));
+        $this->em->persist($trash);
+        $this->em->flush();
+
+        //Regenerate new trash
+        $new_trash = $this->getTrashEntity($workspace_id);
+
+        return $new_trash->getAsArray();
 
     }
 

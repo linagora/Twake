@@ -246,7 +246,7 @@ class ManagerAdapter
                 $data = $entity->getIndexationArray();
             }
 
-            if (method_exists($entity,"getContentKeywords")){
+            if (method_exists($entity, "getContentKeywords") && is_array($entity->getContentKeywords())) {
                 $keywords = $entity->getContentKeywords();
 
                 //partie sur la verification du format des mots clés
