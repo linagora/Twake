@@ -268,7 +268,7 @@ class MarketApplication
         $applications = $this->doctrine->es_search($options);
 
         $result = [];
-        foreach ($applications as $application) {
+        foreach ($applications["result"] as $application) {
             $result[] = $application->getAsArray();
         }
 

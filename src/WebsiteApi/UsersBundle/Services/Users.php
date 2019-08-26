@@ -67,7 +67,7 @@ class Users
         $users = $this->em->es_search($options);
 
         $result = [];
-        foreach ($users as $user) {
+        foreach ($users["result"] as $user) {
             $result[] = $user->getAsArray();
         }
 
