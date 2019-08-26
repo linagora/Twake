@@ -29,7 +29,13 @@ class DriveController extends Controller
         }
 
         try {
-            $object = $this->get("app.drive")->save($object, Array(), $user, $application, $file_uploaded);
+            $options = Array("application_id" => $application->getId());
+            if ($file_uploaded) {
+                //If object[_once_new_version] is set a new version is added
+                $object = $this->get('driveupload.upload')->uploadDirectly($file_uploaded, $object, $options, $user->getId());
+            } else {
+                $object = $this->get("app.drive_refacto")->save($object, $options, $user->getId(), $upload_data);
+            }
         } catch (\Exception $e) {
             $object = false;
         }
@@ -75,7 +81,7 @@ class DriveController extends Controller
         }
 
         if ($workspace_id && $element_id) {
-            $object = $this->get("app.drive")->find(
+            $object = $this->get("app.drive_refacto")->find(
                 Array("workspace_id" => $workspace_id, "element_id" => $element_id), $user);
         }
         else{
@@ -98,7 +104,7 @@ class DriveController extends Controller
         $directory_id = $request->request->get("directory_id", null);
 
         if ($workspace_id && $directory_id) {
-            $objects = $this->get("app.drive")->get(
+            $objects = $this->get("app.drive_refacto")->get(
                 Array("workspace_id" => $workspace_id, "directory_id" => $directory_id, "trash" => false), null);
         } else {
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
