@@ -594,5 +594,14 @@ class DriveFileRefacto
         return $list;
     }
 
+    public function emptyTrash($group_id, $user_id)
+    {
+
+        //TODO empty the trash
+
+        return false;
+
+    }
+
 
 }

@@ -25,16 +25,16 @@ class DriveController extends Controller
 
         $user = null;
         if (isset($object["sender"])) {
-            $user = $this->get("app.users")->getById($object["sender"], true);
+            $user = $this->get("app.users")->getById($object["sender"], true)->getId();
         }
 
         try {
             $options = Array("application_id" => $application->getId());
             if ($file_uploaded) {
                 //If object[_once_new_version] is set a new version is added
-                $object = $this->get('driveupload.upload')->uploadDirectly($file_uploaded, $object, $options, $user->getId());
+                $object = $this->get('driveupload.upload')->uploadDirectly($file_uploaded, $object, $options, $user);
             } else {
-                $object = $this->get("app.drive_refacto")->save($object, $options, $user->getId(), $upload_data);
+                $object = $this->get("app.drive_refacto")->save($object, $options, $user, $upload_data);
             }
         } catch (\Exception $e) {
             $object = false;

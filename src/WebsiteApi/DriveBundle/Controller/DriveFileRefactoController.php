@@ -160,4 +160,21 @@ class DriveFileRefactoController extends Controller
         return new JsonResponse($data);
     }
 
+    public function emptyTrashAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array()
+        );
+
+        $groupId = $request->request->get("workspace_id", 0);
+
+        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
+
+        if ($can || true) {
+            $this->get('app.drive_refacto')->emptyTrash($groupId, $this->getUser());
+        }
+
+        return new JsonResponse($data);
+    }
+
 }

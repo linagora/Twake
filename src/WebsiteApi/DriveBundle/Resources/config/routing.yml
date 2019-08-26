@@ -1,23 +1,18 @@
 # Drive base
 
 #Drive v1.2
-drive_get:
-    path:     /get
-    defaults: { _controller: TwakeDriveBundle:Base:get}
-drive_save:
-    path:     /save
-    defaults: { _controller: TwakeDriveBundle:Base:save }
-drive_remove:
-    path:     /remove
-    defaults: { _controller: TwakeDriveBundle:Base:remove }
-drive_get_a_file:
-    path:     /find
-    defaults: { _controller: TwakeDriveBundle:Base:find }
-
-drive_send_as_message:
-    path:     /send_message
-    defaults: { _controller: TwakeDriveBundle:Files:sendAsMessage }
-
+#drive_get:
+#    path:     /get
+#    defaults: { _controller: TwakeDriveBundle:Base:get}
+#drive_save:
+#    path:     /save
+#    defaults: { _controller: TwakeDriveBundle:Base:save }
+#drive_remove:
+#    path:     /remove
+#    defaults: { _controller: TwakeDriveBundle:Base:remove }
+#drive_get_a_file:
+#    path:     /find
+#    defaults: { _controller: TwakeDriveBundle:Base:find }
 
 drive_refractor_get:
     path:     /v2/get
@@ -44,6 +39,15 @@ twake_privateaccess:
     path:     /access/reset
     defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:reset_file_access }
     methods:  [POST]
+
+twake_drive_trash_empty:
+    path:     /trash/empty
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:emptyTrash }
+    methods: [POST]
+
+drive_send_as_message:
+    path:     /send_message
+    defaults: { _controller: TwakeDriveBundle:Files:sendAsMessage }
 
 
 
@@ -178,11 +182,6 @@ twake_drive_open:
 #    path:     /trash/restore
 #    defaults: { _controller: TwakeDriveBundle:Files:restoreTrash }
 #    methods: [POST]
-
-twake_drive_trash_empty:
-    path:     /trash/empty
-    defaults: { _controller: TwakeDriveBundle:Files:emptyTrash }
-    methods: [POST]
 
 # UsersToNotify
 

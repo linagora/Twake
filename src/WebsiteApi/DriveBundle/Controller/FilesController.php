@@ -42,27 +42,6 @@ class FilesController extends Controller
         return new JsonResponse($data);
     }
 
-    //Tested and ready for 1.2 !
-    public function emptyTrashAction(Request $request)
-    {
-        $data = Array(
-            "errors" => Array()
-        );
-
-        $groupId = $request->request->get("workspace_id", 0);
-
-        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
-
-        if ($can || true) {
-            $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
-            if (!$fileSystem->emptyTrash($groupId)) {
-                $data["errors"][] = "unknown";
-            }
-        }
-
-        return new JsonResponse($data);
-    }
-
     public function downloadAction(Request $request)
     {
         $data = Array(
