@@ -156,6 +156,8 @@ class Resumable
 
         $identifier = $workspace_id . date("U") . bin2hex(random_bytes(20));
 
+        $this->current_user_id = $user_id;
+
         $chunklist = Array();
         $uploadstate = new UploadState($workspace_id, $identifier, $filename, $extension, $chunklist);
         $new_key = bin2hex(random_bytes(20));
@@ -218,6 +220,10 @@ class Resumable
                     }
                 } else {
                     $this->moveUploadedFile($file['tmp_name'], $chunkFile);
+                }
+
+                if ($file_or_url && $numOfChunks == 1) {
+                    $totalSize = filesize($chunkFile);
                 }
 
                 //Preview if only one chunk
