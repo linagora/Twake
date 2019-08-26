@@ -286,6 +286,7 @@ class Resumable
 
             //TODO What if we uploaded to an existing object (object[id] is set) TODO->REMOVE OLD VERSION IF WE ARE NOT CREATING A NEW ONE (or each time onlyoffice write we add a new copy on S3)
 
+            $this->driverefacto->setDriveResumable($this);
             $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $current_user, Array("data" => $data, "size" => $totalSize), true);
 
             if ($uploadstate->getHasPreview() && $totalSize < 20000000) {
@@ -500,6 +501,31 @@ class Resumable
         $ext = end($parts); // get extension
         // remove extension from filename if any
         return str_replace(sprintf('.%s', $ext), '', $filename);
+    }
+
+
+    public function removeFromStorage($data)
+    {
+
+        if ($data["upload_mode"] == "chunk") {
+
+            $identifier = $data["identifier"];
+            $chunkNumber = $data["nb_chunk"];
+
+            $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
+
+            for ($i = 1; $i <= $chunkNumber; $i++) {
+                $this->storagemanager->getAdapter()->remove($uploadstate, $i);
+            }
+
+            $this->doctrine->remove($uploadstate);
+            $this->doctrine->flush();
+
+            return true;
+
+        }
+
+        return false;
     }
 
 }

@@ -10,12 +10,16 @@ use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
 class DriveFileRefacto
 {
 
-    function __construct($entity_manager, $drive_file_system_selector, $uploader, $application_api)
+    function __construct($entity_manager, $application_api)
     {
         $this->em = $entity_manager;
-        $this->dfs = $drive_file_system_selector->getFileSystem();
-        $this->uploader = $uploader;
         $this->applications_api = $application_api;
+        $this->drive_resumable = false;
+    }
+
+    function setDriveResumable($drive_resumable)
+    {
+        $this->drive_resumable = $drive_resumable;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -159,6 +163,11 @@ class DriveFileRefacto
         $last_version = null;
         if ($fileordirectory->getLastVersionId()) {
             $last_version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("id" => $fileordirectory->getLastVersionId()));
+        }
+
+        if ($last_version && !$create_new_version && count($last_version->getData()) > 0 && $this->drive_resumable) {
+            //In this case we must remove what we have on storage !
+            $this->drive_resumable->removeFromStorage($last_version->getData());
         }
 
         if (!$last_version || $create_new_version) { // on crée une nouvelle version pour le fichier en question
