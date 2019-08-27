@@ -658,6 +658,8 @@ class DriveFileRefacto
             $hook_name = "edit_file";
         }
 
+        $application_notified = [];
+
         //Look if this file is in application directory
         $child = $file;
         $repo = $this->em->getRepository("TwakeDriveBundle:DriveFile");
@@ -669,7 +671,10 @@ class DriveFileRefacto
 
                     $notification_data["external_storage_root"] = $parent->getAsArray();
 
-                    $this->applications_api->notifyApp($parent->getApplicationId(), "hook", $hook_name, $notification_data);
+                    if (!in_array($parent->getApplicationId(), $application_notified)) {
+                        $application_notified[] = $parent->getApplicationId();
+                        $this->applications_api->notifyApp($parent->getApplicationId(), "hook", $hook_name, $notification_data);
+                    }
 
                     //Do not continue while because we found our app container
                     break;
@@ -693,7 +698,10 @@ class DriveFileRefacto
         if (count($apps_ids) > 0) {
             foreach ($apps_ids as $app_id) {
                 if ($app_id) {
-                    $this->applications_api->notifyApp($app_id, "hook", $hook_name, $notification_data);
+                    if (!in_array($app_id, $application_notified)) {
+                        $application_notified[] = $app_id;
+                        $this->applications_api->notifyApp($app_id, "hook", $hook_name, $notification_data);
+                    }
                 }
             }
         }
