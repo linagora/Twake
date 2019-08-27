@@ -169,14 +169,19 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     private $content_keywords;
 
     /**
-     * @ORM\Column(name ="public_access_info", type="twake_text", nullable=true)
+     * @ORM\Column(name ="access_info", type="twake_text", nullable=true)
      */
-    private $public_acces_info;
+    private $acces_info;
 
     /**
      * @ORM\Column(name="application_id", type="twake_text", nullable=true)
      */
     private $application_id = null;
+
+    /**
+     * @ORM\Column(type="twake_boolean")
+     */
+    private $external_storage = false;
 
     /**
      * @ORM\Column(name="hidden_data", type="twake_text")
@@ -213,17 +218,17 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     /**
      * @return mixed
      */
-    public function getPublicAccesInfo()
+    public function getAccesInfo()
     {
-        return json_decode($this->public_acces_info,true);
+        return json_decode($this->acces_info, true);
     }
 
     /**
-     * @param mixed $public_acces_info
+     * @param mixed $acces_info
      */
-    public function setPublicAccesInfo($public_acces_info)
+    public function setAccesInfo($acces_info)
     {
-        $this->public_acces_info = json_encode($public_acces_info);
+        $this->acces_info = json_encode($acces_info);
     }
 
 
@@ -679,17 +684,33 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "shared" => $this->getShared(),
             "url" => $this->getUrl(),
             "opening_rate" => $this->getOpeningRate(),
-            "public_access_key" => $this->getPublicAccessKey(),
             "has_preview" => $this->getHasPreview(),
             "preview_has_been_generated" => $this->getPreviewHasBeenGenerated(),
             "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null,
             "object_link_cache" => $this->getObjectLinkCache(),
             //"keywords" => $this->getContentKeywords()
-            "public_acces_info" => $this->getPublicAccesInfo(),
+            "acces_info" => $this->getAccesInfo(),
             "application_id" => $this->getApplicationId(),
+            "external_storage" => $this->getExternalStorage(),
             "hidden_data" => $this->getHiddenData()
 
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExternalStorage()
+    {
+        return $this->external_storage;
+    }
+
+    /**
+     * @param mixed $external_storage
+     */
+    public function setExternalStorage($external_storage)
+    {
+        $this->external_storage = $external_storage;
     }
 
     /**

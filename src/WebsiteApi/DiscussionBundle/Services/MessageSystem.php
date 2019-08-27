@@ -406,14 +406,16 @@ class MessageSystem
 
             $message->setReactions($current_reactions);
         }
-//
+
         $this->em->persist($message);
 
         if($did_create){
             $this->indexbloc($message,$channel->getOriginalWorkspaceId(),$object["channel_id"]);
         }
         else{
-            $this->updateinbloc($message,$object["content"]["prepared"][0]);
+            $content = $this->mdToText($object["content"]);
+            error_log(print_r($current_reactions,true));
+            $this->updateinbloc($message, $content, $key_first);
         }
 
         if (!$ephemeral) {
@@ -475,9 +477,7 @@ class MessageSystem
                 $array["ephemeral_message_recipients"] = $object["ephemeral_message_recipients"];
             }
         }
-
         return $array;
-
     }
 
     public function indexbloc($message,$workspace_id,$channel_id)
@@ -494,15 +494,21 @@ class MessageSystem
 //            error_log("CREATION NOUVEAU BLOC");
             $content = Array();
             $message_array_id = Array();
-            $blocbdd = new Bloc($workspace_id, $channel_id, $content, $message_array_id);
+            $reactions = Array();
+            $blocbdd = new Bloc($workspace_id, $channel_id, $content, $message_array_id, $reactions);
             $blocbdd->setMinMessageId($message_id);
+            $blocbdd->setMinDate($message->getCreationDate());
         } else
             $blocbdd = $lastbloc;
         if($blocbdd->getNbMessage() == 9){
             $blocbdd->setMaxMessageId($message_id);
+            $blocbdd->setMaxDate($message->getCreationDate());
             $blocbdd->setLock(true);
         }
-        $blocbdd->addmessage($message->getContent()["prepared"][0], $message_id);
+
+        $content = $this->mdToText($message->getContent());
+
+        $blocbdd->addmessage($content, $message_id);
         $this->em->persist($blocbdd);
         $message->setBlockId($blocbdd->getId()."");
         $this->em->persist($message);
@@ -517,7 +523,7 @@ class MessageSystem
         }
     }
 
-    public function updateinbloc($message,$new_content){  //this param is a message ENTITY
+    public function updateinbloc($message,$new_content,$new_reaction){  //this param is a message ENTITY
         //var_dump($message->getId()."");
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
         //var_dump($bloc->getMessages());
@@ -525,6 +531,13 @@ class MessageSystem
         $contents = $bloc->getContent();
         $contents[$position] = $new_content;
         $bloc->setContent($contents);
+
+        $reaction_table = $bloc->getReactions();
+        if(!(in_array($new_reaction, $reaction_table))){
+            array_push($reaction_table ,$new_reaction);
+        }
+
+        $bloc->setReactions($reaction_table);
 
         $this->em->persist($bloc);
         $this->em->flush();

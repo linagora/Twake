@@ -75,10 +75,6 @@ twake_marketplace:
     prefix:   /ajax/market/
     methods: [POST]
 
-twake_drive_download:
-    path:     ajax/drive/download
-    defaults: { _controller: TwakeDriveBundle:Files:download }
-
 twake_drive:
     resource: "@TwakeDriveBundle/Resources/config/routing.yml"
     prefix:   ajax/drive/

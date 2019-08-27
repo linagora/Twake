@@ -126,7 +126,21 @@ class WorkspaceController extends Controller
                 $response["errors"][] = "notallowed";
                 $response["errors"]["max"] = $ws;
 		}else{
+
             $ws_id = $ws->getId();
+
+            $channels = $request->request->get("channels", false);
+            if ($channels && is_array($channels)) {
+                foreach ($channels as $channel) {
+                    $this->get("app.channels.channels_system")->save(Array(
+                        "original_workspace" => $ws_id,
+                        "original_group" => $ws->getGroup()->getId(),
+                        "name" => $channel["name"],
+                        "icon" => $channel["icon"]
+                    ), Array("workspace_id" => $ws_id), $this->getUser());
+                }
+            }
+
 			$response["data"]["status"] = "success";
             //$response["data"]["workspace_id"] = $ws_id;
             $response["data"]["workspace"] = $ws->getAsArray();

@@ -21,7 +21,7 @@ class AdvancedSearch
 
     }
 
-    public function SearchInBloc($current_user_id,$words,$channels){
+    public function SearchInBloc($current_user_id,$options,$channels){
         $channel_acces = Array();
         //verif l acces au channel
 
@@ -34,7 +34,7 @@ class AdvancedSearch
         }
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
         if(isset($channel_acces) && $channel_acces != Array()){
-            $messages = $this->blocservice->search($words, $channel_acces);
+            $messages = $this->blocservice->search($options, $channel_acces);
             if (isset($messages))
             {
                 foreach ($messages as $message) {
@@ -44,11 +44,13 @@ class AdvancedSearch
         }
     }
 
-    public function AdvancedSearch($current_user_id,$words,$channels)
+    public function AdvancedSearch($current_user_id,$options,$channels)
     {
 
         $this->globalresult = Array();
-        $this->SearchInBloc($current_user_id,$words,$channels);
+
+
+        $this->SearchInBloc($current_user_id,$options,$channels);
         //error_log(print_r("taille result : " . count($this->globalresult),true));
         //error_log(print_r($this->globalresult,true));
 //        $files = $this->fileservice->search($words);

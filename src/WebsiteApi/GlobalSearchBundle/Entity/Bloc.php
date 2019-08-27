@@ -43,6 +43,16 @@ class Bloc extends SearchableObject
      * @ORM\Column(name="max_message_id", type="twake_timeuuid", nullable=true)
      */
     protected $max_message_id;
+
+    /**
+     * @ORM\Column(name="min_date", type="twake_datetime", nullable=true)
+     */
+    protected $min_date;
+
+    /**
+     * @ORM\Column(name="max_date", type="twake_datetime", nullable=true)
+     */
+    protected $max_date;
     /**
      * @ORM\Column(name ="nb_message", type="integer", nullable=true)
      */
@@ -58,6 +68,11 @@ class Bloc extends SearchableObject
     protected $messages;
 
     /**
+     * @ORM\Column(name ="reaction", type="twake_text", nullable=true)
+     */
+    protected $reactions;
+
+    /**
      * @ORM\Column(name ="lock", type="twake_boolean")
      */
     protected $lock = false;
@@ -70,12 +85,13 @@ class Bloc extends SearchableObject
      * @param int $nb_message
      * @param $content_keywords
      */
-    public function __construct($workspace_id, $channel_id, $content, $messages)
+    public function __construct($workspace_id, $channel_id, $content, $messages, $reactions)
     {
         $this->workspace_id = $workspace_id;
         $this->channel_id = $channel_id;
         $this->content = json_encode($content);
         $this->messages = json_encode($messages);
+        $this->reactions = json_encode($reactions);
 
     }
 
@@ -87,9 +103,13 @@ class Bloc extends SearchableObject
             "channel_id" => $this->getChannelId(),
             "workspace_id" => $this->getWorkspaceId(),
             "min_message_id" => $this->getMinMessageId(),
+            "min_date" => $this->getMinDate(),
             "max_message_id" => $this->getMaxMessageId(),
+            "max_date" => $this->getMaxDate(),
             "nb_message" => $this->getNbMessage(),
             "content" => $this->getContent(),
+            "reactions" => $this->getReactions(),
+
         );
         return $return;
     }
@@ -101,12 +121,63 @@ class Bloc extends SearchableObject
                 "id" => $this->getId()."",
                 "channel_id" => $this->getChannelId(),
                 "workspace_id" => $this->getWorkspaceId(),
+                "date_first" => $this->getMinDate(),
+                "date_last" => $this->getMaxDate(),
                 "content" => $this->getContent(),
+                "reactions" => $this->getReactions(),
             );
         }
         else
             $return = Array();
         return $return;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getReactions()
+    {
+        return json_decode($this->reactions);
+    }
+
+    /**
+     * @param mixed $reaction
+     */
+    public function setReactions($reactions)
+    {
+        $this->reactions = json_encode($reactions);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMinDate()
+    {
+        return $this->min_date;
+    }
+
+    /**
+     * @param mixed $min_date
+     */
+    public function setMinDate($min_date)
+    {
+        $this->min_date = $min_date;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMaxDate()
+    {
+        return $this->max_date;
+    }
+
+    /**
+     * @param mixed $max_date
+     */
+    public function setMaxDate($max_date)
+    {
+        $this->max_date = $max_date;
     }
 
 

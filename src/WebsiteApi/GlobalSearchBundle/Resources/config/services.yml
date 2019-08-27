@@ -34,3 +34,7 @@ services:
 
   globalsearch.mapping:
     class: WebsiteApi\GlobalSearchBundle\Services\Mapping
+
+  globalsearch.pagination:
+    class: WebsiteApi\GlobalSearchBundle\Services\Pagination
+    arguments: ["@app.twake_doctrine"]

@@ -108,6 +108,29 @@ class Adapter_AWS implements AdapterInterface{
 
     }
 
+    public function remove(UploadState $uploadState, $chunkNo = 1)
+    {
+
+        $file_path = "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo;
+
+        try {
+
+            $data = [
+                'Bucket' => $this->aws_bucket_name,
+                'Key' => $file_path
+            ];
+
+            // Upload data.
+            $result = $this->aws_s3_client->deleteObject($data);
+
+        } catch (S3Exception $e) {
+            error_log($e->getMessage() . PHP_EOL);
+        }
+
+        return $result;
+
+    }
+
     public function streamModeIsAvailable()
     {
         return false;

@@ -15,12 +15,11 @@ class Blocmessage
         $this->doctrine = $doctrine;
     }
 
-    public function search($words,$channels){
-
+    public function search($options,$channels){
         $final_words = Array();
-        foreach($words as $word){
+        foreach($options["word"] as $word){
             if(strlen($word) > 3) {
-                $final_words[] = $word;
+                $final_words[] = strtolower($word);
             }
         }
 
@@ -76,8 +75,8 @@ class Blocmessage
 
             // search in ES
             $result = $this->doctrine->es_search($options);
-            array_slice($result, 0, 5);
-//            error_log(print_r($result,true));
+            array_slice($result["result"], 0, 5);
+            //error_log(print_r("nombre de resultat : " . count($result),true));
 
             // on cherche dans le bloc en cours de construction de tout les channels demandés
             foreach($channels as $channel) {
@@ -86,7 +85,7 @@ class Blocmessage
                 if (isset($lastbloc)) {
                     foreach ($lastbloc->getContent() as $content) {
                         foreach ($words as $word) {
-                            if (strpos($content, $word) !== false) {
+                            if (strpos(strtolower($content), strtolower($word)) !== false) {
                                 if (in_array($lastbloc->getMessages()[$compt], $id_message) == false) {
                                     $id_message[] = $lastbloc->getMessages()[$compt];
                                     //on peut penser a rajouter un break
@@ -103,12 +102,12 @@ class Blocmessage
             //on traite les données recu d'Elasticsearch
 
 
-            foreach ($result as $bloc) {
+            foreach ($result["result"] as $bloc) {
                 $content = $bloc->getContent();
                 $compt = 0;
                 foreach ($content as $phrase) {
                     foreach ($words as $word) {
-                        if (strpos($phrase, $word) !== false) {
+                        if (strpos(strtolower($phrase), strtolower($word)) !== false) {
                             if (in_array($bloc->getMessages()[$compt], $id_message) == false) {
                                 $id_message[] = $bloc->getMessages()[$compt];
                             }
@@ -145,9 +144,11 @@ class Blocmessage
 //        var_dump("BLOC A LA FIN");
 //        var_dump($lastbloc);
 
-//
+
+
         $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
         foreach($lastbloc as $bloc){
+//            var_dump($bloc->getAsArray());
             $this->doctrine->remove($bloc);
             $this->doctrine->flush();
         }

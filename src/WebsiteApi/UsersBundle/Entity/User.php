@@ -213,6 +213,8 @@ class User extends SearchableObject implements UserInterface
         $this->roles = array();
         $this->lastlogin = new \DateTime();
         $this->passwordrequestedat = new \DateTime();
+
+        $this->setCreationDate(new \DateTime());
 	}
 
 	/**

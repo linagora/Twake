@@ -117,7 +117,7 @@ class Adapter_OpenStack implements AdapterInterface{
             return $decodedPath;
 
         } catch (Exception $e) {
-            error_log("Error accessing aws file.");
+            error_log("Error accessing openstack file.");
         }
 
         return false;
@@ -172,6 +172,26 @@ class Adapter_OpenStack implements AdapterInterface{
         $finalpath = $lib->decryptFile($chunkFile, $key, $pathTemp);
         @unlink($chunkFile);
         return $finalpath;
+
+    }
+
+    public function remove(UploadState $uploadState, $chunkNo = 1)
+    {
+
+        $file_path = "drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo;
+
+        try {
+
+            $this->openstack->objectStoreV1()
+                ->getContainer($this->openstack_bucket_name)
+                ->getObject($file_path)
+                ->delete();
+
+        } catch (Exception $e) {
+            error_log($e->getMessage() . PHP_EOL);
+        }
+
+        return $result;
 
     }
 

@@ -424,7 +424,7 @@ class ImportCommand extends ContainerAwareCommand
                                 $drive_file_bdd->setSize($file["size"]);
                                 $drive_file_bdd->setExtension($file["extension"]);
                                 $drive_file_bdd->setWorkspaceId($workspace_id . "");
-                                //$drive_file_bdd->setPublicAccesInfo($file["public_acces_info"]);
+                                //$drive_file_bdd->setAccesInfo($file["acces_info"]);
                                 $drive_file_bdd->setUrl($file["url"]);
 
                                 if ($file["parent_id"] != 0 && array_key_exists($file["parent_id"], $this->match_file)) {
