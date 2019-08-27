@@ -113,6 +113,10 @@ class UsersController extends Controller
             }
 
             if (!$users) {
+                $users = $users_service->findUserById($search_string);
+            }
+
+            if (!$users) {
 
                 $advanced_search = $this->get("app.users");
 
