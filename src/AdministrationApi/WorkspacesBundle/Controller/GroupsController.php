@@ -83,4 +83,45 @@ class GroupsController extends Controller
         return new JsonResponse($data);
     }
 
+    public function findGroupsAction(Request $request) {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $validation = $this->get("administration.validation");
+        $token = $request->request->get("token");
+        $validate_token = $validation->validateAuthentication($token);
+
+        if ($validate_token) {
+
+            $data['data']['group'] = array();
+            $data['data']['workspaces'] = array();
+
+            $search_string = $request->request->get("search");
+
+            $group_service = $this->get("administration.groups");
+
+            $group = $group_service->getOneGroup($search_string);
+
+            if ($group) {
+                $data['data']['group'] = $group;
+            }
+
+            $workspace_service = $this->get("administration.workspaces");
+
+            $workspace = $workspace_service->getOneWorkspace($search_string);
+
+            if ($workspace) {
+                $data['data']['workspaces'] = $workspace;
+            }
+
+
+        } else {
+            $data["errors"][] = "invalid_authentication_token";
+        }
+
+        return new JsonResponse($data);
+    }
+
 }

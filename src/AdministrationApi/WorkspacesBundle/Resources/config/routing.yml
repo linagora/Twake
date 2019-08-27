@@ -12,3 +12,7 @@ administration_api_workspaces_get_one:
   path: /getWorkspace
   defaults: { _controller: AdministrationApiWorkspacesBundle:Workspaces:getOneWorkspace }
   methods: [POST]
+
+administration_api_groups_find:
+  path: /searchGroups
+  defaults: { _controller: AdministrationApiWorkspacesBundle:Groups:findGroups }
