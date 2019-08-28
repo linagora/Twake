@@ -105,7 +105,7 @@ class GroupsController extends Controller
             $group = $group_service->getOneGroup($search_string);
 
             if ($group) {
-                $data['data']['group'] = $group->getAsArray();
+                $data['data']['group'][] = $group->getAsArray();
             }
 
             $workspace_service = $this->get("administration.workspaces");
