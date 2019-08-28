@@ -18,14 +18,16 @@ class Counter
     /**
      * @var
      *
-     * @ORM\Column(name="counter_key", type="string")
+     * @ORM\Column(name="counter_key", type="string", length=50)
+     * @ORM\Id
      */
     protected $counter_key;
 
     /**
      * @var
      *
-     * @ORM\Column(name="date", type="twake_datetime")
+     * @ORM\Column(name="date", type="string", length=20)
+     * @ORM\Id
      */
     protected $date;
 
