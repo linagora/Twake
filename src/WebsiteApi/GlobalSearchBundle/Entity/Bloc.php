@@ -68,7 +68,7 @@ class Bloc extends SearchableObject
     protected $messages;
 
     /**
-     * @ORM\Column(name ="reaction", type="twake_text", nullable=true)
+     * @ORM\Column(name ="reactions", type="twake_text", nullable=true)
      */
     protected $reactions;
 
@@ -121,8 +121,8 @@ class Bloc extends SearchableObject
                 "id" => $this->getId()."",
                 "channel_id" => $this->getChannelId(),
                 "workspace_id" => $this->getWorkspaceId(),
-                "date_first" => $this->getMinDate(),
-                "date_last" => $this->getMaxDate(),
+                "date_first" => ($this->getMinDate() ? $this->getMinDate()->format('Y-m-d') : null),
+                "date_last" => ($this->getMaxDate() ? $this->getMaxDate()->format('Y-m-d') : null),
                 "content" => $this->getContent(),
                 "reactions" => $this->getReactions(),
             );
@@ -137,7 +137,7 @@ class Bloc extends SearchableObject
      */
     public function getReactions()
     {
-        return json_decode($this->reactions);
+        return json_decode($this->reactions,true);
     }
 
     /**

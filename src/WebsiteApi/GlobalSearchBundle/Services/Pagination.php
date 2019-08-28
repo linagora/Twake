@@ -22,7 +22,6 @@ class Pagination
           "repository" => $repository
         );
         $result = $this->doctrine->es_search($option);
-        var_dump("fin get next");
         return $result;
 
     }

@@ -34,6 +34,7 @@ class AdvancedSearch
         }
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
         if(isset($channel_acces) && $channel_acces != Array()){
+
             $messages = $this->blocservice->search($options, $channel_acces);
             if (isset($messages))
             {
@@ -48,7 +49,6 @@ class AdvancedSearch
     {
 
         $this->globalresult = Array();
-
 
         $this->SearchInBloc($current_user_id,$options,$channels);
         //error_log(print_r("taille result : " . count($this->globalresult),true));
