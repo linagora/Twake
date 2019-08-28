@@ -31,6 +31,11 @@ parameters:
     mailer_auth_mode: plain
     secret: c9a17eab88ab63bb3e90c027196a89776651a7c0
 
+    branding:
+        logo: https://www.weare-aerospace.com/wp-content/uploads/2017/06/WeareGROUP_logoQ.png"
+        name: WeAre Aerospace
+        link: https://weare-aerospace.com
+
     cas_base_url: -
     cas_email_key:
     cas_firstname_key:

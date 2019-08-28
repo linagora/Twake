@@ -1,19 +1,18 @@
 # Drive base
 
-#Drive v1.2
-#drive_get:
-#    path:     /get
-#    defaults: { _controller: TwakeDriveBundle:Base:get}
-#drive_save:
-#    path:     /save
-#    defaults: { _controller: TwakeDriveBundle:Base:save }
-#drive_remove:
-#    path:     /remove
-#    defaults: { _controller: TwakeDriveBundle:Base:remove }
-#drive_get_a_file:
-#    path:     /find
-#    defaults: { _controller: TwakeDriveBundle:Base:find }
+#Old mobile versions
+drive_get:
+    path:     /get
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:get}
+drive_save:
+    path:     /save
+    defaults: { _controller: TwakeDriveBundle:Base:save }
+drive_get_a_file:
+    path:     /find
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:find }
 
+
+#Drive v1.2
 drive_refractor_get:
     path:     /v2/get
     defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:get}
@@ -211,7 +210,7 @@ twake_drive_google_drive_response:
 twake_drive_get_external_drives:
     path:     /gdrive/getExternalDrives
     defaults: { _controller: TwakeDriveBundle:ExternalFiles:getExternalDrives }
-    
+
 # Activity
 
 drive_activities_create:
