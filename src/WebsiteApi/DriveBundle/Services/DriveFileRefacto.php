@@ -10,12 +10,16 @@ use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
 class DriveFileRefacto
 {
 
-    function __construct($entity_manager, $drive_file_system_selector, $uploader, $application_api)
+    function __construct($entity_manager, $application_api)
     {
         $this->em = $entity_manager;
-        $this->dfs = $drive_file_system_selector->getFileSystem();
-        $this->uploader = $uploader;
         $this->applications_api = $application_api;
+        $this->drive_resumable = false;
+    }
+
+    function setDriveResumable($drive_resumable)
+    {
+        $this->drive_resumable = $drive_resumable;
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -119,7 +123,7 @@ class DriveFileRefacto
         if(isset($object["id"])) { // on recoit un identifiant donc on supprime un drive file
             $fileordirectory = $this->em->getRepository("TwakeDriveBundle:DriveFile")
                 ->findOneBy(Array("id" => $object["id"]));
-            if($fileordirectory){
+            if ($fileordirectory && $fileordirectory->getParentId() && $fileordirectory->getParentId() != "trash") {
                 //on change la taille de tous les dossiers parent a celui ci
                 if($fileordirectory->getIsInTrash()){
                     //on delete definitevement de la corbeille donc on modifie pas la racine
@@ -140,6 +144,9 @@ class DriveFileRefacto
                 }
                 $this->em->remove($fileordirectory);
                 $this->em->flush();
+
+                $this->notifyConnectors($fileordirectory, "remove", $current_user);
+
             }
             else{
                 return false;
@@ -159,6 +166,11 @@ class DriveFileRefacto
         $last_version = null;
         if ($fileordirectory->getLastVersionId()) {
             $last_version = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findOneBy(Array("id" => $fileordirectory->getLastVersionId()));
+        }
+
+        if ($last_version && !$create_new_version && count($last_version->getData()) > 0 && $this->drive_resumable) {
+            //In this case we must remove what we have on storage !
+            $this->drive_resumable->removeFromStorage($last_version->getData());
         }
 
         if (!$last_version || $create_new_version) { // on crée une nouvelle version pour le fichier en question
@@ -232,7 +244,7 @@ class DriveFileRefacto
             else{ // on a un parent ce n'est pas une creation c'est un déplacement
                 $fileordirectory_parent_id = $fileordirectory->getParentId()."";
                 if ($fileordirectory_parent_id != $parent_id) { //changement de parent id donc le fichier a été déplacé.7
-                    $this->move($fileordirectory, $fileordirectory_parent_id, $parent_id);
+                    $this->move($fileordirectory, $fileordirectory_parent_id, $parent_id, $current_user);
                 }
             }
         }
@@ -249,7 +261,7 @@ class DriveFileRefacto
             $oldparent = $fileordirectory->getParentId() . "";
             $newparent = $this->getTrashEntity($fileordirectory->getWorkspaceId() . "")->getId() . "";
             //error_log(print_r("new parent id: " . $newparent,true));
-            $this->move($fileordirectory, $oldparent, $newparent, 1);
+            $this->move($fileordirectory, $oldparent, $newparent, 1, $current_user);
 
             $fileordirectory->setOldParent($oldparent);
 
@@ -264,7 +276,7 @@ class DriveFileRefacto
             if ($parenttrash->getIsInTrash() && $newparent === "") { // Si le parent est a la corbeille également on va le mettre a la racine du workspace
                 $newparent = $this->getRootEntity($fileordirectory->getWorkspaceId() . "")->getId() . "";
             }
-            $this->move($fileordirectory, $oldparent, $newparent, 2);
+            $this->move($fileordirectory, $oldparent, $newparent, 2, $current_user);
 
             $fileordirectory->setOldParent("");
             $this->recursetrash($fileordirectory);
@@ -323,6 +335,9 @@ class DriveFileRefacto
 
         if (isset($object["application_id"])) {
             $fileordirectory->setApplicationId($object["application_id"]);
+            if (isset($object["external_storage"])) {
+                $fileordirectory->setExternalStorage($object["external_storage"]);
+            }
         }
 
         if (isset($object["url"])) {
@@ -343,7 +358,7 @@ class DriveFileRefacto
             $new = $object["_once_new_version"];
         }
         else{
-            $new = true;
+            $new = false;
         }
 
         //Update size if file was created AFTER versionning
@@ -361,6 +376,8 @@ class DriveFileRefacto
                 }
             }
         }
+
+        $this->notifyConnectors($fileordirectory, $did_create, $current_user);
 
         if ($return_entity) {
             return $fileordirectory;
@@ -387,7 +404,7 @@ class DriveFileRefacto
         $this->em->flush();
     }
 
-    public function move($fileordirectory, $oldparent, $newparent, $to_or_out_trash = 0)
+    public function move($fileordirectory, $oldparent, $newparent, $to_or_out_trash = 0, $current_user = null)
     {
         $this->em->remove($fileordirectory);
         $this->em->flush();
@@ -407,7 +424,6 @@ class DriveFileRefacto
             $fileordirectory->setDetachedFile(false);
         }
         $this->updateSize($newparent, $size, $to_or_out_trash);
-
 
     }
 
@@ -527,6 +543,7 @@ class DriveFileRefacto
             $this->em->persist($trash);
             $this->em->flush();
         }
+
         return $trash;
     }
 
@@ -550,7 +567,7 @@ class DriveFileRefacto
 
         if ($directoryId == $root->getId()) {
             if ($trash) {
-                $list = $repo->findBy(Array("workspace_id" => $workspaceId, "parent_id" => $this->getTrashEntity($workspaceId)->getId()));
+                $list = $repo->findBy(Array("workspace_id" => $workspaceId, "parent_id" => $this->getTrashEntity($workspaceId)->getId() . ""));
             } else {
                 $list = $repo->findBy(Array("workspace_id" => $workspaceId, "parent_id" => $root->getId()));
             }
@@ -579,7 +596,7 @@ class DriveFileRefacto
 
         $list = [$child->getAsArray()];
 
-        while ($child && $child->getParentId() && $child->getParentId() != "root") {
+        while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash") {
             $parent = $repo->findOneBy(Array("id" => $child->getParentId()));
             if ($parent) {
                 $list[] = $parent->getAsArray();
@@ -592,6 +609,103 @@ class DriveFileRefacto
         $list = array_reverse($list);
 
         return $list;
+    }
+
+    public function emptyTrash($workspace_id, $current_user)
+    {
+
+        $trash = $this->getTrashEntity($workspace_id);
+        $this->updateSize($this->getRootEntity($workspace_id), -$trash->getSize(), 2);
+
+        //We have just to rename the trash, we are not really deleting it
+        $this->em->remove($trash);
+        $this->em->flush();
+
+        $trash->setParentId("removed_trashes");
+        $trash->setName("removed_trash_" . date("U"));
+        $this->em->persist($trash);
+        $this->em->flush();
+
+        //Regenerate new trash
+        $new_trash = $this->getTrashEntity($workspace_id);
+
+        return $new_trash->getAsArray();
+
+    }
+
+    private function notifyConnectors(DriveFile $file, $did_create = true, $current_user = null)
+    {
+
+        if ($file->getDetachedFile()) {
+            return;
+        }
+
+        $workspace_id = $file->getWorkspaceId();
+        $workspace = $this->em->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id));
+
+        $notification_data = Array(
+            "group" => $workspace->getGroup()->getAsArray(),
+            "workspace" => $workspace->getAsArray(),
+            "file" => $file->getAsArray(),
+            "user" => $current_user
+        );
+
+        if ($did_create == "remove") {
+            $hook_name = "remove_file";
+        } else if ($did_create) {
+            $hook_name = "new_file";
+        } else {
+            $hook_name = "edit_file";
+        }
+
+        $application_notified = [];
+
+        //Look if this file is in application directory
+        $child = $file;
+        $repo = $this->em->getRepository("TwakeDriveBundle:DriveFile");
+        while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash") {
+            $parent = $repo->findOneBy(Array("id" => $child->getParentId()));
+            if ($parent) {
+
+                if ($parent->getApplicationId() && $parent->getExternalStorage()) {
+
+                    $notification_data["external_storage_root"] = $parent->getAsArray();
+
+                    if (!in_array($parent->getApplicationId(), $application_notified)) {
+                        $application_notified[] = $parent->getApplicationId();
+                        $this->applications_api->notifyApp($parent->getApplicationId(), "hook", $hook_name, $notification_data);
+                    }
+
+                    //Do not continue while because we found our app container
+                    break;
+                }
+
+                $child = $parent;
+            } else {
+                $child = null;
+            }
+        }
+
+        //Notify all connectors with access to drive
+        $resources = [];
+        $resources = array_merge($resources, $this->applications_api->getResources($workspace_id, "workspace_drive", $workspace_id));
+        $apps_ids = [];
+        foreach ($resources as $resource) {
+            if (in_array("file", $resource->getApplicationHooks())) {
+                $apps_ids[] = $resource->getApplicationId();
+            }
+        }
+        if (count($apps_ids) > 0) {
+            foreach ($apps_ids as $app_id) {
+                if ($app_id) {
+                    if (!in_array($app_id, $application_notified)) {
+                        $application_notified[] = $app_id;
+                        $this->applications_api->notifyApp($app_id, "hook", $hook_name, $notification_data);
+                    }
+                }
+            }
+        }
+
     }
 
 

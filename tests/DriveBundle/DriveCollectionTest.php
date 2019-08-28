@@ -65,7 +65,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         $idtofind_parent = json_decode($result->getContent(),true)["data"]["object"]["id"];
 
 
-        $this->assertEquals($workspace_id,json_decode($result->getContent(),true)["data"]["object"]["workspace_id"], "Wrong workspace id for file create with a parent");
+        $this->assertEquals($workspace_id, json_decode($result->getContent(), true)["data"]["object"]["workspace_id"], "Wrong workspace id for file create with a parent " . json_encode(json_decode($result->getContent())));
         $this->assertEquals($root_id,json_decode($result->getContent(),true)["data"]["object"]["parent_id"],"Wrong parent id for file create with a parent");
         $this->assertEquals("14005200-48b1-11e9-a0b4-0242ac120005",json_decode($result->getContent(),true)["data"]["object"]["front_id"], "Wrong front id for file create with a parent");
         $this->assertEquals("filefortest",json_decode($result->getContent(),true)["data"]["object"]["name"], "Wrong name for file create with a parent");

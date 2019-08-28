@@ -77,6 +77,9 @@ class AccessManager
                 return $this->has_access($current_user_id, Array("type" => "Workspace", "object_id" => $data["workspace_id"]));
             }
 
+            if (!$id) {
+                return false;
+            }
             $df = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $id));
 
             if(isset($df)){

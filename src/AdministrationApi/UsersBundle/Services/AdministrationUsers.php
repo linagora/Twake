@@ -25,7 +25,7 @@ class AdministrationUsers
 
         foreach ($usersEnitity as $user) {
             $user_tab = $user->getAsArray();
-            $user_tab['mails'] = $this->getUserMails($user);
+            $user_tab['mail'] = $user->getEmail();
             $users[] = $user_tab;
         }
 
@@ -117,7 +117,9 @@ class AdministrationUsers
             $rep = array();
 
             foreach ($users as $user) {
-                $rep[] = $user->getAsArray();
+                $user_tab = $user->getAsArray();
+                $user_tab['mail'] = $user->getEmail();
+                $rep[] = $user_tab;
             }
         }
 
@@ -136,11 +138,36 @@ class AdministrationUsers
             $rep = array();
 
             foreach ($usersMails as $mail) {
-                $rep[] = $mail->getUser()->getAsArray();
+                $user = $mail->getUser();
+                $user_tab = $user->getAsArray();
+                $user_tab['mail'] = $user->getEmail();
+                $rep[] = $user_tab;
             }
         }
 
         return $rep;
+    }
+
+    public function findUserById($id) {
+
+        $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
+
+        $users = $usersRepository->findBy(Array("id" => $id));
+
+        $rep = false;
+
+        if (count($users) >= 1) {
+            $rep = array();
+
+            foreach ($users as $user) {
+                $user_tab = $user->getAsArray();
+                $user_tab['mail'] = $user->getEmail();
+                $rep[] = $user_tab;
+            }
+        }
+
+        return $rep;
+
     }
 
 }

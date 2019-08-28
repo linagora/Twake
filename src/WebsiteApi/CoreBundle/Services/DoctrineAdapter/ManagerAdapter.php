@@ -246,7 +246,7 @@ class ManagerAdapter
                 $data = $entity->getIndexationArray();
             }
 
-            if (method_exists($entity,"getContentKeywords")){
+            if (method_exists($entity, "getContentKeywords") && is_array($entity->getContentKeywords())) {
                 $keywords = $entity->getContentKeywords();
 
                 //partie sur la verification du format des mots clés
@@ -313,7 +313,6 @@ class ManagerAdapter
 
         if(isset($options["scroll_id"])){
             $route = "http://" . $this->es_server . "/_search/scroll" ;
-            var_dump($route);
             $res = $this->circle->post($route, json_encode(Array("scroll" => "1m" ,"scroll_id" => $options["scroll_id"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         }
         else {
@@ -352,8 +351,6 @@ class ManagerAdapter
 
         $res = $res->getContent();
 
-        var_dump($res);
-
         $result = [];
         $scroll_id = "";
 
@@ -371,7 +368,6 @@ class ManagerAdapter
                     if ($repository) {
                         $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
                     } else {
-                        var_dump("la");
                         $obj = $object_json["_id"];
                     }
 

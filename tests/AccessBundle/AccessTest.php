@@ -235,6 +235,7 @@ class AccessTest extends WebTestCaseExtended
 //        $this->get("app.twake_doctrine")->persist($file);
 //        $this->get("app.twake_doctrine")->flush();
 
+        /*
         $result = $this->doPost("/ajax/drive/publicaccess", Array(
             "file_id" => $idtofind_shared,
             "is_editable" => false,
@@ -246,7 +247,8 @@ class AccessTest extends WebTestCaseExtended
         $publicdata = $file->getAccesInfo();
        // error_log(print_r($publicdata, true));
 
-        $this->assertEquals(true,in_array($user3_id,$publicdata["authorized_members"]), "User 3 id is not inside the public data of file shared");
+        $this->assertEquals(true, in_array($user3_id, $publicdata["authorized_members"]), "User 3 id is not inside the public data of file shared");
+        */
 
 //// =================================================================================================================================================
 //// =================================================================================================================================================

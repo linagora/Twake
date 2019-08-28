@@ -59,14 +59,16 @@ class DriveFileRefactoController extends Controller
             $file_uploaded = $object["file_url"] ? $object["file_url"] : $request->request->get("file_url");
         }
 
-        if ($file_uploaded) {
-            //TODO upload file using move_uploaded or file_get_content then edit upload_data for size update
-        }
-
         $current_user = $this->getUser();
         $current_user_id = $current_user->getId();
 
-        $res = $this->get("app.drive_refacto")->save($object, $options, $current_user_id, $upload_data);
+        if ($file_uploaded) {
+            //If object[_once_new_version] is set a new version is added
+            $res = $this->get('driveupload.upload')->uploadDirectly($file_uploaded, $object, $options, $current_user_id);
+        } else {
+            $res = $this->get("app.drive_refacto")->save($object, $options, $current_user_id, $upload_data);
+        }
+
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         }
@@ -154,6 +156,23 @@ class DriveFileRefactoController extends Controller
 
         $publicaccess = $this->get('app.drive_refacto')->reset_file_access($file_id, $this->getUser());
         $data = Array("data" => $publicaccess);
+
+        return new JsonResponse($data);
+    }
+
+    public function emptyTrashAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array()
+        );
+
+        $groupId = $request->request->get("workspace_id", 0);
+
+        $can = $this->get('app.workspace_levels')->can($groupId, $this->getUser(), "drive:write");
+
+        if ($can || true) {
+            $data["data"] = $this->get('app.drive_refacto')->emptyTrash($groupId, $this->getUser());
+        }
 
         return new JsonResponse($data);
     }

@@ -179,6 +179,11 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     private $application_id = null;
 
     /**
+     * @ORM\Column(type="twake_boolean")
+     */
+    private $external_storage = false;
+
+    /**
      * @ORM\Column(name="hidden_data", type="twake_text")
      */
     private $hidden_data = "{}";
@@ -686,9 +691,26 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             //"keywords" => $this->getContentKeywords()
             "acces_info" => $this->getAccesInfo(),
             "application_id" => $this->getApplicationId(),
+            "external_storage" => $this->getExternalStorage(),
             "hidden_data" => $this->getHiddenData()
 
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExternalStorage()
+    {
+        return $this->external_storage;
+    }
+
+    /**
+     * @param mixed $external_storage
+     */
+    public function setExternalStorage($external_storage)
+    {
+        $this->external_storage = $external_storage;
     }
 
     /**
