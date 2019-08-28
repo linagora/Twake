@@ -69,6 +69,7 @@ class GroupsController extends Controller
                 //TODO Get group Drive size
 
                 $data["data"]["group"] = $group->getAsArray();
+                $data["data"]["group"]["creation_data"] = $group->getOnCreationData();
                 $data["data"]["workspaces"] = $workspaces;
                 $data["data"]["members"] = $members;
                 $data["data"]["apps"] = $apps;
@@ -113,7 +114,7 @@ class GroupsController extends Controller
             $workspace = $workspace_service->getOneWorkspace($search_string);
 
             if ($workspace) {
-                $data['data']['workspaces'] = $workspace->getAsArray();
+                $data['data']['workspaces'][] = $workspace->getAsArray();
             }
 
 
