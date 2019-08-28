@@ -11,3 +11,4 @@ administration_api_apps_get_one:
 administration_api_apps_toggle_validation:
   path: /toggleValidation
   defaults: { _controller: AdministrationApiAppsBundle:Apps:toggleValidation }
+  methods: [POST]
