@@ -379,7 +379,6 @@ class MessageSystem
                 $this->em->persist($message_reaction);
             }
 
-
             if (isset($reaction["add"])) {
                 $key_first = array_keys($reaction["add"])[0];
                 //error_log(print_r($key_first,true));
@@ -414,8 +413,7 @@ class MessageSystem
         }
         else{
             $content = $this->mdToText($object["content"]);
-            error_log(print_r($current_reactions,true));
-            $this->updateinbloc($message, $content, $key_first);
+            $this->updateinbloc($message, $content, $reaction);
         }
 
         if (!$ephemeral) {
@@ -484,14 +482,14 @@ class MessageSystem
     {
         $message_id = $message->getId()."";
 
-//        error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");
-//        error_log(print_r($message_id,true));
-//        error_log(print_r($message->getContent()["prepared"][0],true));
+        error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");
+        error_log(print_r($message_id,true));
+        error_log(print_r($message->getContent()["prepared"][0],true));
 
         $lastbloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
 
         if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
-//            error_log("CREATION NOUVEAU BLOC");
+            error_log("CREATION NOUVEAU BLOC");
             $content = Array();
             $message_array_id = Array();
             $reactions = Array();
@@ -516,14 +514,14 @@ class MessageSystem
 
 
         if ($blocbdd->getNbMessage() == 10){
-            //error_log("INDEXATION DU BLOC DE MESSAGE");
+            error_log("INDEXATION DU BLOC DE MESSAGE");
+            //error_log(print_r($blocbdd->getAsArray(),true));
             // indexer le bloc de message
             $this->em->es_put($blocbdd,$blocbdd->getEsType());
-
         }
     }
 
-    public function updateinbloc($message,$new_content,$new_reaction){  //this param is a message ENTITY
+    public function updateinbloc($message,$new_content,$reaction){  //this param is a message ENTITY
         //var_dump($message->getId()."");
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
         //var_dump($bloc->getMessages());
@@ -532,12 +530,46 @@ class MessageSystem
         $contents[$position] = $new_content;
         $bloc->setContent($contents);
 
-        $reaction_table = $bloc->getReactions();
-        if(!(in_array($new_reaction, $reaction_table))){
-            array_push($reaction_table ,$new_reaction);
+
+        if(isset($reaction["add"]) || isset($reaction["remove"]) ){
+            $current_reactions = $bloc->getReactions();
+
+            if (isset($reaction["add"])) {
+                $new = true;
+                foreach ($current_reactions as $key => $value) {
+                    if ($value["reaction"] == array_keys($reaction["add"])[0]) {
+                        $current_reactions[$key]['count']++;
+                        $new = false;
+                    }
+                }
+                if ($new) {
+                    $current_reactions[] = Array(
+                        "reaction" => array_keys($reaction["add"])[0],
+                        "count" => 1
+                    );
+                }
+            }
+            if (isset($reaction["remove"])) {
+                foreach ($current_reactions as $key => $value) {
+                    if ($value["reaction"] == array_keys($reaction["remove"])[0]) {
+                        if($value["count"] == 1){
+                            unset($current_reactions[$key]);
+                        }
+                        else{
+                            $current_reactions[$key]['count']--;
+                        }
+                    }
+                }
+            }
+            $new_reaction = Array();
+            foreach ($current_reactions as $key => $value) {
+                $new_reaction[] = $value;
+            }
+
+            $bloc->setReactions($new_reaction);
+
         }
 
-        $bloc->setReactions($reaction_table);
 
         $this->em->persist($bloc);
         $this->em->flush();
@@ -555,11 +587,18 @@ class MessageSystem
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
         $position = array_search($message->getId()."",$bloc->getMessages());
 
-        if($position == 0){ //change id min or max
+        if($position == 0){ //change id min or max and dates
             $bloc->setMinMessageId($bloc->getMessages()[1]);
+            $id = $bloc->getMessages()[1];
+            $message_before= $this->em->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
+            $bloc->setMinDate($message_before->getCreationDate());
+
         }
         elseif ($position == 9){
             $bloc->setMaxMessageId($bloc->getMessages()[8]);
+            $id = $bloc->getMessages()[8];
+            $message_after= $this->em->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
+            $bloc->setMinDate($message_after->getCreationDate());
         }
         $bloc->setNbMessage($bloc->getNbMessage()-1);
 
@@ -567,14 +606,48 @@ class MessageSystem
         $ids = $bloc->getMessages();
         array_splice($contents, $position, 1);
         array_splice($ids, $position, 1);
+
+        $reaction = $message->getReactions();
+
+        if(isset($reaction)){
+            $current_reactions = $bloc->getReactions();
+            //error_log(print_r($current_reactions,true));
+
+            $reaction = array_keys($reaction)[0];
+            foreach ($current_reactions as $key => $value) {
+                if ($value["reaction"] == $reaction) {
+                    if($value["count"] == 1){
+                        unset($current_reactions[$key]);
+                    }
+                    else{
+                        $current_reactions[$key]['count']--;
+                    }
+                }
+            }
+            $new_reaction = Array();
+            foreach ($current_reactions as $key => $value) {
+                $new_reaction[] = $value;
+            }
+            $bloc->setReactions($new_reaction);
+
+            //print_r($bloc->getReactions(),true));
+        }
+
+//        $current_reactions = list($current_reactions);
+
         $bloc->setContent($contents);
         $bloc->setMessages($ids);
-//        unset($bloc->getContentKeywords()[$position]);
-//        unset($bloc->getMessages()[$position]);
+
+
+
+        //error_log(print_r($contents,true));
+        //error_log(print_r($ids,true));
 
         $this->em->persist($bloc);
         $this->em->flush();
-        //var_dump($bloc);
+
+        //error_log(print_r($bloc, true));
+
         if($bloc->getLock() == true){
             $this->em->es_put($bloc,$bloc->getEsType());
 
