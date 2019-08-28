@@ -249,6 +249,9 @@ class MarketApplication
         $options = Array(
             "repository" => "TwakeMarketBundle:Application",
             "index" => "applications",
+            "fallback_keys" => Array(
+                "name" => $query
+            ),
             "query" => Array(
                 "bool" => Array(
                     "filter" => Array(
@@ -269,7 +272,9 @@ class MarketApplication
 
         $result = [];
         foreach ($applications["result"] as $application) {
-            $result[] = $application->getAsArray();
+            if ($allows_unpublished_apps_from_group_id == $application->getGroupId() || $application->getPublic()) {
+                $result[] = $application->getAsArray();
+            }
         }
 
         return $result;

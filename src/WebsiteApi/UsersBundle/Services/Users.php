@@ -45,6 +45,11 @@ class Users
         $options = Array(
             "repository" => "TwakeUsersBundle:User",
             "index" => "users",
+            "fallback_keys" => Array(
+                "username" => $word,
+                "lastname" => $word,
+                "firstname" => $word,
+            ),
             "query" => Array(
                 "bool" => Array(
                     "should" => $terms,
