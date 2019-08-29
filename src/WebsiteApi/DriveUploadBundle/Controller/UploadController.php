@@ -37,6 +37,8 @@ class UploadController extends Controller
 
         //TODO check access to this file or set of files
 
+        $this->get("administration.counter")->incrementCounter("total_files_downloaded", 1);
+
 
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
         @$response = $this->get('driveupload.download')->download($workspace_id, $files_ids, $download, $versionId, $fileSystem);
@@ -58,6 +60,10 @@ class UploadController extends Controller
     {
         $current_user_id = $this->getUser()->getId();
         $res = $this->get('driveupload.upload')->upload($request, $response, $current_user_id);
+
+        $this->get("administration.counter")->incrementCounter("total_files", 1);
+        $this->get("administration.counter")->incrementCounter("total_files_size", intval($res["size"] / 1000));
+
         return new JsonResponse(Array("data" => Array("object" => $res)));
     }
 

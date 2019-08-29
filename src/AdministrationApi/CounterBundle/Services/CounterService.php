@@ -15,21 +15,25 @@ class CounterService
         $this->em = $em;
     }
 
-    public function incrementValue($key, $increment = 1) {
+    public function incrementCounter($key, $increment = 1)
+    {
         $counter_repository = $this->em->getRepository("AdministrationApiCounterBundle:Counter");
 
-        $counter_tab = $counter_repository->findBy(Array('counter_key'=>$key), array('date' => 'DESC'));
+        $counter_tab = $counter_repository->findBy(Array('counter_key' => $key), array(), 1, null, 'date', 'DESC');
+        $last_counter = $counter_tab[0];
 
-        if (count($counter_tab) == 0 || $counter_tab[0]->getDate() != date("Y-m-d")) {
+        if (!$counter_tab || $last_counter->getDate() != date("Y-m-d")) {
             $counter = new Counter($key, date("Y-m-d"));
-
-            $this->em->persist($counter);
+            if ($last_counter) {
+                $counter->setValue($last_counter->getValue());
+            }
         } else {
-            $counter = $counter_tab[0];
+            $counter = $last_counter;
         }
 
         $counter->setValue($counter->getValue() + $increment);
 
+        $this->em->persist($counter);
         $this->em->flush();
     }
 
