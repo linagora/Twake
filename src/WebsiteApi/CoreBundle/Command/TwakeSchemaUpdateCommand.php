@@ -43,6 +43,7 @@ class TwakeSchemaUpdateCommand extends ContainerAwareCommand
             "integer" => "int",
             "bigint" => "bigint",
             "twake_bigint" => "bigint",
+            "twake_counter" => "counter",
             "decimal" => "decimal",
             "twake_datetime" => "timestamp",
             "blob" => "blob"

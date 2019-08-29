@@ -20,7 +20,7 @@
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types;
 
 use Doctrine\DBAL\Platforms\AbstractPlatform;
-use \Doctrine\DBAL\Types\StringType;
+use \Doctrine\DBAL\Types\BigIntType;
 
 class CassandraCounterType extends BigIntType
 {
@@ -30,7 +30,12 @@ class CassandraCounterType extends BigIntType
      */
     public function getBindingType()
     {
-        return "twake_bigint";
+        return "twake_counter";
+    }
+
+    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform)
+    {
+        return "COUNTER";
     }
 
 }

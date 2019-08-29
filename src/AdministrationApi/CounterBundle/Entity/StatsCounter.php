@@ -1,40 +1,33 @@
 <?php
-
-
 namespace AdministrationApi\CounterBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
-use Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
- * Class Counter
+ * Counter
  *
- * @ORM\Table(name="counter_entity", options={"engine":"MyISAM", "scylladb_keys": {{"counter_key":"ASC", "date":"DESC"}}})
+ * @ORM\Table(name="stats_counter",options={"engine":"MyISAM", "scylladb_keys": {{"counter_key":"ASC", "date":"DESC"}} })
+ * @ORM\Entity(repositoryClass="AdministrationApi\CounterBundle\Repository\CounterRepository")
  */
-class Counter
+class StatsCounter
 {
 
     /**
-     * @var
-     *
      * @ORM\Column(name="counter_key", type="string", length=50)
      * @ORM\Id
      */
     protected $counter_key;
 
     /**
-     * @var
-     *
-     * @ORM\Column(name="date", type="string", length=20)
+     * @ORM\Column(name="date", type="integer")
      * @ORM\Id
      */
     protected $date;
 
     /**
-     * @var
-     *
-     * @ORM\Column(name="value", type="twake_bigint")
+     * @ORM\Column(name="value", type="twake_counter")
      */
     protected $value;
 
@@ -70,9 +63,9 @@ class Counter
     }
 
     /**
-     * @param mixed $value
+     * @param mixed $value BE CAREFUL THIS IS A COUNTER ! SO IT WILL BE AN ADD NOT A SET
      */
-    public function setValue($value)
+    public function setIncrementValue($value)
     {
         $this->value = $value;
     }

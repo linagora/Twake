@@ -27,7 +27,9 @@ class TaskController extends Controller
         $object = $request->request->get("object");
         $res = $this->get("app.tasks.task")->save($object, $options, $this->getUser());
 
-        $this->get("administration.counter")->incrementCounter("total_tasks", 1);
+        if (!$object["id"]) {
+            $this->get("administration.counter")->incrementCounter("total_tasks", 1);
+        }
 
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
