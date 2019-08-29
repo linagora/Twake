@@ -142,6 +142,8 @@ class PDOStatementAdapter
         $query_explode = explode("?", $query);
         $query = "";
 
+        $there_is_a_counter = false;
+
         foreach ($query_explode as $position => $query_part) {
 
             if ($position == count($query_explode) - 1) {
@@ -159,7 +161,8 @@ class PDOStatementAdapter
                 } else if ($this->types[$position + 1] == \PDO::PARAM_INT || $this->types[$position + 1] == "twake_timeuuid" || $this->types[$position + 1] == "twake_bigint") {
                     $value = $value;
                 } else if ($this->types[$position + 1] == "twake_counter") {
-                    preg_match("/([a-z_]+) ?= ?$/", $query_part, $matches);
+                    $there_is_a_counter = $position;
+                    preg_match("/([a-z_]+) *= *$/", $query_part, $matches);
                     if (isset($matches[1])) {
                         $column_name = $matches[1];
                         if ($value > 0) {
@@ -182,6 +185,34 @@ class PDOStatementAdapter
         }
 
         $query = preg_replace("/ +IS +NULL( |$)/", " = NULL ", $query);
+
+
+        if ($there_is_a_counter !== false && preg_match("/^INSERT/", $query)) {
+
+            //Change INSERTS to UPDATES
+            $pos = $there_is_a_counter;
+            preg_match("/^ *INSERT +INTO +([a-z_]+) +\(([a-z_ ,]+)\) +values +\((.*)\) *$/", $query, $matches);
+            $table = $matches[1];
+            $parameters = explode(",", $matches[2]);
+            $values = explode(",", $matches[3]);
+            $increment_value = $values[$pos];
+            if ($increment_value >= 0) {
+                $increment_value = " + " . intval($increment_value);
+            }
+            $new_query = "UPDATE " . $table . " SET " . $parameters[$pos] . " = " . $parameters[$pos] . " " . $increment_value . " WHERE ";
+
+            $first = true;
+            foreach ($parameters as $k => $parameter) {
+                if ($k != $pos) {
+                    if (!$first) $new_query .= " AND ";
+                    $new_query .= $parameter . " = " . $values[$k];
+                    $first = false;
+                }
+            }
+
+            $query = $new_query;
+
+        }
 
         try {
             $this->executor->exec($query, $this);

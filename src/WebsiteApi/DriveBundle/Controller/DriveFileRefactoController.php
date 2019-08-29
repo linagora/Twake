@@ -71,8 +71,10 @@ class DriveFileRefactoController extends Controller
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         } else {
-            $this->get("administration.counter")->incrementCounter("total_files", 1);
-            $this->get("administration.counter")->incrementCounter("total_files_size", intval($res["size"] / 1000));
+            if (!$object["id"]) {
+                $this->get("administration.counter")->incrementCounter("total_files", 1);
+                $this->get("administration.counter")->incrementCounter("total_files_size", intval($res["size"] / 1000));
+            }
         }
         return new JsonResponse(Array("data" => Array("object" => $res)));
     }
