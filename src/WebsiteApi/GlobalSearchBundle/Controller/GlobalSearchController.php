@@ -90,10 +90,10 @@ class GlobalSearchController extends Controller
         //$current_user_id = $current_user->getId();
 
         $options = Array(
-            "words" => Array("message","final"),
+            "words" => Array("test","final"),
             "date_before" => "2019-08-30",
-            "date_after" => "2019-08-29",
-            "reaction" => Array(":sunglasses:"),
+            "date_after" => "2019-08-20",
+            "reaction" => Array("sun"),
 
         );
 

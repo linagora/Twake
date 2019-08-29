@@ -49,64 +49,14 @@ class Blocmessage
     public function search($options,$channels){
         $final_words = Array();
         $options_save = $options;
-        $now = new \DateTime();
-        //$now = $now["date"];
-        $now = $now->format('Y-m-d');
-        $before = Array(
-            "bool" => Array(
-                "filter" => Array(
-                    "range" => Array(
-                        "date_first" =>Array(
-                            "lte" => $now
-                        )
-                    )
-                )
-            )
-        );
-        $after = Array(
-            "bool" => Array(
-                "filter" => Array(
-                    "range" => Array(
-                        "date_last" =>Array(
-                            "gte" => "2000-01-01"
-                        )
-                    )
-                )
-            )
-        );
 
+        //var_dump($options);
 
+        //PARTIE SUR LES MOTS
         foreach($options["words"] as $word){
             if(strlen($word) > 3) {
                 $final_words[] = strtolower($word);
             }
-        }
-        if(isset($options["date_before"])){
-            $before = Array(
-                "bool" => Array(
-                    "filter" => Array(
-                        "range" => Array(
-                            "date_first" =>Array(
-                                "lte" => $options["date_before"]
-                            )
-                        )
-                    )
-                )
-            );
-        }
-
-        if(isset($options["date_after"])){
-            $after = Array(
-                "bool" => Array(
-                    "filter" => Array(
-                        "range" => Array(
-                            "date_last" =>Array(
-                                "gte" => $options["date_after"]
-                            )
-                        )
-                    )
-                )
-            );
         }
 
         if(isset($final_words) && $final_words != Array()){
@@ -116,13 +66,26 @@ class Blocmessage
                     "bool" => Array(
                         "filter" => Array(
                             "regexp" => Array(
-                                "content" => ".*" . $word . ".*"
+                                "messages.content" => ".*" . $word . ".*"
                             )
                         )
                     )
                 );
             }
 
+            $now = new \DateTime();
+            $before = $now->format('Y-m-d');
+            $after = "2000-01-01";
+
+            if(isset($options["date_before"])){
+                $before = $options["date_before"];
+            }
+
+            if(isset($options["date_after"])){
+                $after = $options["date_after"];
+            }
+
+            //PARTIES SUR LES CHANNELS
             $should_channels = Array();
             foreach($channels as $channel) {
                 $should_channels[] = Array(
@@ -131,6 +94,24 @@ class Blocmessage
                     )
                 );
             }
+
+            //PARTIE SUR LES REACTION
+            if(isset($options["reactions"])){
+                $reactions = Array();
+                foreach ($reactions as $reaction){
+                    $reactions[]= Array(
+                        "bool" => Array(
+                            "filter" => Array(
+                                "regexp" => Array(
+                                    "messages.reactions.reaction" => ".*".$reaction.".*"
+                                )
+                            )
+                        )
+                    );
+                }
+
+            }
+
 
             $options = Array(
                 "repository" => "TwakeGlobalSearchBundle:Bloc",
@@ -141,25 +122,57 @@ class Blocmessage
                             Array(
                                 "bool" => Array(
                                     "should" => Array(
-                                        $should_channels
-                                    ),
-                                    "minimum_should_match" => 1,
-                                )
-                            ),
-                            Array(
-                                "bool" => Array(
-                                    "should" => Array(
-                                        $terms
+                                        $channels
                                     ),
                                     "minimum_should_match" => 1
                                 )
-                            ),
-                            Array(
-                                $before
-                            ),
-                            Array(
-                                $after
-                            ),
+//                            ),
+//                            Array(
+//                                "nested" => Array(
+//                                    "path" => "messages",
+//                                    "score_mode" => "avg",
+//                                    "query" => Array(
+//                                        "bool" => Array(
+//                                            "must" => Array(
+//                                                Array(
+//                                                    "range" => Array(
+//                                                        "messages.date" => Array(
+//                                                            "lte" => $before,
+//                                                            "gte" => $after
+//                                                        )
+//                                                    )
+//                                                )
+//                                                Array(
+//                                                    "bool" => Array(
+//                                                        "must" => Array(
+//                                                            "nested" => Array(
+//                                                                "path" => "messages.reactions",
+//                                                                "score_mode" => "avg",
+//                                                                "query" => Array(
+//                                                                    "bool" => Array(
+//                                                                        "should" => Array(
+//                                                                           $reactions
+//                                                                        ),
+//                                                                        "minimum_should_match" => 1
+//                                                                    )
+//                                                                )
+//                                                            )
+//                                                        )
+//                                                    )
+//                                                ),
+//                                                Array(
+//                                                    "bool" => Array(
+//                                                        "should" => Array(
+//                                                            $terms
+//                                                        ),
+//                                                        "minimum_should_match" => 1
+//                                                    )
+//                                                )
+//                                            )
+//                                        )
+//                                    )
+//                                )
+                            )
                         )
                     )
                 )
@@ -171,46 +184,51 @@ class Blocmessage
 
             // search in ES
             $result = $this->doctrine->es_search($options);
-            array_slice($result["result"], 0, 5);
+//            var_dump($result);
+
+//            if(isset($result)){
+//                array_slice($result["result"], 0, 5);
+//            }
 
 
-            // on cherche dans le bloc en cours de construction de tout les channels demandés
-            foreach($channels as $channel) {
-                $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("channel_id" => $channel));
-                $compt = 0;
-                if (isset($lastbloc) && $lastbloc->getLock() == false) {
-                    foreach ($lastbloc->getContent() as $content) {
-                        foreach ($final_words as $word) {
-                            if (strpos(strtolower($content), strtolower($word)) !== false) {
-                                $message_id_in_bloc = $lastbloc->getMessages()[$compt];
-                                $list_message = $this->verif_valid($message_id_in_bloc, $options_save,$list_message);
-                            }
 
-                        }
-                        $compt++;
-                        //var_dump($compt);
-                    }
-                }
-            }
-
-            //on traite les données recu d'Elasticsearch
-
-            foreach ($result["result"] as $bloc) {
-                $content = $bloc->getContent();
-//                error_log(print_r("nombre de resultat : " . count($result),true));
-//                error_log(print_r($bloc,true));
-                $compt = 0;
-                foreach ($content as $phrase) {
-                    foreach ($final_words as $word) {
-                        if (strpos(strtolower($phrase), strtolower($word)) !== false) {
-                            $message_id_in_bloc = $bloc->getMessages()[$compt];
-                            $list_message = $this->verif_valid($message_id_in_bloc, $options_save, $list_message);
-                        }
-                    }
-                    $compt++;
-                }
-            }
-            error_log(print_r("nombre de resultat : " . count($list_message),true));
+//            // on cherche dans le bloc en cours de construction de tout les channels demandés
+//            foreach($channels as $channel) {
+//                $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("channel_id" => $channel));
+//                $compt = 0;
+//                if (isset($lastbloc) && $lastbloc->getLock() == false) {
+//                    foreach ($lastbloc->getContent() as $content) {
+//                        foreach ($final_words as $word) {
+//                            if (strpos(strtolower($content), strtolower($word)) !== false) {
+//                                $message_id_in_bloc = $lastbloc->getMessages()[$compt];
+//                                $list_message = $this->verif_valid($message_id_in_bloc, $options_save,$list_message);
+//                            }
+//
+//                        }
+//                        $compt++;
+//                        //var_dump($compt);
+//                    }
+//                }
+//            }
+//
+//            //on traite les données recu d'Elasticsearch
+//
+//            foreach ($result["result"] as $bloc) {
+//                $content = $bloc->getContent();
+////                error_log(print_r("nombre de resultat : " . count($result),true));
+////                error_log(print_r($bloc,true));
+//                $compt = 0;
+//                foreach ($content as $phrase) {
+//                    foreach ($final_words as $word) {
+//                        if (strpos(strtolower($phrase), strtolower($word)) !== false) {
+//                            $message_id_in_bloc = $bloc->getMessages()[$compt];
+//                            $list_message = $this->verif_valid($message_id_in_bloc, $options_save, $list_message);
+//                        }
+//                    }
+//                    $compt++;
+//                }
+//            }
+//            error_log(print_r("nombre de resultat : " . count($list_message),true));
         }
 
     return $list_message ?: null;

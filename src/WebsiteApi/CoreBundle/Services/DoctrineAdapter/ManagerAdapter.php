@@ -316,6 +316,7 @@ class ManagerAdapter
             $res = $this->circle->post($route, json_encode(Array("scroll" => "1m" ,"scroll_id" => $options["scroll_id"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         }
         else {
+
             if (!$this->es_server || true) {
 
                 if (isset($options["repository"]) && isset($options["fallback_keys"])) {
@@ -343,7 +344,6 @@ class ManagerAdapter
 
                 return [];
             }
-
             if (isset($options["index"]) && !$type) {
                 $index = $options["index"];
             }
@@ -352,7 +352,7 @@ class ManagerAdapter
             $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
             $route .= "_search";
             $route .= "?scroll=1m"; //on spécifie un temps ou la recherche est active
-
+            var_dump($route);
             try {
                 if (isset($options["sort"])) {
                     $res = $this->circle->post($route, json_encode(Array("query" => $options["query"], "sort" => $options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
@@ -374,6 +374,8 @@ class ManagerAdapter
         //error_log(print_r($repository,true));
 
         $res = $res->getContent();
+
+        var_dump($res);
 
         $result = [];
         $scroll_id = "";

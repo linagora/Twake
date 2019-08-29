@@ -35,32 +35,11 @@ class Bloc extends SearchableObject
      * @ORM\Id
      */
     protected $channel_id;
-    /**
-     * @ORM\Column(name="min_message_id", type="twake_timeuuid", nullable=true)
-     */
-    protected $min_message_id;
-    /**
-     * @ORM\Column(name="max_message_id", type="twake_timeuuid", nullable=true)
-     */
-    protected $max_message_id;
 
-    /**
-     * @ORM\Column(name="min_date", type="twake_datetime", nullable=true)
-     */
-    protected $min_date;
-
-    /**
-     * @ORM\Column(name="max_date", type="twake_datetime", nullable=true)
-     */
-    protected $max_date;
     /**
      * @ORM\Column(name ="nb_message", type="integer", nullable=true)
      */
     protected $nb_message = 0;
-    /**
-     * @ORM\Column(name ="content", type="twake_text", nullable=true)
-     */
-    protected $content;
 
     /**
      * @ORM\Column(name ="messages", type="twake_text", nullable=true)
@@ -68,9 +47,9 @@ class Bloc extends SearchableObject
     protected $messages;
 
     /**
-     * @ORM\Column(name ="reactions", type="twake_text", nullable=true)
+     * @ORM\Column(name ="id_messages", type="twake_text", nullable=true)
      */
-    protected $reactions;
+    protected $id_messages;
 
     /**
      * @ORM\Column(name ="lock", type="twake_boolean")
@@ -85,14 +64,12 @@ class Bloc extends SearchableObject
      * @param int $nb_message
      * @param $content_keywords
      */
-    public function __construct($workspace_id, $channel_id, $content, $messages, $reactions)
+    public function __construct($workspace_id, $channel_id, $messages, $id_messages)
     {
         $this->workspace_id = $workspace_id;
         $this->channel_id = $channel_id;
-        $this->content = json_encode($content);
         $this->messages = json_encode($messages);
-        $this->reactions = json_encode($reactions);
-
+        $this->id_messages = json_encode($id_messages);
     }
 
 
@@ -102,13 +79,9 @@ class Bloc extends SearchableObject
             "id" => $this->getId(),
             "channel_id" => $this->getChannelId(),
             "workspace_id" => $this->getWorkspaceId(),
-            "min_message_id" => $this->getMinMessageId(),
-            "min_date" => $this->getMinDate(),
-            "max_message_id" => $this->getMaxMessageId(),
-            "max_date" => $this->getMaxDate(),
             "nb_message" => $this->getNbMessage(),
-            "content" => $this->getContent(),
-            "reactions" => $this->getReactions(),
+            "message" => $this->getMessages(),
+            "id_messages" =>$this->getIdMessages()
 
         );
         return $return;
@@ -121,10 +94,7 @@ class Bloc extends SearchableObject
                 "id" => $this->getId()."",
                 "channel_id" => $this->getChannelId(),
                 "workspace_id" => $this->getWorkspaceId(),
-                "date_first" => ($this->getMinDate() ? $this->getMinDate()->format('Y-m-d') : null),
-                "date_last" => ($this->getMaxDate() ? $this->getMaxDate()->format('Y-m-d') : null),
-                "content" => $this->getContent(),
-                "reactions" => $this->getReactions(),
+                "messages" => $this->getMessages()
             );
         }
         else
@@ -135,51 +105,18 @@ class Bloc extends SearchableObject
     /**
      * @return mixed
      */
-    public function getReactions()
+    public function getIdMessages()
     {
-        return json_decode($this->reactions,true);
+        return json_decode($this->id_messages,true);
     }
 
     /**
-     * @param mixed $reaction
+     * @param mixed $id_messages
      */
-    public function setReactions($reactions)
+    public function setIdMessages($id_messages)
     {
-        $this->reactions = json_encode($reactions);
+        $this->id_messages = json_encode($id_messages);
     }
-
-    /**
-     * @return mixed
-     */
-    public function getMinDate()
-    {
-        return $this->min_date;
-    }
-
-    /**
-     * @param mixed $min_date
-     */
-    public function setMinDate($min_date)
-    {
-        $this->min_date = $min_date;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMaxDate()
-    {
-        return $this->max_date;
-    }
-
-    /**
-     * @param mixed $max_date
-     */
-    public function setMaxDate($max_date)
-    {
-        $this->max_date = $max_date;
-    }
-
 
     /**
      * @return string
@@ -194,7 +131,7 @@ class Bloc extends SearchableObject
      */
     public function getMessages()
     {
-        return json_decode($this->messages);
+        return json_decode($this->messages,true);
     }
 
     /**
@@ -268,39 +205,6 @@ class Bloc extends SearchableObject
     {
         $this->channel_id = $channel_id;
     }
-
-    /**
-     * @return mixed
-     */
-    public function getMinMessageId()
-    {
-        return $this->min_message_id;
-    }
-
-    /**
-     * @param mixed $min_message_id
-     */
-    public function setMinMessageId($min_message_id)
-    {
-        $this->min_message_id = $min_message_id;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getMaxMessageId()
-    {
-        return $this->max_message_id;
-    }
-
-    /**
-     * @param mixed $max_message_id
-     */
-    public function setMaxMessageId($max_message_id)
-    {
-        $this->max_message_id = $max_message_id;
-    }
-
     /**
      * @return mixed
      */
@@ -317,32 +221,80 @@ class Bloc extends SearchableObject
         $this->nb_message = $nb_message;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getContent()
-    {
-        return json_decode($this->content);
-    }
+    public function addmessage($message_entity){
 
-    /**
-     * @param mixed $content
-     */
-    public function setContent($content)
-    {
-        $this->content = json_encode($content);
-    }
+        $content = $this->mdToText($message_entity->getContent());
+        $date = $message_entity->getCreationDate();
 
-    public function addmessage($message,$message_id){
-        $content = $this->getContent();
-        array_push($content ,$message);
-        $this->setContent($content);
+        $messages = $this->getMessages();
+
+        $add = Array(
+            "content" => $content,
+            "date" => $date->format('Y-m-d'),
+            "reactions" => Array()
+        );
+        array_push($messages, $add);
+        $this->setMessages($messages);
         $this->setNbMessage($this->getNbMessage()+1);
 
-        $ids = $this->getMessages();
-        array_push($ids,$message_id);
-        $this->setMessages($ids);
+        $id_messages = $this->getIdMessages();
+        $id= $message_entity->getId()."";
+        array_push( $id_messages, $id);
+        $this->setIdMessages($id_messages);
         }
+
+    private function mdToText($array)
+    {
+
+        if (!$array) {
+            return "";
+        }
+
+        if (is_string($array)) {
+            $array = [$array];
+        }
+
+        if (isset($array["fallback_string"])) {
+            $result = $array["fallback_string"];
+        } else if (isset($array["original_str"])) {
+            $result = $array["original_str"];
+        } else {
+
+            if (isset($array["type"]) || isset($array["start"])) {
+                $array = [$array];
+            }
+
+            $result = "";
+
+            try {
+                foreach ($array as $item) {
+                    if (is_string($item)) {
+                        $result .= $item;
+                    } else if (isset($item["type"])) {
+                        if (in_array($item["type"], Array("underline", "strikethrough", "bold", "italic", "mquote", "quote", "email", "url", "", "nop", "br", "system"))) {
+                            if ($item["type"] == "br") {
+                                $result .= " ";
+                            }
+                            $result .= $this->mdToText($item["content"]);
+                        }
+                    } else {
+                        $result .= $this->mdToText($item["content"]);
+                    }
+                }
+
+            } catch (\Exception $e) {
+                return "Open Twake to see this message.";
+            }
+
+        }
+
+
+        $result = preg_replace("/@(.*):.*(( |$))/", "@$1$2", $result);
+        $result = preg_replace("/#(.*):.*(( |$))/", "#$1$2", $result);
+
+        return $result;
+
+    }
 
 
 }
