@@ -33,4 +33,21 @@ class CounterService
         $this->em->flush();
     }
 
+    public function getCounter($key) {
+        $counter_repository = $this->em->getRepository("AdministrationApiCounterBundle:Counter");
+
+        $counter_tab = $counter_repository->findBy(Array('counter_key'=>$key), array('date' => 'DESC')); //TODO a changer quand j'aurai pull
+
+        $rep = false;
+
+        if ($counter_tab) {
+            $rep = array();
+            foreach ($counter_tab as $counter_entity) {
+                $rep[] = $counter_entity->getAsArray();
+            }
+        }
+
+        return $rep;
+    }
+
 }

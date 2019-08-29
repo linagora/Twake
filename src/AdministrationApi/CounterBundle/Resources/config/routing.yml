@@ -1,4 +1,4 @@
 administration_api_increment_counter:
-  path: /increment
-  defaults: { _controller: AdministrationApiCounterBundle:Counter:incrementValue }
+  path: /getCounter
+  defaults: { _controller: AdministrationApiCounterBundle:Counter:getCounter }
   methods:  [POST]

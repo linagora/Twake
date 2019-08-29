@@ -10,23 +10,41 @@ use Symfony\Component\HttpFoundation\Request;
 class CounterController extends Controller
 {
 
-    public function incrementValueAction(Request $request) {
+    public function getCounterAction(Request $request) {
 
-        $data = array(
-            "data" => array(),
-            "errors" => array()
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
         );
 
-        $counter_id = $request->request->get('key');
+        $validation = $this->get("administration.validation");
+        $token = $request->request->get("token");
+        $validate_token = $validation->validateAuthentication($token);
 
-        $counter_value = $request->request->get('value');
+        if ($validate_token) {
 
-        $counter_service = $this->get("administration.counter");
+            $keys = $request->request->get("key");
 
-        if (isset($counter)) {
-            $counter_service->incrementValue($counter_id, $counter_value);
+            $counter_service = $this->get("administration.counter");
+
+            $counter_data = array();
+
+            if (is_array($keys)) {
+                foreach ($keys as $key) {
+                    $counter_tab = $counter_service->getCounter($key);
+                    if ($counter_tab) {
+                        $counter_data[$key] = $counter_tab;
+                    }
+                }
+            } elseif ($keys) {
+                $counter_tab = $counter_service->getCounter($keys);
+                if ($counter_tab) {
+                    $counter_data[$keys] = $counter_tab;
+                }
+            }
+
         } else {
-            $counter_service->incrementValue($counter_id);
+            $data["errors"][] = "invalid_authentication_token";
         }
 
         return new JsonResponse($data);
