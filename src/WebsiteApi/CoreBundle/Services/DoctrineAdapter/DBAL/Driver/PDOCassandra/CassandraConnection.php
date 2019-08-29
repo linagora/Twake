@@ -190,9 +190,27 @@ class PDOStatementAdapter
         if ($there_is_a_counter !== false && preg_match("/^INSERT/", $query)) {
 
             //Change INSERTS to UPDATES
+            $pos = $there_is_a_counter;
+            preg_match("/^ *INSERT +INTO +([a-z_]+) +\(([a-z_ ,]+)\) +values +\((.*)\) *$/", $query, $matches);
+            $table = $matches[1];
+            $parameters = explode(",", $matches[2]);
+            $values = explode(",", $matches[3]);
+            $increment_value = $values[$pos];
+            if ($increment_value >= 0) {
+                $increment_value = " + " . intval($increment_value);
+            }
+            $new_query = "UPDATE " . $table . " SET " . $parameters[$pos] . " = " . $parameters[$pos] . " " . $increment_value . " WHERE ";
 
-            error_log("CHANGE INSERT TO UPDATE !");
-            error_log($query . " > pos = " . $there_is_a_counter);
+            $first = true;
+            foreach ($parameters as $k => $parameter) {
+                if ($k != $pos) {
+                    if (!$first) $new_query .= " AND ";
+                    $new_query .= $parameter . " = " . $values[$k];
+                    $first = false;
+                }
+            }
+
+            $query = $new_query;
 
         }
 
