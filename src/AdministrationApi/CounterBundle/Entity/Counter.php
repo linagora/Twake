@@ -34,7 +34,7 @@ class Counter
     /**
      * @var
      *
-     * @ORM\Column(name="value", type="integer")
+     * @ORM\Column(name="value", type="twake_bigint")
      */
     protected $value;
 

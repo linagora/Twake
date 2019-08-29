@@ -72,6 +72,8 @@ class UsersSubscribeController extends Controller
                 $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], isset($device["version"]) ? $device["version"] : null);
             }
 
+            $this->get("administration.counter")->incrementCounter("total_users", 1);
+
         } else {
 
             $data["errors"][] = "error";
