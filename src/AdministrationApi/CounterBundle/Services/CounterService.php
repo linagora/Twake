@@ -40,7 +40,7 @@ class CounterService
     public function getCounter($key) {
         $counter_repository = $this->em->getRepository("AdministrationApiCounterBundle:Counter");
 
-        $counter_tab = $counter_repository->findBy(Array('counter_key'=>$key), array('date' => 'DESC')); //TODO a changer quand j'aurai pull
+        $counter_tab = $counter_repository->findBy(Array('counter_key' => $key), array(), 20, null, 'date', 'DESC');
 
         $rep = false;
 

@@ -36,11 +36,18 @@ class CounterController extends Controller
                         $counter_data[$key] = $counter_tab;
                     }
                 }
+                if (count($counter_data) == 0) {
+                    $data['errors'][] = "key_not_found";
+                }
             } elseif ($keys) {
                 $counter_tab = $counter_service->getCounter($keys);
                 if ($counter_tab) {
                     $counter_data[$keys] = $counter_tab;
+                } else {
+                    $data['errors'][] = "counter_not_found";
                 }
+            } else {
+                $data['errors'][] = "key_not_found";
             }
 
         } else {
