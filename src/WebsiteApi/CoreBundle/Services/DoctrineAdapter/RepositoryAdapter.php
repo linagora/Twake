@@ -214,10 +214,14 @@ class RepositoryAdapter extends \Doctrine\ORM\EntityRepository
                     if (is_object($offset)) {
                         $offset = $offset->getId();
                     }
-                    $offset = new FakeCassandraTimeuuid($offset);
-                    if (strpos($order_field, "__TOKEN__") === 0) {
-                        $offset = "__TOKEN__" . $offset . "";
+
+                    if (is_string($offset)) {
+                        $offset = new FakeCassandraTimeuuid($offset);
+                        if (strpos($order_field, "__TOKEN__") === 0) {
+                            $offset = "__TOKEN__" . $offset . "";
+                        }
                     }
+
                     $qb = $qb->setParameter("offset", $offset);
                 }
 
