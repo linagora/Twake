@@ -53,6 +53,8 @@ class FilesController extends Controller
 
                 if ($object) {
 
+                    $access = $object["acces_info"];
+
                     $is_editable = $access["is_editable"];
                     $publicaccess = $access["token"];
                     $authorized_members = $access["authorized_members"];
