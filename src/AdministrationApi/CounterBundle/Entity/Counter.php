@@ -77,5 +77,11 @@ class Counter
         $this->value = $value;
     }
 
+    public function getAsArray() {
+        return array(
+            "date" => $this->getDate(),
+            "value" => $this->getValue()
+        );
+    }
 
 }
