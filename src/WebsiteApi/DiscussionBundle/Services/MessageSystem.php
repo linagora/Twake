@@ -490,28 +490,24 @@ class MessageSystem
 
         if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
             error_log("CREATION NOUVEAU BLOC");
-            $content = Array();
-            $message_array_id = Array();
-            $reactions = Array();
-            $blocbdd = new Bloc($workspace_id, $channel_id, $content, $message_array_id, $reactions);
-            $blocbdd->setMinMessageId($message_id);
-            $blocbdd->setMinDate($message->getCreationDate());
+            $messages= Array();
+            $id_messages = Array();
+            $blocbdd = new Bloc($workspace_id, $channel_id, $messages, $id_messages);
+
         } else
             $blocbdd = $lastbloc;
         if($blocbdd->getNbMessage() == 9){
-            $blocbdd->setMaxMessageId($message_id);
-            $blocbdd->setMaxDate($message->getCreationDate());
             $blocbdd->setLock(true);
         }
 
-        $content = $this->mdToText($message->getContent());
-
-        $blocbdd->addmessage($content, $message_id);
+        $blocbdd->addmessage($message);
         $this->em->persist($blocbdd);
         $message->setBlockId($blocbdd->getId()."");
         $this->em->persist($message);
         $this->em->flush();
 
+        error_log(print_r($blocbdd->getMessages(),true));
+        error_log(print_r($blocbdd->getIdMessages(),true));
 
         if ($blocbdd->getNbMessage() == 10){
             error_log("INDEXATION DU BLOC DE MESSAGE");
@@ -525,14 +521,15 @@ class MessageSystem
         //var_dump($message->getId()."");
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
         //var_dump($bloc->getMessages());
-        $position = array_search($message->getId()."",$bloc->getMessages());
-        $contents = $bloc->getContent();
-        $contents[$position] = $new_content;
-        $bloc->setContent($contents);
+        $position = array_search($message->getId()."",$bloc->getIdMessages());
+        $messages = $bloc->getMessages();
+        $messages[$position]["content"] = $new_content;
+
+        $bloc->setMessages($messages);
 
 
         if(isset($reaction["add"]) || isset($reaction["remove"]) ){
-            $current_reactions = $bloc->getReactions();
+            $current_reactions = $messages[$position]["reactions"];
 
             if (isset($reaction["add"])) {
                 $new = true;
@@ -566,7 +563,8 @@ class MessageSystem
                 $new_reaction[] = $value;
             }
 
-            $bloc->setReactions($new_reaction);
+            $messages[$position]["reactions"] = $new_reaction;
+            $bloc->setMessages($messages);
 
         }
 
@@ -585,63 +583,19 @@ class MessageSystem
     public function deleteinbloc($message){
 
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
-        $position = array_search($message->getId()."",$bloc->getMessages());
+        $position = array_search($message->getId()."",$bloc->getIdMessages());
 
-        if($position == 0){ //change id min or max and dates
-            $bloc->setMinMessageId($bloc->getMessages()[1]);
-            $id = $bloc->getMessages()[1];
-            $message_before= $this->em->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
-            $bloc->setMinDate($message_before->getCreationDate());
 
-        }
-        elseif ($position == 9){
-            $bloc->setMaxMessageId($bloc->getMessages()[8]);
-            $id = $bloc->getMessages()[8];
-            $message_after= $this->em->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
-            $bloc->setMinDate($message_after->getCreationDate());
-        }
         $bloc->setNbMessage($bloc->getNbMessage()-1);
 
-        $contents = $bloc->getContent();
-        $ids = $bloc->getMessages();
-        array_splice($contents, $position, 1);
-        array_splice($ids, $position, 1);
+        $messages = $bloc->getMessages();
+        $id_messages = $bloc->getIdMessages();
 
-        $reaction = $message->getReactions();
+        array_splice( $messages, $position, 1);
+        array_splice($id_messages, $position, 1);
 
-        if(isset($reaction)){
-            $current_reactions = $bloc->getReactions();
-            //error_log(print_r($current_reactions,true));
-
-            $reaction = array_keys($reaction)[0];
-            foreach ($current_reactions as $key => $value) {
-                if ($value["reaction"] == $reaction) {
-                    if($value["count"] == 1){
-                        unset($current_reactions[$key]);
-                    }
-                    else{
-                        $current_reactions[$key]['count']--;
-                    }
-                }
-            }
-            $new_reaction = Array();
-            foreach ($current_reactions as $key => $value) {
-                $new_reaction[] = $value;
-            }
-            $bloc->setReactions($new_reaction);
-
-            //print_r($bloc->getReactions(),true));
-        }
-
-//        $current_reactions = list($current_reactions);
-
-        $bloc->setContent($contents);
-        $bloc->setMessages($ids);
-
-
-
-        //error_log(print_r($contents,true));
-        //error_log(print_r($ids,true));
+        $bloc->setMessages($messages);
+        $bloc->setIdMessages($id_messages);
 
         $this->em->persist($bloc);
         $this->em->flush();
@@ -768,5 +722,6 @@ class MessageSystem
         return $result;
 
     }
+
 
 }
