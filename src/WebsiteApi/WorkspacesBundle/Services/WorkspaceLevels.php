@@ -9,14 +9,14 @@ use WebsiteApi\WorkspacesBundle\Model\WorkspaceLevelsInterface;
 class WorkspaceLevels implements WorkspaceLevelsInterface
 {
 
-	private $doctrine;
+    private $doctrine;
     private $pusher;
 
     public function __construct($doctrine, $pusher)
-	{
-		$this->doctrine = $doctrine;
+    {
+        $this->doctrine = $doctrine;
         $this->pusher = $pusher;
-	}
+    }
 
 
     private function convertToEntity($var, $repository)
@@ -35,32 +35,32 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
     }
 
-	public function can($workspaceId, $userId, $action)
-	{
+    public function can($workspaceId, $userId, $action)
+    {
 
         if (!$userId) {
             return false;
         }
 
-		//Load rights for this users
+        //Load rights for this users
 
-		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-		$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+        $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
         $user = $this->convertToEntity($userId, "TwakeUsersBundle:User");
-		$workspace = $workspaceRepository->find($workspaceId);
+        $workspace = $workspaceRepository->find($workspaceId);
 
-		if(!$user || !$workspace){
+        if (!$user || !$workspace) {
             error_log("no user / ws ");
-			return false;
-		}
+            return false;
+        }
 
-		if($workspace->getUser() != null && $workspace->getUser()->getId()==$user->getId()){
-			return true;
-		}
+        if ($workspace->getUser() != null && $workspace->getUser()->getId() == $user->getId()) {
+            return true;
+        }
 
-		$link = $workspaceUserRepository->findOneBy(Array("user"=>$user, "workspace"=>$workspace));
-		if($link){
+        $link = $workspaceUserRepository->findOneBy(Array("user" => $user, "workspace" => $workspace));
+        if ($link) {
             $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
             if(!$link || !$level){
                 return false;
@@ -93,57 +93,57 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
         return true;
 
-	}
+    }
 
-	public function getLevel($workspaceId, $userId, $currentUserId = null)
-	{
-		if($currentUserId == null
-			|| $currentUserId == $userId
+    public function getLevel($workspaceId, $userId, $currentUserId = null)
+    {
+        if ($currentUserId == null
+            || $currentUserId == $userId
             || $this->can($workspaceId, $currentUserId, "")
-		){
+        ) {
 
-			$userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
-			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
-			$user = $userRepository->find($userId);
-			$workspace = $workspaceRepository->find($workspaceId);
-			$link = $workspaceUserRepository->findOneBy(Array("user"=>$user, "workspace"=>$workspace));
+            $user = $userRepository->find($userId);
+            $workspace = $workspaceRepository->find($workspaceId);
+            $link = $workspaceUserRepository->findOneBy(Array("user" => $user, "workspace" => $workspace));
 
-			if(!$link){
-				return null; //No level because no member
-			}
+            if (!$link) {
+                return null; //No level because no member
+            }
             $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
 
-			return $level;
+            return $level;
 
-		}
+        }
 
-		return null; //Cant look this info
-	}
+        return null; //Cant look this info
+    }
 
-	public function updateLevel($workspaceId, $levelId, $label, $rights, $currentUserId = null)
-	{
-		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "workspace:write")
-		){
+    public function updateLevel($workspaceId, $levelId, $label, $rights, $currentUserId = null)
+    {
+        if ($currentUserId == null
+            || $this->can($workspaceId, $currentUserId, "workspace:write")
+        ) {
 
-			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+            $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
 
-			$level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"level"=>$levelId));
-			if(!$level){
-				return false;
-			}
+            $level = $levelRepository->findBy(Array("workspace" => $workspaceId, "level" => $levelId));
+            if (!$level) {
+                return false;
+            }
 
-			if($level->getWorkspace()->getId() != $workspaceId){
-				return false;
-			}
+            if ($level->getWorkspace()->getId() != $workspaceId) {
+                return false;
+            }
 
-			$level->setRights($rights);
-			$level->setLabel($label);
+            $level->setRights($rights);
+            $level->setLabel($label);
 
-			$this->doctrine->persist($level);
-			$this->doctrine->flush();
+            $this->doctrine->persist($level);
+            $this->doctrine->flush();
 
             $datatopush = Array(
                 "type" => "CHANGE_LEVEL",
@@ -153,130 +153,150 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
             );
             $this->pusher->push($datatopush, "group/" . $workspaceId);
 
-			return true;
+            return true;
 
-		}
-
-		return false;
-	}
-
-	public function getDefaultLevel($workspaceId)
-	{
-		$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
-		$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-
-		$workspace = $workspaceRepository->find($workspaceId);
-        $levels = $levelRepository->findBy(Array("workspace" => $workspace));
-        foreach($levels as $level){
-            if($level->getisDefault()){
-                return $level;
-            }
         }
 
         return false;
+    }
 
-	}
+    public function getDefaultLevel($workspaceId)
+    {
 
-	public function setDefaultLevel($workspaceId, $levelId, $currentUserId = null)
-	{
-		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "workspace:write")
-		){
+        $choosen = null;
 
-			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
-			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+        $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 
-			$workspace = $workspaceRepository->find($workspaceId);
-
-			$oldLevelDefault = $levelRepository->findOneBy(Array("workspace"=>$workspace, "isdefault"=>true));
-
-			if($oldLevelDefault) {
-				$oldLevelDefault->setisDefault(false);
-				$this->doctrine->persist($oldLevelDefault);
-			}
-
-			$levelDefault = $levelRepository->find($levelId);
-			if(!$levelDefault){
-				return false;
-			}
-			if($levelDefault->getWorkspace()->getId() != $workspaceId){
-				return false;
-			}
-			$levelDefault->setisDefault(true);
+        $workspace = $workspaceRepository->find($workspaceId);
+        $levels = $levelRepository->findBy(Array("workspace" => $workspace));
 
 
-			$this->doctrine->persist($levelDefault);
-			$this->doctrine->flush();
+        foreach($levels as $level){
+            if($level->getisDefault()){
+                $choosen = $level;
+            }
+        }
 
-			return true;
+        //No default level !
+        if (!$choosen) {
 
-		}
+            $levelD = new WorkspaceLevel();
+            $levelD->setWorkspace($workspace);
+            $levelD->setLabel("Default");
+            $levelD->setIsAdmin(false);
+            $levelD->setIsDefault(true);
+            $this->doctrine->persist($levelD);
+            $this->doctrine->flush();
 
-		return false;
-	}
+            $choosen = $levelD;
 
-	public function addLevel($workspaceId, $label, $rights, $currentUserId = null)
-	{
-		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "workspace:write")
-		){
-			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-			$workspace = $workspaceRepository->find($workspaceId);
+        }
 
-			$level = new WorkspaceLevel();
+        return $choosen;
 
-			$level->setWorkspace($workspace);
-			$level->setRights($rights);
-			$level->setLabel($label);
+    }
 
-			$this->doctrine->persist($level);
-			$this->doctrine->flush();
+    public function setDefaultLevel($workspaceId, $levelId, $currentUserId = null)
+    {
+        if ($currentUserId == null
+            || $this->can($workspaceId, $currentUserId, "workspace:write")
+        ) {
 
-			return true;
+            $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 
-		}
+            $workspace = $workspaceRepository->find($workspaceId);
 
-		return false;
-	}
+            $oldLevelDefault = $levelRepository->findOneBy(Array("workspace" => $workspace, "isdefault" => true));
 
-	public function removeLevel($workspaceId, $levelId, $currentUserId = null)
-	{
-		if($currentUserId == null
-			|| $this->can($workspaceId, $currentUserId, "workspace:write")
-		){
+            if ($oldLevelDefault) {
+                $oldLevelDefault->setisDefault(false);
+                $this->doctrine->persist($oldLevelDefault);
+            }
 
-			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
-			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $levelDefault = $levelRepository->find($levelId);
+            if (!$levelDefault) {
+                return false;
+            }
+            if ($levelDefault->getWorkspace()->getId() != $workspaceId) {
+                return false;
+            }
+            $levelDefault->setisDefault(true);
 
-			$level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"level"=>$levelId));
-			if($level->getWorkspace()->getId() != $workspaceId){
-				return false;
-			}
 
-			if($level->getisDefault()){
-				return false; //Can't remove default level
-			}
+            $this->doctrine->persist($levelDefault);
+            $this->doctrine->flush();
 
-			if($level->getisAdmin()){
-				return false; //Can't remove admin level
-			}
+            return true;
 
-			$workspace = $workspaceRepository->find($workspaceId);
-			$levelDefault = $levelRepository->findOneBy(Array("workspace"=>$workspace, "isdefault"=>true));
+        }
 
-			if(!$levelDefault){
-				return false;
-			}
+        return false;
+    }
 
-			$affectedUsers = $workspaceUserRepository->findBy(Array("workspace"=>$workspace, "level"=>$level));
-			foreach ($affectedUsers as $affectedUser){
-				$affectedUser->setLevel($levelDefault);
-				$this->doctrine->persist($affectedUser);
-			}
+    public function addLevel($workspaceId, $label, $rights, $currentUserId = null)
+    {
+        if ($currentUserId == null
+            || $this->can($workspaceId, $currentUserId, "workspace:write")
+        ) {
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspace = $workspaceRepository->find($workspaceId);
 
-			$this->doctrine->remove($level);
-			$this->doctrine->flush();
+            $level = new WorkspaceLevel();
+
+            $level->setWorkspace($workspace);
+            $level->setRights($rights);
+            $level->setLabel($label);
+
+            $this->doctrine->persist($level);
+            $this->doctrine->flush();
+
+            return true;
+
+        }
+
+        return false;
+    }
+
+    public function removeLevel($workspaceId, $levelId, $currentUserId = null)
+    {
+        if ($currentUserId == null
+            || $this->can($workspaceId, $currentUserId, "workspace:write")
+        ) {
+
+            $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+
+            $level = $levelRepository->findBy(Array("workspace" => $workspaceId, "level" => $levelId));
+            if ($level->getWorkspace()->getId() != $workspaceId) {
+                return false;
+            }
+
+            if ($level->getisDefault()) {
+                return false; //Can't remove default level
+            }
+
+            if ($level->getisAdmin()) {
+                return false; //Can't remove admin level
+            }
+
+            $workspace = $workspaceRepository->find($workspaceId);
+            $levelDefault = $levelRepository->findOneBy(Array("workspace" => $workspace, "isdefault" => true));
+
+            if (!$levelDefault) {
+                return false;
+            }
+
+            $affectedUsers = $workspaceUserRepository->findBy(Array("workspace" => $workspace, "level" => $level));
+            foreach ($affectedUsers as $affectedUser) {
+                $affectedUser->setLevel($levelDefault);
+                $this->doctrine->persist($affectedUser);
+            }
+
+            $this->doctrine->remove($level);
+            $this->doctrine->flush();
 
             $datatopush = Array(
                 "type" => "CHANGE_LEVEL",
@@ -286,60 +306,61 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
             );
             $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
-			return true;
+            return true;
 
-		}
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function getUsers($workspaceId, $levelId, $currentUserId = null)
-	{
-		if($currentUserId == null
+    public function getUsers($workspaceId, $levelId, $currentUserId = null)
+    {
+        if ($currentUserId == null
             || $this->can($workspaceId, $currentUserId, "workspace:read")
-		) {
+        ) {
 
-			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
-			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-			$workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+            $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
-			$level = $levelRepository->findBy(Array("workspace"=>$workspaceId,"level"=>$levelId));
-			$workspace = $workspaceRepository->find($workspaceId);
+            $level = $levelRepository->findBy(Array("workspace" => $workspaceId, "level" => $levelId));
+            $workspace = $workspaceRepository->find($workspaceId);
 
-			if (!$level || !$workspace) {
-				return false;
-			}
+            if (!$level || !$workspace) {
+                return false;
+            }
 
-			$link = $workspaceUserRepository->findBy(Array("level" => $level, "workspace" => $workspace));
+            $link = $workspaceUserRepository->findBy(Array("level" => $level, "workspace" => $workspace));
 
-			$users = Array();
-			foreach($link as $user){
-				$users[] = $user->getUser();
-			}
+            $users = Array();
+            foreach ($link as $user) {
+                $users[] = $user->getUser();
+            }
 
-			return $users;
-		}
+            return $users;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function getLevels($workspaceId, $currentUserId = null)
-	{
-			$levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
-			$workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+    public function getLevels($workspaceId, $currentUserId = null)
+    {
+        $levelRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+        $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
 
-			$workspace = $workspaceRepository->find($workspaceId);
+        $workspace = $workspaceRepository->find($workspaceId);
 
-			if (!$workspace) {
-				return false;
-			}
+        if (!$workspace) {
+            return false;
+        }
 
-			$levels = $levelRepository->findBy(Array("workspace" => $workspace));
+        $levels = $levelRepository->findBy(Array("workspace" => $workspace));
 
-			return $levels;
-	}
+        return $levels;
+    }
 
-	public function getByLabel($workspaceId,$label, $currentUserId = null){
+    public function getByLabel($workspaceId, $label, $currentUserId = null)
+    {
         if($currentUserId == null
             || $this->can($workspaceId, $currentUserId, "workspace:read")
         ) {
@@ -362,33 +383,32 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
     }
 
 
-
-	// @Depreciated
-	public function hasRight($userId, $workspaceId, $rightAsked)
-	{
+    // @Depreciated
+    public function hasRight($userId, $workspaceId, $rightAsked)
+    {
         $userId = $this->convertToEntity($userId, "TwakeUsersBundle:User");
         $userId = $userId->getId();
 
         $workspaceId = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
         $workspaceId = $workspaceId->getId();
 
-		return $this->can($workspaceId, $userId, $rightAsked);
-	}
+        return $this->can($workspaceId, $userId, $rightAsked);
+    }
 
-	// @Depreciated
-	public function errorsAccess($userId, $workspaceId, $right)
-	{
+    // @Depreciated
+    public function errorsAccess($userId, $workspaceId, $right)
+    {
         $userId = $this->convertToEntity($userId, "TwakeUsersBundle:User");
         $userId = $userId->getId();
 
         $workspaceId = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
         $workspaceId = $workspaceId->getId();
 
-		if($this->can($workspaceId, $userId, $right)){
-			return [];
-		}
-		return ["notallowed"];
-	}
+        if ($this->can($workspaceId, $userId, $right)) {
+            return [];
+        }
+        return ["notallowed"];
+    }
 
 }
 
