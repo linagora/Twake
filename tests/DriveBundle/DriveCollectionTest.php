@@ -5,6 +5,8 @@ namespace Tests\DriveBundle;
 use Tests\WebTestCaseExtended;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\WorkspacesBundle\Entity\Group;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\GroupUser;
 
 class DriveCollectionTest extends WebTestCaseExtended
 {
@@ -35,7 +37,7 @@ class DriveCollectionTest extends WebTestCaseExtended
         //ON CREEE UN USER POUR FAIRE NOS TEST ET ON LE CONNECTE
 
         $this->removeUserByName("usertest001");
-        $this->newUserByName("usertest001");
+        $user1 = $this->newUserByName("usertest001");
 
         $this->doPost("/ajax/users/login", Array(
             "_username" => "usertest001",
@@ -45,6 +47,13 @@ class DriveCollectionTest extends WebTestCaseExtended
         $user1_id = json_decode($result->getContent(),true)["data"]["id"];
         $current_date = new \DateTime();
         $current_date = $current_date->getTimestamp();
+
+        $workspaceUser1 = new WorkspaceUser($workspace, $user1, null);
+        $groupUser1 = new GroupUser($group, $user1);
+        $this->get("app.twake_doctrine")->persist($workspaceUser1);
+        $this->get("app.twake_doctrine")->persist($groupUser1);
+        $this->get("app.twake_doctrine")->flush();
+
 
 // =================================================================================================================================================
 // =================================================================================================================================================

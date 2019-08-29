@@ -316,7 +316,7 @@ class ManagerAdapter
             $res = $this->circle->post($route, json_encode(Array("scroll" => "1m" ,"scroll_id" => $options["scroll_id"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         }
         else {
-            if (!$this->es_server || true) {
+            if (!$this->es_server) {
 
                 if (isset($options["repository"]) && isset($options["fallback_keys"])) {
                     $repository = $this->getRepository($options["repository"]);
@@ -329,7 +329,7 @@ class ManagerAdapter
                     foreach ($results as $result) {
                         $match = false;
                         foreach ($options["fallback_keys"] as $key => $query) {
-                            if (strpos(strtolower($result->getAsArray()[$key]), strtolower(trim($query))) !== false) {
+                            if (strtolower(trim($query)) && strpos(strtolower($result->getAsArray()[$key]), strtolower(trim($query))) !== false) {
                                 $match = true;
                             }
                         }

@@ -26,6 +26,7 @@ class FilesController extends Controller
 
         $object = $request->request->get("message", null);
         $chan_id = $object["channel_id"];
+        $file_id = $request->request->get("file_id", null);
 
         $object = $this->get("app.messages")->save($object, Array(), $this->getUser(), $application);
 
@@ -38,6 +39,32 @@ class FilesController extends Controller
         $this->get("app.websockets")->push("messages/" . $chan_id, $event);
 
         $data["data"] = $object;
+
+        if ($file_id) {
+
+            $acces = $this->get('app.accessmanager')->has_access($this->getUser()->getId(), Array(
+                "type" => "DriveFile",
+                "object_id" => $file_id
+            ), Array());
+            if ($acces) {
+
+
+                $object = $this->get("app.drive_refacto")->find(Array("element_id" => $file_id), $this->getUser());
+
+                if ($object) {
+
+                    $is_editable = $access["is_editable"];
+                    $publicaccess = $access["token"];
+                    $authorized_members = $access["authorized_members"];
+                    $authorized_channels = $access["authorized_channels"];
+                    $authorized_channels[] = $chan_id;
+
+                    $publicaccess = $this->get('app.drive_refacto')->set_file_access($file_id, $publicaccess, $is_editable, $authorized_members, $authorized_channels, $this->getUser());
+
+                }
+
+            }
+        }
 
         return new JsonResponse($data);
     }
