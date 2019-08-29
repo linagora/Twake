@@ -73,7 +73,8 @@ class ManagerAdapter
                 'twake_boolean' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'BooleanType',
                 'twake_text' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'TextType',
                 'twake_string' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'StringType',
-                'twake_bigint' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'BigIntType'
+                'twake_bigint' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'BigIntType',
+                'twake_counter' => 'WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Types\\' . $driver_type . 'CounterType'
             )
         ), $config);
 
@@ -145,6 +146,32 @@ class ManagerAdapter
             unset($this->es_updates[$object->getId() . ""]);
         }
         return $this->getEntityManager()->remove($object);
+    }
+
+    public function getReference($ent, $id)
+    {
+        $res = null;
+        try {
+            $res = $this->getEntityManager()->getReference($ent, $id);
+        } catch (\Exception $e) {
+            error_log($e);
+            die("ERROR with persist");
+        }
+
+        return $res;
+    }
+
+    public function merge($object)
+    {
+        $res = null;
+        try {
+            $res = $this->getEntityManager()->merge($object);
+        } catch (\Exception $e) {
+            error_log($e);
+            die("ERROR with persist");
+        }
+
+        return $res;
     }
 
     public function persist($object)
@@ -316,8 +343,7 @@ class ManagerAdapter
             $res = $this->circle->post($route, json_encode(Array("scroll" => "1m" ,"scroll_id" => $options["scroll_id"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         }
         else {
-
-            if (!$this->es_server || true) {
+            if (!$this->es_server) {
 
                 if (isset($options["repository"]) && isset($options["fallback_keys"])) {
                     $repository = $this->getRepository($options["repository"]);
@@ -330,7 +356,7 @@ class ManagerAdapter
                     foreach ($results as $result) {
                         $match = false;
                         foreach ($options["fallback_keys"] as $key => $query) {
-                            if (strpos(strtolower($result->getAsArray()[$key]), strtolower(trim($query))) !== false) {
+                            if (strtolower(trim($query)) && strpos(strtolower($result->getAsArray()[$key]), strtolower(trim($query))) !== false) {
                                 $match = true;
                             }
                         }

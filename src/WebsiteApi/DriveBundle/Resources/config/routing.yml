@@ -6,7 +6,7 @@ drive_get:
     defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:get}
 drive_save:
     path:     /save
-    defaults: { _controller: TwakeDriveBundle:Base:save }
+    defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:save }
 drive_get_a_file:
     path:     /find
     defaults: { _controller: TwakeDriveBundle:DriveFileRefacto:find }

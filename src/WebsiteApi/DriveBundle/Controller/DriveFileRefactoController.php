@@ -39,7 +39,6 @@ class DriveFileRefactoController extends Controller
     {
         $options = $request->request->get("options");
         $object = $request->request->get("object");
-        $upload_data = $request->request->get("upload_data");
 
         $acces = $this->get('app.accessmanager')->has_access($this->getUser()->getId(), Array(
             "type" => "DriveFile",
@@ -66,11 +65,16 @@ class DriveFileRefactoController extends Controller
             //If object[_once_new_version] is set a new version is added
             $res = $this->get('driveupload.upload')->uploadDirectly($file_uploaded, $object, $options, $current_user_id);
         } else {
-            $res = $this->get("app.drive_refacto")->save($object, $options, $current_user_id, $upload_data);
+            $res = $this->get("app.drive_refacto")->save($object, $options, $current_user_id, Array());
         }
 
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
+        } else {
+            if (!$object["id"]) {
+                $this->get("administration.counter")->incrementCounter("total_files", 1);
+                $this->get("administration.counter")->incrementCounter("total_files_size", intval($res["size"] / 1000));
+            }
         }
         return new JsonResponse(Array("data" => Array("object" => $res)));
     }
