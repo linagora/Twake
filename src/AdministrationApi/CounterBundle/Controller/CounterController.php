@@ -25,13 +25,17 @@ class CounterController extends Controller
 
             $keys = $request->request->get("key");
 
+            $begin_date = $request->request->get("begin");
+
+            $end_date = $request->request->get("end");
+
             $counter_service = $this->get("administration.counter");
 
             $counter_data = array();
 
             if (is_array($keys)) {
                 foreach ($keys as $key) {
-                    $counter_tab = $counter_service->getCounter($key);
+                    $counter_tab = $counter_service->getCounter($key, $begin_date, $end_date);
                     if ($counter_tab) {
                         $counter_data[$key] = $counter_tab;
                     }
@@ -40,7 +44,7 @@ class CounterController extends Controller
                     $data['errors'][] = "key_not_found";
                 }
             } elseif ($keys) {
-                $counter_tab = $counter_service->getCounter($keys);
+                $counter_tab = $counter_service->getCounter($keys, $begin_date, $end_date);
                 if ($counter_tab) {
                     $counter_data[$keys] = $counter_tab;
                 } else {

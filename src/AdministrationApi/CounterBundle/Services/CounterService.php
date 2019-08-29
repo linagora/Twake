@@ -39,17 +39,31 @@ class CounterService
         $this->em->flush();
     }
 
-    public function getCounter($key) {
+    public function getCounter($key, $beginDate = null, $endDate = null) {
         $counter_repository = $this->em->getRepository("AdministrationApiCounterBundle:StatsCounter");
 
         $counter_tab = $counter_repository->findBy(Array('counter_key' => $key), array(), 20, null, 'date', 'DESC');
 
         $rep = false;
 
+        if ($beginDate) {
+            $beginValue = strtotime($beginDate);
+            $begin = intval(date('Y', $beginValue)) * 1000 + intval(date('z', $beginValue));
+        }
+
+        if ($endDate) {
+            $endValue = strtotime($endDate);
+            $end = intval(date('Y', $endValue)) * 1000 + intval(date('z', $endValue));
+        }
+
         if ($counter_tab) {
             $rep = array();
             foreach ($counter_tab as $counter_entity) {
-                $rep[] = $counter_entity->getAsArray();
+                $afterBegin = !isset($begin) || $counter_entity->getDate() >= $begin;
+                $beforeEnd = !isset($end) || $counter_entity->getDate() <= $end;
+                if ($afterBegin && $beforeEnd) {
+                    $rep[] = $counter_entity->getAsArray();
+                }
             }
         }
 
