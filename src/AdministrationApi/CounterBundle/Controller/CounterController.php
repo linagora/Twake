@@ -50,6 +50,8 @@ class CounterController extends Controller
                 $data['errors'][] = "key_not_found";
             }
 
+            $data['data'] = $counter_data;
+
         } else {
             $data["errors"][] = "invalid_authentication_token";
         }
