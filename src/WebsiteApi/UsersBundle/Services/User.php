@@ -378,7 +378,7 @@ class User
             return false;
         }
 
-        $token = $this->subscribeMail($mail, $pseudo, $password, $lastName, $firstName, $phone, $language, false);
+        $token = $this->subscribeMail($mail, $pseudo, $password, $lastName, $firstName, $phone, $language,false, false);
         $user = $this->verifyMail($mail, $token, "", true);
         if($user==null || $user== false){
             return false;
@@ -395,7 +395,7 @@ class User
         return $user;
     }
 
-    public function subscribeMail($mail, $pseudo, $password, $name, $firstname, $phone, $language, $sendEmail = true)
+    public function subscribeMail($mail, $pseudo, $password, $name, $firstname, $phone, $language,$newsletter=false, $sendEmail = true)
     {
 
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
@@ -472,7 +472,22 @@ class User
                 error_log($exception->getMessage());
             }
         }
-
+        if ($newsletter) {
+            try {
+                $data = Array(
+                    "Email" => $mail,
+                    "Properties" => Array(
+                        "first_name" => $firstname,
+                        "last_name" => $name,
+                        "language" => $language,
+                    ),
+                    "Action" => "addforce"
+                );
+                $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345532/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+            } catch (\Exception $exception) {
+                error_log($exception->getMessage());
+            }
+        }
         return $verificationNumberMail->getToken();
 	}
 
