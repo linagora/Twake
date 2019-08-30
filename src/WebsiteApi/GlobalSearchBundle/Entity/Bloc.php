@@ -223,16 +223,35 @@ class Bloc extends SearchableObject
 
     public function addmessage($message_entity){
 
+        $messages = $this->getMessages();
         $content = $this->mdToText($message_entity->getContent());
         $date = $message_entity->getCreationDate();
+        $sender = $message_entity->getSender()->getId()."";
 
-        $messages = $this->getMessages();
+        $mentions = Array();
+
+        if(is_array($message_entity->getContent()["prepared"][0])){
+            foreach ($message_entity->getContent()["prepared"][0] as $elem){
+                if(is_array($elem)){
+                    $id = explode(":",$elem["content"])[1];
+                    //error_log(print_r($id,true));
+                    $mentions[] = $id;
+                }
+            }
+            $mentions = array_unique($mentions);
+            //error_log(print_r($mentions,true));
+        }
+
 
         $add = Array(
             "content" => $content,
+            "sender" => $sender,
+            "mentions" => $mentions,
             "date" => $date->format('Y-m-d'),
             "reactions" => Array()
+
         );
+
         array_push($messages, $add);
         $this->setMessages($messages);
         $this->setNbMessage($this->getNbMessage()+1);
