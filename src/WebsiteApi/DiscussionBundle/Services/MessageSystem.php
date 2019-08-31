@@ -482,10 +482,10 @@ class MessageSystem
     {
         $message_id = $message->getId()."";
 
-        error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");
-        error_log(print_r($message_id,true));
-        error_log(print_r($message->getContent()["prepared"][0],true));
-
+        /*        error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");
+                error_log(print_r($message_id,true));
+                error_log(print_r($message->getContent()["prepared"][0],true));
+        */
         $lastbloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
 
         if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
@@ -505,10 +505,10 @@ class MessageSystem
         $message->setBlockId($blocbdd->getId()."");
         $this->em->persist($message);
         $this->em->flush();
-
-        error_log(print_r($blocbdd->getMessages(),true));
-        error_log(print_r($blocbdd->getIdMessages(),true));
-
+        /*
+                error_log(print_r($blocbdd->getMessages(),true));
+                error_log(print_r($blocbdd->getIdMessages(),true));
+        */
         if ($blocbdd->getNbMessage() == 10){
             error_log("INDEXATION DU BLOC DE MESSAGE");
             //error_log(print_r($blocbdd->getAsArray(),true));
