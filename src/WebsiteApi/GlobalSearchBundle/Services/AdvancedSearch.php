@@ -23,8 +23,6 @@ class AdvancedSearch
 
     public function SearchInBloc($current_user_id,$options,$channels){
         $channel_acces = Array();
-        //verif l acces au channel
-
 
         foreach ($channels as $channel){
             $member = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id"=> $current_user_id, "channel_id" => $channel));

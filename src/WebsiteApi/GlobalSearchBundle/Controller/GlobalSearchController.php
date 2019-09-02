@@ -81,33 +81,31 @@ class GlobalSearchController extends Controller
 
     public function AdvancedSearchAction(Request $request)
     {
-        //$words = $identifier = $request->request->get("words");
-        //$group_id = $request->request->get("group_id");
         $options =  $request->request->get("options");
         $channels= $request->request->get("channel_id");
 
-        //$current_user = $this->getUser();
-        //$current_user_id = $current_user->getId();
+        $current_user = $this->getUser();
+        $current_user_id = $current_user->getId();
 
-        $options = Array(
-            "words" => Array("salut","blabla"),
-            "date_before" => "2019-08-30",
-            "date_after" => "2019-08-20",
-            "reactions" => Array("sun"),
-            "mentions" => Array("3aa48caa-ad60-11e9-8cdf-0242ac1d0005","3af5c99e-ad60-11e9-9e16-0242ac1d0005"),
-            "sender" => "3aa48caa-ad60-11e9-8cdf-0242ac1d0005"
+//        $options = Array(
+//            "words" => Array("message"),
+//            "date_before" => "2019-09-30",
+//            "date_after" => "2019-08-20",
+//            //"reactions" => Array("sun"),
+////            "mentions" => Array("3aa48caa-ad60-11e9-8cdf-0242ac1d0005","3af5c99e-ad60-11e9-9e16-0242ac1d0005"),
+//            "sender" => "3aa48caa-ad60-11e9-8cdf-0242ac1d0005"
+//
+//        );
 
-        );
-
-        if(!(isset($current_user)))
-        {
-            $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
-        }
-        else
-        {
-            $current_user_id= $current_user->getId();
-        }
-        $channels = Array("db2c2b9e-c357-11e9-933e-0242ac1d0005");
+//        if(!(isset($current_user)))
+//        {
+//            $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
+//        }
+//        else
+//        {
+//            $current_user_id= $current_user->getId();
+//        }
+        //$channels = Array("db2c2b9e-c357-11e9-933e-0242ac1d0005");
         $globalresult = $this->get('globalsearch.advancedsearch')->AdvancedSearch($current_user_id,$options,$channels);
         $data = Array("data" => $globalresult);
         return new JsonResponse($data);
