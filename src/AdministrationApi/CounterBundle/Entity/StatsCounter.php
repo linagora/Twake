@@ -71,10 +71,9 @@ class StatsCounter
     }
 
     public function getAsArray() {
-        $date = \DateTime::createFromFormat("d/m/y",date("d/m/Y"));
-        $date->setDate(intdiv($this->getDate(),1000),1,1);
+        $date = \DateTime::createFromFormat("d-m-Y", "01-01-" . intdiv($this->getDate(), 1000));
         $days = $this->getDate() % 1000;
-        $date->add(new DateInterval("P".$days."D"));
+        $date->add(new \DateInterval("P" . $days . "D"));
         $date_string = date("d/m/Y", $date->getTimestamp());
         return array(
             "date" => $date_string,
