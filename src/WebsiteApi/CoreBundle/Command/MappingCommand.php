@@ -38,19 +38,31 @@ class MappingCommand extends ContainerAwareCommand
 
         $mapping_message_bloc = Array(
             "_source" => Array(
-                "includes" => Array("id","date_first","date_last","reaction"),
+                "includes" => Array("id"),
                 "excludes" => Array(
-                    "workspace_id","channel_id","content"
+                    "workspace_id","channel_id","messages"
                 )
             ),
             "properties" => Array(
                 "id" => Array("type" => "keyword"),
                 "workspace_id" => Array("type" => "keyword"),
                 "channel_id" => Array("type" => "keyword"),
-                "date_first" => Array("type" => "date"),
-                "date_last" => Array("type" => "date"),
-                "content" => Array("type" => "text"),
-                "reaction" => Array("type" => "text"),
+                "messages" => Array(
+                    "type" => "nested",
+                    "properties" => Array(
+                        "content" => Array("type" => "text"),
+                        "sender" => Array("type" => "keyword"),
+                        "mentions" => Array("type" => "text"),
+                        "date" => Array("type" => "date"),
+                        "reactions" =>  Array(
+                            "type" => "nested",
+                            "properties" => Array(
+                                "reaction" => Array("type" => "text"),
+                                "count" => Array("type" => "integer"),
+                            )
+                        )
+                    )
+                )
             )
 
 

@@ -416,6 +416,8 @@ class MessageSystem
             $this->updateinbloc($message, $content, $reaction);
         }
 
+
+
         if (!$ephemeral) {
 
             if ($channel && $did_create) {
@@ -482,14 +484,14 @@ class MessageSystem
     {
         $message_id = $message->getId()."";
 
-        /*        error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");
-                error_log(print_r($message_id,true));
-                error_log(print_r($message->getContent()["prepared"][0],true));
-        */
+//        error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");
+//        error_log(print_r($message_id,true));
+//        error_log(print_r($message->getContent()["prepared"][0],true));
+
         $lastbloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
 
         if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
-            error_log("CREATION NOUVEAU BLOC");
+//            error_log("CREATION NOUVEAU BLOC");
             $messages= Array();
             $id_messages = Array();
             $blocbdd = new Bloc($workspace_id, $channel_id, $messages, $id_messages);
@@ -500,17 +502,18 @@ class MessageSystem
             $blocbdd->setLock(true);
         }
 
+
         $blocbdd->addmessage($message);
         $this->em->persist($blocbdd);
         $message->setBlockId($blocbdd->getId()."");
         $this->em->persist($message);
         $this->em->flush();
-        /*
-                error_log(print_r($blocbdd->getMessages(),true));
-                error_log(print_r($blocbdd->getIdMessages(),true));
-        */
+
+        //error_log(print_r($blocbdd->getMessages(),true));
+//        error_log(print_r($blocbdd->getIdMessages(),true));
+
         if ($blocbdd->getNbMessage() == 10){
-            error_log("INDEXATION DU BLOC DE MESSAGE");
+//            error_log("INDEXATION DU BLOC DE MESSAGE");
             //error_log(print_r($blocbdd->getAsArray(),true));
             // indexer le bloc de message
             $this->em->es_put($blocbdd,$blocbdd->getEsType());
@@ -523,9 +526,26 @@ class MessageSystem
         //var_dump($bloc->getMessages());
         $position = array_search($message->getId()."",$bloc->getIdMessages());
         $messages = $bloc->getMessages();
-        $messages[$position]["content"] = $new_content;
+        $messages[$position]["content"] = $this->mdToText($new_content);
 
         $bloc->setMessages($messages);
+        $this->em->persist($bloc);
+
+        $mentions = Array();
+        //error_log(print_r($message->getContent(),true));
+        if(is_array($message->getContent()["prepared"][0])) {
+            foreach ($message->getContent()["prepared"][0] as $elem) {
+                if (is_array($elem)) {
+                    $id = explode(":", $elem["content"])[1];
+                    $mentions[] = $id;
+                }
+            }
+            $mentions = array_unique($mentions);
+            //error_log(print_r($mentions,true));
+            $messages[$position]["mentions"] = $mentions;
+            $bloc->setMessages($messages);
+            $this->em->persist($bloc);
+        }
 
 
         if(isset($reaction["add"]) || isset($reaction["remove"]) ){
@@ -565,11 +585,14 @@ class MessageSystem
 
             $messages[$position]["reactions"] = $new_reaction;
             $bloc->setMessages($messages);
+            $this->em->persist($bloc);
 
         }
 
+        //error_log(print_r($bloc->getMessages(),true));
 
-        $this->em->persist($bloc);
+
+        //$this->em->persist($bloc);
         $this->em->flush();
 
         // Need to reindex the bloc in ES if he is already indexed
