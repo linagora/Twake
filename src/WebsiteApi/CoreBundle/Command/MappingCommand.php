@@ -40,7 +40,7 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "workspace_id","channel_id","messages"
+                    "workspace_id", "channel_id", "messages"
                 )
             ),
             "properties" => Array(
@@ -54,7 +54,7 @@ class MappingCommand extends ContainerAwareCommand
                         "sender" => Array("type" => "keyword"),
                         "mentions" => Array("type" => "text"),
                         "date" => Array("type" => "date"),
-                        "reactions" =>  Array(
+                        "reactions" => Array(
                             "type" => "nested",
                             "properties" => Array(
                                 "reaction" => Array("type" => "text"),

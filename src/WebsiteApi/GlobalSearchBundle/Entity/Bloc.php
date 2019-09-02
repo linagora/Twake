@@ -226,14 +226,14 @@ class Bloc extends SearchableObject
         $messages = $this->getMessages();
         $content = $this->mdToText($message_entity->getContent());
         $date = $message_entity->getCreationDate();
-        $sender = $message_entity->getSender()->getId()."";
+        $sender = $message_entity->getSender()->getId() . "";
 
         $mentions = Array();
 
-        if(is_array($message_entity->getContent()["prepared"][0])){
-            foreach ($message_entity->getContent()["prepared"][0] as $elem){
-                if(is_array($elem)){
-                    $id = explode(":",$elem["content"])[1];
+        if (is_array($message_entity->getContent()["prepared"][0])) {
+            foreach ($message_entity->getContent()["prepared"][0] as $elem) {
+                if (is_array($elem)) {
+                    $id = explode(":", $elem["content"])[1];
                     //error_log(print_r($id,true));
                     $mentions[] = $id;
                 }

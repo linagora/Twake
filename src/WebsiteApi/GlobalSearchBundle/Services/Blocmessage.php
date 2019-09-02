@@ -26,24 +26,26 @@ class Blocmessage
 //        var_dump('date after : ' . $options["date_after"]);
 //        var_dump('date message : ' . $message_bdd->getCreationDate()->format('Y-m-d'));
 
-        if($valid && isset($options["sender"])){
-            if($message_bdd->getSender()->getId()."" != $options["sender"]){
+        if ($valid && isset($options["sender"])) {
+            if ($message_bdd->getSender()->getId() . "" != $options["sender"]) {
                 $valid = false;
             }
         }
-        if($valid && isset($options["date_before"]) && ($message_bdd->getCreationDate()->format('Y-m-d') > $options["date_before"])){
+        if ($valid && isset($options["date_before"]) && ($message_bdd->getCreationDate()->format('Y-m-d') > $options["date_before"])) {
+//            var_dump("error valid date before");
             $valid = false;
         }
-        if($valid && isset($options["date_after"]) && ($message_bdd->getCreationDate()->format('Y-m-d') < $options["date_after"])){
+        if ($valid && isset($options["date_after"]) && ($message_bdd->getCreationDate()->format('Y-m-d') < $options["date_after"])) {
+//            var_dump("error valid date after");
             $valid = false;
         }
 
-        if($valid && isset($options["mentions"])){
+        if ($valid && isset($options["mentions"])) {
             $mentions = Array();
-            if(is_array($message_bdd->getContent()["prepared"][0])){
-                foreach ($message_bdd->getContent()["prepared"][0] as $elem){
-                    if(is_array($elem)){
-                        $id = explode(":",$elem["content"])[1];
+            if (is_array($message_bdd->getContent()["prepared"][0])) {
+                foreach ($message_bdd->getContent()["prepared"][0] as $elem) {
+                    if (is_array($elem)) {
+                        $id = explode(":", $elem["content"])[1];
                         //error_log(print_r($id,true));
                         $mentions[] = $id;
                     }
@@ -52,17 +54,17 @@ class Blocmessage
             }
 
 //            var_dump(array_intersect($options["mentions"], $mentions));
-            if(!array_intersect($options["mentions"], $mentions) == $options["mentions"]){
+            if (!array_intersect($options["mentions"], $mentions) == $options["mentions"]) {
                 $valid = false;
             }
         }
 
-        if($valid && isset($options["reactions"])){
+        if ($valid && isset($options["reactions"])) {
             $react_search = true;
             $i = 0;
             // on parcours toute les reactions saisites
             $reaction = $message_bdd->getReactions();
-            if(isset($reaction)) {
+            if (isset($reaction)) {
                 while ($react_search && $i < count($options["reactions"])) {
                     //version OU il faut enleveer react_search pour tous check voir vérifier si on pas deja assez trouvé pour s'arreter la
                     $trouve = false;
@@ -88,14 +90,13 @@ class Blocmessage
                     }
                     $i++;
                 }
-            }else{
+            } else {
                 $valid = false;
             }
-            if(!$react_search){
+            if (!$react_search) {
                 $valid = false;
             }
         }
-
 
 
         //var_dump($valid);
@@ -169,7 +170,7 @@ class Blocmessage
             //PARTIE SUR LES REACTION
             if(isset($options["reactions"])){
                 $reactions = Array();
-                foreach ($options["reactions"] as $reaction){
+                foreach ($options["reactions"] as $reaction) {
                     $reactions[]= Array(
                         "bool" => Array(
                             "filter" => Array(
@@ -195,10 +196,10 @@ class Blocmessage
 
 
             // PARTIE SUR LES MENTIONS
-            if(isset($options["mentions"])){
+            if (isset($options["mentions"])) {
                 $mentions = Array();
-                foreach ($options["mentions"] as $mention){
-                    $mentions[]= Array(
+                foreach ($options["mentions"] as $mention) {
+                    $mentions[] = Array(
                         "bool" => Array(
                             "must" => Array(
                                 "match_phrase" => Array(
@@ -323,8 +324,9 @@ class Blocmessage
             }
             //var_dump("nombre de resultat : " . count($list_message));
 
+
             // on cherche dans le bloc en cours de construction de tout les channels demandés
-            foreach($channels as $channel) {
+            foreach ($channels as $channel) {
                 $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("channel_id" => $channel));
                 $compt = 0;
                 if (isset($lastbloc) && $lastbloc->getLock() == false) {
