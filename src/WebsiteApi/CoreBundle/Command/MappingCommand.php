@@ -52,6 +52,7 @@ class MappingCommand extends ContainerAwareCommand
                     "properties" => Array(
                         "content" => Array("type" => "text"),
                         "sender" => Array("type" => "keyword"),
+                        "application_id" => Array("type" => "keyword"),
                         "mentions" => Array("type" => "text"),
                         "date" => Array("type" => "date"),
                         "reactions" => Array(

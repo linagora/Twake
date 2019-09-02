@@ -12,6 +12,8 @@ class Blocmessage
     private $doctrine;
     private $doublon_id = Array();
 
+    private $list_messages = Array("messages" => Array(), "scroll_id" => "");
+
 
     public function __construct($doctrine)
     {
@@ -26,18 +28,25 @@ class Blocmessage
 //        var_dump('date after : ' . $options["date_after"]);
 //        var_dump('date message : ' . $message_bdd->getCreationDate()->format('Y-m-d'));
 
+        //var_dump("DEBUT VALIDATION");
         if ($valid && isset($options["sender"])) {
             if ($message_bdd->getSender()->getId() . "" != $options["sender"]) {
                 $valid = false;
+                //var_dump("error valid sender");
             }
         }
         if ($valid && isset($options["date_before"]) && ($message_bdd->getCreationDate()->format('Y-m-d') > $options["date_before"])) {
-//            var_dump("error valid date before");
+            //var_dump("error valid date before");
             $valid = false;
         }
         if ($valid && isset($options["date_after"]) && ($message_bdd->getCreationDate()->format('Y-m-d') < $options["date_after"])) {
-//            var_dump("error valid date after");
+            //var_dump("error valid date after");
             $valid = false;
+        }
+        //var_dump($message_bdd->getAsArray());
+        if($valid && isset($options["application_id"]) && ($message_bdd->getApplicationId() != $options["application_id"])){
+            $valid = false;
+            //var_dump("error valid application id");
         }
 
         if ($valid && isset($options["mentions"])) {
@@ -46,14 +55,12 @@ class Blocmessage
                 foreach ($message_bdd->getContent()["prepared"][0] as $elem) {
                     if (is_array($elem)) {
                         $id = explode(":", $elem["content"])[1];
-                        //error_log(print_r($id,true));
                         $mentions[] = $id;
                     }
                 }
                 $mentions = array_unique($mentions);
             }
 
-//            var_dump(array_intersect($options["mentions"], $mentions));
             if (!array_intersect($options["mentions"], $mentions) == $options["mentions"]) {
                 $valid = false;
             }
@@ -66,26 +73,14 @@ class Blocmessage
             $reaction = $message_bdd->getReactions();
             if (isset($reaction)) {
                 while ($react_search && $i < count($options["reactions"])) {
-                    //version OU il faut enleveer react_search pour tous check voir vérifier si on pas deja assez trouvé pour s'arreter la
                     $trouve = false;
-                    //$trouve = 0;
-                    //var_dump($options["reactions"]);
-                    //var_dump($message_bdd->getReactions());
                     foreach (array_keys($message_bdd->getReactions()) as $reaction) {
-                        //var_dump($reaction);
-                        //var_dump($options["reactions"][$i]);
                         if (strpos(strtolower($reaction), strtolower($options["reactions"][$i])) !== false) {
-                            //var_dump("match");
                             $trouve = true;
-                            //$trouve++;
                             break;
                         }
                     }
                     if ($trouve == false) {
-                        //if($trouve )
-                        //il manque la reaction en question
-
-                        // voir pour changer si passage en version OU pour
                         $react_search = false;
                     }
                     $i++;
@@ -104,12 +99,8 @@ class Blocmessage
         if ($valid && !in_array($message_id_in_bloc, $this->doublon_id)) {
             $this->doublon_id[] = $message_id_in_bloc;
             $channel_entity = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $message_bdd->getChannelId()));
-            $list_message[] = Array("message" => $message_bdd->getAsArray(), "channel"=> $channel_entity->getAsArray());
-            //error_log("MESSAGE DANS RESULT");
-            //error_log(print_r($result,true));
+            $this->list_messages["messages"][]= Array("message" => $message_bdd->getAsArray(), "channel"=> $channel_entity->getAsArray());
         }
-
-        return $list_message;
 
     }
 
@@ -118,22 +109,21 @@ class Blocmessage
         $options_save = $options;
         $mentions = Array();
         $reactions = Array();
-
         $must = Array();
 
 
-        //var_dump($options);
-
         //PARTIE SUR LES MOTS
-        foreach($options["words"] as $word){
-            if(strlen($word) > 3) {
-                $final_words[] = strtolower($word);
+        if(isset($options["words"])) {
+            foreach ($options["words"] as $word) {
+                if (strlen($word) > 3) {
+                    $final_words[] = strtolower($word);
+                }
             }
         }
 
-        if(isset($final_words) && $final_words != Array()){
+        if(isset($final_words) && $final_words != Array()) {
             $terms = Array();
-            foreach ($final_words as $word){
+            foreach ($final_words as $word) {
                 $terms[] = Array(
                     "bool" => Array(
                         "filter" => Array(
@@ -144,7 +134,7 @@ class Blocmessage
                     )
                 );
             }
-
+        }
             $now = new \DateTime();
             $before = $now->format('Y-m-d');
             $after = "2000-01-01";
@@ -184,17 +174,6 @@ class Blocmessage
 
             }
 
-            //PARTIE SUR LE SENDER
-
-            if(isset($options["sender"])){
-                $sender = Array(
-                    "match_phrase" => Array(
-                        "messages.sender" => $options["sender"]
-                    )
-                );
-            }
-
-
             // PARTIE SUR LES MENTIONS
             if (isset($options["mentions"])) {
                 $mentions = Array();
@@ -221,7 +200,11 @@ class Blocmessage
             );
 
             if(isset($options["sender"])){
-                $must[] = $sender;
+                $must[] = Array(
+                    "match_phrase" => Array(
+                        "messages.sender" => $options["sender"]
+                    )
+                );
             }
 
             if(isset($options["mentions"])){
@@ -252,7 +235,16 @@ class Blocmessage
                 );
             }
 
-            $must[]= Array(
+            if(isset($options["application_id"])){
+                $must[] = Array(
+                    "match_phrase" => Array(
+                        "messages.application_id" => $options["application_id"]
+                    )
+                );;
+            }
+
+            if(isset($terms) && $terms != Array()){
+                $must[]= Array(
                     "bool" => Array(
                         "should" => Array(
                             $terms
@@ -260,10 +252,12 @@ class Blocmessage
                         "minimum_should_match" => count($terms)
                     )
                 );
+            }
 
             $options = Array(
                 "repository" => "TwakeGlobalSearchBundle:Bloc",
                 "index" => "message_bloc",
+                "size" => 1,
                 "query" => Array(
                     "bool" => Array(
                         "must" => Array(
@@ -293,12 +287,13 @@ class Blocmessage
 
             //var_dump(json_encode($options,JSON_PRETTY_PRINT));
 
-            $list_message=Array();
 
             // search in ES
             $result = $this->doctrine->es_search($options);
 
             array_slice($result["result"], 0, 5);
+
+            $scroll_id = $result["scroll_id"];
 
             //on traite les données recu d'Elasticsearch
 
@@ -306,24 +301,31 @@ class Blocmessage
                 $messages = $bloc->getMessages();
                 $compt = 0;
                 foreach ($messages as $message) {
-                    $word_valid = true;
-                    foreach ($final_words as $word) {
-                        if ($word_valid && strpos(strtolower($message["content"]), strtolower($word)) !== false) {
+                    if(isset($options_save["words"])){
+                        $word_valid = true;
+
+                        foreach ($final_words as $word) {
+                            if ($word_valid && strpos(strtolower($message["content"]), strtolower($word)) !== false) {
+                            } else {
+                                $word_valid = false;
+                            }
                         }
-                        else{
-                            $word_valid = false;
+                        if ($word_valid) {
+                            $message_id_in_bloc = $bloc->getIdMessages()[$compt];
+                            $this->verif_valid($message_id_in_bloc, $options_save, $list_message);
                         }
                     }
-                    if($word_valid){
-                        //var_dump("valid");
+                    elseif (!isset($options["words"]) && isset($options_save["application_id"]) && isset($message["application_id"])){
+                        //POUR LES MESSAGES D APPLICATION COMME LES ENVOIES DE FICHIER QUI ONT PAS DE TEXTE
+//                        var_dump("passage bloc ES sans content");
+//                        var_dump($message["application_id"]);
                         $message_id_in_bloc = $bloc->getIdMessages()[$compt];
-                        $list_message = $this->verif_valid($message_id_in_bloc, $options_save, $list_message);
+                        $this->verif_valid($message_id_in_bloc, $options_save, $list_message);
                     }
                     $compt++;
                 }
             }
             //var_dump("nombre de resultat : " . count($list_message));
-
 
             // on cherche dans le bloc en cours de construction de tout les channels demandés
             foreach ($channels as $channel) {
@@ -331,28 +333,35 @@ class Blocmessage
                 $compt = 0;
                 if (isset($lastbloc) && $lastbloc->getLock() == false) {
                     foreach ($lastbloc->getMessages() as $message) {
-                        $word_valid = true;
-                        foreach ($final_words as $word) {
-                            if ($word_valid && strpos(strtolower($message["content"]), strtolower($word)) !== false) {
+                        //var_dump($message);
+                        if(isset($options_save["words"])) {
+                            $word_valid = true;
+                            foreach ($final_words as $word) {
+                                if ($word_valid && strpos(strtolower($message["content"]), strtolower($word)) !== false) {
+                                } else {
+                                    $word_valid = false;
+                                }
                             }
-                            else{
-                                $word_valid = false;
+                            if ($word_valid) {
+                                $message_id_in_bloc = $lastbloc->getIdMessages()[$compt];
+                                $this->verif_valid($message_id_in_bloc, $options_save, $list_message);
                             }
                         }
-                        if($word_valid){
+                        elseif (!isset($options["words"]) && isset($options_save["application_id"]) && isset($message["application_id"])){
+                            //POUR LES MESSAGES D APPLICATION COMME LES ENVOIES DE FICHIER QUI ONT PAS DE TEXTE
+//                            var_dump("passage hors bloc sans content");
+//                            var_dump($message["application_id"]);
                             $message_id_in_bloc = $lastbloc->getIdMessages()[$compt];
-                            $list_message = $this->verif_valid($message_id_in_bloc, $options_save,$list_message);
+                            $this->verif_valid($message_id_in_bloc, $options_save, $list_message);
                         }
-                        $compt++;
-                        //var_dump($compt);
-                    }
+                            $compt++;
+                        }
                 }
             }
+            $this->list_messages["scroll_id"] = $scroll_id;
 
 
-        }
-
-    return $list_message ?: null;
+    return $this->list_messages ?: null;
 
     }
 

@@ -23,7 +23,6 @@ class AdvancedSearch
 
     public function SearchInBloc($current_user_id,$options,$channels){
         $channel_acces = Array();
-
         foreach ($channels as $channel){
             $member = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id"=> $current_user_id, "channel_id" => $channel));
             if(isset($member)){
@@ -32,14 +31,14 @@ class AdvancedSearch
         }
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
         if(isset($channel_acces) && $channel_acces != Array()){
-
             $messages = $this->blocservice->search($options, $channel_acces);
-            if (isset($messages))
-            {
-                foreach ($messages as $message) {
-                    $this->globalresult[] = Array("message" => $message);
-                }
-            }
+//            if (isset($messages))
+//            {
+//                foreach ($messages as $message) {
+//                    $this->globalresult[] = Array("message" => $message);
+//                }
+//            }
+            $this->globalresult = $messages;
         }
     }
 

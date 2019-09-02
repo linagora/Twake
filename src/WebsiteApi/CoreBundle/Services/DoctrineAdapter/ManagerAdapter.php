@@ -340,7 +340,7 @@ class ManagerAdapter
 
         if(isset($options["scroll_id"])){
             $route = "http://" . $this->es_server . "/_search/scroll" ;
-            $res = $this->circle->post($route, json_encode(Array("scroll" => "1m" ,"scroll_id" => $options["scroll_id"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            $res = $this->circle->post($route, json_encode(Array("scroll" => "5m" ,"scroll_id" => $options["scroll_id"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         }
         else {
             if (!$this->es_server) {
@@ -376,13 +376,13 @@ class ManagerAdapter
 
             $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
             $route .= "_search";
-            $route .= "?scroll=1m"; //on spécifie un temps ou la recherche est active
+            $route .= "?scroll=5m"; //on spécifie un temps ou la recherche est active
 
             try {
                 if (isset($options["sort"])) {
-                    $res = $this->circle->post($route, json_encode(Array("query" => $options["query"], "sort" => $options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+                    $res = $this->circle->post($route, json_encode(Array("size" => $options["size"] ,"query" => $options["query"], "sort" => $options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
                 } else {
-                    $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+                    $res = $this->circle->post($route, json_encode(Array("size" => $options["size"], "query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
                 }
 
             } catch (\Exception $e) {
@@ -405,7 +405,7 @@ class ManagerAdapter
 
         if ($res) {
             $res = json_decode($res, 1);
-            if($res["hits"]["total"] > 10 && isset($res["_scroll_id"])){
+            if($res["hits"]["total"] > $options["size"] && isset($res["_scroll_id"])){
                 //on a plus de 10 resultat et un ID il faut paginer
                 $scroll_id = $res["_scroll_id"];
             }

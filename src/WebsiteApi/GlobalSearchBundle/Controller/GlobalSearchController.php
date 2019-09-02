@@ -53,7 +53,7 @@ class GlobalSearchController extends Controller
 //        $scroll_id = $request->request->get("scroll_id");
 //        $repository = $request->request->get("repository");
 //        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAAAezFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAB7UWeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAAAe2FnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtxZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
-//        $repository = "TwakeGlobalSearchBundle:Bloc";
+//
 
         if(isset($scroll_id) && isset($repository)){
             $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
@@ -64,14 +64,8 @@ class GlobalSearchController extends Controller
             $group_id = $request->request->get("group_id");
             $workspace_id = $request->request->get("workspace_id");
             $current_user_id = $current_user->getId();
-
-            //$globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id, $words, $group_id, $workspace_id);
-            $channels = Array("db2c2b9e-c357-11e9-933e-0242ac1d0005");
-            //$tests
-            $globalresult= $this->get('globalsearch.advancedsearch')->AdvancedSearch($current_user_id,$words,$channels);
+            $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id, $words, $group_id, $workspace_id);
         }
-
-
 
         $data = Array("data" => $globalresult);
         //return new Response("Hello !");
@@ -81,34 +75,40 @@ class GlobalSearchController extends Controller
 
     public function AdvancedSearchAction(Request $request)
     {
-        $options =  $request->request->get("options");
-        $channels= $request->request->get("channel_id");
+         $scroll_id = $request->request->get("scroll_id");
+//        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAABgNFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYDBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAGA4WeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAABgPFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYEBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
+        $repository = "TwakeGlobalSearchBundle:Bloc";
 
-        $current_user = $this->getUser();
-        $current_user_id = $current_user->getId();
+        if(isset($scroll_id) && isset($repository)){
+            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+        }
+        else {
+            $options = $request->request->get("options");
+            $channels = $request->request->get("channel_id");
 
-//        $options = Array(
-//            "words" => Array("message"),
-//            "date_before" => "2019-09-30",
-//            "date_after" => "2019-08-20",
-//            //"reactions" => Array("sun"),
+            $current_user = $this->getUser();
+            $current_user_id = $current_user->getId();
+
+//            $options = Array(
+//                "words" => Array("test"),
+//                "date_before" => "2019-09-30",
+//                "date_after" => "2019-08-20",
+////                "reactions" => Array("sun"),
 ////            "mentions" => Array("3aa48caa-ad60-11e9-8cdf-0242ac1d0005","3af5c99e-ad60-11e9-9e16-0242ac1d0005"),
-//            "sender" => "3aa48caa-ad60-11e9-8cdf-0242ac1d0005"
+//                "sender" => "3aa48caa-ad60-11e9-8cdf-0242ac1d0005",
+////                "application_id" => "31e572d0-c356-11e9-a2bc-0242ac1d0005"
 //
-//        );
-
-//        if(!(isset($current_user)))
-//        {
-//            $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
-//        }
-//        else
-//        {
-//            $current_user_id= $current_user->getId();
-//        }
-        //$channels = Array("db2c2b9e-c357-11e9-933e-0242ac1d0005");
-        $globalresult = $this->get('globalsearch.advancedsearch')->AdvancedSearch($current_user_id,$options,$channels);
+//            );
+//
+//            if (!(isset($current_user))) {
+//                $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
+//            } else {
+//                $current_user_id = $current_user->getId();
+//            }
+//            $channels = Array("db2c2b9e-c357-11e9-933e-0242ac1d0005");
+            $globalresult = $this->get('globalsearch.advancedsearch')->AdvancedSearch($current_user_id, $options, $channels);
+        }
         $data = Array("data" => $globalresult);
         return new JsonResponse($data);
-
     }
 }

@@ -228,6 +228,8 @@ class Bloc extends SearchableObject
         $date = $message_entity->getCreationDate();
         $sender = $message_entity->getSender()->getId() . "";
 
+        $application_id = $message_entity->getApplicationId();
+
         $mentions = Array();
 
         if (is_array($message_entity->getContent()["prepared"][0])) {
@@ -246,6 +248,7 @@ class Bloc extends SearchableObject
         $add = Array(
             "content" => $content,
             "sender" => $sender,
+            "application_id" => $application_id,
             "mentions" => $mentions,
             "date" => $date->format('Y-m-d'),
             "reactions" => Array()
