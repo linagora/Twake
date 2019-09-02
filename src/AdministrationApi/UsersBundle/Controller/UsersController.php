@@ -122,7 +122,7 @@ class UsersController extends Controller
 
                 $search_words = explode(" ", $search_string);
 
-                $users = $advanced_search->search($search_words);
+                $users = $advanced_search->search($search_words, Array("allow_email" => true));
 
             }
 

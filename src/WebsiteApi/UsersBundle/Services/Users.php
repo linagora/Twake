@@ -71,6 +71,32 @@ class Users
 
         $users = $this->em->es_search($options);
 
+
+        if (isset($options["allow_email"]) && $options["allow_email"]) {
+
+            $mails = $this->em->es_search(Array(
+                "repository" => "TwakeUsersBundle:Mail",
+                "index" => "email",
+                "fallback_keys" => Array(
+                    "mail" => $word
+                ),
+                "query" => Array(
+                    "bool" => Array(
+                        "filter" => Array(
+                            "regexp" => Array(
+                                "email" => "*" . $word . "*"
+                            ),
+                        ),
+                    )
+                )
+            ));
+
+            foreach ($mails["result"] as $mail) {
+                $users["result"][] = $mail->getUser();
+            }
+
+        }
+
         $result = [];
         foreach ($users["result"] as $user) {
             $result[] = $user->getAsArray();
