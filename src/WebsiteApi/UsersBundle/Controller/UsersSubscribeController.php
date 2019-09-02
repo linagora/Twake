@@ -30,7 +30,7 @@ class UsersSubscribeController extends Controller
         $language = $request->request->get("language", "");
         $newsletter = $request->request->get("newsletter", "");
 
-        $res = $this->get("app.user")->subscribeMail($email, $username, $password, $name, $firstname, $phone, $language,$newsletter);
+        $res = $this->get("app.user")->subscribeMail($email, $username, $password, $name, $firstname, $phone, $language, $newsletter);
 
 		if ($res) {
 

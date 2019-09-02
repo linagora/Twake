@@ -417,7 +417,6 @@ class MessageSystem
         }
 
 
-
         if (!$ephemeral) {
 
             if ($channel && $did_create) {
@@ -533,7 +532,7 @@ class MessageSystem
 
         $mentions = Array();
         //error_log(print_r($message->getContent(),true));
-        if(is_array($message->getContent()["prepared"][0])) {
+        if (is_array($message->getContent()["prepared"][0])) {
             foreach ($message->getContent()["prepared"][0] as $elem) {
                 if (is_array($elem)) {
                     $id = explode(":", $elem["content"])[1];
