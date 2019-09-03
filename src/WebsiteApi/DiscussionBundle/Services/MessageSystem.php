@@ -394,7 +394,7 @@ class MessageSystem
             if (isset($reaction["remove"])) {
                 $key_first = array_keys($reaction["remove"])[0];
                 if(array_key_exists($key_first,$current_reactions)){
-                    $keytoremove = array_search( $user->getId(),$current_reactions[$key_first]["users"]);
+                    $keytoremove = array_search($user->getId(), $current_reactions[$key_first]["users"]);
                     unset($current_reactions[$key_first]["users"][$keytoremove]);
                     $current_reactions[$key_first]["count"]--;
                     if($current_reactions[$key_first]["count"]==0){
@@ -605,7 +605,12 @@ class MessageSystem
     public function deleteinbloc($message){
 
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
-        $position = array_search($message->getId()."",$bloc->getIdMessages());
+
+        if (!$bloc->getIdMessages()) {
+            return;
+        }
+
+        $position = array_search($message->getId() . "", $bloc->getIdMessages());
 
 
         $bloc->setNbMessage($bloc->getNbMessage()-1);
