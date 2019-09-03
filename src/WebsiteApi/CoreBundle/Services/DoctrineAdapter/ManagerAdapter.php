@@ -378,6 +378,10 @@ class ManagerAdapter
             $route .= "_search";
             $route .= "?scroll=5m"; //on spécifie un temps ou la recherche est active
 
+            if (!isset($options["size"])) {
+                $options["size"] = 10;
+            }
+
             try {
                 if (isset($options["sort"])) {
                     $res = $this->circle->post($route, json_encode(Array("size" => $options["size"] ,"query" => $options["query"], "sort" => $options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));

@@ -28,6 +28,10 @@ class EventController extends Controller
         $res = $this->get("app.calendar.event")->save($object, $options, $this->getUser());
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
+        } else {
+            if (!$object["id"]) {
+                $this->get("administration.counter")->incrementCounter("total_events", 1);
+            }
         }
         return new JsonResponse(Array("data" => Array("object" => $res)));
     }

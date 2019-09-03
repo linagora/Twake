@@ -67,6 +67,8 @@ class GlobalSearchController extends Controller
             $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id, $words, $group_id, $workspace_id);
         }
 
+        $this->get("administration.counter")->incrementCounter("total_quicksearch", 1);
+
         $data = Array("data" => $globalresult);
         //return new Response("Hello !");
         return new JsonResponse($data);
@@ -93,11 +95,10 @@ class GlobalSearchController extends Controller
 //                "words" => Array("test"),
 //                "date_before" => "2019-09-30",
 //                "date_after" => "2019-08-20",
-////                "reactions" => Array("sun"),
-////            "mentions" => Array("3aa48caa-ad60-11e9-8cdf-0242ac1d0005","3af5c99e-ad60-11e9-9e16-0242ac1d0005"),
+//                "reactions" => Array("sun"),
+//                "mentions" => Array("3aa48caa-ad60-11e9-8cdf-0242ac1d0005","3af5c99e-ad60-11e9-9e16-0242ac1d0005"),
 //                "sender" => "3aa48caa-ad60-11e9-8cdf-0242ac1d0005",
-////                "application_id" => "31e572d0-c356-11e9-a2bc-0242ac1d0005"
-//
+//                "application_id" => "31e572d0-c356-11e9-a2bc-0242ac1d0005"
 //            );
 //
 //            if (!(isset($current_user))) {
@@ -108,6 +109,9 @@ class GlobalSearchController extends Controller
 //            $channels = Array("db2c2b9e-c357-11e9-933e-0242ac1d0005");
             $globalresult = $this->get('globalsearch.advancedbloc')->AdvancedSearch($current_user_id, $options, $channels);
         }
+
+        $this->get("administration.counter")->incrementCounter("total_search", 1);
+
         $data = Array("data" => $globalresult);
         return new JsonResponse($data);
     }

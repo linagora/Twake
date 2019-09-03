@@ -56,6 +56,8 @@ class DriveController extends Controller
 
         }
 
+        $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
+
         return new JsonResponse(Array("object" => $object));
 
 
@@ -88,6 +90,8 @@ class DriveController extends Controller
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
         }
 
+        $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
+
         return new JsonResponse(Array("object" => $object));
     }
 
@@ -117,6 +121,8 @@ class DriveController extends Controller
             }
         }
 
+        $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
+
         return new JsonResponse(Array("data" => $res));
     }
 
@@ -132,6 +138,8 @@ class DriveController extends Controller
 
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
         @$response = $this->get('driveupload.download')->download($workspace_id, $fileId, true, null, $fileSystem);
+
+        $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
 
         return $response;
     }

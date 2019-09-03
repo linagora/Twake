@@ -132,6 +132,10 @@ developers_api_v1_drive:
     resource: "@DevelopersApiV1DriveBundle/Resources/config/routing.yml"
     prefix:   /api/v1/drive/
 
+developers_api_v1_tasks:
+    resource: "@DevelopersApiV1TasksBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/tasks/
+
 developers_api_v1_core:
     resource: "@DevelopersApiV1CoreBundle/Resources/config/routing.yml"
     prefix:   /api/v1/core/

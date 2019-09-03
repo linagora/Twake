@@ -1,15 +1,17 @@
 <?php
 
 
-namespace DevelopersApiV1\CalendarBundle\Controller;
+namespace DevelopersApiV1\TasksBundle\Controller;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class CalendarController extends Controller
+class TasksController extends Controller
 {
-    public function removeEventAction (Request $request){
-        $capabilities = ["calendar_event_remove"];
+    public function removeTaskAction(Request $request)
+    {
+        $capabilities = ["tasks_task_remove"];
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
@@ -18,7 +20,7 @@ class CalendarController extends Controller
 
         $object = $request->request->get("object", null);
         $user = null;
-        $object = $this->get("app.calendar.event")->remove($object, Array(), $user);
+        $object = $this->get("app.tasks.task")->remove($object, Array(), $user);
 
         $event = Array(
             "client_id" => "system",
@@ -26,22 +28,19 @@ class CalendarController extends Controller
             "object_type" => "",
             "front_id" => $object["front_id"]
         );
-        $workspace_calendars = $object["workspaces_calendars"] ? $object["workspaces_calendars"] : [];
-        $workspace_ids = [];
-        foreach ($workspace_calendars as $wc) {
-            if (!in_array($wc["workspace_id"], $workspace_ids)) {
-                $workspace_ids[] = $wc["workspace_id"];
-                $this->get("app.websockets")->push("calendar_events/" . $wc["workspace_id"], $event);
-            }
-        }
 
-        $this->get("administration.counter")->incrementCounter("total_api_calendar_operation", 1);
+        //TODO ws update
+
+        $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
 
         return new JsonResponse(Array("result" => $object));
     }
 
-    public function saveEventAction (Request $request){
-        $capabilities = ["calendar_event_save"];
+    public function saveTaskAction(Request $request)
+    {
+
+        $capabilities = ["tasks_task_save"];
+
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
             return new JsonResponse($application);
@@ -50,7 +49,7 @@ class CalendarController extends Controller
         $object = $request->request->get("object", null);
         $user = null;
         try {
-            $object = $this->get("app.calendar.event")->save($object, Array(), $user);
+            $object = $this->get("app.tasks.task")->save($object, Array(), $user);
         } catch (\Exception $e) {
             $object = false;
         }
@@ -66,26 +65,20 @@ class CalendarController extends Controller
                 "object_type" => "",
                 "object" => $object
             );
-            $workspace_calendars = $object["workspaces_calendars"] ? $object["workspaces_calendars"] : [];
-            $workspace_ids = [];
-            foreach ($workspace_calendars as $wc) {
-                if (!in_array($wc["workspace_id"], $workspace_ids)) {
-                    $workspace_ids[] = $wc["workspace_id"];
-                    $this->get("app.websockets")->push("calendar_events/" . $wc["workspace_id"], $event);
-                }
-            }
+
+            //TODO ws update
 
         }
 
-        $this->get("administration.counter")->incrementCounter("total_api_calendar_operation", 1);
+        $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
 
         return new JsonResponse(Array("object" => $object));
 
     }
 
-    public function getCalendarListAction(Request $request)
+    public function getBoardListAction(Request $request)
     {
-        $privileges = ["workspace_calendar"];
+        $privileges = ["workspace_tasks"];
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
         if (is_array($application) && $application["error"]) {
@@ -94,12 +87,12 @@ class CalendarController extends Controller
         $objects = false;
         $user_id = $request->request->get("user_id", "");
         $workspace_id = $request->request->get("workspace_id", "");
-        if ($workspace_id){
+        if ($workspace_id) {
             if ($user_id) {
                 $user_entity = $this->get("app.users")->getById($user_id, true);
             }
-            if($user_entity) {
-                $objects = $this->get("app.calendar.calendar")->get(Array("workspace_id" => $workspace_id), $user_entity);
+            if ($user_entity) {
+                $objects = $this->get("app.tasks.board")->get(Array("workspace_id" => $workspace_id), $user_entity);
             }
         }
 
@@ -112,7 +105,7 @@ class CalendarController extends Controller
             $res[] = $object;
         }
 
-        $this->get("administration.counter")->incrementCounter("total_api_calendar_operation", 1);
+        $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
 
         return new JsonResponse(Array("data" => $res));
     }
