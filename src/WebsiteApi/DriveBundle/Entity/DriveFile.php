@@ -99,6 +99,12 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     private $last_version_id;
 
     /**
+     * @ORM\Column(name="creator", type="text")
+     */
+    private $creator;
+
+
+    /**
      * @ORM\Column(type="twake_bigint")
      */
     private $size;
@@ -128,6 +134,8 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
      * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
      */
     private $copyof;
+
+
 
     /**
      * @ORM\Column(type="twake_boolean")
@@ -238,11 +246,32 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "id" => $this->getId()."",
             "type" => $this->getExtension(),
             "name"=> $this->getName(),
-            "creation_date" => ($this->getLastModified() ? $this->getLastModified()->format('Y-m-d') : null),
+            "creation_date" => ($this->getAdded() ? $this->getAdded()->format('Y-m-d') : null),
+            "creator" => $this->getCreator(),
+            "size" => $this->getSize(),
+            "date_last_modified" => ($this->getLastModified() ? $this->getLastModified()->format('Y-m-d') : null),
             "workspace_id" => $this->getWorkspaceId(),
             "keywords" => $this->getContentKeywords()
         );
     }
+
+    /**
+     * @return mixed
+     */
+    public function getCreator()
+    {
+        return $this->creator;
+    }
+
+    /**
+     * @param mixed $creator
+     */
+    public function setCreator($creator)
+    {
+        $this->creator = $creator;
+    }
+
+
 
     public function setId($id)
     {
@@ -670,7 +699,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "trash" => $this->getIsInTrash(),
 
             'is_directory' => $this->getIsDirectory(),
-
+            "creator" => $this->getCreator(),
             'name' => $this->getName(),
             'description' => $this->getDescription(),
             "last_user" => $this->getLastUser(),

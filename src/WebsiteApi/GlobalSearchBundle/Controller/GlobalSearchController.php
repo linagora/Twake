@@ -73,7 +73,7 @@ class GlobalSearchController extends Controller
 
     }
 
-    public function AdvancedSearchAction(Request $request)
+    public function AdvancedBlocAction(Request $request)
     {
          $scroll_id = $request->request->get("scroll_id");
 //        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAABgNFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYDBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAGA4WeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAABgPFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYEBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
@@ -106,9 +106,52 @@ class GlobalSearchController extends Controller
 //                $current_user_id = $current_user->getId();
 //            }
 //            $channels = Array("db2c2b9e-c357-11e9-933e-0242ac1d0005");
-            $globalresult = $this->get('globalsearch.advancedsearch')->AdvancedSearch($current_user_id, $options, $channels);
+            $globalresult = $this->get('globalsearch.advancedbloc')->AdvancedSearch($current_user_id, $options, $channels);
         }
         $data = Array("data" => $globalresult);
         return new JsonResponse($data);
     }
+
+    public function AdvancedFileAction(Request $request)
+    {
+
+        //$scroll_id = $request->request->get("scroll_id");
+//        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAABgNFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYDBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAGA4WeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAABgPFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYEBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
+        //$repository = "TwakeGlobalSearchBundle:Bloc";
+
+        if(isset($scroll_id) && isset($repository)){
+            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+        }
+        else {
+//            $options = $request->request->get("options");
+//            $workspaces = $request->request->get("channel_id");
+//
+//            $current_user = $this->getUser();
+//            $current_user_id = $current_user->getId();
+
+            $options = Array(
+                "name" => "jack",
+                "date_create_before" => "2019-09-30",
+                "date_create_after" => "2019-08-20",
+                "date_modified_before" => "2019-09-30",
+                "date_modified_after" => "2019-08-20",
+                "size_gte" => 0,
+                "size_lte" => 5000000,
+                "type" => "png",
+                "creator" => "3aa48caa-ad60-11e9-8cdf-0242ac1d0005"
+            );
+
+            if (!(isset($current_user))) {
+                $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
+            } else {
+                $current_user_id = $current_user->getId();
+            }
+            $workspaces = Array("52a05d64-c356-11e9-8117-0242ac1d0005");
+            $globalresult = $this->get('globalsearch.advancedfile')->AdvancedFile($current_user_id, $options, $workspaces);
+        }
+        $data = Array("data" => $globalresult);
+        //return new Response("Hello !");
+        return new JsonResponse($data);
+    }
+
 }

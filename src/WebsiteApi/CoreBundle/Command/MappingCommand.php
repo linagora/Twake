@@ -65,8 +65,6 @@ class MappingCommand extends ContainerAwareCommand
                     )
                 )
             )
-
-
         );
 
 

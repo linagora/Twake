@@ -252,7 +252,7 @@ class ManagerAdapter
 
     public function es_put($entity, $index, $server = "twake")
     {
-
+//        error_log("passage");
         if (!$this->es_server) {
             return;
         }
@@ -399,7 +399,6 @@ class ManagerAdapter
         //error_log(print_r($repository,true));
 
         $res = $res->getContent();
-
         $result = [];
         $scroll_id = "";
 
@@ -411,8 +410,10 @@ class ManagerAdapter
             }
 
             //error_log(print_r($res,true));
+
             if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
                 $res = $res["hits"]["hits"];
+
                 foreach ($res as $object_json) {
                     if ($repository) {
                         $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
@@ -430,7 +431,6 @@ class ManagerAdapter
             }
             $result = Array("repository" => $repository, "scroll_id" => $scroll_id, "result" => $result);
         }
-
         return $result;
 
     }

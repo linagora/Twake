@@ -20,7 +20,7 @@ class Blocmessage
         $this->doctrine = $doctrine;
     }
 
-    public function verif_valid($message_id_in_bloc, $options, $list_message){
+    public function verif_valid($message_id_in_bloc, $options){
         $valid = true;
         //var_dump($options);
         $message_bdd = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message_id_in_bloc));
@@ -312,7 +312,7 @@ class Blocmessage
                         }
                         if ($word_valid) {
                             $message_id_in_bloc = $bloc->getIdMessages()[$compt];
-                            $this->verif_valid($message_id_in_bloc, $options_save, $list_message);
+                            $this->verif_valid($message_id_in_bloc, $options_save);
                         }
                     }
                     elseif (!isset($options["words"]) && isset($options_save["application_id"]) && isset($message["application_id"])){
@@ -320,7 +320,7 @@ class Blocmessage
 //                        var_dump("passage bloc ES sans content");
 //                        var_dump($message["application_id"]);
                         $message_id_in_bloc = $bloc->getIdMessages()[$compt];
-                        $this->verif_valid($message_id_in_bloc, $options_save, $list_message);
+                        $this->verif_valid($message_id_in_bloc, $options_save);
                     }
                     $compt++;
                 }
@@ -344,7 +344,7 @@ class Blocmessage
                             }
                             if ($word_valid) {
                                 $message_id_in_bloc = $lastbloc->getIdMessages()[$compt];
-                                $this->verif_valid($message_id_in_bloc, $options_save, $list_message);
+                                $this->verif_valid($message_id_in_bloc, $options_save);
                             }
                         }
                         elseif (!isset($options["words"]) && isset($options_save["application_id"]) && isset($message["application_id"])){
@@ -352,7 +352,7 @@ class Blocmessage
 //                            var_dump("passage hors bloc sans content");
 //                            var_dump($message["application_id"]);
                             $message_id_in_bloc = $lastbloc->getIdMessages()[$compt];
-                            $this->verif_valid($message_id_in_bloc, $options_save, $list_message);
+                            $this->verif_valid($message_id_in_bloc, $options_save);
                         }
                             $compt++;
                         }

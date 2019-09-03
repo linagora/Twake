@@ -12,10 +12,13 @@ globalsearch_quicksearch:
   path:       /quicksearch
   defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:QuickSearch }
 
-globalsearch_advancedsearch:
-  path:       /advancedsearch
-  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:AdvancedSearch }
+globalsearch_advancedbloc:
+  path:       /advancedbloc
+  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:AdvancedBloc}
 
+globalsearch_advancedfile:
+  path:       /advancedfile
+  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:AdvancedFile}
 
 globalsearch_testindex:
   path:       /testindex
@@ -28,3 +31,17 @@ globalsearch_testindex:
 globalsearch_mapping:
   path:       /mapping
   defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:Mapping }
+
+
+globalsearch_tag_get:
+    path:     /tagget
+    defaults: { _controller: TwakeGlobalSearchBundle:Tag:get}
+
+globalsearch_tag_save:
+    path:     /tagsave
+    defaults: { _controller: TwakeGlobalSearchBundle:Tag:save }
+
+globalsearch_tag_remove:
+    path:     /tagremove
+    defaults: { _controller: TwakeGlobalSearchBundle:Tag:remove }
+

@@ -214,6 +214,7 @@ class DriveFileRefacto
             $workspace_id = $object["workspace_id"];
             $fileordirectory = new DriveFile($workspace_id, "defined_later", $object["is_directory"]);
             $fileordirectory->setFrontId($front_id);
+            $fileordirectory->setCreator($current_user);
             $fileordirectory->setPreviewHasBeenGenerated(false);
             $fileordirectory->setHasPreview(false);
             //$fileordirectory->setIsInTrash(false);
