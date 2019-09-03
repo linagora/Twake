@@ -196,6 +196,8 @@ class DriveFileRefacto
             return false;
         }
 
+        $application = isset($options["application_id"]) ? $options["application_id"] : false;
+
         $did_create = false;
         $fileordirectory = null;
         if (isset($object["id"]) && $object["id"]) { // on recoit un identifiant donc c'est un modification
@@ -296,7 +298,10 @@ class DriveFileRefacto
             $list = $repo->findBy(Array("workspace_id" => $fileordirectory->getWorkspaceId(), "parent_id" => $fileordirectory->getParentId(), "isintrash" => false));
 
             $present = true;
-            while ($present == true) {
+            $iter = 0;
+            while ($present == true && $iter < 100) {
+                $iter++;
+
                 $second_present = false;
                 foreach ($list as $el) {
                     if ($el->getName() == $fileordirectory->getName() && $el->getId() != $fileordirectory->getId()) {
@@ -314,7 +319,12 @@ class DriveFileRefacto
                     preg_match("/-([0-9]+)$/i", $name, $matches);
                     $cur_val = intval(isset($matches[1]) ? $matches[1] : 0);
                     $cur_val_to_replace = isset($matches[0]) ? $matches[0] : "";
-                    $new_name = substr($name, 0, strlen($name) - strlen($cur_val_to_replace)) . "-" . ($cur_val + 1) . $ext;
+
+                    if ($iter >= 100) {
+                        $new_name = substr($name, 0, strlen($name) - strlen($cur_val_to_replace)) . "-" . date("U") . $ext;
+                    } else {
+                        $new_name = substr($name, 0, strlen($name) - strlen($cur_val_to_replace)) . "-" . ($cur_val + 1) . $ext;
+                    }
 
                     $fileordirectory->setName($new_name);
 
@@ -484,8 +494,11 @@ class DriveFileRefacto
 
         $workspace_id = null;
 
-        while ($directory != null) {
+        $iter = 0;
 
+        while ($directory != null && $iter < 100) {
+
+            $iter++;
 
             if ($directory == "root" || $directory == "trash") {
                 if (!$workspace_id) {
@@ -596,7 +609,9 @@ class DriveFileRefacto
 
         $list = [$child->getAsArray()];
 
-        while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash") {
+        $iter = 0;
+        while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash" && $iter < 100) {
+            $iter++;
             $parent = $repo->findOneBy(Array("id" => $child->getParentId()));
             if ($parent) {
                 $list[] = $parent->getAsArray();
@@ -663,7 +678,9 @@ class DriveFileRefacto
         //Look if this file is in application directory
         $child = $file;
         $repo = $this->em->getRepository("TwakeDriveBundle:DriveFile");
-        while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash") {
+        $iter = 0;
+        while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash" && $iter < 100) {
+            $iter++;
             $parent = $repo->findOneBy(Array("id" => $child->getParentId()));
             if ($parent) {
 
