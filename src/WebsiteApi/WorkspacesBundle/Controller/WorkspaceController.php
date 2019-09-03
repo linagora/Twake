@@ -118,6 +118,9 @@ class WorkspaceController extends Controller
 			$planId = $plan->getId();
             $group = $this->get("app.groups")->create($this->getUser()->getId(), $group_name, $uniquename, $planId, $group_creation_data);
 			$groupId = $group->getId();
+
+            $this->get("administration.counter")->incrementCounter("total_groups", 1);
+
 		}
 
 		$ws = $this->get("app.workspaces")->create($name, $groupId, $this->getUser()->getId());
@@ -144,6 +147,9 @@ class WorkspaceController extends Controller
 			$response["data"]["status"] = "success";
             //$response["data"]["workspace_id"] = $ws_id;
             $response["data"]["workspace"] = $ws->getAsArray();
+
+            $this->get("administration.counter")->incrementCounter("total_workspaces", 1);
+
 		}
 
 		return new JsonResponse($response);

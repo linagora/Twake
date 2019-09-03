@@ -667,9 +667,9 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "workspace_id" => $this->getWorkspaceId(),
             'parent_id' => $this->getParentId(),
             "detached" => $this->getDetachedFile(),
-            "trash" => $this->getIsInTrash(),
+            "trash" => $this->getIsInTrash() ? true : false,
 
-            'is_directory' => $this->getIsDirectory(),
+            'is_directory' => $this->getIsDirectory() ? true : false,
 
             'name' => $this->getName(),
             'description' => $this->getDescription(),

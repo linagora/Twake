@@ -207,7 +207,7 @@ class DriveFileRefacto
             }
         }
         else{ // pas d'identifiant on veut donc créer un fichier
-            if(!isset($object["front_id"]) || !isset($object["workspace_id"])) {
+            if (!isset($object["workspace_id"])) {
                 return false;
             }
             $front_id = $object["front_id"];

@@ -38,6 +38,9 @@ class ApplicationDevelopmentController extends Controller
             if (!$res) {
                 $data["errors"][] = "error";
             } else {
+
+                $this->get("administration.counter")->incrementCounter("total_apps", 1);
+
                 $data["data"] = $res;
             }
 
@@ -115,6 +118,9 @@ class ApplicationDevelopmentController extends Controller
         if (!$res) {
             $data["errors"][] = "error";
         } else {
+
+            $this->get("administration.counter")->incrementCounter("total_apps", -1);
+
             $data["data"] = Array("success" => true);
         }
 
