@@ -344,6 +344,10 @@ class DriveFileRefacto
             $fileordirectory->setHiddenData($object["hidden_data"]);
         }
 
+        if (isset($object["last_modification_token"])) {
+            $fileordirectory->setLastModificationToken($object["last_modification_token"]);
+        }
+
         if (isset($object["application_id"])) {
             $fileordirectory->setApplicationId($object["application_id"]);
             if (isset($object["external_storage"])) {

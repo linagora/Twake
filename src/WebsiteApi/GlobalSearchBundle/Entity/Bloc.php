@@ -259,15 +259,17 @@ class Bloc extends SearchableObject
 
         );
 
+        if (!$messages) $messages = Array();
         array_push($messages, $add);
         $this->setMessages($messages);
         $this->setNbMessage($this->getNbMessage()+1);
 
         $id_messages = $this->getIdMessages();
+        if (!$id_messages) $id_messages = Array();
         $id= $message_entity->getId()."";
         array_push( $id_messages, $id);
         $this->setIdMessages($id_messages);
-        }
+    }
 
     private function mdToText($array)
     {

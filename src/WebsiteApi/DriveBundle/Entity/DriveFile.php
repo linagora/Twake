@@ -99,6 +99,11 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     private $last_version_id;
 
     /**
+     * @ORM\Column(name="last_modification_token", type="text")
+     */
+    private $last_modification_token;
+
+    /**
      * @ORM\Column(name="creator", type="text")
      */
     private $creator;
@@ -518,6 +523,22 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     /**
      * @return mixed
      */
+    public function getLastModificationToken()
+    {
+        return $this->last_modification_token;
+    }
+
+    /**
+     * @param mixed $last_modification_token
+     */
+    public function setLastModificationToken($last_modification_token)
+    {
+        $this->last_modification_token = $last_modification_token;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getLastVersionId()
     {
         return $this->last_version_id;
@@ -721,7 +742,9 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "acces_info" => $this->getAccesInfo(),
             "application_id" => $this->getApplicationId(),
             "external_storage" => $this->getExternalStorage(),
-            "hidden_data" => $this->getHiddenData()
+            "hidden_data" => $this->getHiddenData(),
+            "last_modification_token" => $this->getLastModificationToken(),
+            "last_modified" => ($this->getLastModified() ? $this->getLastModified()->format('U') : null),
 
         );
     }
