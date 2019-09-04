@@ -202,6 +202,12 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
      */
     private $last_user;
 
+    /**
+     * @ORM\Column(name="tags", type="twake_text", nullable=true)
+     * @Encrypted
+     */
+    private $tags;
+
     protected $es_type = "drive_file";
 
     public function __construct($workspace_id, $parent_id, $isdirectory = false)
@@ -254,6 +260,23 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "keywords" => $this->getContentKeywords()
         );
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTags()
+    {
+        return json_decode($this->tags);
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setTags($tags)
+    {
+        $this->tags = json_encode($tags);
+    }
+
 
     /**
      * @return mixed

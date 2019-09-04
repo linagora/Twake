@@ -43,10 +43,43 @@ class Blocmessage
             //var_dump("error valid date after");
             $valid = false;
         }
+
+        if ($valid && isset($options["pinned"]) && $message_bdd->getPinned() != $options["pinned"]){
+            $valid = false;
+        }
+
+
         //var_dump($message_bdd->getAsArray());
         if($valid && isset($options["application_id"]) && ($message_bdd->getApplicationId() != $options["application_id"])){
             $valid = false;
             //var_dump("error valid application id");
+        }
+
+        if ($valid && isset($options["tags"])){
+            $tags = $message_bdd->gettags();
+            $tags_search = true;
+            $i = 0;
+            if(isset($tags)) {
+                while ($tags_search && $i < count($options["tags"])) {
+                    $trouve = false;
+                    foreach (array_keys($message_bdd->gettags()) as $tag) {
+                        if (strpos(strtolower($tag), strtolower($options["tags"][$i])) !== false) {
+                            $trouve = true;
+                            break;
+                        }
+                    }
+                    if ($trouve == false) {
+                        $tags_search = false;
+                    }
+                    $i++;
+                }
+            }
+            else {
+                $valid = false;
+            }
+            if (!$tags_search) {
+                $valid = false;
+            }
         }
 
         if ($valid && isset($options["mentions"])) {
