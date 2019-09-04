@@ -406,18 +406,19 @@ class MessageSystem
             $message->setReactions($current_reactions);
         }
 
+        //Generate an ID
         $this->em->persist($message);
 
-        if($did_create){
-            $this->indexbloc($message,$channel->getOriginalWorkspaceId(),$object["channel_id"]);
-        }
-        else{
-            $content = $this->mdToText($object["content"]);
-            $this->updateinbloc($message, $content, $reaction);
-        }
+        if ($ephemeral) {
+            $this->em->remove($message);
+        } else {
 
-
-        if (!$ephemeral) {
+            if ($did_create) {
+                $this->indexbloc($message, $channel->getOriginalWorkspaceId(), $object["channel_id"]);
+            } else {
+                $content = $this->mdToText($object["content"]);
+                $this->updateinbloc($message, $content, $reaction);
+            }
 
             if ($channel && $did_create) {
                 $channel->setMessagesCount($channel->getMessagesCount() + 1);
