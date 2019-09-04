@@ -4,19 +4,17 @@
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
 
-class AdvancedSearch
+class AdvancedBloc
 {
     private $doctrine;
     private $blocservice;
-    private $fileservice;
     private $workspaceservice;
     private $globalresult;
 
-    public function __construct($doctrine, $blocservice, $fileservice, $workspaceservice)
+    public function __construct($doctrine, $blocservice, $workspaceservice)
     {
         $this->doctrine = $doctrine;
         $this->blocservice = $blocservice;
-        $this->fileservice = $fileservice;
         $this->workspaceservice = $workspaceservice;
 
     }
@@ -42,7 +40,7 @@ class AdvancedSearch
         }
     }
 
-    public function AdvancedSearch($current_user_id,$options,$channels)
+    public function AdvancedBloc($current_user_id,$options,$channels)
     {
 
         $this->globalresult = Array();

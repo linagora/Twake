@@ -24,9 +24,13 @@ services:
     class: WebsiteApi\GlobalSearchBundle\Services\QuickSearch
     arguments: ["@app.twake_doctrine", "@globalsearch.user", "@globalsearch.workspace", "@globalsearch.channel", "@globalsearch.file", "@app.workspace_members", "@globalsearch.messagebloc"]
 
-  globalsearch.advancedsearch:
-    class: WebsiteApi\GlobalSearchBundle\Services\AdvancedSearch
-    arguments: ["@app.twake_doctrine", "@globalsearch.messagebloc", "@globalsearch.file","@globalsearch.workspace"]
+  globalsearch.advancedbloc:
+    class: WebsiteApi\GlobalSearchBundle\Services\AdvancedBloc
+    arguments: ["@app.twake_doctrine", "@globalsearch.messagebloc", "@globalsearch.workspace"]
+
+  globalsearch.advancedfile:
+    class: WebsiteApi\GlobalSearchBundle\Services\AdvancedFile
+    arguments: ["@app.twake_doctrine", "@globalsearch.file","@globalsearch.workspace"]
 
   globalsearch.reindex:
     class: WebsiteApi\GlobalSearchBundle\Services\Reindex
@@ -38,3 +42,7 @@ services:
   globalsearch.pagination:
     class: WebsiteApi\GlobalSearchBundle\Services\Pagination
     arguments: ["@app.twake_doctrine"]
+
+  globalsearch.tag:
+      class: WebsiteApi\GlobalSearchBundle\Services\Tag
+      arguments: ["@app.twake_doctrine"]

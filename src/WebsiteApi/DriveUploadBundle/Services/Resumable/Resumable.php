@@ -43,7 +43,7 @@ class Resumable
     protected $storagemanager;
     protected $doctrine;
     protected $driverefacto;
-    protected $current_user;
+    protected $current_user_id;
     protected $previews;
     protected $parameter_drive_salt;
     protected $file_system;
@@ -80,12 +80,12 @@ class Resumable
         }
     }
 
-    public function process($current_user)
+    public function process($current_user_id)
     {
 
         if (!empty($this->resumableParams())) {
             if (!empty($this->request->file())) {
-                $this->current_user_id = $current_user;
+                $this->current_user_id = $current_user_id;
                 return $this->handleChunk();
             } else {
                 $this->handleTestChunk();
@@ -287,7 +287,8 @@ class Resumable
             //TODO What if we uploaded to an existing object (object[id] is set) TODO->REMOVE OLD VERSION IF WE ARE NOT CREATING A NEW ONE (or each time onlyoffice write we add a new copy on S3)
 
             $this->driverefacto->setDriveResumable($this);
-            $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $current_user, Array("data" => $data, "size" => $totalSize), true);
+
+            $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $this->current_user_id, Array("data" => $data, "size" => $totalSize), true);
 
             if ($uploadstate->getHasPreview() && $totalSize < 20000000) {
                 $this->file_system->getFileSystem()->genPreview($fileordirectory);

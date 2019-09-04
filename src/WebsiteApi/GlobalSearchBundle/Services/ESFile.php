@@ -8,6 +8,7 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 class ESFile
 {
     private $doctrine;
+    private $list_files = Array("files" => Array(), "scroll_id" => "");
 
     public function __construct($doctrine)
     {
@@ -214,6 +215,165 @@ END;
 //        }
 //        return ($file1[1] > $file2[1]) ? -1 : 1;
 //    }
+
+
+    public function advancedsearch($options,$workspaces){
+
+
+        $options_save = $options;
+        $must = Array();
+
+        //PARTIE SUR LE NAME
+
+        if(isset($options["name"])) {
+            $name = Array(
+                "bool" =>Array(
+                    "should" => Array(
+                        "bool" => Array(
+                            "filter" => Array(
+                                "regexp" => Array(
+                                    "name" => ".*" . $options["name"] . ".*"
+                                )
+                            )
+                        )
+                    ),
+                    "minimum_should_match" => 1
+                )
+            );
+        }
+
+        $now = new \DateTime();
+        $create_before = $now->format('Y-m-d');
+        $create_after = "2000-01-01";
+        $modified_before = $now->format('Y-m-d');
+        $modified_after = "2000-01-01";
+        $size_gte = 0;
+        $size_lte = 2000000000;
+
+        if(isset($options["size_lte"])){
+            $size_lte= $options["size_lte"];
+        }
+
+        if(isset($options["size_gte"])){
+            $size_gte= $options["size_gte"];
+        }
+
+        if(isset($options["date_create_before"])){
+            $create_before = $options["date_create_before"];
+        }
+
+        if(isset($options["date_create_after"])){
+            $create_after = $options["date_create_after"];
+        }
+
+        if(isset($options["date_modified_before"])){
+            $modified_before = $options["date_modified_before"];
+        }
+
+        if(isset($options["date_modified_after"])){
+            $modified_after = $options["date_modified_after"];
+        }
+
+        //PARTIES SUR LES WORKSPACES
+        $should_workspaces = Array();
+        foreach($workspaces as $wp) {
+            $should_workspaces[] = Array(
+                "match_phrase" => Array(
+                    "workspace_id" => $wp
+                )
+            );
+        }
+
+        $must[] = Array(
+            "bool" => Array(
+                "should" => $should_workspaces,
+                "minimum_should_match" => 1
+            )
+        );
+
+        if(isset($options["creator"])){
+            $must[] = Array(
+                "match_phrase" => Array(
+                    "creator" => $options["creator"]
+                )
+            );
+        }
+
+        if(isset($options["type"])){
+            $must[] = Array(
+                "match_phrase" => Array(
+                    "type" => strtolower($options["type"])
+                )
+            );
+        }
+
+        if(isset($name)){
+            $must[] = $name;
+        }
+
+        $must[] = Array(
+            "range" => Array(
+                "size" => Array(
+                    "lte" => $size_lte,
+                    "gte" => $size_gte
+                )
+            )
+
+        );
+
+        $must[] = Array(
+            "range" => Array(
+                "creation_date" => Array(
+                    "lte" => $create_before,
+                    "gte" => $create_after
+                )
+            )
+        );
+
+        $must[] = Array(
+            "range" => Array(
+                "date_last_modified" => Array(
+                    "lte" => $modified_before,
+                    "gte" => $modified_after
+                )
+            )
+        );
+
+        $options = Array(
+            "repository" => "TwakeDriveBundle:DriveFile",
+            "index" => "drive_file",
+            "size" => 1,
+            "query" => Array(
+                "bool" => Array(
+                    "must" => $must
+                )
+            )
+        );
+
+        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
+
+        // search in ES
+        $result = $this->doctrine->es_search($options);
+
+
+        array_slice($result["result"], 0, 5);
+
+        $scroll_id = $result["scroll_id"];
+
+        //on traite les données recu d'Elasticsearch
+        //var_dump(json_encode($options));
+        foreach ($result["result"] as $file){
+            //var_dump($file->getAsArray());
+            $this->list_files["files"][]= $file->getAsArray();
+        }
+//        var_dump("nombre de resultat : " . count($this->list_files));
+//        var_dump($this->list_files);
+        $this->list_files["scroll_id"] = $scroll_id;
+
+        return $this->list_files ?: null;
+
+    }
+
 
     public function TestSearch()
     {
