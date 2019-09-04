@@ -314,7 +314,7 @@ class DriveFileRefacto
                 } else {
                     $present = true;
 
-                    preg_match("/(.*)(\.[a-zA-Z0-9]+)+$/i", $fileordirectory->getName(), $matches);
+                    preg_match("/(.*)(\.[a-zA-Z0-9]+)*$/i", $fileordirectory->getName(), $matches);
                     $name = isset($matches[1]) ? $matches[1] : "";
                     $ext = isset($matches[2]) ? $matches[2] : "";
                     preg_match("/-([0-9]+)$/i", $name, $matches);
@@ -346,6 +346,8 @@ class DriveFileRefacto
 
         if (isset($object["last_modification_token"])) {
             $fileordirectory->setLastModificationToken($object["last_modification_token"]);
+        } else {
+            $fileordirectory->setLastModificationToken(date("U") . "-" . md5(random_bytes(20)));
         }
 
         if (isset($object["application_id"])) {
@@ -670,7 +672,7 @@ class DriveFileRefacto
             "user" => $current_user
         );
 
-        if ($did_create == "remove") {
+        if ($did_create === "remove") {
             $hook_name = "remove_file";
         } else if ($did_create) {
             $hook_name = "new_file";

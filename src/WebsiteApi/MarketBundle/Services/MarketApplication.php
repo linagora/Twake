@@ -261,7 +261,7 @@ class MarketApplication
                     ),
                     "must" => Array(
                         "query_string" => Array(
-                            "query" => $query
+                            "query" => "*" . $query . "*"
                         )
                     )
                 )
