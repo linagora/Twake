@@ -361,6 +361,10 @@ class DriveFileRefacto
             $fileordirectory->setUrl($object["url"]);
         }
 
+        if(isset($object["tags"])){
+            $fileordirectory->setTags($object["tags"]);
+        }
+
 
         $fileordirectory->setLastUser($current_user);
 

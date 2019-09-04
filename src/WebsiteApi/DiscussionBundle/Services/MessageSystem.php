@@ -406,6 +406,10 @@ class MessageSystem
             $message->setReactions($current_reactions);
         }
 
+        if(isset($object["tags"])){
+            $message->setTags($object["tags"]);
+        }
+
         //Generate an ID
         $this->em->persist($message);
 
@@ -536,9 +540,14 @@ class MessageSystem
 
         $pinned = $message->getPinned();
         if (isset($pinned) &&  $messages[$position]["pinned"] != $pinned){
-            error_log("passage");
             $messages[$position]["pinned"] = $pinned;
         }
+
+        $tags = $message->getTags();
+        if (isset($tags) &&  $messages[$position]["tags"] != $tags){
+            $messages[$position]["tags"] = $tags;
+        }
+
 
         $mentions = Array();
         //error_log(print_r($message->getContent(),true));

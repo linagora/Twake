@@ -133,18 +133,18 @@ Class Tag{
         return $valid;
     }
 
-    public function addTags($object,$tags){
-        $actual_tags = $object->gettags();
-
-        $object->setTags($tags);
-        $this->em->persist($object);
-        $this->em->flush();
-
-        $diff = array_merge(array_diff($tags, $actual_tags), array_diff($actual_tags, $tags));
-
-        foreach ($diff as $d){
-            //mettre a jour les compteurs
-        }
-
-    }
+//    public function addTags($object,$tags){
+//        $actual_tags = $object->gettags();
+//
+//        $object->setTags($tags);
+//        $this->em->persist($object);
+//        $this->em->flush();
+//
+//        $diff = array_merge(array_diff($tags, $actual_tags), array_diff($actual_tags, $tags));
+//
+//        foreach ($diff as $d){
+//            //mettre a jour les compteurs
+//        }
+//
+//    }
 }
