@@ -262,7 +262,8 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "size" => $this->getSize(),
             "date_last_modified" => ($this->getLastModified() ? $this->getLastModified()->format('Y-m-d') : null),
             "workspace_id" => $this->getWorkspaceId(),
-            "keywords" => $this->getContentKeywords()
+            "keywords" => $this->getContentKeywords(),
+            "tags" => $this->getTags()
         );
     }
 
@@ -768,6 +769,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "hidden_data" => $this->getHiddenData(),
             "last_modification_token" => $this->getLastModificationToken(),
             "last_modified" => ($this->getLastModified() ? $this->getLastModified()->format('U') : null),
+            "tags" => $this->getTags()
 
         );
     }

@@ -55,6 +55,8 @@ class MappingCommand extends ContainerAwareCommand
                         "application_id" => Array("type" => "keyword"),
                         "mentions" => Array("type" => "text"),
                         "date" => Array("type" => "date"),
+                        "tags" => Array("type" => "text"),
+                        "pinned" => Array("type" => "boolean"),
                         "reactions" => Array(
                             "type" => "nested",
                             "properties" => Array(
@@ -97,6 +99,7 @@ class MappingCommand extends ContainerAwareCommand
                 "type" => Array("type" => "keyword"),
                 "creation_date" => Array("type" => "date"),
                 "workspace_id" => Array("type" => "keyword"),
+                "tags" => Array("type" => "text"),
                 "keywords" => Array(
                     "type" => "nested",
                     "properties" => Array(

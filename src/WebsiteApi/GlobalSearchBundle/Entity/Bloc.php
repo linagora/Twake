@@ -26,7 +26,7 @@ class Bloc extends SearchableObject
      */
     protected $id;
     /**
-     * @ORM\Column(name="workspace_id", type="twake_text")
+     * @ORM\Column(name="workspace_id", type="twake_timeuuid")
      * @ORM\Id
      */
     protected $workspace_id;

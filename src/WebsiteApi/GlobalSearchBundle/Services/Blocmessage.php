@@ -27,7 +27,6 @@ class Blocmessage
 //        var_dump('date before : ' . $options["date_before"]);
 //        var_dump('date after : ' . $options["date_after"]);
 //        var_dump('date message : ' . $message_bdd->getCreationDate()->format('Y-m-d'));
-
         //var_dump("DEBUT VALIDATION");
         if ($valid && isset($options["sender"])) {
             if ($message_bdd->getSender()->getId() . "" != $options["sender"]) {
@@ -45,6 +44,7 @@ class Blocmessage
         }
 
         if ($valid && isset($options["pinned"]) && $message_bdd->getPinned() != $options["pinned"]){
+            //var_dump("error valid pinned");
             $valid = false;
         }
 
@@ -62,8 +62,9 @@ class Blocmessage
             if(isset($tags)) {
                 while ($tags_search && $i < count($options["tags"])) {
                     $trouve = false;
-                    foreach (array_keys($message_bdd->gettags()) as $tag) {
-                        if (strpos(strtolower($tag), strtolower($options["tags"][$i])) !== false) {
+                    //var_dump($options["tags"][$i]);
+                    foreach ($message_bdd->gettags() as $tag) {
+                        if ($tag == $options["tags"][$i]) {
                             $trouve = true;
                             break;
                         }
@@ -79,6 +80,7 @@ class Blocmessage
             }
             if (!$tags_search) {
                 $valid = false;
+                //var_dump("error valid tags");
             }
         }
 
@@ -138,6 +140,7 @@ class Blocmessage
     }
 
     public function search($options,$channels){
+
         $final_words = Array();
         $options_save = $options;
         $mentions = Array();
@@ -205,6 +208,39 @@ class Blocmessage
                     );
                 }
 
+            }
+
+            if(isset($options["pinned"])){
+
+            }
+
+            //PARTIES SUR LES TAGS
+
+            if(isset($options["tags"])){
+                $should_tags = Array();
+                foreach($options["tags"] as $tag) {
+                    $should_tags[] = Array(
+                        "match_phrase" => Array(
+                            "messages.tags" => $tag
+                        )
+                    );
+                }
+
+                $must[] = Array(
+                    "bool" => Array(
+                        "should" => $should_tags,
+                        "minimum_should_match" => count($should_tags)
+                    )
+                );
+            }
+
+            //PARTIE SUR PINNED
+            if(isset($options["pinned"])){
+                $must[] = Array(
+                  "match_phrase" => Array(
+                      "messages.pinned" => $options["pinned"]
+                  )
+                );
             }
 
             // PARTIE SUR LES MENTIONS
@@ -401,42 +437,11 @@ class Blocmessage
 
     public function TestMessage()
     {
-//        $messagetest="je suis seulement dans la base de données";
-//        //$messagetest="je commence a voir faim ca veut dire que je vais mieux";
-//        $message = new Message("e5d085aa-6028-11e9-922a-0242ac120005","");
-//        $message->setContent($messagetest);
-//        $this->doctrine->persist($message);
-//        $this->doctrine->flush();
-//        $this->indexbloc($message,"d975075e-6028-11e9-b206-0242ac120005","e5d085aa-6028-11e9-922a-0242ac120005");
-
-        //$lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => "d975075e-6028-11e9-b206-0242ac120005", "channel_id" => "e5d085aa-6028-11e9-922a-0242ac120005"));
-//        var_dump("BLOC A LA FIN");
-//        var_dump($lastbloc);
-
-
-
         $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
         foreach($lastbloc as $bloc){
-//            var_dump($bloc->getAsArray());
-            $this->doctrine->remove($bloc);
-            $this->doctrine->flush();
+           $this->doctrine->remove($bloc);
+           $this->doctrine->flush();
         }
-
-//        $words = Array("commence","données");
-//        $this->search($words);
-
-//        $users = $this->doctrine->getRepository("TwakeUsersBundle:User")->findBy(Array());
-//        foreach ($users as $user) {
-//            var_dump($user->getUsername());
-//        }
-//        $channel = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => "db2c2b9e-c357-11e9-933e-0242ac1d0005"));
-//        $channel_id = $channel->getId();
-//        var_dump($channel_id);
-//        $lastblocs = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
-//        foreach ($lastblocs as $lastbloc){
-//            var_dump($lastbloc->getAsArray());
-//        }
-        //$this->Updateinbloc($message);
 
     }
 
