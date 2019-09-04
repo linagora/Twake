@@ -52,7 +52,7 @@ class AppKernel extends Kernel
             new DevelopersApiV1\GeneralBundle\DevelopersApiV1GeneralBundle(),
             new DevelopersApiV1\CalendarBundle\DevelopersApiV1CalendarBundle(),
             new DevelopersApiV1\DriveBundle\DevelopersApiV1DriveBundle(),
-            new DevelopersApiV1\DriveBundle\DevelopersApiV1TasksBundle(),
+            new DevelopersApiV1\TasksBundle\DevelopersApiV1TasksBundle(),
 
             new AdministrationApi\CoreBundle\AdministrationApiCoreBundle(),
             new AdministrationApi\UsersBundle\AdministrationApiUsersBundle(),
