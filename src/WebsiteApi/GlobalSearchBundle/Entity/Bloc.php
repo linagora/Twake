@@ -80,7 +80,7 @@ class Bloc extends SearchableObject
             "channel_id" => $this->getChannelId(),
             "workspace_id" => $this->getWorkspaceId(),
             "nb_message" => $this->getNbMessage(),
-            "message" => $this->getMessages(),
+            "messages" => $this->getMessages(),
             "id_messages" =>$this->getIdMessages()
 
         );
@@ -226,6 +226,9 @@ class Bloc extends SearchableObject
         $messages = $this->getMessages();
         $content = $this->mdToText($message_entity->getContent());
         $date = $message_entity->getCreationDate();
+        $tags = $message_entity->getTags();
+        $pinned = $message_entity->getPinned();
+
         if ($message_entity->getSender()) {
             $sender = $message_entity->getSender()->getId() . "";
         } else {
@@ -255,7 +258,9 @@ class Bloc extends SearchableObject
             "application_id" => $application_id,
             "mentions" => $mentions,
             "date" => $date->format('Y-m-d'),
-            "reactions" => Array()
+            "reactions" => Array(),
+            "tags" => $tags,
+            "pinned" => $pinned
 
         );
 

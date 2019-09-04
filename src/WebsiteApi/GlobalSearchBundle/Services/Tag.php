@@ -60,8 +60,6 @@ Class Tag{
             $this->em->remove($tag);
             $this->em->flush();
 
-            //$this->notifyConnectors($fileordirectory, "remove", $current_user);
-
         }
         else{
             return false;
@@ -98,25 +96,45 @@ Class Tag{
             $tag->setColor($object["color"]);
         }
 
-        if (!$did_create && isset($object["name"])) {
-            $tag->setName($object["name"]);
+        if (isset($object["name"])) {
+            $tags = $this->em->getRepository("TwakeGlobalSearchBundle:WorkspaceTag")->findOneBy(Array("workspace_id" => $workspace_id, "id" => $object["id"]));
+            $valid = true;
+            foreach ($tags as $tag){
+                if($tag->getName() == $object["name"]){
+                    $valid = false;
+                }
+            }
+            if($valid){
+                $tag->setName($object["name"]);
+            }
         }
 
-        if (!$did_create && isset($object["workspace_id"])) {
-            $tag->setWorkspaceId($object["workspace_id"]);
-        }
 
         if(isset($tag)){
             $this->em->persist($tag);
             $this->em->flush();
         }
 
-        //$this->notifyConnectors($fileordirectory, $did_create, $current_user);
-
         if ($return_entity) {
             return $tag;
         }
         return $tag->getAsArray();
+
+    }
+
+    public function AddTags($object,$tags){
+        $actual_tags = $object->gettags();
+
+        $object->setTags($tags);
+        $this->em->persist($object);
+        $this->em->flush();
+
+        $diff = array_merge(array_diff($tags, $actual_tags), array_diff($actual_tags, $tags));
+
+        foreach ($diff as $d){
+            //mettre a jour les compteurs
+        }
+
 
     }
 }
