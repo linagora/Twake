@@ -109,7 +109,10 @@ class UsersController extends Controller
             $users = $users_service->findUserByUsername($search_string);
 
             if (!$users) {
-                $users = $users_service->findUserByEmail($search_string);
+                $options = Array(
+                    "mail" => $search_string
+                );
+                $users = $this->get('administration.users')->getUserbyMail($options);
             }
 
             if (!$users) {

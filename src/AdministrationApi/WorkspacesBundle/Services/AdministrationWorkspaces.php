@@ -8,6 +8,7 @@ class AdministrationWorkspaces
 {
 
     private $em;
+    private $list_workspace = Array("workspace" => Array(), "scroll_id" => "");
 
     public function __construct($em) {
         $this->em = $em;
@@ -55,6 +56,56 @@ class AdministrationWorkspaces
         }
 
         return $apps;
+    }
+
+    public function getWpbyName($options){
+
+        if (isset($options["name"])) {
+            $name = $options["name"];
+
+            $options = Array(
+                "repository" => "TwakeWorkspacesBundle:Workspace",
+                "index" => "workspace",
+                "size" => 10,
+                "query" => Array(
+                    "bool" => Array(
+                        "should" => Array(
+                            "bool" => Array(
+                                "filter" => Array(
+                                    "regexp" => Array(
+                                        "name" => ".*".$name.".*"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                "sort" => Array(
+                    "creation_date" => Array(
+                        "order" => "desc"
+                    )
+                )
+            );
+        }
+        // search in ES
+        $result = $this->em->es_search($options);
+
+
+        array_slice($result["result"], 0, 5);
+
+        $scroll_id = $result["scroll_id"];
+
+        //on traite les données recu d'Elasticsearch
+        //var_dump(json_encode($options));
+        foreach ($result["result"] as $workspace){
+            //var_dump($file->getAsArray());
+            $this->list_workspace["workspace"][]= Array($workspace[0]->getAsArray(),$workspace[1][0]);;
+        }
+//        var_dump("nombre de resultat : " . count($this->list_files));
+//        var_dump($this->list_group);
+        $this->list_workspace["scroll_id"] = $scroll_id;
+
+        return $this->list_workspace ?: null;
     }
 
 }

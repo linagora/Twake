@@ -45,9 +45,7 @@ class GroupsController extends Controller
                 $globalresult = $this->get('administration.groups')->getAllGroup();
             }
 
-            $data = Array("data" => $globalresult);
-            //return new Response("Hello !");
-            return new JsonResponse($data);
+            $data["data"] = $globalresult;
 
         } else {
             $data["errors"][] = "invalid_authentication_token";
@@ -112,18 +110,20 @@ class GroupsController extends Controller
             $scroll_id = $request->request->get("scroll_id");
             $repository = "TwakeWorkspacesBundle:Group";
 
+            $search_string = $request->request->get("search");
+
+            $data['data']['group'] = array();
+            $data['data']['workspaces'] = array();
+
             if(isset($scroll_id) && isset($repository)){
                 $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
             }
             else{
                 $options = Array(
-                    "name" => $request->request->get("search")
+                    "name" => $search_string
                 );
                 $globalresult = $this->get('administration.groups')->getGroupbyName($options);
             }
-
-            $data['data']['group'] = array();
-            $data['data']['workspaces'] = array();
 
             $group_service = $this->get("administration.groups");
 
@@ -137,13 +137,33 @@ class GroupsController extends Controller
                 $data['data']['workspaces'] = array_merge($data['data']['workspaces'], $workspaces);
             }
 
-            $search_string = $request->request->get("search");
+            $data['data']['group']['scroll_id'] = $globalresult['scroll_id'];
 
             $group = $group_service->getOneGroup($search_string);
 
             if ($group) {
                 $data['data']['group'][] = $group->getAsArray();
             }
+
+            $repository = "TwakeWorkspacesBundle:Group";
+
+            if(isset($scroll_id) && isset($repository)){
+                $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+            }
+            else{
+                $options = Array(
+                    "name" => $search_string
+                );
+                $globalresult = $this->get('administration.workspaces')->getWpbyName($options);
+            }
+
+            foreach ($globalresult['workspace'] as $workspace) {
+
+                $data['data']['workspaces'][] = $workspace[0];
+
+            }
+
+            $data['data']['workspaces']['scroll_id'] = $globalresult['scroll_id'];
 
             $workspace_service = $this->get("administration.workspaces");
 
