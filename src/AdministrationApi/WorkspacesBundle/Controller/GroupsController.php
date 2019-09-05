@@ -42,7 +42,7 @@ class GroupsController extends Controller
                 $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
             }
             else{
-                $globalresult = $this->get('administration.groups')->getAllGroup();
+                $globalresult = $this->get('administration.groups')->getAllGroups();
             }
 
             $data["data"] = $globalresult;
@@ -137,7 +137,7 @@ class GroupsController extends Controller
                 $data['data']['workspaces'] = array_merge($data['data']['workspaces'], $workspaces);
             }
 
-            $data['data']['group']['scroll_id'] = $globalresult['scroll_id'];
+            $data['data']['group_scroll_id'] = $globalresult['scroll_id'];
 
             $group = $group_service->getOneGroup($search_string);
 
@@ -163,7 +163,7 @@ class GroupsController extends Controller
 
             }
 
-            $data['data']['workspaces']['scroll_id'] = $globalresult['scroll_id'];
+            $data['data']['workspaces_scroll_id'] = $globalresult['scroll_id'];
 
             $workspace_service = $this->get("administration.workspaces");
 
