@@ -344,7 +344,7 @@ class DriveFileRefacto
             $fileordirectory->setHiddenData($object["hidden_data"]);
         }
 
-        if (isset($object["last_modification_token"])) {
+        if ($application && isset($object["last_modification_token"])) {
             $fileordirectory->setLastModificationToken($object["last_modification_token"]);
         } else {
             $fileordirectory->setLastModificationToken(date("U") . "-" . md5(random_bytes(20)));

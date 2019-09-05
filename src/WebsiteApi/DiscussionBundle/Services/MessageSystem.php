@@ -521,9 +521,13 @@ class MessageSystem
     }
 
     public function updateinbloc($message,$new_content,$reaction){  //this param is a message ENTITY
-        //var_dump($message->getId()."");
+
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
-        //var_dump($bloc->getMessages());
+
+        if (!$bloc) {
+            return false;
+        }
+
         $position = array_search($message->getId()."",$bloc->getIdMessages());
         $messages = $bloc->getMessages();
         $messages[$position]["content"] = $this->mdToText($new_content);
