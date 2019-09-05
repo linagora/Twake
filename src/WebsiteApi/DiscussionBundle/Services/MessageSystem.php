@@ -406,6 +406,10 @@ class MessageSystem
             $message->setReactions($current_reactions);
         }
 
+        if(isset($object["tags"])){
+            $message->setTags($object["tags"]);
+        }
+
         //Generate an ID
         $this->em->persist($message);
 
@@ -532,8 +536,22 @@ class MessageSystem
         $messages = $bloc->getMessages();
         $messages[$position]["content"] = $this->mdToText($new_content);
 
+//        $message->setTags(Array("4f3b9286-cef7-11e9-9732-0242ac1d0005"));
+//        $messages[$position]["tags"] = Array("4f3b9286-cef7-11e9-9732-0242ac1d0005");
+
         $bloc->setMessages($messages);
         $this->em->persist($bloc);
+
+        $pinned = $message->getPinned();
+        if (isset($pinned) &&  $messages[$position]["pinned"] != $pinned){
+            $messages[$position]["pinned"] = $pinned;
+        }
+
+        $tags = $message->getTags();
+        if (isset($tags) &&  $messages[$position]["tags"] != $tags){
+            $messages[$position]["tags"] = $tags;
+        }
+
 
         $mentions = Array();
         //error_log(print_r($message->getContent(),true));

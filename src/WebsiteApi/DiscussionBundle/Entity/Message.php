@@ -102,7 +102,6 @@ class Message extends FrontObject
      */
     private $tags;
 
-
     /**
      * @ORM\Column(name="block_id", type="twake_timeuuid", nullable=true)
      */

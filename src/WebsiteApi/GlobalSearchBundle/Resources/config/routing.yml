@@ -44,4 +44,3 @@ globalsearch_tag_save:
 globalsearch_tag_remove:
     path:     /tagremove
     defaults: { _controller: TwakeGlobalSearchBundle:Tag:remove }
-

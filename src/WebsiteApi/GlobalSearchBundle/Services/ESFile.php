@@ -219,6 +219,10 @@ END;
 
     public function advancedsearch($options,$workspaces){
 
+//        $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => "c213d80a-cf14-11e9-86c0-0242ac1d0005"));
+//        $file->setTags(Array("4f3b9286-cef7-11e9-9732-0242ac1d0005"));
+//        $this->doctrine->persist($file);
+//        $this->doctrine->flush();
 
         $options_save = $options;
         $must = Array();
@@ -284,12 +288,34 @@ END;
             );
         }
 
+        //PARTIES SUR LES TAGS
+        if(isset($options["tags"])){
+            $should_tags = Array();
+            foreach($options["tags"] as $tag) {
+                $should_tags[] = Array(
+                    "match_phrase" => Array(
+                        "tags" => $tag
+                    )
+                );
+            }
+
+            $must[] = Array(
+                "bool" => Array(
+                    "should" => $should_tags,
+                    "minimum_should_match" => count($should_tags)
+                )
+            );
+        }
+
+
         $must[] = Array(
             "bool" => Array(
                 "should" => $should_workspaces,
                 "minimum_should_match" => 1
             )
         );
+
+
 
         if(isset($options["creator"])){
             $must[] = Array(
@@ -298,6 +324,8 @@ END;
                 )
             );
         }
+
+
 
         if(isset($options["type"])){
             $must[] = Array(
@@ -350,7 +378,7 @@ END;
             )
         );
 
-        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
+//        var_dump(json_encode($options,JSON_PRETTY_PRINT));
 
         // search in ES
         $result = $this->doctrine->es_search($options);

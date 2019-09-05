@@ -265,9 +265,6 @@ class ManagerAdapter
             }
         } else {
 
-
-
-
             $id = $entity->getId()."";
             if (method_exists($entity, "getIndexationArray")) {
                 $data = $entity->getIndexationArray();
@@ -424,7 +421,6 @@ class ManagerAdapter
                     } else {
                         $obj = $object_json["_id"];
                     }
-
                     if($obj && $object_json["sort"]){
                         $result[] = Array($obj,$object_json["sort"]);
                     }

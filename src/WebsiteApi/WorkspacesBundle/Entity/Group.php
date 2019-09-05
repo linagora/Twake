@@ -5,8 +5,7 @@ namespace WebsiteApi\WorkspacesBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator;
-
-
+use WebsiteApi\CoreBundle\Entity\SearchableObject;
 
 
 /**
@@ -15,8 +14,11 @@ use Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator;
  * @ORM\Table(name="group_entity",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupRepository")
  */
-class Group
+class Group extends SearchableObject
 {
+
+    protected $es_type = "group";
+
 	/**
 	 * @var int
 	 *
@@ -86,6 +88,17 @@ class Group
 		$this->name = $name;
 		$this->date_added = new \DateTime();
 	}
+
+    public function getIndexationArray()
+    {
+        $return = Array(
+            "id" => $this->getId()."",
+            "name" => $this->getName(),
+            "creation_date" => ($this->getDateAdded() ? $this->getDateAdded()->format('Y-m-d') : null),
+        );
+        return $return;
+    }
+
 
     public function setId($id)
     {

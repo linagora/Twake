@@ -26,6 +26,7 @@ Class Tag{
             return false;
         }
 
+
         $list= Array();
         if(isset($options["workspace_id"])){
             $workspace_id = $options["workspace_id"];
@@ -88,7 +89,10 @@ Class Tag{
         else { // pas d'identifiant on veut donc créer un tag
             $name= $object["name"];
             $workspace_id = $object["workspace_id"];
-            $tag = new WorkspaceTag($workspace_id, $name);
+            if($this->checkname($workspace_id,$name)){
+                $tag = new WorkspaceTag($workspace_id, $name);
+
+            }
             $did_create = true;
         }
 
@@ -96,15 +100,8 @@ Class Tag{
             $tag->setColor($object["color"]);
         }
 
-        if (isset($object["name"])) {
-            $tags = $this->em->getRepository("TwakeGlobalSearchBundle:WorkspaceTag")->findOneBy(Array("workspace_id" => $workspace_id, "id" => $object["id"]));
-            $valid = true;
-            foreach ($tags as $tag){
-                if($tag->getName() == $object["name"]){
-                    $valid = false;
-                }
-            }
-            if($valid){
+        if (!$did_create && isset($object["name"])) {
+            if($this->checkname($tag->getWorkspaceId(),$object["name"])){
                 $tag->setName($object["name"]);
             }
         }
@@ -118,23 +115,36 @@ Class Tag{
         if ($return_entity) {
             return $tag;
         }
-        return $tag->getAsArray();
-
-    }
-
-    public function AddTags($object,$tags){
-        $actual_tags = $object->gettags();
-
-        $object->setTags($tags);
-        $this->em->persist($object);
-        $this->em->flush();
-
-        $diff = array_merge(array_diff($tags, $actual_tags), array_diff($actual_tags, $tags));
-
-        foreach ($diff as $d){
-            //mettre a jour les compteurs
+        if(isset($tag)){
+            return $tag->getAsArray();
         }
 
-
     }
+
+    public function checkname($workspace_id, $name){
+        $tags = $this->em->getRepository("TwakeGlobalSearchBundle:WorkspaceTag")->findBy(Array("workspace_id" => $workspace_id));
+        $valid = true;
+        foreach ($tags as $tag){
+            if($tag->getName() == $name){
+                $valid = false;
+            }
+        }
+
+        return $valid;
+    }
+
+//    public function addTags($object,$tags){
+//        $actual_tags = $object->gettags();
+//
+//        $object->setTags($tags);
+//        $this->em->persist($object);
+//        $this->em->flush();
+//
+//        $diff = array_merge(array_diff($tags, $actual_tags), array_diff($actual_tags, $tags));
+//
+//        foreach ($diff as $d){
+//            //mettre a jour les compteurs
+//        }
+//
+//    }
 }
