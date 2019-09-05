@@ -112,20 +112,20 @@ class UsersController extends Controller
                 $options = Array(
                     "mail" => $search_string
                 );
-                $users = $this->get('administration.users')->getUserbyMail($options);
+                $users = $this->get('administration.users')->getUserbyMail($options)["users"];
             }
 
             if (!$users) {
-                $users = $users_service->findUserById($search_string);
+                //$users = $users_service->findUserById($search_string);
             }
 
             if (!$users) {
 
-                $advanced_search = $this->get("app.users");
+                //$advanced_search = $this->get("app.users");
 
-                $search_words = explode(" ", $search_string);
+                //$search_words = explode(" ", $search_string);
 
-                $users = $advanced_search->search($search_words, Array("allow_email" => true));
+                //$users = $advanced_search->search($search_words, Array("allow_email" => true));
 
             }
 

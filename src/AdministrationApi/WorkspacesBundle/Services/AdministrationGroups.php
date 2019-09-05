@@ -145,7 +145,7 @@ class AdministrationGroups
                             "bool" => Array(
                                 "filter" => Array(
                                     "regexp" => Array(
-                                        "name" => ".*".$name.".*"
+                                        "name" => ".*".strtolower($name).".*"
                                     )
                                 )
                             )

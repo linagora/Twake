@@ -9,6 +9,8 @@ class AdministrationUsers
 
     private $em;
 
+    private $list_user = Array("users" => Array(), "scroll_id" => "");
+
     public function __construct($em)
     {
         $this->em = $em;
@@ -214,15 +216,15 @@ class AdministrationUsers
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
         foreach ($result["result"] as $mail){
-            //var_dump($file->getAsArray());
-            $this->list_group["group"][]= $mail->getUser()
+            var_dump($mail->getUser()->getAsArray());
+            $this->list_user["users"][]= $mail->getUser()
                 ->getAsArray();
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);
-        $this->list_group["scroll_id"] = $scroll_id;
+        $this->list_user["scroll_id"] = $scroll_id;
 
-        return $this->list_group ?: null;
+        return $this->list_user ?: null;
     }
 
 }
