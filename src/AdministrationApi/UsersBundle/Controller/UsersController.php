@@ -112,7 +112,7 @@ class UsersController extends Controller
                 $options = Array(
                     "mail" => $search_string
                 );
-                $users = $this->get('administration.users')->getUserbyMail($options)["users"];
+                $users = $this->get('administration.users')->getUserbyMail($options);
             }
 
             if (!$users) {
