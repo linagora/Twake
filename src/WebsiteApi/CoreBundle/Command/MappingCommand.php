@@ -145,7 +145,7 @@ class MappingCommand extends ContainerAwareCommand
         $mapping_mail = json_encode($mapping_mail);
 
 
-        $url = "http://albatros.twakeapp.com:9200/channel/_mapping/_doc";
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/channel/_mapping/_doc";
         //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";
 
         $ch = curl_init();
@@ -157,7 +157,7 @@ class MappingCommand extends ContainerAwareCommand
         curl_exec($ch);
         curl_close($ch);
 
-        $url = "http://albatros.twakeapp.com:9200/group/_mapping/_doc";
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/group/_mapping/_doc";
         //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";
 
         $ch = curl_init();
@@ -169,7 +169,7 @@ class MappingCommand extends ContainerAwareCommand
         curl_exec($ch);
         curl_close($ch);
 
-        $url = "http://albatros.twakeapp.com:9200/mail/_mapping/_doc";
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/mail/_mapping/_doc";
         //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";
 
         $ch = curl_init();
@@ -182,7 +182,7 @@ class MappingCommand extends ContainerAwareCommand
         curl_close($ch);
 //
 //        //$url = "http://51.68.94.194:9200/workspace/_mapping/_doc";
-        $url = "http://albatros.twakeapp.com:9200/workspace/_mapping/_doc";
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/workspace/_mapping/_doc";
 
 
         $ch = curl_init();
@@ -195,7 +195,7 @@ class MappingCommand extends ContainerAwareCommand
         curl_close($ch);
 
 //        $url = "http://51.68.91.127:9200/drive_file/_mapping/_doc";
-        $url = "http://albatros.twakeapp.com:9200/drive_file/_mapping/_doc";
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/drive_file/_mapping/_doc";
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
@@ -207,7 +207,7 @@ class MappingCommand extends ContainerAwareCommand
         curl_close($ch);
 
         //$url = "http://51.68.91.127:9200/message_bloc/_mapping/_doc";
-        $url = "http://albatros.twakeapp.com:9200/message_bloc/_mapping/_doc";
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/message_bloc/_mapping/_doc";
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
