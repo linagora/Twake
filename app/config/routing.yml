@@ -144,6 +144,10 @@ administration_users:
     resource: "@AdministrationApiUsersBundle/Resources/config/routing.yml"
     prefix:   /api/backend/users/
 
+administration_group:
+    resource: "@AdministrationApiGroupBundle/Resources/config/routing.yml"
+    prefix:   /api/backend/group/
+
 administration_workspaces:
     resource: "@AdministrationApiWorkspacesBundle/Resources/config/routing.yml"
     prefix:   /api/backend/workspaces/

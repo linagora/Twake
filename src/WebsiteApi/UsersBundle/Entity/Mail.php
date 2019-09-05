@@ -18,7 +18,7 @@ use WebsiteApi\CoreBundle\Entity\SearchableObject;
 class Mail extends SearchableObject
 {
 
-    protected $es_type = "email";
+    protected $es_type = "mail";
 
     /**
      * @var int
@@ -55,6 +55,7 @@ class Mail extends SearchableObject
     {
         return $this->id;
     }
+
 
     /**
      * Set user
@@ -107,7 +108,8 @@ class Mail extends SearchableObject
     public function getIndexationArray()
     {
         $return = Array(
-            "email" => $this->getMail()
+            "id" => $this->getId()."",
+            "mail" => $this->getMail()
         );
         return $return;
     }

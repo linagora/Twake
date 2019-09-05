@@ -17,6 +17,7 @@ imports:
     - { resource: "@TwakeTasksBundle/Resources/config/services.yml" }
     - { resource: "@AdministrationApiCoreBundle/Resources/config/services.yml" }
     - { resource: "@AdministrationApiUsersBundle/Resources/config/services.yml" }
+    - { resource: "@AdministrationApiGroupBundle/Resources/config/services.yml" }
     - { resource: "@AdministrationApiWorkspacesBundle/Resources/config/services.yml" }
     - { resource: "@AdministrationApiAppsBundle/Resources/config/services.yml" }
     - { resource: "@AdministrationApiCounterBundle/Resources/config/services.yml"}

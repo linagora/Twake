@@ -115,7 +115,8 @@ class Workspace extends SearchableObject
         $return = Array(
             "id" => $this->getId()."",
             "name" => $this->getName(),
-            "group_id" => $this->getGroup()->getId().""
+            "group_id" => $this->getGroup()->getId()."",
+            "creation_date" => ($this->getDateAdded() ? $this->getDateAdded()->format('Y-m-d') : null),
         );
         return $return;
     }

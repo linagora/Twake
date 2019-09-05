@@ -265,9 +265,6 @@ class ManagerAdapter
             }
         } else {
 
-
-
-
             $id = $entity->getId()."";
             if (method_exists($entity, "getIndexationArray")) {
                 $data = $entity->getIndexationArray();
@@ -406,7 +403,6 @@ class ManagerAdapter
         $result = [];
         $scroll_id = "";
 
-
         if ($res) {
             $res = json_decode($res, 1);
             if($res["hits"]["total"] > $options["size"] && isset($res["_scroll_id"])){
@@ -425,7 +421,6 @@ class ManagerAdapter
                     } else {
                         $obj = $object_json["_id"];
                     }
-
                     if($obj && $object_json["sort"]){
                         $result[] = Array($obj,$object_json["sort"]);
                     }
