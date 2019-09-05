@@ -22,19 +22,32 @@ class GroupsController extends Controller
         $validate_token = $validation->validateAuthentication($token);
 
         if ($validate_token) {
-            $page = $request->request->get("page");
-            $limit = $request->request->get("limit");
-            $offset = $page * $limit;
+//            $page = $request->request->get("page");
+//            $limit = $request->request->get("limit");
+//            $offset = $page * $limit;
+//
+//            $validate_struct = $validation->validateStructure(Array(), Array(), $limit, $offset);
+//
+//            if ($validate_struct) {
+//                $groups = $this->get("administration.groups")->getAllGroups($limit,$offset);
+//
+//                $data["data"] = $groups;
+//            } else {
+//                $data["errors"][] = "invalid_request_structure";
+//            }
+            $scroll_id = $request->request->get("scroll_id");
+            $repository = "TwakeWorkspacesBundle:Group";
 
-            $validate_struct = $validation->validateStructure(Array(), Array(), $limit, $offset);
-
-            if ($validate_struct) {
-                $groups = $this->get("administration.groups")->getAllGroups($limit,$offset);
-
-                $data["data"] = $groups;
-            } else {
-                $data["errors"][] = "invalid_request_structure";
+            if(isset($scroll_id) && isset($repository)){
+                $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
             }
+            else{
+                $globalresult = $this->get('administration.group')->getAllGroup();
+            }
+
+            $data = Array("data" => $globalresult);
+            //return new Response("Hello !");
+            return new JsonResponse($data);
 
         } else {
             $data["errors"][] = "invalid_authentication_token";
@@ -96,12 +109,35 @@ class GroupsController extends Controller
 
         if ($validate_token) {
 
+            $scroll_id = $request->request->get("scroll_id");
+            $repository = "TwakeWorkspacesBundle:Group";
+
+            if(isset($scroll_id) && isset($repository)){
+                $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+            }
+            else{
+                $options = Array(
+                    "name" => $request->request->get("search")
+                );
+                $globalresult = $this->get('administration.group')->getGroupbyName($options);
+            }
+
             $data['data']['group'] = array();
             $data['data']['workspaces'] = array();
 
-            $search_string = $request->request->get("search");
-
             $group_service = $this->get("administration.groups");
+
+            foreach ($globalresult['group'] as $group) {
+
+                $id = $group[0]['id'];
+
+                $workspaces = $group_service->getGroupWorkspaces($id);
+
+                $data['data']['group'][] = $group[0];
+                $data['data']['workspaces'] = array_merge($data['data']['workspaces'], $workspaces);
+            }
+
+            $search_string = $request->request->get("search");
 
             $group = $group_service->getOneGroup($search_string);
 
