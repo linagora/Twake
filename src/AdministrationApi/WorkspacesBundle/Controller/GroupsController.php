@@ -42,7 +42,7 @@ class GroupsController extends Controller
                 $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
             }
             else{
-                $globalresult = $this->get('administration.group')->getAllGroup();
+                $globalresult = $this->get('administration.groups')->getAllGroup();
             }
 
             $data = Array("data" => $globalresult);
@@ -119,7 +119,7 @@ class GroupsController extends Controller
                 $options = Array(
                     "name" => $request->request->get("search")
                 );
-                $globalresult = $this->get('administration.group')->getGroupbyName($options);
+                $globalresult = $this->get('administration.groups')->getGroupbyName($options);
             }
 
             $data['data']['group'] = array();
