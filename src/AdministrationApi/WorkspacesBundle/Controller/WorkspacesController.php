@@ -46,4 +46,34 @@ class WorkspacesController extends Controller
         return new JsonResponse($data);
     }
 
+    public function getAllWorkspacesAction(Request $request) {
+        $data = Array(
+            "data" => Array(),
+            "errors" => Array()
+        );
+
+        $validation = $this->get("administration.validation");
+        $token = $request->request->get("token");
+        $validate_token = $validation->validateAuthentication($token);
+
+        if ($validate_token) {
+            $scroll_id = $request->request->get("scroll_id");
+            $repository = "TwakeWorkspacesBundle:Group";
+
+            if(isset($scroll_id) && isset($repository)){
+                $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+            }
+            else{
+
+                $globalresult = $this->get('administration.workspaces')->getAllWorkspace();
+            }
+
+            $data = Array("data" => $globalresult);
+        } else {
+            $data["errors"][] = "invalid_authentication_token";
+        }
+
+        return new JsonResponse($data);
+    }
+
 }

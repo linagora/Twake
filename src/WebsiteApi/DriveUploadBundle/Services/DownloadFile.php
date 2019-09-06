@@ -74,6 +74,10 @@ class DownloadFile
         $first_element = true;
         foreach ($files as $file) {
 
+            if (!$file) {
+                return false;
+            }
+
             if (is_string($file)) {
                 $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $file));
             }

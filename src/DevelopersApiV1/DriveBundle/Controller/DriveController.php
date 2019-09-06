@@ -126,7 +126,9 @@ class DriveController extends Controller
         return new JsonResponse(Array("data" => $res));
     }
 
-    public function downloadAction(Request $request ){
+    public function downloadAction(Request $request)
+    {
+
         $privileges = ["workspace_drive"];
         $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
         if (is_array($application) && $application["error"]) {

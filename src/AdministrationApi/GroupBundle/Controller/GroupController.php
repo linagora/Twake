@@ -50,7 +50,7 @@ class GroupController extends Controller
         }
         else{
 
-            $globalresult = $this->get('administration.group')->getAllGroup();
+            $globalresult = $this->get('administration.group')->getAllGroups();
         }
 
         $data = Array("data" => $globalresult);

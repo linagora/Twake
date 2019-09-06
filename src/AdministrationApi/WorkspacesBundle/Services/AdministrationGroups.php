@@ -8,24 +8,60 @@ class AdministrationGroups
 {
 
     private $em;
+    private $list_group = Array("group" => Array(), "scroll_id" => "");
 
     public function __construct($em)
     {
         $this->em = $em;
     }
 
-    public function getAllGroups($limit, $offset) {
-        $groupsRepository = $this->em->getRepository("TwakeWorkspacesBundle:Group");
+    public function getAllGroups() {
+//        $groupsRepository = $this->em->getRepository("TwakeWorkspacesBundle:Group");
+//
+//        $groupsEntity = $groupsRepository->findBy(Array(),Array(),$limit, $offset);
+//
+//        $groups = Array();
+//
+//        foreach($groupsEntity as $group) {
+//            $groups[] = $group->getAsArray();
+//        }
+//
+//        return $groups;
+        $options = Array(
+            "repository" => "TwakeWorkspacesBundle:Group",
+            "index" => "group",
+            "size" => 10,
+            "query" => Array(
+                "match_all" => (object)[]
+            ),
+            "sort" => Array(
+                "creation_date" => Array(
+                    "order" => "desc"
+                )
+            )
+        );
 
-        $groupsEntity = $groupsRepository->findBy(Array(),Array(),$limit, $offset);
+        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
 
-        $groups = Array();
+        // search in ES
+        $result = $this->em->es_search($options);
 
-        foreach($groupsEntity as $group) {
-            $groups[] = $group->getAsArray();
+
+        array_slice($result["result"], 0, 5);
+
+        $scroll_id = $result["scroll_id"];
+
+        //on traite les données recu d'Elasticsearch
+        //var_dump(json_encode($options));
+        foreach ($result["result"] as $group){
+            //var_dump($file->getAsArray());
+            $this->list_group["group"][]= Array($group[0]->getAsArray(),$group[1][0]);;
         }
+//        var_dump("nombre de resultat : " . count($this->list_files));
+//        var_dump($this->list_group);
+        $this->list_group["scroll_id"] = $scroll_id;
 
-        return $groups;
+        return $this->list_group ?: null;
     }
 
     public function getOneGroup($group_id) {
@@ -93,4 +129,57 @@ class AdministrationGroups
         return $apps;
     }
 
+    public function getGroupbyName($options)
+    {
+
+        if (isset($options["name"])) {
+            $name = $options["name"];
+
+            $options = Array(
+                "repository" => "TwakeWorkspacesBundle:Group",
+                "index" => "group",
+                "size" => 10,
+                "query" => Array(
+                    "bool" => Array(
+                        "should" => Array(
+                            "bool" => Array(
+                                "filter" => Array(
+                                    "regexp" => Array(
+                                        "name" => ".*".strtolower($name).".*"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                "sort" => Array(
+                    "creation_date" => Array(
+                        "order" => "desc"
+                    )
+                )
+            );
+        }
+        // search in ES
+        $result = $this->em->es_search($options);
+
+        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
+
+        array_slice($result["result"], 0, 5);
+
+        $scroll_id = $result["scroll_id"];
+
+        //on traite les données recu d'Elasticsearch
+        //var_dump(json_encode($options));
+        foreach ($result["result"] as $group){
+            //var_dump($file->getAsArray());
+            $this->list_group["group"][]= Array($group[0]->getAsArray(),$group[1][0]);;
+        }
+//        var_dump("nombre de resultat : " . count($this->list_files));
+//        var_dump($this->list_group);
+        $this->list_group["scroll_id"] = $scroll_id;
+
+        return $this->list_group ?: null;
+    }
+
 }
+

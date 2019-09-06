@@ -9,6 +9,8 @@ class AdministrationUsers
 
     private $em;
 
+    private $list_user = Array("users" => Array(), "scroll_id" => "");
+
     public function __construct($em)
     {
         $this->em = $em;
@@ -168,6 +170,61 @@ class AdministrationUsers
 
         return $rep;
 
+    }
+
+    public function getUserbyMail($options)
+    {
+
+        if (isset($options["mail"])) {
+            $mail = $options["mail"];
+
+            //var_dump("passage");
+
+            $options = Array(
+                "repository" => "TwakeUsersBundle:Mail",
+                "index" => "mail",
+                "size" => 10,
+                "query" => Array(
+                    "bool" => Array(
+                        "should" => Array(
+                            "bool" => Array(
+                                "filter" => Array(
+                                    "regexp" => Array(
+                                        "mail" => ".*".$mail.".*"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+            );
+        }
+
+//        $mail = new Mail();
+//        $mail->setMail("romaric@twakemail.fr");
+//        $this->em->persist($mail);
+//        $this->em->flush();
+
+        // search in ES
+        $result = $this->em->es_search($options);
+
+
+        array_slice($result["result"], 0, 5);
+
+        $scroll_id = $result["scroll_id"];
+
+        //on traite les données recu d'Elasticsearch
+        //var_dump(json_encode($options));
+        foreach ($result["result"] as $mail){
+            //var_dump($mail->getUser()->getAsArray());
+            $this->list_user["users"][]= $mail->getUser()
+                ->getAsArray();
+        }
+//        var_dump("nombre de resultat : " . count($this->list_files));
+//        var_dump($this->list_group);
+        $this->list_user["scroll_id"] = $scroll_id;
+
+        return $this->list_user ?: null;
     }
 
 }
