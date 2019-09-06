@@ -81,6 +81,11 @@ class Users
                         )
                     )
                 )
+            ),
+            "sort" => Array(
+                "creation_date" => Array(
+                    "order" => "desc"
+                )
             )
         );
 
@@ -98,7 +103,7 @@ class Users
         //var_dump(json_encode($options));
         foreach ($result["result"] as $user){
             //var_dump($file->getAsArray());
-            $this->list_users["users"][]= $user->getAsArray();
+            $this->list_users["users"][]= Array($user[0]->getAsArray(),$user[1][0]);;
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_files);
