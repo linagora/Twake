@@ -56,6 +56,15 @@ class Mail extends SearchableObject
         return $this->id;
     }
 
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
+    }
+
+
 
     /**
      * Set user

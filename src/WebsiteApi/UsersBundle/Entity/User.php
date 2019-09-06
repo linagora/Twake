@@ -528,8 +528,8 @@ class User extends SearchableObject implements UserInterface
             "username" => $this->getUsername(),
             "firstname" => $this->getFirstName(),
             "lastname" => $this->getLastName(),
-            "banned" => $this->getBanned(),
-            "language" => $this->getLanguage()
+            "language" => $this->getLanguage(),
+            "creation_date" => ($this->getCreationDate() ? $this->getCreationDate()->format('Y-m-d') : null),
         );
         return $return;
     }
@@ -669,6 +669,15 @@ class User extends SearchableObject implements UserInterface
     {
         return $this->salt;
     }
+
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
+    }
+
 
     /**
      * {@inheritdoc}

@@ -89,6 +89,15 @@ class Group extends SearchableObject
 		$this->date_added = new \DateTime();
 	}
 
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
+    }
+
+
     public function getIndexationArray()
     {
         $return = Array(

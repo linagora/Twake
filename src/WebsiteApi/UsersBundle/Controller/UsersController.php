@@ -14,25 +14,22 @@ class UsersController extends Controller
     public function searchAction(Request $request)
     {
 
-        $data = Array(
-            "errors" => Array(),
-            "data" => Array()
-        );
-
-        $query = $request->request->get("query");
+        $scroll_id = $request->request->get("scroll_id");
+        $repository = "TwakeUsersBundle:User";
         $options = $request->request->get("options");
 
-        if ($this->getUser()) {
-            $options["language_preference"] = $this->getUser()->getLanguage();
+        if(isset($scroll_id) && isset($repository)){
+            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+        }
+        else{
+            $name = $options["name"];
+            $options = Array(
+                "name" => "r"
+            );
+            $globalresult = $this->get("app.users")->search($options);
         }
 
-        $users = $this->get("app.users")->search(explode(" ", $query), $options);
-
-        if ($users) {
-            $data["data"] = $users;
-        } else {
-            $data["errors"][] = "an_error_occured";
-        }
+        $data = Array("data" => $globalresult);
 
         return new JsonResponse($data);
 

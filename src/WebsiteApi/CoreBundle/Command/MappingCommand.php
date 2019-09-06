@@ -137,12 +137,32 @@ class MappingCommand extends ContainerAwareCommand
                 )
             )
         );
+
+        $mapping_users = Array(
+            "_source" => Array(
+                "includes" => Array("id"),
+                "excludes" => Array(
+                    "fisrtname","lastnamename","usernname","language","creation_date"
+                )
+            ),
+            "properties" => Array(
+                "id" => Array("type" => "keyword"),
+                "firstname" => Array("type" => "keyword"),
+                "lasttname" => Array("type" => "keyword"),
+                "username" => Array("type" => "keyword"),
+                "language" => Array("type" => "text"),
+                "creation_date" => Array("type" => "date")
+            )
+        );
+
+
         $mapping_channel = json_encode($mapping_channel);
         $mapping_workspace = json_encode($mapping_workspace);
         $mapping_file=json_encode($mapping_file);
         $mapping_message_bloc = json_encode($mapping_message_bloc);
         $mapping_group = json_encode($mapping_group);
         $mapping_mail = json_encode($mapping_mail);
+        $mapping_users = json_encode($mapping_users);
 
 
         $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/channel/_mapping/_doc";
@@ -190,6 +210,19 @@ class MappingCommand extends ContainerAwareCommand
         curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_workspace)));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
         curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_workspace);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_exec($ch);
+        curl_close($ch);
+
+        //$url = "http://51.68.94.194:9200/workspace/_mapping/_doc";
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/users/_mapping/_doc";
+
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $url);
+        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_users)));
+        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
+        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_users);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
