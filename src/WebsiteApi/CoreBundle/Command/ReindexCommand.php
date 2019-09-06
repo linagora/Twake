@@ -71,5 +71,19 @@ class ReindexCommand extends ContainerAwareCommand
 //            error_log(print_r($user->getEsType(),true));
             $manager->es_put($user, $user->getEsType());
         }
+
+        $tasks = $manager->getRepository("TwakeTasksBundle:Task")->findBy(Array());
+        foreach ($tasks as $task){
+//            error_log("passage");
+//            error_log(print_r($user->getEsType(),true));
+            $manager->es_put($task, $task->getEsType());
+        }
+
+        $events = $manager->getRepository("TwakeCalendarBundle:Event")->findBy(Array());
+        foreach ($events as $event){
+//            error_log("passage");
+//            error_log(print_r($user->getEsType(),true));
+            $manager->es_put($event, $event->getEsType());
+        }
     }
 }

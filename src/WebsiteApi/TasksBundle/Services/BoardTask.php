@@ -100,6 +100,8 @@ class BoardTask
             $task = new Task($object["board_id"], $object["list_id"], $object["title"]);
             $task->setFrontId($object["front_id"]);
             $task->setOwner($current_user ? $current_user->getId() : null);
+            $workspace_id = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $object["board_id"]))->getWorkspaceId();
+            $task->setWorkspaceId($workspace_id);
             $did_create = true;
         }
 

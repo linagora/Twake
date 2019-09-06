@@ -32,6 +32,14 @@ services:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedFile
     arguments: ["@app.twake_doctrine", "@globalsearch.file","@globalsearch.workspace"]
 
+  globalsearch.advancedtask:
+    class: WebsiteApi\GlobalSearchBundle\Services\AdvancedTask
+    arguments: ["@app.twake_doctrine", "@globalsearch.workspace"]
+
+  globalsearch.advancedevent:
+    class: WebsiteApi\GlobalSearchBundle\Services\AdvancedEvent
+    arguments: ["@app.twake_doctrine", "@globalsearch.workspace"]
+
   globalsearch.reindex:
     class: WebsiteApi\GlobalSearchBundle\Services\Reindex
     arguments: ["@app.twake_doctrine"]
