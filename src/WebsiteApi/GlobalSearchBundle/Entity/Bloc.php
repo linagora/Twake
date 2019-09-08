@@ -110,6 +110,7 @@ class Bloc extends SearchableObject
         return json_decode($this->id_messages,true);
     }
 
+
     /**
      * @param mixed $id_messages
      */

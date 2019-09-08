@@ -216,7 +216,7 @@ class AdministrationUsers
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
         foreach ($result["result"] as $mail){
-            var_dump($mail->getUser()->getAsArray());
+            //var_dump($mail->getUser()->getAsArray());
             $this->list_user["users"][]= $mail->getUser()
                 ->getAsArray();
         }

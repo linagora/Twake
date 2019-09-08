@@ -250,6 +250,14 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
         $this->acces_info = json_encode($acces_info);
     }
 
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
+    }
+
 
     public function getIndexationArray()
     {

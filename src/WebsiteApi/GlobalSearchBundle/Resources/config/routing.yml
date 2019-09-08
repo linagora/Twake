@@ -20,6 +20,14 @@ globalsearch_advancedfile:
   path:       /advancedfile
   defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:AdvancedFile}
 
+globalsearch_advancedtask:
+  path:       /advancedtask
+  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:AdvancedTask}
+
+globalsearch_advancedevent:
+  path:       /advancedevent
+  defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:AdvancedEvent}
+
 globalsearch_testindex:
   path:       /testindex
   defaults: { _controller: TwakeGlobalSearchBundle:GlobalSearch:TestIndex }

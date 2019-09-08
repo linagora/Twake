@@ -344,6 +344,15 @@ class Channel extends SearchableObject
     }
 
     /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
+    }
+
+
+    /**
      * @param mixed $direct
      */
     public function setApplication($application)

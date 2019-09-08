@@ -210,6 +210,10 @@ class CalendarEvent
         } else {
             $event = new Event($object["title"], $object["from"], $object["to"]);
             $event->setFrontId($object["front_id"]);
+            if(isset($object["workspace_id"])){
+                $event->setWorkspaceId($object["workspace_id"]);
+            }
+
             $did_create = true;
         }
 
