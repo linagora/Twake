@@ -33,6 +33,7 @@ test:
         - docker-compose exec -T php chmod -R 777 /twake-core/var/
         - docker-compose exec -T php chmod -R 777 /tmp/
         - docker-compose exec -T php php ./bin/console twake:init #Init install
+        - docker-compose exec -T php php composer.phar show
         
         - docker-compose exec -T php  ./vendor/bin/phpunit
 
