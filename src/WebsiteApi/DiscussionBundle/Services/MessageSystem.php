@@ -507,7 +507,7 @@ class MessageSystem
         }
 
 
-        $blocbdd->addmessage($message);
+        $blocbdd->addmessage($message, $this);
         $this->em->persist($blocbdd);
         $message->setBlockId($blocbdd->getId()."");
         $this->em->persist($message);

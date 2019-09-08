@@ -314,9 +314,13 @@ class DriveFileRefacto
                 } else {
                     $present = true;
 
-                    preg_match("/(.*)(\.[a-zA-Z0-9]+)*$/i", $fileordirectory->getName(), $matches);
+                    preg_match("/(.*)(\.[a-zA-Z0-9]+)+$/i", $fileordirectory->getName(), $matches);
                     $name = isset($matches[1]) ? $matches[1] : "";
                     $ext = isset($matches[2]) ? $matches[2] : "";
+                    if (!$ext) {
+                        $name = $fileordirectory->getName();
+                        $ext = "";
+                    }
                     preg_match("/-([0-9]+)$/i", $name, $matches);
                     $cur_val = intval(isset($matches[1]) ? $matches[1] : 0);
                     $cur_val_to_replace = isset($matches[0]) ? $matches[0] : "";

@@ -221,13 +221,18 @@ class Bloc extends SearchableObject
         $this->nb_message = $nb_message;
     }
 
-    public function addmessage($message_entity){
+    public function addmessage($message_entity, $message_system_service = null)
+    {
 
         $messages = $this->getMessages();
         $content = $this->mdToText($message_entity->getContent());
         $date = $message_entity->getCreationDate();
         $tags = $message_entity->getTags();
         $pinned = $message_entity->getPinned();
+
+        if ($message_system_service) {
+            $message_as_text = $message_system_service->mdToText($message_entity->getContent());
+        }
 
         if ($message_entity->getSender()) {
             $sender = $message_entity->getSender()->getId() . "";
@@ -241,7 +246,7 @@ class Bloc extends SearchableObject
 
         if (!is_string($message_entity->getContent()) && isset($message_entity->getContent()["prepared"]) && is_array($message_entity->getContent()["prepared"][0])) {
             foreach ($message_entity->getContent()["prepared"][0] as $elem) {
-                if (is_array($elem)) {
+                if (is_array($elem) && is_string($elem["content"])) {
                     $id = explode(":", $elem["content"])[1];
                     //error_log(print_r($id,true));
                     $mentions[] = $id;
