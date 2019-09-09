@@ -222,7 +222,8 @@ class Bloc extends SearchableObject
         $this->nb_message = $nb_message;
     }
 
-    public function addmessage($message_entity,$content,$content_id){
+    public function addmessage($message_entity, $content, $content_id)
+    {
 
         $messages = $this->getMessages();
         $date = $message_entity->getCreationDate();

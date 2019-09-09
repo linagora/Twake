@@ -27,10 +27,9 @@ class UsersController extends Controller
 
             $scroll_id = $request->request->get("scroll_id");
 
-            if(isset($scroll_id) && isset($repository)){
-                $users = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
-            }
-            else{
+            if (isset($scroll_id) && isset($repository)) {
+                $users = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
+            } else {
                 $users = $this->get("administration.users")->getAllUsers();
             }
 

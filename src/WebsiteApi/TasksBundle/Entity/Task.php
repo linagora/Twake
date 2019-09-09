@@ -119,11 +119,11 @@ class Task extends SearchableObject
             "description" => $this->getDescription(),
             "owner" => $this->getOwner(),
             "tags" => $this->getTags(),
-            'date_from' => $this->getFrom(),
-            'date_to' => $this->getTo(),
-            "last_modified" => $this->getTaskLastModified(),
+            'date_from' =>  ($this->getTaskCreatedAt() ? date('Y-m-d',$this->getTaskCreatedAt()) : null),
+            'date_to' => ($this->getTaskCreatedAt() ? date('Y-m-d',$this->getTaskCreatedAt()) : null),
+            "date_last_modified" =>  ($this->getTaskLastModified() ? date('Y-m-d',$this->getTaskLastModified()) : null),
             "workspace_id" => $this->getWorkspaceId(),
-            "participant" => $this->getParticipants()
+            "participants" => $this->getParticipants()
         );
 
     }
@@ -413,6 +413,7 @@ class Task extends SearchableObject
             "participants" => $this->getParticipants(),
             "notifications" => $this->getNotifications(),
             "tags" => $this->getTags(),
+            "workspace_id" => $this->getWorkspaceId()
         );
     }
 

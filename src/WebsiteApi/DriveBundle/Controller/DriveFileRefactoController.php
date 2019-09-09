@@ -19,7 +19,7 @@ class DriveFileRefactoController extends Controller
         $options = $request->request->get("options");
         $object = $request->request->get("object");
 
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser()->getId(), Array(
+        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
             "type" => "DriveFile",
             "object_id" => $object["id"],
             "edition" => true
@@ -40,7 +40,7 @@ class DriveFileRefactoController extends Controller
         $options = $request->request->get("options");
         $object = $request->request->get("object");
 
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser()->getId(), Array(
+        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
             "type" => "DriveFile",
             "object_id" => isset($object["id"]) ? $object["id"] : $object["parent_id"], //Ability to add element to parent, or to edit current element
             "edition" => true
@@ -68,6 +68,17 @@ class DriveFileRefactoController extends Controller
             $res = $this->get("app.drive_refacto")->save($object, $options, $current_user_id, Array());
         }
 
+        if ($object["_once_set_access"] && $object["id"]) {
+
+            $is_editable = $object["acces_info"]["is_editable"];
+            $publicaccess = $object["acces_info"]["public_access"];
+            $authorized_members = $object["acces_info"]["authorized_members"];
+            $authorized_channels = $object["acces_info"]["authorized_channels"];
+
+            $res = $this->get('app.drive_refacto')->set_file_access($object["id"], $publicaccess, $is_editable, $authorized_members, $authorized_channels, $this->getUser());
+
+        }
+
         if (!$res) {
             return new JsonResponse(Array("status" => "error"));
         } else {
@@ -83,7 +94,7 @@ class DriveFileRefactoController extends Controller
     {
         $options = $request->request->get("options");
 
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser()->getId(), Array(
+        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
             "type" => "DriveFile",
             "object_id" => $options["directory_id"],
             "workspace_id" => $options["workspace_id"]
@@ -104,7 +115,7 @@ class DriveFileRefactoController extends Controller
     {
         $options = $request->request->get("options");
 
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser()->getId(), Array(
+        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
             "type" => "DriveFile",
             "object_id" => $options["element_id"],
             "workspace_id" => $options["workspace_id"],
@@ -127,7 +138,7 @@ class DriveFileRefactoController extends Controller
 
         $file_id = $request->request->get("file_id");
 
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser()->getId(), Array(
+        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
             "type" => "DriveFile",
             "object_id" => $file_id
         ), Array());
@@ -150,7 +161,7 @@ class DriveFileRefactoController extends Controller
     {
         $file_id = $request->request->get("file_id");
 
-        $acces = $this->get('app.accessmanager')->has_access($this->getUser()->getId(), Array(
+        $acces = $this->get('app.accessmanager')->has_access($this->getUser(), Array(
             "type" => "DriveFile",
             "object_id" => $file_id
         ), Array());

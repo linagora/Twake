@@ -136,6 +136,10 @@ class BoardTask
 
         $task->setTaskLastModified();
 
+        if(isset($object["tags"])){
+            $task->setTags($object["tags"]);
+        }
+
         $this->doctrine->persist($task);
         $this->doctrine->flush();
 

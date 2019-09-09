@@ -58,14 +58,14 @@ class AdministrationUsers
 
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
-        foreach ($result["result"] as $user){
+        foreach ($result["result"] as $user) {
             //var_dump($file->getAsArray());
             $user_tab = $user[0]->getAsArray();
             $user_tab['mail'] = $this->getUserMails($user[0])[0];
             $user_tab['phone_number'] = $user[0]->getPhone();
             $user_tab['creation_date'] = $user[0]->getCreationDate();
 
-            $this->list_user["users"][]= Array($user_tab,$user[1][0]);;
+            $this->list_user["users"][] = Array($user_tab, $user[1][0]);;
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);
@@ -242,7 +242,7 @@ class AdministrationUsers
             $user_tab['phone_number'] = $user->getPhone();
             $user_tab['creation_date'] = $user->getCreationDate();
 
-            $this->list_user["users"][]= $user_tab;
+            $this->list_user["users"][] = $user_tab;
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);

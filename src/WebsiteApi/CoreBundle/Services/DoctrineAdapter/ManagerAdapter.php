@@ -301,7 +301,7 @@ class ManagerAdapter
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
         try {
-            $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         } catch (\Exception $e) {
             error_log("Unable to put on ElasticSearch.");
         }
@@ -337,7 +337,7 @@ class ManagerAdapter
 
         if(isset($options["scroll_id"])){
             $route = "http://" . $this->es_server . "/_search/scroll" ;
-            $res = $this->circle->post($route, json_encode(Array("scroll" => "5m" ,"scroll_id" => $options["scroll_id"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            $res = $this->circle->post($route, json_encode(Array("scroll" => "5m", "scroll_id" => $options["scroll_id"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         }
         else {
             if (!$this->es_server) {
@@ -381,9 +381,9 @@ class ManagerAdapter
 
             try {
                 if (isset($options["sort"])) {
-                    $res = $this->circle->post($route, json_encode(Array("size" => $options["size"] ,"query" => $options["query"], "sort" => $options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+                    $res = $this->circle->post($route, json_encode(Array("size" => $options["size"], "query" => $options["query"], "sort" => $options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
                 } else {
-                    $res = $this->circle->post($route, json_encode(Array("size" => $options["size"], "query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+                    $res = $this->circle->post($route, json_encode(Array("size" => $options["size"], "query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
                 }
 
             } catch (\Exception $e) {

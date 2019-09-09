@@ -50,7 +50,7 @@ class NotificationQueueCommand extends ContainerAwareCommand
                     foreach ($notifications as $notification) {
                         $dataArray["data"][] = $notification->getText();
                     }
-                    $circle->post($masterServer, json_encode($dataArray), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+                    $circle->post($masterServer, json_encode($dataArray), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 3, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
 
                 } else {
                     foreach ($notifications as $notification) {

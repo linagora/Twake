@@ -21,6 +21,7 @@ class AdvancedTask
 
     public function AdvancedTask($current_user_id,$options,$workspaces)
     {
+        //var_dump("test");
         $workspace_access = Array();
         foreach ($workspaces as $wp){
             $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $wp));
@@ -32,12 +33,12 @@ class AdvancedTask
             }
         }
 
+
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
         if(isset($workspace_access) && $workspace_access != Array()){
 
             $options_save = $options;
             $must = Array();
-
 
             //PARTIE SUR LE NAME
 
@@ -48,7 +49,7 @@ class AdvancedTask
                             "bool" => Array(
                                 "filter" => Array(
                                     "regexp" => Array(
-                                        "name" => ".*" . $options["title"] . ".*"
+                                        "title" => ".*" . $options["title"] . ".*"
                                     )
                                 )
                             )
@@ -67,7 +68,7 @@ class AdvancedTask
                             "bool" => Array(
                                 "filter" => Array(
                                     "regexp" => Array(
-                                        "name" => ".*" . $options["description"] . ".*"
+                                        "description" => ".*" . $options["description"] . ".*"
                                     )
                                 )
                             )
@@ -131,19 +132,47 @@ class AdvancedTask
 
             //PARTIES SUR LES PARTICIPANTS
             if(isset($options["participants"])){
+
                 $should_participants = Array();
                 foreach($options["participants"] as $participant) {
                     $should_participants[] = Array(
-                        "match_phrase" => Array(
-                            "participants" => $participant
+                        "nested" => Array(
+                            "path" => "participants",
+                            "score_mode" => "avg",
+                            "query" => Array(
+                                "bool" => Array(
+                                    "should" => Array(
+                                        Array(
+                                            "bool" => Array(
+                                                "must" => Array(
+                                                    "match_phrase" => Array(
+                                                        "participants.user_id_or_mail" => $participant
+                                                    )
+                                                )
+                                            )
+                                        ),
+                                        Array(
+                                            "bool" => Array(
+                                                "filter" => Array(
+                                                    "regexp" => Array(
+                                                        "participants.email" => ".*".$participant.".*"
+                                                    )
+                                                )
+                                            )
+                                        )
+                                    ),
+                                    "minimum_should_match" => 1
+                                )
+                            )
                         )
                     );
                 }
 
+
                 $must[] = Array(
                     "bool" => Array(
                         "should" => $should_participants,
-                        "minimum_should_match" => count($should_participants)
+                        "minimum_should_match" => count($options["participants"])
                     )
                 );
             }
@@ -170,7 +199,16 @@ class AdvancedTask
 
             $must[] = Array(
                 "range" => Array(
-                    "creation_date" => Array(
+                    "date_from" => Array(
+                        "lte" => $date_to,
+                        "gte" => $date_from
+                    )
+                )
+            );
+
+            $must[] = Array(
+                "range" => Array(
+                    "date_to" => Array(
                         "lte" => $date_to,
                         "gte" => $date_from
                     )
@@ -194,6 +232,11 @@ class AdvancedTask
                     "bool" => Array(
                         "must" => $must
                     )
+                ),
+                "sort" => Array(
+                    "date_from" => Array(
+                        "order" => "desc",
+                    )
                 )
             );
 
@@ -209,9 +252,9 @@ class AdvancedTask
 
             //on traite les données recu d'Elasticsearch
             //var_dump(json_encode($options));
-            foreach ($result["result"] as $file){
+            foreach ($result["result"] as $task){
                 //var_dump($file->getAsArray());
-                $this->list_tasks["tasks"][]= $file->getAsArray();
+                $this->list_tasks["tasks"][]= $task->getAsArray();
             }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_files);

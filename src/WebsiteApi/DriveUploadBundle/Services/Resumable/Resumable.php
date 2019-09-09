@@ -43,7 +43,7 @@ class Resumable
     protected $storagemanager;
     protected $doctrine;
     protected $driverefacto;
-    protected $current_user_id;
+    protected $current_user;
     protected $previews;
     protected $parameter_drive_salt;
     protected $file_system;
@@ -80,12 +80,12 @@ class Resumable
         }
     }
 
-    public function process($current_user_id)
+    public function process($current_user)
     {
 
         if (!empty($this->resumableParams())) {
             if (!empty($this->request->file())) {
-                $this->current_user_id = $current_user_id;
+                $this->current_user_id = $current_user;
                 return $this->handleChunk();
             } else {
                 $this->handleTestChunk();
@@ -184,7 +184,7 @@ class Resumable
         }
     }
 
-    public function handleChunk($file_or_url = null, $filename = null, $totalSize = null, $identifier = null, $chunkNumber = 1, $numOfChunks = 1, $object_from_caller = null, $options_from_caller = null)
+    public function handleChunk($file_or_url = null, $filename = null, $totalSize = null, $identifier = null, $chunkNumber = null, $numOfChunks = null, $object_from_caller = null, $options_from_caller = null)
     {
 
         //  VERIFIER IDENTIFIER QU ON A BIEN QUE DES CHIFFRES ET DES LETTRES ET PAS UN REQUETE OU AUTRES.
@@ -287,8 +287,7 @@ class Resumable
             //TODO What if we uploaded to an existing object (object[id] is set) TODO->REMOVE OLD VERSION IF WE ARE NOT CREATING A NEW ONE (or each time onlyoffice write we add a new copy on S3)
 
             $this->driverefacto->setDriveResumable($this);
-
-            $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $this->current_user_id, Array("data" => $data, "size" => $totalSize), true);
+            $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $current_user, Array("data" => $data, "size" => $totalSize), true);
 
             if ($uploadstate->getHasPreview() && $totalSize < 20000000) {
                 $this->file_system->getFileSystem()->genPreview($fileordirectory);
