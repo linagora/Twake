@@ -222,13 +222,16 @@ class Bloc extends SearchableObject
         $this->nb_message = $nb_message;
     }
 
-    public function addmessage($message_entity){
+    public function addmessage($message_entity,$content,$content_id){
 
         $messages = $this->getMessages();
-        $content = $this->mdToText($message_entity->getContent());
         $date = $message_entity->getCreationDate();
         $tags = $message_entity->getTags();
         $pinned = $message_entity->getPinned();
+
+        preg_match_all("/\w*-\w*-\w*-\w*-\w*/i", $content_id, $matches);
+        $matches = $matches[0];
+        $matches = array_unique($matches);
 
         if ($message_entity->getSender()) {
             $sender = $message_entity->getSender()->getId() . "";
@@ -238,26 +241,26 @@ class Bloc extends SearchableObject
 
         $application_id = $message_entity->getApplicationId();
 
-        $mentions = Array();
+//        $mentions = Array();
 
-        if (!is_string($message_entity->getContent()) && isset($message_entity->getContent()["prepared"]) && is_array($message_entity->getContent()["prepared"][0])) {
-            foreach ($message_entity->getContent()["prepared"][0] as $elem) {
-                if (is_array($elem)) {
-                    $id = explode(":", $elem["content"])[1];
-                    //error_log(print_r($id,true));
-                    $mentions[] = $id;
-                }
-            }
-            $mentions = array_unique($mentions);
+//        if (!is_string($message_entity->getContent()) && isset($message_entity->getContent()["prepared"]) && is_array($message_entity->getContent()["prepared"][0])) {
+//            foreach ($message_entity->getContent()["prepared"][0] as $elem) {
+//                if (is_array($elem)) {
+//                    $id = explode(":", $elem["content"])[1];
+//                    //error_log(print_r($id,true));
+//                    $mentions[] = $id;
+//                }
+//            }
+//            $mentions = array_unique($mentions);
             //error_log(print_r($mentions,true));
-        }
+//        }
 
 
         $add = Array(
             "content" => $content,
             "sender" => $sender,
             "application_id" => $application_id,
-            "mentions" => $mentions,
+            "mentions" => $matches,
             "date" => $date->format('Y-m-d'),
             "reactions" => Array(),
             "tags" => $tags,
@@ -276,59 +279,5 @@ class Bloc extends SearchableObject
         array_push( $id_messages, $id);
         $this->setIdMessages($id_messages);
     }
-
-    private function mdToText($array)
-    {
-
-        if (!$array) {
-            return "";
-        }
-
-        if (is_string($array)) {
-            $array = [$array];
-        }
-
-        if (isset($array["fallback_string"])) {
-            $result = $array["fallback_string"];
-        } else if (isset($array["original_str"])) {
-            $result = $array["original_str"];
-        } else {
-
-            if (isset($array["type"]) || isset($array["start"])) {
-                $array = [$array];
-            }
-
-            $result = "";
-
-            try {
-                foreach ($array as $item) {
-                    if (is_string($item)) {
-                        $result .= $item;
-                    } else if (isset($item["type"])) {
-                        if (in_array($item["type"], Array("underline", "strikethrough", "bold", "italic", "mquote", "quote", "email", "url", "", "nop", "br", "system"))) {
-                            if ($item["type"] == "br") {
-                                $result .= " ";
-                            }
-                            $result .= $this->mdToText($item["content"]);
-                        }
-                    } else {
-                        $result .= $this->mdToText($item["content"]);
-                    }
-                }
-
-            } catch (\Exception $e) {
-                return "Open Twake to see this message.";
-            }
-
-        }
-
-
-        $result = preg_replace("/@(.*):.*(( |$))/", "@$1$2", $result);
-        $result = preg_replace("/#(.*):.*(( |$))/", "#$1$2", $result);
-
-        return $result;
-
-    }
-
 
 }
