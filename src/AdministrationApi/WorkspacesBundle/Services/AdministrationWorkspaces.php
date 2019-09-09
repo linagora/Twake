@@ -58,6 +58,20 @@ class AdministrationWorkspaces
         return $apps;
     }
 
+    public function getInvitedUsers($workspace) {
+        $workspaceMailRepository = $this->em->getrepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
+
+        $mails_tab = $workspaceMailRepository->findBy(array('workspace' => $workspace));
+
+        $mails = array();
+
+        foreach ($mails_tab as $ws_mail) {
+            $mails[] = $ws_mail->getMail();
+        }
+
+        return $mails;
+    }
+
     public function getWpbyName($options){
 
         if (isset($options["name"])) {

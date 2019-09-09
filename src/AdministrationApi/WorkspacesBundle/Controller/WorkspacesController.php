@@ -30,10 +30,12 @@ class WorkspacesController extends Controller
             if ($workspace) {
                 $members = $workspace_service->getWorkspaceMembers($workspace);
                 $apps = $workspace_service->getWorkspaceApps($workspace);
+                $invited_mails = $workspace_service->getInvitedUsers($workspace);
 
                 $data["data"]["workspace"] = $workspace->getAsArray();
                 $data["data"]["members"] = $members;
                 $data["data"]["apps"] = $apps;
+                $data["data"]["invited"] = $invited_mails;
 
                 //TODO Infos du workspace a recuperer : taille du Drive
             } else {
