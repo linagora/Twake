@@ -16,24 +16,62 @@ class AdministrationUsers
         $this->em = $em;
     }
 
-    public function getAllUsers($limit, $offset)
+    public function getAllUsers()
     {
 
-        $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
+//        $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
+//
+//        $usersEnitity = $usersRepository->findBy(Array(), Array(), $limit, $offset/*, "__TOKEN__id"*/);
+//
+//        $users = Array();
+//
+//        foreach ($usersEnitity as $user) {
+//            $user_tab = $user->getAsArray();
+//            $user_tab['mail'] = $this->getUserMails($user)[0];
+//            $user_tab['phone_number'] = $user->getPhone();
+//            $user_tab['creation_date'] = $user->getCreationDate();
+//            $users[] = $user_tab;
+//        }
+//
+//        return $users;
 
-        $usersEnitity = $usersRepository->findBy(Array(), Array(), $limit, $offset/*, "__TOKEN__id"*/);
+        $options = Array(
+            "repository" => "TwakeUsersBundle:User",
+            "index" => "users",
+            "size" => 10,
+            "query" => Array(
+                "match_all" => (object)[]
+            ),
+            "sort" => Array(
+                "creation_date" => Array(
+                    "order" => "desc"
+                )
+            )
+        );
 
-        $users = Array();
+        // search in ES
+        $result = $this->em->es_search($options);
 
-        foreach ($usersEnitity as $user) {
-            $user_tab = $user->getAsArray();
-            $user_tab['mail'] = $this->getUserMails($user)[0];
-            $user_tab['phone_number'] = $user->getPhone();
-            $user_tab['creation_date'] = $user->getCreationDate();
-            $users[] = $user_tab;
+        array_slice($result["result"], 0, 5);
+
+        $scroll_id = $result["scroll_id"];
+
+        //on traite les données recu d'Elasticsearch
+        //var_dump(json_encode($options));
+        foreach ($result["result"] as $user){
+            //var_dump($file->getAsArray());
+            $user_tab = $user[0]->getAsArray();
+            $user_tab['mail'] = $this->getUserMails($user[0])[0];
+            $user_tab['phone_number'] = $user[0]->getPhone();
+            $user_tab['creation_date'] = $user[0]->getCreationDate();
+
+            $this->list_user["users"][]= Array($user_tab,$user[1][0]);;
         }
+//        var_dump("nombre de resultat : " . count($this->list_files));
+//        var_dump($this->list_group);
+        $this->list_user["scroll_id"] = $scroll_id;
 
-        return $users;
+        return $this->list_user ?: null;
     }
 
     public function getOneUser($user_id) {
@@ -131,27 +169,6 @@ class AdministrationUsers
 
     }
 
-    public function findUserByEmail($email) {
-        $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-
-        $usersMails = $mailsRepository->findBy(array("mail" => $email));
-
-        $rep = false;
-
-        if (count($usersMails) >= 1) {
-            $rep = array();
-
-            foreach ($usersMails as $mail) {
-                $user = $mail->getUser();
-                $user_tab = $user->getAsArray();
-                $user_tab['mail'] = $user->getEmail();
-                $rep[] = $user_tab;
-            }
-        }
-
-        return $rep;
-    }
-
     public function findUserById($id) {
 
         $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
@@ -219,8 +236,13 @@ class AdministrationUsers
         //var_dump(json_encode($options));
         foreach ($result["result"] as $mail){
             //var_dump($mail->getUser()->getAsArray());
-            $this->list_user["users"][]= $mail->getUser()
-                ->getAsArray();
+            $user = $mail->getUser();
+            $user_tab = $user->getAsArray();
+            $user_tab['mail'] = $this->getUserMails($user)[0];
+            $user_tab['phone_number'] = $user->getPhone();
+            $user_tab['creation_date'] = $user->getCreationDate();
+
+            $this->list_user["users"][]= $user_tab;
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);
