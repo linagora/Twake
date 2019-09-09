@@ -23,18 +23,19 @@ class UsersController extends Controller
 
         if ($validate_token) {
 
-            $offset = $request->request->get("offset");
-            $limit = $request->request->get("limit");
+            $repository = "TwakeUsersBundle:User";
 
-            $validate_struct = $validation->validateStructure(Array(), Array(), $limit, $offset);
+            $scroll_id = $request->request->get("scroll_id");
 
-            if ($validate_struct) {
-                $users = $this->get("administration.users")->getAllUsers($limit, $offset);
-
-                $data["data"] = $users;
-            } else {
-                $data["errors"][] = "invalid_request_structure";
+            if(isset($scroll_id) && isset($repository)){
+                $users = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
             }
+            else{
+                $users = $this->get("administration.users")->getAllUsers();
+            }
+
+            $data["data"] = $users;
+
         } else {
             $data["errors"][] = "invalid_authentication_token";
         }

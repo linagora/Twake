@@ -107,7 +107,7 @@ class GroupsController extends Controller
 
         if ($validate_token) {
 
-            $scroll_id = $request->request->get("scroll_id");
+            $group_scroll_id = $request->request->get("group_scroll_id");
             $repository = "TwakeWorkspacesBundle:Group";
 
             $search_string = $request->request->get("search");
@@ -115,8 +115,8 @@ class GroupsController extends Controller
             $data['data']['group'] = array();
             $data['data']['workspaces'] = array();
 
-            if(isset($scroll_id) && isset($repository)){
-                $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+            if(isset($group_scroll_id) && isset($repository)){
+                $globalresult = $this->get('globalsearch.pagination')->getnextelement($group_scroll_id,$repository);
             }
             else{
                 $options = Array(
@@ -145,10 +145,12 @@ class GroupsController extends Controller
                 $data['data']['group'][] = $group->getAsArray();
             }
 
+            $workspace_scroll_id = $request->request->get("workspace_scroll_id");
+
             $repository = "TwakeWorkspacesBundle:Group";
 
-            if(isset($scroll_id) && isset($repository)){
-                $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+            if(isset($workspace_scroll_id) && isset($repository)){
+                $globalresult = $this->get('globalsearch.pagination')->getnextelement($workspace_scroll_id,$repository);
             }
             else{
                 $options = Array(

@@ -16,17 +16,7 @@ class AdministrationGroups
     }
 
     public function getAllGroups() {
-//        $groupsRepository = $this->em->getRepository("TwakeWorkspacesBundle:Group");
-//
-//        $groupsEntity = $groupsRepository->findBy(Array(),Array(),$limit, $offset);
-//
-//        $groups = Array();
-//
-//        foreach($groupsEntity as $group) {
-//            $groups[] = $group->getAsArray();
-//        }
-//
-//        return $groups;
+
         $options = Array(
             "repository" => "TwakeWorkspacesBundle:Group",
             "index" => "group",
@@ -61,8 +51,8 @@ class AdministrationGroups
             $group_tab["creation_data"] = $group[0]->getOnCreationData();
             $this->list_group["group"][]= Array($group_tab,$group[1][0]);
         }
-//        var_dump("nombre de resultat : " . count($this->list_files));
-//        var_dump($this->list_group);
+        //var_dump("nombre de resultat : " . count($this->list_files));
+        //var_dump($this->list_group);
         $this->list_group["scroll_id"] = $scroll_id;
 
         return $this->list_group ?: null;
@@ -176,7 +166,11 @@ class AdministrationGroups
         //var_dump(json_encode($options));
         foreach ($result["result"] as $group){
             //var_dump($file->getAsArray());
-            $this->list_group["group"][]= Array($group[0]->getAsArray(),$group[1][0]);;
+            $group_tab = $group[0]->getAsArray();
+            $group_tab["nb_workspaces"] = count($group[0]->getWorkspaces());
+            $group_tab["nb_members"] = count($this->getGroupMembers($group[0]));
+            $group_tab["creation_data"] = $group[0]->getOnCreationData();
+            $this->list_group["group"][]= Array($group_tab,$group[1][0]);
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);
