@@ -103,7 +103,7 @@ class Group extends SearchableObject
         $return = Array(
             "id" => $this->getId()."",
             "name" => $this->getName(),
-            "creation_date" => ($this->getDateAdded() ? $this->getDateAdded()->format('Y-m-d') : null),
+            "creation_date" => ($this->getDateAdded() ? ($this->getDateAdded()->format('U')*1000) : null),
         );
         return $return;
     }
