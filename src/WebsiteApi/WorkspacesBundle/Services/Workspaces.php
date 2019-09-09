@@ -319,7 +319,7 @@ class Workspaces implements WorkspacesInterface
                 $original_workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $original_workspace));
                 $adminLevelId = 0;
                 foreach ($original_workspacelevels as $level) {
-                    if ($level->getisAdmin()) {
+                    if ($level->getIsAdmin()) {
                         $adminLevelId = $level->getId();
                     }
                 }
@@ -328,18 +328,18 @@ class Workspaces implements WorkspacesInterface
                 $old_levels_id_to_new_levels = Array();
                 $workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $workspace));
                 foreach ($workspacelevels as $level) {
-                    if ($level->getisAdmin()) {
+                    if ($level->getIsAdmin()) {
                         $old_levels_id_to_new_levels[$adminLevelId . ""] = $level;
                     }
                 }
                 if ($config["users"] == "all" || $config["rights"]) {
                     foreach ($original_workspacelevels as $level) {
-                        if (!$level->getisAdmin()) {
+                        if (!$level->getIsAdmin()) {
                             $level = new WorkspaceLevel();
                             $level->setWorkspace($workspace);
                             $level->setLabel($level->getLabel());
-                            $level->setIsAdmin($level->getisAdmin());
-                            $level->setIsDefault($level->getisDefault());
+                            $level->setIsAdmin($level->getIsAdmin());
+                            $level->setIsDefault($level->getIsDefault());
                             $this->doctrine->persist($level);
                             $old_levels_id_to_new_levels[$level->getId() . ""] = $level;
                         }

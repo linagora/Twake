@@ -115,8 +115,8 @@ class GroupsController extends Controller
             $data['data']['group'] = array();
             $data['data']['workspaces'] = array();
 
-            if(isset($group_scroll_id) && isset($repository)){
-                $globalresult = $this->get('globalsearch.pagination')->getnextelement($group_scroll_id,$repository);
+            if (isset($group_scroll_id) && isset($repository)) {
+                $globalresult = $this->get('globalsearch.pagination')->getnextelement($group_scroll_id, $repository);
             }
             else{
                 $options = Array(
@@ -149,8 +149,8 @@ class GroupsController extends Controller
 
             $repository = "TwakeWorkspacesBundle:Group";
 
-            if(isset($workspace_scroll_id) && isset($repository)){
-                $globalresult = $this->get('globalsearch.pagination')->getnextelement($workspace_scroll_id,$repository);
+            if (isset($workspace_scroll_id) && isset($repository)) {
+                $globalresult = $this->get('globalsearch.pagination')->getnextelement($workspace_scroll_id, $repository);
             }
             else{
                 $options = Array(
