@@ -128,11 +128,11 @@ class Event extends SearchableObject
             "description" => $this->getDescription(),
             "owner" => $this->getOwner(),
             "tags" => $this->getTags(),
-            'date_from' => $this->getFrom(),
-            'date_to' => $this->getTo(),
-            "last_modified" => $this->getTaskLastModified(),
+            'date_from' => ($this->getFrom() ?  date('Y-m-d',$this->getFrom()) : null),
+            'date_to' => ($this->getTo() ? date('Y-m-d',$this->getTo()) : null),
+            "date_last_modified" => ($this->getEventLastModified() ? date('Y-m-d',$this->getEventLastModified()) : null),
             "workspace_id" => $this->getWorkspaceId(),
-            "participant" => $this->getParticipants()
+            "participants" => $this->getParticipants()
 
         );
 
