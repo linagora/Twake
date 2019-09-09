@@ -38,8 +38,7 @@ class AdvancedFile
 
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
         if(isset($workspace_access) && $workspace_access != Array()){
-            $files = $this->fileservice->advancedsearch($options, $workspace_access);
-            $this->globalresult = $files;
+            //do search
         }
 
         return $this->globalresult;
