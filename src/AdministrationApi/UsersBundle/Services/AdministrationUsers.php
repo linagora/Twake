@@ -27,7 +27,9 @@ class AdministrationUsers
 
         foreach ($usersEnitity as $user) {
             $user_tab = $user->getAsArray();
-            $user_tab['mail'] = $user->getEmail();
+            $user_tab['mail'] = $this->getUserMails($user)[0];
+            $user_tab['phone_number'] = $user->getPhone();
+            $user_tab['creation_date'] = $user->getCreationDate();
             $users[] = $user_tab;
         }
 

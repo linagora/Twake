@@ -106,7 +106,7 @@ class UsersController extends Controller
 
             $users_service = $this->get("administration.users");
 
-            $users = $users_service->findUserByUsername($search_string);
+            $users = $users_service->findUserById($search_string);
 
             if (!$users) {
                 $options = Array(
@@ -115,26 +115,19 @@ class UsersController extends Controller
                 $users = $this->get('administration.users')->getUserbyMail($options);
             }
 
-            if (!$users) {
-                //$users = $users_service->findUserById($search_string);
-            }
+            if (count($users["users"]) == 0) {
 
-            if (!$users) {
+                $advanced_search = $this->get("app.users");
 
-                //$advanced_search = $this->get("app.users");
+                $options = array(
+                    "name" => $search_string
+                );
 
-                //$search_words = explode(" ", $search_string);
-
-                //$users = $advanced_search->search($search_words, Array("allow_email" => true));
+                $users = $advanced_search->search($options);
 
             }
 
-            if (count($users) == 0) {
-                $data['errors'][] = "user_not_found";
-            } else {
-                $data['data'] = $users;
-            }
-
+            $data['data'] = $users;
         } else {
             $data["errors"][] = "invalid_authentication_token";
         }
