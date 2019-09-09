@@ -210,8 +210,8 @@ class CalendarEvent
         } else {
             $event = new Event($object["title"], $object["from"], $object["to"]);
             $event->setFrontId($object["front_id"]);
-            if(isset($object["workspace_id"])){
-                $event->setWorkspaceId($object["workspace_id"]);
+            if(isset($object["workspaces_calendars"] )&& is_array($object["workspaces_calendars"])){
+                $event->setWorkspaceId($object["workspaces_calendars"][0]["workspace_id"]);
             }
 
             $did_create = true;

@@ -416,13 +416,18 @@ class MessageSystem
         if ($ephemeral) {
             $this->em->remove($message);
         } else {
-
-            if ($did_create) {
-                $this->indexbloc($message, $channel->getOriginalWorkspaceId(), $object["channel_id"]);
-            } else {
-                $content = $this->mdToText($object["content"]);
-                $this->updateinbloc($message, $content, $reaction);
+            
+            try{
+                if ($did_create) {
+                    $this->indexbloc($message, $channel->getOriginalWorkspaceId(), $object["channel_id"]);
+                } else {
+                    $content = $this->mdToText($object["content"]);
+                    $this->updateinbloc($message, $content, $reaction);
+                }
+            }catch (\Exception $e ){
+                error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
             }
+
 
             if ($channel && $did_create) {
                 $channel->setMessagesCount($channel->getMessagesCount() + 1);
@@ -506,8 +511,10 @@ class MessageSystem
             $blocbdd->setLock(true);
         }
 
-
-        $blocbdd->addmessage($message);
+        $options = Array("keep_mentions" => true);
+        $content_id = $this->mdToText($message->getContent(),$options);
+        $content = $this->mdToText($message->getContent());
+        $blocbdd->addmessage($message, $content, $content_id);
         $this->em->persist($blocbdd);
         $message->setBlockId($blocbdd->getId()."");
         $this->em->persist($message);
@@ -720,7 +727,7 @@ class MessageSystem
 
     }
 
-    private function mdToText($array)
+    private function mdToText($array, $options = null)
     {
 
         if (!$array) {
@@ -764,10 +771,10 @@ class MessageSystem
             }
 
         }
-
-
-        $result = preg_replace("/@(.*):.*(( |$))/", "@$1$2", $result);
-        $result = preg_replace("/#(.*):.*(( |$))/", "#$1$2", $result);
+        if(!(isset($options["keep_mentions"]) && $options["keep_mentions"] == true)) {
+            $result = preg_replace("/@(.*?):.*?(( |$))/", "@$1$2", $result);
+            $result = preg_replace("/#(.*?):.*?(( |$))/", "#$1$2", $result);
+        }
 
         return $result;
 
