@@ -461,7 +461,7 @@ class DriveFileRefacto
             if (strlen($df->getPublicAccessKey()) > 10) {
                 $token = $df->getPublicAccessKey();
             } else {
-                $token = sha1(bin2hex(random_bytes(20)));
+                $token = sha1(bin2hex(random_bytes(40)));
                 $df->setPublicAccessKey($token);
             }
 
@@ -478,7 +478,7 @@ class DriveFileRefacto
             $this->em->persist($df);
             $this->em->flush();
 
-            return $df;
+            return $df->getAsArray();
 
         }
     }

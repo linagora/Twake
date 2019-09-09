@@ -416,15 +416,15 @@ class MessageSystem
         if ($ephemeral) {
             $this->em->remove($message);
         } else {
-            
-            try{
+
+            try {
                 if ($did_create) {
                     $this->indexbloc($message, $channel->getOriginalWorkspaceId(), $object["channel_id"]);
                 } else {
                     $content = $this->mdToText($object["content"]);
                     $this->updateinbloc($message, $content, $reaction);
                 }
-            }catch (\Exception $e ){
+            } catch (\Exception $e) {
                 error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
             }
 
@@ -512,7 +512,7 @@ class MessageSystem
         }
 
         $options = Array("keep_mentions" => true);
-        $content_id = $this->mdToText($message->getContent(),$options);
+        $content_id = $this->mdToText($message->getContent(), $options);
         $content = $this->mdToText($message->getContent());
         $blocbdd->addmessage($message, $content, $content_id);
         $this->em->persist($blocbdd);
@@ -771,7 +771,7 @@ class MessageSystem
             }
 
         }
-        if(!(isset($options["keep_mentions"]) && $options["keep_mentions"] == true)) {
+        if (!(isset($options["keep_mentions"]) && $options["keep_mentions"] == true)) {
             $result = preg_replace("/@(.*?):.*?(( |$))/", "@$1$2", $result);
             $result = preg_replace("/#(.*?):.*?(( |$))/", "#$1$2", $result);
         }
