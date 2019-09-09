@@ -231,6 +231,11 @@ class AdvancedEvent
                     "bool" => Array(
                         "must" => $must
                     )
+                ),
+                "sort" => Array(
+                    "date_from" => Array(
+                        "order" => "desc",
+                    )
                 )
             );
 
