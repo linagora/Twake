@@ -108,7 +108,7 @@ class UsersController extends Controller
 
             $users = $users_service->findUserById($search_string);
 
-            if (!$users) {
+            if (count($users["users"]) == 0) {
                 $options = Array(
                     "mail" => $search_string
                 );

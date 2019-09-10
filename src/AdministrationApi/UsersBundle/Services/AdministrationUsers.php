@@ -16,24 +16,7 @@ class AdministrationUsers
         $this->em = $em;
     }
 
-    public function getAllUsers()
-    {
-
-//        $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
-//
-//        $usersEnitity = $usersRepository->findBy(Array(), Array(), $limit, $offset/*, "__TOKEN__id"*/);
-//
-//        $users = Array();
-//
-//        foreach ($usersEnitity as $user) {
-//            $user_tab = $user->getAsArray();
-//            $user_tab['mail'] = $this->getUserMails($user)[0];
-//            $user_tab['phone_number'] = $user->getPhone();
-//            $user_tab['creation_date'] = $user->getCreationDate();
-//            $users[] = $user_tab;
-//        }
-//
-//        return $users;
+    public function getAllUsers() {
 
         $options = Array(
             "repository" => "TwakeUsersBundle:User",
@@ -57,9 +40,7 @@ class AdministrationUsers
         $scroll_id = $result["scroll_id"];
 
         //on traite les données recu d'Elasticsearch
-        var_dump(json_encode($options));
         foreach ($result["result"] as $user) {
-            //var_dump($file->getAsArray());
             $user_tab = $user[0]->getAsArray();
             $user_tab['mail'] = $this->getUserMails($user[0])[0];
             $user_tab['phone_number'] = $user[0]->getPhone();
@@ -67,8 +48,6 @@ class AdministrationUsers
 
             $this->list_user["users"][] = Array($user_tab, $user[1][0]);;
         }
-//        var_dump("nombre de resultat : " . count($this->list_files));
-        var_dump($this->list_user);
         $this->list_user["scroll_id"] = $scroll_id;
 
         return $this->list_user ?: null;
@@ -175,15 +154,14 @@ class AdministrationUsers
 
         $users = $usersRepository->findBy(Array("id" => $id));
 
-        $rep = false;
+        $rep = array("users" => array());
 
         if (count($users) >= 1) {
-            $rep = array();
 
             foreach ($users as $user) {
                 $user_tab = $user->getAsArray();
                 $user_tab['mail'] = $user->getEmail();
-                $rep[] = $user_tab;
+                $rep["users"][] = array($user_tab, null);
             }
         }
 
@@ -219,33 +197,23 @@ class AdministrationUsers
             );
         }
 
-//        $mail = new Mail();
-//        $mail->setMail("romaric@twakemail.fr");
-//        $this->em->persist($mail);
-//        $this->em->flush();
-
         // search in ES
         $result = $this->em->es_search($options);
-
 
         array_slice($result["result"], 0, 5);
 
         $scroll_id = $result["scroll_id"];
 
         //on traite les données recu d'Elasticsearch
-        //var_dump(json_encode($options));
         foreach ($result["result"] as $mail){
-            //var_dump($mail->getUser()->getAsArray());
             $user = $mail->getUser();
             $user_tab = $user->getAsArray();
             $user_tab['mail'] = $this->getUserMails($user)[0];
             $user_tab['phone_number'] = $user->getPhone();
             $user_tab['creation_date'] = $user->getCreationDate();
 
-            $this->list_user["users"][] = $user_tab;
+            $this->list_user["users"][] = array($user_tab, null);
         }
-//        var_dump("nombre de resultat : " . count($this->list_files));
-//        var_dump($this->list_group);
         $this->list_user["scroll_id"] = $scroll_id;
 
         return $this->list_user ?: null;
