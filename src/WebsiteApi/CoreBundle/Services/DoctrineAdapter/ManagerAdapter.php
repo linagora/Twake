@@ -252,7 +252,6 @@ class ManagerAdapter
 
     public function es_put($entity, $index, $server = "twake")
     {
-//        error_log("passage");
         if (!$this->es_server) {
             return;
         }
@@ -272,7 +271,6 @@ class ManagerAdapter
 
             if (method_exists($entity, "getContentKeywords") && is_array($entity->getContentKeywords())) {
                 $keywords = $entity->getContentKeywords();
-
                 //partie sur la verification du format des mots clés
                 $keywords_verif = Array();
                 foreach ($keywords as $keyword_score){
@@ -296,9 +294,12 @@ class ManagerAdapter
             }
         }
 
+        //error_log(print_r($data,true));
         $st = new StringCleaner();
         $data = $st->simplifyInArray($data);
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
+
+
 
         try {
             $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));

@@ -471,7 +471,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                             }
 
                             @unlink($previewpath);
-                            error_log("PREVIEW GENERATED !");
+                            //error_log("PREVIEW GENERATED !");
 
                         } else {
                             $res = false;

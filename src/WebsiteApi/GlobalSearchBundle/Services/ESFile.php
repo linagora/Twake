@@ -118,6 +118,7 @@ END;
         $terms = Array();
         $should_workspaces = Array();
 
+
         foreach($termslist as $term){
             $st = new StringCleaner();
             $term= $st->simplifyInArray($term);
@@ -192,7 +193,7 @@ END;
             )
         );
 
-        //var_dump(json_encode($options));
+        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
         //var_dump($workspace["id"]);
         $files = $this->doctrine->es_search($options);
         $files_final=Array();
