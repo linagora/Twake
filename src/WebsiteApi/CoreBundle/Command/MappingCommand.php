@@ -160,16 +160,18 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "name","type","creation_date","workspace_id","keywords"
-                )
+                    "name","type","creation_date","workspace_id","keywords","creator","date_last_modified","tags","size")
             ),
             "properties" => Array(
                 "id" => Array("type" => "keyword"),
                 "name" => Array("type" => "keyword"),
                 "type" => Array("type" => "keyword"),
                 "creation_date" => Array("type" => "date"),
+                "creator" => Array("type" => "keyword"),
+                "date_last_modified" => Array("type" => "date"),
                 "workspace_id" => Array("type" => "keyword"),
                 "tags" => Array("type" => "text"),
+                "size" => Array("type" => "integer"),
                 "keywords" => Array(
                     "type" => "nested",
                     "properties" => Array(
