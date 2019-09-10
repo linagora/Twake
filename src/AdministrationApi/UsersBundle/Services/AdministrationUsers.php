@@ -57,7 +57,6 @@ class AdministrationUsers
         $scroll_id = $result["scroll_id"];
 
         //on traite les données recu d'Elasticsearch
-        var_dump(json_encode($options));
         foreach ($result["result"] as $user) {
             //var_dump($file->getAsArray());
             $user_tab = $user[0]->getAsArray();
@@ -67,8 +66,7 @@ class AdministrationUsers
 
             $this->list_user["users"][] = Array($user_tab, $user[1][0]);;
         }
-//        var_dump("nombre de resultat : " . count($this->list_files));
-        var_dump($this->list_user);
+
         $this->list_user["scroll_id"] = $scroll_id;
 
         return $this->list_user ?: null;

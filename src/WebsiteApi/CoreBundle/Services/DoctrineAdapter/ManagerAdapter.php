@@ -403,7 +403,6 @@ class ManagerAdapter
         $result = [];
         $scroll_id = "";
 
-        var_dump($res);
         if ($res) {
             $res = json_decode($res, 1);
             if($res["hits"]["total"] > $options["size"] && isset($res["_scroll_id"])){
