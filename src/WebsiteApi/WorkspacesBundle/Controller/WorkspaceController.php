@@ -84,6 +84,34 @@ class WorkspaceController extends Controller
 		}
 		return new JsonResponse($response);
 	}
+
+    public function getPublicDataAction(Request $request)
+    {
+
+        $response = Array("errors" => Array(), "data" => Array());
+
+        $workspaceId = $request->request->get("workspace_id");
+
+        $ws = $this->get("app.workspaces")->get($workspaceId);
+        if (!$ws) {
+            $response["errors"][] = "no_such_workspace";
+        } else {
+
+            $response["data"]["workspace_name"] = $ws->getName();
+
+            if ($ws->getGroup() != null) {
+
+                $group = $ws->getGroup();
+
+                $response["data"]["group_name"] = $group->getAsArray()["name"];
+                $response["data"]["group_logo"] = $group->getAsArray()["logo"];
+
+            }
+        }
+        return new JsonResponse($response);
+
+    }
+
 	/**
 	 * Récupère les informations de base d'un groupe
 	 */
