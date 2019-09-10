@@ -203,10 +203,12 @@ class DriveFileRefacto
         if (isset($object["id"]) && $object["id"]) { // on recoit un identifiant donc c'est un modification
             $fileordirectory = $this->em->getRepository("TwakeDriveBundle:DriveFile")
                 ->findOneBy(Array("id" => $object["id"].""));
-            $fileordirectory->setLastModified();
             if(!$fileordirectory){
                 return false;
             }
+
+            $fileordirectory->setLastModified();
+
         }
         else{ // pas d'identifiant on veut donc créer un fichier
             if (!isset($object["workspace_id"])) {
