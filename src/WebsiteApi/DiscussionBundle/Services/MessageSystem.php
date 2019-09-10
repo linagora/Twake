@@ -480,6 +480,7 @@ class MessageSystem
 
     public function indexbloc($message,$workspace_id,$channel_id)
     {
+        return true; // WARNING à retirer
         $message_id = $message->getId()."";
 
         error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");

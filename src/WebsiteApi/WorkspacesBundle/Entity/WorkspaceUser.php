@@ -60,6 +60,11 @@ class WorkspaceUser
      */
     private $externe;
 
+    /**
+     * @ORM\Column(name="is_auto_add_externe", type="twake_boolean")
+     */
+    private $auto_add_externe;
+
     public function __construct($workspace, $user, $level_id)
     {
 		$this->workspace = $workspace;
@@ -203,6 +208,22 @@ class WorkspaceUser
         $this->externe = $externe;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAutoAddExterne()
+    {
+        return $this->auto_add_externe;
+    }
+
+    /**
+     * @param mixed $isclient
+     */
+    public function setAutoAddExterne($auto_add_externe)
+    {
+        $this->auto_add_externe = $auto_add_externe;
+    }
+
     public function getAsArray(){
         return Array(
             "id" => $this->getId(),
@@ -212,7 +233,8 @@ class WorkspaceUser
             "date_added" => $this->getDateAdded(),
             "last_access" => $this->getLastAccess(),
             "hasnotifications" => $this->getHasNotifications(),
-            "externe" => $this->getExterne()
+            "externe" => $this->getExterne(),
+            "auto_add_externe" => $this->getAutoAddExterne()
         );
     }
 
