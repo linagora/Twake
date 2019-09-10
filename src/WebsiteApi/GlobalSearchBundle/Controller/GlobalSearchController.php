@@ -64,6 +64,12 @@ class GlobalSearchController extends Controller
             $group_id = $request->request->get("group_id");
             $workspace_id = $request->request->get("workspace_id");
             $current_user_id = $current_user->getId();
+//            if (!(isset($current_user))) {
+//                $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
+//            } else {
+//                $current_user_id = $current_user->getId();
+//            }
+//            $words = Array("meme");
             $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id, $words, $group_id, $workspace_id);
         }
 
