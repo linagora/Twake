@@ -184,14 +184,14 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "fisrtname","lastnamename","usernname","language","creation_date"
+                    "firstname","lastname","username","language","creation_date"
                 )
             ),
             "properties" => Array(
                 "id" => Array("type" => "keyword"),
-                "firstname" => Array("type" => "keyword"),
-                "lasttname" => Array("type" => "keyword"),
-                "username" => Array("type" => "keyword"),
+                "firstname" => Array("type" => "text"),
+                "lastname" => Array("type" => "text"),
+                "username" => Array("type" => "text"),
                 "language" => Array("type" => "text"),
                 "creation_date" => Array("type" => "date")
             )
@@ -256,6 +256,7 @@ class MappingCommand extends ContainerAwareCommand
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
+
 
         $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/mail/_mapping/_doc";
         //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";
