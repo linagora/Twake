@@ -39,9 +39,9 @@ class AdministrationUsers
             "repository" => "TwakeUsersBundle:User",
             "index" => "users",
             "size" => 10,
-            "query" => Array(
-                "match_all" => (object)[]
-            ),
+//            "query" => Array(
+//                "match_all" => (object)[]
+//            ),
             "sort" => Array(
                 "creation_date" => Array(
                     "order" => "desc"
