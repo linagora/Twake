@@ -3,49 +3,14 @@
 namespace Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
+use WebsiteApi\WorkspacesBundle\Entity\Group;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class WebTestCaseExtended extends WebTestCase
 {
 
     var $client;
 
-    /*    var $cookies = "";
-        var $server = "";
-
-        protected function getClient()
-        {
-            if (!isset($this->client)) {
-                $this->client = static::createClient();
-            }
-            $this->server = "https://albatros.twakeapp.com";
-            return $this->client;
-        }
-
-        public function resetCookies()
-        {
-            $this->cookies = "";
-        }
-
-        public function post($route, $data)
-        {
-            $cookies = $this->cookies;
-            $res = $this->getClient()->getContainer()->get('circle.restclient')->post($this->server . $route, json_encode($data), Array(
-                CURLOPT_HTTPHEADER => ['Content-Type: application/json', 'Cookie: ' . $cookies]
-            ));
-            if (isset($res->headers->all()["set-cookie"])) {
-                $this->cookies = join(";", $res->headers->all()["set-cookie"]);
-            }
-            return $res;
-        }
-
-        public function get($route)
-        {
-            $res = $this->getClient()->getContainer()->get('circle.restclient')->get($this->server . $route);
-            if (isset($res->headers->all()["set-cookie"])) {
-                $this->cookies = join(";", $res->headers->all()["set-cookie"]);
-            }
-            return $res;
-        }*/
 
     public function setUp(){
       # Warning:
@@ -59,7 +24,7 @@ class WebTestCaseExtended extends WebTestCase
         if (!isset($this->client)) {
             $this->client = static::createClient();
         }
-        return $this->client->getContainer()->get('doctrine.orm.entity_manager');
+        return $this->get("app.twake_doctrine");
     }
 
     protected function get($service)
@@ -97,10 +62,11 @@ class WebTestCaseExtended extends WebTestCase
         $this->getClient()->request($method, $route, array(), array(), array('CONTENT_TYPE' => 'application/json'),
             json_encode($data)
         );
-        return $this->getClient()->getResponse();
+        //error_log("call for ".$route."--- with :".json_encode($data)."--- response : ".$this->getClient()->getResponse()->getContent());
+        return json_decode($this->getClient()->getResponse()->getContent(),true);
     }
 
-    public function newUserByName($name){
+    public function newUserByName($name,$mail=null){
 
         $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
 
@@ -108,11 +74,12 @@ class WebTestCaseExtended extends WebTestCase
             $this->removeUserByName($name);
         }
 
-        $mail = $name . "@twake_phpunit.fr";
+        if(!$mail){
+            $mail = $name . "@twake_phpunit.fr";
+        }
 
         $userWithMail = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("emailcanonical" => $mail));
         if ($userWithMail) {
-            error_log("Removed already existing user with mail " . $userWithMail);
             $this->removeUserByName($userWithMail->getUsername());
         }
 
@@ -121,15 +88,10 @@ class WebTestCaseExtended extends WebTestCase
             $this->get("app.twake_doctrine")->remove($mail);
             $this->get("app.twake_doctrine")->flush();
         }
-
         $token = $this->get("app.user")->subscribeMail($mail, $name, $name, "", "", "", "en", false);
         $this->get("app.user")->verifyMail($mail, $token, "", true);
 
         $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
-
-        if (!$user) {
-            error_log("User " . $name . " not created");
-        }
 
         return $user;
     }
@@ -150,29 +112,18 @@ class WebTestCaseExtended extends WebTestCase
         }
     }
 
-    public function newGroup($userId){
-        $group = $this->get("app.groups")->create($userId,"phpunit","phpunit",1);
+    public function newGroup($userId,$name){
+        $group = new Group($name);
         $this->get("app.twake_doctrine")->persist($group);
+        $plan = $this->get("app.pricing_plan")->getMinimalPricing();
+        $group->setPricingPlan($plan);
         $this->get("app.twake_doctrine")->flush();
-
-        $groupIdentity = $this->get("app.group_identitys")->create($group, "fake","fake","fake",0);
-        $this->get("app.twake_doctrine")->persist($groupIdentity);
-        $this->get("app.twake_doctrine")->flush();
-
         return $group;
     }
 
-    public function newWorkspace($groupId){
-        $userRepository = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User");
-        // $user = $userRepository->findByName("phpunit");
-        $user = $userRepository->findOneBy(Array("usernamecanonical" => "phpunit"));
-        if (count($user) == 0) {
-            $user = $this->newUser();
-        }
-        //$user = $user[0];
-
-        $userId = $user->getId(); //TODO
-        $work = $this->get("app.workspaces")->create("phpunit", $groupId, $userId); // Get a service and run function
+    public function newWorkspace($name,$group){
+        $work = new Workspace($name);
+        $work->setGroup($group);
         $this->get("app.twake_doctrine")->persist($work);
         $this->get("app.twake_doctrine")->flush();
 
@@ -186,5 +137,16 @@ class WebTestCaseExtended extends WebTestCase
         return $sub;
     }
 
-
+    public function login($username,$password=null){
+        if(!$password){
+            $password = $username;
+        }
+        $result = $this->doPost("/ajax/users/login", Array(
+            "_username" => $username,
+            "_password" => $password
+        ));
+    }
+    public function logout(){
+        $this->doPost("/ajax/users/logout", Array());
+    }
 }

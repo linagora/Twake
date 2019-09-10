@@ -81,7 +81,6 @@ class ChannelSystemAbstract
 
     public function updateExtChannelMembers($channel_entity, $ext_members, $current_user_id = null)
     {
-
         $_ext_members = [];
         $members = $channel_entity->getMembers();
         foreach ($ext_members as $ext_member) {
@@ -168,7 +167,7 @@ class ChannelSystemAbstract
     }
 
     public function addUserToChannel($user,$channel){
-        $link = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("user_id"=>$user->getId(),"channel_id"=>$channel->getId()));
+        $link = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct"=>false,"user_id"=>$user->getId(),"channel_id"=>$channel->getId()));
         if(!$link){
             $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($user->getId(), $channel);
             $member->setLastMessagesIncrement($channel->getMessagesIncrement());

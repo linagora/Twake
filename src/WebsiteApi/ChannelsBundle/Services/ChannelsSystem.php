@@ -27,8 +27,7 @@ class ChannelsSystem extends ChannelSystemAbstract
 
     public function hasAccess($data, $current_user = null)
     {
-        $group = $data["group_id"];
-        $workspace = $data["workspace_id"];
+        //$workspace = $data["workspace_id"];
         //TODO
         return true;
     }
