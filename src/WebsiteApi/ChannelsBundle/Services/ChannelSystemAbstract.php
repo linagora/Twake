@@ -83,11 +83,21 @@ class ChannelSystemAbstract
     {
         $_ext_members = [];
         $members = $channel_entity->getMembers();
+
         foreach ($ext_members as $ext_member) {
             if (!in_array($ext_member, $members)) {
                 $_ext_members[] = $ext_member;
             }
         }
+
+        $workspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$channel_entity->getOriginalWorkspaceId()));
+        $membersWorkspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace"=>$workspace));
+        foreach($membersWorkspace as $members){
+            if($members->getAutoAddExterne() && !in_array($members->getUser()->getId(),$_ext_members)){
+                $_ext_members[] = $members->getUser()->getId();
+            }
+        }
+
 
         $current_ext = $channel_entity->getExtMembers();
         $current_ext = $current_ext ? $current_ext : [];
@@ -129,7 +139,6 @@ class ChannelSystemAbstract
                             $did_something = true;
                         }
                         else{
-                            error_log("New email ;)");
                             $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($mail, $channel_entity);
                             $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
                             $member->setExterne(true);
@@ -287,7 +296,6 @@ class ChannelSystemAbstract
 
         $tab = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelTab")->findOneBy(Array("channel_id" => $channel_id, "app_id" => $application_id, "id" => $tab_id));
         if (!$tab) {
-            error_log("deleted");
             return;
         }
         $this->entity_manager->remove($tab);

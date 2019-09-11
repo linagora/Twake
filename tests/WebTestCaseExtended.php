@@ -66,7 +66,7 @@ class WebTestCaseExtended extends WebTestCase
         $this->getClient()->request($method, $route, array(), array(), array('CONTENT_TYPE' => 'application/json'),
             json_encode($data)
         );
-        //error_log("call for ".$route."--- with :".json_encode($data)."--- response : ".$this->getClient()->getResponse()->getContent());
+        error_log("call for ".$route."--- with :".json_encode($data)."--- response : ".$this->getClient()->getResponse()->getContent());
         return json_decode($this->getClient()->getResponse()->getContent(),true);
     }
 

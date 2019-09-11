@@ -55,6 +55,15 @@ class ExterneUserTest extends WebTestCaseExtended
         $this->assertEquals(false,$this->verifyIfUserIsInChannel($u4,$w1,$c1,true,$mail1),"mail1 is still invited as chanvité");
     }
 
+    public function testRemoveAutoAddFromChannel(){
+        list($g1,$w1,$c1,$u1) = $this->getStuff();
+        $u2 = $this->newUserByName("usertest002");
+        $this->login($u1->getUsernameCanonical());
+        $result = $this->doPost("/ajax/workspace/members/addlist",Array("list"=>$u2->getUsernameCanonical()."|1","workspaceId"=>$w1->getId()));
+        $this->updateChavinteFromFront($w1,$c1,$u1,[],[$u2->getId()]);
+        $this->assertEquals(true,$this->verifyIfUserIsInChannel($u2,$w1,$c1,true),"User can be remove from channel as wexterne");
+    }
+
     private function getStuff(){
         $u1 = $this->newUserByName("usertest001");
         $g1 = $this->newGroup($u1->getId(),"grptest1");
@@ -94,6 +103,7 @@ class ExterneUserTest extends WebTestCaseExtended
         $frontChan = $this->getChannelById($channels,$channel->getId());
         if($frontChan){
             $members = $frontChan["ext_members"];
+            error_log(json_encode($members));
             foreach($toAdd as $adding){
                 if(!in_array($adding,$members)){
                     $members[] = $adding;
