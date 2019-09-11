@@ -116,9 +116,7 @@ class DriveController extends Controller
 
         $res = [];
         foreach ($objects as $object) {
-            if ($object["is_directory"]) {
-                $res[] = $object;
-            }
+            $res[] = $object;
         }
 
         $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
