@@ -376,6 +376,7 @@ class DriveFileRefacto
 
 
         if(isset($fileordirectory)){
+            $fileordirectory->setEsIndex(false);
             $this->em->persist($fileordirectory);
             $this->em->flush();
         }

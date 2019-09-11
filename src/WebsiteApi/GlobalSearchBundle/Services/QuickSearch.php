@@ -158,6 +158,7 @@ class QuickSearch
         $this->SearchPrivateChannel($words,$user->getUsername(),$current_user_id);
 
 
+
 //        usort($this->fileresult,array($this,'cmpfile')); //on a meme plus besoin de trier ES le fait pour nous normalement
 //        usort($this->priofileresult,array($this,'cmpfile'));
 //        usort($this->priochannelresult,array($this,'cmpchannel'));
@@ -197,11 +198,12 @@ class QuickSearch
 //        foreach ($workspaces as $workspace) {
 //            //var_dump($workspace->getAsArray());
 //        }
-//
+
 //        $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
 //        foreach ($files as $file){
-//            var_dump($file->getAsArray());
+//            $this->doctrine->remove($file);
 //        }
+//        $this->doctrine->flush();
 
         return $this->globalresult;
     }

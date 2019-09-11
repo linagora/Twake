@@ -190,15 +190,19 @@ class ManagerAdapter
             //This is a searchable object
             if (method_exists($object,"getLock()") ){
                 if($object->getLock() == true) {
-                    $this->es_updates[$object->getId() . ""] = $object;
+                    $this->es_updates[$object->getId().""] = $object;
                     unset($this->es_removes[$object->getId() . ""]);
                     $object->setEsIndexed(true);
                 }
             }
             else{
+                //error_log("DEBUT");
                 if (!$object->getEsIndexed() || $object->changesInIndexationArray()) {
-                    $this->es_updates[$object->getId() . ""] = $object;
-                    unset($this->es_removes[$object->getId() . ""]);
+                    error_log("PASSAGE");
+                    //error_log(print_r($this->es_updates,true));
+
+                    $this->es_updates[$object->getId().""] = $object;
+                    unset($this->es_removes[$object->getId().""]);
                     $object->setEsIndexed(true);
                 }
             }
@@ -236,6 +240,9 @@ class ManagerAdapter
     //update for important keywords from title or extension of a file only in ES to not repeat info in scyllaDB
 
     public function update_ES_keyword($keywords,$word){
+//        error_log(print_r($keywords,true));
+//        error_log(print_r($word,true));
+
         $keywords[] = Array(
             "keyword" => $word,
             "score" => 1.1
@@ -252,6 +259,10 @@ class ManagerAdapter
 
     public function es_put($entity, $index, $server = "twake")
     {
+
+        //error_log("PASSAGE DANS ES PUT");
+//        error_log(print_r($entity->getId()."",true));
+
         if (!$this->es_server) {
             return;
         }
@@ -263,17 +274,17 @@ class ManagerAdapter
                 $data = Array("content" => $data);
             }
         } else {
-
             $id = $entity->getId()."";
             if (method_exists($entity, "getIndexationArray")) {
                 $data = $entity->getIndexationArray();
             }
-
             if (method_exists($entity, "getContentKeywords") && is_array($entity->getContentKeywords())) {
                 $keywords = $entity->getContentKeywords();
+                //error_log(print_r($keywords,true));
                 //partie sur la verification du format des mots clés
                 $keywords_verif = Array();
                 foreach ($keywords as $keyword_score){
+                    //error_log(print_r($keyword_score,true));
                     $keys = array_keys($keyword_score);
                     if(count($keys) != 2 || $keys[0] != "keyword" || $keys[1]  != "score" ||
                         gettype($keyword_score["keyword"]) != "string" || gettype($keyword_score["keyword"]) != "string"){
@@ -284,13 +295,10 @@ class ManagerAdapter
                     }
                 }
 
-                $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
-                foreach ($data as $field){
-                    if(is_string($field) && !(preg_match($UUIDv4, $field)) && !($this->validateDate($field)) &&$field != "" ) {
-                        $keywords=$this->update_ES_keyword($keywords_verif, $field);
-                    }
-                }
+                $name= $entity->getName();
+                $keywords = $this->update_ES_keyword($keywords_verif,$name);
                 $data["keywords"] = $keywords;
+
             }
         }
 
