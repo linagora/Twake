@@ -113,6 +113,10 @@ class WebTestCaseExtended extends WebTestCase
     }
 
     public function newGroup($userId,$name){
+        $grp = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group")->findOneBy(Array("name"=>$name));
+        if($grp){
+            $this->getDoctrine()->remove($grp);
+        }
         $group = new Group($name);
         $this->get("app.twake_doctrine")->persist($group);
         $plan = $this->get("app.pricing_plan")->getMinimalPricing();
@@ -122,12 +126,31 @@ class WebTestCaseExtended extends WebTestCase
     }
 
     public function newWorkspace($name,$group){
+        $wsp = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("name"=>$name));
+        if($wsp){
+            $this->getDoctrine()->remove($wsp);
+        }
         $work = new Workspace($name);
         $work->setGroup($group);
         $this->get("app.twake_doctrine")->persist($work);
         $this->get("app.twake_doctrine")->flush();
 
         return $work;
+    }
+
+    public function newChannel($group,$workspace,$user){
+        $channel = new Channel();
+        $channel->setDirect(false);
+        $channel->setOriginalWorkspaceId($workspace->getId());
+        $channel->setOriginalGroup($group);
+
+        $this->getDoctrine()->persist($channel);
+        $this->getDoctrine()->flush();
+
+        $linkUserChannel = new ChannelMember($user->getId()."",$channel);
+        $this->getDoctrine()->persist($linkUserChannel);
+        $this->getDoctrine()->flush();
+        return $channel;
     }
 
     public function newSubscription($group,$pricing_plan, $balanceInit, $start_date, $end_date, $autowithdraw, $autorenew){
