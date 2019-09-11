@@ -5,7 +5,11 @@ namespace Tests;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use WebsiteApi\WorkspacesBundle\Entity\Group;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
-
+use WebsiteApi\ChannelsBundle\Entity\Channel;
+use WebsiteApi\ChannelsBundle\Entity\ChannelMember;
+use WebsiteApi\UsersBundle\Entity\User;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 class WebTestCaseExtended extends WebTestCase
 {
 
@@ -113,10 +117,6 @@ class WebTestCaseExtended extends WebTestCase
     }
 
     public function newGroup($userId,$name){
-        $grp = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Group")->findOneBy(Array("name"=>$name));
-        if($grp){
-            $this->getDoctrine()->remove($grp);
-        }
         $group = new Group($name);
         $this->get("app.twake_doctrine")->persist($group);
         $plan = $this->get("app.pricing_plan")->getMinimalPricing();
@@ -126,10 +126,6 @@ class WebTestCaseExtended extends WebTestCase
     }
 
     public function newWorkspace($name,$group){
-        $wsp = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("name"=>$name));
-        if($wsp){
-            $this->getDoctrine()->remove($wsp);
-        }
         $work = new Workspace($name);
         $work->setGroup($group);
         $this->get("app.twake_doctrine")->persist($work);
@@ -169,6 +165,7 @@ class WebTestCaseExtended extends WebTestCase
             "_password" => $password
         ));
     }
+
     public function logout(){
         $this->doPost("/ajax/users/logout", Array());
     }

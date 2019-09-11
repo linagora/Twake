@@ -90,7 +90,6 @@ class WorkspaceMembersController extends Controller
             $element = $element[0];
             if (strlen($element) > 0) {
                 if (strrpos($element, "@") <= 0) { //No mail or "@username"
-                    error_log("add user ".$element.", as externe : ".$asExterne);
                     $res = $this->get("app.workspace_members")->addMemberByUsername($workspaceId, $element, $asExterne,true, $this->getUser()->getId());
                     if ($res) {
                         $added["user"][] = $element;

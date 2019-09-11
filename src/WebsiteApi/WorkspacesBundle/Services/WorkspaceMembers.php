@@ -589,7 +589,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                         $channel_entity->setMembers(array_merge($channel_entity->getMembers(), [$user->getId()]));
                     }else{
                         // externe
-                        if(!array_search($user->getId(),$channelExt)){
+                        if(array_search($user->getId(),$channelExt)===false){
                             $channel_entity->setExtMembers(array_merge($channel_entity->getExtMembers(), [$user->getId()]));
                         }
                         if(!$workspaceMember->getAutoAddExterne()){
@@ -597,10 +597,11 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                             $mails = $this->doctrine->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user"=>$user->getId()));
                             $channelExt = $channel_entity->getExtMembers();
                             foreach($mails as $mail){
-                                if(($index = array_search($mail->getMail(),$channelExt))){
+                                if(($index = array_search($mail->getMail(),$channelExt))!==false){
                                     array_splice($channelExt,$index,1);
                                 }
                             }
+                            $channel_entity->setExtMembers($channelExt);
                         }
                     }
                     $this->doctrine->persist($channel_entity);
