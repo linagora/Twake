@@ -89,13 +89,16 @@ class ChannelSystemAbstract
                 $_ext_members[] = $ext_member;
             }
         }
-
-        $workspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$channel_entity->getOriginalWorkspaceId()));
-        $membersWorkspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace"=>$workspace));
-        foreach($membersWorkspace as $members){
-            if($members->getAutoAddExterne() && !in_array($members->getUser()->getId(),$_ext_members)){
-                $_ext_members[] = $members->getUser()->getId();
+        if(!$channel_entity->getPrivate()){
+            // si le channel n'est pas privé, on rajoute tous les autoadd
+            $workspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$channel_entity->getOriginalWorkspaceId()));
+            $membersWorkspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace"=>$workspace));
+            foreach($membersWorkspace as $members){
+                if($members->getAutoAddExterne() && !in_array($members->getUser()->getId(),$_ext_members)){
+                    $_ext_members[] = $members->getUser()->getId();
+                }
             }
+
         }
 
 
