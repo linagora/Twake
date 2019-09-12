@@ -23,26 +23,21 @@ class Error200Test extends WebTestCaseExtended
         $this->assertEquals(Array("badmail"), $result["errors"]);
     }
 
+
     public function testCheckNumberForAddNewMail()
     {
 
         $this->removeUserByName("usertest001");
-        $user = $this->newUserByName("usertest001");
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->newUserByName("usertest001","usertest001@twake_phpunit.fr");
+        $this->login($user->getUsernameCanonical());
 
-        $result = $this->doPost("/ajax/users/login", Array(
-            "_username" => "usertest001",
-            "_password" => "usertest001"
-        ));
-
-        $result = $this->doPost("/ajax/users/recover/mail", Array(
-            "email" => "usertest001@twake_phpunit.fr"
+        $result = $this->doPost("/ajax/users/account/addmail", Array(
+            "mail" => "usertest0021@twake_phpunit.fr"
         ));
         $token = $result["data"]["token"];
 
         $verif = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:VerificationNumberMail")->findOneBy(Array("token" => $token));
-        $code = $verif->getcode();
-
+        $code = $verif->getCleanCode();
 
         $result = $this->doPost("/ajax/users/account/addmailverify", Array(
             "token" => $token,

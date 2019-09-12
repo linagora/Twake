@@ -88,7 +88,6 @@ class Calls implements CallSystemInterface
 
 	public function exitCalls($user){
 		$this->exitAllCalls($user);
-		error_log("end exitCalls");
 	}
 
 	private function getCall($discussionKey,$user)

@@ -216,7 +216,7 @@ class UserAccountTest extends WebTestCaseExtended
         $this->assertEquals(false, $user->getisNew());
     }
 
-    public function testUpdateNotificationPreferenceByWorkspace()
+    /*public function testUpdateNotificationPreferenceByWorkspace()
     {
         $user = $this->newUserByName("usertest001");
         $result = $this->login($user->getUsernameCanonical());
@@ -229,7 +229,7 @@ class UserAccountTest extends WebTestCaseExtended
         $this->assertArrayHasKey("14005200-48b1-11e9-a0b4-0242ac120005", $user->getNotificationPreference()["workspace"]);
         $this->assertEquals(Array(), $user->getNotificationPreference()["workspace"]["14005200-48b1-11e9-a0b4-0242ac120005"]);
 
-    }
+    }*/
 
     public function testRemoveUserByUsername()
     {

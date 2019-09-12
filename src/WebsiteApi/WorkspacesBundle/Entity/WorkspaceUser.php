@@ -9,7 +9,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * WorkspaceUser
  *
- * @ORM\Table(name="workspace_user",options={"engine":"MyISAM", "scylladb_keys": {{<:"ASC", "user_id": "DESC", "id":"ASC"}, {"level_id":"ASC"}, {"user_id": "DESC"}} })
+ * @ORM\Table(name="workspace_user",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "user_id": "DESC", "id":"ASC"}, {"level_id":"ASC"}, {"user_id": "DESC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceUserRepository")
  */
 class WorkspaceUser

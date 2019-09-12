@@ -203,13 +203,11 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
     public function autoAddMemberByNewMail($mail, $userId)
     {
-        error_log("auto add member by mail ".$mail);
         $mail = $this->string_cleaner->simplifyMail($mail);
         $workspaceUerByMailRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
         $invitations = $workspaceUerByMailRepository->findBy(Array("mail" => $mail));
 
         foreach ($invitations as $userByMail) {
-            error_log("mail :".$userByMail->getMail());
             $this->doctrine->remove($userByMail);
             $this->doctrine->flush();
             $this->addMember($userByMail->getWorkspace()->getId(), $userId, $userByMail->getExterne(),$userByMail->getAutoAddExterne());

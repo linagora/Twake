@@ -80,7 +80,6 @@ class CallsController extends Controller
         }
 
 		$this->get("app.callSystem")->exitCalls($this->getUser());
-        error_log("end exit controler");
         return new JsonResponse($data);
 	}
 

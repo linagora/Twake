@@ -18,7 +18,7 @@ class DriveFileRefactoController extends Controller
     {
         $options = $request->request->get("options");
         $object = $request->request->get("object");
-
+        $token = $options["public_access_token"] || "";
         $acces = $this->get('app.accessmanager')->has_access($this->getUser()->getId(), Array(
             "type" => "DriveFile",
             "object_id" => $object["id"],

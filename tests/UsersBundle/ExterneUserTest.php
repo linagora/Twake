@@ -103,7 +103,6 @@ class ExterneUserTest extends WebTestCaseExtended
         $frontChan = $this->getChannelById($channels,$channel->getId());
         if($frontChan){
             $members = $frontChan["ext_members"];
-            error_log(json_encode($members));
             foreach($toAdd as $adding){
                 if(!in_array($adding,$members)){
                     $members[] = $adding;
