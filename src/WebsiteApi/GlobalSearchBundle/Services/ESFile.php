@@ -393,7 +393,7 @@ END;
         //var_dump(json_encode($options));
         foreach ($result["result"] as $file){
             //var_dump($file->getAsArray());
-            $this->list_files["files"][]= $file->getAsArray();
+            $this->list_files["files"][] = $file[0]->getAsArray();
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_files);

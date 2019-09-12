@@ -293,7 +293,7 @@ class AdministrationGroup
         //var_dump(json_encode($options));
         foreach ($result["result"] as $mail){
             //var_dump($file->getAsArray());
-            $this->list_group["group"][]= $mail->getUser()
+            $this->list_group["group"][] = $mail[0]->getUser()
                     ->getId()."";
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));

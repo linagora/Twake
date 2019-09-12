@@ -252,7 +252,7 @@ class AdvancedEvent
             //var_dump(json_encode($options));
             foreach ($result["result"] as $event){
                 //var_dump($file->getAsArray());
-                $this->list_events["events"][]= $event->getAsArray();
+                $this->list_events["events"][] = $event[0]->getAsArray();
             }
 //        var_dump("nombre de resultat : " . count($this->list_files));
        //var_dump($this->list_events);

@@ -917,7 +917,7 @@ class Workspaces implements WorkspacesInterface
 
         foreach ($workspaces["result"] as $workspace) {
             //var_dump($workspace->getMembers()->getAsArray());
-            $result[] = $workspace->getAsArray();
+            $result[] = $workspace[0]->getAsArray();
         }
 
         return $result;
