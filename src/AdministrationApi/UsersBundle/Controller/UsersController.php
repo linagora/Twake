@@ -28,7 +28,23 @@ class UsersController extends Controller
             $scroll_id = $request->request->get("scroll_id");
 
             if (isset($scroll_id) && isset($repository)) {
-                $users = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
+                $result = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
+
+                $users = array("users" => array(), "scroll_id" => $result["scroll_id"]);
+
+                $users_service = $this->get("administration.users");
+
+                foreach ($result["result"] as $value) {
+                    $entity = $users_service->getOneUser($value[0]["id_as_string_for_session_handler"]);
+                    if ($entity) {
+                        $user_tab = $entity->getAsArray();
+                        $user_tab["mail"] = $users_service->getUserMails($entity)[0];
+                        $user_tab["phone_number"] = $entity->getPhone();
+                        $user_tab["creation_date"] = $entity->getCreationDate();
+
+                        $users["users"][] = array($user_tab, $value[1][0]);
+                    }
+                }
             } else {
                 $users = $this->get("administration.users")->getAllUsers();
             }
