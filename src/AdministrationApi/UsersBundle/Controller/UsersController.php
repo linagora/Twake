@@ -29,31 +29,11 @@ class UsersController extends Controller
 
             $options = Array();
 
-            if(isset($group_scroll_id) && isset($repository)){
-                $options["scroll_id"] = $group_scroll_id;
-            }
-
-            if (isset($scroll_id) && isset($repository)) {
-                $result = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
-
-                $users = array("users" => array(), "scroll_id" => $result["scroll_id"]);
-
-                $users_service = $this->get("administration.users");
-
-                foreach ($result["result"] as $entity) {
-                    if ($entity) {
-                        $user_tab = $entity->getAsArray();
-                        $user_tab["mail"] = $users_service->getUserMails($entity)[0];
-                        $user_tab["phone_number"] = $entity->getPhone();
-                        $user_tab["creation_date"] = $entity->getCreationDate();
-
-                        $users["users"][] = array($user_tab, null);
-                    }
-                }
+            if(isset($scroll_id) && isset($repository)){
+                $options["scroll_id"] = $scroll_id;
             }
 
             $users = $this->get("administration.users")->getAllUsers($options);
-
 
             $data["data"] = $users;
 
