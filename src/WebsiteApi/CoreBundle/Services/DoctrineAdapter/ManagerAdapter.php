@@ -409,6 +409,7 @@ class ManagerAdapter
         //error_log(print_r($repository,true));
 
         $res = $res->getContent();
+
         $result = [];
         $scroll_id = "";
 
@@ -431,12 +432,9 @@ class ManagerAdapter
                     } else {
                         $obj = $object_json["_id"];
                     }
-                    if($obj && $object_json["sort"]){
-                        $result[] = Array($obj,$object_json["sort"]);
-                    }
-                    elseif ($obj) {
-                        $result[] = $obj;
-                    }
+
+                    $result[] = Array($obj, isset($object_json["sort"]) ? $object_json["sort"] : 0);
+
                 }
             }
             $result = Array("repository" => $repository, "scroll_id" => $scroll_id, "result" => $result);

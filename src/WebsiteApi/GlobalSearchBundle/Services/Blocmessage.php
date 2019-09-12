@@ -367,6 +367,7 @@ class Blocmessage
             //on traite les données recu d'Elasticsearch
 
             foreach ($result["result"] as $bloc) {
+                $bloc = $bloc[0];
                 $messages = $bloc->getMessages();
                 $compt = 0;
                 foreach ($messages as $message) {

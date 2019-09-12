@@ -184,6 +184,7 @@ class AdministrationUsers
 
         //on traite les données recu d'Elasticsearch
         foreach ($result["result"] as $mail){
+            $mail = $mail[0];
             $user = $mail->getUser();
             $user_tab = $user->getAsArray();
             $user_tab['mail'] = $this->getUserMails($user)[0];

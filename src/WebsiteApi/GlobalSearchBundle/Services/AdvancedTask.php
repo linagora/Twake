@@ -254,7 +254,7 @@ class AdvancedTask
             //var_dump(json_encode($options));
             foreach ($result["result"] as $task){
                 //var_dump($file->getAsArray());
-                $this->list_tasks["tasks"][]= $task->getAsArray();
+                $this->list_tasks["tasks"][] = $task[0]->getAsArray();
             }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_files);
