@@ -53,7 +53,7 @@ class AccessTest extends WebTestCaseExtended
             "_password" => "usertest003"
         ));
         $result = $this->doPost("/ajax/users/current/get", Array());
-        $user3_id = json_decode($result->getContent(),true)["data"]["id"];
+        $user3_id = $result["data"]["id"];
 
 
         $result = $this->doPost("/ajax/users/logout", Array(
@@ -68,7 +68,7 @@ class AccessTest extends WebTestCaseExtended
             "_password" => "usertest002"
         ));
         $result = $this->doPost("/ajax/users/current/get", Array());
-        $user2_id = json_decode($result->getContent(),true)["data"]["id"];
+        $user2_id = $result["data"]["id"];
 
         $result = $this->doPost("/ajax/users/logout", Array(
         ));
@@ -82,7 +82,7 @@ class AccessTest extends WebTestCaseExtended
             "_password" => "usertest001"
         ));
         $result = $this->doPost("/ajax/users/current/get", Array());
-        $user1_id = json_decode($result->getContent(),true)["data"]["id"];
+        $user1_id = $result["data"]["id"];
 
         $user1 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user1_id));
         $user2 = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $user2_id));
@@ -210,7 +210,7 @@ class AccessTest extends WebTestCaseExtended
             "object" => $object,
             "options" => $options
         ));
-        $idtofind_parent = json_decode($result->getContent(),true)["data"]["object"]["id"];
+        $idtofind_parent = $result["data"]["object"]["id"];
 
         $object = Array("workspace_id" => $workspace2_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "detached" => true, "is_directory" => false);
         $options = Array("new" => true, "data" => $data, "version" => true);
@@ -218,7 +218,7 @@ class AccessTest extends WebTestCaseExtended
             "object" => $object,
             "options" => $options
         ));
-        $idtofind_detached = json_decode($result->getContent(),true)["data"]["object"]["id"];
+        $idtofind_detached = $result["data"]["object"]["id"];
 
         $object = Array("parent_id" => $root_id, "workspace_id" => $workspace1_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
         $data = Array("upload_mode" => "chunk", "identifier" => "identifier" ,"nb_chunk" => 1);
@@ -227,7 +227,7 @@ class AccessTest extends WebTestCaseExtended
             "object" => $object,
             "options" => $options
         ));
-        $idtofind_shared = json_decode($result->getContent(),true)["data"]["object"]["id"];
+        $idtofind_shared = $result["data"]["object"]["id"];
         //error_log(print_r($idtofind_shared,true));
 
         //$file = $this->get("app.twake_doctrine")->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $idtofind_shared));
@@ -271,7 +271,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have acces to the workspace 1 , he should");
+        $this->assertEquals(true,$result["data"], "User 1 don't have acces to the workspace 1 , he should");
 
             //test que le user1 n'a pas acces au workspace2
         $data = Array("type" => "Workspace", "object_id" => $workspace2_id);
@@ -280,7 +280,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have acces to the workspace 2 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 1 have acces to the workspace 2 , he shouldn't");
 
 
            //test que le user1 a acces au channel 1 et 2 du workspace 1
@@ -291,7 +291,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have acces to the channel 1 , he should");
+        $this->assertEquals(true,$result["data"], "User 1 don't have acces to the channel 1 , he should");
 
 
         $data = Array("type" => "Channel", "object_id" => $channel2_ID);
@@ -300,7 +300,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have acces to the channel 2 , he should");
+        $this->assertEquals(true,$result["data"], "User 1 don't have acces to the channel 2 , he should");
 
 
             // test que le user1 n'a pas acces au channel 2 et 3 du workspace 2
@@ -310,7 +310,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have acces to the channel 3 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 1 have acces to the channel 3 , he shouldn't");
 
 
         $data = Array("type" => "Channel", "object_id" => $channel4_ID);
@@ -319,7 +319,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have acces to the channel 4 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 1 have acces to the channel 4 , he shouldn't");
 
             //test que le user1 a acces au message 1 par exemple (doit aussi fonctionner avec les messages 2, 3 et 4)
         $data = Array("type" => "Message", "object_id" => $message1_ID);
@@ -328,7 +328,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have acces to the message 1 , he should");
+        $this->assertEquals(true,$result["data"], "User 1 don't have acces to the message 1 , he should");
 
             //test que le user 1 n'a pas acces au message 5 par exemple (doit aussi fonctionner aves les messages 6, 7 et 8)
         $data = Array("type" => "Message", "object_id" => $message5_ID);
@@ -337,7 +337,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have acces to the message 1 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 1 have acces to the message 1 , he shouldn't");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_parent);
 
@@ -345,7 +345,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to filefortest , he should");
+        $this->assertEquals(true,$result["data"], "User 1 don't have access to filefortest , he should");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_detached);
 
@@ -353,14 +353,14 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have access to detached file , he should not");
+        $this->assertEquals(false,$result["data"], "User 1 have access to detached file , he should not");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
 
         $result = $this->doPost("/ajax/core/access", Array(
             "data" => $data
         ));
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have access to shared file , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 1 have access to shared file , he shouldn't");
 
         $token = $publicdata["token"];
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
@@ -370,13 +370,13 @@ class AccessTest extends WebTestCaseExtended
             "options" => Array("token" => $token)
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 1 have access to shared file , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 1 have access to shared file , he shouldn't");
 
         $result = $this->doPost("/ajax/core/workspaceaccess", Array(
             "workspace_id" => $workspace1_id,
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 have access to workspace 1 with special function , he shouldn't");
+        $this->assertEquals(true,$result["data"], "User 1 have access to workspace 1 with special function , he shouldn't");
 
         $data = Array("type" => "Calendar", "object_id" => $id_calendar);
 
@@ -384,7 +384,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 1 don't have access to calendar , he should");
+        $this->assertEquals(true,$result["data"], "User 1 don't have access to calendar , he should");
 
 //// =================================================================================================================================================
 //// =================================================================================================================================================
@@ -401,7 +401,7 @@ class AccessTest extends WebTestCaseExtended
         ));
 
         $result = $this->doPost("/ajax/users/current/get", Array());
-        $user2_id = json_decode($result->getContent(),true)["data"]["id"];
+        $user2_id = $result["data"]["id"];
 
 
         //test que le user2 a acces au workspace2
@@ -411,7 +411,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have acces to the workspace 2 , he should");
+        $this->assertEquals(true,$result["data"], "User 2 don't have acces to the workspace 2 , he should");
 
         //test que le user2 n'a pas acces au workspace1
         $data = Array("type" => "Workspace", "object_id" => $workspace1_id);
@@ -420,7 +420,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have acces to the workspace 1 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 2 have acces to the workspace 1 , he shouldn't");
 
 
         // test que le user2 a acces au channel 3 et 4 du workspace 2
@@ -432,7 +432,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have acces to the channel 3 , he should");
+        $this->assertEquals(true,$result["data"], "User 2 don't have acces to the channel 3 , he should");
 
 
         $data = Array("type" => "Channel", "object_id" => $channel4_ID);
@@ -441,7 +441,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have acces to the channel 4 , he should");
+        $this->assertEquals(true,$result["data"], "User 2 don't have acces to the channel 4 , he should");
 
 
         // test que le user2 n'a pas acces au channel 1 et 2 du workspace 1
@@ -451,7 +451,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have acces to the channel 1 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 2 have acces to the channel 1 , he shouldn't");
 
 
         $data = Array("type" => "Channel", "object_id" => $channel2_ID);
@@ -460,7 +460,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have acces to the channel 2 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 2 have acces to the channel 2 , he shouldn't");
 
         //test que le user2 a acces au message 5 par exemple (doit aussi fonctionner avec les messages 6, 7 et 8)
         $data = Array("type" => "Message", "object_id" => $message5_ID);
@@ -469,7 +469,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have acces to the message 5 , he should");
+        $this->assertEquals(true,$result["data"], "User 2 don't have acces to the message 5 , he should");
 
         //test que le user 2 n'a pas acces au message 1 par exemple (doit aussi fonctionner aves les messages 1, 2 et 3)
         $data = Array("type" => "Message", "object_id" => $message1_ID);
@@ -478,7 +478,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have acces to the message 1 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 2 have acces to the message 1 , he shouldn't");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_parent);
 
@@ -486,7 +486,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have access to filefortest , he should not");
+        $this->assertEquals(false,$result["data"], "User 2 have access to filefortest , he should not");
 
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_detached);
@@ -495,7 +495,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 2 don't have access to detached file , he should");
+        $this->assertEquals(true,$result["data"], "User 2 don't have access to detached file , he should");
 
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
@@ -504,7 +504,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have access to shared file , he should not ");
+        $this->assertEquals(false,$result["data"], "User 2 have access to shared file , he should not ");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
 
@@ -513,7 +513,7 @@ class AccessTest extends WebTestCaseExtended
             "options" => Array("token" => $token)
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User  have access to shared file with token , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User  have access to shared file with token , he shouldn't");
 
         $data = Array("type" => "Calendar", "object_id" => $id_calendar);
 
@@ -521,7 +521,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 2 have access to calendar , he should not");
+        $this->assertEquals(false,$result["data"], "User 2 have access to calendar , he should not");
 
 //// =================================================================================================================================================
 //// =================================================================================================================================================
@@ -538,7 +538,7 @@ class AccessTest extends WebTestCaseExtended
         ));
 
         $result = $this->doPost("/ajax/users/current/get", Array());
-        $user3_id = json_decode($result->getContent(),true)["data"]["id"];
+        $user3_id = $result["data"]["id"];
 
         //test que le user1 a acces au workspace1
         $data = Array("type" => "Workspace", "object_id" => $workspace1_id);
@@ -547,7 +547,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have acces to the workspace 1 , he should");
+        $this->assertEquals(true,$result["data"], "User 3 don't have acces to the workspace 1 , he should");
 
         //test que le user1 n'a pas acces au workspace2
         $data = Array("type" => "Workspace", "object_id" => $workspace2_id);
@@ -556,7 +556,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the workspace 2 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 3 have acces to the workspace 2 , he shouldn't");
 
 
         //test que le user1 a acces au channel 1 et 2 du workspace 1
@@ -567,7 +567,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have acces to the channel 1 , he should");
+        $this->assertEquals(true,$result["data"], "User 3 don't have acces to the channel 1 , he should");
 
 
         $data = Array("type" => "Channel", "object_id" => $channel2_ID);
@@ -576,7 +576,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the channel 2 , he should not");
+        $this->assertEquals(false,$result["data"], "User 3 have acces to the channel 2 , he should not");
 
 
         // test que le user1 n'a pas acces au channel 2 et 3 du workspace 2
@@ -586,7 +586,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the channel 3 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 3 have acces to the channel 3 , he shouldn't");
 
 
         $data = Array("type" => "Channel", "object_id" => $channel4_ID);
@@ -595,7 +595,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the channel 4 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 3 have acces to the channel 4 , he shouldn't");
 
         //test que le user1 a acces au message 1 par exemple (doit aussi fonctionner avec les messages 2, 3 et 4)
         $data = Array("type" => "Message", "object_id" => $message1_ID);
@@ -604,7 +604,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have acces to the message 1 , he should");
+        $this->assertEquals(true,$result["data"], "User 3 don't have acces to the message 1 , he should");
 
         $data = Array("type" => "Message", "object_id" => $message3_ID);
 
@@ -612,7 +612,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the message 3 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 3 have acces to the message 3 , he shouldn't");
 
         $data = Array("type" => "Message", "object_id" => $message5_ID);
 
@@ -620,7 +620,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have acces to the message 5 , he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 3 have acces to the message 5 , he shouldn't");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_parent);
 
@@ -628,7 +628,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have access to filefortest , he should");
+        $this->assertEquals(true,$result["data"], "User 3 don't have access to filefortest , he should");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_detached);
 
@@ -636,7 +636,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have access to detached file , he should not");
+        $this->assertEquals(false,$result["data"], "User 3 have access to detached file , he should not");
 
         $token = $publicdata["token"];
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
@@ -646,7 +646,7 @@ class AccessTest extends WebTestCaseExtended
             "options" => Array("token" => $token)
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have access to shared file , he should");
+        $this->assertEquals(true,$result["data"], "User 3 don't have access to shared file , he should");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
 
@@ -655,7 +655,7 @@ class AccessTest extends WebTestCaseExtended
             "options" => Array("token" => "wrongtokenfortest")
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have access to shared file with wrong token , he should not");
+        $this->assertEquals(false,$result["data"], "User 3 have access to shared file with wrong token , he should not");
 
         $result = $this->doPost("/ajax/drive/publicaccess", Array(
             "file_id" => $idtofind_shared,
@@ -679,7 +679,7 @@ class AccessTest extends WebTestCaseExtended
             "options" => Array("token" => $token)
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 dont' have access to shared file with channel , he should");
+        $this->assertEquals(true,$result["data"], "User 3 dont' have access to shared file with channel , he should");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
         //error_log(print_r($publicdata,true));
@@ -689,7 +689,7 @@ class AccessTest extends WebTestCaseExtended
             "options" => Array("token" => "badtokenfortest")
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have access to shared file with channel and a wrong token, he shouldn't");
+        $this->assertEquals(false,$result["data"], "User 3 have access to shared file with channel and a wrong token, he shouldn't");
 
         $data = Array("type" => "Calendar", "object_id" => $id_calendar);
 
@@ -697,7 +697,7 @@ class AccessTest extends WebTestCaseExtended
             "data" => $data
         ));
 
-        $this->assertEquals(true,json_decode($result->getContent(),true)["data"], "User 3 don't have access to calendar , he should");
+        $this->assertEquals(true,$result["data"], "User 3 don't have access to calendar , he should");
 
         $result = $this->doPost("/ajax/drive/privateaccess", Array(
             "file_id" => $idtofind_shared,
@@ -716,7 +716,7 @@ class AccessTest extends WebTestCaseExtended
             "options" => Array("token" => "")
         ));
 
-        $this->assertEquals(false,json_decode($result->getContent(),true)["data"], "User 3 have access to shared file with empty token, he should not");
+        $this->assertEquals(false,$result["data"], "User 3 have access to shared file with empty token, he should not");
 
 
 //// =================================================================================================================================================

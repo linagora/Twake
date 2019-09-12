@@ -64,6 +64,23 @@ class ExterneUserTest extends WebTestCaseExtended
         $this->assertEquals(true,$this->verifyIfUserIsInChannel($u2,$w1,$c1,true),"User can be remove from channel as wexterne");
     }
 
+    public function testRemoveAutoAddFromPrivateChannel(){
+        list($g1,$w1,$c1,$u1) = $this->getStuff();
+        $c1->setPrivate(true);
+        $this->getDoctrine()->persist($c1);
+        $this->getDoctrine()->flush();
+        $u2 = $this->newUserByName("usertest002");
+        $this->login($u1->getUsernameCanonical());
+        $result = $this->doPost("/ajax/workspace/members/addlist",Array("list"=>$u2->getUsernameCanonical()."|1","workspaceId"=>$w1->getId()));
+        $this->assertEquals(false,$this->verifyIfUserIsInChannel($u2,$w1,$c1,true),"Wexterne is auto add in private channel");
+        $this->updateChavinteFromFront($w1,$c1,$u1,[$u2->getId()],[]);
+        $this->assertEquals(true,$this->verifyIfUserIsInChannel($u2,$w1,$c1,true),"Wexterne can't be add in private channel");
+        $this->updateChavinteFromFront($w1,$c1,$u1,[],[$u2->getId()]);
+        $this->assertEquals(false,$this->verifyIfUserIsInChannel($u2,$w1,$c1,true),"Wexterne can't be remove from private channel");
+    }
+
+
+
     private function getStuff(){
         $u1 = $this->newUserByName("usertest001");
         $g1 = $this->newGroup($u1->getId(),"grptest1");
