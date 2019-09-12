@@ -351,6 +351,9 @@ class Workspace extends SearchableObject
      */
     public function getTotalActivity()
     {
+        if ($this->member_count < 1) {
+            $this->member_count = 1;
+        }
         $date_interval = (date("U") - $this->date_added->getTimestamp()) / (60 * 60 * 24) + 1;
         $val = intval($this->total_activity) / ($date_interval / 2);
         $by_user = $val / $this->member_count;

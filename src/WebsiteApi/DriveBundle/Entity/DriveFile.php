@@ -221,7 +221,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
         $this->workspace_id = $workspace_id;
         $this->setParentId($parent_id);
         $this->isdirectory = $isdirectory;
-
+        $this->setContentKeywords(Array());
         $this->setName("");
         $this->setDescription("");
         $this->setSize(0);

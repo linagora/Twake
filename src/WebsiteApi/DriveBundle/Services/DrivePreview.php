@@ -176,7 +176,7 @@ class DrivePreview
 | .                                 #:00d2f4aa-605b-11e9-b23e-0242ac120005 anything else
 /x
 END;
-
+            error_log(print_r($words,true));
             foreach ($words as $value){
                 $value = preg_replace($regex, '$1', $value);
                 $value = strtolower($value);
@@ -232,6 +232,8 @@ END;
             $entity->setContentKeywords($keywords_score);
 
         }catch(\Exception $e){
+//            error_log(print_r($e->getTraceAsString(),true));
+//            error_log(print_r($e->getMessage(),true));
         }
 
     }

@@ -468,7 +468,7 @@ class Resumable
     {
         //$tmpChunkDir = $this->tempFolder . DIRECTORY_SEPARATOR . $identifier;
         $tmpChunkDir = $this->tempFolder;
-        error_log($tmpChunkDir);
+        //error_log($tmpChunkDir);
         if (!file_exists($tmpChunkDir)) {
             mkdir($tmpChunkDir);
         }

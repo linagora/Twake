@@ -444,7 +444,7 @@ class Adapter_AWS_DriveFileSystem extends DriveFileSystem
                         }
 
                         @unlink($previewpath . ".png");
-                        error_log("PREVIEW GENERATED !");
+                        //error_log("PREVIEW GENERATED !");
 
                     } else {
                         $res = false;
