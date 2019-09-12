@@ -27,6 +27,12 @@ class UsersController extends Controller
 
             $scroll_id = $request->request->get("scroll_id");
 
+            $options = Array();
+
+            if(isset($group_scroll_id) && isset($repository)){
+                $options["scroll_id"] = $group_scroll_id;
+            }
+
             if (isset($scroll_id) && isset($repository)) {
                 $result = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
 
@@ -44,9 +50,10 @@ class UsersController extends Controller
                         $users["users"][] = array($user_tab, null);
                     }
                 }
-            } else {
-                $users = $this->get("administration.users")->getAllUsers();
             }
+
+            $users = $this->get("administration.users")->getAllUsers($options);
+
 
             $data["data"] = $users;
 

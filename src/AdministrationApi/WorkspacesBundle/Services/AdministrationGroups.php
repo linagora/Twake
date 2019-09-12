@@ -15,21 +15,24 @@ class AdministrationGroups
         $this->em = $em;
     }
 
-    public function getAllGroups() {
+    public function getAllGroups($options) {
 
-        $options = Array(
-            "repository" => "TwakeWorkspacesBundle:Group",
-            "index" => "group",
-            "size" => 10,
-            "query" => Array(
-                "match_all" => (object)[]
-            ),
-            "sort" => Array(
-                "creation_date" => Array(
-                    "order" => "desc"
+        if(isset($options) && $options != Array()) {
+
+            $options = Array(
+                "repository" => "TwakeWorkspacesBundle:Group",
+                "index" => "group",
+                "size" => 10,
+                "query" => Array(
+                    "match_all" => (object)[]
+                ),
+                "sort" => Array(
+                    "creation_date" => Array(
+                        "order" => "desc"
+                    )
                 )
-            )
-        );
+            );
+        }
 
         //var_dump(json_encode($options,JSON_PRETTY_PRINT));
 

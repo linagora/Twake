@@ -16,21 +16,24 @@ class AdministrationUsers
         $this->em = $em;
     }
 
-    public function getAllUsers() {
+    public function getAllUsers($options) {
 
-        $options = Array(
-            "repository" => "TwakeUsersBundle:User",
-            "index" => "users",
-            "size" => 10,
-            "query" => Array(
-                "match_all" => (object)[]
-            ),
-            "sort" => Array(
-                "creation_date" => Array(
-                    "order" => "desc"
+        if(isset($options) && $options != Array()) {
+
+            $options = Array(
+                "repository" => "TwakeUsersBundle:User",
+                "index" => "users",
+                "size" => 10,
+                "query" => Array(
+                    "match_all" => (object)[]
+                ),
+                "sort" => Array(
+                    "creation_date" => Array(
+                        "order" => "desc"
+                    )
                 )
-            )
-        );
+            );
+        }
 
         // search in ES
         $result = $this->em->es_search($options);

@@ -62,13 +62,13 @@ class WorkspacesController extends Controller
             $scroll_id = $request->request->get("scroll_id");
             $repository = "TwakeWorkspacesBundle:Group";
 
-            if(isset($scroll_id) && isset($repository)){
-                $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
-            }
-            else{
+            $options = Array();
 
-                $globalresult = $this->get('administration.workspaces')->getAllWorkspace();
+            if(isset($scroll_id) && isset($repository)){
+                $options["scroll_id"] = $scroll_id;
             }
+
+            $globalresult = $this->get('administration.workspaces')->getAllWorkspace($options);
 
             $data = Array("data" => $globalresult);
         } else {

@@ -122,7 +122,7 @@ class AdministrationWorkspaces
         return $this->list_workspace ?: null;
     }
 
-    public function getAllWorkspace()
+    public function getAllWorkspace($options)
     {
 
 //        $group = new Group("group_for_workspace_1");
@@ -133,20 +133,21 @@ class AdministrationWorkspaces
 //        $wp->setGroup($group);
 //        $this->em->persist($wp);
 //        $this->em->flush();
-
-        $options = Array(
-            "repository" => "TwakeWorkspacesBundle:Workspace",
-            "index" => "workspace",
-            "size" => 10,
-            "query" => Array(
-                "match_all" => (object)[]
-            ),
-            "sort" => Array(
-                "creation_date" => Array(
-                    "order" => "desc"
+        if(isset($options) && $options != Array()) {
+            $options = Array(
+                "repository" => "TwakeWorkspacesBundle:Workspace",
+                "index" => "workspace",
+                "size" => 10,
+                "query" => Array(
+                    "match_all" => (object)[]
+                ),
+                "sort" => Array(
+                    "creation_date" => Array(
+                        "order" => "desc"
+                    )
                 )
-            )
-        );
+            );
+        }
 
         //var_dump(json_encode($options,JSON_PRETTY_PRINT));
 

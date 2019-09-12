@@ -38,12 +38,13 @@ class GroupsController extends Controller
             $scroll_id = $request->request->get("scroll_id");
             $repository = "TwakeWorkspacesBundle:Group";
 
+            $options = Array();
+
             if(isset($scroll_id) && isset($repository)){
-                $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+                $options["scroll_id"] = $scroll_id;
             }
-            else{
-                $globalresult = $this->get('administration.groups')->getAllGroups();
-            }
+
+            $globalresult = $this->get('administration.groups')->getAllGroups($options);
 
             $data["data"] = $globalresult;
 
@@ -108,6 +109,7 @@ class GroupsController extends Controller
         if ($validate_token) {
 
             $group_scroll_id = $request->request->get("group_scroll_id");
+
             $repository = "TwakeWorkspacesBundle:Group";
 
             $search_string = $request->request->get("search");
@@ -115,15 +117,15 @@ class GroupsController extends Controller
             $data['data']['group'] = array();
             $data['data']['workspaces'] = array();
 
-            if (isset($group_scroll_id) && isset($repository)) {
-                $globalresult = $this->get('globalsearch.pagination')->getnextelement($group_scroll_id, $repository);
+            $options = Array(
+                "name" => $search_string
+            );
+
+            if(isset($group_scroll_id) && isset($repository)){
+                $options["scroll_id"] = $group_scroll_id;
             }
-            else{
-                $options = Array(
-                    "name" => $search_string
-                );
-                $globalresult = $this->get('administration.groups')->getGroupbyName($options);
-            }
+
+            $globalresult = $this->get('administration.groups')->getGroupbyName($options);
 
             $group_service = $this->get("administration.groups");
 

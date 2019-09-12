@@ -55,23 +55,23 @@ class GlobalSearchController extends Controller
 //        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAAAezFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAB7UWeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAAAe2FnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtxZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
 //
 
-        if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+//        if(isset($scroll_id) && isset($repository)){
+//            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+//        }
+
+        $current_user = $this->getUser();
+        //$words = $identifier = $request->request->get("words");
+        $group_id = $request->request->get("group_id");
+        $workspace_id = $request->request->get("workspace_id");
+        //$current_user_id = $current_user->getId();
+        if (!(isset($current_user))) {
+            $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
+        } else {
+            $current_user_id = $current_user->getId();
         }
-        else{
-            $current_user = $this->getUser();
-            //$words = $identifier = $request->request->get("words");
-            $group_id = $request->request->get("group_id");
-            $workspace_id = $request->request->get("workspace_id");
-            //$current_user_id = $current_user->getId();
-            if (!(isset($current_user))) {
-                $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
-            } else {
-                $current_user_id = $current_user->getId();
-            }
-            $words = Array("test");
-            $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id, $words, $group_id, $workspace_id);
-        }
+        $words = Array("test");
+        $globalresult = $this->get('globalsearch.quicksearch')->QuickSearch($current_user_id, $words, $group_id, $workspace_id);
+
 
         $this->get("administration.counter")->incrementCounter("total_quicksearch", 1);
 
@@ -130,15 +130,16 @@ class GlobalSearchController extends Controller
         //$scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAABgNFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYDBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAGA4WeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAABgPFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYEBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
         $repository = "TwakeGlobalSearchBundle:Bloc";
 
-        if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
-        }
-        else {
-            $options = $request->request->get("options");
-            $workspaces = $request->request->get("workspace_id");
 
-            $current_user = $this->getUser();
-            $current_user_id = $current_user->getId();
+        $options = $request->request->get("options");
+        $workspaces = $request->request->get("workspace_id");
+
+        if(isset($scroll_id) && isset($repository)){
+            $options["scroll_id"] = $scroll_id;
+        }
+
+        $current_user = $this->getUser();
+        $current_user_id = $current_user->getId();
 
 //            $options = Array(
 //                "name" => "jack",
@@ -160,8 +161,8 @@ class GlobalSearchController extends Controller
 //                $current_user_id = $current_user->getId();
 //            }
 //            $workspaces = Array("52a05d64-c356-11e9-8117-0242ac1d0005");
-            $globalresult = $this->get('globalsearch.advancedfile')->AdvancedFile($current_user_id, $options, $workspaces);
-        }
+        $globalresult = $this->get('globalsearch.advancedfile')->AdvancedFile($current_user_id, $options, $workspaces);
+
         $data = Array("data" => $globalresult);
         //return new Response("Hello !");
         return new JsonResponse($data);
@@ -174,36 +175,37 @@ class GlobalSearchController extends Controller
         //$scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAABgNFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYDBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAGA4WeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAABgPFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYEBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
         $repository = "TwakeTasksBundle:Task";
 
+
+        $options = $request->request->get("options");
+        $workspaces = $request->request->get("workspace_id");
+
         if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+            $options["scroll_id"] = $scroll_id;
         }
-        else {
-            $options = $request->request->get("options");
-            $workspaces = $request->request->get("workspace_id");
 
-//            $current_user = $this->getUser();
+        $current_user = $this->getUser();
+        $current_user_id = $current_user->getId();
+
+//        $options = Array(
+//            "title" => "final",
+//            "description" => "description",
+//            "date_to" => "2019-09-30",
+//            "date_from" => "2019-08-20",
+//            "date_modified_before" => "2019-09-30",
+//            "date_modified_after" => "2019-08-20",
+//            "owner" => "3aa48caa-ad60-11e9-8cdf-0242ac1d0005",
+////                "tags" => Array("4f3b9286-cef7-11e9-9732-0242ac1d0005"),
+//            "participants" => Array("3aa48caa-ad60-11e9-8cdf-0242ac1d0005")
+//
+//        );
+//        if (!(isset($current_user))) {
+//            $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
+//        } else {
 //            $current_user_id = $current_user->getId();
+//        }
+//        $workspaces = Array("52a05d64-c356-11e9-8117-0242ac1d0005");
+        $globalresult = $this->get('globalsearch.advancedtask')->AdvancedTask($current_user_id, $options, $workspaces);
 
-            $options = Array(
-                "title" => "final",
-                "description" => "description",
-                "date_to" => "2019-09-30",
-                "date_from" => "2019-08-20",
-                "date_modified_before" => "2019-09-30",
-                "date_modified_after" => "2019-08-20",
-                "owner" => "3aa48caa-ad60-11e9-8cdf-0242ac1d0005",
-//                "tags" => Array("4f3b9286-cef7-11e9-9732-0242ac1d0005"),
-                "participants" => Array("3aa48caa-ad60-11e9-8cdf-0242ac1d0005")
-
-            );
-            if (!(isset($current_user))) {
-                $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
-            } else {
-                $current_user_id = $current_user->getId();
-            }
-            $workspaces = Array("52a05d64-c356-11e9-8117-0242ac1d0005");
-            $globalresult = $this->get('globalsearch.advancedtask')->AdvancedTask($current_user_id, $options, $workspaces);
-        }
         $data = Array("data" => $globalresult);
         //return new Response("Hello !");
         return new JsonResponse($data);
@@ -216,36 +218,36 @@ class GlobalSearchController extends Controller
         //$scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAABgNFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYDBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAGA4WeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAABgPFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYEBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
         $repository = "TwakeCalendarBundle:Event";
 
+        $options = $request->request->get("options");
+        $workspaces = $request->request->get("workspace_id");
+
         if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+            $options["scroll_id"] = $scroll_id;
         }
-        else {
-            $options = $request->request->get("options");
-            $workspaces = $request->request->get("workspace_id");
 
-//            $current_user = $this->getUser();
-//            $current_user_id = $current_user->getId();
+        $current_user = $this->getUser();
+        $current_user_id = $current_user->getId();
 
-            $options = Array(
-                "title" => "final",
-                "description" => "description",
-                "date_to" => "2019-09-30",
-                "date_from" => "2019-08-20",
-                "date_modified_before" => "2019-09-30",
-                "date_modified_after" => "2019-08-20",
-//                "owner" => "3aa48caa-ad60-11e9-8cdf-0242ac1d0005",
-//                "tags" => Array("4f3b9286-cef7-11e9-9732-0242ac1d0005"),
-                "participants" => Array("3aa48caa-ad60-11e9-8cdf-0242ac1d0005", "benoit")
+//            $options = Array(
+//                "title" => "final",
+//                "description" => "description",
+//                "date_to" => "2019-09-30",
+//                "date_from" => "2019-08-20",
+//                "date_modified_before" => "2019-09-30",
+//                "date_modified_after" => "2019-08-20",
+////                "owner" => "3aa48caa-ad60-11e9-8cdf-0242ac1d0005",
+////                "tags" => Array("4f3b9286-cef7-11e9-9732-0242ac1d0005"),
+//                "participants" => Array("3aa48caa-ad60-11e9-8cdf-0242ac1d0005", "benoit")
+//
+//            );
+//            if (!(isset($current_user))) {
+//                $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
+//            } else {
+//                $current_user_id = $current_user->getId();
+//            }
+//            $workspaces = Array("52a05d64-c356-11e9-8117-0242ac1d0005");
+        $globalresult = $this->get('globalsearch.advancedevent')->AdvancedEvent($current_user_id, $options, $workspaces);
 
-            );
-            if (!(isset($current_user))) {
-                $current_user_id = "3aa48caa-ad60-11e9-8cdf-0242ac1d0005";
-            } else {
-                $current_user_id = $current_user->getId();
-            }
-            $workspaces = Array("52a05d64-c356-11e9-8117-0242ac1d0005");
-            $globalresult = $this->get('globalsearch.advancedevent')->AdvancedEvent($current_user_id, $options, $workspaces);
-        }
         $data = Array("data" => $globalresult);
         //return new Response("Hello !");
         return new JsonResponse($data);
