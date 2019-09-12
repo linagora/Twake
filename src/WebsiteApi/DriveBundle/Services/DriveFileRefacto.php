@@ -196,24 +196,29 @@ class DriveFileRefacto
             return false;
         }
 
+        $application = isset($options["application_id"]) ? $options["application_id"] : false;
+
         $did_create = false;
         $fileordirectory = null;
         if (isset($object["id"]) && $object["id"]) { // on recoit un identifiant donc c'est un modification
             $fileordirectory = $this->em->getRepository("TwakeDriveBundle:DriveFile")
                 ->findOneBy(Array("id" => $object["id"].""));
-            $fileordirectory->setLastModified();
             if(!$fileordirectory){
                 return false;
             }
+
+            $fileordirectory->setLastModified();
+
         }
         else{ // pas d'identifiant on veut donc créer un fichier
-            if(!isset($object["front_id"]) || !isset($object["workspace_id"])) {
+            if (!isset($object["workspace_id"])) {
                 return false;
             }
             $front_id = $object["front_id"];
             $workspace_id = $object["workspace_id"];
             $fileordirectory = new DriveFile($workspace_id, "defined_later", $object["is_directory"]);
             $fileordirectory->setFrontId($front_id);
+            $fileordirectory->setCreator($current_user);
             $fileordirectory->setPreviewHasBeenGenerated(false);
             $fileordirectory->setHasPreview(false);
             //$fileordirectory->setIsInTrash(false);
@@ -296,7 +301,10 @@ class DriveFileRefacto
             $list = $repo->findBy(Array("workspace_id" => $fileordirectory->getWorkspaceId(), "parent_id" => $fileordirectory->getParentId(), "isintrash" => false));
 
             $present = true;
-            while ($present == true) {
+            $iter = 0;
+            while ($present == true && $iter < 100) {
+                $iter++;
+
                 $second_present = false;
                 foreach ($list as $el) {
                     if ($el->getName() == $fileordirectory->getName() && $el->getId() != $fileordirectory->getId()) {
@@ -311,10 +319,19 @@ class DriveFileRefacto
                     preg_match("/(.*)(\.[a-zA-Z0-9]+)+$/i", $fileordirectory->getName(), $matches);
                     $name = isset($matches[1]) ? $matches[1] : "";
                     $ext = isset($matches[2]) ? $matches[2] : "";
+                    if (!$ext) {
+                        $name = $fileordirectory->getName();
+                        $ext = "";
+                    }
                     preg_match("/-([0-9]+)$/i", $name, $matches);
                     $cur_val = intval(isset($matches[1]) ? $matches[1] : 0);
                     $cur_val_to_replace = isset($matches[0]) ? $matches[0] : "";
-                    $new_name = substr($name, 0, strlen($name) - strlen($cur_val_to_replace)) . "-" . ($cur_val + 1) . $ext;
+
+                    if ($iter >= 100) {
+                        $new_name = substr($name, 0, strlen($name) - strlen($cur_val_to_replace)) . "-" . date("U") . $ext;
+                    } else {
+                        $new_name = substr($name, 0, strlen($name) - strlen($cur_val_to_replace)) . "-" . ($cur_val + 1) . $ext;
+                    }
 
                     $fileordirectory->setName($new_name);
 
@@ -333,6 +350,12 @@ class DriveFileRefacto
             $fileordirectory->setHiddenData($object["hidden_data"]);
         }
 
+        if ($application && isset($object["last_modification_token"])) {
+            $fileordirectory->setLastModificationToken($object["last_modification_token"]);
+        } else {
+            $fileordirectory->setLastModificationToken(date("U") . "-" . md5(random_bytes(20)));
+        }
+
         if (isset($object["application_id"])) {
             $fileordirectory->setApplicationId($object["application_id"]);
             if (isset($object["external_storage"])) {
@@ -344,11 +367,16 @@ class DriveFileRefacto
             $fileordirectory->setUrl($object["url"]);
         }
 
+        if(isset($object["tags"])){
+            $fileordirectory->setTags($object["tags"]);
+        }
+
 
         $fileordirectory->setLastUser($current_user);
 
 
         if(isset($fileordirectory)){
+            $fileordirectory->setEsIndex(false);
             $this->em->persist($fileordirectory);
             $this->em->flush();
         }
@@ -436,7 +464,7 @@ class DriveFileRefacto
             if (strlen($df->getPublicAccessKey()) > 10) {
                 $token = $df->getPublicAccessKey();
             } else {
-                $token = sha1(bin2hex(random_bytes(20)));
+                $token = sha1(bin2hex(random_bytes(40)));
                 $df->setPublicAccessKey($token);
             }
 
@@ -453,7 +481,7 @@ class DriveFileRefacto
             $this->em->persist($df);
             $this->em->flush();
 
-            return $df;
+            return $df->getAsArray();
 
         }
     }
@@ -484,8 +512,11 @@ class DriveFileRefacto
 
         $workspace_id = null;
 
-        while ($directory != null) {
+        $iter = 0;
 
+        while ($directory != null && $iter < 100) {
+
+            $iter++;
 
             if ($directory == "root" || $directory == "trash") {
                 if (!$workspace_id) {
@@ -596,7 +627,9 @@ class DriveFileRefacto
 
         $list = [$child->getAsArray()];
 
-        while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash") {
+        $iter = 0;
+        while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash" && $iter < 100) {
+            $iter++;
             $parent = $repo->findOneBy(Array("id" => $child->getParentId()));
             if ($parent) {
                 $list[] = $parent->getAsArray();
@@ -650,7 +683,7 @@ class DriveFileRefacto
             "user" => $current_user
         );
 
-        if ($did_create == "remove") {
+        if ($did_create === "remove") {
             $hook_name = "remove_file";
         } else if ($did_create) {
             $hook_name = "new_file";
@@ -663,8 +696,20 @@ class DriveFileRefacto
         //Look if this file is in application directory
         $child = $file;
         $repo = $this->em->getRepository("TwakeDriveBundle:DriveFile");
-        while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash") {
-            $parent = $repo->findOneBy(Array("id" => $child->getParentId()));
+        $iter = 0;
+        while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash" && $iter < 100) {
+            $iter++;
+
+            $parent_id = null;
+            if ($child->getIsInTrash()) {
+                $parent_id = $child->getOldParent();
+            }
+
+            if (!$parent_id) {
+                $parent_id = $child->getParentId();
+            }
+
+            $parent = $repo->findOneBy(Array("id" => $parent_id));
             if ($parent) {
 
                 if ($parent->getApplicationId() && $parent->getExternalStorage()) {

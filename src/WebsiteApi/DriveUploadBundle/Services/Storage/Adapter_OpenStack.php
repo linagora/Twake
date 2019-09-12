@@ -96,8 +96,9 @@ class Adapter_OpenStack implements AdapterInterface{
                 ->getObject("drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo)
                 ->download();
 
-            file_put_contents($destination, $stream->getContents());
-            $decodedPath = $this->decode($destination, $param_bag);
+            $tmp_upload = "/tmp/" . date("U") . $uploadState->getWorkspaceId() . $uploadState->getIdentifier();
+            file_put_contents($tmp_upload, $stream->getContents());
+            $decodedPath = $this->decode($tmp_upload, $param_bag);
 
             if ($destination == "stream") {
 
@@ -171,7 +172,7 @@ class Adapter_OpenStack implements AdapterInterface{
 
         $finalpath = $lib->decryptFile($chunkFile, $key, $pathTemp);
         @unlink($chunkFile);
-        return $finalpath;
+        return $pathTemp;
 
     }
 

@@ -53,6 +53,8 @@ class MessageController extends Controller
 
         }
 
+        $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
+
         return new JsonResponse(Array("result" => $object));
 
     }
@@ -101,6 +103,8 @@ class MessageController extends Controller
             "object" => $object
         );
         $this->get("app.websockets")->push("messages/" . $chan_id, $event);
+
+        $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
 
         return new JsonResponse(Array("object" => $object));
 

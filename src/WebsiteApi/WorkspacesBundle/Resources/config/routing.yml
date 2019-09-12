@@ -2,6 +2,10 @@ twake_workspaces_get:
     path:     /get
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:get }
 
+twake_workspaces_get_public_data:
+    path:     /get_public_data
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:getPublicData }
+
 twake_workspaces_get_activities:
     path:     /getActivities
     defaults: { _controller: TwakeWorkspacesBundle:WorkspaceActivities:getActivities }

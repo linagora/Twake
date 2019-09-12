@@ -378,7 +378,7 @@ class User
             return false;
         }
 
-        $token = $this->subscribeMail($mail, $pseudo, $password, $lastName, $firstName, $phone, $language,false, false);
+        $token = $this->subscribeMail($mail, $pseudo, $password, $lastName, $firstName, $phone, $language, false, false);
         $user = $this->verifyMail($mail, $token, "", true);
         if($user==null || $user== false){
             return false;
@@ -395,7 +395,7 @@ class User
         return $user;
     }
 
-    public function subscribeMail($mail, $pseudo, $password, $name, $firstname, $phone, $language,$newsletter=false, $sendEmail = true)
+    public function subscribeMail($mail, $pseudo, $password, $name, $firstname, $phone, $language, $newsletter = false, $sendEmail = true)
     {
 
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);

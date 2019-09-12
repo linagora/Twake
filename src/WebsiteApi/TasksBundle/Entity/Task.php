@@ -6,6 +6,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\CoreBundle\Entity\FrontObject;
+use WebsiteApi\CoreBundle\Entity\SearchableObject;
 
 /**
  * Task
@@ -13,8 +14,9 @@ use WebsiteApi\CoreBundle\Entity\FrontObject;
  * @ORM\Table(name="tasks_task",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "id":"ASC"}, {"id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\TasksBundle\Repository\TaskRepository")
  */
-class Task extends FrontObject
+class Task extends SearchableObject
 {
+    protected $es_type = "task";
 
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
@@ -94,6 +96,11 @@ class Task extends FrontObject
      */
     private $archived;
 
+    /**
+     * @ORM\Column(name="workspace_id", type="twake_timeuuid")
+     */
+    protected $workspace_id;
+
 
     public function __construct($board_id, $list_id, $title)
     {
@@ -102,6 +109,49 @@ class Task extends FrontObject
         $this->setListId($list_id);
         $this->setTaskLastModified();
         $this->setTaskCreatedAt(date("U"));
+    }
+
+    public function getIndexationArray()
+    {
+        return Array(
+            "id" => $this->getId()."",
+            "title" => $this->getTitle(),
+            "description" => $this->getDescription(),
+            "owner" => $this->getOwner(),
+            "tags" => $this->getTags(),
+            'date_from' =>  ($this->getTaskCreatedAt() ? date('Y-m-d',$this->getTaskCreatedAt()) : null),
+            'date_to' => ($this->getTaskCreatedAt() ? date('Y-m-d',$this->getTaskCreatedAt()) : null),
+            "date_last_modified" =>  ($this->getTaskLastModified() ? date('Y-m-d',$this->getTaskLastModified()) : null),
+            "workspace_id" => $this->getWorkspaceId(),
+            "participants" => $this->getParticipants()
+        );
+
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspaceId()
+    {
+        return $this->workspace_id;
+    }
+
+    /**
+     * @param mixed $workspace_id
+     */
+    public function setWorkspaceId($workspace_id)
+    {
+        $this->workspace_id = $workspace_id;
+    }
+
+
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
     }
 
     /**
@@ -363,6 +413,7 @@ class Task extends FrontObject
             "participants" => $this->getParticipants(),
             "notifications" => $this->getNotifications(),
             "tags" => $this->getTags(),
+            "workspace_id" => $this->getWorkspaceId()
         );
     }
 

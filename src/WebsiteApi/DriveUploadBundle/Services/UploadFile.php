@@ -24,12 +24,12 @@ class UploadFile
         return $this->resumable->createObject($workspace_id, $name, $extension, $current_user_id);
     }
 
-    public function upload($request, $response, $current_user)
+    public function upload($request, $response, $current_user_id)
     {
         $request = new SimpleRequest($request);
         $response = new SimpleResponse($response);
         $this->resumable->updateParam($request, $response);
-        $res = $this->resumable->process($current_user);
+        $res = $this->resumable->process($current_user_id);
         if (is_array($res)) {
             return $res;
         }

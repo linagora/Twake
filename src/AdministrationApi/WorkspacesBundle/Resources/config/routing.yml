@@ -8,6 +8,11 @@ administration_api_groups_get_one:
   defaults: { _controller: AdministrationApiWorkspacesBundle:Groups:getOneGroup }
   methods: [POST]
 
+administration_api_workspaces_get_all:
+  path: /getAllWorkspaces
+  defaults: { _controller: AdministrationApiWorkspacesBundle:Workspaces:getAllWorkspaces }
+  methods: [POST]
+
 administration_api_workspaces_get_one:
   path: /getWorkspace
   defaults: { _controller: AdministrationApiWorkspacesBundle:Workspaces:getOneWorkspace }

@@ -450,7 +450,7 @@ class Notifications implements NotificationsInterface
         $data = Array(
             "message" => $message,
             "title" => $title,
-            "data" => $_data,
+            "data" => json_encode($_data),
             "badge" => $badge,
             "device_id" => $deviceId,
             "type" => $type

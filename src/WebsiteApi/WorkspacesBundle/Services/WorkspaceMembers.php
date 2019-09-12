@@ -370,7 +370,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 //Test if other workspace administrators are present
                 $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $member->getLevelId()));
 
-                if ($currentUserId != null && $level->getisAdmin()) {
+                if ($currentUserId != null && $level->getIsAdmin()) {
                     $other_workspace_admins = $workspaceUserRepository->findBy(Array("level_id" => $member->getLevelId()));
                     if (count($other_workspace_admins) <= 1) {
                         header("twake-debug: no other workspace admins");

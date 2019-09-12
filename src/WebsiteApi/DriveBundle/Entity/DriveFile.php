@@ -99,6 +99,17 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     private $last_version_id;
 
     /**
+     * @ORM\Column(name="last_modification_token", type="text")
+     */
+    private $last_modification_token;
+
+    /**
+     * @ORM\Column(name="creator", type="text")
+     */
+    private $creator;
+
+
+    /**
      * @ORM\Column(type="twake_bigint")
      */
     private $size;
@@ -128,6 +139,8 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
      * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
      */
     private $copyof;
+
+
 
     /**
      * @ORM\Column(type="twake_boolean")
@@ -194,6 +207,12 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
      */
     private $last_user;
 
+    /**
+     * @ORM\Column(name="tags", type="twake_text", nullable=true)
+     * @Encrypted
+     */
+    private $tags;
+
     protected $es_type = "drive_file";
 
     public function __construct($workspace_id, $parent_id, $isdirectory = false)
@@ -202,7 +221,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
         $this->workspace_id = $workspace_id;
         $this->setParentId($parent_id);
         $this->isdirectory = $isdirectory;
-
+        $this->setContentKeywords(Array());
         $this->setName("");
         $this->setDescription("");
         $this->setSize(0);
@@ -231,6 +250,14 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
         $this->acces_info = json_encode($acces_info);
     }
 
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
+    }
+
 
     public function getIndexationArray()
     {
@@ -238,11 +265,50 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "id" => $this->getId()."",
             "type" => $this->getExtension(),
             "name"=> $this->getName(),
-            "creation_date" => ($this->getLastModified() ? $this->getLastModified()->format('Y-m-d') : null),
+            "creation_date" => ($this->getAdded() ? $this->getAdded()->format('Y-m-d') : null),
+            "creator" => $this->getCreator(),
+            "size" => $this->getSize(),
+            "date_last_modified" => ($this->getLastModified() ? $this->getLastModified()->format('Y-m-d') : null),
             "workspace_id" => $this->getWorkspaceId(),
-            "keywords" => $this->getContentKeywords()
+            "keywords" => $this->getContentKeywords(),
+            "tags" => $this->getTags()
         );
     }
+
+    /**
+     * @return mixed
+     */
+    public function getTags()
+    {
+        return json_decode($this->tags);
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setTags($tags)
+    {
+        $this->tags = json_encode($tags);
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getCreator()
+    {
+        return $this->creator;
+    }
+
+    /**
+     * @param mixed $creator
+     */
+    public function setCreator($creator)
+    {
+        $this->creator = $creator;
+    }
+
+
 
     public function setId($id)
     {
@@ -489,6 +555,22 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     /**
      * @return mixed
      */
+    public function getLastModificationToken()
+    {
+        return $this->last_modification_token;
+    }
+
+    /**
+     * @param mixed $last_modification_token
+     */
+    public function setLastModificationToken($last_modification_token)
+    {
+        $this->last_modification_token = $last_modification_token;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getLastVersionId()
     {
         return $this->last_version_id;
@@ -667,16 +749,17 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "workspace_id" => $this->getWorkspaceId(),
             'parent_id' => $this->getParentId(),
             "detached" => $this->getDetachedFile(),
-            "trash" => $this->getIsInTrash(),
+            "trash" => $this->getIsInTrash() ? true : false,
 
             'is_directory' => $this->getIsDirectory(),
-
+            "creator" => $this->getCreator(),
             'name' => $this->getName(),
             'description' => $this->getDescription(),
             "last_user" => $this->getLastUser(),
             'size' => $this->getSize()?$this->getSize():0,
             'added' => $this->getAdded() ? $this->getAdded()->getTimestamp() : null,
             'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
+            "last_modification_token" => $this->getLastModificationToken(),
             "extension" => $this->getExtension(),
             "cache" => $this->getCache(),
             "preview_link" => $this->getPreviewLink(),
@@ -692,7 +775,8 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "acces_info" => $this->getAccesInfo(),
             "application_id" => $this->getApplicationId(),
             "external_storage" => $this->getExternalStorage(),
-            "hidden_data" => $this->getHiddenData()
+            "hidden_data" => $this->getHiddenData(),
+            "tags" => $this->getTags()
 
         );
     }
