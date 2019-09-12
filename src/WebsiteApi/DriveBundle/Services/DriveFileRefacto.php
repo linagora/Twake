@@ -699,7 +699,17 @@ class DriveFileRefacto
         $iter = 0;
         while ($child && $child->getParentId() && $child->getParentId() != "root" && $child->getParentId() != "trash" && $iter < 100) {
             $iter++;
-            $parent = $repo->findOneBy(Array("id" => $child->getParentId()));
+
+            $parent_id = null;
+            if ($child->getIsInTrash()) {
+                $parent_id = $child->getOldParent();
+            }
+
+            if (!$parent_id) {
+                $parent_id = $child->getParentId();
+            }
+
+            $parent = $repo->findOneBy(Array("id" => $parent_id));
             if ($parent) {
 
                 if ($parent->getApplicationId() && $parent->getExternalStorage()) {
