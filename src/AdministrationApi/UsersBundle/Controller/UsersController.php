@@ -34,15 +34,14 @@ class UsersController extends Controller
 
                 $users_service = $this->get("administration.users");
 
-                foreach ($result["result"] as $value) {
-                    $entity = $users_service->getOneUser($value[0]["id_as_string_for_session_handler"]);
+                foreach ($result["result"] as $entity) {
                     if ($entity) {
                         $user_tab = $entity->getAsArray();
                         $user_tab["mail"] = $users_service->getUserMails($entity)[0];
                         $user_tab["phone_number"] = $entity->getPhone();
                         $user_tab["creation_date"] = $entity->getCreationDate();
 
-                        $users["users"][] = array($user_tab, $value[1][0]);
+                        $users["users"][] = array($user_tab, null);
                     }
                 }
             } else {
