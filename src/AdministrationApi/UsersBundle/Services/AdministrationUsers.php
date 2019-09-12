@@ -18,22 +18,20 @@ class AdministrationUsers
 
     public function getAllUsers($options) {
 
-        if(isset($options) && $options != Array()) {
-
-            $options = Array(
-                "repository" => "TwakeUsersBundle:User",
-                "index" => "users",
-                "size" => 10,
-                "query" => Array(
-                    "match_all" => (object)[]
-                ),
-                "sort" => Array(
-                    "creation_date" => Array(
-                        "order" => "desc"
-                    )
+        $options = Array(
+            "repository" => "TwakeUsersBundle:User",
+            "index" => "users",
+            "scroll_id" => $options["scroll_id"],
+            "size" => 10,
+            "query" => Array(
+                "match_all" => (object)[]
+            ),
+            "sort" => Array(
+                "creation_date" => Array(
+                    "order" => "desc"
                 )
-            );
-        }
+            )
+        );
 
         // search in ES
         $result = $this->em->es_search($options);

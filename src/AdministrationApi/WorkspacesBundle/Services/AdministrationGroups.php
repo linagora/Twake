@@ -17,22 +17,20 @@ class AdministrationGroups
 
     public function getAllGroups($options) {
 
-        if(isset($options) && $options != Array()) {
-
-            $options = Array(
-                "repository" => "TwakeWorkspacesBundle:Group",
-                "index" => "group",
-                "size" => 10,
-                "query" => Array(
-                    "match_all" => (object)[]
-                ),
-                "sort" => Array(
-                    "creation_date" => Array(
-                        "order" => "desc"
-                    )
+        $options = Array(
+            "repository" => "TwakeWorkspacesBundle:Group",
+            "index" => "group",
+            "size" => 10,
+            "scroll_id" => $options["scroll_id"],
+            "query" => Array(
+                "match_all" => (object)[]
+            ),
+            "sort" => Array(
+                "creation_date" => Array(
+                    "order" => "desc"
                 )
-            );
-        }
+            )
+        );
 
         //var_dump(json_encode($options,JSON_PRETTY_PRINT));
 

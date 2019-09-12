@@ -133,21 +133,20 @@ class AdministrationWorkspaces
 //        $wp->setGroup($group);
 //        $this->em->persist($wp);
 //        $this->em->flush();
-        if(isset($options) && $options != Array()) {
-            $options = Array(
-                "repository" => "TwakeWorkspacesBundle:Workspace",
-                "index" => "workspace",
-                "size" => 10,
-                "query" => Array(
-                    "match_all" => (object)[]
-                ),
-                "sort" => Array(
-                    "creation_date" => Array(
-                        "order" => "desc"
-                    )
+        $options = Array(
+            "repository" => "TwakeWorkspacesBundle:Workspace",
+            "index" => "workspace",
+            "scroll_id" => $options["scroll_id"],
+            "size" => 10,
+            "query" => Array(
+                "match_all" => (object)[]
+            ),
+            "sort" => Array(
+                "creation_date" => Array(
+                    "order" => "desc"
                 )
-            );
-        }
+            )
+        );
 
         //var_dump(json_encode($options,JSON_PRETTY_PRINT));
 
