@@ -36,7 +36,7 @@ class DrivePreview
     /* Do not generate preview for files larger than 50Mo */
     public function generatePreview($filename, $file, $path, $ext, $entity = null)
     {
-
+        error_log("gen preview");
         try {
 
             if (!is_dir($path)) {

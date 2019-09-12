@@ -182,7 +182,6 @@ class ManagerAdapter
         }
         if (method_exists($object, "getId") && (!$object->getId() || (is_object($object->getId()) && method_exists($object->getId(), "isNull") && $object->getId()->isNull()))) {
             $object->setId($this->generator->generate($this->getEntityManager(), $object));
-            //error_log($object->getId());
         }
 
 
@@ -196,11 +195,7 @@ class ManagerAdapter
                 }
             }
             else{
-                //error_log("DEBUT");
                 if (!$object->getEsIndexed() || $object->changesInIndexationArray()) {
-                    error_log("PASSAGE");
-                    //error_log(print_r($this->es_updates,true));
-
                     $this->es_updates[$object->getId().""] = $object;
                     unset($this->es_removes[$object->getId().""]);
                     $object->setEsIndexed(true);

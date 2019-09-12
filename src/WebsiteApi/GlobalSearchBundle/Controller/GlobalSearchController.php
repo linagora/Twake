@@ -87,15 +87,15 @@ class GlobalSearchController extends Controller
         //$scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAABgNFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYDBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAGA4WeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAABgPFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYEBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
         $repository = "TwakeGlobalSearchBundle:Bloc";
 
-        if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
-        }
-        else {
-            $options = $request->request->get("options");
-            $channels = $request->request->get("channel_id");
+        $options = $request->request->get("options");
+        $channels = $request->request->get("channel_id");
 
-            $current_user = $this->getUser();
-            $current_user_id = $current_user->getId();
+        if(isset($scroll_id) && isset($repository)){
+            $options["scroll_id"] = $scroll_id;
+        }
+
+        $current_user = $this->getUser();
+        $current_user_id = $current_user->getId();
 
 //            $options = Array(
 //                "words" => Array("romar"),
@@ -115,8 +115,7 @@ class GlobalSearchController extends Controller
 //                $current_user_id = $current_user->getId();
 //            }
 //            $channels = Array("db2c2b9e-c357-11e9-933e-0242ac1d0005");
-            $globalresult = $this->get('globalsearch.advancedbloc')->AdvancedBloc($current_user_id, $options, $channels);
-        }
+        $globalresult = $this->get('globalsearch.advancedbloc')->AdvancedBloc($current_user_id, $options, $channels);
 
         $this->get("administration.counter")->incrementCounter("total_search", 1);
 
