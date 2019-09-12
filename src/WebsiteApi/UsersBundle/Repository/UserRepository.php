@@ -20,8 +20,6 @@ class UserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\Rep
     public function loadUserByUsername($username)
     {
 
-        error_log("** FIND USER " . $username);
-
         $q = $this->createQueryBuilder('u')
             ->select('u')
             ->where('u.usernamecanonical = :username')

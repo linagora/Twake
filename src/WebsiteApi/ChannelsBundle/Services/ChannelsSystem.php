@@ -11,11 +11,11 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 class ChannelsSystem extends ChannelSystemAbstract
 {
 
-    function __construct($entity_manager, $messages_service, $websockets_service, $applicationsApi)
+    function __construct($entity_manager, $messages_service, $websockets_service, $applicationsApi,$workspaceMembers)
     {
         $this->messages_service = $messages_service;
         $this->websockets_service = $websockets_service;
-        parent::__construct($entity_manager, $applicationsApi);
+        parent::__construct($entity_manager, $applicationsApi,$workspaceMembers);
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -27,8 +27,7 @@ class ChannelsSystem extends ChannelSystemAbstract
 
     public function hasAccess($data, $current_user = null)
     {
-        $group = $data["group_id"];
-        $workspace = $data["workspace_id"];
+        //$workspace = $data["workspace_id"];
         //TODO
         return true;
     }
@@ -53,10 +52,9 @@ class ChannelsSystem extends ChannelSystemAbstract
                 $tmp["_user_last_message_increment"] = $res->getLastMessagesIncrement();
                 $tmp["_user_last_access"] = $res->getLastAccess() ? $res->getLastAccess()->getTimestamp() : null;
                 $tmp["_user_muted"] = $res->getMuted();
-
                 $result[] = $tmp;
             }
-        }
+        };
 
         return $result;
     }
@@ -113,7 +111,7 @@ class ChannelsSystem extends ChannelSystemAbstract
             }
         }
 
-        //It should not be a direct channel !
+        //It should not be a direct channel
         if ($channel->getDirect()) {
             return false;
         }

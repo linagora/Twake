@@ -76,25 +76,26 @@ doctrine:
         auto_mapping: true
 
 # Doctrine Configuration
-#doctrine:
-#    dbal:
-#        driver:   pdo_mysql
-#        host:     "%database_host%"
-#        port:     "%database_port%"
-#        dbname:   "%database_name%"
-#        user:     "%database_user%"
-#        password:     "%database_password%"
-#        charset:  UTF8
-#
-#    orm:
-#        auto_generate_proxy_classes: false #"%kernel.debug%"
-#        naming_strategy: doctrine.orm.naming_strategy.underscore
-#        auto_mapping: true
-#         # We need this the dql property to register the custom doctrine functions :
-#        dql:
-#            string_functions:
-#            # Match agains should have the path to the MatchAgainst class created in the previous step
-#                MATCH_AGAINST: WebsiteApi\CoreBundle\Extensions\MatchAgainst
+doctrine:
+    dbal:
+        driver:   pdo_mysql
+        host:     "%database_host%"
+        port:     "%database_port%"
+        dbname:   "%database_name%"
+        user:     "%database_user%"
+        password:     "%database_password%"
+        charset:  UTF8
+
+    orm:
+        auto_generate_proxy_classes: false #"%kernel.debug%"
+        naming_strategy: doctrine.orm.naming_strategy.underscore
+        auto_mapping: true
+         # We need this the dql property to register the custom doctrine functions :
+        dql:
+            string_functions:
+            # Match agains should have the path to the MatchAgainst class created in the previous step
+                MATCH_AGAINST: WebsiteApi\CoreBundle\Extensions\MatchAgainst
+
 
 # Swiftmailer Configuration
 swiftmailer:

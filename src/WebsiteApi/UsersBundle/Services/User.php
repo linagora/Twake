@@ -467,7 +467,7 @@ class User
                     ),
                     "Action" => "addforce"
                 );
-                $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345487/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+                //$this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345487/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
             } catch (\Exception $exception) {
                 error_log($exception->getMessage());
             }
@@ -483,7 +483,7 @@ class User
                     ),
                     "Action" => "addforce"
                 );
-                $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345532/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+                //$this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345532/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
             } catch (\Exception $exception) {
                 error_log($exception->getMessage());
             }
@@ -540,60 +540,6 @@ class User
         }
         return false;
     }
-
-    /*
-    public function subscribe($token, $code, $pseudo, $password, $name, $firstname, $phone, $force = false)
-	{
-
-		$pseudo = $this->string_cleaner->simplifyUsername($pseudo);
-
-		//Check pseudo doesn't exists
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
-		if($user != null){
-            error_log("*** HELLO A ***");
-			return false;
-		}
-
-		$verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
-		$ticket = $verificationRepository->findOneBy(Array("token"=>$token));
-		$factory = $this->encoder_factory;
-
-		if($ticket != null) {
-            if ($ticket->verifyCode($code) || $ticket->getVerified() || $force) {
-
-				$mail = $ticket->getMail();
-
-				$user = new \WebsiteApi\UsersBundle\Entity\User();
-                $user->setSalt(bin2hex(random_bytes(40)));
-				$encoder = $factory->getEncoder($user);
-				$user->setPassword($encoder->encodePassword($password, $user->getSalt()));
-				$user->setUsername($pseudo);
-				$user->setEmail($mail);
-                $user->setFirstName($firstname);
-                $user->setLastName($name);
-                $user->setPhone($phone);
-
-                $mailObj = new Mail();
-                $mailObj->setMail($ticket->getMail());
-                $mailObj->setUser($user);
-
-                //$this->twake_mailer->send($mail, "newMember", Array("_language" => $user ? $user->getLanguage() : "en", "username" => $user->getUsername()));
-
-				$this->em->remove($ticket);
-				$this->em->persist($user);
-                $this->em->persist($mailObj);
-				$this->em->flush();
-
-				$this->workspace_members_service->autoAddMemberByNewMail($mail, $user->getId());
-
-				return $user;
-
-			}
-		}
-
-		return false;
-	}*/
 
 	public function checkPassword($userId, $password)
 	{
@@ -745,12 +691,10 @@ class User
 		if($ticket != null && $user!=null) {
 			if($ticket->verifyCode($code)){
                 $userWithMail = $userRepository->findOneBy(Array("emailcanonical" => $ticket->getMail()));
-
                 if ($userWithMail == null || $userWithMail->getId() != $userId) {
                     $mailExists = $mailRepository->findOneBy(Array("mail" => $ticket->getMail()));
 
 					if($mailExists == null) {
-
 						$mail = new Mail();
 						$mail->setMail($ticket->getMail());
 						$mail->setUser($user);

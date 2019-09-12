@@ -23,10 +23,10 @@ interface WorkspaceMembersInterface
 	public function removeAllMember($workspaceId);
 
 	//@addMemberByUsername add an user by username
-	public function addMemberByUsername($workspaceId, $username,$asExterne, $currentUserId = null);
+	public function addMemberByUsername($workspaceId, $username,$asExterne,$autoAddExterne, $currentUserId = null);
 
 	//@addMemberByMail add an user by e-mail
-	public function addMemberByMail($workspaceId, $mail,$asExterne, $currentUserId = null);
+	public function addMemberByMail($workspaceId, $mail,$asExterne,$autoAddExterne, $currentUserId = null);
 
 	//@removeMemberByMail remove an user by e-mail
 	public function removeMemberByMail($workspaceId, $mail, $currentUserId = null);

@@ -68,6 +68,11 @@ class Channel extends SearchableObject
     private $direct = 0;
 
     /**
+     * @ORM\Column(name="auto_mute", type="twake_boolean")
+     */
+    private $auto_mute = 0;
+
+    /**
      * @ORM\Column(name="application", type="twake_boolean")
      */
     private $application = 0;
@@ -600,5 +605,23 @@ class Channel extends SearchableObject
     {
         $this->messages_increment = $messages_increment;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAutoMute()
+    {
+        return $this->auto_mute;
+    }
+
+    /**
+     * @param mixed $auto_mute
+     */
+    public function setAutoMute($auto_mute)
+    {
+        $this->auto_mute = $auto_mute;
+    }
+
+
 
 }
