@@ -36,19 +36,18 @@ class DrivePreview
     /* Do not generate preview for files larger than 50Mo */
     public function generatePreview($filename, $file, $path, $ext, $entity = null)
     {
-        error_log("gen preview");
         try {
 
             if (!is_dir($path)) {
                 mkdir($path, 0777, true);
             }
 
-            if (filesize($file) > 50000000) { //50Mo (protection)
-                return false;
-            }
-
+//            if (filesize($file) > 50000000) { //50Mo (protection)
+//                return false;
+//            }
             $finfo = finfo_open(FILEINFO_MIME_TYPE);
             $filetype = finfo_file($finfo, $file);
+
             if ($filetype === 'image/png' ||
                 $filetype === 'image/gif' ||
                 $filetype === 'image/x-icon' ||
@@ -246,6 +245,7 @@ END;
         $im = new \Imagick();
 
 
+
         if ($isText) {
             $im->readimage($file . "[0]");
             $this->set_keyword($file,$entity);
@@ -256,6 +256,7 @@ END;
         }else{
             $im->readimage($file);
         }
+
 
         $im = $this->autorotate($im);
         $im->setBackgroundColor(new \ImagickPixel('transparent'));
@@ -289,9 +290,9 @@ END;
 
         // thumbnail the image
 
+
         $im->setImageFormat('png');
         $im->writeImage($filepath.'.png');
-
         $im->clear();
         $im->destroy();
 

@@ -47,11 +47,10 @@ class Resumable
     protected $previews;
     protected $parameter_drive_salt;
     protected $file_system;
-    protected $drive_preview_fonc;
 
     const WITHOUT_EXTENSION = true;
 
-    public function __construct($doctrine, $storagemanager, $driverefacto, $drive_previews_tmp_folder, $drive_tmp_folder, $file_system, $parameter_drive_salt, $drive_preview_fonc)
+    public function __construct($doctrine, $storagemanager, $driverefacto, $drive_previews_tmp_folder, $drive_tmp_folder, $file_system, $parameter_drive_salt)
     {
         $this->doctrine = $doctrine;
         $this->storagemanager = $storagemanager;
@@ -62,7 +61,6 @@ class Resumable
         $this->tempFolder = $drive_tmp_folder;
         $this->file_system = $file_system;
         $this->parameter_drive_salt = $parameter_drive_salt;
-        $this->drive_preview_fonc = $drive_preview_fonc;
 
 
         //$this->preProcess();
@@ -230,7 +228,7 @@ class Resumable
 
                 //Preview if only one chunk
                 if ($do_preview) {
-                    $previewDestination = $this->previews . "preview_" . $finalname;
+                    $previewDestination = $this->previews . DIRECTORY_SEPARATOR . "preview_" . $finalname;
                     $this->copy($chunkFile, $previewDestination);
                     $uploadstate->setHasPreview(true);
                     $this->doctrine->persist($uploadstate);
@@ -292,39 +290,9 @@ class Resumable
             $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $current_user, Array("data" => $data, "size" => $totalSize), true);
 
             if ($uploadstate->getHasPreview() && $totalSize < 20000000) {
-//                error_log("passage preview");
-                //error_log(print_r($previewDestination,true));
-
-//                $files = scandir($this->previews);
-//                error_log(print_r($files,true));
-                $this->file_system->getFileSystem()->genPreview($fileordirectory);
-//                try {
-//                    error_log("passage");
-//                    //error_log(print_r(basename($file->getPath()),true));
-////                    error_log(print_r($tmppath,true));
-////                    error_log(print_r(dirname($tmppath),true));
-////                    error_log(print_r($ext,true));
-////                    error_log(print_r($file,true));
-//                    $tmppath = $this->drive_previews_tmp_folder . "/preview_" . $uploadstate->getIdentifier() . ".chunk_1";
-//                    $res = $this->drive_preview_fonc->generatePreview($fileordirectory->getId(), $previewDestination, dirname($tmppath), $fileordirectory->getExtension(), $fileordirectory);
-////                    if ($this->file_exists($path . ".png", null)) {
-////                        rename($path . ".png", $previewPath);
-//
-//                        $file->setPreviewHasBeenGenerated(true);
-//                        $file->setHasPreview(true);
-//                        $this->doctrine->persist($file);
-//                        $this->doctrine->flush();
-//
-//                        $res = true;
-////                    } else {
-////                        error_log("FILE NOT GENERATED !");
-////                        $res = false;
-////                    }
-//                } catch (\Exception $e) {
-//
-//                }
+                $tmppath = $this->previews . "/preview_" . $uploadstate->getIdentifier() . ".chunk_1";
+                $this->storagemanager->getAdapter()->genPreview($fileordirectory,$previewDestination);
             }
-
             return $fileordirectory->getAsArray();
 
         }

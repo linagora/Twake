@@ -42,6 +42,11 @@ class Adapter_AWS implements AdapterInterface{
         $this->aws_s3_client = new S3Client($options);
     }
 
+    public function genPreview(){
+
+
+    }
+
     public function read($destination, $chunkNo, $param_bag, UploadState $uploadState)
     {
 

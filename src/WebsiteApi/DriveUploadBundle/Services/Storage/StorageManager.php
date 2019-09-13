@@ -11,12 +11,15 @@ class StorageManager{
     private $openstack;
     private $root;
     private $adapter;
+    private $doctrine;
 
-    public function __construct($aws, $openstack, $root)
+    public function __construct($aws, $openstack, $root, $preview,$doctrine)
     {
         $this->aws = $aws;
         $this->openstack = $openstack;
         $this->root = $root;
+        $this->preview = $preview;
+        $this->doctrine = $doctrine;
     }
 
     public function BindAdapter(){
@@ -25,7 +28,7 @@ class StorageManager{
             return new Adapter_AWS($this->aws);
         }
         elseif (isset($this->openstack["use"]) && $this->openstack["use"]) {
-            return new Adapter_OpenStack($this->openstack);
+            return new Adapter_OpenStack($this->openstack,$this->preview,$this->doctrine);
         }
 
     }
