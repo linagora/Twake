@@ -120,6 +120,10 @@ class PricingPlan
         return json_decode($this->limitation, 1);
     }
 
+    public function  __toString(){
+	    $r = "id : ".$this->getId().",   ".$this->getLabel();
+	    return $r;
+    }
     public function getAsArray(){
         return Array(
             "id"=> $this->getId(),

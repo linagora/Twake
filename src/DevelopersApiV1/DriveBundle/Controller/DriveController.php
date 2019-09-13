@@ -63,6 +63,39 @@ class DriveController extends Controller
 
     }
 
+    public function removeAction(Request $request)
+    {
+        $capabilities = ["drive_remove"];
+        $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
+        if (is_array($application) && $application["error"]) {
+            return new JsonResponse($application);
+        }
+
+        $options = Array("application_id" => $application->getId());
+        $object = $request->request->get("object", null);
+
+        $res = $this->get("app.drive_refacto")->remove($object, $options, null);
+        if (!$res) {
+            return new JsonResponse(Array("error" => "unknown error or malformed query."));
+        } else {
+
+            $event = Array(
+                "client_id" => "system",
+                "action" => "remove",
+                "object_type" => "",
+                "front_id" => $res["front_id"]
+            );
+            $this->get("app.websockets")->push("drive/" . $res["workspace_id"] . "/" . $res["parent_id"], $event);
+
+        }
+
+        $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
+
+        return new JsonResponse(Array("object" => $res));
+
+
+    }
+
     public function findAction(Request $request)
     {
         $privileges = ["workspace_drive"];

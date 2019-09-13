@@ -20,9 +20,8 @@ class WorkspaceMembers implements WorkspaceMembersInterface
     /* @var WorkspacesActivities $workspacesActivities*/
     var $workspacesActivities;
     var $groupManager;
-    var $channels_system;
 
-    public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner, $pusher, $priceService, $calendar, $workspacesActivities, $groupManager, $channels_system)
+    public function __construct($doctrine, $workspaces_levels_service, $twake_mailer, $string_cleaner, $pusher, $priceService, $calendar, $workspacesActivities, $groupManager)
     {
         $this->doctrine = $doctrine;
         $this->wls = $workspaces_levels_service;
@@ -33,7 +32,6 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         $this->calendar = $calendar;
         $this->workspacesActivities = $workspacesActivities;
         $this->groupManager = $groupManager;
-        $this->channels_system = $channels_system;
     }
 
     public function changeLevel($workspaceId, $userId, $levelId, $currentUserId = null)
@@ -84,7 +82,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         return false;
     }
 
-    public function addMemberByUsername($workspaceId, $username, $asExterne, $currentUserId = null)
+    public function addMemberByUsername($workspaceId, $username, $asExterne,$autoAddExterne, $currentUserId = null)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
@@ -94,7 +92,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
             $user = $userRepository->findOneBy(Array("usernamecanonical" => $username));
             if ($user) {
-                return $this->addMember($workspaceId, $user->getId(), $asExterne);
+                return $this->addMember($workspaceId, $user->getId(), $asExterne,$autoAddExterne);
             }
 
         }
@@ -102,7 +100,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
     }
 
     // return false if error, user if user already have an account, mail if invitation mail sent
-    public function addMemberByMail($workspaceId, $mail, $asExterne, $currentUserId = null)
+    public function addMemberByMail($workspaceId, $mail, $asExterne,$autoAddExterne, $currentUserId = null)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")
@@ -122,7 +120,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
 
             if ($user) {
-                $uOk = $this->addMember($workspaceId, $user->getId(), $asExterne);
+                $uOk = $this->addMember($workspaceId, $user->getId(), $asExterne,$autoAddExterne);
                 if($uOk){
                     return "user";
                 }
@@ -133,7 +131,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             $userMail = $mailsRepository->findOneBy(Array("mail" => $mail));
 
             if ($userMail) {
-                $mOk = $this->addMember($workspaceId, $userMail->getUser(), $asExterne);
+                $mOk = $this->addMember($workspaceId, $userMail->getUser(), $asExterne,$autoAddExterne);
                 if($mOk){
                     return "user";
                 }
@@ -151,6 +149,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 //Mail not in tables
                 $userByMail = new WorkspaceUserByMail($workspace, $mail);
                 $userByMail->setExterne($asExterne);
+                $userByMail->setAutoAddExterne($autoAddExterne);
                 $this->doctrine->persist($userByMail);
                 $this->doctrine->flush();
                 $retour = "mail";
@@ -211,13 +210,13 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         foreach ($invitations as $userByMail) {
             $this->doctrine->remove($userByMail);
             $this->doctrine->flush();
-            $this->addMember($userByMail->getWorkspace()->getId(), $userId, $userByMail->getExterne());
+            $this->addMember($userByMail->getWorkspace()->getId(), $userId, $userByMail->getExterne(),$userByMail->getAutoAddExterne());
         }
 
         return true;
     }
 
-    public function addMember($workspaceId, $userId, $asExterne = false, $levelId = null, $currentUserId = null)
+    public function addMember($workspaceId, $userId, $asExterne = false,$autoAddExterne=false, $levelId = null, $currentUserId = null)
     {
         if ($currentUserId == null || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
             $userRepository = $this->doctrine->getRepository("TwakeUsersBundle:User");
@@ -259,6 +258,8 @@ class WorkspaceMembers implements WorkspaceMembersInterface
             }
             $member = new WorkspaceUser($workspace, $user, $level->getId());
             $member->setExterne($asExterne);
+            $member->setAutoAddExterne($autoAddExterne);
+
 
             $workspace->setMemberCount($workspace->getMemberCount() + 1);
 
@@ -269,13 +270,10 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $groupmember = new GroupUser($workspace->getGroup(), $user);
                 $groupmember->increaseNbWorkspace();
                 $groupmember->setLevel(0);
-                $groupmember->setExterne($asExterne);
             } else {
-                if ($groupmember->getNbWorkspace() == 0) { //Deleted user can still change status, not others
-                    $groupmember->setExterne($asExterne);
-                }
                 $groupmember->increaseNbWorkspace();
             }
+            $groupmember->setExterne(false);
 
             $this->doctrine->persist($workspace);
             $this->doctrine->persist($member);
@@ -321,7 +319,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 //            $this->workspacesActivities->recordActivity($workspace, $user->getId(), "workspace", "workspace.activity.workspace.add_member");
 //            $this->messages->addWorkspaceMember($workspace, $user);
 //            $this->calendar->addWorkspaceMember($workspace, $user);
-            $this->channels_system->addWorkspaceMember($workspace, $user);
+            $this->updateChannelAfterAddWorkspaceMember($workspace, $user);
 
             return true;
         }
@@ -441,7 +439,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
            /* $this->messages->delWorkspaceMember($workspace, $user);
             $this->calendar->delWorkspaceMember($workspace, $user);*/
-            $this->channels_system->delWorkspaceMember($workspace, $user);
+            $this->delWorkspaceMember_temp($workspace, $user);
 
             return true;
         }
@@ -497,6 +495,7 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                         "last_access" => $user->getLastAccess() ? $user->getLastAccess()->getTimestamp() : null,
                         "level" => $user->getLevelId(),
                         "externe" => $user->getExterne(),
+                        "autoAddExterne" => $user->getAutoAddExterne(),
                         "groupLevel" => $this->groupManager->getLevel($groupId,$user->getUser()->getId(),$currentUserId)
                     );
 
@@ -561,4 +560,71 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         return $workspaces;
     }
 
+    public function updateChannelAfterAddWorkspaceMember($workspace, $user)
+    {
+        $workspaceMember = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace"=>$workspace,"user"=>$user));
+        if($workspaceMember){
+            $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(
+                Array("original_workspace_id" => $workspace->getId(), "direct" => false)
+            );
+
+            foreach ($channels as $channel_entity) {
+
+                $isInChannel = false;
+                $mails = $this->doctrine->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user"=>$user));
+                $channelExt = $channel_entity->getExtMembers();
+                foreach($mails as $mail){
+                    if(in_array($mail->getMail(),$channelExt)){
+                        $isInChannel = true;
+                    }
+                }
+                if (!$channel_entity->getPrivate() && (!$workspaceMember->getExterne() || $workspaceMember->getExterne() && $workspaceMember->getAutoAddExterne() || $workspaceMember->getExterne() && (in_array($user->getId(),$channel_entity->getExtMembers()) || $isInChannel ))) {
+                    $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($user->getId()."", $channel_entity);
+                    $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
+                    $this->doctrine->persist($member);
+                    if(!$workspaceMember->getExterne()){
+                        //membre du ws
+                        $channel_entity->setMembers(array_merge($channel_entity->getMembers(), [$user->getId()]));
+                    }else{
+                        // externe
+                        if(array_search($user->getId(),$channelExt)===false){
+                            $channel_entity->setExtMembers(array_merge($channel_entity->getExtMembers(), [$user->getId()]));
+                        }
+                        if(!$workspaceMember->getAutoAddExterne()){
+                            // c'est un chaviter d'espace
+                            $mails = $this->doctrine->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user"=>$user->getId()));
+                            $channelExt = $channel_entity->getExtMembers();
+                            foreach($mails as $mail){
+                                if(($index = array_search($mail->getMail(),$channelExt))!==false){
+                                    array_splice($channelExt,$index,1);
+                                }
+                            }
+                            $channel_entity->setExtMembers($channelExt);
+                        }
+                    }
+                    $this->doctrine->persist($channel_entity);
+                }
+            }
+            $this->doctrine->flush();
+        }
+    }
+
+
+    public function delWorkspaceMember_temp($workspace, $user)
+    {
+        $membersRepo = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember");
+        $channels = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(
+            Array("original_workspace_id" => $workspace->getId(), "direct" => false)
+        );
+
+        foreach ($channels as $channel_entity) {
+            $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $user));
+            if($member){
+                $this->doctrine->remove($member);
+                $channel_entity->setMembers(array_diff($channel_entity->getMembers(), [$user->getId()]));
+            }
+            $this->doctrine->persist($channel_entity);
+        }
+        $this->doctrine->flush();
+    }
 }
