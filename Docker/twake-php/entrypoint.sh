@@ -15,6 +15,7 @@ fi
 
 exec "$@"
 
+chmod -R 777 /var/www
 chmod -R 777 /tmp/
 cron -f &
 docker-php-entrypoint php-fpm
