@@ -67,6 +67,16 @@ class UploadController extends Controller
         return new JsonResponse(Array("data" => Array("object" => $res)));
     }
 
+    public function ZipDownloadAction(Request $request)
+    {
+        //$current_user_id = $this->getUser()->getId();
+        $res = $this->get('driveupload.download')->zipDownload();
+
+        //return new JsonResponse(Array("data" => Array("object" => $res)));
+        return new JsonResponse("hello");
+    }
+
+
     public function PreviewAction(Request $request)
     {
         $response = new Response();
