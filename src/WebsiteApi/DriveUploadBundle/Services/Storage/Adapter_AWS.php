@@ -8,7 +8,7 @@ use WebsiteApi\DriveUploadBundle\Entity\UploadState;
 
 class Adapter_AWS implements AdapterInterface{
 
-    public function __construct($aws_config)
+    public function __construct($aws_config, $preview, $doctrine)
     {
 
         $s3_config = $aws_config["S3"];
@@ -42,8 +42,83 @@ class Adapter_AWS implements AdapterInterface{
         $this->aws_s3_client = new S3Client($options);
     }
 
-    public function genPreview(){
 
+    public function genPreview(DriveFile $file, $tmppath)
+    {
+
+        $res = false;
+        if (!$file->getIsDirectory() && $file->getLastVersion($this->doctrine)) {
+
+            $ext = $file->getExtension();
+
+
+            if ($tmppath) {
+
+                rename($tmppath, $tmppath . ".tw");
+                $tmppath = $tmppath . ".tw";
+
+                try {
+
+                    //Remove old preview
+                    if ($file->getPreviewLink()) {
+                        try {
+                            $this->aws_s3_client->deleteObject([
+                                'Bucket' => $this->aws_bucket_name,
+                                'Key' => "public/uploads/previews/" . $file->getPath() . ".png",
+                            ]);
+                        } catch (S3Exception $e) {
+                            error_log($e->getMessage());
+                        }
+                    }
+
+                    try {
+                        $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext, $file);
+                    } catch (\Exception $e) {
+                        //error_log($e->getMessage());
+                    }
+                    $previewpath = dirname($tmppath) . "/" . basename($file->getPath());
+
+                    if (file_exists($previewpath . ".png")) {
+
+                        try {
+                            // Upload data.
+                            $result = $this->aws_s3_client->putObject([
+                                'Bucket' => $this->aws_bucket_name,
+                                'Key' => "public/uploads/previews/" . $file->getId() . ".png",
+                                'Body' => fopen($previewpath . ".png", "rb"),
+                                'ACL' => 'public-read'
+                            ]);
+
+                            $file->setPreviewLink($result['ObjectURL'] . "");
+                            $file->setPreviewHasBeenGenerated(true);
+                            $file->setHasPreview(true);
+                            $this->doctrine->persist($file);
+                            $this->doctrine->flush();
+                            $res = true;
+
+                        } catch (S3Exception $e) {
+                            $res = false;
+                            $e->getMessage();
+                        }
+
+                        @unlink($previewpath . ".png");
+                        //error_log("PREVIEW GENERATED !");
+
+                    } else {
+                        $res = false;
+                        error_log("FILE NOT GENERATED !");
+                    }
+
+                } catch (\Exception $e) {
+
+                }
+
+                @unlink($tmppath);
+
+            }
+
+        }
+        return $res;
 
     }
 

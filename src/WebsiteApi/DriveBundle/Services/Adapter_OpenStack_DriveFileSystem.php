@@ -437,20 +437,12 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                         }
 
                         try {
-//                            error_log("DEBUT");
-//                            error_log(print_r("name : " . basename($file->getPath()),true));
-//                            error_log(print_r("path : " . $tmppath,true));
-//                            error_log(print_r("dir : " . dirname($tmppath),true));
-//                            error_log(print_r("ext : " . $ext,true));
-//                            error_log(print_r($file,true));
                             $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext, $file);
                         } catch (\Exception $e) {
-                            //error_log($e->getMessage());
+                            error_log($e->getMessage());
                         }
                         $previewpath = dirname($tmppath) . "/" . basename($file->getPath());
-                        error_log(print_r($tmppath,true));
-                        error_log(print_r($previewpath,true));
-                        error_log(print_r(file_exists($previewpath . ".png"),true));
+
                         if ($previewpath && file_exists($previewpath . ".png")) {
 
                             try {
