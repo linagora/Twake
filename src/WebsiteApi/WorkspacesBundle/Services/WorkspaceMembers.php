@@ -573,6 +573,9 @@ class WorkspaceMembers implements WorkspaceMembersInterface
                 $isInChannel = false;
                 $mails = $this->doctrine->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user"=>$user));
                 $channelExt = $channel_entity->getExtMembers();
+                if(!$channelExt){
+                    $channelExt = Array();
+                }
                 foreach($mails as $mail){
                     if(in_array($mail->getMail(),$channelExt)){
                         $isInChannel = true;
@@ -618,10 +621,12 @@ class WorkspaceMembers implements WorkspaceMembersInterface
         );
 
         foreach ($channels as $channel_entity) {
-            $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $user));
+
+            $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId()."", "user_id" => $user->getId()));
             if($member){
                 $this->doctrine->remove($member);
                 $channel_entity->setMembers(array_diff($channel_entity->getMembers(), [$user->getId()]));
+                $channel_entity->setExtMembers(array_diff($channel_entity->getExtMembers(), [$user->getId()]));
             }
             $this->doctrine->persist($channel_entity);
         }
