@@ -6,6 +6,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\CoreBundle\Entity\FrontObject;
+use WebsiteApi\CoreBundle\Entity\SearchableObject;
 
 /**
  * Event
@@ -13,8 +14,11 @@ use WebsiteApi\CoreBundle\Entity\FrontObject;
  * @ORM\Table(name="event",options={"engine":"MyISAM", "scylladb_keys": {{"id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\EventRepository")
  */
-class Event extends FrontObject
+class Event extends SearchableObject
 {
+
+    protected $es_type = "event";
+
 
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
@@ -102,6 +106,11 @@ class Event extends FrontObject
      */
     private $event_last_modified;
 
+    /**
+     * @ORM\Column(name="workspace_id", type="twake_timeuuid")
+     */
+    protected $workspace_id;
+
 
     public function __construct($title, $from, $to)
     {
@@ -109,6 +118,50 @@ class Event extends FrontObject
         $this->setFrom($from);
         $this->setTo($to);
         $this->setEventLastModified();
+    }
+
+    public function getIndexationArray()
+    {
+        return Array(
+            "id" => $this->getId()."",
+            "title" => $this->getTitle(),
+            "description" => $this->getDescription(),
+            "owner" => $this->getOwner(),
+            "tags" => $this->getTags(),
+            'date_from' => ($this->getFrom() ?  date('Y-m-d',$this->getFrom()) : null),
+            'date_to' => ($this->getTo() ? date('Y-m-d',$this->getTo()) : null),
+            "date_last_modified" => ($this->getEventLastModified() ? date('Y-m-d',$this->getEventLastModified()) : null),
+            "workspace_id" => $this->getWorkspaceId(),
+            "participants" => $this->getParticipants()
+
+        );
+
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspaceId()
+    {
+        return $this->workspace_id;
+    }
+
+    /**
+     * @param mixed $workspace_id
+     */
+    public function setWorkspaceId($workspace_id)
+    {
+        $this->workspace_id = $workspace_id;
+    }
+
+
+
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
     }
 
     /**
@@ -393,7 +446,6 @@ class Event extends FrontObject
     {
         $this->event_last_modified = date("U");
     }
-
 
 
     public function getAsArray()

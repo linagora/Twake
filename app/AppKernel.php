@@ -52,12 +52,14 @@ class AppKernel extends Kernel
             new DevelopersApiV1\GeneralBundle\DevelopersApiV1GeneralBundle(),
             new DevelopersApiV1\CalendarBundle\DevelopersApiV1CalendarBundle(),
             new DevelopersApiV1\DriveBundle\DevelopersApiV1DriveBundle(),
+            new DevelopersApiV1\TasksBundle\DevelopersApiV1TasksBundle(),
 
             new AdministrationApi\CoreBundle\AdministrationApiCoreBundle(),
             new AdministrationApi\UsersBundle\AdministrationApiUsersBundle(),
             new AdministrationApi\WorkspacesBundle\AdministrationApiWorkspacesBundle(),
             new AdministrationApi\AppsBundle\AdministrationApiAppsBundle(),
             new AdministrationApi\CounterBundle\AdministrationApiCounterBundle(),
+            new AdministrationApi\GroupBundle\AdministrationApiGroupBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

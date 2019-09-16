@@ -8,6 +8,7 @@ use OpenStack\Common\Transport\Utils as TransportUtils;
 
 use OpenStack\OpenStack;
 
+use WebsiteApi\DriveBundle\Entity\DriveFile;
 use WebsiteApi\DriveBundle\Services\AESCryptFileLib;
 use WebsiteApi\DriveBundle\Services\OpenSSLCryptLib;
 use WebsiteApi\DriveBundle\Services\MCryptAES256Implementation;
@@ -16,11 +17,23 @@ use GuzzleHttp\Psr7\Stream;
 use OpenStack\Identity\v2\Service;
 use WebsiteApi\DriveUploadBundle\Entity\UploadState;
 
-class Adapter_OpenStack implements AdapterInterface{
+class Adapter_OpenStack implements AdapterInterface {
 
     protected $openstack;
+    protected $openstack_buckets;
+    protected $openstack_buckets_prefix;
+    protected $openstack_credentials_key;
+    protected $openstack_credentials_secret;
+    protected $openstack_project_id;
+    protected $openstack_auth_url;
+    protected $openstack_bucket_name;
+    protected $openstack_public_bucket_name;
+    protected $openstack_bucket_region;
+    protected $openstack_region_id;
+    protected $preview;
+    protected $doctrine;
 
-    public function __construct($openstack)
+    public function __construct($openstack,$preview,$doctrine)
     {
 
         $this->openstack_buckets = $openstack["buckets"];
@@ -61,7 +74,94 @@ class Adapter_OpenStack implements AdapterInterface{
             'identityService' => Service::factory($httpClient)
         ]);
 
+        $this->preview = $preview;
+        $this->doctrine = $doctrine;
+
     }
+
+    public function genPreview(Drivefile $file, $tmppath)
+    {
+        $res = false;
+
+        try {
+
+            if (!$file->getIsDirectory() && $file->getLastVersion($this->doctrine)) {
+
+                $ext = $file->getExtension();
+
+                if ($tmppath) {
+                    rename($tmppath, $tmppath . ".tw");
+                    $tmppath = $tmppath . ".tw";
+
+                    try {
+
+                        //Remove old preview
+                        if ($file->hasPreviewLink()) {
+                            try {
+                                $this->openstack->objectStoreV1()
+                                    ->getContainer($this->openstack_public_bucket_name)
+                                    ->getObject("public/uploads/previews/" . $file->getPath() . ".png")
+                                    ->delete();
+                            } catch (\Exception $e) {
+                                //error_log($e->getMessage());
+                            }
+                        }
+
+                        try {
+                            $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext, $file);
+                        } catch (\Exception $e) {
+                            //error_log($e->getMessage());
+                        }
+                        $previewpath = dirname($tmppath) . "/" . basename($file->getPath());
+                        if ($previewpath && file_exists($previewpath . ".png")) {
+
+                            try {
+                                // Upload data.
+                                $options = [
+                                    'name' => "public/uploads/previews/" . $file->getPath() . ".png",
+                                    'stream' => new Stream(fopen($previewpath . ".png", "rb")),
+                                ];
+                                $result = $this->openstack->objectStoreV1()
+                                    ->getContainer($this->openstack_public_bucket_name)
+                                    ->createObject($options);
+
+                                $file->setPreviewLink($result->getPublicUri() . "");
+                                $file->setPreviewHasBeenGenerated(true);
+                                $file->setHasPreview(true);
+                                $this->doctrine->persist($file);
+                                $this->doctrine->flush();
+                                $res = true;
+
+                            } catch (\Exception $e) {
+                                $res = false;
+                                //error_log($e->getMessage());
+                            }
+
+                            @unlink($previewpath);
+                            //error_log("PREVIEW GENERATED !");
+
+                        } else {
+                            $res = false;
+                            error_log("FILE NOT GENERATED !" . $e->getMessage());
+                        }
+
+                    } catch (\Exception $e) {
+                        //error_log($e->getMessage());
+                    }
+
+                    @unlink($tmppath);
+
+                }
+            }
+
+        } catch (\Exception $e) {
+            //error_log($e->getMessage());
+            $res = false;
+        }
+        return $res;
+
+    }
+
 
     public function write($chunkFile, $chunkNo, $param_bag, UploadState $uploadState)
     {
@@ -96,8 +196,9 @@ class Adapter_OpenStack implements AdapterInterface{
                 ->getObject("drive/" . $uploadState->getWorkspaceId() . "/" . $uploadState->getIdentifier() . "/" . $chunkNo)
                 ->download();
 
-            file_put_contents($destination, $stream->getContents());
-            $decodedPath = $this->decode($destination, $param_bag);
+            $tmp_upload = "/tmp/" . date("U") . $uploadState->getWorkspaceId() . $uploadState->getIdentifier();
+            file_put_contents($tmp_upload, $stream->getContents());
+            $decodedPath = $this->decode($tmp_upload, $param_bag);
 
             if ($destination == "stream") {
 
@@ -171,7 +272,7 @@ class Adapter_OpenStack implements AdapterInterface{
 
         $finalpath = $lib->decryptFile($chunkFile, $key, $pathTemp);
         @unlink($chunkFile);
-        return $finalpath;
+        return $pathTemp;
 
     }
 

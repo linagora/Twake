@@ -19,64 +19,97 @@ class Users
 {
 
     private $em;
+    private $list_users = Array("users" => Array(), "scroll_id" => "");
+
 
     public function __construct($em)
     {
         $this->em = $em;
     }
 
-    public function search($words, $options = Array())
+    public function search($options = Array())
     {
+        //var_dump("passage");
+        $name = $options["name"];
+        //var_dump($name);
 
-        if (!$words || !is_array($words)) {
-            return [];
+        $should = Array();
+
+        if(isset($name)){
+            $should[] = Array(
+                "bool" => Array(
+                    "filter" => Array(
+                        "regexp" => Array(
+                            "firstname" => ".*".$name.".*"
+                        )
+                    )
+                )
+            );
+
+            $should[] = Array(
+                "bool" => Array(
+                    "filter" => Array(
+                        "regexp" => Array(
+                            "lastname" => ".*".$name.".*"
+                        )
+                    )
+                )
+            );
+
+            $should[] = Array(
+                "bool" => Array(
+                    "filter" => Array(
+                        "regexp" => Array(
+                            "username" => ".*".$name.".*"
+                        )
+                    )
+                )
+            );
         }
 
-        $language_preference = isset($options["language_preference"]) ? $options["language_preference"] : false;
-
-        $terms = Array();
-
-        foreach ($words as $word){
-            $terms[] = Array("prefix" => Array("firstname" => strtolower($word)));
-            $terms[] = Array("prefix" => Array("lastname" => strtolower($word)));
-            $terms[] = Array("prefix" => Array("username" => strtolower($word)));
-        }
 
         $options = Array(
             "repository" => "TwakeUsersBundle:User",
             "index" => "users",
-            "fallback_keys" => Array(
-                "username" => $word,
-                "lastname" => $word,
-                "firstname" => $word,
-            ),
+            "size" => 10,
             "query" => Array(
                 "bool" => Array(
-                    "should" => $terms,
-                    "minimum_should_match" => 1,
-                    "filter" => Array(
-                        "term" => Array(
-                            "banned" => false
+                    "must" => Array(
+                        "bool" => Array(
+                            "should" => $should,
+                            "minimum_should_match" => 1
                         )
                     )
+                )
+            ),
+            "sort" => Array(
+                "creation_date" => Array(
+                    "order" => "desc"
                 )
             )
         );
 
+
         //var_dump(json_encode($options));
 
-        /*if ($language_preference) {
-            $options["query"]["bool"]["should"][] = Array("match" => Array("language" => $language_preference));
-        }*/
+        // search in ES
+        $result = $this->em->es_search($options);
 
-        $users = $this->em->es_search($options);
+        array_slice($result["result"], 0, 5);
 
-        $result = [];
-        foreach ($users["result"] as $user) {
-            $result[] = $user->getAsArray();
+        $scroll_id = $result["scroll_id"];
+
+        //on traite les données recu d'Elasticsearch
+        //var_dump(json_encode($options));
+        foreach ($result["result"] as $user){
+            //var_dump($file->getAsArray());
+            $this->list_users["users"][]= Array($user[0]->getAsArray(),$user[1][0]);;
         }
+//        var_dump("nombre de resultat : " . count($this->list_files));
+//        var_dump($this->list_files);
+        $this->list_users["scroll_id"] = $scroll_id;
 
-        return $result;
+       return $this->list_users ?: null;
     }
 
     public function getById($id, $entity = false)

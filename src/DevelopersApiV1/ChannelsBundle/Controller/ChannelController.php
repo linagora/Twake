@@ -35,6 +35,8 @@ class ChannelController extends Controller
             }
         }
 
+        $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
+
         return new JsonResponse(Array("object" => $object));
 
     }
@@ -69,6 +71,8 @@ class ChannelController extends Controller
                 $res[] = $object;
             }
         }
+
+        $this->get("administration.counter")->incrementCounter("total_api_messages_operation", 1);
 
         return new JsonResponse(Array("data" => $res));
     }

@@ -49,6 +49,7 @@ class GroupUser
     /**
      * @ORM\Column(name="is_externe", type="twake_boolean")
      */
+    // don't use it <3
     private $externe;
 
     /**

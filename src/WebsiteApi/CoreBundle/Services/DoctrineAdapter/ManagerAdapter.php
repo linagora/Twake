@@ -37,7 +37,7 @@ class ManagerAdapter
         $this->es_removes = Array();
         $this->generator = null;
 
-        if (!$this->es_server && !defined("ELASTICSEARCH_INSTALL_MESSAGE_SHOWED")) {
+        if (!$this->es_server && !defined("ELASTICSEARCH_INSTALL_MESSAGE_SHOWED") && php_sapi_name() === 'cli') {
             define("ELASTICSEARCH_INSTALL_MESSAGE_SHOWED", true);
             error_log("INFO: Installation configured without elastic search");
         }
@@ -182,7 +182,6 @@ class ManagerAdapter
         }
         if (method_exists($object, "getId") && (!$object->getId() || (is_object($object->getId()) && method_exists($object->getId(), "isNull") && $object->getId()->isNull()))) {
             $object->setId($this->generator->generate($this->getEntityManager(), $object));
-            //error_log($object->getId());
         }
 
 
@@ -190,15 +189,15 @@ class ManagerAdapter
             //This is a searchable object
             if (method_exists($object,"getLock()") ){
                 if($object->getLock() == true) {
-                    $this->es_updates[$object->getId() . ""] = $object;
+                    $this->es_updates[$object->getId().""] = $object;
                     unset($this->es_removes[$object->getId() . ""]);
                     $object->setEsIndexed(true);
                 }
             }
             else{
                 if (!$object->getEsIndexed() || $object->changesInIndexationArray()) {
-                    $this->es_updates[$object->getId() . ""] = $object;
-                    unset($this->es_removes[$object->getId() . ""]);
+                    $this->es_updates[$object->getId().""] = $object;
+                    unset($this->es_removes[$object->getId().""]);
                     $object->setEsIndexed(true);
                 }
             }
@@ -236,6 +235,9 @@ class ManagerAdapter
     //update for important keywords from title or extension of a file only in ES to not repeat info in scyllaDB
 
     public function update_ES_keyword($keywords,$word){
+//        error_log(print_r($keywords,true));
+//        error_log(print_r($word,true));
+
         $keywords[] = Array(
             "keyword" => $word,
             "score" => 1.1
@@ -253,6 +255,9 @@ class ManagerAdapter
     public function es_put($entity, $index, $server = "twake")
     {
 
+        //error_log("PASSAGE DANS ES PUT");
+//        error_log(print_r($entity->getId()."",true));
+
         if (!$this->es_server) {
             return;
         }
@@ -264,21 +269,17 @@ class ManagerAdapter
                 $data = Array("content" => $data);
             }
         } else {
-
-
-
-
             $id = $entity->getId()."";
             if (method_exists($entity, "getIndexationArray")) {
                 $data = $entity->getIndexationArray();
             }
-
             if (method_exists($entity, "getContentKeywords") && is_array($entity->getContentKeywords())) {
                 $keywords = $entity->getContentKeywords();
-
+                //error_log(print_r($keywords,true));
                 //partie sur la verification du format des mots clés
                 $keywords_verif = Array();
                 foreach ($keywords as $keyword_score){
+                    //error_log(print_r($keyword_score,true));
                     $keys = array_keys($keyword_score);
                     if(count($keys) != 2 || $keys[0] != "keyword" || $keys[1]  != "score" ||
                         gettype($keyword_score["keyword"]) != "string" || gettype($keyword_score["keyword"]) != "string"){
@@ -289,22 +290,22 @@ class ManagerAdapter
                     }
                 }
 
-                $UUIDv4 = '/^[0-9A-F]{8}-[0-9A-F]{4}-[0-9A-F]{4}-[89AB][0-9A-F]{3}-[0-9A-F]{12}$/i';
-                foreach ($data as $field){
-                    if(is_string($field) && !(preg_match($UUIDv4, $field)) && !($this->validateDate($field)) &&$field != "" ) {
-                        $keywords=$this->update_ES_keyword($keywords_verif, $field);
-                    }
-                }
+                $name= $entity->getName();
+                $keywords = $this->update_ES_keyword($keywords_verif,$name);
                 $data["keywords"] = $keywords;
+
             }
         }
 
+        //error_log(print_r($data,true));
         $st = new StringCleaner();
         $data = $st->simplifyInArray($data);
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
 
+
+
         try {
-            $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            $this->circle->put($route, json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         } catch (\Exception $e) {
             error_log("Unable to put on ElasticSearch.");
         }
@@ -340,7 +341,7 @@ class ManagerAdapter
 
         if(isset($options["scroll_id"])){
             $route = "http://" . $this->es_server . "/_search/scroll" ;
-            $res = $this->circle->post($route, json_encode(Array("scroll" => "1m" ,"scroll_id" => $options["scroll_id"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+            $res = $this->circle->post($route, json_encode(Array("scroll" => "5m", "scroll_id" => $options["scroll_id"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
         }
         else {
             if (!$this->es_server) {
@@ -367,7 +368,6 @@ class ManagerAdapter
 
                     return Array("result" => $entities);
                 }
-
                 return [];
             }
             if (isset($options["index"]) && !$type) {
@@ -377,13 +377,17 @@ class ManagerAdapter
 
             $route = "http://" . $this->es_server . "/" . $index . "/_doc/";
             $route .= "_search";
-            $route .= "?scroll=1m"; //on spécifie un temps ou la recherche est active
-            //var_dump($route);
+            $route .= "?scroll=5m"; //on spécifie un temps ou la recherche est active
+
+            if (!isset($options["size"])) {
+                $options["size"] = 10;
+            }
+
             try {
                 if (isset($options["sort"])) {
-                    $res = $this->circle->post($route, json_encode(Array("query" => $options["query"], "sort" => $options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+                    $res = $this->circle->post($route, json_encode(Array("size" => $options["size"], "query" => $options["query"], "sort" => $options["sort"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
                 } else {
-                    $res = $this->circle->post($route, json_encode(Array("query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+                    $res = $this->circle->post($route, json_encode(Array("size" => $options["size"], "query" => $options["query"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
                 }
 
             } catch (\Exception $e) {
@@ -401,21 +405,22 @@ class ManagerAdapter
 
         $res = $res->getContent();
 
-        //var_dump($res);
-
         $result = [];
         $scroll_id = "";
 
+        //var_dump($res);
         if ($res) {
             $res = json_decode($res, 1);
-            if($res["hits"]["total"] > 10 && isset($res["_scroll_id"])){
+            if($res["hits"]["total"] > $options["size"] && isset($res["_scroll_id"])){
                 //on a plus de 10 resultat et un ID il faut paginer
                 $scroll_id = $res["_scroll_id"];
             }
 
             //error_log(print_r($res,true));
+
             if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
                 $res = $res["hits"]["hits"];
+
                 foreach ($res as $object_json) {
                     if ($repository) {
                         $obj = $repository->findOneBy(Array("id" => $object_json["_id"]));
@@ -423,17 +428,12 @@ class ManagerAdapter
                         $obj = $object_json["_id"];
                     }
 
-                    if($obj && $object_json["sort"]){
-                        $result[] = Array($obj,$object_json["sort"]);
-                    }
-                    elseif ($obj) {
-                        $result[] = $obj;
-                    }
+                    $result[] = Array($obj, isset($object_json["sort"]) ? $object_json["sort"] : 0);
+
                 }
             }
             $result = Array("repository" => $repository, "scroll_id" => $scroll_id, "result" => $result);
         }
-
         return $result;
 
     }

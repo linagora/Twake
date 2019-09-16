@@ -8,24 +8,55 @@ class AdministrationGroups
 {
 
     private $em;
+    private $list_group = Array("group" => Array(), "scroll_id" => "");
 
     public function __construct($em)
     {
         $this->em = $em;
     }
 
-    public function getAllGroups($limit, $offset) {
-        $groupsRepository = $this->em->getRepository("TwakeWorkspacesBundle:Group");
+    public function getAllGroups($options) {
 
-        $groupsEntity = $groupsRepository->findBy(Array(),Array(),$limit, $offset);
+        $options = Array(
+            "repository" => "TwakeWorkspacesBundle:Group",
+            "index" => "group",
+            "size" => 10,
+            "scroll_id" => $options["scroll_id"],
+            "query" => Array(
+                "match_all" => (object)[]
+            ),
+            "sort" => Array(
+                "creation_date" => Array(
+                    "order" => "desc"
+                )
+            )
+        );
 
-        $groups = Array();
+        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
 
-        foreach($groupsEntity as $group) {
-            $groups[] = $group->getAsArray();
+        // search in ES
+        $result = $this->em->es_search($options);
+
+
+        array_slice($result["result"], 0, 5);
+
+        $scroll_id = $result["scroll_id"];
+
+        //on traite les données recu d'Elasticsearch
+        //var_dump(json_encode($options));
+        foreach ($result["result"] as $group){
+            //var_dump($file->getAsArray());
+            $group_tab = $group[0]->getAsArray();
+            $group_tab["nb_workspaces"] = count($group[0]->getWorkspaces());
+            $group_tab["nb_members"] = count($this->getGroupMembers($group[0]));
+            $group_tab["creation_data"] = $group[0]->getOnCreationData();
+            $this->list_group["group"][]= Array($group_tab,$group[1][0]);
         }
+        //var_dump("nombre de resultat : " . count($this->list_files));
+        //var_dump($this->list_group);
+        $this->list_group["scroll_id"] = $scroll_id;
 
-        return $groups;
+        return $this->list_group ?: null;
     }
 
     public function getOneGroup($group_id) {
@@ -93,4 +124,61 @@ class AdministrationGroups
         return $apps;
     }
 
+    public function getGroupbyName($options)
+    {
+
+        if (isset($options["name"])) {
+            $name = $options["name"];
+
+            $options = Array(
+                "repository" => "TwakeWorkspacesBundle:Group",
+                "index" => "group",
+                "size" => 10,
+                "query" => Array(
+                    "bool" => Array(
+                        "should" => Array(
+                            "bool" => Array(
+                                "filter" => Array(
+                                    "regexp" => Array(
+                                        "name" => ".*".strtolower($name).".*"
+                                    )
+                                )
+                            )
+                        )
+                    )
+                ),
+                "sort" => Array(
+                    "creation_date" => Array(
+                        "order" => "desc"
+                    )
+                )
+            );
+        }
+        // search in ES
+        $result = $this->em->es_search($options);
+
+        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
+
+        array_slice($result["result"], 0, 5);
+
+        $scroll_id = $result["scroll_id"];
+
+        //on traite les données recu d'Elasticsearch
+        //var_dump(json_encode($options));
+        foreach ($result["result"] as $group){
+            //var_dump($file->getAsArray());
+            $group_tab = $group[0]->getAsArray();
+            $group_tab["nb_workspaces"] = count($group[0]->getWorkspaces());
+            $group_tab["nb_members"] = count($this->getGroupMembers($group[0]));
+            $group_tab["creation_data"] = $group[0]->getOnCreationData();
+            $this->list_group["group"][] = Array($group_tab, $group[1][0]);
+        }
+//        var_dump("nombre de resultat : " . count($this->list_files));
+//        var_dump($this->list_group);
+        $this->list_group["scroll_id"] = $scroll_id;
+
+        return $this->list_group ?: null;
+    }
+
 }
+

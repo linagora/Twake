@@ -30,7 +30,7 @@ class UsersSubscribeController extends Controller
         $language = $request->request->get("language", "");
         $newsletter = $request->request->get("newsletter", "");
 
-        $res = $this->get("app.user")->subscribeMail($email, $username, $password, $name, $firstname, $phone, $language,$newsletter);
+        $res = $this->get("app.user")->subscribeMail($email, $username, $password, $name, $firstname, $phone, $language, $newsletter);
 
 		if ($res) {
 
@@ -71,6 +71,7 @@ class UsersSubscribeController extends Controller
             $device = $request->request->get("device", false);
             if ($device && isset($device["type"]) && isset($device["value"])) {
                 $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], isset($device["version"]) ? $device["version"] : null);
+                $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
             }
 
             $this->get("administration.counter")->incrementCounter("total_users", 1);

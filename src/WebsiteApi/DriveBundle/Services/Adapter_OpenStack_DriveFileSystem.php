@@ -406,7 +406,6 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 
     public function genPreview(DriveFile $file)
     {
-
         $res = false;
 
         try {
@@ -419,9 +418,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                 if (!$tmppath || !file_exists($tmppath)) {
                     $tmppath = $this->decode($file->getPath(), $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());
                 }
-
                 if ($tmppath) {
-
                     rename($tmppath, $tmppath . ".tw");
                     $tmppath = $tmppath . ".tw";
 
@@ -442,7 +439,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                         try {
                             $this->preview->generatePreview(basename($file->getPath()), $tmppath, dirname($tmppath), $ext, $file);
                         } catch (\Exception $e) {
-                            //error_log($e->getMessage());
+                            error_log($e->getMessage());
                         }
                         $previewpath = dirname($tmppath) . "/" . basename($file->getPath());
 
@@ -471,7 +468,7 @@ class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
                             }
 
                             @unlink($previewpath);
-                            error_log("PREVIEW GENERATED !");
+                            //error_log("PREVIEW GENERATED !");
 
                         } else {
                             $res = false;

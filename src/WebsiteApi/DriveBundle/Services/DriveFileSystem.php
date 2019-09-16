@@ -1902,8 +1902,8 @@ class DriveFileSystem
     }
 
 
-    //Used to show content of a drive folder since now other group can see others content
-    public function isWorkspaceAllowed($workspaceId, $directoryId)
+        //Used to show content of a drive folder since now other group can see others content
+        public function isWorkspaceAllowed($workspaceId, $directoryId)
     {
         if ($directoryId == null) {
             return true;

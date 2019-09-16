@@ -14,19 +14,13 @@ class UserLoginTest extends WebTestCaseExtended
     public function testLoginCorrect()
 
     {
-
-        $this->removeUserByName("usertest001");
         $user = $this->newUserByName("usertest001");
 
 
-        $result = $this->doPost("/ajax/users/login", Array(
-            "_username" => "usertest001",
-            "_password" => "usertest001"
-        ));
-
+        $this->login("usertest001");
         $result = $this->doPost("/ajax/users/current/get", Array());
 
-        $name = json_decode($result->getContent(), true)["data"]["username"];
+        $name = $result["data"]["username"];
         $this->assertEquals("usertest001", $name);
 
 
@@ -34,10 +28,7 @@ class UserLoginTest extends WebTestCaseExtended
 
     public function testLoginIncorrect()
     {
-        $this->removeUserByName("usertest001");
         $user = $this->newUserByName("usertest001");
-
-
         $result = $this->doPost("/ajax/users/login", Array(
             "_username" => "wrong email",
 
@@ -45,16 +36,14 @@ class UserLoginTest extends WebTestCaseExtended
 
         $result = $this->doPost("/ajax/users/current/get", Array());
 
-        $this->assertEquals("disconnected", json_decode($result->getContent(), true)["errors"]["0"]);
-        $this->assertEquals(Array(), json_decode($result->getContent(), true)["data"]);
+        $this->assertEquals("disconnected", $result["errors"]["0"]);
+        $this->assertEquals(Array(), $result["data"]);
 
     }
 
     public function testEmailCorrect()
     {
-        $this->removeUserByName("usertest001");
         $user = $this->newUserByName("usertest001");
-
 
         $result = $this->doPost("/ajax/users/login", Array(
             "_username" => "usertest001@twake_phpunit.fr",
@@ -63,13 +52,12 @@ class UserLoginTest extends WebTestCaseExtended
 
 
         $result = $this->doPost("/ajax/users/current/get", Array());
-        $email = json_decode($result->getContent(), true)["data"]["mails"][0]["email"];
+        $email = $result["data"]["mails"][0]["email"];
         $this->assertEquals("usertest001@twake_phpunit.fr", $email);
     }
 
     public function testPasswordIncorrect()
     {
-        $this->removeUserByName("usertest001");
         $user = $this->newUserByName("usertest001");
 
 
@@ -79,25 +67,23 @@ class UserLoginTest extends WebTestCaseExtended
         ));
 
         $result = $this->doPost("/ajax/users/current/get", Array());
-        $this->assertEquals("disconnected", json_decode($result->getContent(), true)["errors"]["0"]);
-        $this->assertEquals(Array(), json_decode($result->getContent(), true)["data"]);;
+        $this->assertEquals("disconnected", $result["errors"]["0"]);
+        $this->assertEquals(Array(), $result["data"]);;
 
     }
 
     public function testBanuser()
     {
 
-
-        $this->removeUserByName("usertest001");
         $user = $this->newUserByName("usertest001");
 
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
 
         $this->assertEquals(false, $user->getBanned());
 
         $ban = $this->get("app.user")->ban($user->getId());
 
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
 
         $this->assertEquals(true, $user->getBanned());
 
@@ -105,7 +91,7 @@ class UserLoginTest extends WebTestCaseExtended
             "_username" => "usertest001",
             "_password" => "usertest001"
         ));
-        $this->assertEquals("disconnected", json_decode($result->getContent(), true)["data"]["status"]);
+        $this->assertEquals("disconnected", $result["data"]["status"]);
 
 
         //test for unban
@@ -116,24 +102,20 @@ class UserLoginTest extends WebTestCaseExtended
             "_username" => "usertest001",
             "_password" => "usertest001"
         ));
-        $this->assertEquals("connected", json_decode($result->getContent(), true)["data"]["status"]);
+        $this->assertEquals("connected", $result["data"]["status"]);
 
     }
 
     public function testPassword()
     {
-
-
-        $this->removeUserByName("usertest001");
         $user = $this->newUserByName("usertest001");
 
-
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
 
         $checkPass = $this->get("app.user")->checkPassword($user->getId(), "usertest001");
 
 
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
         $this->assertEquals(true, $checkPass);
 
         $checkPass = $this->get("app.user")->checkPassword($user->getId(), "wrong password");
@@ -147,9 +129,9 @@ class UserLoginTest extends WebTestCaseExtended
 
         $this->removeUserByName("usertest001");
 
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
         $checkPass = $this->get("app.user")->checkPassword("14005200-48b1-11e9-a0b4-0242ac120005", "usertest001");
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
         $this->assertEquals(false, $checkPass);
 
     }
@@ -183,14 +165,14 @@ class UserLoginTest extends WebTestCaseExtended
 
         $result = $this->doPost("/ajax/users/current/get", Array());
 
-        $name = json_decode($result->getContent(), true)["data"]["username"];
+        $name = $result["data"]["username"];
         $this->assertEquals("usertest001", $name);
 
         $result = $this->doPost("/ajax/users/logout", Array());
         $this->clearClient();
 
         $result = $this->doPost("/ajax/users/current/get", Array());
-        $this->assertEquals(Array(), json_decode($result->getContent(), true)["data"]);
+        $this->assertEquals(Array(), $result["data"]);
     }
 
     public function testVerifyMail()
@@ -198,17 +180,17 @@ class UserLoginTest extends WebTestCaseExtended
 
         $this->removeUserByName("usertest001");
         $user = $this->newUserByName("usertest001");
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
 
         $result = $this->doPost("/ajax/users/recover/mail", Array(
             "email" => "usertest001@twake_phpunit.fr"
         ));
-        $token = json_decode($result->getContent(), true)["data"]["token"];
+        $token = $result["data"]["token"];
 
-        $verif = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:VerificationNumberMail")->findOneBy(Array("token" => $token));
+        $verif = $this->getDoctrine()->getRepository("TwakeUsersBundle:VerificationNumberMail")->findOneBy(Array("token" => $token));
         $code = $verif->getcode();
-        $this->get("app.twake_doctrine")->persist($verif);
-        $this->get("app.twake_doctrine")->flush();
+        $this->getDoctrine()->persist($verif);
+        $this->getDoctrine()->flush();
 
 
         $res = $this->doPost("/ajax/users/subscribe/doverifymail", Array(
@@ -218,7 +200,7 @@ class UserLoginTest extends WebTestCaseExtended
         ));
 
 
-        $verificationRepository = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:VerificationNumberMail");
+        $verificationRepository = $this->getDoctrine()->getRepository("TwakeUsersBundle:VerificationNumberMail");
 
         $ticket = $verificationRepository->findOneBy(Array("token" => $token));
         $mail = trim(strtolower("usertest001@twake_phpunit.fr"));
@@ -228,12 +210,12 @@ class UserLoginTest extends WebTestCaseExtended
 
         $this->assertEquals(true, $user->getMailVerified());
 
-        $email = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail" => "usertest001@twake_phpunit.fr"));
+        $email = $this->getDoctrine()->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail" => "usertest001@twake_phpunit.fr"));
         $email = $email->getMail();
         $this->assertEquals("usertest001@twake_phpunit.fr", $email);
 
 
-        $workspaceUerByMailRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail")->findOneBy(Array("mail" => "usertest001@twake_phpunit.fr"));
+        $workspaceUerByMailRepository = $this->getDoctrine()->getRepository("TwakeWorkspacesBundle:WorkspaceUserByMail")->findOneBy(Array("mail" => "usertest001@twake_phpunit.fr"));
         $this->assertEquals(null, $workspaceUerByMailRepository);
 
 
@@ -250,7 +232,7 @@ class UserLoginTest extends WebTestCaseExtended
 
         $this->removeUserByName("usertest001");
         $user = $this->newUserByName("usertest001");
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
 
         $result = $this->doPost("/ajax/users/login", Array(
             "_username" => "usertest001",
@@ -265,10 +247,10 @@ class UserLoginTest extends WebTestCaseExtended
         );
 
 
-        $existedDevice = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
+        $existedDevice = $this->getDoctrine()->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
         if (isset($existedDevice)) {
-            $this->get("app.twake_doctrine")->remove($existedDevice);
-            $this->get("app.twake_doctrine")->flush();
+            $this->getDoctrine()->remove($existedDevice);
+            $this->getDoctrine()->flush();
         }
 
 
@@ -277,7 +259,7 @@ class UserLoginTest extends WebTestCaseExtended
         ));
 
 
-        $existedDevice = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
+        $existedDevice = $this->getDoctrine()->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
         $existedDeviceValue = $existedDevice->getValue();
         $this->assertEquals("AZERTYUIOPQSDFGHJKLMWXCVBN134567890", $existedDeviceValue);
 
@@ -293,14 +275,14 @@ class UserLoginTest extends WebTestCaseExtended
             "device" => $device
         ));
 
-        $existedDevice = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
+        $existedDevice = $this->getDoctrine()->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
         $existedDeviceValue = $existedDevice->getValue();
         $this->assertEquals("1.3.0", $existedDevice->getVersion());
 
 
         $this->removeUserByName("usertest002");
         $user = $this->newUserByName("usertest002");
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest002"));
+        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest002"));
 
         $result = $this->doPost("/ajax/users/login", Array(
             "_username" => "usertest002",
@@ -311,7 +293,7 @@ class UserLoginTest extends WebTestCaseExtended
             "device" => $device
         ));
 
-        $existedDevice = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
+        $existedDevice = $this->getDoctrine()->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
 
         $this->assertEquals("usertest002", $existedDevice->getUser()->getUsername());
 
@@ -322,7 +304,7 @@ class UserLoginTest extends WebTestCaseExtended
 
         $this->removeUserByName("usertest001");
         $user = $this->newUserByName("usertest001");
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
 
         $result = $this->doPost("/ajax/users/login", Array(
             "_username" => "usertest002",
@@ -336,7 +318,7 @@ class UserLoginTest extends WebTestCaseExtended
         );
 
 
-        $device = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
+        $device = $this->getDoctrine()->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
         $deviceValue = $device->getValue();
         $this->assertEquals("AZERTYUIOPQSDFGHJKLMWXCVBN134567890", $deviceValue);
 
@@ -344,7 +326,7 @@ class UserLoginTest extends WebTestCaseExtended
             "device" => $device_array
         ));
 
-        $device = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
+        $device = $this->getDoctrine()->getRepository("TwakeUsersBundle:Device")->findOneBy(Array("value" => "AZERTYUIOPQSDFGHJKLMWXCVBN134567890"));
         $this->assertEquals(null, $device);
 
     }
@@ -354,7 +336,7 @@ class UserLoginTest extends WebTestCaseExtended
 
         $this->removeUserByName("usertest001");
         $user = $this->newUserByName("usertest001");
-        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
+        $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
 
         $result = $this->doPost("/ajax/users/login", Array(
             "_username" => "usertest001",

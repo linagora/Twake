@@ -132,6 +132,10 @@ developers_api_v1_drive:
     resource: "@DevelopersApiV1DriveBundle/Resources/config/routing.yml"
     prefix:   /api/v1/drive/
 
+developers_api_v1_tasks:
+    resource: "@DevelopersApiV1TasksBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/tasks/
+
 developers_api_v1_core:
     resource: "@DevelopersApiV1CoreBundle/Resources/config/routing.yml"
     prefix:   /api/v1/core/
@@ -139,6 +143,10 @@ developers_api_v1_core:
 administration_users:
     resource: "@AdministrationApiUsersBundle/Resources/config/routing.yml"
     prefix:   /api/backend/users/
+
+administration_group:
+    resource: "@AdministrationApiGroupBundle/Resources/config/routing.yml"
+    prefix:   /api/backend/group/
 
 administration_workspaces:
     resource: "@AdministrationApiWorkspacesBundle/Resources/config/routing.yml"

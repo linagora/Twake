@@ -56,6 +56,7 @@ class UsersConnectionsController extends Controller
 			$device = $request->request->get("device", false);
             if ($device && isset($device["type"]) && isset($device["value"])) {
                 $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], isset($device["version"]) ? $device["version"] : null);
+                $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
 			}
 
 			$data["data"]["status"] = "connected";
@@ -106,6 +107,7 @@ class UsersConnectionsController extends Controller
 		$device = $request->request->get("device", false);
 		if($device && isset($device["type"])) {
 			$this->get("app.user")->removeDevice($this->getUser()->getId(), $device["type"], $device["value"]);
+            $this->get("administration.counter")->incrementCounter("total_devices_linked", -1);
 		}
 		$this->get("app.user")->logout();
 		return new JsonResponse(Array());
@@ -235,8 +237,8 @@ class UsersConnectionsController extends Controller
             $device = $request->request->get("device", false);
 
             if ($device && isset($device["type"]) && isset($device["value"]) && $device["value"]) {
-
                 $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], $device["version"]);
+                $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
             }
 
             $this->get("app.user")->updateTimezone($this->getUser(), $request->request->get("timezone", false));

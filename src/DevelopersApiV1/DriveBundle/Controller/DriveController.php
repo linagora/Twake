@@ -56,7 +56,42 @@ class DriveController extends Controller
 
         }
 
+        $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
+
         return new JsonResponse(Array("object" => $object));
+
+
+    }
+
+    public function removeAction(Request $request)
+    {
+        $capabilities = ["drive_remove"];
+        $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
+        if (is_array($application) && $application["error"]) {
+            return new JsonResponse($application);
+        }
+
+        $options = Array("application_id" => $application->getId());
+        $object = $request->request->get("object", null);
+
+        $res = $this->get("app.drive_refacto")->remove($object, $options, null);
+        if (!$res) {
+            return new JsonResponse(Array("error" => "unknown error or malformed query."));
+        } else {
+
+            $event = Array(
+                "client_id" => "system",
+                "action" => "remove",
+                "object_type" => "",
+                "front_id" => $res["front_id"]
+            );
+            $this->get("app.websockets")->push("drive/" . $res["workspace_id"] . "/" . $res["parent_id"], $event);
+
+        }
+
+        $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
+
+        return new JsonResponse(Array("object" => $res));
 
 
     }
@@ -88,6 +123,8 @@ class DriveController extends Controller
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
         }
 
+        $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
+
         return new JsonResponse(Array("object" => $object));
     }
 
@@ -112,15 +149,17 @@ class DriveController extends Controller
 
         $res = [];
         foreach ($objects as $object) {
-            if ($object["is_directory"]) {
-                $res[] = $object;
-            }
+            $res[] = $object;
         }
+
+        $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
 
         return new JsonResponse(Array("data" => $res));
     }
 
-    public function downloadAction(Request $request ){
+    public function downloadAction(Request $request)
+    {
+
         $privileges = ["workspace_drive"];
         $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
         if (is_array($application) && $application["error"]) {
@@ -132,6 +171,8 @@ class DriveController extends Controller
 
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
         @$response = $this->get('driveupload.download')->download($workspace_id, $fileId, true, null, $fileSystem);
+
+        $this->get("administration.counter")->incrementCounter("total_api_drive_operation", 1);
 
         return $response;
     }

@@ -261,7 +261,7 @@ class MarketApplication
                     ),
                     "must" => Array(
                         "query_string" => Array(
-                            "query" => $query
+                            "query" => "*" . $query . "*"
                         )
                     )
                 )
@@ -272,6 +272,7 @@ class MarketApplication
 
         $result = [];
         foreach ($applications["result"] as $application) {
+            $application = $application[0];
             if ($allows_unpublished_apps_from_group_id == $application->getGroupId() || $application->getPublic()) {
                 $result[] = $application->getAsArray();
             }

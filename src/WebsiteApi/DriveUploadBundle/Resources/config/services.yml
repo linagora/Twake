@@ -5,7 +5,7 @@ services:
 
   driveupload.storemanager:
     class: WebsiteApi\DriveUploadBundle\Services\Storage\StorageManager
-    arguments: [%aws%, %openstack%, %kernel.root_dir%]
+    arguments: [%aws%, %openstack%, %kernel.root_dir%, "@app.drive.Preview","@app.twake_doctrine"]
 
   driveupload.download:
     class: WebsiteApi\DriveUploadBundle\Services\DownloadFile

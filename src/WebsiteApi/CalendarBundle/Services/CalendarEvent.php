@@ -208,8 +208,12 @@ class CalendarEvent
             }
             $did_create = false;
         } else {
-            $event = new Event($object["title"], $object["from"], $object["to"]);
+            $event = new Event($object["title"], intval($object["from"]), intval($object["to"]));
             $event->setFrontId($object["front_id"]);
+            if (isset($object["workspaces_calendars"]) && is_array($object["workspaces_calendars"])) {
+                $event->setWorkspaceId($object["workspaces_calendars"][0]["workspace_id"]);
+            }
+
             $did_create = true;
         }
 
@@ -235,8 +239,8 @@ class CalendarEvent
         }
         $tmp_sort_key = json_encode($event->getSortKey());
         $from_changed = ($object["from"] != $event->getFrom());
-        $event->setFrom($object["from"]);
-        $event->setTo($object["to"]);
+        $event->setFrom(intval($object["from"]));
+        $event->setTo(intval($object["to"]));
         $event->setAllDay($object["all_day"]);
         $event->setType($object["type"]);
         $event->setRepetitionDefinition($object["repetition_definition"]);
@@ -246,6 +250,11 @@ class CalendarEvent
         }
 
         $event->setEventLastModified();
+
+        if(isset($object["tags"])){
+            $event->setTags($object["tags"]);
+        }
+
 
         $this->doctrine->persist($event);
         $this->doctrine->flush();

@@ -184,7 +184,7 @@ class Resumable
         }
     }
 
-    public function handleChunk($file_or_url = null, $filename = null, $totalSize = null, $identifier = null, $chunkNumber = 1, $numOfChunks = 1, $object_from_caller = null, $options_from_caller = null)
+    public function handleChunk($file_or_url = null, $filename = null, $totalSize = null, $identifier = null, $chunkNumber = null, $numOfChunks = null, $object_from_caller = null, $options_from_caller = null)
     {
 
         //  VERIFIER IDENTIFIER QU ON A BIEN QUE DES CHIFFRES ET DES LETTRES ET PAS UN REQUETE OU AUTRES.
@@ -290,9 +290,8 @@ class Resumable
             $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $current_user, Array("data" => $data, "size" => $totalSize), true);
 
             if ($uploadstate->getHasPreview() && $totalSize < 20000000) {
-                $this->file_system->getFileSystem()->genPreview($fileordirectory);
+                $this->storagemanager->getAdapter()->genPreview($fileordirectory, $previewDestination);
             }
-
             return $fileordirectory->getAsArray();
 
         }
@@ -468,7 +467,7 @@ class Resumable
     {
         //$tmpChunkDir = $this->tempFolder . DIRECTORY_SEPARATOR . $identifier;
         $tmpChunkDir = $this->tempFolder;
-        error_log($tmpChunkDir);
+        //error_log($tmpChunkDir);
         if (!file_exists($tmpChunkDir)) {
             mkdir($tmpChunkDir);
         }

@@ -97,6 +97,12 @@ class Message extends FrontObject
     private $user_specific_content = "[]";
 
     /**
+     * @ORM\Column(name="tags", type="twake_text", nullable=true)
+     * @Encrypted
+     */
+    private $tags;
+
+    /**
      * @ORM\Column(name="block_id", type="twake_timeuuid", nullable=true)
      */
     private $block_id = null;
@@ -114,6 +120,22 @@ class Message extends FrontObject
         $this->modification_date = new \DateTime();
     }
 
+
+    /**
+     * @return mixed
+     */
+    public function getTags()
+    {
+        return json_decode($this->tags);
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setTags($tags)
+    {
+        $this->tags = json_encode($tags);
+    }
 
     /**
      * Get the value of Id

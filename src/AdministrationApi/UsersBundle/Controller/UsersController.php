@@ -23,18 +23,20 @@ class UsersController extends Controller
 
         if ($validate_token) {
 
-            $offset = $request->request->get("offset");
-            $limit = $request->request->get("limit");
+            $repository = "TwakeUsersBundle:User";
 
-            $validate_struct = $validation->validateStructure(Array(), Array(), $limit, $offset);
+            $scroll_id = $request->request->get("scroll_id");
 
-            if ($validate_struct) {
-                $users = $this->get("administration.users")->getAllUsers($limit, $offset);
+            $options = Array();
 
-                $data["data"] = $users;
-            } else {
-                $data["errors"][] = "invalid_request_structure";
+            if(isset($scroll_id) && isset($repository)){
+                $options["scroll_id"] = $scroll_id;
             }
+
+            $users = $this->get("administration.users")->getAllUsers($options);
+
+            $data["data"] = $users;
+
         } else {
             $data["errors"][] = "invalid_authentication_token";
         }
@@ -106,32 +108,28 @@ class UsersController extends Controller
 
             $users_service = $this->get("administration.users");
 
-            $users = $users_service->findUserByUsername($search_string);
+            $users = $users_service->findUserById($search_string);
 
-            if (!$users) {
-                $users = $users_service->findUserByEmail($search_string);
+            if (count($users["users"]) == 0) {
+                $options = Array(
+                    "mail" => $search_string
+                );
+                $users = $this->get('administration.users')->getUserbyMail($options);
             }
 
-            if (!$users) {
-                $users = $users_service->findUserById($search_string);
-            }
-
-            if (!$users) {
+            if (count($users["users"]) == 0) {
 
                 $advanced_search = $this->get("app.users");
 
-                $search_words = explode(" ", $search_string);
+                $options = array(
+                    "name" => $search_string
+                );
 
-                $users = $advanced_search->search($search_words);
+                $users = $advanced_search->search($options);
 
             }
 
-            if (count($users) == 0) {
-                $data['errors'][] = "user_not_found";
-            } else {
-                $data['data'] = $users;
-            }
-
+            $data['data'] = $users;
         } else {
             $data["errors"][] = "invalid_authentication_token";
         }

@@ -4,6 +4,7 @@ namespace WebsiteApi\UsersBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
+use WebsiteApi\CoreBundle\Entity\SearchableObject;
 
 /**
  * Mail
@@ -14,8 +15,11 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
  * })
  * @ORM\Entity(repositoryClass="WebsiteApi\UsersBundle\Repository\MailRepository")
  */
-class Mail
+class Mail extends SearchableObject
 {
+
+    protected $es_type = "mail";
+
     /**
      * @var int
      *
@@ -51,6 +55,16 @@ class Mail
     {
         return $this->id;
     }
+
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
+    }
+
+
 
     /**
      * Set user
@@ -98,6 +112,15 @@ class Mail
     public function getMail()
     {
         return $this->mail;
+    }
+
+    public function getIndexationArray()
+    {
+        $return = Array(
+            "id" => $this->getId()."",
+            "mail" => $this->getMail()
+        );
+        return $return;
     }
 
 }

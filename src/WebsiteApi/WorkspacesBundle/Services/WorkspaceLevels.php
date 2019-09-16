@@ -173,7 +173,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
 
         foreach($levels as $level){
-            if($level->getisDefault()){
+            if ($level->getIsDefault()) {
                 $choosen = $level;
             }
         }
@@ -274,11 +274,11 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
                 return false;
             }
 
-            if ($level->getisDefault()) {
+            if ($level->getIsDefault()) {
                 return false; //Can't remove default level
             }
 
-            if ($level->getisAdmin()) {
+            if ($level->getIsAdmin()) {
                 return false; //Can't remove admin level
             }
 

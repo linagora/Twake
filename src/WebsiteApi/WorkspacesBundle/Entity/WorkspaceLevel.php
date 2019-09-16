@@ -114,7 +114,7 @@ class WorkspaceLevel
 	/**
 	 * @return mixed
 	 */
-	public function getisDefault()
+    public function getIsDefault()
 	{
         return $this->isdefault;
 	}
@@ -130,7 +130,7 @@ class WorkspaceLevel
 	/**
 	 * @return mixed
 	 */
-	public function getisAdmin()
+    public function getIsAdmin()
 	{
         return $this->isadmin;
 	}
@@ -149,8 +149,8 @@ class WorkspaceLevel
 		return Array(
 			"id" => $this->getId(),
 			"name" => $this->getLabel(),
-			"admin" => $this->getisAdmin(),
-			"default" => $this->getisDefault(),
+            "admin" => $this->getIsAdmin(),
+            "default" => $this->getIsDefault(),
 			"rights" => $this->getRights()
 		);
 	}

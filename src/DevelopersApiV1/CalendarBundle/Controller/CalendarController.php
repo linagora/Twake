@@ -35,6 +35,8 @@ class CalendarController extends Controller
             }
         }
 
+        $this->get("administration.counter")->incrementCounter("total_api_calendar_operation", 1);
+
         return new JsonResponse(Array("result" => $object));
     }
 
@@ -75,6 +77,8 @@ class CalendarController extends Controller
 
         }
 
+        $this->get("administration.counter")->incrementCounter("total_api_calendar_operation", 1);
+
         return new JsonResponse(Array("object" => $object));
 
     }
@@ -107,6 +111,8 @@ class CalendarController extends Controller
         foreach ($objects as $object) {
             $res[] = $object;
         }
+
+        $this->get("administration.counter")->incrementCounter("total_api_calendar_operation", 1);
 
         return new JsonResponse(Array("data" => $res));
     }

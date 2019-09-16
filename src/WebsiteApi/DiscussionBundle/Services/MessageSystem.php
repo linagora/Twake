@@ -394,7 +394,7 @@ class MessageSystem
             if (isset($reaction["remove"])) {
                 $key_first = array_keys($reaction["remove"])[0];
                 if(array_key_exists($key_first,$current_reactions)){
-                    $keytoremove = array_search( $user->getId(),$current_reactions[$key_first]["users"]);
+                    $keytoremove = array_search($user->getId(), $current_reactions[$key_first]["users"]);
                     unset($current_reactions[$key_first]["users"][$keytoremove]);
                     $current_reactions[$key_first]["count"]--;
                     if($current_reactions[$key_first]["count"]==0){
@@ -406,17 +406,28 @@ class MessageSystem
             $message->setReactions($current_reactions);
         }
 
+        if(isset($object["tags"])){
+            $message->setTags($object["tags"]);
+        }
+
+        //Generate an ID
         $this->em->persist($message);
 
-        if($did_create){
-            $this->indexbloc($message,$channel->getOriginalWorkspaceId(),$object["channel_id"]);
-        }
-        else{
-            $content = $this->mdToText($object["content"]);
-            $this->updateinbloc($message, $content, $reaction);
-        }
+        if ($ephemeral) {
+            $this->em->remove($message);
+        } else {
 
-        if (!$ephemeral) {
+            try {
+                if ($did_create) {
+                    $this->indexbloc($message, $channel->getOriginalWorkspaceId(), $object["channel_id"]);
+                } else {
+                    $content = $this->mdToText($object["content"]);
+                    $this->updateinbloc($message, $content, $reaction);
+                }
+            } catch (\Exception $e) {
+                error_log("ERROR WITH MESSAGE SAVE INSIDE A BLOC");
+            }
+
 
             if ($channel && $did_create) {
                 $channel->setMessagesCount($channel->getMessagesCount() + 1);
@@ -480,16 +491,17 @@ class MessageSystem
 
     public function indexbloc($message,$workspace_id,$channel_id)
     {
+        return true; // WARNING à retirer
         $message_id = $message->getId()."";
 
-        error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");
-        error_log(print_r($message_id,true));
-        error_log(print_r($message->getContent()["prepared"][0],true));
+//        error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");
+//        error_log(print_r($message_id,true));
+//        error_log(print_r($message->getContent()["prepared"][0],true));
 
         $lastbloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
 
         if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
-            error_log("CREATION NOUVEAU BLOC");
+//            error_log("CREATION NOUVEAU BLOC");
             $messages= Array();
             $id_messages = Array();
             $blocbdd = new Bloc($workspace_id, $channel_id, $messages, $id_messages);
@@ -500,17 +512,20 @@ class MessageSystem
             $blocbdd->setLock(true);
         }
 
-        $blocbdd->addmessage($message);
+        $options = Array("keep_mentions" => true);
+        $content_id = $this->mdToText($message->getContent(), $options);
+        $content = $this->mdToText($message->getContent());
+        $blocbdd->addmessage($message, $content, $content_id);
         $this->em->persist($blocbdd);
         $message->setBlockId($blocbdd->getId()."");
         $this->em->persist($message);
         $this->em->flush();
 
-        error_log(print_r($blocbdd->getMessages(),true));
-        error_log(print_r($blocbdd->getIdMessages(),true));
+        //error_log(print_r($blocbdd->getMessages(),true));
+//        error_log(print_r($blocbdd->getIdMessages(),true));
 
         if ($blocbdd->getNbMessage() == 10){
-            error_log("INDEXATION DU BLOC DE MESSAGE");
+//            error_log("INDEXATION DU BLOC DE MESSAGE");
             //error_log(print_r($blocbdd->getAsArray(),true));
             // indexer le bloc de message
             $this->em->es_put($blocbdd,$blocbdd->getEsType());
@@ -518,14 +533,49 @@ class MessageSystem
     }
 
     public function updateinbloc($message,$new_content,$reaction){  //this param is a message ENTITY
-        //var_dump($message->getId()."");
+
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
-        //var_dump($bloc->getMessages());
+
+        if (!$bloc) {
+            return false;
+        }
+
         $position = array_search($message->getId()."",$bloc->getIdMessages());
         $messages = $bloc->getMessages();
-        $messages[$position]["content"] = $new_content;
+        $messages[$position]["content"] = $this->mdToText($new_content);
+
+//        $message->setTags(Array("4f3b9286-cef7-11e9-9732-0242ac1d0005"));
+//        $messages[$position]["tags"] = Array("4f3b9286-cef7-11e9-9732-0242ac1d0005");
 
         $bloc->setMessages($messages);
+        $this->em->persist($bloc);
+
+        $pinned = $message->getPinned();
+        if (isset($pinned) &&  $messages[$position]["pinned"] != $pinned){
+            $messages[$position]["pinned"] = $pinned;
+        }
+
+        $tags = $message->getTags();
+        if (isset($tags) &&  $messages[$position]["tags"] != $tags){
+            $messages[$position]["tags"] = $tags;
+        }
+
+
+        $mentions = Array();
+        //error_log(print_r($message->getContent(),true));
+        if (is_array($message->getContent()["prepared"][0])) {
+            foreach ($message->getContent()["prepared"][0] as $elem) {
+                if (is_array($elem)) {
+                    $id = explode(":", $elem["content"])[1];
+                    $mentions[] = $id;
+                }
+            }
+            $mentions = array_unique($mentions);
+            //error_log(print_r($mentions,true));
+            $messages[$position]["mentions"] = $mentions;
+            $bloc->setMessages($messages);
+            $this->em->persist($bloc);
+        }
 
 
         if(isset($reaction["add"]) || isset($reaction["remove"]) ){
@@ -565,11 +615,14 @@ class MessageSystem
 
             $messages[$position]["reactions"] = $new_reaction;
             $bloc->setMessages($messages);
+            $this->em->persist($bloc);
 
         }
 
+        //error_log(print_r($bloc->getMessages(),true));
 
-        $this->em->persist($bloc);
+
+        //$this->em->persist($bloc);
         $this->em->flush();
 
         // Need to reindex the bloc in ES if he is already indexed
@@ -583,7 +636,12 @@ class MessageSystem
     public function deleteinbloc($message){
 
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
-        $position = array_search($message->getId()."",$bloc->getIdMessages());
+
+        if (!$bloc->getIdMessages()) {
+            return;
+        }
+
+        $position = array_search($message->getId() . "", $bloc->getIdMessages());
 
 
         $bloc->setNbMessage($bloc->getNbMessage()-1);
@@ -670,7 +728,7 @@ class MessageSystem
 
     }
 
-    private function mdToText($array)
+    private function mdToText($array, $options = null)
     {
 
         if (!$array) {
@@ -714,10 +772,10 @@ class MessageSystem
             }
 
         }
-
-
-        $result = preg_replace("/@(.*):.*(( |$))/", "@$1$2", $result);
-        $result = preg_replace("/#(.*):.*(( |$))/", "#$1$2", $result);
+        if (!(isset($options["keep_mentions"]) && $options["keep_mentions"] == true)) {
+            $result = preg_replace("/@(.*?):.*?(( |$))/", "@$1$2", $result);
+            $result = preg_replace("/#(.*?):.*?(( |$))/", "#$1$2", $result);
+        }
 
         return $result;
 

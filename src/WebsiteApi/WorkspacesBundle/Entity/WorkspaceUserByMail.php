@@ -35,11 +35,18 @@ class WorkspaceUserByMail
      */
     private $externe;
 
+    /**
+     * @ORM\Column(name="is_auto_add_externe", type="twake_boolean")
+     */
+    private $is_auto_add_externe;
+
+
 	function __construct($workspace, $mail)
 	{
 		$this->workspace = $workspace;
 		$this->mail = $mail;
         $this->externe = false;
+        $this->is_auto_add_externe = false;
     }
 
 	public function setId($id)
@@ -82,6 +89,21 @@ class WorkspaceUserByMail
     public function setExterne($externe)
     {
         $this->externe = $externe;
+    }
+    /**
+     * @return mixed
+     */
+    public function getAutoAddExterne()
+    {
+        return $this->is_auto_add_externe;
+    }
+
+    /**
+     * @param mixed $isclient
+     */
+    public function setAutoAddExterne($externe)
+    {
+        $this->is_auto_add_externe = $externe;
     }
 
 

@@ -143,6 +143,10 @@ class Notifications implements NotificationsInterface
 
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($users[$i]);
 
+            if (!$user) {
+                continue;
+            }
+
             //Verify that user want this notification
 
             $notificationPreference = $user->getNotificationPreference();
@@ -450,7 +454,7 @@ class Notifications implements NotificationsInterface
         $data = Array(
             "message" => $message,
             "title" => $title,
-            "data" => $_data,
+            "data" => json_encode($_data),
             "badge" => $badge,
             "device_id" => $deviceId,
             "type" => $type

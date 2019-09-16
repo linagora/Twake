@@ -33,6 +33,10 @@ class CounterService
             $counter = $last_counter;
         }
 
+        if (!$increment) {
+            return;
+        }
+
         $counter->setIncrementValue($increment);
 
         $this->em->merge($counter);

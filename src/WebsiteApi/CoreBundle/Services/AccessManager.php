@@ -13,6 +13,10 @@ class AccessManager
 
     public function has_access($current_user_id, $data, $options = null){
 
+        if ($current_user_id && !is_string($current_user_id)) {
+            $current_user_id = $current_user_id->getId();
+        }
+
         $type = $data["type"];
         $edition = $data["edition"]; //TODO test if we have edition access (everybodyhas edition acess for now)
         $id = $data["object_id"];
@@ -85,48 +89,51 @@ class AccessManager
             if(isset($df)){
                 $df = $df->getAsArray();
                 $workspace_id = $df["workspace_id"];
-                if (isset($df["acces_info"]["token"]) && $df["acces_info"]["token"] != "" && !isset($options["token"])) {
+
+                // Public access token
+                if (isset($df["acces_info"]["token"]) && isset($options["token"]) && $df["acces_info"]["token"] != $options["token"]) {
                     return false;
-                } elseif (isset($df["acces_info"]["token"]) && $df["acces_info"]["token"] == "" && isset($options["token"]) && $options["token"] == "") {
+                }
+                if (isset($df["acces_info"]["token"]) && $df["acces_info"]["token"] == "" && isset($options["token"]) && $options["token"] == "") {
                     return false;
-                } elseif (isset($options["token"]) && $options["token"] != "" && $df["acces_info"]["token"] != "") {
-                    $token = $options["token"];
-                    $members = $df["acces_info"]["authorized_members"];
+                }
+                if (isset($df["acces_info"]["token"]) && isset($options["token"]) && $df["acces_info"]["token"] == $options["token"]) {
+                    return true;
+                }
+
+                //In this case only members authorized can see the directory
+                if (isset($df["acces_info"]["authorized_members"]) && is_array($df["acces_info"]["authorized_members"])) {
+                    if (in_array($current_user_id, $df["acces_info"]["authorized_members"])) {
+                        return true;
+                    } else {
+                        return false;
+                    }
+                }
+
+                //In this case defined has special access authorization
+                if (isset($df["acces_info"]["authorized_channels"]) && is_array($df["acces_info"]["authorized_channels"])) {
                     $channels = $df["acces_info"]["authorized_channels"];
-
-                    if(!isset($members) && !isset($channels)) {
-                        // si les deux liste sont vide alors l'utilisateur ne peux pas avoir acces au fichier
-                        return false;
-                    }
-
-                    if($members != Array() && !in_array($current_user_id,$members) && $channels == Array()){
-                    //fichier privé a certains et user pas dedans;
-                    return false;
-                    }
-                    elseif( $channels != Array() && $members == Array()){
-                        // il y a des channels en privé , on regarde si user et sur au moins un d'eux
-                        $access = false;
-                        foreach ($channels as $channel){
-                            $data = Array("type" => "Channel", "object_id" => $channel);
-                            if($this->has_access($current_user_id,$data)){
-                                $access = true;
-                            }
-                        }
-                        if(!$access){
-                            return false;
+                    $access = false;
+                    foreach ($channels as $channel) {
+                        $data = Array("type" => "Channel", "object_id" => $channel);
+                        if ($this->has_access($current_user_id, $data)) {
+                            $access = true;
                         }
                     }
-                    if ($token != $df["acces_info"]["token"]) {
-                        return false;
+                    if ($access) {
+                        return true;
                     }
                 }
-                if(!$this->user_has_workspace_access($current_user_id,$workspace_id)){
-                    return false;
+
+                //Access to workspace
+                if ($this->user_has_workspace_access($current_user_id, $workspace_id)) {
+                    return true;
                 }
+
             }
-            else{
-                return false;
-            }
+
+            return false;
+
         }
 
         else if($type == "Calendar"){ //pensez au parent id tous ca tous ca et a detached
