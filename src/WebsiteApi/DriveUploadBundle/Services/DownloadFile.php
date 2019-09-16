@@ -98,7 +98,6 @@ class DownloadFile
         $download = $this->download;
         $versionId = $this->versionId;
         $workspace_id = $this->workspace_id;
-        error_log("passage");
         $first_element = true;
         foreach ($files as $file) {
 
