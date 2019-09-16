@@ -5,7 +5,7 @@ services:
 
     app.channels.channels_system:
             class: WebsiteApi\ChannelsBundle\Services\ChannelsSystem
-            arguments: ["@app.twake_doctrine", "@app.messages", "@app.websockets", "@app.applications_api","@app.workspace_members"]
+            arguments: ["@app.twake_doctrine", "@app.messages", "@app.websockets", "@app.applications_api", "@app.workspace_members"]
 
     app.channels.notifications:
             class: WebsiteApi\ChannelsBundle\Services\ChannelsNotificationsSystem

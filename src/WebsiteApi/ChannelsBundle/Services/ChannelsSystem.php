@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 class ChannelsSystem extends ChannelSystemAbstract
 {
 
-    function __construct($entity_manager, $messages_service, $websockets_service, $applicationsApi,$workspaceMembers)
+    function __construct($entity_manager, $messages_service, $websockets_service, $applicationsApi, $workspaceMembers)
     {
         $this->messages_service = $messages_service;
         $this->websockets_service = $websockets_service;

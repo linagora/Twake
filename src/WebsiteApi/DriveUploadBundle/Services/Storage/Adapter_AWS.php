@@ -5,6 +5,7 @@ namespace WebsiteApi\DriveUploadBundle\Services\Storage;
 use Aws\S3\S3Client;
 use Aws\S3\Exception\S3Exception;
 use WebsiteApi\DriveUploadBundle\Entity\UploadState;
+use WebsiteApi\DriveBundle\Entity\DriveFile;
 
 class Adapter_AWS implements AdapterInterface{
 
@@ -40,6 +41,9 @@ class Adapter_AWS implements AdapterInterface{
         }
 
         $this->aws_s3_client = new S3Client($options);
+
+        $this->preview = $preview;
+        $this->doctrine = $doctrine;
     }
 
 
