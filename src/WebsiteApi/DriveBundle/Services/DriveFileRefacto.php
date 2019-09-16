@@ -518,7 +518,7 @@ class DriveFileRefacto
 
             $iter++;
 
-            if ($directory == "root" || $directory == "trash") {
+            if ($directory == "root" || $directory == "trash" || $directory == "removed_trashes") {
                 if (!$workspace_id) {
                     return;
                 }

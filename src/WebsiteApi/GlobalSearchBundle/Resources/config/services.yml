@@ -8,37 +8,25 @@ services:
     class: WebsiteApi\GlobalSearchBundle\Services\Blocmessage
     arguments: ["@app.twake_doctrine"]
 
-  globalsearch.user:
-    class: WebsiteApi\UsersBundle\Services\Users
-    arguments: ["@app.twake_doctrine"]
-
-  globalsearch.workspace:
-    class: WebsiteApi\WorkspacesBundle\Services\Workspaces
-    arguments: ["@app.twake_doctrine", "@app.workspace_levels", "@app.workspace_members", "@app.group_managers", "@app.group_apps", "@app.groups", "@app.pricing_plan","@app.string_cleaner","@app.pusher",'@app.workspaces_activities','@app.translate','@app.calendar.calendar','@app.calendar.event','@app.drive.adapter_selector', "@app.workspaces_apps"]
-
-  globalsearch.channel:
-    class: WebsiteApi\ChannelsBundle\Services\ChannelsSystem
-    arguments: ["@app.twake_doctrine", "@app.messages", "@app.websockets", "@app.applications_api"]
-
   globalsearch.quicksearch:
     class: WebsiteApi\GlobalSearchBundle\Services\QuickSearch
-    arguments: ["@app.twake_doctrine", "@globalsearch.user", "@globalsearch.workspace", "@globalsearch.channel", "@globalsearch.file", "@app.workspace_members", "@globalsearch.messagebloc"]
+    arguments: ["@app.twake_doctrine", "@app.users", "@app.workspaces", "@app.channels.channels_system", "@globalsearch.file", "@app.workspace_members", "@globalsearch.messagebloc"]
 
   globalsearch.advancedbloc:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedBloc
-    arguments: ["@app.twake_doctrine", "@globalsearch.messagebloc", "@globalsearch.workspace"]
+    arguments: ["@app.twake_doctrine", "@globalsearch.messagebloc", "@app.workspaces"]
 
   globalsearch.advancedfile:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedFile
-    arguments: ["@app.twake_doctrine", "@globalsearch.file","@globalsearch.workspace"]
+    arguments: ["@app.twake_doctrine", "@globalsearch.file","@app.workspaces"]
 
   globalsearch.advancedtask:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedTask
-    arguments: ["@app.twake_doctrine", "@globalsearch.workspace"]
+    arguments: ["@app.twake_doctrine", "@app.workspaces"]
 
   globalsearch.advancedevent:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedEvent
-    arguments: ["@app.twake_doctrine", "@globalsearch.workspace"]
+    arguments: ["@app.twake_doctrine", "@app.workspaces"]
 
   globalsearch.reindex:
     class: WebsiteApi\GlobalSearchBundle\Services\Reindex

@@ -163,7 +163,6 @@ class Adapter_OpenStack implements AdapterInterface {
     }
 
 
-
     public function write($chunkFile, $chunkNo, $param_bag, UploadState $uploadState)
     {
         $this->encode($chunkFile,$param_bag);

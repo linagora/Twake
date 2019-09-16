@@ -25,10 +25,10 @@ class StorageManager{
     public function BindAdapter(){
 
         if (isset($this->aws["S3"]["use"]) && $this->aws["S3"]["use"]) {
-            return new Adapter_AWS($this->aws);
+            return new Adapter_AWS($this->aws, $this->preview, $this->doctrine);
         }
         elseif (isset($this->openstack["use"]) && $this->openstack["use"]) {
-            return new Adapter_OpenStack($this->openstack,$this->preview,$this->doctrine);
+            return new Adapter_OpenStack($this->openstack, $this->preview, $this->doctrine);
         }
 
     }
