@@ -4,6 +4,9 @@ namespace WebsiteApi\DriveUploadBundle\Services;
 
 
 use http\Client\Response;
+use WebsiteApi\DriveUploadBundle\Services\ZipStream\Stream;
+use WebsiteApi\DriveUploadBundle\Services\ZipStream\ZipStream;
+use WebsiteApi\DriveUploadBundle\Services\ZipStream\Option\Archive;
 
 
 class DownloadFile
@@ -19,6 +22,31 @@ class DownloadFile
     {
         $this->resumable = $resumable;
         $this->doctrine = $doctrine;
+    }
+
+
+    public function zipDownload(){
+
+        # enable output of HTTP headers
+        $options = new Archive();
+        $options->setSendHttpHeaders(true);
+
+        # create a new zipstream object
+        $zip = new ZipStream('example.zip', $options);
+
+        # add a file named 'goodbye.txt' from an open stream resource
+        $fp = tmpfile();
+        fwrite($fp, 'The quick brown fox jumped over the lazy dog.');
+        rewind($fp);
+        //$zip->addFileFromStream('goodbye.txt', $fp);
+        $stream = new Stream($fp);
+        $zip->addFileFromPsr7Stream('goodbye.txt', $stream);
+
+        # finish the zip stream
+        $zip->finish();
+
+
+
     }
 
     public function addOneFile($file, $version)
@@ -70,7 +98,7 @@ class DownloadFile
         $download = $this->download;
         $versionId = $this->versionId;
         $workspace_id = $this->workspace_id;
-
+        error_log("passage");
         $first_element = true;
         foreach ($files as $file) {
 
