@@ -533,6 +533,10 @@ class MessageSystem
 
     public function updateinbloc($message,$new_content,$reaction){  //this param is a message ENTITY
 
+        if (!$message->getBlockId()) {
+            return false;
+        }
+
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
 
         if (!$bloc) {
