@@ -491,7 +491,6 @@ class MessageSystem
 
     public function indexbloc($message,$workspace_id,$channel_id)
     {
-        return true; // WARNING à retirer
         $message_id = $message->getId()."";
 
 //        error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");
@@ -533,6 +532,10 @@ class MessageSystem
     }
 
     public function updateinbloc($message,$new_content,$reaction){  //this param is a message ENTITY
+
+        if (!$message->getBlockId()) {
+            return false;
+        }
 
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
 
