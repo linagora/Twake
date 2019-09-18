@@ -13,6 +13,8 @@ use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
 use WebsiteApi\DriveUploadBundle\Services\Storage\EncryptionBag;
+use WebsiteApi\DriveUploadBundle\Services\ZipStream\Option\Archive;
+use WebsiteApi\DriveUploadBundle\Services\ZipStream\ZipStream;
 
 class Resumable
 {
@@ -364,13 +366,14 @@ class Resumable
         $this->preProcess();
     }
 
-    public function downloadFile($identifier)
+    public function downloadFile($identifier, &$zip = null, $zip_prefix = false)
     {
+//        error_log(print_r($zip_prefix,true));
         $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
         $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $this->parameter_drive_salt, "OpenSSL-2");
 
         for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
-            $this->storagemanager->getAdapter()->read("stream", $i, $param_bag, $uploadstate);
+            $this->storagemanager->getAdapter()->read("stream", $i, $param_bag, $uploadstate, $zip, $zip_prefix);
         }
 
     }

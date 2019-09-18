@@ -330,6 +330,7 @@ class File
 
     public function processStream(StreamInterface $stream): void
     {
+
         $this->zlen = new Bigint();
         $this->len = new Bigint();
 
@@ -342,6 +343,7 @@ class File
 
     protected function processStreamWithZeroHeader(StreamInterface $stream): void
     {
+
         $this->bits |= self::BIT_ZERO_HEADER;
         $this->addFileHeader();
         $this->readStream($stream, self::COMPUTE | self::SEND);
@@ -350,6 +352,7 @@ class File
 
     protected function readStream(StreamInterface $stream, ?int $options = null): void
     {
+        //error_log("passage 2 ");
         $this->deflateInit();
         $total = 0;
         $size = $this->opt->getSize();
@@ -409,7 +412,6 @@ class File
     {
         $this->readStream($stream, self::COMPUTE);
         $stream->rewind();
-
         // incremental compression with deflate_add
         // makes this second read unnecessary
         // but it is only available from PHP 7.0
@@ -422,6 +424,7 @@ class File
             }
             $stream->rewind();
         }
+        //error_log("passage process");
 
         $this->addFileHeader();
         $this->readStream($stream, self::SEND);

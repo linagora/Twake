@@ -70,7 +70,12 @@ class UploadController extends Controller
     public function ZipDownloadAction(Request $request)
     {
         //$current_user_id = $this->getUser()->getId();
-        $res = $this->get('driveupload.download')->zipDownload();
+        //$files_id = Array("be8a46cc-d943-11e9-939c-0242ac1d0005","b9dfea28-d943-11e9-a143-0242ac1d0005");
+        //$files_id = Array("be8a46cc-d943-11e9-939c-0242ac1d0005");
+        //parent id as a folder
+        $files_id = Array("01292620-d92a-11e9-a0ae-0242ac1d0005");
+        //$files_id = Array("36b368e6-cb38-11e9-ab11-0242ac1d0005");
+        $res = $this->get('driveupload.download')->zipDownload("52a05d64-c356-11e9-8117-0242ac1d0005",$files_id,true,0);
 
         //return new JsonResponse(Array("data" => Array("object" => $res)));
         return new JsonResponse("hello");
