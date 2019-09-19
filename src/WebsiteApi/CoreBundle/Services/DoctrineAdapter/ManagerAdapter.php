@@ -362,7 +362,7 @@ class ManagerAdapter
                             }
                         }
                         if ($match) {
-                            $entities[] = $result;
+                            $entities[] = [$result, 0];
                         }
                     }
 
@@ -428,8 +428,9 @@ class ManagerAdapter
                         $obj = $object_json["_id"];
                     }
 
-                    $result[] = Array($obj, isset($object_json["sort"]) ? $object_json["sort"] : 0);
-
+                    if ($obj) {
+                        $result[] = Array($obj, isset($object_json["sort"]) ? $object_json["sort"] : 0);
+                    }
                 }
             }
             $result = Array("repository" => $repository, "scroll_id" => $scroll_id, "result" => $result);

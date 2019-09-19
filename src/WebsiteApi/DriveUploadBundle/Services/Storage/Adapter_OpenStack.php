@@ -187,9 +187,8 @@ class Adapter_OpenStack implements AdapterInterface {
         }
     }
 
-    public function read($destination, $chunkNo, $param_bag, UploadState $uploadState)
+    public function read($destination, $chunkNo, $param_bag, UploadState $uploadState, &$zip = null, $zip_prefix = null)
     {
-
         try {
             $stream = $this->openstack->objectStoreV1()
                 ->getContainer($this->openstack_bucket_name)
@@ -203,17 +202,28 @@ class Adapter_OpenStack implements AdapterInterface {
             if ($destination == "stream") {
 
                 if ($stream = fopen($decodedPath, 'r')) {
-                    // While the stream is still open
-                    while (!feof($stream)) {
-                        // Read 1,024 bytes from the stream
-                        echo fread($stream, 1024);
+                    if(isset($zip)){
+                        $stream_zip = new \WebsiteApi\DriveUploadBundle\Services\ZipStream\Stream($stream);
+                        error_log(print_r($zip_prefix,true));
+                        $zip->addFileFromPsr7Stream($zip_prefix . DIRECTORY_SEPARATOR . $uploadState->getFilename(), $stream_zip);
+//                        error_log("passage");
+
+                        return;
                     }
-                    // Be sure to close the stream resource when you're done with it
-                    fclose($stream);
+                    elseif (!isset($zip)) {
+                        // While the stream is still open
+                        while (!feof($stream)) {
+                            // Read 1,024 bytes from the stream
+                            echo fread($stream, 1024);
+                        }
+                        // Be sure to close the stream resource when you're done with it
+                        fclose($stream);
+                    }
                 }
 
                 return true;
             }
+
 
             return $decodedPath;
 
