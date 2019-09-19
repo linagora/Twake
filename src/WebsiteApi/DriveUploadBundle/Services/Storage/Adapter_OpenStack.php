@@ -16,6 +16,10 @@ use GuzzleHttp\Psr7\Stream;
 
 use OpenStack\Identity\v2\Service;
 use WebsiteApi\DriveUploadBundle\Entity\UploadState;
+use WebsiteApi\DriveUploadBundle\Services\ZipStream\Exception;
+use WebsiteApi\DriveUploadBundle\Services\ZipStream\File;
+use WebsiteApi\DriveUploadBundle\Services\ZipStream\Option\File as FileOptions;
+use WebsiteApi\DriveUploadBundle\Services\ZipStream\TwakeFileStream;
 
 class Adapter_OpenStack implements AdapterInterface {
 
@@ -187,6 +191,7 @@ class Adapter_OpenStack implements AdapterInterface {
         }
     }
 
+
     public function read($destination, $chunkNo, $param_bag, UploadState $uploadState, &$zip = null, $zip_prefix = null)
     {
         try {
@@ -200,17 +205,7 @@ class Adapter_OpenStack implements AdapterInterface {
             $decodedPath = $this->decode($tmp_upload, $param_bag);
 
             if ($destination == "stream") {
-
                 if ($stream = fopen($decodedPath, 'r')) {
-                    if(isset($zip)){
-                        $stream_zip = new \WebsiteApi\DriveUploadBundle\Services\ZipStream\Stream($stream);
-                        error_log(print_r($zip_prefix,true));
-                        $zip->addFileFromPsr7Stream($zip_prefix . DIRECTORY_SEPARATOR . $uploadState->getFilename(), $stream_zip);
-//                        error_log("passage");
-
-                        return;
-                    }
-                    elseif (!isset($zip)) {
                         // While the stream is still open
                         while (!feof($stream)) {
                             // Read 1,024 bytes from the stream
@@ -218,12 +213,15 @@ class Adapter_OpenStack implements AdapterInterface {
                         }
                         // Be sure to close the stream resource when you're done with it
                         fclose($stream);
-                    }
                 }
-
                 return true;
             }
 
+            if ($destination == "original_stream"){
+                if ($stream = fopen($decodedPath, 'r')) {
+                    return $stream;
+                }
+            }
 
             return $decodedPath;
 

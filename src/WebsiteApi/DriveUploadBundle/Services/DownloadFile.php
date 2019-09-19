@@ -67,7 +67,6 @@ class DownloadFile
         //error_log("passage");
         $zip->finish();
 
-
     }
 
     public function addOneFile($file, $version, &$zip = null, $zip_prefix = null)
@@ -78,7 +77,7 @@ class DownloadFile
             return false;
         }
         if (isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
-            $this->resumable->downloadFile($version->getData()["identifier"], $zip, $zip_prefix);
+            $this->resumable->downloadFile($version->getData()["identifier"],$file->getName(), $zip, $zip_prefix);
             return true;
         } else {
             if ($oldFileSystem) {

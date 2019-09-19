@@ -217,6 +217,29 @@ class ZipStream
     }
 
     /**
+     * Send string, sending HTTP headers if necessary.
+     * Flush output after write if configure option is set.
+     *
+     * @param String $str
+     * @return void
+     */
+    public function send(string $str): void
+    {
+        if ($this->need_headers) {
+            $this->sendHttpHeaders();
+        }
+        $this->need_headers = false;
+
+        fwrite($this->opt->getOutputStream(), $str);
+
+        if ($this->opt->isFlushOutput()) {
+            flush();
+            ob_flush();
+        }
+    }
+
+
+    /**
      * addFileFromPath
      *
      * Add a file at path to the archive.
@@ -322,6 +345,7 @@ class ZipStream
      *
      * @return void
      */
+
     public function addFileFromPsr7Stream(
         string $name,
         StreamInterface $stream,
@@ -444,28 +468,6 @@ class ZipStream
 
         // build output string from header and compressed data
         return pack(...$args);
-    }
-
-    /**
-     * Send string, sending HTTP headers if necessary.
-     * Flush output after write if configure option is set.
-     *
-     * @param String $str
-     * @return void
-     */
-    public function send(string $str): void
-    {
-        if ($this->need_headers) {
-            $this->sendHttpHeaders();
-        }
-        $this->need_headers = false;
-
-        fwrite($this->opt->getOutputStream(), $str);
-
-        if ($this->opt->isFlushOutput()) {
-            flush();
-            ob_flush();
-        }
     }
 
     /**
