@@ -4,6 +4,7 @@ namespace WebsiteApi\GlobalSearchBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
+use WebsiteApi\CoreBundle\Entity\FrontObject;
 
 /**
  * Tag
@@ -12,7 +13,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
  * @ORM\Entity(repositoryClass="WebsiteApi\GlobalSearchBundle\Repository\BlocRepository")
 
  */
-class WorkspaceTag
+class WorkspaceTag extends FrontObject
 {
 
     /**
@@ -50,6 +51,7 @@ class WorkspaceTag
     {
         $return = Array(
             "id" => $this->getId(),
+            "front_id" => $this->getFrontId(),
             "workspace_id" => $this->getWorkspaceId(),
             "name" => $this->getName(),
             "color" => $this->getColor()
