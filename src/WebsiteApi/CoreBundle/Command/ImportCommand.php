@@ -72,7 +72,6 @@ class ImportCommand extends ContainerAwareCommand
         $services = $this->getApplication()->getKernel()->getContainer();
         $manager = $services->get('app.twake_doctrine');
         //$group_name = $input->getArgument('tarname');
-        //error_log(print_r($group_name,true));
         $export_user = true;
         chdir('web');
         chmod(getcwd(), 0777);
@@ -151,7 +150,6 @@ class ImportCommand extends ContainerAwareCommand
             $handle_group = fopen($group_file, 'r') or die('Cannot open file:  ' . $group_file);
             $group_members = Array();
             $contents = json_decode(fread($handle_group, filesize($group_file)), true);
-            //error_log(print_r($contents, true));
             fclose($handle_group);
 
             $group = $manager->getRepository("TwakeWorkspacesBundle:Group")->findOneBy(Array("name" => $contents["name"] . "_itw"));
@@ -505,7 +503,6 @@ class ImportCommand extends ContainerAwareCommand
                         $handle_channel_file = fopen($channel_file, 'r') or die('Cannot open file:  ' . $channel_file);
                         if (filesize($channel_file) > 0) {
                             $contents = json_decode(fread($handle_channel_file, filesize($channel_file)), true);
-                            //error_log(print_r($contents,true));
                             if (isset($contents)) {
                                 error_log(print_r("NEW CHANNEL : ". $name . " ID : ". $contents["id"],true));
                                 $channel_bdd->setPrivate($contents["is_private"]);
@@ -519,7 +516,6 @@ class ImportCommand extends ContainerAwareCommand
                                         array_push($member_list, $this->match_table["user"][$channel_member["id"]]);
                                     }
                                 }
-//                                error_log(print_r($member_list,true));
                                 $channel_bdd->setMembers($member_list);
                             }
                             fclose($handle_channel_file);
@@ -543,7 +539,6 @@ class ImportCommand extends ContainerAwareCommand
                         $contents = json_decode(fread($handle_message_file, filesize($message_file)), true);
                         if (isset($contents) && $contents != Array()) {
                             usort($contents, "self::cmpMessage");
-                            //error_log(print_r($contents,true));
                             $no_parent_yet = Array();
 
                             $messages_to_sort = $contents;
@@ -606,7 +601,6 @@ class ImportCommand extends ContainerAwareCommand
                                 if ($message["sender"] != null) {
                                     if (array_key_exists($message["sender"], $this->match_table["user"])) {
                                         $user = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $this->match_table["user"][$message["sender"]]));
-                                        //error_log(print_r($user->getUsername()));
                                         $message_bdd->setSender($user);
                                     }
                                 }
@@ -866,7 +860,6 @@ class ImportCommand extends ContainerAwareCommand
                         $channel_bdd_id = $channel_bdd->getId();
 
                         usort($channel["message"], "self::cmpMessage");
-                        //error_log(print_r($contents,true));
                         $no_parent_yet = Array();
 
                         $messages_to_sort = $channel["message"];
@@ -927,7 +920,6 @@ class ImportCommand extends ContainerAwareCommand
                             if ($message["sender"] != null) {
                                 if (array_key_exists($message["sender"], $this->match_table["user"])) {
                                     $user = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $this->match_table["user"][$message["sender"]]));
-                                    //error_log(print_r($user->getUsername()));
                                     $message_bdd->setSender($user);
                                 }
                             }

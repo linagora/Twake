@@ -29,10 +29,7 @@ class Users
 
     public function search($options = Array())
     {
-        //var_dump("passage");
         $name = $options["name"];
-        //var_dump($name);
-
         $should = Array();
 
         if(isset($name)){
@@ -89,9 +86,6 @@ class Users
             )
         );
 
-
-        //var_dump(json_encode($options));
-
         // search in ES
         $result = $this->em->es_search($options);
 
@@ -100,13 +94,10 @@ class Users
         $scroll_id = $result["scroll_id"];
 
         //on traite les données recu d'Elasticsearch
-        //var_dump(json_encode($options));
         foreach ($result["result"] as $user){
-            //var_dump($file->getAsArray());
             $this->list_users["users"][]= Array($user[0]->getAsArray(),$user[1][0]);;
         }
-//        var_dump("nombre de resultat : " . count($this->list_files));
-//        var_dump($this->list_files);
+
         $this->list_users["scroll_id"] = $scroll_id;
 
        return $this->list_users ?: null;

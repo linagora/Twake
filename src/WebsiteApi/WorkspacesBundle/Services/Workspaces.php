@@ -910,13 +910,11 @@ class Workspaces implements WorkspacesInterface
             )
         );
 
-        //var_dump($options);
 
         $workspaces = $this->doctrine->es_search($options);
         $result = [];
 
         foreach ($workspaces["result"] as $workspace) {
-            //var_dump($workspace->getMembers()->getAsArray());
             $result[] = $workspace[0]->getAsArray();
         }
 

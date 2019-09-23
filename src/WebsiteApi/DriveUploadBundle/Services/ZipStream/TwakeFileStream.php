@@ -131,6 +131,7 @@ class TwakeFileStream implements StreamInterface
     }
 
     public function read($length){
+
         error_log(print_r("read : " . $length, true));
 //            $this->current_chunk = 1;
 //            $this->stream = $this->manager->read("original_stream", $this->current_chunk, $this->param_bag, $this->uploadstate);
@@ -152,9 +153,7 @@ class TwakeFileStream implements StreamInterface
                 }
             }
         }
-        error_log(print_r("size retour : " . strlen($retour), true));
         return $retour;
-
     }
 
 

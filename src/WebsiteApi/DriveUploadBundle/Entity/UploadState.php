@@ -107,7 +107,6 @@ class UploadState
         $chunklist = $this->getChunklist();
         array_push($chunklist ,$chunk);
         $this->setChunklist($chunklist);
-        //error_log(print_r($this->chunklist,true));
 
         $this->setChunk(count($this->getChunklist()));
     }

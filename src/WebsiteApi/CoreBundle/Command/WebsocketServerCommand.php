@@ -68,14 +68,12 @@ class WebsocketServerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        error_log("Hey ! :D");
         $this->entryPoint->launch(
             null,
             $this->host,
             $this->port,
             null
         );
-        error_log("End... :(");
 
     }
 }

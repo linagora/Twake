@@ -115,7 +115,6 @@ final class Archive
     {
         $this->largeFileMethod = Method::STORE();
         $this->outputStream = fopen('php://output', 'wb');
-//        $this->outputStream = fopen('php://output', 'a');
     }
 
     public function getComment(): string

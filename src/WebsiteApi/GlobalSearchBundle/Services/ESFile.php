@@ -193,24 +193,17 @@ END;
             )
         );
 
-        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
-        //var_dump($workspace["id"]);
         $files = $this->doctrine->es_search($options);
         $files_final=Array();
-        //var_dump(json_encode($options));
         foreach ($files["result"] as $file){
-            //var_dump($file->getAsArray());
             $files_final[]= Array($file[0]->getAsArray(),$file[1][0]);
         }
-        //var_dump($files_final);
         return $files_final;
     }
 
 //    public static function cmp($file1, $file2)
 //    {
-//        var_dump($file1[1]);
-//        var_dump($file2[1]);
-//        var_dump(" ");
+
 //        if ($file1[1] == $file2[1]) {
 //            return 0;
 //        }
@@ -379,7 +372,6 @@ END;
             )
         );
 
-//        var_dump(json_encode($options,JSON_PRETTY_PRINT));
 
         // search in ES
         $result = $this->doctrine->es_search($options);
@@ -390,13 +382,9 @@ END;
         $scroll_id = $result["scroll_id"];
 
         //on traite les données recu d'Elasticsearch
-        //var_dump(json_encode($options));
         foreach ($result["result"] as $file){
-            //var_dump($file->getAsArray());
             $this->list_files["files"][] = $file[0]->getAsArray();
         }
-//        var_dump("nombre de resultat : " . count($this->list_files));
-//        var_dump($this->list_files);
         $this->list_files["scroll_id"] = $scroll_id;
 
         return $this->list_files ?: null;
@@ -407,7 +395,6 @@ END;
     public function TestSearch()
     {
 
-//        var_dump("cc");
 //       $this->index("pdftest.pdf");
 //        $file= $this->doctrine->getRepository("TwakeDriveBundle:Drivefile")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
 //        $file = new DriveFile("14005200-48b1-11e9-a0b4-0242ac120000","14005200-48b1-11e9-a0b4-0242ac120000");
@@ -415,12 +402,10 @@ END;
 //        // $keywords_score=$this->update_keyword($keywords_score,explode(".", $document)[0]); //change this with document title
 //        $file->setExtension("PDF");
 //        $this->doctrine->es_put($file,$file->getEsType());
-//        var_dump("cc");
 
 //        $words=Array("stage","django");
 //        $workspaces = Array("d975075e-6028-11e9-b206-0242ac1200050","14005200-48b1-11e9-a0b4-0242ac120005");
 //        $result = $this->search($words, $workspaces);
-//        var_dump($result);
     }
 
 }

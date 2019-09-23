@@ -46,8 +46,6 @@ class AdvancedBloc
         $this->globalresult = Array();
 
         $this->SearchInBloc($current_user_id,$options,$channels);
-        //error_log(print_r("taille result : " . count($this->globalresult),true));
-        //error_log(print_r($this->globalresult,true));
 //        $files = $this->fileservice->search($words);
 //        foreach ($files as $file){
 //            $globalresult[]=Array( $file["id"] => "file");

@@ -49,7 +49,6 @@ class QuickSearch
             if(in_array($current_user_id,$channel[0]["members"]) || in_array($current_user_id,$channel[0]["ext_members"]))
             {
                 if(isset($this->workspace_prio) && $this->workspace_prio == $channel[0]["original_workspace"]){
-                    //var_dump($channel[0]["original_workspace"]);
                     $this->priochannelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1], "workspace" =>  $workspaces[$channel[0]["original_workspace"]]);
                 }
                 else {
@@ -79,7 +78,6 @@ class QuickSearch
     }
 
     public function SearchFile($words,$workspaces){
-        //var_dump($workspace["id"]);
         $files = $this->fileservice->search($words,$workspaces);
         foreach ($files as $file){
             if(isset($this->workspace_prio) && $this->workspace_prio == $file[0]["workspace_id"]){
@@ -94,7 +92,6 @@ class QuickSearch
 
     public function SearchPrivateChannel($words,$name,$current_user_id){
         $words[] = $name;
-        //var_dump($words);
         $channels = $this->channelservice->searchprivate($words,$current_user_id); // search channel in a workspace
         foreach ($channels as $channel){
             $this->channelresult[] = Array("type" => "channel", "channel" => $channel[0], "last_activity" => $channel[1]);
@@ -150,7 +147,6 @@ class QuickSearch
         }
 
        $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $current_user_id));
-        //var_dump($user);
 
 
         $this->SearchFile($words, $workspaces);
@@ -175,28 +171,21 @@ class QuickSearch
         $this->globalresult = array_merge($this->globalresult,$this->priofileresult);
         $this->globalresult = array_merge($this->globalresult,$this->channelresult);
         $this->globalresult = array_merge($this->globalresult,$this->fileresult);
-       //
-       //var_dump($this->globalresult);
 
 
 //        $this->history = $this->doctrine->getRepository("TwakeGlobalSearchBundle:SearchHistory")->findOneBy(Array("user_id" => $current_user_id));
-//        var_dump(sizeof($this->history));
-//        //var_dump($this->history->getAsArray());
 //        $this->doctrine->persist($this->history); //rajouter if isset history
-//        //var_dump($this->history);
 //        $this->doctrine->flush();
 
 //        $channels= $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
 //        foreach ($channels as $channel){
 //            if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == true) {
-//                var_dump($channel->getIndexationArray());
 //            }
 //        }
 
 //
 //        $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array("id" => "0f34eff8-48af-11e9-9dd1-0242ac120005"));
 //        foreach ($workspaces as $workspace) {
-//            //var_dump($workspace->getAsArray());
 //        }
 
 //        $files = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());

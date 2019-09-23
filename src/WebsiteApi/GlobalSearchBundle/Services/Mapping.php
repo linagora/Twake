@@ -82,7 +82,6 @@ class Mapping
         $mapping_file=json_encode($mapping_file);
         $mapping_message_bloc = json_encode($mapping_message_bloc);
 
-        //var_dump($mapping_channel);
 
 //        $url = "http://albatros.twakeapp.com:9200/channel/_mapping/_doc";
 //        //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";

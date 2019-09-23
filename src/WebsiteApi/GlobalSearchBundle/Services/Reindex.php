@@ -20,9 +20,7 @@ class Reindex
 
 
 //        $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array());
-//        //var_dump(sizeof($workspaces));
 //        foreach ($workspaces as $workspace) {
-//            //var_dump($workspace->getMembers()->getAsArray());
 //            $this->doctrine->es_put($workspace, $workspace->getEsType());
 //        }
 //
@@ -55,7 +53,6 @@ class Reindex
 //        foreach ($channels as $channel){
 //            if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false)
 //            {
-//                //var_dump(gettype($channel->getAsArray()["last_activity"]));
 //                $this->doctrine->es_put($channel,$channel->getEsType());
 //            }
 //        }

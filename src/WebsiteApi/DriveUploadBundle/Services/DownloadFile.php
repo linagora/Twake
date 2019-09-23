@@ -7,6 +7,7 @@ use http\Client\Response;
 use WebsiteApi\DriveUploadBundle\Services\ZipStream\Stream;
 use WebsiteApi\DriveUploadBundle\Services\ZipStream\ZipStream;
 use WebsiteApi\DriveUploadBundle\Services\ZipStream\Option\Archive;
+use WebsiteApi\DriveUploadBundle\Services\ZipStream\Option\Method;
 
 
 class DownloadFile
@@ -27,22 +28,6 @@ class DownloadFile
 
     public function zipDownload($workspace_id, $files_ids, $download, $versionId, $oldFileSystem = null){
 
-        # enable output of HTTP headers
-        $options = new Archive();
-        $options->setSendHttpHeaders(true);
-
-        # create a new zipstream object
-        $zip = new ZipStream('example.zip', $options);
-
-//        # add a file named 'goodbye.txt' from an open stream resource
-//        $fp = tmpfile();
-//        fwrite($fp, 'The quick brown fox jumped over the lazy dog.');
-//        rewind($fp);
-        //$zip->addFileFromStream('goodbye.txt', $fp);
-
-        //$stream = new Stream($fp);
-        //$zip->addFileFromPsr7Stream('goodbye.txt', $stream);
-
 
         if (!is_array($files_ids)) {
             $files_ids = [$files_ids];
@@ -57,14 +42,15 @@ class DownloadFile
         # enable output of HTTP headers
         $options = new Archive();
         $options->setSendHttpHeaders(true);
+        $options->setZeroHeader(true);
+
+
         # create a new zipstream object
         $zip = new ZipStream('example.zip', $options);
-
 
         $this->downloadList($files_ids, $zip, "/");
 
         # finish the zip stream
-        //error_log("passage");
         $zip->finish();
 
     }
@@ -135,8 +121,6 @@ class DownloadFile
                 $download_name = $file->getName();
                 $ext = $file->getExtension();
 
-//                error_log(print_r("son id : " . $file->getId()."", true));
-//                error_log(print_r("son name : " . $file->getName(), true));
 
                 $version = null;
                 if ($versionId != 0) {
@@ -202,20 +186,15 @@ class DownloadFile
                         else{
                             $zip_prefix = $zip_prefix . DIRECTORY_SEPARATOR . $file->getName();
                         }
-                        // error_log(print_r($file->getId()."", true));
-                        //error_log($file->getName());
+
 
                         $files_son = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $file->getWorkspaceId(), "parent_id" => $file->getId()));
                         foreach ($files_son as $son) {
-//                            error_log(print_r("son id : " . $son->getId()."", true));
-//                            error_log(print_r($zip_prefix, true));
-//                            error_log(print_r("son name : " . $son->getName(), true));
+
                             $this->downloadList(Array($son->getId().""), $zip, $zip_prefix);
-                            //error_log("fin un fils");
                         }
                     }
                     else{
-                        //error_log(print_r("solo file id: " . $file->getId()."",true));
                         $this->addOneFile($file, $version,$zip, $zip_prefix);
                     }
                 }
@@ -226,13 +205,7 @@ class DownloadFile
     public function download($workspace_id, $files_ids, $download, $versionId, $oldFileSystem = null)
     {
 
-//        error_log(print_r($workspace_id,true));
-//        error_log(print_r($files_ids,true));
-////        error_log(print_r($download,true));
-////        error_log(print_r($versionId,true));
-//
 //        $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $files_ids));
-//        error_log(print_r($file->getAsArray(),true));
 
         //TODO verify access to this file
 

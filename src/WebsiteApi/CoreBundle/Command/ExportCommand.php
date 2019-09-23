@@ -35,7 +35,6 @@ class ExportCommand extends ContainerAwareCommand
         $doctrine = $this->getContainer()->get('doctrine');
         $manager = $doctrine->getManager();
         $group_name = $input->getArgument('name');
-        //error_log(print_r($group_name,true));
         $export_user = true;
 
 // =================================================================================================================================================
@@ -69,7 +68,6 @@ class ExportCommand extends ContainerAwareCommand
                 "externe" => $ga->getExterne()
             );
         }
-        //var_dump($group_members);
         fwrite($handle_group_members, json_encode($group_members,JSON_PRETTY_PRINT));
         fclose($handle_group_members);
         $url = $group->getLogo()->getName();
@@ -249,7 +247,6 @@ class ExportCommand extends ContainerAwareCommand
                 $channel = $channel->getAsArray();
                 if($channel["name"] != "") {
                     if(!file_exists($channel["name"])) {
-                        //var_dump(str_replace("/","_",$channel["name"]));
                         mkdir(str_replace("/","_",$channel["name"]));
                         chdir(str_replace("/","_",$channel["name"]));
                         $channel_file = "channel.json";
@@ -356,12 +353,10 @@ class ExportCommand extends ContainerAwareCommand
                         "date_added" => $v["added"],
                         "data" => json_encode($v["data"],JSON_PRETTY_PRINT),
                     );
-                    //var_dump($version_array);
 
                 }
                 $drive_file = "drive_" . $file["id"] . ".json";
-                //var_dump($file["id"]);
-                //var_dump($drive_file);
+
                 $handle_drive_file = fopen($drive_file, 'w') or die('Cannot open file:  ' . $drive_file);
                 $drivefile = Array(
                     "parent_id" => $file["parent_id"],

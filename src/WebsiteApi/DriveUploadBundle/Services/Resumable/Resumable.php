@@ -305,13 +305,11 @@ class Resumable
     {
         $part = explode("_",$filename)[0];
         $chemin = $this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $part . "_" . $chunkNumber;
-        //error_log("chemin");
-        //error_log(print_r($chemin,true));
+
 
         $file = new File($chemin);
 
         //$file = new File($this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $filename);
-//        error_log("passage");
 //        if($file->exists() == 1)
 //            return true;
 //        else
@@ -321,7 +319,6 @@ class Resumable
 
 //    public function isFileUploadComplete($filename, $identifier, $chunkSize, $totalSize)
 //    {
-//        //error_log("cc");
 //        if ($chunkSize <= 0) {
 //            return false;
 //        }
@@ -369,11 +366,9 @@ class Resumable
 
     public function downloadFile($identifier, $name, &$zip = null, $zip_prefix = null)
     {
-//        error_log(print_r($zip_prefix,true));
         $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
         $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $this->parameter_drive_salt, "OpenSSL-2");
         if(isset($zip_prefix) && isset($zip)){
-            //error_log(print_r($zip_prefix,true));
             $stream_zip = new TwakeFileStream($this->storagemanager->getAdapter(),$param_bag, $uploadstate);
             $zip->addFileFromPsr7Stream($zip_prefix . DIRECTORY_SEPARATOR . $name, $stream_zip);
         }
@@ -388,10 +383,7 @@ class Resumable
     public function createFileFromChunks($chunkFile, $destFile)
     {
         $this->log('Beginning of create files from chunks');
-        //natsort($chunkFiles);
-        //error_log(print_r($chunkFile,true));
         $handle = $this->getExclusiveFileHandle($destFile);
-        //error_log(print_r($handle,true));
         if (!$handle) {
             return false;
         }
@@ -399,7 +391,6 @@ class Resumable
         $destFile->handle = $handle;
 
         $file = new File($chunkFile);
-        //var_dump($destFile->read());
         $destFile->append($file->read());
         @unlink($chunkFile);
         $this->log('Append ', ['chunk file' => $chunkFile]);
