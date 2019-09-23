@@ -33,6 +33,7 @@ class Websockets
             "board" => "app.tasks.board",
             "list" => "app.tasks.list",
             "task" => "app.tasks.task",
+            "tags" => "globalsearch.tag",
             "updates" => "app.user_updates"
         );
 

@@ -14,6 +14,12 @@ Class Tag{
 
     }
 
+    /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
+    public function init($route, $data, $current_user = null)
+    {
+        return true;
+    }
+
     public function hasAccess($data, $current_user = null, $drive_element = null)
     {
         return true;

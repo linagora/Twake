@@ -9,7 +9,7 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 /**
  * TaskUser
  *
- * @ORM\Table(name="task_user",options={"engine":"MyISAM", "scylladb_keys": {{"user_id_or_mail": "ASC", "sort_date": "ASC", "id": "ASC"}, {"task_id":"ASC"}} })
+ * @ORM\Table(name="task_user",options={"engine":"MyISAM", "scylladb_keys": {{"user_id_or_mail": "ASC", "id": "ASC"}, {"task_id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\TasksBundle\Repository\TaskUserRepository")
  */
 class TaskUser
