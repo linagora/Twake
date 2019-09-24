@@ -255,7 +255,6 @@ class DownloadFile
 
         if(isset($zip) && $zip ) {
             //on ajoute un fichier url dans le zip
-            $zip_archive->addFile("test.url", "[InternetShortcut]" . "\r\n" . "URL=https://www.youtube.com/?gl=FR&hl=fr");
 
             # finish the zip stream
             $zip_archive->finish();
