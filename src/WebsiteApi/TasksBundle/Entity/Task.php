@@ -191,6 +191,11 @@ class Task extends SearchableObject
      */
     public function getDescription()
     {
+        try {
+            return json_decode($this->description, 1);
+        } catch (\Exception $e) {
+
+        }
         return $this->description;
     }
 
@@ -199,7 +204,7 @@ class Task extends SearchableObject
      */
     public function setDescription($description)
     {
-        $this->description = $description;
+        $this->description = json_encode($description);
     }
 
     /**

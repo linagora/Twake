@@ -51,10 +51,13 @@ class DriveFileRefacto
         $elements = $this->listDirectory($workspace_id, $directory_id, $trash);
         $path = $this->getPath($workspace_id, $directory_id);
 
+
         $list = Array();
         foreach ($elements as $element) {
             $array = $element->getAsArray();
             $array["path"] = $path;
+            $array["versions"] = $this->getFileVersion($element,true);
+
             $list[] = $array;
         }
         return $list;
@@ -94,8 +97,14 @@ class DriveFileRefacto
             $path = [$data->getAsArray()];
         }
 
+        $versions = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $element->getId()));
+        $file_version = [];
+        foreach($versions as $version){
+            $file_version[] = $version->getAsArray();
+        }
         $data = $data->getAsArray();
         $data["path"] = $path;
+        $data["versions"] = $file_version;
 
         return $data;
 
@@ -293,7 +302,7 @@ class DriveFileRefacto
             $fileordirectory->setName($object["name"]);
         }
 
-        if (($name_changed || $did_create || $did_move) && !$fileordirectory->getIsInTrash()) {
+        if (($name_changed || $did_create || $did_move) && !$fileordirectory->getIsInTrash()){
 
             $repo = $this->em->getRepository("TwakeDriveBundle:DriveFile");
             $list = $repo->findBy(Array("workspace_id" => $fileordirectory->getWorkspaceId(), "parent_id" => $fileordirectory->getParentId(), "isintrash" => false));
@@ -386,7 +395,6 @@ class DriveFileRefacto
         else{
             $new = false;
         }
-
         //Update size if file was created AFTER versionning
         if (!$fileordirectory->getIsDirectory() && $upload_data) {
             $size_before = $fileordirectory->getSize();
@@ -661,6 +669,26 @@ class DriveFileRefacto
 
         return $new_trash->getAsArray();
 
+    }
+
+    public function getFileVersion($fileOrFileId,$asArray=false){
+        if(!is_object($fileOrFileId)){
+            $file = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=>$fileOrFileId));
+        }else{
+            $file = $fileOrFileId;
+        }
+        if(!$file || $file->getIsDirectory()){
+            return false;
+        }
+        $versionsEntity = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id"=>$file->getId()));
+        if($asArray){
+            $versions = Array();
+            foreach($versionsEntity as $version){
+                $versions[] = $version->getAsArray();
+            }
+            return $versions;
+        }
+        return $versionsEntity;
     }
 
     private function notifyConnectors(DriveFile $file, $did_create = true, $current_user = null)

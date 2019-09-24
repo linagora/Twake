@@ -268,21 +268,6 @@ class Resumable
             } else {
                 $object = json_decode($_POST['object'], 1);
 
-                $parent_id = $object['parent_id'];
-                $is_directory = $object['is_directory'];
-                $name = $object['name'];
-                $detached = $object['detached'];
-                $workspace_id = $object['workspace_id'];
-                $front_id = $object['front_id'];
-
-                $object = Array(
-                    "parent_id" => $parent_id,
-                    "is_directory" => $is_directory,
-                    "detached" => $detached,
-                    "workspace_id" => $workspace_id,
-                    "front_id" => $front_id,
-                    "name" => $name
-                );
             }
 
             $data = Array("upload_mode" => "chunk", "identifier" => $identifier, "nb_chunk" => $chunkNumber);
@@ -293,7 +278,13 @@ class Resumable
             $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $current_user, Array("data" => $data, "size" => $totalSize), true);
 
             if ($uploadstate->getHasPreview() && $totalSize < 20000000) {
-                $this->storagemanager->getAdapter()->genPreview($fileordirectory, $previewDestination);
+                //$this->storagemanager->getAdapter()->genPreview($fileordirectory, $previewDestination);
+            }
+            $fileToReturn = $fileordirectory->getAsArray();
+            if(!$fileordirectory->getIsDirectory()){
+                $versions = $this->driverefacto->getFileVersion($fileordirectory,true);
+                $fileToReturn["versions"] = $versions;
+                return $fileToReturn;
             }
             return $fileordirectory->getAsArray();
 

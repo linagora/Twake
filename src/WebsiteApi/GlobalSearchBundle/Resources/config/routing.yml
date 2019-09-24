@@ -42,13 +42,13 @@ globalsearch_mapping:
 
 
 globalsearch_tag_get:
-    path:     /tagget
+    path:     /tags/get
     defaults: { _controller: TwakeGlobalSearchBundle:Tag:get}
 
 globalsearch_tag_save:
-    path:     /tagsave
+    path:     /tags/save
     defaults: { _controller: TwakeGlobalSearchBundle:Tag:save }
 
 globalsearch_tag_remove:
-    path:     /tagremove
+    path:     /tags/remove
     defaults: { _controller: TwakeGlobalSearchBundle:Tag:remove }

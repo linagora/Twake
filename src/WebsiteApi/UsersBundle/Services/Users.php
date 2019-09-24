@@ -86,6 +86,7 @@ class Users
             )
         );
 
+
         // search in ES
         $result = $this->em->es_search($options);
 
@@ -93,9 +94,17 @@ class Users
 
         $scroll_id = $result["scroll_id"];
 
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => substr($name)));
+
+        if ($user) {
+            $this->list_users["users"][] = $user;
+        }
+
         //on traite les données recu d'Elasticsearch
         foreach ($result["result"] as $user){
-            $this->list_users["users"][]= Array($user[0]->getAsArray(),$user[1][0]);;
+            //var_dump($file->getAsArray());
+            $this->list_users["users"][] = Array($user[0]->getAsArray(), $user[1][0]);;
         }
 
         $this->list_users["scroll_id"] = $scroll_id;
