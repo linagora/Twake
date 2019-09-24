@@ -153,7 +153,6 @@ class Contacts implements ContactsInterface
 
 	public function getAll($current_user, $ignore_notifications = false)
 	{
-		error_log("test");
 		$contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
 
 		$links = $contactRepository->findBy(Array("to"=>$current_user, "status"=>1));

@@ -44,7 +44,6 @@ END;
 
     public function simplifyInArray($data){
         if (is_string($data)) {
-            //var_dump($data);
             return strtolower($this->removeSpecialChars(strtolower($data)));
         }
         if (is_array($data)) {

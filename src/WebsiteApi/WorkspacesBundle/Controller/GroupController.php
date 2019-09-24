@@ -61,7 +61,6 @@ class GroupController extends Controller
             $thumbnail = $thumbnail[0];
 
             if (count($thumbnail["errors"]) > 0) {
-                //error_log("error ".print_r($thumbnail));
                 $data["errors"][] = "badimage";
             } else {
 

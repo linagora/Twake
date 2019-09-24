@@ -25,9 +25,7 @@ class ReindexCommand extends ContainerAwareCommand
         $manager = $doctrine->getManager();
 
 //        $workspaces = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array());
-//        //var_dump(sizeof($workspaces));
 //        foreach ($workspaces as $workspace) {
-//            //var_dump($workspace->getMembers()->getAsArray());
 //            $manager->es_put($workspace, $workspace->getEsType());
 //        }
 //
@@ -46,7 +44,6 @@ class ReindexCommand extends ContainerAwareCommand
 //        foreach ($channels as $channel){
 //            if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false)
 //            {
-//                //var_dump(gettype($channel->getAsArray()["last_activity"]));
 //                $manager->es_put($channel,$channel->getEsType());
 //            }
 //        }

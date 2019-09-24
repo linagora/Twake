@@ -248,12 +248,10 @@ class Bloc extends SearchableObject
 //            foreach ($message_entity->getContent()["prepared"][0] as $elem) {
 //                if (is_array($elem)) {
 //                    $id = explode(":", $elem["content"])[1];
-//                    //error_log(print_r($id,true));
 //                    $mentions[] = $id;
 //                }
 //            }
 //            $mentions = array_unique($mentions);
-            //error_log(print_r($mentions,true));
 //        }
 
 

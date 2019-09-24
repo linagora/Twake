@@ -235,8 +235,7 @@ class ManagerAdapter
     //update for important keywords from title or extension of a file only in ES to not repeat info in scyllaDB
 
     public function update_ES_keyword($keywords,$word){
-//        error_log(print_r($keywords,true));
-//        error_log(print_r($word,true));
+
 
         $keywords[] = Array(
             "keyword" => $word,
@@ -255,9 +254,6 @@ class ManagerAdapter
     public function es_put($entity, $index, $server = "twake")
     {
 
-        //error_log("PASSAGE DANS ES PUT");
-//        error_log(print_r($entity->getId()."",true));
-
         if (!$this->es_server) {
             return;
         }
@@ -275,11 +271,9 @@ class ManagerAdapter
             }
             if (method_exists($entity, "getContentKeywords") && is_array($entity->getContentKeywords())) {
                 $keywords = $entity->getContentKeywords();
-                //error_log(print_r($keywords,true));
                 //partie sur la verification du format des mots clés
                 $keywords_verif = Array();
                 foreach ($keywords as $keyword_score){
-                    //error_log(print_r($keyword_score,true));
                     $keys = array_keys($keyword_score);
                     if(count($keys) != 2 || $keys[0] != "keyword" || $keys[1]  != "score" ||
                         gettype($keyword_score["keyword"]) != "string" || gettype($keyword_score["keyword"]) != "string"){
@@ -297,7 +291,6 @@ class ManagerAdapter
             }
         }
 
-        //error_log(print_r($data,true));
         $st = new StringCleaner();
         $data = $st->simplifyInArray($data);
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
@@ -337,7 +330,6 @@ class ManagerAdapter
 
     public function es_search($options = Array(), $index = null, $server = "twake")
     {
-        //var_dump($options);
 
         if(isset($options["scroll_id"])){
             $route = "http://" . $this->es_server . "/_search/scroll" ;
@@ -400,15 +392,12 @@ class ManagerAdapter
         if (isset($options["repository"])) {
             $repository = $this->getRepository($options["repository"]);
         }
-        //error_log(print_r($options["repository"],true));
-        //error_log(print_r($repository,true));
 
         $res = $res->getContent();
 
         $result = [];
         $scroll_id = "";
 
-        //var_dump($res);
         if ($res) {
             $res = json_decode($res, 1);
             if($res["hits"]["total"] > $options["size"] && isset($res["_scroll_id"])){
@@ -416,7 +405,6 @@ class ManagerAdapter
                 $scroll_id = $res["_scroll_id"];
             }
 
-            //error_log(print_r($res,true));
 
             if (isset($res["hits"]) && isset($res["hits"]["hits"])) {
                 $res = $res["hits"]["hits"];

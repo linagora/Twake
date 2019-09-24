@@ -9,7 +9,7 @@ services:
 
   driveupload.download:
     class: WebsiteApi\DriveUploadBundle\Services\DownloadFile
-    arguments: ["@driveupload.resumable", "@app.twake_doctrine"]
+    arguments: ["@driveupload.resumable", "@app.twake_doctrine","@driveupload.storemanager", %DRIVE_SALT% ]
 
   driveupload.resumable:
     class: WebsiteApi\DriveUploadBundle\Services\Resumable\Resumable

@@ -230,7 +230,6 @@ class DriveFileSystem
             }
 
             if(is_string($directory)){
-                //error_log("search scylla");
                 $directory = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory));
 
             }
@@ -240,25 +239,17 @@ class DriveFileSystem
             }
 
             if($directory != null){
-                //error_log(print_r("directory type: " . gettype($directory),true));
-                //error_log(print_r("id ".$directory->getId(),true));
-                //error_log(print_r($directory->getAsArray(),true));
-                //error_log(print_r("delta: ".$delta,true));
+
                 $currentSize = $directory->getSize();
-                //error_log(print_r("currentsize: ".$currentSize,true));
                 $actualsize = $directory->getSize();
                 $directory->setSize($currentSize + $delta);
                 //$directory->setSize(0);
                 $currentSize = $directory->getSize();
-                //error_log(print_r("aftersize: ".$currentSize,true));
                 $this->doctrine->persist($directory);
                 $this->doctrine->flush();
                 $directory = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory->getId()));
-                //error_log(print_r("get size: ".$directory->getSize(),true));
                 $directory = $directory->getParentId();
-                //error_log(print_r("parent id: ".$directory,true));
-//                error_log("\n");
-//                error_log("\n");
+
             }
         }
     }
@@ -1132,13 +1123,11 @@ class DriveFileSystem
         $fileOrDirectory->setParentId($this->getRootEntity($fileOrDirectory->getWorkspaceId())->getId()); //On le met dans le root de la corbeille
         $fileOrDirectory->setIsInTrash(true);
 
-        //error_log(print_r(gettype($fileOrDirectory->getOldParent()),true));
         $this->updateSize($fileOrDirectory->getOldParent(), -$fileOrDirectory->getSize());
 
         //remettre du poids a la racine
 
         $root = $this->getRootEntity($fileOrDirectory->getWorkspaceId());
-        //error_log(print_r($root->getAsArray(),true));
         $root->setSize($root->getSize()+$fileOrDirectory->getSize());
 
         $this->doctrine->persist($fileOrDirectory);

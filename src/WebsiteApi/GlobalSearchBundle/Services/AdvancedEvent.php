@@ -239,7 +239,6 @@ class AdvancedEvent
                 )
             );
 
-        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
 
             // search in ES
             $result = $this->doctrine->es_search($options);
@@ -249,13 +248,9 @@ class AdvancedEvent
             $scroll_id = $result["scroll_id"];
 
             //on traite les données recu d'Elasticsearch
-            //var_dump(json_encode($options));
             foreach ($result["result"] as $event){
-                //var_dump($file->getAsArray());
                 $this->list_events["events"][] = $event[0]->getAsArray();
             }
-//        var_dump("nombre de resultat : " . count($this->list_files));
-       //var_dump($this->list_events);
             $this->list_events["scroll_id"] = $scroll_id;
 
             return $this->list_events ?: null;
