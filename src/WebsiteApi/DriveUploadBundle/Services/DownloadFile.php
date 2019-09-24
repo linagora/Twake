@@ -36,13 +36,23 @@ class DownloadFile
     {
         $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
         $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $this->parameter_drive_salt, "OpenSSL-2");
-        if(isset($zip_prefix) && isset($zip)) {
-            $stream_zip = new TwakeFileStream($this->storagemanager->getAdapter(), $param_bag, $uploadstate);
-            $zip->addFileFromPsr7Stream($zip_prefix . DIRECTORY_SEPARATOR . $name, $stream_zip);
+        if(isset($uploadstate)){
+            if(isset($zip_prefix) && isset($zip)) {
+                $stream_zip = new TwakeFileStream($this->storagemanager->getAdapter(), $param_bag, $uploadstate);
+                $zip->addFileFromPsr7Stream($zip_prefix . DIRECTORY_SEPARATOR . $name, $stream_zip);
+            }
+            else{
+                for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
+                    $this->storagemanager->getAdapter()->read("stream", $i, $param_bag, $uploadstate);
+                }
+            }
         }
         else{
-            for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
-                $this->storagemanager->getAdapter()->read("stream", $i, $param_bag, $uploadstate);
+            $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("id" => $identifier));
+            $url = $file->getUrl();
+            if(isset($url)){
+                //on ajoute un fichier url dans le zip
+                $zip->addFile("google.url","[InternetShortcut]" . "\r\n" . "URL=" . $url);
             }
         }
     }
@@ -200,7 +210,7 @@ class DownloadFile
 
     public function download($workspace_id, $files_ids, $download, $versionId, $oldFileSystem = null)
     {
-        
+
         //TODO verify access to this file
 
         if (!is_array($files_ids)) {
@@ -244,6 +254,9 @@ class DownloadFile
 
 
         if(isset($zip) && $zip ) {
+            //on ajoute un fichier url dans le zip
+            $zip_archive->addFile("test.url", "[InternetShortcut]" . "\r\n" . "URL=https://www.youtube.com/?gl=FR&hl=fr");
+
             # finish the zip stream
             $zip_archive->finish();
         }
