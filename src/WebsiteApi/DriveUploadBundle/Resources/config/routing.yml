@@ -4,13 +4,8 @@ driveupload_upload:
 
 driveupload_download:
   path:       /download
-  defaults: { _controller: TwakeDriveUploadBundle:Upload:downloadfile}
+  defaults: { _controller: TwakeDriveUploadBundle:Download:downloadfile}
 
 driveupload_preprocess:
   path:       /preprocess
   defaults: { _controller: TwakeDriveUploadBundle:Upload:Preprocess}
-
-
-driveupload_zipdownload:
-  path:       /zipdownload
-  defaults: { _controller: TwakeDriveUploadBundle:Upload:ZipDownload}

@@ -368,7 +368,6 @@ class File
                 $this->zip->send($data);
             }
         }
-        error_log("SORTIT");
         $this->deflateFinish($options);
     }
 

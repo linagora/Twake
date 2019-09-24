@@ -364,41 +364,6 @@ class Resumable
         $this->preProcess();
     }
 
-    public function downloadFile($identifier, $name, &$zip = null, $zip_prefix = null)
-    {
-        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
-        $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $this->parameter_drive_salt, "OpenSSL-2");
-        if(isset($zip_prefix) && isset($zip)){
-            $stream_zip = new TwakeFileStream($this->storagemanager->getAdapter(),$param_bag, $uploadstate);
-            $zip->addFileFromPsr7Stream($zip_prefix . DIRECTORY_SEPARATOR . $name, $stream_zip);
-        }
-        else{
-            for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
-                $this->storagemanager->getAdapter()->read("stream", $i, $param_bag, $uploadstate);
-            }
-        }
-
-    }
-
-    public function createFileFromChunks($chunkFile, $destFile)
-    {
-        $this->log('Beginning of create files from chunks');
-        $handle = $this->getExclusiveFileHandle($destFile);
-        if (!$handle) {
-            return false;
-        }
-        $destFile = new File($destFile);
-        $destFile->handle = $handle;
-
-        $file = new File($chunkFile);
-        $destFile->append($file->read());
-        @unlink($chunkFile);
-        $this->log('Append ', ['chunk file' => $chunkFile]);
-
-        $this->log('End of create files from chunks');
-        return $destFile->exists();
-    }
-
     /**
      * Create the final file from chunks
      */
