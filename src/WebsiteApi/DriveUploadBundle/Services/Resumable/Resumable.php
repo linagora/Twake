@@ -14,6 +14,7 @@ use Monolog\Handler\StreamHandler;
 
 use WebsiteApi\DriveUploadBundle\Services\Storage\EncryptionBag;
 use WebsiteApi\DriveUploadBundle\Services\ZipStream\Option\Archive;
+use WebsiteApi\DriveUploadBundle\Services\ZipStream\TwakeFileStream;
 use WebsiteApi\DriveUploadBundle\Services\ZipStream\ZipStream;
 
 class Resumable
@@ -277,7 +278,7 @@ class Resumable
             $fileordirectory = $this->driverefacto->save($object, $options_from_caller, $current_user, Array("data" => $data, "size" => $totalSize), true);
 
             if ($uploadstate->getHasPreview() && $totalSize < 20000000) {
-                //$this->storagemanager->getAdapter()->genPreview($fileordirectory, $previewDestination);
+                $this->storagemanager->getAdapter()->genPreview($fileordirectory, $previewDestination);
             }
             $fileToReturn = $fileordirectory->getAsArray();
             if(!$fileordirectory->getIsDirectory()){
@@ -295,13 +296,11 @@ class Resumable
     {
         $part = explode("_",$filename)[0];
         $chemin = $this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $part . "_" . $chunkNumber;
-        //error_log("chemin");
-        //error_log(print_r($chemin,true));
+
 
         $file = new File($chemin);
 
         //$file = new File($this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $filename);
-//        error_log("passage");
 //        if($file->exists() == 1)
 //            return true;
 //        else
@@ -311,7 +310,6 @@ class Resumable
 
 //    public function isFileUploadComplete($filename, $identifier, $chunkSize, $totalSize)
 //    {
-//        //error_log("cc");
 //        if ($chunkSize <= 0) {
 //            return false;
 //        }
@@ -355,41 +353,6 @@ class Resumable
         $this->setRequest($request);
         $this->setResponse($response);
         $this->preProcess();
-    }
-
-    public function downloadFile($identifier, &$zip = null, $zip_prefix = false)
-    {
-//        error_log(print_r($zip_prefix,true));
-        $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
-        $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $this->parameter_drive_salt, "OpenSSL-2");
-
-        for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
-            $this->storagemanager->getAdapter()->read("stream", $i, $param_bag, $uploadstate, $zip, $zip_prefix);
-        }
-
-    }
-
-    public function createFileFromChunks($chunkFile, $destFile)
-    {
-        $this->log('Beginning of create files from chunks');
-        //natsort($chunkFiles);
-        //error_log(print_r($chunkFile,true));
-        $handle = $this->getExclusiveFileHandle($destFile);
-        //error_log(print_r($handle,true));
-        if (!$handle) {
-            return false;
-        }
-        $destFile = new File($destFile);
-        $destFile->handle = $handle;
-
-        $file = new File($chunkFile);
-        //var_dump($destFile->read());
-        $destFile->append($file->read());
-        @unlink($chunkFile);
-        $this->log('Append ', ['chunk file' => $chunkFile]);
-
-        $this->log('End of create files from chunks');
-        return $destFile->exists();
     }
 
     /**

@@ -332,7 +332,6 @@ class ChannelsSystem extends ChannelSystemAbstract
             )
         );
 
-        //var_dump(json_encode($options));
         $channels = $this->entity_manager->es_search($options);
 
         $result = [];
@@ -384,7 +383,6 @@ class ChannelsSystem extends ChannelSystemAbstract
             )
         );
 
-        //var_dump(json_encode($options));
         $channels = $this->entity_manager->es_search($options);
 
         $result = [];

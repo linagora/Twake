@@ -29,10 +29,7 @@ class Users
 
     public function search($options = Array())
     {
-        //var_dump("passage");
         $name = $options["name"];
-        //var_dump($name);
-
         $should = Array();
 
         if(isset($name)){

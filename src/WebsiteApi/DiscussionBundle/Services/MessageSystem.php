@@ -337,14 +337,12 @@ class MessageSystem
             $message_reaction_repo = $this->em->getRepository("TwakeDiscussionBundle:MessageReaction");
             $message_reaction = $message_reaction_repo->findOneBy(Array("user_id" => $user->getId(), "message_id" => $message->getId()));
             $current_reactions = $message->getReactions();
-            //error_log(print_r($current_reactions,true));
             $user_reaction = $object["_user_reaction"];
             $reaction = Array();
 
             /*if($current_reactions && !(is_array($current_reactions[0]))){
                 $reacttochangeformat = Array();
                 $allreactionppl = $message_reaction_repo->findBy(Array("message_id" => $message->getId()));
-                //error_log(print_r(count($allreactionppl),true));
                 foreach ($allreactionppl as $ppl){
                     $reacttochangeformat[$ppl->getReaction()]["users"][]= $ppl->getUserId() ;
                     if($reacttochangeformat[$ppl->getReaction()]["count"]){
@@ -354,7 +352,6 @@ class MessageSystem
                         $reacttochangeformat[$ppl->getReaction()]["count"] = 1 ;
                     }
                 }
-                //error_log(print_r($reacttochangeformat,true));
                 $current_reactions = $reacttochangeformat;
             }*/
 
@@ -381,9 +378,7 @@ class MessageSystem
 
             if (isset($reaction["add"])) {
                 $key_first = array_keys($reaction["add"])[0];
-                //error_log(print_r($key_first,true));
                 if(array_key_exists($key_first,$current_reactions)){
-                    //error_log('ici');
                     $current_reactions[$key_first]["users"][] = $user->getId();
                 }
                 else{
@@ -493,14 +488,9 @@ class MessageSystem
     {
         $message_id = $message->getId()."";
 
-//        error_log("DEBUT INDEXATION D UN MESSAGE DANS LE BLOC");
-//        error_log(print_r($message_id,true));
-//        error_log(print_r($message->getContent()["prepared"][0],true));
-
         $lastbloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
 
         if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
-//            error_log("CREATION NOUVEAU BLOC");
             $messages= Array();
             $id_messages = Array();
             $blocbdd = new Bloc($workspace_id, $channel_id, $messages, $id_messages);
@@ -520,12 +510,7 @@ class MessageSystem
         $this->em->persist($message);
         $this->em->flush();
 
-        //error_log(print_r($blocbdd->getMessages(),true));
-//        error_log(print_r($blocbdd->getIdMessages(),true));
-
         if ($blocbdd->getNbMessage() == 10){
-//            error_log("INDEXATION DU BLOC DE MESSAGE");
-            //error_log(print_r($blocbdd->getAsArray(),true));
             // indexer le bloc de message
             $this->em->es_put($blocbdd,$blocbdd->getEsType());
         }
@@ -565,7 +550,6 @@ class MessageSystem
 
 
         $mentions = Array();
-        //error_log(print_r($message->getContent(),true));
         if (is_array($message->getContent()["prepared"][0])) {
             foreach ($message->getContent()["prepared"][0] as $elem) {
                 if (is_array($elem)) {
@@ -574,7 +558,6 @@ class MessageSystem
                 }
             }
             $mentions = array_unique($mentions);
-            //error_log(print_r($mentions,true));
             $messages[$position]["mentions"] = $mentions;
             $bloc->setMessages($messages);
             $this->em->persist($bloc);
@@ -622,10 +605,6 @@ class MessageSystem
 
         }
 
-        //error_log(print_r($bloc->getMessages(),true));
-
-
-        //$this->em->persist($bloc);
         $this->em->flush();
 
         // Need to reindex the bloc in ES if he is already indexed
@@ -660,8 +639,6 @@ class MessageSystem
 
         $this->em->persist($bloc);
         $this->em->flush();
-
-        //error_log(print_r($bloc, true));
 
         if($bloc->getLock() == true){
             $this->em->es_put($bloc,$bloc->getEsType());

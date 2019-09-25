@@ -22,37 +22,26 @@ class Blocmessage
 
     public function verif_valid($message_id_in_bloc, $options){
         $valid = true;
-        //var_dump($options);
         $message_bdd = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message_id_in_bloc));
-//        var_dump('date before : ' . $options["date_before"]);
-//        var_dump('date after : ' . $options["date_after"]);
-//        var_dump('date message : ' . $message_bdd->getCreationDate()->format('Y-m-d'));
-        //var_dump("DEBUT VALIDATION");
         if ($valid && isset($options["sender"])) {
             if ($message_bdd->getSender()->getId() . "" != $options["sender"]) {
                 $valid = false;
-                //var_dump("error valid sender");
             }
         }
         if ($valid && isset($options["date_before"]) && ($message_bdd->getCreationDate()->format('Y-m-d') > $options["date_before"])) {
-            //var_dump("error valid date before");
             $valid = false;
         }
         if ($valid && isset($options["date_after"]) && ($message_bdd->getCreationDate()->format('Y-m-d') < $options["date_after"])) {
-            //var_dump("error valid date after");
             $valid = false;
         }
 
         if ($valid && isset($options["pinned"]) && $message_bdd->getPinned() != $options["pinned"]){
-            //var_dump("error valid pinned");
             $valid = false;
         }
 
 
-        //var_dump($message_bdd->getAsArray());
         if($valid && isset($options["application_id"]) && ($message_bdd->getApplicationId() != $options["application_id"])){
             $valid = false;
-            //var_dump("error valid application id");
         }
 
         if ($valid && isset($options["tags"])){
@@ -62,7 +51,6 @@ class Blocmessage
             if(isset($tags)) {
                 while ($tags_search && $i < count($options["tags"])) {
                     $trouve = false;
-                    //var_dump($options["tags"][$i]);
                     foreach ($message_bdd->gettags() as $tag) {
                         if ($tag == $options["tags"][$i]) {
                             $trouve = true;
@@ -80,7 +68,6 @@ class Blocmessage
             }
             if (!$tags_search) {
                 $valid = false;
-                //var_dump("error valid tags");
             }
         }
 
@@ -127,9 +114,6 @@ class Blocmessage
                 $valid = false;
             }
         }
-
-
-        //var_dump($valid);
 
         if ($valid && !in_array($message_id_in_bloc, $this->doublon_id)) {
             $this->doublon_id[] = $message_id_in_bloc;
@@ -354,8 +338,6 @@ class Blocmessage
                 )
             );
 
-            //var_dump(json_encode($options,JSON_PRETTY_PRINT));
-
 
             // search in ES
             $result = $this->doctrine->es_search($options);
@@ -387,15 +369,12 @@ class Blocmessage
                     }
                     elseif (!isset($options["words"]) && isset($options_save["application_id"]) && isset($message["application_id"])){
                         //POUR LES MESSAGES D APPLICATION COMME LES ENVOIES DE FICHIER QUI ONT PAS DE TEXTE
-//                        var_dump("passage bloc ES sans content");
-//                        var_dump($message["application_id"]);
                         $message_id_in_bloc = $bloc->getIdMessages()[$compt];
                         $this->verif_valid($message_id_in_bloc, $options_save);
                     }
                     $compt++;
                 }
             }
-            //var_dump("nombre de resultat : " . count($list_message));
 
             // on cherche dans le bloc en cours de construction de tout les channels demandés
             foreach ($channels as $channel) {
@@ -403,7 +382,6 @@ class Blocmessage
                 $compt = 0;
                 if (isset($lastbloc) && $lastbloc->getLock() == false) {
                     foreach ($lastbloc->getMessages() as $message) {
-                        //var_dump($message);
                         if(isset($options_save["words"])) {
                             $word_valid = true;
                             foreach ($final_words as $word) {
@@ -419,8 +397,7 @@ class Blocmessage
                         }
                         elseif (!isset($options["words"]) && isset($options_save["application_id"]) && isset($message["application_id"])){
                             //POUR LES MESSAGES D APPLICATION COMME LES ENVOIES DE FICHIER QUI ONT PAS DE TEXTE
-//                            var_dump("passage hors bloc sans content");
-//                            var_dump($message["application_id"]);
+
                             $message_id_in_bloc = $lastbloc->getIdMessages()[$compt];
                             $this->verif_valid($message_id_in_bloc, $options_save);
                         }

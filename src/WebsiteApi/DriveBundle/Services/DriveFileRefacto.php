@@ -111,7 +111,6 @@ class DriveFileRefacto
     }
 
     public function recursedelete($directory){
-        //error_log(print_r($directory->getId(),true));
         if($directory->getIsDirectory()){
             $fileson = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $directory->getWorkspaceId() . "", "parent_id" => $directory->getId() . ""));
             if (isset($fileson)) {
@@ -274,7 +273,6 @@ class DriveFileRefacto
         if (isset($object["trash"]) && $object["trash"] && !$did_create && !$fileordirectory->getIsInTrash()) { // on veut mettre un fichier a la corbeille
             $oldparent = $fileordirectory->getParentId() . "";
             $newparent = $this->getTrashEntity($fileordirectory->getWorkspaceId() . "")->getId() . "";
-            //error_log(print_r("new parent id: " . $newparent,true));
             $this->move($fileordirectory, $oldparent, $newparent, 1, $current_user);
 
             $fileordirectory->setOldParent($oldparent);
@@ -400,6 +398,7 @@ class DriveFileRefacto
         //Update size if file was created AFTER versionning
         if (!$fileordirectory->getIsDirectory() && $upload_data) {
             $size_before = $fileordirectory->getSize();
+
             $this->versionning($fileordirectory, $current_user, $upload_data, $new);
             $size_after = $upload_data["size"];
 
@@ -423,7 +422,6 @@ class DriveFileRefacto
 
     public function recursetrash($directory){ // permet de changer tous les in trash d'une arborescence
 
-        //error_log(print_r($directory->getId(),true));
         $fileson = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $directory->getWorkspaceId()."", "parent_id" => $directory->getId().""));
         if(isset($fileson)){
             foreach ($fileson as $file){

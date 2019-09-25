@@ -86,7 +86,7 @@ twake_drive_preview:
 
 twake_drive_download:
     path:     /download
-    defaults: { _controller: TwakeDriveBundle:Files:download }
+    defaults: { _controller: TwakeDriveUploadBundle:Download:downloadfile}
     methods: [GET, POST]
 
 #twake_drive_search:

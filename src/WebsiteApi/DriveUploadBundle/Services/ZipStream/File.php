@@ -136,6 +136,7 @@ class File
         $this->addFileFooter();
     }
 
+
     /**
      * Create and send zip header for this file.
      *
@@ -352,11 +353,11 @@ class File
 
     protected function readStream(StreamInterface $stream, ?int $options = null): void
     {
-        //error_log("passage 2 ");
         $this->deflateInit();
         $total = 0;
         $size = $this->opt->getSize();
         while (!$stream->eof() && ($size === 0 || $total < $size)) {
+
             $data = $stream->read(self::CHUNKED_READ_BLOCK_SIZE);
             $total += strlen($data);
             if ($size > 0 && $total > $size) {
@@ -410,12 +411,14 @@ class File
 
     protected function processStreamWithComputedHeader(StreamInterface $stream): void
     {
+
         $this->readStream($stream, self::COMPUTE);
         $stream->rewind();
         // incremental compression with deflate_add
         // makes this second read unnecessary
         // but it is only available from PHP 7.0
         if (!$this->deflate && $stream instanceof DeflateStream && $this->method->equals(Method::DEFLATE())) {
+            error_log("PASSAGE DANS LE IF PHP 7");
             $stream->addDeflateFilter($this->opt);
             $this->zlen = new Bigint();
             while (!$stream->eof()) {
@@ -424,7 +427,6 @@ class File
             }
             $stream->rewind();
         }
-        //error_log("passage process");
 
         $this->addFileHeader();
         $this->readStream($stream, self::SEND);
