@@ -73,7 +73,8 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
             $dataToPush = Array(
                 "type" => "update_workspace_level",
-                "workspace" => $level->getAsArray()
+                "workspace_id" => $workspace->getId(),
+                "level" => $level->getAsArray()
             );
             $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
 
