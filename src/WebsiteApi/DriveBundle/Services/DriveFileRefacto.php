@@ -398,6 +398,7 @@ class DriveFileRefacto
         //Update size if file was created AFTER versionning
         if (!$fileordirectory->getIsDirectory() && $upload_data) {
             $size_before = $fileordirectory->getSize();
+
             $this->versionning($fileordirectory, $current_user, $upload_data, $new);
             $size_after = $upload_data["size"];
 

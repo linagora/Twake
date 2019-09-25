@@ -14,7 +14,6 @@ class DownloadController extends Controller
 
     public function downloadfileAction(Request $request)
     {
-
         $data = Array(
             "errors" => Array()
         );
@@ -38,7 +37,6 @@ class DownloadController extends Controller
         //TODO check access to this file or set of files
 
         $this->get("administration.counter")->incrementCounter("total_files_downloaded", 1);
-
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
         @$response = $this->get('driveupload.download')->download($workspace_id, $files_ids, $download, $versionId, $fileSystem);
         if ($response === true) {

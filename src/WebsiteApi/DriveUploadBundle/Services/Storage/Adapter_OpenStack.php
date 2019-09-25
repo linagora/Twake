@@ -140,7 +140,6 @@ class Adapter_OpenStack implements AdapterInterface {
                                 $res = false;
                                 //error_log($e->getMessage());
                             }
-                            error_log(print_r($previewpath,true));
                             @unlink($previewpath . ".png");
                             //error_log("PREVIEW GENERATED !");
 

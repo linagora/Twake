@@ -127,8 +127,11 @@ class DownloadFile
                 $ext = $file->getExtension();
 
                 $version = null;
-                if ($versionId != 0) {
+
+                if (isset($versionId) && $versionId !=0 ) {    //if($versionId !=0 { }
+
                     $version = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->find($versionId);
+
                     if ($version->getFileId() != $file->getId()) {
                         continue;
                     }
@@ -142,16 +145,11 @@ class DownloadFile
 
                     $first_element = false;
 
-                    if (count($files_ids) > 1) {
-                        $final_download_name = "Documents.zip";
-                        $final_download_size = 0;
-                    } else {
-                        $final_download_name = $download_name;
-                        $final_download_size = $file->getSize();
-                    }
-
-
                     if (!isset($zip) || !isset($zip_prefix)) {
+
+                        $final_download_name = $download_name;
+                        $final_download_size = $version->getSize();
+
                         header('Content-Description: File Transfer');
                         if ($download) {
                             header('Content-Type: application/octet-stream');
@@ -224,14 +222,22 @@ class DownloadFile
         $this->download = $download;
         $this->versionId = $versionId;
         $this->workspace_id = $workspace_id;
+        $name = null;
 
         if(count($files_ids)> 1){
             $zip = true;
+            $name = "Document.zip";
         }
         elseif (count($files_ids) == 1){
             $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $files_ids[0]));
             if($file->getIsDirectory()){
+                $name = $file->getName() . ".zip";
                 $zip = true;
+                $files_ids = Array();
+                $files_son = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $file->getWorkspaceId(), "parent_id" => $file->getId()));
+                foreach ($files_son as $son){
+                    $files_ids[] = $son->getId()."";
+                }
             }
         }
 
@@ -243,7 +249,7 @@ class DownloadFile
             $options->setZeroHeader(true);
 
             # create a new zipstream object
-            $zip_archive = new ZipStream('example.zip', $options);
+            $zip_archive = new ZipStream($name, $options);
             //error_log(print_r($files_ids,true));
             $this->downloadList($files_ids, $zip_archive, "/");
 
