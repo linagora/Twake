@@ -3,11 +3,12 @@
 namespace WebsiteApi\CallsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * CallMembers
  *
- * @ORM\Table(name="call_members",options={"engine":"MyISAM"})
+ * @ORM\Table(name="call_members",options={"engine":"myisam"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CallsBundle\Repository\CallMemberRepository")
  */
 class CallMember
@@ -15,19 +16,18 @@ class CallMember
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
 	 */
 	private $user;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\CallsBundle\Entity\Call",cascade={"persist"})
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\CallsBundle\Entity\Call",cascade={"persist"})
 	 */
 	private $call;
 
@@ -35,7 +35,7 @@ class CallMember
 	 *
 	 * Date of start
 	 *
-	 * @ORM\Column(name="since", type="date")
+     * @ORM\Column(name="since", type="twake_datetime")
 	 */
 	private $since;
 

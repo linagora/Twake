@@ -36,10 +36,10 @@ class DriveFileSystemGDrive
     private function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
-            $var = intval($var);
+            $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var)) {
+        if (is_int($var) || is_string($var) || get_class($var) == "Ramsey\Uuid\Uuid") {
             return $this->doctrine->getRepository($repository)->find($var);
         } else if (is_object($var)) {
             return $var;
@@ -111,7 +111,7 @@ class DriveFileSystemGDrive
         $directory = $this->convertToEntity($fileId, "TwakeDriveBundle:DriveFile");
 
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
-        $shared = $driveRepository->findBy(Array("copyOf" => $directory));
+        $shared = $driveRepository->findBy(Array("copyof" => $directory));
 
         return $shared;
 
@@ -122,7 +122,7 @@ class DriveFileSystemGDrive
         $directory = $this->convertToEntity($fileId, "TwakeDriveBundle:DriveFile");
 
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
-        $res = $driveRepository->findOneBy(Array("id" => $fileId, "group" => $groupId, "copyOf" => null));
+        $res = $driveRepository->findOneBy(Array("id" => $fileId, "group" => $groupId, "copyof" => null));
 
         return isset($res);
 
@@ -141,12 +141,12 @@ class DriveFileSystemGDrive
 
 
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
-        $copy = $driveRepository->findOneBy(Array("group" => $group, "copyOf" => $directory));
+        $copy = $driveRepository->findOneBy(Array("group" => $group, "copyof" => $directory));
         if ($copy) {
             return false; //already shared
         }
 
-        $parent = $fileOrDirectory->getParent();
+        $parent = $fileOrDirectory->getParentId();
 
         $newFile = new DriveFile(
             $group,
@@ -165,8 +165,8 @@ class DriveFileSystemGDrive
         $this->doctrine->persist($newFile);
         $this->doctrine->flush();
 
-        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
-        $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getGroup()->getId());
+        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getWorkspaceId());
+        $this->pusher->push(Array("action" => "update"), "drive/" . $newFile->getWorkspaceId());
 
         return true;
     }
@@ -182,19 +182,19 @@ class DriveFileSystemGDrive
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
 
         if ($removeAll) {
-            $copies = $driveRepository->findBy(Array("copyOf" => $directory));
+            $copies = $driveRepository->findBy(Array("copyof" => $directory));
             foreach ($copies as $copy) {
                 $this->doctrine->remove($copy);
             }
             $fileOrDirectory->setShared(false);
         } else {
             //Set unshared if last
-            $copies = $driveRepository->findBy(Array("copyOf" => $directory));
+            $copies = $driveRepository->findBy(Array("copyof" => $directory));
             if (count($copies) == 1) {
                 $fileOrDirectory->setShared(false);
             }
 
-            $copy = $driveRepository->findOneBy(Array("group" => $targetgroupId, "copyOf" => $directory));
+            $copy = $driveRepository->findOneBy(Array("group" => $targetgroupId, "copyof" => $directory));
             if ($copy == null) {
                 return false;
             }
@@ -202,7 +202,7 @@ class DriveFileSystemGDrive
         }
         $this->doctrine->flush();
 
-        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getGroup()->getId());
+        $this->pusher->push(Array("action" => "update"), "drive/" . $fileOrDirectory->getWorkspaceId());
         $this->pusher->push(Array("action" => "update"), "drive/" . $targetgroupId);
 
         return false;
@@ -250,7 +250,7 @@ class DriveFileSystemGDrive
         $this->gdriveApi->rename($fileOrDirectory,$filename,$description, $this->userToken);
 
 
-        $this->pusher->push(Array("action" => "update"), "drive/0");// . $fileOrDirectory->getGroup()->getId());
+        $this->pusher->push(Array("action" => "update"), "drive/0");// . $fileOrDirectory->getWorkspaceId());
 
         return true;
 
@@ -258,7 +258,7 @@ class DriveFileSystemGDrive
 
     public function create($workspace, $directoryId, $filename, $content = "", $isDirectory)
     {
-        if ($directoryId == 0) {
+        if ($directoryId . "" == "0") {
             $directoryId = null;
         }
 
@@ -316,7 +316,7 @@ class DriveFileSystemGDrive
             return null;
         }
 
-        return $this->readDecode($path, $file->getLastVersion()->getKey(), $file->getLastVersion()->getMode());*/
+        return $this->readDecode($path, $file->getLastVersion($this->doctrine)->getKey(), $file->getLastVersion($this->doctrine)->getMode());*/
     }
 
     public function getInfos($workspace, $fileOrDirectory)
@@ -331,14 +331,14 @@ class DriveFileSystemGDrive
         if (!$fileOrDirectory) {
             return null;
         }
-        return $fileOrDirectory->getGroup();
+        return $fileOrDirectory->getWorkspaceId();
     }
 
 
     public function listDirectory($workspaceId, $directory)
     {
         $workspace = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
-        if($directory===0)
+        if ($directory . "" == "0")
             $directory = "sharedWithMe or 'root'";//
         else{
             $directory = "'".$directory."'";
@@ -541,11 +541,11 @@ class DriveFileSystemGDrive
     public function copyFromExternalDrive($workspace, $directory, $externalDriveFileId)
     {
         //$workspace, $directory, $filename, $content = "";
-        $gdriveFile = $this->gdriveApi->getGDriveFileFromGDriveId($externalDriveFileId, $this->userToken);
+        $gdrivefile = $this->gdriveApi->getGDriveFileFromGDriveId($externalDriveFileId, $this->userToken);
         $content = "";
 
 
-        if($gdriveFile->getWebContentLink()!=null) {
+        if ($gdrivefile->getWebContentLink() != null) {
             $service = new Google_Service_Drive($this->gdriveApi->getClient($this->userToken));
 
             $response = $service->files->get($externalDriveFileId, array(
@@ -553,7 +553,7 @@ class DriveFileSystemGDrive
             $content = $response->getBody()->getContents();
         }
 
-        return $this->driveFileSystem->create($workspace, $directory, $gdriveFile->getName(), $content, false, false, $gdriveFile->getWebViewLink());
+        return $this->drivefileSystem->create($workspace, $directory, $gdrivefile->getName(), $content, false, false, $gdrivefile->getWebViewLink());
     }
 
     public function copyToExternalDrive($workspace, $directory, $file)
@@ -562,14 +562,14 @@ class DriveFileSystemGDrive
     }
 
     public function unwatchFile($fileId, $rootDirectory, $additionalData){
-        $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findOneBy(Array("fileId" => $rootDirectory));
+        $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findOneBy(Array("fileid" => $rootDirectory));
         $this->gdriveApi->unwatchFile($fileId,$externalDrive->getWorkspace()->getId(),$externalDrive->getExternalToken(),$additionalData["resourceId"]);
 
         return $additionalData;
     }
 
     public function watchFile($fileId, $rootDirectory, $additionalData){
-        $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findOneBy(Array("fileId" => $rootDirectory));
+        $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findOneBy(Array("fileid" => $rootDirectory));
         $data = $this->gdriveApi->watchFile($fileId,$externalDrive->getWorkspace()->getId(),$externalDrive->getExternalToken());
 
         $additionalData["resourceId"] = $data["resourceId"];

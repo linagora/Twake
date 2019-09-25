@@ -2,11 +2,17 @@
 
 
 namespace WebsiteApi\NotificationsBundle\Services;
+
+use Emojione\Client;
+use Emojione\Ruleset;
 use phpDocumentor\Reflection\Types\Array_;
 use RMS\PushNotificationsBundle\Message\iOSMessage;
+use WebsiteApi\NotificationsBundle\Entity\MailNotificationQueue;
 use WebsiteApi\NotificationsBundle\Entity\Notification;
 use WebsiteApi\NotificationsBundle\Model\NotificationsInterface;
 use WebsiteApi\NotificationsBundle\Entity\PushNotificationQueue;
+use WebsiteApi\UsersBundle\Entity\User;
+
 /**
  * Class Notifications
  * @package WebsiteApi\UsersBundle\Services
@@ -31,38 +37,101 @@ class Notifications implements NotificationsInterface
         $this->pushNotificationServer = $pushNotificationServer;
         $this->standalone = $standalone;
         $this->licenceKey = $licenceKey;
+        $this->emojione_client = new Client(new Ruleset());
     }
 
-    public function pushNotification($application = null, $workspace = null, $users = null, $levels = null, $code = null, $text = null, $type = Array(), $_data = null, $save_notification = true)
+    // Collections part
+    public function init($route, $data, $current_user = null)
+    {
+        if ($current_user && explode("/", $route)[1] == $current_user->getId()) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * @param null $application Application where the notification is from "null" = messaging service
+     * @param null $sender_application Application generating the notification
+     * @param null $sender_user User generating the notification
+     * @param null $workspace Workspace where the notification can be found
+     * @param null $channel Channel where the notification can be found
+     * @param null $users List of users which receive the notification
+     * @param null $code Identifier for the notification (mass deletion)
+     * @param null $text Text for the notification
+     * @param null $shortcut String to find precisely notification origin
+     * @param null $additionnal_data
+     * @param array $type Types of notification : "push" and "mail"
+     * @param bool $save_notification Add notification to log or not (default true)
+     */
+    public function pushNotification(
+        $application = null,
+        $sender_application = null,
+        $sender_user = null,
+        $workspace = null,
+        $channel = null,
+        $users = null,
+        $code = null,
+        $text = null,
+        $shortcut = null,
+        $additionnal_data = Array(),
+        $type = Array(),
+        $save_notification = true
+    )
     {
 
-        if($workspace != null){
-            $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
-        }
+        $text = trim($text);
+        $text = preg_replace("/ +/", " ", $text);
 
-        if($application != null) {
-            $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->find($application);
-        }
-
-        $title = "";
-        if ($workspace && $workspace->getGroup() && !$workspace->getUser()) {
-            $title .= $workspace->getGroup()->getDisplayName() . " - ";
-            $title .= $workspace->getName() . " : ";
+        //Construct title and text according with metadata
+        if ($sender_user) {
+            $title = $sender_user->getFullName();
+        } else if ($sender_application) {
+            $title = $sender_application->getName();
+        } else if ($application) {
+            $title = $application->getName();
         } else {
-            $title .= "Private : ";
+            $title = "Notification";
         }
-        if($application){
-            $title .= $application->getName();
+        if ($channel && !$channel->getDirect()) {
+            $title .= " to ";
+            if ($channel->getIcon()) {
+                $title .= $channel->getIcon() . " ";
+            }
+            $title .= $channel->getName();
         }
+        if ($workspace) {
+            $title .= " in " . $workspace->getName() . " (" . $workspace->getGroup()->getName() . ")";
+        }
+
+        if (($application || $sender_application) && $sender_user) {
+            if ($application) {
+                $text = $application->getName() . " : " . $text;
+            } else {
+                $text = $sender_application->getName() . " : " . $text;
+            }
+        }
+        //End title and text construction
 
         $data = Array(
             "type"=>"add",
+            "application_id" => ($application != null ? $application->getId() : null),
+            "sender_application_id" => ($sender_application != null ? $sender_application->getId() : null),
+            "sender_user_id" => ($sender_user != null ? $sender_user->getId() : null),
             "workspace_id"=>($workspace!=null?$workspace->getId():null),
-            "app_id"=>($application!=null?$application->getId():null),
+            "channel_id" => ($channel != null ? $channel->getId() : null),
             "title" => $title,
+            "original_text" => $text,
             "text" => $text,
             "code" => $code,
-            "type" => $type
+            "type" => $type,
+            "shortcut" => $shortcut,
+            "additionnal_data" => $additionnal_data
+        );
+
+        $device_minimal_data = Array(
+            "shortcut" => $shortcut,
+            "workspace_id" => ($workspace != null ? $workspace->getId() : null),
+            "channel_id" => ($channel != null ? $channel->getId() : null)
         );
 
         $toPush = true;
@@ -70,21 +139,38 @@ class Notifications implements NotificationsInterface
         $count = count($users);
         for($i = 0; $i < $count; $i++) {
 
+            $data["text"] = $data["original_text"];
+
             $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->find($users[$i]);
+
+            if (!$user) {
+                continue;
+            }
 
             //Verify that user want this notification
 
             $notificationPreference = $user->getNotificationPreference();
+
+            $notification_disabled = false;
+            if ($notificationPreference["disable_until"] > 0) {
+                $delta = $notificationPreference["disable_until"] - time();
+                if ($delta > 0) {
+                    $notification_disabled = true;
+                }
+            }
+
+            $mail_preferences = isset($notificationPreference["mail_notifications"]) ? $notificationPreference["mail_notifications"] : 2;
+
             $useDevices = false;
             if( $data["workspace_id"] != null){
                 $workspace_id = $data["workspace_id"];
                 $disabled_workspaces = $notificationPreference["disabled_workspaces"];
-                if (in_array($workspace_id,$disabled_workspaces)){
+                if (in_array($workspace_id . "", $disabled_workspaces)) {
                     return false;
                 }
                 if($application!=null){
-                    if(isset($notificationPreference["workspace"][$workspace_id])){
-                        if(isset($notificationPreference["workspace"][$workspace_id][$application->getId()])){
+                    if (isset($notificationPreference["workspace"][$workspace_id . ""])) {
+                        if (isset($notificationPreference["workspace"][$workspace_id . ""][$application->getId() . ""])) {
                             $toPush = false;
                         }
                     }
@@ -134,17 +220,12 @@ class Notifications implements NotificationsInterface
                 $data["text"] = "[Private]";
             }
 
-            $n = new Notification($application, $workspace, $user);
-            if (is_string($_data)) {
-                $_data = Array("shortcut" => $_data);
+            $n = new Notification($application ? $application->getId() : "", $workspace ? $workspace->getId() : "", $channel ? $channel->getId() : "", $user);
+            if ($shortcut) {
+                $n->setShortcut($shortcut);
             }
-            if (!$_data) {
-                $_data = Array();
-            }
-            if ($_data) {
-                $_data["workspace"] = $data["workspace_id"];
-                $_data["app"] = $data["app_id"];
-                $n->setData($_data);
+            if ($additionnal_data) {
+                $n->setData($additionnal_data);
             }
             if($code){
                 $n->setCode($code);
@@ -158,46 +239,48 @@ class Notifications implements NotificationsInterface
 
             if ($save_notification) {
                 $this->doctrine->persist($n);
+
+                if ($mail_preferences == 2 || $mail_preferences == 1) {
+                    $this->addMailReminder($user);
+                }
+
             }
 
-            if(in_array("push", $type) && $toPush){
+            if (in_array("push", $type) && $toPush && !$notification_disabled) {
 
-                $_data = Array(
-                    "workspace_id" => ($workspace != null ? $workspace->getId() : null),
-                    "app_id" => ($application != null ? $application->getId() : null),
-                    "title" => $title,
-                    "text" => $text,
-                    "shortcut" => isset($_data["shortcut"]) ? $_data["shortcut"] : ""
-                );
-
-                $totalNotifications = $this->countAll($user) + 1;
+                $totalNotifications = 1;
                 if($useDevices) {
-                    @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $_data, false);
+                    @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $device_minimal_data, false);
                 }else{
-                    @$this->updateDeviceBadge($user, $totalNotifications, $_data, false);
+                    @$this->updateDeviceBadge($user, $totalNotifications, Array(), false);
                 }
+
             }
             if(in_array("mail", $type)){
                 @$this->sendMail($application, $workspace, $user, $text);
             }
 
-            $data = $n->getAsArray();
-            $data["action"] = "add";
-            if ($toPush) {
-                $this->pusher->push($data, "notifications/" . $user->getId());
+            if ($toPush && !$notification_disabled) {
+                $ws_data = Array(
+                    "client_id" => "system",
+                    "action" => "save",
+                    "object_type" => "",
+                    "object" => $n->getAsArray()
+                );
+                $this->pusher->push("notifications/" . $user->getId(), $ws_data);
             }
-
 
         }
 
         $this->doctrine->flush();
 
-
-
     }
+
     public function deleteAll($application, $workspace, $user, $code = null, $force=false)
     {
 
+        //TODO
+        /*
         $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
 
         $search = Array(
@@ -242,93 +325,77 @@ class Notifications implements NotificationsInterface
             $this->updateDeviceBadge($user, $totalNotifications);
             return true;
         }
+        */
+
         return true;
 
 
     }
 
-    public function readAll($application, $workspace, $user, $code = null, $force=false)
+    public function readAll($user)
     {
 
-        $this->deleteAll($application, $workspace, $user, $code, $force);
-        return;
+        $this->removeMailReminder($user);
 
-        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+        $has_notification_group = false;
+        $has_notification_workspace = false;
 
-        $search = Array(
-            "user" => $user
-        );
-
-        if ($code) {
-            $search["code"] = $code;
+        $group_members = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser")->findBy(Array("user" => $user));
+        foreach ($group_members as $group_member) {
+            if ($group_member->getHasNotifications()) {
+                $has_notification_group = true;
+                $group_member->setHasNotifications(false);
+                $this->doctrine->persist($group_member);
+            }
         }
+        $this->doctrine->flush();
 
-        if ($application) {
-            $search["application"] = $application;
-        }
+        if ($has_notification_group) {
 
-        if ($workspace) {
-            $search["workspace"] = $workspace;
-        }
-
-        $search["isRead"] = false;
-
-        $notif = $nRepo->findBy($search);
-
-        $count = count($notif);
-        for($i = 0; $i < $count; $i++) {
-            $notif[$i]->setIsRead(true);
-            $this->doctrine->persist($notif[$i]);
-        }
-
-        if ($count == 0){
-            return false;
-        }
-
-        if($count>0 || $force) {
+            $workspace_members = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("user" => $user));
+            foreach ($workspace_members as $workspace_member) {
+                if ($workspace_member->getHasNotifications()) {
+                    $has_notification_workspace = true;
+                    $workspace_member->setHasNotifications(false);
+                    $this->doctrine->persist($workspace_member);
+                }
+            }
             $this->doctrine->flush();
 
-            $totalNotifications = $this->countAll($user);
-
-            $data = Array(
-                "action"=>"remove",
-                "workspace_id"=>($workspace)?$workspace->getId():null,
-                "app_id"=>($application)?$application->getId():null
-            );
-            $this->pusher->push($data, "notifications/".$user->getId());
-
-            $this->updateDeviceBadge($user, $totalNotifications);
-            return true;
         }
-        return true;
 
+        $channel_members = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("direct" => true, "user_id" => $user->getId()));
+        if ($has_notification_workspace) {
+            $channel_members = array_merge($channel_members, $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("direct" => false, "user_id" => $user->getId())));
+        }
+        foreach ($channel_members as $channel_member) {
 
-    }
+            $channel = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $channel_member->getChannelId()));
+            if (!$channel) {
+                $this->doctrine->remove($channel_member);
+            }
+            if ($channel && $channel->getMessagesIncrement() != $channel_member->getLastMessagesIncrement()) {
+                $channel_member->setLastMessagesIncrement($channel->getMessagesIncrement());
+                $this->doctrine->persist($channel_member);
+            }
+        }
+        $this->doctrine->flush();
 
-    public function countAll($user)
-    {
-        $qb = $this->doctrine->createQueryBuilder();
-        $qb = $qb->select('count(n.id)')
-            ->where('n.user = :user')
-            ->andWhere('n.isRead = false')
-            ->setParameter('user', $user)
-            ->from('TwakeNotificationsBundle:Notification','n');
-
-        return $qb->getQuery()->getSingleScalarResult();
     }
 
     public function getAll($user)
     {
         $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
-        $notifs = $nRepo->findBy(Array("user"=>$user), Array("id" => "DESC"), 30); //Limit number of results
+        $notifs = $nRepo->findBy(Array("user" => $user), Array(), 30); //Limit number of results
 
         return $notifs;
     }
 
 
     /* Private */
-    private function updateDeviceBadge($user, $badge = 0, $data = null, $doPush = true)
+    public function updateDeviceBadge($user, $badge = 0, $data = null, $doPush = true)
     {
+
         $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
         $devices = $devicesRepo->findBy(Array("user"=>$user));
 
@@ -350,11 +417,14 @@ class Notifications implements NotificationsInterface
         }
     }
 
-    private function pushDevice($user, $text, $title, $badge = null, $data = null, $doPush = true)
+    public function pushDevice($user, $text, $title, $badge = null, $data = null, $doPush = true)
     {
 
         $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
         $devices = $devicesRepo->findBy(Array("user"=>$user));
+
+        $title = html_entity_decode($this->emojione_client->shortnameToUnicode($title), ENT_NOQUOTES, 'UTF-8');
+        $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');
 
         $count = count($devices);
         for($i = 0; $i < $count; $i++) {
@@ -363,8 +433,8 @@ class Notifications implements NotificationsInterface
             $token = $device->getValue();
 
             $this->pushDeviceInternal($device->getType(), $token,
-                substr($text, 0, 100),
-                substr($title, 0, 50),
+                substr($text, 0, 100) . (strlen($title) > 100 ? "..." : ""),
+                substr($title, 0, 50) . (strlen($title) > 50 ? "..." : ""),
                 $badge,
                 $data,
                 $doPush
@@ -373,7 +443,6 @@ class Notifications implements NotificationsInterface
 
         }
     }
-
 
     public function pushDeviceInternal($type, $deviceId, $message, $title, $badge, $_data, $doPush = true)
     {
@@ -385,11 +454,12 @@ class Notifications implements NotificationsInterface
         $data = Array(
             "message" => $message,
             "title" => $title,
-            "data" => $_data,
+            "data" => json_encode($_data),
             "badge" => $badge,
             "device_id" => $deviceId,
             "type" => $type
         );
+
         try {
             $element = new PushNotificationQueue($data);
             $this->doctrine->persist($element);
@@ -397,11 +467,15 @@ class Notifications implements NotificationsInterface
                 $this->doctrine->flush();
             }
         } catch (\Exception $exception) {
-            error_log("ERROR");
+            error_log("ERROR in pushDeviceInternal");
         }
     }
 
-    private function sendMail($application, $workspace, $user, $text){
+    public function sendMail($application, $workspace, $user, $text)
+    {
+
+        $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');
+
         $this->mailer->send($user->getEmail(), "notification", Array(
             "_language" => $user ? $user->getLanguage() : "en",
             "application_name"=>($application)?$application->getName():"Twake",
@@ -411,41 +485,100 @@ class Notifications implements NotificationsInterface
         ));
     }
 
-    public function deleteAllExceptMessages($user,$force=false){
+    public function sendCustomMail($mail, $template, $data = Array(), $files = Array())
+    {
+        $this->mailer->send($mail, $template, $data, $files);
+    }
 
-        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(array("publicKey" => "messages"));
+    /**
+     * @param $user User
+     */
+    private function addMailReminder($user)
+    {
 
-        $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
-        $notif = $nRepo->getAppNoMessages($app);
-        $count = count($notif);
+        $user->setNotificationWriteIncrement($user->getNotificationWriteIncrement() + 1);
+        $this->doctrine->persist($user);
 
-
-        if ($count == 0){
-            return false;
+        $repo = $this->doctrine->getRepository("TwakeNotificationsBundle:MailNotificationQueue");
+        $reminder = $repo->findOneBy(Array("user_id" => $user->getId()));
+        if (!$reminder) {
+            $reminder = new MailNotificationQueue($user->getId());
+            $this->doctrine->persist($reminder);
         }
-        for($i = 0; $i < $count; $i++) {
-            $this->doctrine->remove($notif[$i]);
+
+        $this->doctrine->flush();
+
+    }
+
+    /**
+     * @param $user User
+     */
+    public function removeMailReminder($user)
+    {
+        $user_notification_status = $this->doctrine->getRepository("TwakeNotificationsBundle:UserNotificationStatus")->findOneBy(Array("user_id" => $user->getId()));
+        if ($user_notification_status) {
+            $user_notification_status->setMailStatus(0);
+            $this->doctrine->persist($user_notification_status);
         }
 
-        if($count>0 || $force) {
+        $user->setNotificationReadIncrement($user->getNotificationWriteIncrement());
+        $this->doctrine->persist($user);
+
+        $repo = $this->doctrine->getRepository("TwakeNotificationsBundle:MailNotificationQueue");
+        $reminder = $repo->findOneBy(Array("user_id" => $user->getId()));
+        if ($reminder) {
+            $this->doctrine->remove($reminder);
             $this->doctrine->flush();
-
-            $data = Array(
-                "action" => "remove_all_non_messages"
-            );
-            //convert
-            $this->pusher->push($data, "notifications/".$user->getId());
-
-            $totalNotifications = $this->countAll($user);
-            $this->updateDeviceBadge($user, $totalNotifications);
-            return true;
         }
+
+    }
+
+    public function deleteAllExceptMessages($user, $force=false){
 
         return true;
-    }
-    public function readAllExceptMessages($user,$force=false){
 
-        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(array("publicKey" => "messages"));
+        //TODO
+        /*
+                $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(array("simple_name" => "messages"));
+
+                $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
+                $notif = $nRepo->getAppNoMessages($app);
+                $count = count($notif);
+
+
+                if ($count == 0){
+                    return false;
+                }
+                for($i = 0; $i < $count; $i++) {
+                    $this->doctrine->remove($notif[$i]);
+                }
+
+                if($count>0 || $force) {
+                    $this->doctrine->flush();
+
+                    $data = Array(
+                        "action" => "remove_all_non_messages"
+                    );
+                    //convert
+                    $this->pusher->push($data, "notifications/".$user->getId());
+
+                    $totalNotifications = $this->countAll($user);
+                    $this->updateDeviceBadge($user, $totalNotifications);
+                    return true;
+                }
+
+                return true;*/
+    }
+
+    public function readAllExceptMessages($user, $force = false)
+    {
+
+        return true;
+
+        //TODO
+        /*
+
+        $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(array("simple_name" => "messages"));
 
         $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");
         $notif = $nRepo->getAppNoMessages($app);
@@ -477,6 +610,7 @@ class Notifications implements NotificationsInterface
         }
 
         return true;
+        */
     }
 
 }

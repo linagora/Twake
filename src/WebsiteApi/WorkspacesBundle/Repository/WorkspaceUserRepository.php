@@ -20,7 +20,7 @@ class WorkspaceUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAd
 			$qb = $qb->setMaxResults($length);
 		}
 		$qb = $qb->setFirstResult($offset)
-			->setParameter('workspace', $workspace);
+            ->setParameter('workspace', $this->queryBuilderUuid($workspace));
 			//->setParameter('type', $type);
 
 		return $qb->getQuery()->getResult();
@@ -33,8 +33,8 @@ class WorkspaceUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAd
 		$qb = $qb->delete('l')
 			->andWhere('l.user = :user')
 			->andWhere('l.workspace_id IN (:ids)')
-			->setParameter('user', $user)
-			->setParameter('ids', $workspaces_ids);
+            ->setParameter('user', $this->queryBuilderUuid($user))
+            ->setParameter('ids', $this->queryBuilderUuid($workspaces_ids));
 
 		return $qb->getQuery()->getResult();
 	}
@@ -45,9 +45,14 @@ class WorkspaceUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAd
 
 		$qb = $qb->select('l')
 			->andWhere('l.workspace_id IN (:ids)')
-			->setParameter('ids', $workspaces_ids);
+            ->setParameter('ids', $this->queryBuilderUuid($workspaces_ids));
 
 		return $qb->getQuery()->getResult();
 	}
+
+    public function findOneBy(array $array)
+    {
+        return parent::findOneBy($array);
+    }
 
 }

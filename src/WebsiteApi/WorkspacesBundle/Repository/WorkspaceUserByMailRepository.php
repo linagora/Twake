@@ -20,7 +20,7 @@ class WorkspaceUserByMailRepository extends \WebsiteApi\CoreBundle\Services\Doct
 			$qb = $qb->setMaxResults($length);
 		}
 		$qb = $qb->setFirstResult($offset)
-			->setParameter('workspace', $workspace);
+            ->setParameter('workspace', $this->queryBuilderUuid($workspace));
 			//->setParameter('type', $type);
 
 		return $qb->getQuery()->getResult();
@@ -33,8 +33,8 @@ class WorkspaceUserByMailRepository extends \WebsiteApi\CoreBundle\Services\Doct
 		$qb = $qb->delete('l')
 			->andWhere('l.user = :user')
 			->andWhere('l.workspace_id IN (:ids)')
-			->setParameter('user', $user)
-			->setParameter('ids', $workspaces_ids);
+            ->setParameter('user', $this->queryBuilderUuid($user))
+            ->setParameter('ids', $this->queryBuilderUuid($workspaces_ids));
 
 		return $qb->getQuery()->getResult();
 	}
@@ -45,7 +45,7 @@ class WorkspaceUserByMailRepository extends \WebsiteApi\CoreBundle\Services\Doct
 
 		$qb = $qb->select('l')
 			->andWhere('l.workspace_id IN (:ids)')
-			->setParameter('ids', $workspaces_ids);
+            ->setParameter('ids', $this->queryBuilderUuid($workspaces_ids));
 
 		return $qb->getQuery()->getResult();
 	}

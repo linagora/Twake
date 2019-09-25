@@ -21,8 +21,8 @@ class DriveActivityController extends Controller
         $application_tmp = $request->request->get("application");
         $workspace_id_tmp = $request->request->get("workspace_id");
 
-        $workspace_id = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
-        $application = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeMarketBundle:Application")->find($application_tmp);
+        $workspace_id = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
+        $application = $this->get("app.twake_doctrine")->getRepository("TwakeMarketBundle:Application")->find($application_tmp);
 
         $data['data'] = $this->get("app.driveActivity")->createDriveActivity($application, $workspace_id, $this->getUser()->getId());
 
@@ -35,8 +35,8 @@ class DriveActivityController extends Controller
         $application_tmp = $request->request->get("application");
         $workspace_id_tmp = $request->request->get("workspace_id");
 
-        $workspace_id = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
-        $application = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeMarketBundle:Application")->find($application_tmp);
+        $workspace_id = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
+        $application = $this->get("app.twake_doctrine")->getRepository("TwakeMarketBundle:Application")->find($application_tmp);
 
         $user = $this->getUser();
         $delete = $this->get('app.driveActivity')->removeAll($application, $workspace_id, $user, null, true);
@@ -49,7 +49,7 @@ class DriveActivityController extends Controller
 
         $workspace_id_tmp = $request->request->get("workspaceId");
 
-        $workspace_id = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
+        $workspace_id = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id_tmp);
 
         $user = $this->getUser();
         $read = $this->get('app.driveActivity')->readAll($workspace_id, $user);
@@ -61,7 +61,7 @@ class DriveActivityController extends Controller
         $activity_id = $request->request->get("activityId");
         $workspace_id= $request->request->get("workspaceId");
 
-        $workspaceId = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id);
+        $workspaceId = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id);
         $read = $this->get('app.driveActivity')->readOne($workspaceId,$activity_id);
         return new JsonResponse();
     }

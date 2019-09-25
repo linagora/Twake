@@ -14,53 +14,59 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
 
     public function sumSize($group, $directory = null)
     {
-        $qb = $this->createQueryBuilder('f')
-            ->select('sum(f.size)')
-            ->where('f.group = :group')
-            ->setParameter("group", $group);
 
-        if ($directory == null) {
-            $qb = $qb->andWhere('f.parent IS NULL');
-        } else {
-            $qb = $qb->andWhere('f.parent = :directory')
-                ->setParameter("directory", $directory);
+        try {
+            $qb = $this->createQueryBuilder('f')
+                ->select('sum(f.size)');
+            if ($directory == null) {
+                $qb = $qb->where('f.root_group_folder = :group')
+                    ->setParameter("group", $this->queryBuilderUuid($group->getId()));
+            } else {
+                $qb = $qb->where('f.parent = :directory')
+                    ->setParameter("directory", $this->queryBuilderUuid($directory));
+            }
+
+            return $qb->getQuery()->getSingleScalarResult();
+        } catch (\Exception $e) {
+
         }
-
-        return $qb->getQuery()->getSingleScalarResult();
+        return 0;
     }
 
     public function sumSizeByExt($group)
     {
-        $qb = $this->createQueryBuilder('f')
-            ->select('f.extension, sum(f.size) as sizes')
-            ->where('f.group = :group')
-            ->setParameter("group", $group)
-            ->andWhere('f.isDirectory = false')
-            ->groupBy('f.extension')
-            ->orderBy('sizes', 'DESC');
-
-        return $qb->getQuery()->getResult();
+        return Array();
     }
 
     public function listDirectory($group, $directory = null, $trash = false, $detached = false)
     {
 
         if ($directory){
-            return $this->findBy(Array(
-                "parent" => $directory,
-                "isInTrash" => $trash,
-                "detached_file" => $detached,
-                "copyOf" => null
-            ), Array("name" => "ASC"));
+
+            $res = $this->findBy(Array(
+                "parent" => $directory
+            ));
+
+        } else {
+
+            if (!$group) {
+                return Array();
+            }
+
+            $res = $this->findBy(Array(
+                "root_group_folder" => $group->getId()
+            ));
+
         }
 
-        return $this->findBy(Array(
-            "group" => $group,
-            "parent" => $directory,
-            "isInTrash" => $trash,
-            "detached_file" => $detached,
-            "copyOf" => null
-        ), Array("name" => "ASC"));
+        $objects = Array();
+        foreach ($res as $file) {
+            if (($file->getIsInTrash() == $trash) && ($file->getDetachedFile() == $detached) && !$file->getCopyOf()) {
+                $objects[] = $file;
+            }
+        }
+
+        return $objects;
 
     }
 
@@ -69,7 +75,7 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
         $qb = $this->createQueryBuilder('f')
             ->select('f')
             ->where('f.group = :group')
-            ->andWhere('f.isInTrash = 0')
+            ->andWhere('f.isintrash = 0')
             ->andWhere('f.detached_file = 0');
 
         foreach ($sorts as $key=>$sort){
@@ -83,7 +89,7 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
             $qb = $qb->setParameter("query", "%".$query."%");
         }
 
-        $qb = $qb->setParameter("group", $group);
+        $qb = $qb->setParameter("group", $this->queryBuilderUuid($group));
 
         $qb = $qb->setMaxResults($max);
         $qb = $qb->setFirstResult($offset);
@@ -94,7 +100,7 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
     public function shared($workspace)
     {
         $criteria = Criteria::create();
-        $criteria->where(Criteria::expr()->neq('copyOf', null));
+        $criteria->where(Criteria::expr()->neq('copyof', null));
         $criteria->orWhere(Criteria::expr()->eq('shared', true));
         $criteria->andWhere(Criteria::expr()->eq('group', $workspace));
         return  $this->matching( $criteria);

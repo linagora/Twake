@@ -52,26 +52,47 @@ class UsersAccountController extends Controller
 
 	}
 
-	public function setNotificationPreferencesAction(Request $request)
-	{
+    public function setNotificationPreferencesAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
+        if ($this->getUser()) {
 
-			$notification = $request->request->get("preferences", Array());
-			$this->get("app.user")->setNotificationPreferences($this->getUser()->getId(), $notification);
+            $notification = $request->request->get("preferences", Array());
+            $this->get("app.user")->setNotificationPreferences($this->getUser()->getId(), $notification);
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
+
+    public function setTutorialStatusAction(Request $request)
+    {
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        if ($this->getUser()) {
+
+            $status = $request->request->get("status", Array());
+            $this->get("app.user")->setTutorialStatus($this->getUser()->getId(), $status);
+
+        } else {
+            $data["errors"][] = "unknown";
+        }
+
+        return new JsonResponse($data);
+
+    }
 
 	public function updateNotificationPreferenceByWorkspaceAction(Request $request){
         $data = Array(
@@ -93,11 +114,57 @@ class UsersAccountController extends Controller
         return new JsonResponse($data);
     }
 
+    public function setWorkspacesPreferencesAction(Request $request)
+    {
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        if ($this->getUser()) {
+
+            $preferences = $request->request->get("preferences", Array());
+            $this->get("app.user")->setWorkspacesPreferences($this->getUser()->getId(), $preferences);
+
+        } else {
+            $data["errors"][] = "unknown";
+        }
+
+        return new JsonResponse($data);
+
+    }
+
+    public function updateStatusAction(Request $request)
+    {
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        if ($this->getUser()) {
+
+            $status = $request->request->get("status", Array());
+            $this->get("app.user")->updateStatus($this->getUser()->getId(), $status);
+
+        } else {
+            $data["errors"][] = "unknown";
+        }
+
+        return new JsonResponse($data);
+
+    }
+
     public function getUploader()
     {
         $aws = $this->getParameter('aws');
         if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
             return $this->get("app.aws_uploader");
+        }
+        $openstack = $this->getParameter('openstack');
+        if (isset($openstack["use"]) && $openstack["use"]) {
+            return $this->get("app.openstack_uploader");
         }
         return $this->get("app.uploader");
     }
@@ -116,6 +183,8 @@ class UsersAccountController extends Controller
 			$lastname = $request->request->get("lastname", "");
             $thumbnail = $request->request->get("thumbnail", null);
 
+            $user = null;
+
 			if(isset($_FILES["thumbnail"])) {
                 $thumbnail = $this->getUploader()->uploadFiles($this->getUser(), $_FILES["thumbnail"], "prfl");
 				$thumbnail = $thumbnail[0];
@@ -123,11 +192,15 @@ class UsersAccountController extends Controller
 				if (count($thumbnail["errors"])>0) {
 					$data["errors"][] = "badimage";
 				} else {
-                    $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail["file"], $this->getUploader());
+                    $user = $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail["file"], $this->getUploader());
 				}
 			}else{
-                $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail, $this->getUploader());
+                $user = $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail, $this->getUploader());
 			}
+
+            if ($user) {
+                $data["data"] = $user->getAsArray();
+            }
 
 		}else{
 			$data["errors"][] = "unknown";
@@ -221,10 +294,11 @@ class UsersAccountController extends Controller
 		if($this->getUser()){
 
 			$mail = $request->request->get("mail", "");
-
-			if(!$this->get("app.user")->removeSecondaryMail($this->getUser()->getId(), $mail)){
+            $result = $this->get("app.user")->removeSecondaryMail($this->getUser()->getId(), $mail);
+			if(!$result){
 				$data["errors"][] = "badmail";
 			}
+			$data["statuts"] = $result;
 
 		}else{
 			$data["errors"][] = "unknown";
@@ -236,18 +310,15 @@ class UsersAccountController extends Controller
 
 	public function addMailAction(Request $request)
 	{
-
 		$data = Array(
 			"errors" => Array(),
 			"data" => Array()
 		);
 
 		if($this->getUser()){
-
 			$mail = $request->request->get("mail", "");
 
 			$token = $this->get("app.user")->addNewMail($this->getUser()->getId(), $mail);
-
 			if($token) {
 				$data["data"]["token"] = $token;
 			}else{
@@ -275,11 +346,13 @@ class UsersAccountController extends Controller
 			$token = $request->request->get("token", "");
 			$number = $request->request->get("code", "");
 
-			$ok = $this->get("app.user")->checkNumberForAddNewMail($this->getUser()->getId(), $token, $number);
+			$idMail = $this->get("app.user")->checkNumberForAddNewMail($this->getUser()->getId(), $token, $number);
 
-			if($ok) {
+			if($idMail) {
 				$data["data"]["status"] = "success";
-			}else{
+                $data["data"]["idMail"] = $idMail;
+
+            }else{
 				$data["errors"][] = "badcode";
 			}
 
@@ -302,16 +375,10 @@ class UsersAccountController extends Controller
 		if($this->getUser()){
 
 			$mails = $this->get("app.user")->getSecondaryMails($this->getUser());
-
-			$data["data"][] = Array(
-				"id" => -1,
-				"main" => true,
-				"email" => $this->getUser()->getEmail()
-			);
 			foreach ($mails as $mail){
 				$data["data"][] = Array(
 					"id" => $mail->getId(),
-					"main" => false,
+					"main" => $mail->getMail()==$this->getUser()->getEmail(),
 					"email" => $mail->getMail()
 				);
 			}

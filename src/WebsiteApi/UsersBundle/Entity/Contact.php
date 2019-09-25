@@ -4,6 +4,7 @@ namespace WebsiteApi\UsersBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Contact
@@ -16,31 +17,30 @@ class Contact
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
+     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Id
+ */
 	protected $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",)
 	 */
 	private $from;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-	 */
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     */
 	private $to;
 
 	/**
-	 * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer")
 	 */
 	private $status = 0;
 
 	/**
 	 * @var \DateTime
 	 *
-	 * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="twake_datetime")
 	 */
 	private $date = "";
 
@@ -55,8 +55,13 @@ class Contact
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
 		return $this->id;
 	}
 

@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Syma
+ * User: Romaric Mourgues
  * Date: 19/01/2017
  * Time: 10:38
  */
@@ -23,7 +23,7 @@ class WorkspaceDataController extends Controller
 
 		$response = Array("errors"=>Array(), "data"=>Array());
 
-		$workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
 		$ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
 
@@ -47,7 +47,7 @@ class WorkspaceDataController extends Controller
 			"data" => Array()
 		);
 
-		$workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 		$name = $request->request->get("name", null);
 
 		$ok = false;
@@ -71,6 +71,10 @@ class WorkspaceDataController extends Controller
         if (isset($aws["S3"]["use"]) && $aws["S3"]["use"]) {
             return $this->get("app.aws_uploader");
         }
+        $openstack = $this->getParameter('openstack');
+        if (isset($openstack["use"]) && $openstack["use"]) {
+            return $this->get("app.openstack_uploader");
+        }
         return $this->get("app.uploader");
     }
 
@@ -82,7 +86,7 @@ class WorkspaceDataController extends Controller
 			"data" => Array()
 		);
 
-		$workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
 		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:write")){
 			$data["errors"][] = "notallowed";
@@ -96,13 +100,17 @@ class WorkspaceDataController extends Controller
 					$data["errors"][] = "badimage";
 				} else {
 
-                    $this->get("app.workspaces")->changeLogo($workspaceId, $thumbnail["file"], $this->getUser()->getId(), $this->getUploader());
+                    $workspace = $this->get("app.workspaces")->changeLogo($workspaceId, $thumbnail["file"], $this->getUser()->getId(), $this->getUploader());
 				}
 			} else {
-                $this->get("app.workspaces")->changeLogo($workspaceId, null, $this->getUser()->getId(), $this->getUploader());
+                $workspace = $this->get("app.workspaces")->changeLogo($workspaceId, null, $this->getUser()->getId(), $this->getUploader());
 			}
 
 		}
+
+        if ($workspace) {
+            $data["data"] = $workspace->getAsArray();
+        }
 
 		return new JsonResponse($data);
 
@@ -116,7 +124,7 @@ class WorkspaceDataController extends Controller
 			"data" => Array()
 		);
 
-		$workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
 		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:write")){
 			$data["errors"][] = "notallowed";

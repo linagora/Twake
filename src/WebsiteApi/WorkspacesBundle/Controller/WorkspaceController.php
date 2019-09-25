@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Syma
+ * User: Romaric Mourgues
  * Date: 19/01/2017
  * Time: 10:38
  */
@@ -17,14 +17,15 @@ use Symfony\Component\HttpFoundation\Request;
 class WorkspaceController extends Controller
 {
 	/**
-	 * Récupère les informations de base d'un groupe
+     * Récupère les informations de base d'un workspace
 	 */
 	public function getAction(Request $request){
 
 		$response = Array("errors"=>Array(), "data"=>Array());
 
-		$workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
+        $this->get("app.channels.notifications")->checkReadWorkspace($workspaceId, $this->getUser());
 
 		$ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
 		if(!$ws){
@@ -37,29 +38,18 @@ class WorkspaceController extends Controller
 
 			$response["data"] = $ws->getAsArray();
 
-            $workspaceApps = $this->get("app.workspaces_apps")->getApps($workspaceId);
-			$apps = Array();
-            foreach ($workspaceApps as $app_obj) {
-				$apps[] = $app_obj->getAsArray();
-			}
-            $response["data"]["apps"] = $apps;
-
-			$users_obj = $this->get("app.workspace_members")->getMembers($workspaceId,$this->getUser()->getId());
-			$users = Array();
-			foreach($users_obj as $user_obj){
-                $users[] = $user_obj["user"]->getAsArray();
-            }
-			$response["data"]["members"] = $users;
-
-            $response["data"]["currentUser"] = $this->getUser()->getAsArray();
             $level = $this->get("app.workspace_levels")->getLevel($workspaceId, $this->getUser()->getId());
-            $level = $this->get("app.workspace_levels")->fixLevels(Array($level),$workspaceApps)["levels"][0];
+            $response["data"]["user_level"] = $level ? $level->getAsArray() : null;
 
-            $response["data"]["currentUser"]["level"] = $level;
+            $levels = $this->get("app.workspace_levels")->getLevels($workspaceId,$this->getUser()->getId());
+            $response["data"]["levels"] = Array();
+            foreach ($levels as $level){
+                $response["data"]["levels"][] = $level->getAsArray();
+            }
 
-            $groupRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:Group");
-            $workspaceRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:Workspace");
-            $groupUserRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Group");
+            $workspaceRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace");
+            $groupUserRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             $wp = $workspaceRepository->find($workspaceId);
             if($wp->getGroup() != null){
@@ -73,7 +63,13 @@ class WorkspaceController extends Controller
 
                 $limit =  $this->get("app.pricing_plan")->getLimitation($group->getId(),"maxWorkspace",PHP_INT_MAX);
 
-                $nbWorkspace = $workspaceRepository->findBy(Array("group"=>$group,"isDeleted"=>0));
+                $nbWorkspace = [];
+                $_nbWorkspace = $workspaceRepository->findBy(Array("group" => $group));
+                foreach ($_nbWorkspace as $ws) {
+                    if (!$ws->getis_deleted()) {
+                        $nbWorkspace[] = $ws;
+                    }
+                }
 
                 $nbuserGroup = $groupUserRepository->findBy(Array("group"=>$wp->getGroup()));
                 $limitUser = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(), "maxUser", PHP_INT_MAX);
@@ -85,11 +81,37 @@ class WorkspaceController extends Controller
                 $response["data"]["maxApps"] = $limitApps;
                 $response["data"]["currentNbUser"] = count($nbuserGroup);
             }
-
 		}
-
 		return new JsonResponse($response);
 	}
+
+    public function getPublicDataAction(Request $request)
+    {
+
+        $response = Array("errors" => Array(), "data" => Array());
+
+        $workspaceId = $request->request->get("workspace_id");
+
+        $ws = $this->get("app.workspaces")->get($workspaceId);
+        if (!$ws) {
+            $response["errors"][] = "no_such_workspace";
+        } else {
+
+            $response["data"]["workspace_name"] = $ws->getName();
+
+            if ($ws->getGroup() != null) {
+
+                $group = $ws->getGroup();
+
+                $response["data"]["group_name"] = $group->getAsArray()["name"];
+                $response["data"]["group_logo"] = $group->getAsArray()["logo"];
+
+            }
+        }
+        return new JsonResponse($response);
+
+    }
+
 	/**
 	 * Récupère les informations de base d'un groupe
 	 */
@@ -103,7 +125,7 @@ class WorkspaceController extends Controller
             $name = "Untitled";
         }
 
-		$groupId = $request->request->getInt("groupId", 0);
+        $groupId = $request->request->get("groupId", 0);
 
 		if(!$groupId){
             $group_name = $request->request->get("group_name", "");
@@ -124,6 +146,9 @@ class WorkspaceController extends Controller
 			$planId = $plan->getId();
             $group = $this->get("app.groups")->create($this->getUser()->getId(), $group_name, $uniquename, $planId, $group_creation_data);
 			$groupId = $group->getId();
+
+            $this->get("administration.counter")->incrementCounter("total_groups", 1);
+
 		}
 
 		$ws = $this->get("app.workspaces")->create($name, $groupId, $this->getUser()->getId());
@@ -132,13 +157,66 @@ class WorkspaceController extends Controller
                 $response["errors"][] = "notallowed";
                 $response["errors"]["max"] = $ws;
 		}else{
+
             $ws_id = $ws->getId();
+
+            $channels = $request->request->get("channels", false);
+            if ($channels && is_array($channels)) {
+                foreach ($channels as $channel) {
+                    $this->get("app.channels.channels_system")->save(Array(
+                        "original_workspace" => $ws_id,
+                        "original_group" => $ws->getGroup()->getId(),
+                        "name" => $channel["name"],
+                        "icon" => $channel["icon"]
+                    ), Array("workspace_id" => $ws_id), $this->getUser());
+                }
+            }
+
 			$response["data"]["status"] = "success";
-			$response["data"]["workspace_id"] = $ws_id;
+            //$response["data"]["workspace_id"] = $ws_id;
+            $response["data"]["workspace"] = $ws->getAsArray();
+
+            $this->get("administration.counter")->incrementCounter("total_workspaces", 1);
+
 		}
 
 		return new JsonResponse($response);
 	}
+
+    /**
+     * Récupère les informations de base d'un groupe
+     */
+    public function duplicateAction(Request $request)
+    {
+
+        $response = Array("errors" => Array(), "data" => Array());
+
+        $original_workspace_id = $request->request->get("original_workspace_id", 0);
+        $name = $request->request->get("config_name", "");
+
+        $config = Array();
+
+        $config["users"] = $request->request->get("config_users", "me");
+
+        $config["calendars"] = $request->request->get("config_calendars", 1);
+        $config["streams"] = $request->request->get("config_streams", 1);
+        $config["drive_labels"] = $request->request->get("config_drive_labels", 1);
+        $config["boards"] = $request->request->get("config_boards", 1);
+        $config["rights"] = $request->request->get("config_rights", 1);
+
+        $ws = $this->get("app.workspaces")->duplicate($original_workspace_id, $name, $config, $this->getUser()->getId());
+
+        if (!$ws || is_string($ws)) {
+            $response["errors"][] = "notallowed";
+            $response["errors"]["max"] = $ws;
+        } else {
+            $ws_id = $ws->getId();
+            $response["data"]["status"] = "success";
+            $response["data"]["workspace_id"] = $ws_id;
+        }
+
+        return new JsonResponse($response);
+    }
 
 	public function deleteAction(Request $request)
 	{
@@ -148,7 +226,7 @@ class WorkspaceController extends Controller
 		);
 
 		if($this->getUser()){
-			$workspaceId = $request->request->getInt("workspaceId");
+            $workspaceId = $request->request->get("workspaceId");
 			$ok = $this->get("app.workspaces")->remove(0, $workspaceId);
 			if($ok){
 				$data["data"] = "success";
@@ -167,42 +245,14 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspace_id");
 
         $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
         if(!$ws){
             $response["errors"][] = "notallowed";
         }else{
-            $apps_obj = $this->get("app.workspaces_apps")->getApps($workspaceId);
-            $apps = Array();
-            foreach ($apps_obj as $app_obj){
-                $apps[] = $app_obj->getAsArray();
-            }
-            $response["data"]["apps"] = $apps;
-        }
-
-        return new JsonResponse($response);
-    }
-
-    /**
-     * Récupère les applications d'un workspace
-     */
-    public function getModuleAppsAction(Request $request){
-
-        $response = Array("errors"=>Array(), "data"=>Array());
-
-        $workspaceId = $request->request->getInt("workspaceId");
-
-        $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
-        if(!$ws){
-            $response["errors"][] = "notallowed";
-        }else{
-            $apps_obj = $this->get("app.workspaces_apps")->getApps($workspaceId,null,true);
-            $apps = Array();
-            foreach ($apps_obj as $app_obj){
-                $apps[] = $app_obj->getAsArray();
-            }
-            $response["data"]["apps"] = $apps;
+            $apps = $this->get("app.workspaces_apps")->getApps($workspaceId);
+            $response["data"] = $apps;
         }
 
         return new JsonResponse($response);
@@ -215,10 +265,10 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
-        $appId = $request->request->getInt("appId");
+        $workspaceId = $request->request->get("workspace_id");
+        $appid = $request->request->get("app_id");
 
-        $res = $this->get("app.workspaces_apps")->disableApp($workspaceId,$appId);
+        $res = $this->get("app.workspaces_apps")->disableApp($workspaceId, $appid);
         if(!$res){
             $response["errors"][] = "notauthorized";
         }else{
@@ -235,10 +285,10 @@ class WorkspaceController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
-        $appId = $request->request->getInt("appId");
+        $workspaceId = $request->request->get("workspace_id");
+        $appid = $request->request->get("app_id");
 
-        $res = $this->get("app.workspaces_apps")->enableApp($workspaceId,$appId);
+        $res = $this->get("app.workspaces_apps")->enableApp($workspaceId, $appid);
         if(!$res){
             $response["errors"][] = "notauthorized";
         }else{
@@ -347,7 +397,7 @@ class WorkspaceController extends Controller
         $res = $this->get("app.workspaces")->favoriteOrUnfavoriteWorkspace($workspaceId, $this->getUser()->getId());
 
         if ($res["answer"]){
-            $response["data"] = $res["isFavorite"];
+            $response["data"] = $res["isfavorite"];
         }else{
             $response["errors"] = "impossible to put as favorite a workspace";
         }

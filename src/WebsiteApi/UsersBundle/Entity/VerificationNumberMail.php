@@ -3,6 +3,7 @@
 namespace WebsiteApi\UsersBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Mail
@@ -15,65 +16,74 @@ class VerificationNumberMail
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="twake_timeuuid")  //TO ADD FOR CASSANDRA
+     * @ORM\Id
+     *
+     * //TO ADD FOR CASSANDRA
 	 */
 	private $id;
 
-	/**
-	 * @var string
-	 *
-	 * @ORM\Column(name="mail", type="string", length=256)
-	 */
-	private $mail;
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="mail", type="twake_text")
+     * @Encrypted
+     */
+    private $mail;
+
+    /**
+     * @ORM\Column(name="verified", type="twake_boolean")
+     */
+    private $verified = false;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="hash_code", type="string", length=256)
+     * @ORM\Column(name="hash_code", type="twake_text")
+     * @Encrypted
 	 */
-	private $hashCode;
+    private $hashcode;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="token", type="string", length=256)
+     * @ORM\Column(name="token_column", type="string", length=256, options={"index": true})
 	 */
 	private $token = "";
 
 	/**
 	 * @var \DateTime
 	 *
-	 * @ORM\Column(name="date", type="datetime")
+     * @ORM\Column(name="date", type="twake_datetime")  //TO ADD FOR CASSANDRA (replace datetime)
 	 */
 	private $date = "";
 
 	/**
-	 * @ORM\Column(name="validity_time", type="integer")
+     * @ORM\Column(name="validity_time", type="integer")
 	 */
-	private $validityTime;
+    private $validitytime;
 
 
 	/**
-	 * @ORM\Column(name="clean_code", type="string")
+     * @ORM\Column(name="clean_code", type="twake_text")
+     * @Encrypted
 	 */
 	private $clean_code;
 
 
-	public function __construct($mail, $validityTime = 3600)
+    public function __construct($mail, $validitytime = 3600)
 	{
 		$this->mail = $mail;
-		$this->token = bin2hex(random_bytes(128));
-		$this->hashCode = bin2hex(random_bytes(128));
+        $this->token = bin2hex(random_bytes(40));
+        $this->hashcode = bin2hex(random_bytes(128));
 		$this->date = new \DateTime();
-		$this->validityTime = max(3600, $validityTime);
+        $this->validitytime = max(3600, $validitytime);
 	}
 
 	public function getCode(){
 		$code = substr(bin2hex(random_bytes(5)), 0, 9);
 		$this->clean_code = $code;
-		$this->hashCode = $this->hash($code);
+        $this->hashcode = $this->hash($code);
 		//Prettify
 		$code = str_split($code, 3);
 		$code = join("-", $code);
@@ -81,11 +91,11 @@ class VerificationNumberMail
 	}
 
 	public function verifyCode($code){
-		if($this->date->format('U') < (new \DateTime())->format('U') - $this->validityTime){
+        if ($this->date->format('U') < (new \DateTime())->format('U') - $this->validitytime) {
 			return false;
 		}
 		$code = preg_replace("/[^a-z0-9]/","",strtolower($code));
-		return $this->hash($code) == $this->hashCode;
+        return $this->hash($code) == $this->hashcode;
 	}
 
 	private function hash($str){
@@ -107,8 +117,13 @@ class VerificationNumberMail
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
 		return $this->id;
 	}
 
@@ -128,7 +143,21 @@ class VerificationNumberMail
 		return $this->clean_code;
 	}
 
+    /**
+     * @return mixed
+     */
+    public function getVerified()
+    {
+        return $this->verified;
+    }
 
+    /**
+     * @param mixed $verified
+     */
+    public function setVerified($verified)
+    {
+        $this->verified = $verified;
+    }
 
 }
 

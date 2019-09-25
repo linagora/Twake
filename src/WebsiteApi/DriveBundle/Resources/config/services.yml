@@ -1,48 +1,51 @@
 services:
+    app.drive:
+        class: WebsiteApi\DriveBundle\Services\DriveSystem
+        arguments: ["@app.twake_doctrine", "@app.drive.adapter_selector", "@app.upload", "@app.applications_api"]
 
     app.drive.FileSystem:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystem
-        arguments: ["@app.doctrine_adapter", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@website_api_market.applications','@app.drive.UserToNotifyService', '@app.translate', '@app.workspaces_apps','@app.workspaces_activities', '@app.objectLinks']
+        arguments: ["@app.twake_doctrine", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@app.applications','@app.drive.UserToNotifyService', '@app.translate', '@app.workspaces_apps','@app.workspaces_activities', '@app.objectLinks', %drive_previews_tmp_folder%]
 
     app.drive.FileSystemExternalDrive:
         class: WebsiteApi\DriveBundle\Services\DriveFileSystemGDrive
-        arguments: ["@app.doctrine_adapter", "@app.drive.GDriveApiSystem", '@app.pusher',"@circle.restclient", '@app.drive.ExternalDriveSystem']
+        arguments: ["@app.twake_doctrine", "@app.drive.GDriveApiSystem", '@app.pusher',"@circle.restclient", '@app.drive.ExternalDriveSystem']
 
     app.drive.ExternalDriveDataCacheSystem:
         class: WebsiteApi\DriveBundle\Services\ExternalDriveDataCacheSystem
-        arguments: ["@app.doctrine_adapter"]
+        arguments: ["@app.twake_doctrine"]
 
     app.drive.ExternalDriveSystem:
         class: WebsiteApi\DriveBundle\Services\ExternalDriveSystem
-        arguments: ["@app.doctrine_adapter","@app.token_service", "@app.drive.GDriveApiSystem"]
+        arguments: ["@app.twake_doctrine","@app.token_service", "@app.drive.GDriveApiSystem"]
 
     app.drive.GDriveApiSystem:
         class: WebsiteApi\DriveBundle\Services\GDriveApiSystem
-        arguments: ["@app.doctrine_adapter", "@circle.restclient", "@app.drive.ExternalDriveDataCacheSystem", '@website_api_market.applications', '@app.token_service']
+        arguments: ["@app.twake_doctrine", "@circle.restclient", "@app.drive.ExternalDriveDataCacheSystem", '@app.applications', '@app.token_service']
 
     app.drive.SmartFolders:
         class: WebsiteApi\DriveBundle\Services\DriveSmartFolders
-        arguments: ["@app.doctrine_adapter"]
+        arguments: ["@app.twake_doctrine"]
 
     app.drive.Labels:
         class: WebsiteApi\DriveBundle\Services\DriveLabels
-        arguments: ["@app.doctrine_adapter"]
+        arguments: ["@app.twake_doctrine"]
 
     app.drive.Preview:
       class: WebsiteApi\DriveBundle\Services\DrivePreview
-      arguments: ["@app.doctrine_adapter"]
+      arguments: ["@app.twake_doctrine"]
 
     app.drive.DriveActivities:
       class: WebsiteApi\DriveBundle\Services\DriveActivities
-      arguments: ["@app.doctrine_adapter",  '@app.pusher', "@app.notifications"]
+      arguments: ["@app.twake_doctrine",  '@app.pusher', "@app.notifications"]
 
     app.drive.UserToNotifyService:
       class: WebsiteApi\DriveBundle\Services\UserToNotifyService
-      arguments: ["@app.doctrine_adapter","@app.drive.FileSystemExternalDrive", "@app.drive.DriveActivities", '@app.translate']
+      arguments: ["@app.twake_doctrine","@app.drive.FileSystemExternalDrive", "@app.drive.DriveActivities", '@app.translate']
 
     app.driveActivity:
         class: WebsiteApi\DriveBundle\Services\DriveActivities
-        arguments: ["@app.doctrine_adapter", "@app.pusher", "@app.notifications"]
+        arguments: ["@app.twake_doctrine", "@app.pusher", "@app.notifications"]
 
     drive.topic:
         class: WebsiteApi\DriveBundle\Topic\DriveTopic
@@ -52,9 +55,18 @@ services:
 
     app.drive.adapter_selector:
         class: WebsiteApi\DriveBundle\Services\DriveAdapterSelector
-        arguments: [%aws%, "@app.drive.AWS_FileSystem", "@app.drive.FileSystem"]
+        arguments: [%aws%, %openstack%, "@app.drive.AWS_FileSystem", "@app.drive.OpenStack_FileSystem", "@app.drive.FileSystem"]
+
+    # OpenStack
+    app.drive.OpenStack_FileSystem:
+        class: WebsiteApi\DriveBundle\Services\Adapter_OpenStack_DriveFileSystem
+        arguments: [%openstack%, "@app.twake_doctrine", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@app.applications','@app.drive.UserToNotifyService', '@app.translate', '@app.workspaces_apps','@app.workspaces_activities', '@app.objectLinks', %drive_previews_tmp_folder%]
 
     # AWS
     app.drive.AWS_FileSystem:
-        class: WebsiteApi\DriveBundle\Services\AWS_DriveFileSystem
-        arguments: [%aws%, "@app.doctrine_adapter", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@website_api_market.applications','@app.drive.UserToNotifyService', '@app.translate', '@app.workspaces_apps','@app.workspaces_activities', '@app.objectLinks']
+        class: WebsiteApi\DriveBundle\Services\Adapter_AWS_DriveFileSystem
+        arguments: [%aws%, "@app.twake_doctrine", %kernel.root_dir%, "@app.drive.Labels", "%DRIVE_SALT%","@app.pricing_plan", "@app.drive.Preview", '@app.pusher','@app.applications','@app.drive.UserToNotifyService', '@app.translate', '@app.workspaces_apps','@app.workspaces_activities', '@app.objectLinks', %drive_previews_tmp_folder%]
+
+    app.drive_refacto:
+        class: WebsiteApi\DriveBundle\Services\DriveFileRefacto
+        arguments: ["@app.twake_doctrine", "@app.applications_api"]

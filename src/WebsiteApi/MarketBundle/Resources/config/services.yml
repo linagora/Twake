@@ -1,12 +1,13 @@
 services:
-#    website_api_market.example:
-#        class: WebsiteApi\MarketBundle\Example
-#        arguments: ["@service_id", "plain_value", "%parameter%"]
 
-    website_api_market.applications:
+    app.applications:
         class: WebsiteApi\MarketBundle\Services\MarketApplication
-        arguments: ["@app.doctrine_adapter", "@app.group_managers","@app.pricing_plan"]
+        arguments: ["@app.twake_doctrine", "@app.group_managers","@app.pricing_plan"]
+
+    app.applications_api:
+        class: WebsiteApi\MarketBundle\Services\ApplicationApi
+        arguments: ["@app.twake_doctrine", "@circle.restclient"]
 
     website_api_market.data_token:
         class: WebsiteApi\MarketBundle\Services\DataTokenSystem
-        arguments: ["@app.doctrine_adapter"]
+        arguments: ["@app.twake_doctrine"]

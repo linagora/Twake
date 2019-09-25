@@ -3,27 +3,27 @@
 namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * DriveFileLabel
  *
- * @ORM\Table(name="drive_file_label",options={"engine":"MyISAM"})
+ * @ORM\Table(name="drive_file_label",options={"engine":"myisam"})
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileLabelRepository")
  */
 class DriveFileLabel
 {
 
 	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
+     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Id
+ */
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false)
 	 */
 	private $file;
 
@@ -41,8 +41,13 @@ class DriveFileLabel
 	/**
 	 * @return mixed
 	 */
-	public function getId()
-	{
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
 		return $this->id;
 	}
 

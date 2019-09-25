@@ -3,6 +3,7 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 
 
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * GroupApp
  *
- * @ORM\Table(name="group_app",options={"engine":"MyISAM"})
+ * @ORM\Table(name="group_app",options={"engine":"MyISAM", "scylladb_keys": {{"group_id": "ASC", "app_id": "ASC", "id": "ASC"}, {"id":"ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupAppRepository")
  */
 class GroupApp
@@ -19,57 +20,93 @@ class GroupApp
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
-	 */
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
+     * @ORM\Id
+     */
 	private $group;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
+     * @ORM\Column(name="app_id", type="twake_timeuuid")
+     * @ORM\Id
 	 */
-	private $app;
+    private $app_id;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date_added;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="twake_boolean")
      */
-    private $workspaceDefault;
+    private $workspacedefault;
+
+    /**
+     * @ORM\Column(type="integer")
+     */
+    private $workspaces_count;
+
+    /**
+     * @ORM\Column(name="privileges_capabilities_last_update", type="twake_datetime")
+     */
+    protected $privileges_capabilities_last_update;
+
+    /**
+     * @ORM\Column(name="privileges", type="twake_text")
+     */
+    protected $privileges = "[]";
+
+    /**
+     * @ORM\Column(name="capabilities", type="twake_text")
+     */
+    protected $capabilities = "[]";
+
+    /**
+     * @ORM\Column(name="hooks", type="twake_text")
+     */
+    protected $hooks = "[]";
 
 
-	public function __construct($group, $app) {
+    public function __construct($group, $app_id)
+    {
 		$this->group = $group;
-		$this->app = $app;
+        $this->app_id = $app_id;
+
 		$this->date_added = new \DateTime();
-		$this->workspaceDefault = false;
+        $this->workspacedefault = false;
+
+        $this->setPrivilegesCapabilitiesLastRead(new \DateTime());
 	}
 
 
     public function getAsArray(){
 	    return Array(
 	        "id" => $this->getId(),
-            "group" => $this->getGroup(),
-            "app" => $this->getApp(),
-            "date_added" => $this->getDateAdded(),
-            "workspace_default" => $this->getWorkspaceDefault()
+            "group_id" => $this->getGroup()->getId(),
+            "app_id" => $this->getAppId(),
+            "date_added" => $this->getDateAdded()->getTimestamp(),
+            "workspace_default" => $this->getWorkspaceDefault(),
+            "workspace_count" => $this->getWorkspacesCount()
         );
     }
 
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	/**
@@ -78,14 +115,6 @@ class GroupApp
 	public function getGroup()
 	{
 		return $this->group;
-	}
-
-	/**
-	 * @return mixed
-	 */
-	public function getApp()
-	{
-		return $this->app;
 	}
 
 	/**
@@ -101,15 +130,116 @@ class GroupApp
      */
     public function getWorkspaceDefault()
     {
-        return $this->workspaceDefault;
+        return $this->workspacedefault;
     }
 
     /**
-     * @param mixed $workspaceDefault
+     * @param mixed $workspacedefault
      */
-    public function setWorkspaceDefault($workspaceDefault)
+    public function setWorkspaceDefault($workspacedefault)
     {
-        $this->workspaceDefault = $workspaceDefault;
+        $this->workspacedefault = $workspacedefault;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getAppId()
+    {
+        return $this->app_id;
+    }
+
+    /**
+     * @param mixed $app_id
+     */
+    public function setAppId($app_id)
+    {
+        $this->app_id = $app_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspacesCount()
+    {
+        return $this->workspaces_count;
+    }
+
+    /**
+     * @param mixed $workspaces_count
+     */
+    public function setWorkspacesCount($workspaces_count)
+    {
+        $this->workspaces_count = $workspaces_count;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrivilegesCapabilitiesLastRead()
+    {
+        return $this->privileges_capabilities_last_update;
+    }
+
+    /**
+     * @param mixed $privileges_capabilities_last_update
+     */
+    public function setPrivilegesCapabilitiesLastRead($privileges_capabilities_last_update)
+    {
+        $this->privileges_capabilities_last_update = $privileges_capabilities_last_update;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getPrivileges()
+    {
+        return json_decode($this->privileges, true);
+    }
+
+    /**
+     * @param mixed $privileges
+     */
+    public function setPrivileges($privileges)
+    {
+        $this->privileges = json_encode($privileges);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getCapabilities()
+    {
+        return json_decode($this->capabilities, true);
+    }
+
+    /**
+     * @param mixed $capabilities
+     */
+    public function setCapabilities($capabilities)
+    {
+        $this->capabilities = json_encode($capabilities);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHooks()
+    {
+        if (!$this->hooks) {
+            return Array();
+        }
+        return json_decode($this->hooks, true);
+    }
+
+    /**
+     * @param mixed $hooks
+     */
+    public function setHooks($hooks)
+    {
+        $this->hooks = json_encode($hooks);
+    }
+
+
 
 }

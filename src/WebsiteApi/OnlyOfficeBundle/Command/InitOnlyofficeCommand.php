@@ -21,7 +21,7 @@ use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;
 
 /**
  * Created by PhpStorm.
- * User: Syma
+ * User: Romaric Mourgues
  * Date: 20/06/2017
  * Time: 09:45
  */
@@ -43,13 +43,12 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $doctrine = $this->getContainer()->get('doctrine');
-        $manager = $doctrine->getManager();
+        $manager = $this->getContainer()->get('app.twake_doctrine');
 
         $serverbase = $this->getContainer()->getParameter('SERVER_NAME') . "/";
 
         // Création des applications
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "onlyoffice_presentation"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "onlyoffice_presentation"));
         if (!$app) {
             $app = new Application();
         }
@@ -76,7 +75,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $manager->persist($app);
 
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "onlyoffice_document"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "onlyoffice_document"));
         if (!$app) {
             $app = new Application();
         }
@@ -103,7 +102,7 @@ class InitOnlyofficeCommand extends ContainerAwareCommand
         $manager->persist($app);
 
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "onlyoffice_spreadsheet"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "onlyoffice_spreadsheet"));
         if (!$app) {
             $app = new Application();
         }

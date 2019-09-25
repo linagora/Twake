@@ -1,0 +1,7 @@
+collections_topic:
+    channel: collections/{id}
+    handler:
+        callback: 'collections.topic'
+    requirements:
+        id:
+            pattern: "[a-zA-Z0-9-]+"

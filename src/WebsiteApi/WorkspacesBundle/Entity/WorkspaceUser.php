@@ -3,12 +3,13 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 
 /**
  * WorkspaceUser
  *
- * @ORM\Table(name="workspace_user",options={"engine":"MyISAM"})
+ * @ORM\Table(name="workspace_user",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "user_id": "DESC", "id":"ASC"}, {"level_id":"ASC"}, {"user_id": "DESC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceUserRepository")
  */
 class WorkspaceUser
@@ -17,61 +18,59 @@ class WorkspaceUser
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\Id
 	 */
 	private $workspace;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\Id
 	 */
 	private $user;
 
-    /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupUser")
-     */
-    protected $groupUser;
-
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel")
+     * @ORM\Column(name="level_id", type="twake_timeuuid")
 	 */
-	private $level;
+	private $level_id;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $date_added;
 
     /**
-     * @ORM\Column(type="datetime", options={"default" : "1970-01-02"})
+     * @ORM\Column(type="twake_datetime", options={"default" : "1970-01-02"})
      */
     private $last_access;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="twake_boolean")
      */
-    private $isHidden = false;
+    private $hasnotifications = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="is_externe", type="twake_boolean")
      */
-    private $isFavorite = false;
+    private $externe;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="is_auto_add_externe", type="twake_boolean")
      */
-    private $hasNotifications = true;
+    private $auto_add_externe;
 
-	public function __construct($workspace, $user, $level) {
+    public function __construct($workspace, $user, $level_id)
+    {
 		$this->workspace = $workspace;
 		$this->user = $user;
-		$this->level = $level;
+
+        $this->level_id = $level_id;
 		$this->date_added = new \DateTime();
         $this->last_access = new \DateTime();
 	}
@@ -79,7 +78,12 @@ class WorkspaceUser
 	/**
 	 * @return int
 	 */
-	public function getId()
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
 	{
 		return $this->id;
 	}
@@ -103,17 +107,17 @@ class WorkspaceUser
 	/**
 	 * @return mixed
 	 */
-	public function getLevel()
+    public function getLevelId()
 	{
-		return $this->level;
+		return $this->level_id;
 	}
 
 	/**
 	 * @param mixed $level
 	 */
-	public function setLevel($level)
-	{
-		$this->level = $level;
+    public function setLevelId($level)
+    {
+        $this->level_id = $level;
 	}
 
 	/**
@@ -123,22 +127,6 @@ class WorkspaceUser
 	{
 		return $this->date_added;
 	}
-
-    /**
-     * @return mixed
-     */
-    public function getGroupUser()
-    {
-        return $this->groupUser;
-    }
-
-    /**
-     * @param mixed $groupUser
-     */
-    public function setGroupUser($groupUser)
-    {
-        $this->groupUser = $groupUser;
-    }
 
     /**
      * @return mixed
@@ -161,15 +149,15 @@ class WorkspaceUser
      */
     public function getisHidden()
     {
-        return $this->isHidden;
+        //return $this->ishidden;
     }
 
     /**
-     * @param mixed $isHidden
+     * @param mixed $ishidden
      */
-    public function setIsHidden($isHidden)
+    public function setIsHidden($ishidden)
     {
-        $this->isHidden = $isHidden;
+        //$this->ishidden = $ishidden;
     }
 
     /**
@@ -177,15 +165,15 @@ class WorkspaceUser
      */
     public function getisFavorite()
     {
-        return $this->isFavorite;
+        //return $this->isfavorite;
     }
 
     /**
-     * @param mixed $isFavorite
+     * @param mixed $isfavorite
      */
-    public function setIsFavorite($isFavorite)
+    public function setIsFavorite($isfavorite)
     {
-        $this->isFavorite = $isFavorite;
+        //$this->isfavorite = $isfavorite;
     }
 
     /**
@@ -193,16 +181,61 @@ class WorkspaceUser
      */
     public function getHasNotifications()
     {
-        return $this->hasNotifications;
+        return $this->hasnotifications;
     }
 
     /**
-     * @param mixed $hasNotifications
+     * @param mixed $hasnotifications
      */
-    public function setHasNotifications($hasNotifications)
+    public function setHasNotifications($hasnotifications)
     {
-        $this->hasNotifications = $hasNotifications;
+        $this->hasnotifications = $hasnotifications;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getExterne()
+    {
+        return $this->externe;
+    }
+
+    /**
+     * @param mixed $isclient
+     */
+    public function setExterne($externe)
+    {
+        $this->externe = $externe;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAutoAddExterne()
+    {
+        return $this->auto_add_externe;
+    }
+
+    /**
+     * @param mixed $isclient
+     */
+    public function setAutoAddExterne($auto_add_externe)
+    {
+        $this->auto_add_externe = $auto_add_externe;
+    }
+
+    public function getAsArray(){
+        return Array(
+            "id" => $this->getId(),
+            "user" => $this->getUser()->getAsArray(),
+            "workspace" => $this->getWorkspace()->getAsArray(),
+            "level_id" => $this->getLevelId(),
+            "date_added" => $this->getDateAdded(),
+            "last_access" => $this->getLastAccess(),
+            "hasnotifications" => $this->getHasNotifications(),
+            "externe" => $this->getExterne(),
+            "auto_add_externe" => $this->getAutoAddExterne()
+        );
+    }
 
 }

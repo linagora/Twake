@@ -6,6 +6,12 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
+use WebsiteApi\NotificationsBundle\Entity\MailNotificationQueue;
+use Emojione\Client;
+use Emojione\Ruleset;
+use WebsiteApi\NotificationsBundle\Entity\UserNotificationStatus;
+use WebsiteApi\UsersBundle\Entity\User;
+
 
 class NotificationMailCommand extends ContainerAwareCommand
 {
@@ -18,24 +24,48 @@ class NotificationMailCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $doctrine = $this->getContainer()->get('doctrine');
-        $em = $doctrine->getManager();
+        $services = $this->getApplication()->getKernel()->getContainer();
+        $em = $services->get('app.twake_doctrine');
 
-        //Daily send an email with a summary of unread notifications for all apps after 12 hours without mails sent (including messages)
-        $number_of_mails = 1;
-        $last_mail_before = new \DateTime();
-        $last_mail_before->setTimestamp(date("U") - 60 * 60 * 12);
-        $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before);
-        $this->sendMail($users_id_count, "unread_notifications", null, true);
+        //Get users to notify
+        $users = [];
 
-        //Send an email for unread notifications after more than 30 minutes only for messages
-        $number_of_mails = 0; //Never notified
-        $last_mail_before = null; //Never notified
-        $delay = 60 * 20; //20 minutes + 10 minutes cron average 25min after message was sent
-        $app = $em->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "messages"));
-        $users_id_count = $em->getRepository("TwakeNotificationsBundle:Notification")->getMailCandidates($number_of_mails, $last_mail_before, $delay, $app);
-        $this->sendMail($users_id_count, "messages_notifications", $app);
-        $em->getRepository("TwakeNotificationsBundle:Notification")->updateMailCandidates($number_of_mails, $last_mail_before, $delay);
+        $repo = $em->getRepository("TwakeNotificationsBundle:MailNotificationQueue");
+        $entries = $repo->findBy(Array(), Array(), 1000);
+
+        foreach ($entries as $entry) {
+
+            $date = date("U") - $entry->getDate()->getTimestamp();
+
+            if ($date > 60 * 60 * 12) //12h
+            {
+
+                $user_notification_status = $em->getRepository("TwakeNotificationsBundle:UserNotificationStatus")->findOneBy(Array("user_id" => $entry->getUserId()));
+                if (!$user_notification_status) {
+                    $user_notification_status = new UserNotificationStatus($entry->getUserId());
+                }
+
+                if ($user_notification_status->getMailStatus() == 0) {
+                    $user_notification_status->setMailStatus(1);
+
+                    $users[] = Array("user" => $entry->getUserId(), "date" => $entry->getDate()->getTimestamp());
+                    $em->remove($entry);
+
+                    $em->persist($user_notification_status);
+
+                    error_log("send to " . $entry->getUserId());
+                } else {
+                    error_log("cancelled " . $entry->getUserId());
+                }
+
+                error_log($date);
+            }
+
+        }
+
+        $em->flush();
+
+        $this->sendMail($users, "messages_notifications");
 
     }
 
@@ -45,65 +75,55 @@ class NotificationMailCommand extends ContainerAwareCommand
      * @param null $app
      * @param bool $all_and_delete
      */
-    protected function sendMail($users_id_count, $template = "unread_notifications", $app = null, $all_and_delete = false)
+    protected function sendMail($users_ids, $template = "unread_notifications")
     {
 
         $services = $this->getApplication()->getKernel()->getContainer();
-        $doctrine = $this->getContainer()->get('doctrine');
-        $em = $doctrine->getManager();
+        $em = $services->get('app.twake_doctrine');
 
-        foreach ($users_id_count as $user_id_count) {
-            $user_id = $user_id_count[1];
-            $count = $user_id_count[2];
+        $emojione_client = new Client(new Ruleset());
 
+        foreach ($users_ids as $user) {
+
+            $user_id = $user["user"];
+            $date = $user["date"];
+
+            /** @var $user User */
             $user = $em->getRepository("TwakeUsersBundle:User")->find($user_id);
 
             $preferences = $user->getNotificationPreference();
             $mail_preferences = isset($preferences["mail_notifications"]) ? $preferences["mail_notifications"] : 2;
 
-            if (($mail_preferences == 2) || ($mail_preferences == 1 && $app == null)) { // Everything or Only daily mails
+            if ($mail_preferences == 0) {
+                break;
+            }
 
-                $filter = Array("user" => $user_id);
-                if ($app) {
-                    $filter["application"] = $app;
-                }
-                $notifications = $em->getRepository("TwakeNotificationsBundle:Notification")->findBy($filter, Array("date" => "DESC"), 20);
+            if ($mail_preferences == 1 && date("U") - $date < 60 * 60 * 12) { // Everything or Only daily mails
+                $new = new MailNotificationQueue($user_id);
+                $time = new \DateTime();
+                $time->setTimestamp($date);
+                $new->setDate($time);
+                break;
+            }
 
-                $data = Array(
-                    "username" => $user->getUsername(),
-                    "total_notifications" => $count,
-                    "notifications" => Array()
+            $count = max(0, $user->getNotificationWriteIncrement() - $user->getNotificationReadIncrement());
+            $notifications = $em->getRepository("TwakeNotificationsBundle:Notification")->findBy(Array("user" => $user_id), Array(), $count);
+
+            $data = Array(
+                "username" => $user->getFullName(),
+                "total_notifications" => $count,
+                "notifications" => Array()
+            );
+
+            foreach ($notifications as $notification) {
+                $data["notifications"][] = Array(
+                    "title" => html_entity_decode($emojione_client->shortnameToUnicode($notification->getTitle()), ENT_NOQUOTES, 'UTF-8'),
+                    "delay" => (new \DateTime())->diff($notification->getDate())->format("%h"),
+                    "text" => html_entity_decode($emojione_client->shortnameToUnicode($notification->getText()), ENT_NOQUOTES, 'UTF-8')
                 );
-
-                $do_not_send = false;
-                foreach ($notifications as $notification) {
-                    if ($notification->getMailSent() == 1) {
-                        $timestamp = $notification->getLastMail();
-                        if ($timestamp && $timestamp->diff(new Date(), true)->getTimestamp() < 60 * 20) {
-                            $do_not_send = true;
-                            break;
-                        }
-                    }
-                }
-                if ($do_not_send) {
-                    continue;
-                }
-
-                foreach ($notifications as $notification) {
-                    $data["notifications"][] = Array(
-                        "title" => $notification->getTitle(),
-                        "delay" => (new \DateTime())->diff($notification->getDate())->format("%h"),
-                        "text" => $notification->getText()
-                    );
-                }
-
-                $services->get("app.twake_mailer")->send($user->getEmail(), $template, $data);
-
             }
 
-            if ($all_and_delete) {
-                $em->getRepository("TwakeNotificationsBundle:Notification")->deleteForUser(1, $user);
-            }
+            $services->get("app.twake_mailer")->send($user->getEmail(), $template, $data);
 
         }
 

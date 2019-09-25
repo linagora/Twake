@@ -4,6 +4,7 @@ namespace WebsiteApi\DriveBundle\Entity;
 
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Created by PhpStorm.
@@ -23,10 +24,9 @@ use Doctrine\ORM\Mapping as ORM;
 class DriveActivity
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+ */
     private $id;
 
     /**
@@ -45,27 +45,27 @@ class DriveActivity
     private $user;
 
     /**
-     * @ORM\Column(type="text", length=64, nullable=true)
+     * @ORM\Column(type="twake_text", length=64, nullable=true)
      */
     private $title;
 
     /**
-     * @ORM\Column(type="text", length=512, nullable=true)
+     * @ORM\Column(type="twake_text", length=512, nullable=true)
      */
     private $text;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $date;
 
     /**
-     * @ORM\Column(type="text", length=1024, nullable=true)
+     * @ORM\Column(type="twake_text", length=1024, nullable=true)
      */
     private $data;
 
     /**
-     * @ORM\Column(name="isRead", type="boolean")
+     * @ORM\Column(name="is_read", type="twake_boolean")
      */
     private $read = false;
 
@@ -82,17 +82,9 @@ class DriveActivity
     /**
      * @return mixed
      */
-    public function getId()
-    {
+public function getId()
+{
         return $this->id;
-    }
-
-    /**
-     * @param mixed $id
-     */
-    public function setId($id)
-    {
-        $this->id = $id;
     }
 
     /**

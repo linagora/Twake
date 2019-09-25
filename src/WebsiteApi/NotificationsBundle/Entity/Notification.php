@@ -3,11 +3,12 @@
 namespace WebsiteApi\NotificationsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Mail
  *
- * @ORM\Table(name="notification",options={"engine":"MyISAM"})
+ * @ORM\Table(name="notification",options={"engine":"MyISAM", "scylladb_keys":{ {"user_id":"ASC", "id":"DESC"}, {"id":"DESC"} }})
  * @ORM\Entity(repositoryClass="WebsiteApi\NotificationsBundle\Repository\NotificationRepository")
  */
 class Notification
@@ -15,49 +16,61 @@ class Notification
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
+     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Id
+     */
 	private $id;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
-	 */
-	private $application;
+    /**
+     * @ORM\Column(type="twake_text")
+     * @ORM\Id
+     */
+    private $application_id;
+
+    /**
+     * @ORM\Column(type="twake_text")
+     */
+    private $channel_id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\Column(type="twake_text")
+     * @ORM\Id
 	 */
-	private $workspace;
+    private $workspace_id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-	 */
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\Id
+     */
 	private $user;
 
-	/**
-	 * @ORM\Column(type="text", length=64, nullable=true)
-	 */
-	private $code;
+    /**
+     * @ORM\Column(type="twake_text", nullable=true)
+     */
+    private $code;
 
-	/**
-	 * @ORM\Column(type="text", length=64,  nullable=true)
+    /**
+     * @ORM\Column(type="twake_text", nullable=true)
+     */
+    private $shortcut;
+
+    /**
+     * @ORM\Column(type="twake_text",  nullable=true)
 	 */
 	private $title;
 
 	/**
-	 * @ORM\Column(type="text", length=512,  nullable=true)
+     * @ORM\Column(type="twake_text",  nullable=true)
 	 */
 	private $text;
 
     /**
-     * @ORM\Column(type="text", length=1024)
+     * @ORM\Column(type="twake_text")
      */
     private $data = "{}";
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $date;
 
@@ -67,20 +80,21 @@ class Notification
     private $mail_sent = 0;
 
     /**
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(type="twake_datetime", nullable=true)
      */
     private $last_mail = null;
 
     /**
-     * @ORM\Column(type="boolean" , options={"default" : true})
+     * @ORM\Column(type="twake_boolean" , options={"default" : true})
      */
-    private $isRead;
+    private $isread;
 
-	public function __construct($application, $workspace, $user)
+    public function __construct($application_id, $workspace_id, $channel_id, $user)
 	{
 		$this->date = new \DateTime();
-		$this->application = $application;
-		$this->workspace = $workspace;
+        $this->application_id = $application_id;
+        $this->workspace_id = $workspace_id;
+        $this->channel_id = $channel_id;
 		$this->user = $user;
 		$this->setIsRead(false);
 	}
@@ -88,25 +102,30 @@ class Notification
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
 		return $this->id;
 	}
 
 	/**
 	 * @return mixed
 	 */
-	public function getApplication()
-	{
-		return $this->application;
+    public function getApplicationId()
+    {
+        return $this->application_id;
 	}
 
 	/**
 	 * @return mixed
 	 */
-	public function getWorkspace()
-	{
-		return $this->workspace;
+    public function getWorkspaceId()
+    {
+        return $this->workspace_id;
 	}
 
 	/**
@@ -224,13 +243,24 @@ class Notification
         $this->last_mail = $last_mail;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getChannelId()
+    {
+        return $this->channel_id;
+    }
+
+
+
 	public function getAsArray(){
 		return Array(
 			"id" => $this->getId(),
 			"date" => $this->getDate()->getTimestamp(),
 			"code" => $this->getCode(),
-			"workspace_id" => ($this->getWorkspace()?$this->getWorkspace()->getId():null),
-			"app_id" => ($this->getApplication()?$this->getApplication()->getId():null),
+            "workspace_id" => ($this->getWorkspaceId() ? $this->getWorkspaceId() : null),
+            "application_id" => ($this->getApplicationId() ? $this->getApplication() : null),
+            "channel_id" => ($this->getChannelId() ? $this->getChannelId() : null),
 			"title" => $this->getTitle(),
 			"text" => $this->getText(),
             "is_read" => $this->getisRead(),
@@ -243,16 +273,34 @@ class Notification
      */
     public function getisRead()
     {
-        return $this->isRead;
+        return $this->isread;
     }
 
     /**
-     * @param mixed $isRead
+     * @param mixed $isread
      */
-    public function setIsRead($isRead)
+    public function setIsRead($isread)
     {
-        $this->isRead = $isRead;
+        $this->isread = $isread;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getShortcut()
+    {
+        return $this->shortcut;
+    }
+
+    /**
+     * @param mixed $shortcut
+     */
+    public function setShortcut($shortcut)
+    {
+        $this->shortcut = $shortcut;
+    }
+
+
 
 }
 

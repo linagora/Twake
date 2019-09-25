@@ -6,6 +6,8 @@ framework:
         resource: "%kernel.root_dir%/config/routing_dev.yml"
         strict_requirements: true
     profiler: { only_exceptions: false }
+    session:
+        cookie_lifetime: 3600000 #1 000h
 
 web_profiler:
     toolbar: false
@@ -13,6 +15,11 @@ web_profiler:
 
 monolog:
     handlers:
+        websocket:
+            type:         fingers_crossed
+            action_level: error
+            handler:      main
+            channels: [websocket]
         main:
             type: stream
             path: "%kernel.logs_dir%/%kernel.environment%.log"

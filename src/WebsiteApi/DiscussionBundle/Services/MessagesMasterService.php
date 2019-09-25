@@ -7,7 +7,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use WebsiteApi\DiscussionBundle\Entity\Message;
 use WebsiteApi\CoreBundle\Services\StringCleaner;
 use WebsiteApi\DiscussionBundle\Entity\MessageLike;
-use WebsiteApi\DiscussionBundle\Entity\Stream;
+use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\UsersBundle\Entity\User;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
@@ -76,7 +76,7 @@ class MessagesMasterService
         $List = array();
         foreach ($streams as $streamMember){
             $element = array();
-            $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(array('streamReciever' => $streamMember->getStream()), array('id' => 'desc'));
+            $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(array('streamreciever' => $streamMember->getStream()), array('id' => 'desc'));
             $stream = $streamMember->getStream();
             $element["stream"]=$stream;
             $element["message"]=$message;

@@ -1,0 +1,28 @@
+{
+    "_source": {
+        "includes": [
+            "id",
+            "workspace_id",
+            "channel_id"
+        ],
+        "excludes": [
+            "content"
+        ]
+    },
+    "properties": {
+        "id": {
+            "type": "keyword"
+        },
+        "workspace_id": {
+            "type": "keyword"
+        },
+        "channel_id": {
+            "type": "keyword"
+        },
+        "content": {
+            "type": "text"
+            
+        }
+    }
+
+}

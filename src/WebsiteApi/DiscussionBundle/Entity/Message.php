@@ -3,349 +3,337 @@
 namespace WebsiteApi\DiscussionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\CoreBundle\Entity\FrontObject;
 
 /**
  * Message
  *
- * @ORM\Table(name="message",options={"engine":"MyISAM"})
+ * @ORM\Table(name="message",options={"engine":"MyISAM", "scylladb_keys": {{"channel_id":"ASC", "parent_message_id":"ASC", "id":"DESC"}, {"id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\DiscussionBundle\Repository\MessageRepository")
  */
-class Message
+class Message extends FrontObject
 {
-	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
-	private $id;
-
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
-     * @ORM\JoinColumn(nullable=true)
-	 */
-	private $userSender;
 
     /**
-     * @ORM\Column(type="string", length=1)
+     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Id
      */
-    private $typeReciever;
-
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=true)
-	 */
-	private $userReciever;
-
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Stream",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=true)
-	 */
-	private $streamReciever;
+    private $id;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="channel_id", type="twake_timeuuid")
+     * @ORM\Id
      */
-    private $isApplicationMessage = false;
+    private $channel_id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application",cascade={"persist"})
+     * @ORM\Column(name="parent_message_id", type="twake_text")
+     * @ORM\Id
+     */
+    private $parent_message_id = "";
+
+    /**
+     * @ORM\Column(name="responses_count", type="integer")
+     */
+    private $responses_count = 0;
+
+    /**
+     * @ORM\Column(name="message_type", type="integer")
+     */
+    private $message_type = 0; //0 from user, 1 from application, 2 from system
+
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",cascade={"persist"})
      * @ORM\JoinColumn(nullable=true)
      */
-    private $applicationSender;
+    private $sender = null;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="application_id", type="twake_text", nullable=true)
      */
-    private $isSystemMessage = false;
-
-
+    private $application_id = null;
 
 
     /**
-	 * @ORM\Column(type="datetime",nullable=true)
-	 */
-	private $date;
-
-    /**
-     * @ORM\Column(type="text", length=30000)
+     * @ORM\Column(name="creation_date", type="twake_datetime", nullable=true)
      */
-    private $htmlContent = "";
-
-	/**
-	 * @ORM\Column(type="text", length=20000)
-	 */
-	private $content;
-
-	/**
-	 * @ORM\Column(type="text", length=10000)
-	 */
-	private $cleanContent;
-
-
-	/**
-	 * @ORM\Column(type="boolean")
-	 */
-	private $edited = false;
-
-	/**
-	 * @ORM\Column(type="boolean")
-	 */
-	private $pinned = false;
-
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Message",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=true)
-	 */
-	private $responseTo = null;
+    private $creation_date;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="modification_date", type="twake_datetime", nullable=true)
      */
-    private $hasResponses = false;
-
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DiscussionBundle\Entity\Subject",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=true)
-	 */
-	private $subject = null;
+    private $modification_date;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_boolean")
      */
-    private $applicationData = "{}";
+    private $edited = false;
 
     /**
-     * @ORM\Column(type="string", length=40)
+     * @ORM\Column(type="twake_boolean")
      */
-    private $front_id;
+    private $pinned = false;
 
+    /**
+     * @ORM\Column(name="hidden_data", type="twake_text")
+     */
+    private $hidden_data = "{}";
 
-	public function __construct($sender,$typeReciever,$reciever,$isApplicationMessage,$applicationMessage,$isSystemMessage,$date,$content,$cleanContent,$subject){
-        $this->setUserSender($sender);
-        if($isApplicationMessage) {
-            $this->setIsApplicationMessage($isApplicationMessage);
-            $this->setApplicationSender($applicationMessage);
-        }
+    /**
+     * @ORM\Column(name="reactions", type="twake_text")
+     */
+    private $reactions = "{}";
 
-        $this->setTypeReciever($typeReciever);
-        if($typeReciever == "S"){
-            $this->setStreamReciever($reciever);
-        }
-        elseif($typeReciever == "U"){
-            $this->setUserReciever($reciever);
-        }
-        $this->setIsSystemMessage($isSystemMessage);
-        $this->setDate($date);
-        $this->setContent($content);
-        $this->setCleanContent($cleanContent);
-        if($subject != null){
-            $this->setSubject($subject);
-        }
+    /**
+     * @ORM\Column(name="content", type="twake_text")
+     */
+    private $content = "[]";
+
+    /**
+     * @ORM\Column(name="user_specific_content", type="twake_text")
+     */
+    private $user_specific_content = "[]";
+
+    /**
+     * @ORM\Column(name="tags", type="twake_text", nullable=true)
+     * @Encrypted
+     */
+    private $tags;
+
+    /**
+     * @ORM\Column(name="block_id", type="twake_timeuuid", nullable=true)
+     */
+    private $block_id = null;
+
+    /**
+     * Message constructor.
+     */
+
+    public function __construct($channel_id, $parent_message_id)
+    {
+        parent::__construct();
+        $this->channel_id = $channel_id;
+        $this->parent_message_id = $parent_message_id;
+        $this->creation_date = new \DateTime();
+        $this->modification_date = new \DateTime();
     }
+
 
     /**
      * @return mixed
      */
+    public function getTags()
+    {
+        return json_decode($this->tags);
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setTags($tags)
+    {
+        $this->tags = json_encode($tags);
+    }
+
+    /**
+     * Get the value of Id
+     *
+     * @return mixed
+     */
+
     public function getId()
     {
         return $this->id;
     }
 
     /**
-     * @param mixed $id
+     * Set the value of Id
+     *
+     * @param mixed id
+     *
+     * @return self
      */
     public function setId($id)
     {
         $this->id = $id;
+
+        return $this;
     }
 
     /**
+     * Get the value of Channel Id
+     *
      * @return mixed
      */
-    public function getUserSender()
+    public function getChannelId()
     {
-        return $this->userSender;
+        return $this->channel_id;
     }
 
     /**
-     * @param mixed $userSender
-     */
-    public function setUserSender($userSender)
-    {
-        $this->userSender = $userSender;
-    }
-
-    /**
+     * Get the value of Parent Message Id
+     *
      * @return mixed
      */
-    public function getTypeReciever()
+    public function getParentMessageId()
     {
-        return $this->typeReciever;
+        return $this->parent_message_id;
+    }
+
+    public function setParentMessageId($id)
+    {
+        $this->parent_message_id = $id;
     }
 
     /**
-     * @param mixed $typeReciever
-     */
-    public function setTypeReciever($typeReciever)
-    {
-        $this->typeReciever = $typeReciever;
-    }
-
-    /**
+     * Get the value of Responses Count
+     *
      * @return mixed
      */
-    public function getUserReciever()
+    public function getResponsesCount()
     {
-        return $this->userReciever;
+        return $this->responses_count;
     }
 
     /**
-     * @param mixed $userReciever
+     * Set the value of Responses Count
+     *
+     * @param mixed responses_count
+     *
+     * @return self
      */
-    public function setUserReciever($userReciever)
+    public function setResponsesCount($responses_count)
     {
-        $this->userReciever = $userReciever;
+        $this->responses_count = max(0, $responses_count);
+
+        return $this;
     }
 
     /**
+     * Get the value of Message Type
+     *
      * @return mixed
      */
-    public function getStreamReciever()
+    public function getMessageType()
     {
-        return $this->streamReciever;
+        return $this->message_type;
     }
 
     /**
-     * @param mixed $streamReciever
+     * Set the value of Message Type
+     *
+     * @param mixed message_type
+     *
+     * @return self
      */
-    public function setStreamReciever($streamReciever)
+    public function setMessageType($message_type)
     {
-        $this->streamReciever = $streamReciever;
+        $this->message_type = $message_type;
+
+        return $this;
     }
 
     /**
+     * Get the value of Sender
+     *
      * @return mixed
      */
-    public function getIsApplicationMessage()
+    public function getSender()
     {
-        return $this->isApplicationMessage;
+        return $this->sender;
     }
 
     /**
-     * @param mixed $isApplicationMessage
+     * Set the value of Sender
+     *
+     * @param mixed sender
+     *
+     * @return self
      */
-    public function setIsApplicationMessage($isApplicationMessage)
+    public function setSender($sender)
     {
-        $this->isApplicationMessage = $isApplicationMessage;
+        $this->sender = $sender;
+
+        return $this;
     }
 
     /**
+     * Get the value of Application
+     *
      * @return mixed
      */
-    public function getApplicationSender()
+    public function getApplicationId()
     {
-        return $this->applicationSender;
+        return $this->application_id;
     }
 
     /**
-     * @param mixed $applicationSender
+     * Set the value of Application
+     *
+     * @param mixed application
+     *
+     * @return self
      */
-    public function setApplicationSender($applicationSender)
+    public function setApplicationId($application_id)
     {
-        $this->applicationSender = $applicationSender;
+        $this->application_id = $application_id;
+
+        return $this;
     }
 
     /**
+     * Get the value of Creation Date
+     *
      * @return mixed
      */
-    public function getIsSystemMessage()
+    public function getCreationDate()
     {
-        return $this->isSystemMessage;
+        return $this->creation_date;
     }
 
     /**
-     * @param mixed $isSystemMessage
+     * Set the value of Creation Date
+     *
+     * @param mixed creation_date
+     *
+     * @return self
      */
-    public function setIsSystemMessage($isSystemMessage)
+    public function setCreationDate($creation_date)
     {
-        $this->isSystemMessage = $isSystemMessage;
+        $this->creation_date = $creation_date;
+
+        return $this;
     }
 
     /**
+     * Get the value of Modification Date
+     *
      * @return mixed
      */
-    public function getDate()
+    public function getModificationDate()
     {
-        return $this->date;
+        return $this->modification_date;
     }
 
     /**
-     * @param mixed $date
+     * Set the value of Modification Date
+     *
+     * @param mixed modification_date
+     *
+     * @return self
      */
-    public function setDate($date)
+    public function setModificationDate($modification_date)
     {
-        $this->date = $date;
+        $this->modification_date = $modification_date;
+
+        return $this;
     }
 
     /**
-     * @return mixed
-     */
-    public function getContent()
-    {
-        return base64_decode($this->content);
-    }
-
-    /**
-     * @param mixed $content
-     */
-    public function setContent($content)
-    {
-        $this->content = base64_encode($content);
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getHtmlContent()
-    {
-        return base64_decode($this->content);
-    }
-
-    /**
-     * @param mixed $content
-     */
-    public function setHtmlContent($content)
-    {
-        $tmp = base64_encode($content);
-
-        //Important : remove dangerous html
-        $tmp = str_replace(
-            Array("<script"),
-            Array("&#60;script"),
-            $tmp
-        );
-
-        $this->content = $tmp;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getCleanContent()
-    {
-        return $this->cleanContent;
-    }
-
-    /**
-     * @param mixed $cleanContent
-     */
-    public function setCleanContent($cleanContent)
-    {
-        $this->cleanContent = $cleanContent;
-    }
-
-    /**
+     * Get the value of Edited
+     *
      * @return mixed
      */
     public function getEdited()
@@ -354,14 +342,22 @@ class Message
     }
 
     /**
-     * @param mixed $edited
+     * Set the value of Edited
+     *
+     * @param mixed edited
+     *
+     * @return self
      */
     public function setEdited($edited)
     {
         $this->edited = $edited;
+
+        return $this;
     }
 
     /**
+     * Get the value of Pinned
+     *
      * @return mixed
      */
     public function getPinned()
@@ -370,146 +366,129 @@ class Message
     }
 
     /**
-     * @param mixed $pinned
+     * Set the value of Pinned
+     *
+     * @param mixed pinned
+     *
+     * @return self
      */
     public function setPinned($pinned)
     {
         $this->pinned = $pinned;
+
+        return $this;
     }
 
     /**
+     * Get the value of Hidden Data
+     *
      * @return mixed
      */
-    public function getResponseTo()
+    public function getHiddenData()
     {
-        return $this->responseTo;
-    }
-
-    /**
-     * @param mixed $responseTo
-     */
-    public function setResponseTo($responseTo)
-    {
-        $this->responseTo = $responseTo;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getHasResponses()
-    {
-        return $this->hasResponses;
-    }
-
-    /**
-     * @param mixed $hasResponses
-     */
-    public function setHasResponses($hasResponses)
-    {
-        $this->hasResponses = $hasResponses;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getSubject()
-    {
-        return $this->subject;
-    }
-
-    /**
-     * @param mixed $subject
-     */
-    public function setSubject($subject)
-    {
-        $this->subject = $subject;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getApplicationData()
-    {
-        return json_decode($this->applicationData,true);
-    }
-
-    /**
-     * @param mixed $applicationData
-     */
-    public function setApplicationData($applicationData)
-    {
-        $this->applicationData = json_encode($applicationData);
-    }
-
-    public function getDiscussionKey(){
-        $key = "";
-        if($this->getTypeReciever()=="S" && $this->getStreamReciever()!=null){
-            $key = $this->getStreamReciever()->getId();
+        if (!$this->hidden_data) {
+            return Array();
         }
-        else{
-            if($this->getUserSender()!=null && $this->getUserReciever()!=null){
-                $key = $this->getUserSender()->getId()."_".$this->getUserReciever()->getId();
-            }
+        return json_decode($this->hidden_data, 1);
+    }
+
+    /**
+     * Set the value of Hidden Data
+     *
+     * @param mixed hidden_data
+     *
+     * @return self
+     */
+    public function setHiddenData($hidden_data)
+    {
+        $this->hidden_data = json_encode($hidden_data);
+
+        return $this;
+    }
+
+    /**
+     * Get the value of Hidden Data
+     *
+     * @return mixed
+     */
+    public function getReactions()
+    {
+        if (!$this->reactions) {
+            return Array();
         }
-        return $key;
+        return json_decode($this->reactions, 1);
+    }
+
+    /**
+     * Set the value of Hidden Data
+     *
+     * @param mixed hidden_data
+     *
+     * @return self
+     */
+    public function setReactions($reactions)
+    {
+        $this->reactions = json_encode($reactions);
+
+        return $this;
+    }
+
+    public function getContent()
+    {
+        return json_decode($this->content, true);
+    }
+
+    public function setContent($content)
+    {
+        $this->content = json_encode($content);
+    }
+
+    public function getUserSpecificContent()
+    {
+        return json_decode($this->user_specific_content, true);
+    }
+
+    public function setUserSpecificContent($user_specific_content)
+    {
+        $this->user_specific_content = json_encode($user_specific_content);
     }
 
     /**
      * @return mixed
      */
-    public function getFrontId()
+    public function getBlockId()
     {
-        return $this->front_id;
+        return $this->block_id;
     }
 
     /**
-     * @param mixed $front_id
+     * @param mixed $block_id
      */
-    public function setFrontId($front_id)
+    public function setBlockId($block_id)
     {
-        $this->front_id = $front_id;
+        $this->block_id = $block_id;
     }
 
-    public function getAsArray(){
+    public function getAsArray()
+    {
         return Array(
             "id" => $this->getId(),
             "front_id" => $this->getFrontId(),
-            "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getId():null,
-            "recieverType" => $this->getTypeReciever(),
-            "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getId()  :null,
-            "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
-            "isApplicationMessage" => $this->getIsApplicationMessage(),
-            "applicationSender" => ($this->getApplicationSender()!=null)?$this->getApplicationSender()->getAsArray():null,
-            "isSystemMessage" => $this->getIsSystemMessage(),
-            "content" => $this->getContent(),
-            "cleanContent" => $this->getCleanContent(),
-            "date" => $this->getDate()?$this->getDate()->getTimestamp()*1000:null,
+            "channel_id" => $this->getChannelId(),
+            "parent_message_id" => $this->getParentMessageId(),
+            "responses_count" => $this->getResponsesCount(),
+            "message_type" => $this->getMessageType(),
+            "sender" => ($this->getSender() ? $this->getSender()->getId() : null),
+            "application_id" => $this->getApplicationId(),
             "edited" => $this->getEdited(),
             "pinned" => $this->getPinned(),
-            "subject" => ($this->getSubject()!=null)?$this->getSubject()->getAsArray():null,
-            "applicationData" => $this->getApplicationData(),
-            "responseTo" => ($this->getResponseTo() != null) ? $this->getResponseTo()->getId() : null,
-        );
-
-    }
-
-    public function getAsArrayForClient(){
-        return Array(
-            "id" => $this->getId(),
-            "userSender" => ($this->getUserSender()!=null)?$this->getUserSender()->getId():null,
-            "streamReciever" => ($this->getStreamReciever()!=null)?$this->getStreamReciever()->getId()  :null,
-            "userReciever" => ($this->getUserReciever()!=null)?$this->getUserReciever()->getId():null,
-            "htmlContent" => $this->getHtmlContent(),
+            "hidden_data" => $this->getHiddenData(),
+            "reactions" => $this->getReactions(),
+            "modification_date" => ($this->getModificationDate() ? $this->getModificationDate()->getTimestamp() : null),
+            "creation_date" => ($this->getCreationDate() ? $this->getCreationDate()->getTimestamp() : null),
             "content" => $this->getContent(),
-            "date" => $this->getDate()?$this->getDate()->getTimestamp()*1000:null,
-            "edited" => $this->getEdited(),
-            "pinned" => $this->getPinned(),
-            "subject" => ($this->getSubject()!=null)?$this->getSubject()->getAsArray():null,
-            "responseTo" => ($this->getResponseTo() != null) ? $this->getResponseTo()->getId() : null,
+            "user_specific_content" => $this->getUserSpecificContent()
         );
     }
-
-
-
 
 }

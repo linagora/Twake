@@ -42,10 +42,10 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
     private function convertToEntity($var, $repository)
     {
         if (is_string($var)) {
-            $var = intval($var);
+            $var = $var; // Cassandra id do nothing
         }
 
-        if (is_int($var)) {
+        if (is_int($var) || is_string($var) || get_class($var) == "Ramsey\Uuid\Uuid") {
             return $this->doctrine->getRepository($repository)->find($var);
         } else if (is_object($var)) {
             return $var;
@@ -86,7 +86,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         $res = array();
 
         foreach ($groups as $group) {
-            $res[$group->getId()] = $this->checkOverusingByGroup($group);
+            $res[$group->getId() . ""] = $this->checkOverusingByGroup($group);
         }
 
         return $res;
@@ -136,12 +136,12 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
             $list = array();
             foreach ($apps as $app){
                 if (count($groupPeriod->getAppsUsagePeriod()) != 0){
-                    if(!$groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()]){
+                    if (!$groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId() . ""]) {
                         continue;
                     }
                     $element = array(
                         "app" => $app->getApp()->getAsArray(),
-                        "usage" => $groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId()],
+                        "usage" => $groupPeriod->getAppsUsagePeriod()[$app->getApp()->getId() . ""],
                     );
                     $list[] = $element;
                 }
@@ -211,7 +211,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
         $res = array();
 
         foreach ($groups as $group) {
-            $res[$group->getId()] = $this->checkEndPeriodByGroup($group);
+            $res[$group->getId() . ""] = $this->checkEndPeriodByGroup($group);
         }
 
         return $res;
@@ -286,7 +286,7 @@ class SubscriptionManagerSystem implements SubscriptionManagerInterface
 
         foreach ($identities as $identity){
             $this->putInFree($identity->getGroup());
-            $res[$identity->getGroup()->getId()] = true;
+            $res[$identity->getGroup()->getId() . ""] = true;
         }
 
         return $res;

@@ -3,35 +3,36 @@
 namespace WebsiteApi\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * Sessions
  *
- * @ORM\Table(name="sessions",options={"collation":"utf8_bin","engine":"InnoDB"})
+ * @ORM\Table(name="twake_sessions",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\CoreBundle\Repository\SessionsRepository")
  */
 class Sessions
 {
 
     /**
-     * @ORM\Column(name="sess_id", type="string", length=128, nullable=false)
+     * @ORM\Column(name="sess_id", type="twake_string", length=128, nullable=false)
      * @ORM\Id
      */
     private $sess_id;
 
     /**
-     * @ORM\Column(name="sess_data", type="blob", nullable=false)
+     * @ORM\Column(name="sess_data", type="twake_text", nullable=false)
      */
     private $sess_data;
 
     /**
-     * @ORM\Column(name="sess_time", type="integer", nullable=false, options={"unsigned"=true})
+     * @ORM\Column(name="sess_time", type="twake_bigint", nullable=false, options={"unsigned"=true})
      */
     private $sess_time;
 
     /**
-     * @ORM\Column(name="sess_lifetime", type="bigint", nullable=false)
+     * @ORM\Column(name="sess_lifetime", type="twake_bigint", nullable=false)
      */
     private $sess_lifetime;
 
@@ -74,5 +75,39 @@ class Sessions
     {
         return $this->sess_lifetime;
     }
+
+    /**
+     * @param mixed $sess_id
+     */
+    public function setSessId($sess_id)
+    {
+        $this->sess_id = $sess_id;
+    }
+
+    /**
+     * @param mixed $sess_data
+     */
+    public function setSessData($sess_data)
+    {
+        $this->sess_data = $sess_data;
+    }
+
+    /**
+     * @param mixed $sess_time
+     */
+    public function setSessTime($sess_time)
+    {
+        $this->sess_time = $sess_time;
+    }
+
+    /**
+     * @param mixed $sess_lifetime
+     */
+    public function setSessLifetime($sess_lifetime)
+    {
+        $this->sess_lifetime = $sess_lifetime;
+    }
+
+
 
 }

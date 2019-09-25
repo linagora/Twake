@@ -40,7 +40,7 @@ class DriveSmartFolders implements DriveSmartFoldersInterface
 	public function edit($group, $id, $name, $labels)
 	{
 		$folder = $this->doctrine->getRepository("TwakeDriveBundle:DriveSmartFolder")->find($id);
-		if($folder != null && $folder->getGroup()==$group){
+        if ($folder != null && $folder->getWorkspaceId() == $group) {
 			$folder->setName($name);
 			$folder->setLabels($labels);
 			$this->doctrine->persist($folder);

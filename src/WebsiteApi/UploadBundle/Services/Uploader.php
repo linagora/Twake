@@ -74,6 +74,14 @@ class Uploader extends Controller
 				"sizes"=>31, //All !
 				"allowed_ext"=>Array("png","jpg","jpeg","gif","tiff")
 			),
+            "grouplogo"=>Array(
+                "is_img"=>1,
+                "max_size" => 2000000, //2mo
+                "min_width"=>100,
+                "min_height"=>100,
+                "sizes"=>31, //All !
+                "allowed_ext"=>Array("png","jpg","jpeg","gif","tiff")
+            ),
 			"wswall"=>Array(
 				"is_img"=>1,
 				"max_size" => 4000000, //2mo
@@ -102,7 +110,7 @@ class Uploader extends Controller
 	 */
 	private function uploadTheFile($currentUser, $realfile, $context){
 
-		if($currentUser == null or $currentUser->getId()<=0){
+        if ($currentUser == null || !$currentUser->getId()) {
 			return Array("errors"=>Array("error_not_connected"), "file"=>null, "realfile"=>$realfile);
 		}
 

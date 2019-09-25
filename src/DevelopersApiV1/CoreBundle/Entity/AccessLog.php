@@ -3,6 +3,7 @@
 namespace DevelopersApiV1\CoreBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
@@ -14,16 +15,15 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class AccessLog
 {
 	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
+     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Id
+ */
 	private $id;
 
     /**
      * @ORM\Column(type="integer")
      */
-	private $appId;
+    private $appid;
 
     /**
      * @ORM\Column(type="integer")
@@ -33,32 +33,29 @@ class AccessLog
     /**
      * @ORM\Column(type="integer")
      */
-    private $readAccessCount;
+    private $readaccesscount;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $writeAccessCount;
+    private $writeaccesscount;
 
     /**
      * @ORM\Column(type="integer")
      */
-    private $manageAccessCount;
+    private $manageaccesscount;
 
     /**
      * @return mixed
      */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * @param mixed $id
-     */
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
     }
 
     /**
@@ -66,15 +63,15 @@ class AccessLog
      */
     public function getAppId()
     {
-        return $this->appId;
+        return $this->appid;
     }
 
     /**
-     * @param mixed $appId
+     * @param mixed $appid
      */
-    public function setAppId($appId)
+    public function setAppId($appid)
     {
-        $this->appId = $appId;
+        $this->appid = $appid;
     }
 
     /**
@@ -98,7 +95,7 @@ class AccessLog
      */
     public function getReadAccessCount()
     {
-        return $this->readAccessCount;
+        return $this->readaccesscount;
     }
 
     /**
@@ -113,7 +110,7 @@ class AccessLog
      */
     public function getWriteAccessCount()
     {
-        return $this->writeAccessCount;
+        return $this->writeaccesscount;
     }
 
     /**
@@ -128,7 +125,7 @@ class AccessLog
      */
     public function getManageAccessCount()
     {
-        return $this->manageAccessCount;
+        return $this->manageaccesscount;
     }
 
     /**
@@ -138,28 +135,28 @@ class AccessLog
         $this->manageAccessCount++;
     }
     /**
-     * @param mixed $readAccessCount
+     * @param mixed $readaccesscount
      */
-    public function setReadAccessCount($readAccessCount)
+    public function setReadAccessCount($readaccesscount)
     {
-        $this->readAccessCount = $readAccessCount;
+        $this->readaccesscount = $readaccesscount;
     }
 
 
     /**
-     * @param mixed $writeAccessCount
+     * @param mixed $writeaccesscount
      */
-    public function setWriteAccessCount($writeAccessCount)
+    public function setWriteAccessCount($writeaccesscount)
     {
-        $this->writeAccessCount = $writeAccessCount;
+        $this->writeaccesscount = $writeaccesscount;
     }
 
     /**
-     * @param mixed $manageAccessCount
+     * @param mixed $manageaccesscount
      */
-    public function setManageAccessCount($manageAccessCount)
+    public function setManageAccessCount($manageaccesscount)
     {
-        $this->manageAccessCount = $manageAccessCount;
+        $this->manageaccesscount = $manageaccesscount;
     }
 
     public function clear($minutes){

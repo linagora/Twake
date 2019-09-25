@@ -21,7 +21,7 @@ class ReminderCheckerCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setName("twake:calendar_check");
+            ->setName("twake:calendar_check_reminders");
     }
 
 
@@ -30,7 +30,7 @@ class ReminderCheckerCommand extends ContainerAwareCommand
 
         $services = $this->getApplication()->getKernel()->getContainer();
 
-        $services->get("app.calendar_events")->checkReminders();
+        $services->get("app.calendar.event")->checkReminders();
 
         posix_kill(posix_getpid(), SIGKILL);
 

@@ -4,27 +4,33 @@ namespace WebsiteApi\CalendarBundle\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
+use WebsiteApi\CoreBundle\Entity\FrontObject;
 
 /**
- * Event
+ * Calendar
  *
- * @ORM\Table(name="calendar",options={"engine":"MyISAM"})
+ * @ORM\Table(name="calendar",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "id":"ASC"}, {"id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\CalendarBundle\Repository\CalendarRepository")
  */
-
-class Calendar {
+class Calendar extends FrontObject
+{
 
     /**
-     * @var int
-     *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @ORM\Column(name="title", type="string", nullable=true)
+     * @ORM\Column(name="workspace_id", type="twake_timeuuid")
+     * @ORM\Id
+     */
+    private $workspace_id;
+
+    /**
+     * @ORM\Column(name="title", type="twake_text", nullable=true)
+     * @Encrypted
      */
     private $title;
 
@@ -34,38 +40,26 @@ class Calendar {
     private $color;
 
     /**
-     * @ORM\Column(name="workspaces_number", type="integer", nullable=true)
+     * @ORM\Column(name="auto_participants", type="twake_text", nullable=false)
      */
-    private $workspacesNumber = 1;
+    private $auto_participants = "[]";
 
     /**
-     * @ORM\Column(name="autoParticipateList", type="string", length=264, nullable=false)
+     * @ORM\Column(name="connectors", type="twake_text", nullable=true)
      */
-    private $autoParticipantList;
+    private $connectors = "[]";
 
 
-    /**
-     * @ORM\Column(type="string", nullable=true)
-     */
-    private $icsLink;
-
-    /**
-     * @ORM\Column(type="datetime" , options={"default" : "2018-07-27 14:00:58"})
-     */
-    private $lastUpdateDate;
-
-
-    public  function __construct($title,$color, $icsLink=null)
+    public function __construct($workspace_id, $title, $color)
     {
+        $this->setWorkspaceId($workspace_id);
         $this->setTitle($title);
         $this->setColor($color);
-        $this->setAutoParticipantList(Array());
-        $this->setIcsLink($icsLink);
-        $this->setLastUpdateDate(new DateTime('now'));
+        $this->setAutoParticipants(Array());
     }
 
     /**
-     * @return int
+     * @return mixed
      */
     public function getId()
     {
@@ -73,31 +67,27 @@ class Calendar {
     }
 
     /**
-     * @return mixed
-     */
-    public function getAutoParticipantList()
-    {
-        if($this->autoParticipantList == null){
-            return null;
-        }else{
-            return json_decode($this->autoParticipantList, true );
-        }
-    }
-
-    /**
-     * @param mixed $autoParticipantList
-     */
-    public function setAutoParticipantList($autoParticipantList)
-    {
-        $this->autoParticipantList = json_encode($autoParticipantList);
-    }
-
-    /**
-     * @param int $id
+     * @param mixed $id
      */
     public function setId($id)
     {
         $this->id = $id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getWorkspaceId()
+    {
+        return $this->workspace_id;
+    }
+
+    /**
+     * @param mixed $workspace_id
+     */
+    public function setWorkspaceId($workspace_id)
+    {
+        $this->workspace_id = $workspace_id;
     }
 
     /**
@@ -135,60 +125,45 @@ class Calendar {
     /**
      * @return mixed
      */
-    public function getWorkspacesNumber()
+    public function getAutoParticipants()
     {
-        return $this->workspacesNumber;
+        return json_decode($this->auto_participants, 1);
     }
 
     /**
-     * @param mixed $workspacesNumber
+     * @param mixed $auto_participants
      */
-    public function setWorkspacesNumber($workspacesNumber)
+    public function setAutoParticipants($auto_participants)
     {
-        $this->workspacesNumber = $workspacesNumber;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getIcsLink()
-    {
-        return $this->icsLink;
-    }
-
-    /**
-     * @param mixed $icsLink
-     */
-    public function setIcsLink($icsLink)
-    {
-        $this->icsLink = $icsLink;
+        $this->auto_participants = json_encode($auto_participants);
     }
 
     /**
      * @return mixed
      */
-    public function getLastUpdateDate()
+    public function getConnectors()
     {
-        return $this->lastUpdateDate;
+        return json_decode($this->connectors, 1);
     }
 
     /**
-     * @param mixed $lastUpdateDate
+     * @param mixed $tabs
      */
-    public function setLastUpdateDate($lastUpdateDate)
+    public function setConnectors($connectors)
     {
-        $this->lastUpdateDate = $lastUpdateDate;
+        $this->connectors = json_encode($connectors);
     }
 
     public function getAsArray()
     {
         return Array(
             "id" => $this->getId(),
-            "name" => $this->getTitle(),
+            "front_id" => $this->getFrontId(),
+            "title" => $this->getTitle(),
             "color" => $this->getColor(),
-            "workspaces_number" => $this->getWorkspacesNumber(),
-            "autoParticipate" => $this->getAutoParticipantList(),
-            "icsLink" => $this->getIcsLink()
+            "connectors" => $this->getConnectors(),
+            "workspace_id" => $this->getWorkspaceId(),
+            "auto_participants" => $this->getAutoParticipants()
         );
     }
 

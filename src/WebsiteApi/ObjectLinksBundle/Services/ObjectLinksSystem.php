@@ -27,15 +27,17 @@ class ObjectLinksSystem
         if (count(self::$keyMap) == 0) {
             self::$keyMap["file"] = "TwakeDriveBundle:DriveFile";
             self::$keyMap["event"] = "TwakeCalendarBundle:CalendarEvent";
-            self::$keyMap["task"] = "TwakeProjectBundle:BoardTask";
             self::$keyMap["call"] = "TwakeDiscussionBundle:Call";
         }
     }
 
     public function getObjectLinks($id, $type)
     {
-        $resA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $id, "typeA" => self::$keyMap[$type]));
-        $resB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $id, "typeB" => self::$keyMap[$type]));
+        if($type == ""){
+            return [];
+        }
+        $resA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("ida" => $id, "typea" => self::$keyMap[$type]));
+        $resB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idb" => $id, "typeb" => self::$keyMap[$type]));
 
         $object = $this->doctrine->getRepository(self::$keyMap[$type])->findOneBy(Array("id" => $id));
 
@@ -88,19 +90,19 @@ class ObjectLinksSystem
     public function createObjectLinkFromType($typeA, $typeB, $idA, $idB){
         $link = new ObjectLinks(self::$keyMap[$typeA], $idA, self::$keyMap[$typeB], $idB);
         $exists = $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks')->findBy(array(
-            'idA' => $idA,
-            'idB' => $idB,
-            'typeA' => $link->getTypeA(),
-            'typeB' => $link->getTypeB()
+            'ida' => $idA,
+            'idb' => $idB,
+            'typea' => $link->getTypeA(),
+            'typeb' => $link->getTypeB()
         ));
 
         if (!$exists) {
 
             $exists = $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks')->findBy(array(
-                'idB' => $idA,
-                'idA' => $idB,
-                'typeB' => $link->getTypeA(),
-                'typeA' => $link->getTypeB()
+                'idb' => $idA,
+                'ida' => $idB,
+                'typeb' => $link->getTypeA(),
+                'typea' => $link->getTypeB()
             ));
 
             if (!$exists) {
@@ -131,18 +133,18 @@ class ObjectLinksSystem
         $repo =  $this->doctrine->getRepository('TwakeObjectLinksBundle:ObjectLinks');
 
         $exists =$repo->findOneBy(array(
-            'idA' => $idA,
-            'idB' => $idB,
-            'typeA' => self::$keyMap[$typeA],
-            'typeB' => self::$keyMap[$typeB]
+            'ida' => $idA,
+            'idb' => $idB,
+            'typea' => self::$keyMap[$typeA],
+            'typeb' => self::$keyMap[$typeB]
         ));
 
         if(!$exists){ //test inversion param
             $exists =$repo->findOneBy(array(
-                'idA' => $idB,
-                'idB' => $idA,
-                'typeA' => self::$keyMap[$typeB],
-                'typeB' => self::$keyMap[$typeA]
+                'ida' => $idB,
+                'idb' => $idA,
+                'typea' => self::$keyMap[$typeB],
+                'typeb' => self::$keyMap[$typeA]
             ));
         }
 
@@ -169,8 +171,8 @@ class ObjectLinksSystem
     }
 
     public function deleteLinkedObjects($id, $type, $linkedIdsToDelete, $linkedIdsType){
-        $relationsA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $id, "typeA" => $type));
-        $relationsB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $id, "typeB" => $type));
+        $relationsA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("ida" => $id, "typea" => $type));
+        $relationsB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idb" => $id, "typeb" => $type));
         $relations = array_merge($relationsA,$relationsB);
         $needFlush = false;
         $deleted = 0;
@@ -178,12 +180,12 @@ class ObjectLinksSystem
         foreach ($relations as $relation){
             /* @var ObjectLinks $relation*/
             $toDelete = false;
-            if(in_array($relation->getIdA(),$linkedIdsToDelete)){
+            if (in_array($relation->getIdA() . "", $linkedIdsToDelete)) {
                 if($linkedIdsType[$relation->getIdA()]==$relation->getTypeA()){
                     $toDelete = [$relation->getIdA(), $relation->getTypeA()];
                 }
             }
-            if(in_array($relation->getIdB(),$linkedIdsToDelete)){
+            if (in_array($relation->getIdB() . "", $linkedIdsToDelete)) {
                 if($linkedIdsType[$relation->getIdB()]==$relation->getTypeB()){
                     $toDelete = [$relation->getIdB(), $relation->getTypeB()];
                 }
@@ -205,8 +207,8 @@ class ObjectLinksSystem
     }
 
     public function getPartners(ObjectLinksInterface $object){
-        $relationsA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $object->getId(), "typeA" => $object->getRepository()));
-        $relationsB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $object->getId(), "typeB" => $object->getRepository()));
+        $relationsA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("ida" => $object->getId(), "typea" => $object->getRepository()));
+        $relationsB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idb" => $object->getId(), "typeb" => $object->getRepository()));
         $relations = array_merge($relationsA,$relationsB);
 
         $partners = [];
@@ -224,8 +226,8 @@ class ObjectLinksSystem
     }
 
     public function getPartnersAndFieldsToSynchronised(ObjectLinksInterface $object){
-        $relationsA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $object->getId(), "typeA" => $object->getRepository()));
-        $relationsB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $object->getId(), "typeB" => $object->getRepository()));
+        $relationsA = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("ida" => $object->getId(), "typea" => $object->getRepository()));
+        $relationsB = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idb" => $object->getId(), "typeb" => $object->getRepository()));
 
         $partners = Array();
         $i= 0;
@@ -295,8 +297,8 @@ class ObjectLinksSystem
 
     public function deleteObject(ObjectLinksInterface $object)
     {
-        $relations = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idA" => $object->getId(), "typeA" => $object->getRepository()));
-        $relations = array_merge($relations, $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idB" => $object->getId(), "typeB" => $object->getRepository())));
+        $relations = $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("ida" => $object->getId(), "typea" => $object->getRepository()));
+        $relations = array_merge($relations, $this->doctrine->getRepository("TwakeObjectLinksBundle:ObjectLinks")->findBy(Array("idb" => $object->getId(), "typeb" => $object->getRepository())));
         foreach ($relations as $relation) {
             $this->doctrine->remove($relation);
         }

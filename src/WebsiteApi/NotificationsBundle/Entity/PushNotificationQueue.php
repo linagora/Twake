@@ -3,6 +3,7 @@
 namespace WebsiteApi\NotificationsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Mail
@@ -15,19 +16,19 @@ class PushNotificationQueue
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
+     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Id
+     */
 	private $id;
 
 	/**
-	 * @ORM\Column(type="text", length=512,  nullable=true)
+     * @ORM\Column(type="twake_text",  nullable=true)
+     * @Encrypted
 	 */
 	private $text;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date;
 
@@ -42,8 +43,13 @@ class PushNotificationQueue
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
 		return $this->id;
 	}
 

@@ -58,7 +58,7 @@ class DefaultController extends Controller
         $parameters = $this->getParametersForMode($mode);
 
         $user = $this->getUser();
-        $workspaceId = $request->query->getInt("workspaceId", 0);
+        $workspaceId = $request->query->get("workspaceId", 0);
 
         if ($user != null) {
 
@@ -97,7 +97,7 @@ class DefaultController extends Controller
             $key = $request["key"];
             $document = $request["url"];
 
-            $em = $this->get("app.doctrine_adapter")->getManager();
+            $em = $this->get("app.twake_doctrine");
 
             $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFileKeys");
             $fileKey = $repo->findOneBy(Array("key" => $key));
@@ -107,7 +107,7 @@ class DefaultController extends Controller
             if ($fileKey != null) {
 
                 /** @var OnlyofficeFile $file */
-                $file = $repo->findOneBy(Array("fileId" => $fileKey->getFileId(), "token" => $fToken));
+                $file = $repo->findOneBy(Array("fileid" => $fileKey->getFileId(), "token" => $fToken));
 
                 if ($file != null) {
 
@@ -160,20 +160,20 @@ class DefaultController extends Controller
     {
 
         $user = $this->getUser();
-        $workspaceId = $request->request->getInt("workspaceId", 0);
+        $workspaceId = $request->request->get("workspaceId", 0);
 
         if ($user != null) {
 
-            $fId = $request->request->getInt("fileId", 0);
+            $fId = $request->request->get("fileId", 0);
             $filename = $request->request->get("filename", 0);
-            $em = $this->get("app.doctrine_adapter")->getManager();
+            $em = $this->get("app.twake_doctrine");
 
             $file = new OnlyofficeFile($workspaceId, $fId);
             $em->persist($file);
 
 
             $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFileKeys");
-            $fileKey = $repo->findOneBy(Array("fileId" => $fId));
+            $fileKey = $repo->findOneBy(Array("fileid" => $fId));
 
             if (!$fileKey) {
                 $fileKey = new OnlyofficeFileKeys($workspaceId, $fId);
@@ -199,13 +199,13 @@ class DefaultController extends Controller
         $this->getParametersForMode($mode);
 
         $fToken = $request->query->get("fileToken", null);
-        $fId = $request->query->getInt("fileId", 0);
+        $fId = $request->query->get("fileId", 0);
 
-        $em = $this->get("app.doctrine_adapter")->getManager();
+        $em = $this->get("app.twake_doctrine");
         $repo = $em->getRepository("TwakeOnlyOfficeBundle:OnlyofficeFile");
 
         /** @var OnlyofficeFile $file */
-        $file = $repo->findOneBy(Array("fileId" => $fId, "token" => $fToken));
+        $file = $repo->findOneBy(Array("fileid" => $fId, "token" => $fToken));
 
         if ($file != null) {
 
@@ -220,7 +220,7 @@ class DefaultController extends Controller
                 $response->headers->set('Content-Disposition', $disposition);
                 $response->sendHeaders();
 
-                $this->get("app.drive.adapter_selector")->getFileSystem()->download($file->getWorkspaceId(), $file->getFileId(), false);
+                //$this->get("app.drive.adapter_selector")->getFileSystem()->download($file->getWorkspaceId(), $file->getFileId(), false);
                 die();
 
 

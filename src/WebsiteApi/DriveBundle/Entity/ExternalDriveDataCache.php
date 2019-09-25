@@ -9,6 +9,7 @@
 namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Validator\Constraints\DateTime;
 
@@ -33,20 +34,20 @@ class ExternalDriveDataCache
     private $drive;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      */
     private $json;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
      */
-    private $lastUpdate;
+    private $lastupdate;
 
     public function __construct($id,$drive){
         $this->id = $id;
         $this->drive = $drive;
         $this->json = new JsonResponse();
-        $this->lastUpdate = new \DateTime();
+        $this->lastupdate = new \DateTime();
     }
 
     /**

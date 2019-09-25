@@ -2,6 +2,10 @@ twake_workspaces_get:
     path:     /get
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:get }
 
+twake_workspaces_get_public_data:
+    path:     /get_public_data
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:getPublicData }
+
 twake_workspaces_get_activities:
     path:     /getActivities
     defaults: { _controller: TwakeWorkspacesBundle:WorkspaceActivities:getActivities }
@@ -9,6 +13,10 @@ twake_workspaces_get_activities:
 twake_workspaces_create:
     path:     /create
     defaults: { _controller: TwakeWorkspacesBundle:Workspace:create }
+
+twake_workspaces_duplicate:
+    path:     /duplicate
+    defaults: { _controller: TwakeWorkspacesBundle:Workspace:duplicate }
 
 twake_workspaces_delete:
     path:     /delete
@@ -96,6 +104,10 @@ twake_groups_set_name:
     path:     /group/data/name
     defaults: { _controller: TwakeWorkspacesBundle:Group:changeName }
 
+twake_groups_set_logo:
+    path:     /group/data/logo
+    defaults: { _controller: TwakeWorkspacesBundle:Group:setLogo }
+
 twake_groups_get_workspaces:
     path:     /group/getWorkspaces
     defaults: { _controller: TwakeWorkspacesBundle:Group:getWorkspaces }
@@ -139,6 +151,10 @@ twake_groups_manager_remove:
 twake_groups_manager_edit:
     path:     /group/manager/edit
     defaults: { _controller: TwakeWorkspacesBundle:GroupManager:editManagers }
+
+twake_groups_manager_toggle:
+    path:     /group/manager/toggleManager
+    defaults: { _controller: TwakeWorkspacesBundle:GroupManager:toggleManager }
 
 
 # Edit members

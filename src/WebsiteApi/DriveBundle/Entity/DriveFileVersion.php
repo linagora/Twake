@@ -3,84 +3,114 @@
 namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\UsersBundle\Entity\User;
 
 /**
- * DriveFile
+ * DriveFileVersion
  *
- * @ORM\Table(name="drive_file_version",options={"engine":"MyISAM"})
- * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileRepository")
+ * @ORM\Table(name="drive_file_version",options={"engine":"MyISAM" , "scylladb_keys": { {"id": "DESC"}, {"file_id": "DESC"} } })
+ * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileVersionRepository")
  */
 class DriveFileVersion
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+    */
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=false)
+     * @ORM\Column(name="file_id", type="twake_timeuuid")
 	 */
-	private $file;
+    private $file_id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\Column(name="creator_id", type="twake_text")
      */
-    private $user;
+    private $creator_id;
 
 	/**
-	 * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
 	 */
-	private $realName;
+    private $realname;
 
 	/**
-	 * @ORM\Column(name="aes_key", type="string", length=1024)
+     * @ORM\Column(name="aes_key", type="twake_text")
+     * @Encrypted
 	 */
 	private $key;
 
 	/**
-	 * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
 	 */
 	private $mode = "OpenSSL-2";
 
 	/**
-	 * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer")
 	 */
 	private $size;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date_added;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
      */
-    private $fileName;
+    private $filename;
+
+    /**
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
+     */
+    private $data;
 
 
-	public function __construct(DriveFile $file, User $user)
+
+    public function __construct(DriveFile $file, $user_id)
 	{
-		$this->file = $file;
+        $this->file_id = $file->getId();
 		$this->setKey(base64_encode(random_bytes(256)));
 		$this->setSize(0);
 		$this->resetRealName();
 		$this->date_added = new \DateTime();
 		$this->setFileName($file->getName());
-		$this->setUser($user);
+        $this->setUserId($user_id);
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        return json_decode($this->data,true);
+    }
+
+    /**
+     * @param mixed $data
+     */
+    public function setData($data)
+    {
+        $this->data = json_encode($data);
+    }
 
 	/**
 	 * @return mixed
 	 */
-	public function getId()
-	{
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	/**
@@ -104,15 +134,15 @@ class DriveFileVersion
 	 */
 	public function getRealName()
 	{
-		return $this->realName;
+        return $this->realname;
 	}
 
 	/**
-	 * @param mixed $realName
+     * @param mixed $realname
 	 */
 	public function resetRealName()
 	{
-		$this->realName = sha1(microtime() . rand(0, 10000)) . ".tw";
+        $this->realname = sha1(microtime() . rand(0, 10000)) . ".tw";
 	}
 
 	/**
@@ -134,21 +164,29 @@ class DriveFileVersion
 	/**
 	 * @return mixed
 	 */
-	public function getMode()
-	{
-		if(!$this->mode){
-			return "AES";
-		}
-		return $this->mode;
-	}
+    public function getMode()
+    {
+        if (!$this->mode) {
+            return "AES";
+        }
+        return $this->mode;
+    }
+
+    public function setMode($mode)
+    {
+        $this->mode = $mode;
+    }
 
 	public function getAsArray(){
 	    return Array(
 	        "id" => $this->id,
             "name" => $this->getFileName(),
+            "file_id" => $this->getFileId(),
             "added" => $this->date_added->getTimestamp(),
             "size" => $this->size,
-            "user" => $this->user!=null ? $this->user->getId() != 0 ? $this->user->getAsArray() : "" : ""
+            //"user" => $this->user!=null ? $this->user->getId() != 0 ? $this->user->getAsArray() : "" : "",
+            "creator" => $this->getUserId(),
+            "data" => $this->getData()
             );
     }
 
@@ -157,31 +195,31 @@ class DriveFileVersion
      */
     public function getFileName()
     {
-        return $this->fileName;
+        return $this->filename;
     }
 
     /**
-     * @param mixed $fileName
+     * @param mixed $filename
      */
-    public function setFileName($fileName)
+    public function setFileName($filename)
     {
-        $this->fileName = $fileName;
+        $this->filename = $filename;
     }
 
     /**
      * @return mixed
      */
-    public function getUser()
+    public function getUserId()
     {
-        return $this->user;
+        return $this->creator_id;
     }
 
     /**
      * @param mixed $user
      */
-    public function setUser($user)
+    public function setUserId($user)
     {
-        $this->user = $user;
+        $this->creator_id = $user;
     }
 
     /**
@@ -199,6 +237,23 @@ class DriveFileVersion
     {
         $this->date_added = $date_added;
     }
+
+    /**
+     * @return mixed
+     */
+    public function getFileId()
+    {
+        return $this->file_id;
+    }
+
+    /**
+     * @param mixed $file_id
+     */
+    public function setFileId($file_id)
+    {
+        $this->file_id = $file_id;
+    }
+
 
 
 

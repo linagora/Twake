@@ -22,6 +22,8 @@ class AppKernel extends Kernel
 	        new EasyCorp\Bundle\EasyAdminBundle\EasyAdminBundle(),
 	        new CMEN\GoogleChartsBundle\CMENGoogleChartsBundle(),
             new \Aws\Symfony\AwsBundle(),
+            new Circle\RestClientBundle\CircleRestClientBundle(),
+            new TweedeGolf\PrometheusBundle\TweedeGolfPrometheusBundle(),
 
 			new WebsiteApi\CoreBundle\TwakeCoreBundle(),
 			new WebsiteApi\UsersBundle\TwakeUsersBundle(),
@@ -29,38 +31,41 @@ class AppKernel extends Kernel
 			new WebsiteApi\PaymentsBundle\TwakePaymentsBundle(),
 			new WebsiteApi\UploadBundle\TwakeUploadBundle(),
 			new WebsiteApi\DiscussionBundle\TwakeDiscussionBundle(),
+            new WebsiteApi\ChannelsBundle\TwakeChannelsBundle(),
 	        new WebsiteApi\CallsBundle\TwakeCallsBundle(),
             new WebsiteApi\ObjectLinksBundle\TwakeObjectLinksBundle(),
-			new Administration\GeneralBundle\AdministrationGeneralBundle(),
 			new Gos\Bundle\WebSocketBundle\GosWebSocketBundle(),
 			new Gos\Bundle\PubSubRouterBundle\GosPubSubRouterBundle(),
 	        new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
             new WebsiteApi\MarketBundle\TwakeMarketBundle(),
             new WebsiteApi\DriveBundle\TwakeDriveBundle(),
-            new DevelopersApi\CheckBundle\TwakeCheckBundle(),
-            new DevelopersApi\UsersBundle\DevelopersApiUsersBundle(),
-            new DevelopersApi\DriveBundle\DevelopersApiDriveBundle(),
-	        new DevelopersApi\GroupsBundle\DevelopersApiGroupsBundle(),
-            new Administration\AuthenticationBundle\AdministrationAuthenticationBundle(),
+            new WebsiteApi\GlobalSearchBundle\TwakeGlobalSearchBundle(),
+            new WebsiteApi\DriveUploadBundle\TwakeDriveUploadBundle(),
             new WebsiteApi\CalendarBundle\TwakeCalendarBundle(),
-            new WebsiteApi\ProjectBundle\TwakeProjectBundle(),
+            new WebsiteApi\TasksBundle\TwakeTasksBundle(),
             new WebsiteApi\NotificationsBundle\TwakeNotificationsBundle(),
             new WebsiteApi\OnlyOfficeBundle\TwakeOnlyOfficeBundle(),
-            new DevelopersApi\MessagesBundle\DevelopersApiMessagesBundle(),
-            new Circle\RestClientBundle\CircleRestClientBundle(),
-            new DevelopersApiV1\MessagesBundle\DevelopersApiV1MessagesBundle(),
-            new DevelopersApiV1\DriveBundle\DevelopersApiV1DriveBundle(),
             new DevelopersApiV1\CoreBundle\DevelopersApiV1CoreBundle(),
+            new DevelopersApiV1\MessagesBundle\DevelopersApiV1MessagesBundle(),
+            new DevelopersApiV1\UsersBundle\DevelopersApiV1UsersBundle(),
+            new DevelopersApiV1\ChannelsBundle\DevelopersApiV1ChannelsBundle(),
+            new DevelopersApiV1\GeneralBundle\DevelopersApiV1GeneralBundle(),
             new DevelopersApiV1\CalendarBundle\DevelopersApiV1CalendarBundle(),
-            new DevelopersApiV1\ProjectBundle\DevelopersApiV1ProjectBundle(),
-            new DevelopersApiV1\WorkspacesBundle\DevelopersApiV1WorkspacesBundle()
+            new DevelopersApiV1\DriveBundle\DevelopersApiV1DriveBundle(),
+            new DevelopersApiV1\TasksBundle\DevelopersApiV1TasksBundle(),
+
+            new AdministrationApi\CoreBundle\AdministrationApiCoreBundle(),
+            new AdministrationApi\UsersBundle\AdministrationApiUsersBundle(),
+            new AdministrationApi\WorkspacesBundle\AdministrationApiWorkspacesBundle(),
+            new AdministrationApi\AppsBundle\AdministrationApiAppsBundle(),
+            new AdministrationApi\CounterBundle\AdministrationApiCounterBundle(),
+            new AdministrationApi\GroupBundle\AdministrationApiGroupBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
             $bundles[] = new Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
-            $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
         }
 
         return $bundles;

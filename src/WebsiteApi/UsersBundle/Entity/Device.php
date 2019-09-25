@@ -3,11 +3,12 @@
 namespace WebsiteApi\UsersBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Mail
  *
- * @ORM\Table(name="device",options={"engine":"MyISAM"})
+ * @ORM\Table(name="device",options={"engine":"MyISAM", "scylladb_keys": {{"id": "ASC"}, {"value": "ASC"}, {"user_id":"ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\UsersBundle\Repository\DeviceRepository")
  */
 class Device
@@ -15,35 +16,35 @@ class Device
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="secondary_mails")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
 	 */
     private $user;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="type", type="string", length=16)
+     * @ORM\Column(name="type", type="string", length=16)
 	 */
 	private $type;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="version", type="string", length=16)
+     * @ORM\Column(name="version", type="string", length=16)
 	 */
 	private $version;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="value", type="string", length=255, nullable=true)
+     * @ORM\Column(name="value", type="twake_text", nullable=true)
+     * @Encrypted
      */
     private $value = "";
 
@@ -58,9 +59,14 @@ class Device
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	/**
@@ -127,6 +133,16 @@ class Device
         $this->version = isset($version) ? $version : "unknown";
 	}
 
+    public function getAsArray()
+    {
+        return Array(
+            "user" => $this->getUser()->getAsArray(),
+            "type" => $this->getType(),
+            "value" => $this->getValue(),
+            "version" => $this->getVersion()
+
+        );
+    }
 
 
 }

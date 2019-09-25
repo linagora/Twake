@@ -4,6 +4,7 @@ namespace WebsiteApi\PaymentsBundle\Entity;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\UsersBundle\Entity\User;
 
@@ -18,19 +19,18 @@ class PriceLevel
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+ */
     private $id;
 
 	/**
-	 * @ORM\Column(type="string")
+     * @ORM\Column(type="string")
 	 */
 	private $name;
 
 	/**
-	 * @ORM\Column(type="decimal")
+     * @ORM\Column(type="decimal")
 	 */
 	private $price;
 
@@ -40,8 +40,14 @@ class PriceLevel
 		$this->setPrice($price);
 	}
 
-	public function getId() {
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	public function getName() {

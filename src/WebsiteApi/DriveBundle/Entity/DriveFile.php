@@ -3,34 +3,48 @@
 namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
+use WebsiteApi\CoreBundle\Entity\FrontObject;
+use WebsiteApi\CoreBundle\Entity\SearchableObject;
 use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
  * DriveFile
  *
- * @ORM\Table(name="drive_file",options={"engine":"MyISAM"})
+ * @ORM\Table(name="drive_file",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "parent_id":"ASC", "isintrash": "ASC", "id":"DESC"}, {"id": "DESC"}, {"previewhasbeengenerated": "DESC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileRepository")
  */
-class DriveFile implements ObjectLinksInterface
+class DriveFile extends SearchableObject implements ObjectLinksInterface
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
+     * @ORM\Column(name="workspace_id", type="text")
+     * @ORM\Id
      */
-    private $group;
+    private $workspace_id;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\Column(name="parent_id", type="text")
+     * @ORM\Id
      */
-    private $parent;
+    private $parent_id;
+
+    /**
+     * @ORM\Column(type="twake_boolean")
+     * @ORM\Id
+     */
+    private $isintrash = false;
+
+    /**
+     * @ORM\Column(name="root_group_folder_id", type="twake_timeuuid", nullable=true)
+     */
+    private $root_group_folder = NULL;
 
     /**
      * @ORM\Column(type="string", length=512)
@@ -38,7 +52,8 @@ class DriveFile implements ObjectLinksInterface
     private $public_access_key = "";
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
      */
     private $name;
 
@@ -48,25 +63,20 @@ class DriveFile implements ObjectLinksInterface
     private $extension;
 
     /**
-     * @ORM\Column(type="string", length=2048)
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
      */
     private $description;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="twake_boolean")
      */
-    private $isDirectory;
+    private $isdirectory;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="old_parent", type="text")
      */
-    private $isInTrash;
-
-    /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
-     * @ORM\JoinColumn(nullable=true)
-     */
-    private $oldParent;
+    private $old_parent;
 
     /**
      * @ORM\OneToMany(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile", mappedBy="parent")
@@ -74,53 +84,72 @@ class DriveFile implements ObjectLinksInterface
     private $children;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $added;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
      */
     private $last_modified;
 
     /**
-     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFileVersion")
-     * @ORM\JoinColumn(nullable=true)
+     * @ORM\Column(name="last_version_id", type="text")
      */
-    private $last_version;
+    private $last_version_id;
 
     /**
-     * @ORM\Column(type="bigint")
+     * @ORM\Column(name="last_modification_token", type="text")
+     */
+    private $last_modification_token;
+
+    /**
+     * @ORM\Column(name="creator", type="text")
+     */
+    private $creator;
+
+
+    /**
+     * @ORM\Column(type="twake_bigint")
      */
     private $size;
 
     /**
-     * @ORM\Column(type="string", length=2048)
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
      */
     private $cache;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="twake_boolean")
      */
     private $detached_file = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="twake_boolean")
      */
-    private $previewHasBeenGenerated = false;
+    private $previewhasbeengenerated = false;
 
-	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
-	 */
-	private $copyOf;
+    /**
+     * @ORM\Column(type="twake_boolean")
+     */
+    private $has_preview = false;
 
-	/**
-    * @ORM\Column(type="boolean")
-    */
+    /**
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile")
+     */
+    private $copyof;
+
+
+
+    /**
+     * @ORM\Column(type="twake_boolean")
+     */
     private $shared = false;
 
     /**
-     * @ORM\Column(type="string", length=2048, nullable = true)
+     * @ORM\Column(type="twake_text", nullable = true)
+     * @Encrypted
      */
     private $url;
 
@@ -136,70 +165,227 @@ class DriveFile implements ObjectLinksInterface
     private $default_web_app;
 
     /**
-     * @ORM\Column(type="string", length=2048, nullable = true)
+     * @ORM\Column(type="twake_text", nullable = true)
+     * @Encrypted
      */
-    private $aws_preview_link = "";
+    private $preview_link = "";
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
+     * @Encrypted
      */
     private $object_link_cache;
 
+    /**
+     * @ORM\Column(name ="content_keywords", type="twake_text", nullable=true)
+     */
+    private $content_keywords;
 
-    public function __construct($group, $parent, $name, $isDirectory = false,$directoryToCopy = null, $url = null)
+    /**
+     * @ORM\Column(name ="access_info", type="twake_text", nullable=true)
+     */
+    private $acces_info;
+
+    /**
+     * @ORM\Column(name="application_id", type="twake_text", nullable=true)
+     */
+    private $application_id = null;
+
+    /**
+     * @ORM\Column(type="twake_boolean")
+     */
+    private $external_storage = false;
+
+    /**
+     * @ORM\Column(name="hidden_data", type="twake_text")
+     */
+    private $hidden_data = "{}";
+
+    /**
+     * @ORM\Column(name="last_user", type="twake_text", nullable=true)
+     * @Encrypted
+     */
+    private $last_user;
+
+    /**
+     * @ORM\Column(name="tags", type="twake_text", nullable=true)
+     * @Encrypted
+     */
+    private $tags;
+
+    protected $es_type = "drive_file";
+
+    public function __construct($workspace_id, $parent_id, $isdirectory = false)
     {
-        $this->group = $group;
-        $this->setParent($parent);
-        $this->setName($name);
+        parent::__construct();
+        $this->workspace_id = $workspace_id;
+        $this->setParentId($parent_id);
+        $this->isdirectory = $isdirectory;
+        $this->setContentKeywords(Array());
+        $this->setName("");
         $this->setDescription("");
         $this->setSize(0);
-        $this->isDirectory = $isDirectory;
         $this->setIsInTrash(false);
         $this->added = new \DateTime();
         $this->cache = "{}";
         $this->setLastModified();
-        if ($directoryToCopy){
-            $this->copyOf = $directoryToCopy;
-        }
-        if ($url != null){
-            $this->setUrl($url);
-        }
         $this->opening_rate = 0;
         $this->default_web_app = null;
         $this->setPreviewHasBeenGenerated(false);
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getAccesInfo()
+    {
+        return json_decode($this->acces_info, true);
+    }
+
+    /**
+     * @param mixed $acces_info
+     */
+    public function setAccesInfo($acces_info)
+    {
+        $this->acces_info = json_encode($acces_info);
+    }
+
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
+    }
+
+
+    public function getIndexationArray()
+    {
+        return Array(
+            "id" => $this->getId()."",
+            "type" => $this->getExtension(),
+            "name"=> $this->getName(),
+            "creation_date" => ($this->getAdded() ? $this->getAdded()->format('Y-m-d') : null),
+            "creator" => $this->getCreator(),
+            "size" => $this->getSize(),
+            "date_last_modified" => ($this->getLastModified() ? $this->getLastModified()->format('Y-m-d') : null),
+            "workspace_id" => $this->getWorkspaceId(),
+            "keywords" => $this->getContentKeywords(),
+            "tags" => $this->getTags()
+        );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getTags()
+    {
+        return json_decode($this->tags);
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setTags($tags)
+    {
+        $this->tags = json_encode($tags);
+    }
+
+
+    /**
+     * @return mixed
+     */
+    public function getCreator()
+    {
+        return $this->creator;
+    }
+
+    /**
+     * @param mixed $creator
+     */
+    public function setCreator($creator)
+    {
+        $this->creator = $creator;
+    }
+
+
+    public function setId($id)
+    {
+        $this->id = $id;
     }
 
     public function getId()
     {
         return $this->id;
     }
-    public function setId($newId)
+
+    /**
+     * @return mixed
+     */
+    public function getLastUser()
     {
-        return $this->id = $newId;
+        return $this->last_user;
+    }
+
+    /**
+     * @param mixed $last_user
+     */
+    public function setLastUser($last_user)
+    {
+        $this->last_user = $last_user;
     }
 
     /**
      * @return mixed
      */
-    public function getGroup()
+    public function getContentKeywords()
     {
-        return $this->group;
+        return json_decode($this->content_keywords, true);
+    }
+
+    /**
+     * @param mixed $content_keywords
+     */
+    public function setContentKeywords($content_keywords)
+    {
+        $this->content_keywords = json_encode($content_keywords);
     }
 
     /**
      * @return mixed
      */
-    public function getParent()
+    public function getWorkspaceId()
     {
-        return $this->parent;
+        return $this->workspace_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function setWorkspaceId($wid)
+    {
+        $this->workspace_id = $wid;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getParentId()
+    {
+        return $this->parent_id;
     }
 
     /**
      * @param mixed $parent
      */
-    public function setParent($parent)
+    public function setParentId($parent_id)
     {
-        $this->parent = $parent;
+        $this->parent_id = $parent_id . "";
+        if ($parent_id) {
+            $this->root_group_folder = NULL;
+        } else {
+            $this->root_group_folder = $this->getWorkspaceId() . "";
+        }
     }
 
     /**
@@ -245,7 +431,7 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getIsDirectory()
     {
-        return $this->isDirectory;
+        return $this->isdirectory;
     }
 
     /**
@@ -253,15 +439,15 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getIsInTrash()
     {
-        return $this->isInTrash;
+        return $this->isintrash;
     }
 
     /**
-     * @param mixed $isInTrash
+     * @param mixed $isintrash
      */
-    public function setIsInTrash($isInTrash)
+    public function setIsInTrash($isintrash)
     {
-        $this->isInTrash = $isInTrash;
+        $this->isintrash = $isintrash;
     }
 
     /**
@@ -269,15 +455,15 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getOldParent()
     {
-        return $this->oldParent;
+        return $this->old_parent;
     }
 
     /**
-     * @param mixed $oldParent
+     * @param mixed $old_parent
      */
-    public function setOldParent($oldParent)
+    public function setOldParent($old_parent)
     {
-        $this->oldParent = $oldParent;
+        $this->old_parent = $old_parent;
     }
 
     /**
@@ -293,13 +479,14 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getPath()
     {
-        if($this->getLastVersion() == null){
+        if ($this->getLastVersionId() == null) {
             return null;
         }
+
         if($this->getDetachedFile()){
-            return "detached/".$this->group->getId() . "/" . $this->getLastVersion()->getRealName();
+            return "" . $this->workspace_id . "/" . $this->getLastVersionId();
         }
-        return $this->group->getId() . "/" . $this->getLastVersion()->getRealName();
+        return $this->workspace_id . "/" . $this->getLastVersionId();
     }
 
     /**
@@ -307,13 +494,13 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getPreviewPath()
     {
-        if($this->getLastVersion() == null){
+        if ($this->getLastVersionId() == null) {
             return null;
         }
         if($this->getDetachedFile()){
-            return "detached/".$this->group->getId() . "/preview/" . $this->getLastVersion()->getRealName().".png";
+            return "" . $this->workspace_id . "/preview/" . $this->getLastVersionId() . ".png";
         }
-        return $this->group->getId() . "/preview/" . $this->getLastVersion()->getRealName().".png";
+        return $this->workspace_id . "/preview/" . $this->getLastVersionId() . ".png";
     }
 
     /**
@@ -367,17 +554,40 @@ class DriveFile implements ObjectLinksInterface
     /**
      * @return mixed
      */
-    public function getLastVersion()
+    public function getLastModificationToken()
     {
-        return $this->last_version;
+        return $this->last_modification_token;
+    }
+
+    /**
+     * @param mixed $last_modification_token
+     */
+    public function setLastModificationToken($last_modification_token)
+    {
+        $this->last_modification_token = $last_modification_token;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getLastVersionId()
+    {
+        return $this->last_version_id;
     }
 
     /**
      * @param mixed $last_version
      */
-    public function setLastVersion($last_version)
+    public function setLastVersionId($last_version_id)
     {
-        $this->last_version = $last_version;
+        $this->last_version_id = $last_version_id . "";
+    }
+
+    //TODO Very very bad to pass doctrine as parameter here...
+    public function getLastVersion($doctrine)
+    {
+        $repo = $doctrine->getRepository("TwakeDriveBundle:DriveFileVersion");
+        return $repo->find($this->getLastVersionId());
     }
 
     /**
@@ -395,7 +605,7 @@ class DriveFile implements ObjectLinksInterface
     {
         $this->size = $size;
         if($this->size < 10){
-            $this->size = 10;
+            $this->size = 0;
         }
     }
 
@@ -459,15 +669,15 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getCopyOf()
     {
-        return $this->copyOf;
+        return $this->copyof;
     }
 
     /**
-     * @param mixed $copyOf
+     * @param mixed $copyof
      */
-    public function setCopyOf($copyOf)
+    public function setCopyOf($copyof)
     {
-        $this->copyOf = $copyOf;
+        $this->copyof = $copyof;
     }
 
     /**
@@ -534,28 +744,56 @@ class DriveFile implements ObjectLinksInterface
     {
         return Array(
             'id' => $this->getId(),
+            'front_id' => $this->getFrontId(),
+            "workspace_id" => $this->getWorkspaceId(),
+            'parent_id' => $this->getParentId(),
+            "detached" => $this->getDetachedFile(),
+            "trash" => $this->getIsInTrash() ? true : false,
+
+            'is_directory' => $this->getIsDirectory(),
+            "creator" => $this->getCreator(),
             'name' => $this->getName(),
             'description' => $this->getDescription(),
-            'size' => $this->getSize(),
-            'added' => $this->getAdded()->getTimestamp(),
-            'parent' => (($this->getParent())?$this->getParent()->getId():0),
+            "last_user" => $this->getLastUser(),
+            'size' => $this->getSize()?$this->getSize():0,
+            'added' => $this->getAdded() ? $this->getAdded()->getTimestamp() : null,
             'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
-            'isDirectory' => $this->getIsDirectory(),
+            "last_modification_token" => $this->getLastModificationToken(),
             "extension" => $this->getExtension(),
-            "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
-            "detached" => $this->getDetachedFile(),
             "cache" => $this->getCache(),
-            "direct_preview_link" => $this->getAwsPreviewLink(),
-            "preview" => $this->getPreviewPath(),
-            "copyOf" => ($this->getCopyOf()?$this->getCopyOf()->getId():null),
+            "preview_link" => $this->getPreviewLink(),
+            "copy_of" => ($this->getCopyOf() ? $this->getCopyOf()->getId() : null),
             "shared" => $this->getShared(),
             "url" => $this->getUrl(),
             "opening_rate" => $this->getOpeningRate(),
-            "public_access_key" => $this->getPublicAccessKey(),
-            "previewHasBeenGenerated" => $this->getPreviewHasBeenGenerated(),
+            "has_preview" => $this->getHasPreview(),
+            "preview_has_been_generated" => $this->getPreviewHasBeenGenerated(),
             "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null,
-            "object_link_cache" => $this->getObjectLinkCache()
+            "object_link_cache" => $this->getObjectLinkCache(),
+            //"keywords" => $this->getContentKeywords()
+            "acces_info" => $this->getAccesInfo(),
+            "application_id" => $this->getApplicationId(),
+            "external_storage" => $this->getExternalStorage(),
+            "hidden_data" => $this->getHiddenData(),
+            "tags" => $this->getTags()
+
         );
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getExternalStorage()
+    {
+        return $this->external_storage;
+    }
+
+    /**
+     * @param mixed $external_storage
+     */
+    public function setExternalStorage($external_storage)
+    {
+        $this->external_storage = $external_storage;
     }
 
     /**
@@ -563,15 +801,15 @@ class DriveFile implements ObjectLinksInterface
      */
     public function getPreviewHasBeenGenerated()
     {
-        return $this->previewHasBeenGenerated;
+        return $this->previewhasbeengenerated;
     }
 
     /**
-     * @param mixed $previewHasBeenGenerated
+     * @param mixed $previewhasbeengenerated
      */
-    public function setPreviewHasBeenGenerated($previewHasBeenGenerated)
+    public function setPreviewHasBeenGenerated($previewhasbeengenerated)
     {
-        $this->previewHasBeenGenerated = $previewHasBeenGenerated;
+        $this->previewhasbeengenerated = $previewhasbeengenerated;
     }
 
 
@@ -585,7 +823,7 @@ class DriveFile implements ObjectLinksInterface
             "title" => "File",
             "object_name" => $this->getName(),
             "object_data" => Array(
-                "direct_preview_link" => $this->getAwsPreviewLink(),
+                "preview_link" => $this->getPreviewLink(),
                 "extension" => $this->getExtension(),
                 "groupId" => ($this->getGroup()) ? $this->getGroup()->getId() : "",
                 'parent' => (($this->getParent()) ? $this->getParent()->getId() : 0),
@@ -597,21 +835,22 @@ class DriveFile implements ObjectLinksInterface
         );
     }
 
-    public function synchroniseField($fieldName, $value)
+    public function synchroniseField($fieldname, $value)
     {
-        if(!property_exists($this, $fieldName))
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $setter = "set".ucfirst($fieldName);
+        $setter = "set" . ucfirst($fieldname);
         $this->$setter($value);
         return true;
     }
 
-    public function get($fieldName){
-        if(!property_exists($this, $fieldName))
+    public function get($fieldname)
+    {
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $getter = "get".ucfirst($fieldName);
+        $getter = "get" . ucfirst($fieldname);
 
         return $this->$getter();
     }
@@ -629,20 +868,28 @@ class DriveFile implements ObjectLinksInterface
         $this->group = $group;
     }
 
-    /**
-     * @return mixed
-     */
-    public function getAwsPreviewLink()
+    public function hasPreviewLink()
     {
-        return $this->aws_preview_link;
+        return !!$this->preview_link;
     }
 
     /**
-     * @param mixed $aws_preview_link
+     * @return mixed
      */
-    public function setAwsPreviewLink($aws_preview_link)
+    public function getPreviewLink()
     {
-        $this->aws_preview_link = $aws_preview_link;
+        if (!$this->preview_link) {
+            return "/ajax/drive/preview?f=" . $this->getLastVersionId() . "&w=" . $this->getWorkspaceId() . "&d=" . $this->getParentId() . "&t=" . $this->getIsInTrash();
+        }
+        return $this->preview_link;
+    }
+
+    /**
+     * @param mixed $preview_link
+     */
+    public function setPreviewLink($preview_link)
+    {
+        $this->preview_link = $preview_link;
     }
 
 
@@ -660,4 +907,57 @@ class DriveFile implements ObjectLinksInterface
     {
         return json_decode($this->object_link_cache, 1);
     }
+
+    /**
+     * @return mixed
+     */
+    public function getHasPreview()
+    {
+        return $this->has_preview;
+    }
+
+    /**
+     * @param mixed $haspreview
+     */
+    public function setHasPreview($has_preview)
+    {
+        $this->has_preview = $has_preview;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getApplicationId()
+    {
+        return $this->application_id;
+    }
+
+    /**
+     * @param mixed $application_id
+     */
+    public function setApplicationId($application_id)
+    {
+        $this->application_id = $application_id;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getHiddenData()
+    {
+        if (!$this->hidden_data) {
+            return Array();
+        }
+        return json_decode($this->hidden_data, 1);
+    }
+
+    /**
+     * @param mixed $hidden_data
+     */
+    public function setHiddenData($hidden_data)
+    {
+        $this->hidden_data = json_encode($hidden_data);
+    }
+
+
 }

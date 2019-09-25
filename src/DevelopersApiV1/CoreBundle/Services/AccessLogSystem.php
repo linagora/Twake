@@ -22,7 +22,7 @@ class AccessLogSystem
     }
 
     public function record($applicationId, $rightLevel){
-        $accessLogger = $this->doctrine->getRepository("DevelopersApiV1CoreBundle:AccessLog")->findOneBy(Array("appId" => $applicationId));
+        $accessLogger = $this->doctrine->getRepository("DevelopersApiV1CoreBundle:AccessLog")->findOneBy(Array("appid" => $applicationId));
 
         if($accessLogger==null) {
             $accessLogger = new AccessLog();

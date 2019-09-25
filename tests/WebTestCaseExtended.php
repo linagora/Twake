@@ -3,18 +3,32 @@
 namespace Tests;
 
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
-
+use WebsiteApi\WorkspacesBundle\Entity\Group;
+use WebsiteApi\WorkspacesBundle\Entity\Workspace;
+use WebsiteApi\ChannelsBundle\Entity\Channel;
+use WebsiteApi\ChannelsBundle\Entity\ChannelMember;
+use WebsiteApi\UsersBundle\Entity\User;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
+use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 class WebTestCaseExtended extends WebTestCase
 {
 
     var $client;
+
+
+    public function setUp(){
+      # Warning:
+      \PHPUnit_Framework_Error_Warning::$enabled = FALSE;
+      # notice, strict:
+      \PHPUnit_Framework_Error_Notice::$enabled = FALSE;
+    }
 
     protected function getDoctrine()
     {
         if (!isset($this->client)) {
             $this->client = static::createClient();
         }
-        return $this->client->getContainer()->get('doctrine.orm.entity_manager');
+        return $this->get("app.twake_doctrine");
     }
 
     protected function get($service)
@@ -23,6 +37,10 @@ class WebTestCaseExtended extends WebTestCase
             $this->client = static::createClient();
         }
         return $this->client->getContainer()->get($service);
+    }
+
+    protected function clearClient(){
+        $this->client = null;
     }
 
     protected function getClient()
@@ -48,64 +66,87 @@ class WebTestCaseExtended extends WebTestCase
         $this->getClient()->request($method, $route, array(), array(), array('CONTENT_TYPE' => 'application/json'),
             json_encode($data)
         );
-        return json_decode($this->getClient()->getResponse()->getContent(), 1);
+        //error_log("call for ".$route."--- with :".json_encode($data)."--- response : ".$this->getClient()->getResponse()->getContent());
+        return json_decode($this->getClient()->getResponse()->getContent(),true);
     }
 
-    public function newUser(){
-        $userToken = $this->get("app.user")->subscribeMail("phpunit@PHPUNIT.fr");
-        $user = $this->get("app.user")->subscribe($userToken,null, "phpunit","phpunit",true);
+    public function newUserByName($name,$mail=null){
 
-        if (!$user) {
-            return $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => "phpunit"));
+        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
+
+        if ($user) {
+            $this->removeUserByName($name);
         }
 
-        $this->get("app.doctrine_adapter")->persist($user);
-        $this->get("app.doctrine_adapter")->flush();
+        if(!$mail){
+            $mail = $name . "@twake_phpunit.fr";
+        }
+
+        $userWithMail = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("emailcanonical" => $mail));
+        if ($userWithMail) {
+            $this->removeUserByName($userWithMail->getUsername());
+        }
+
+        $mails = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findBy(Array("mail" => $mail));
+        foreach ($mails as $mail) {
+            $this->get("app.twake_doctrine")->remove($mail);
+            $this->get("app.twake_doctrine")->flush();
+        }
+        $token = $this->get("app.user")->subscribeMail($mail, $name, $name, "", "", "", "en", false);
+        $this->get("app.user")->verifyMail($mail, $token, "", true);
+
+        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
 
         return $user;
     }
 
-    public function newUserByName($name){
-        $userToken = $this->get("app.user")->subscribeMail($name . "@PHPUNIT.fr");
-        $user = $this->get("app.user")->subscribe($userToken,null, $name,$name,true);
+    public function removeUserByName($name){
+        $user = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => $name));
 
-        if (!$user) {
-            return $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username" => $name));
+        if (isset($user)) {
+
+            $mails = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:Mail")->findBy(Array("user" => $user));
+
+            foreach ($mails as $mail) {
+                $this->get("app.twake_doctrine")->remove($mail);
+            }
+
+            $this->get("app.twake_doctrine")->remove($user);
+            $this->get("app.twake_doctrine")->flush();
         }
-
-        $this->get("app.doctrine_adapter")->persist($user);
-        $this->get("app.doctrine_adapter")->flush();
-
-        return $user;
     }
 
-    public function newGroup($userId){
-        $group = $this->get("app.groups")->create($userId,"phpunit","phpunit",1);
-        $this->get("app.doctrine_adapter")->persist($group);
-        $this->get("app.doctrine_adapter")->flush();
-
-        $groupIdentity = $this->get("app.group_identitys")->create($group, "fake","fake","fake",0);
-        $this->get("app.doctrine_adapter")->persist($groupIdentity);
-        $this->get("app.doctrine_adapter")->flush();
-
+    public function newGroup($userId,$name){
+        $group = new Group($name);
+        $this->get("app.twake_doctrine")->persist($group);
+        $plan = $this->get("app.pricing_plan")->getMinimalPricing();
+        $group->setPricingPlan($plan);
+        $this->get("app.twake_doctrine")->flush();
         return $group;
     }
 
-    public function newWorkspace($groupId){
-        $userRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User");
-       // $user = $userRepository->findByName("phpunit");
-        $user = $userRepository->findOneBy(Array("username" => "phpunit"));
-        if (count($user) == 0) {
-            $user = $this->newUser();
-        }
-        //$user = $user[0];
-
-        $userId = $user->getId(); //TODO
-        $work = $this->get("app.workspaces")->create("phpunit", $groupId, $userId); // Get a service and run function
-        $this->get("app.doctrine_adapter")->persist($work);
-        $this->get("app.doctrine_adapter")->flush();
+    public function newWorkspace($name,$group){
+        $work = new Workspace($name);
+        $work->setGroup($group);
+        $this->get("app.twake_doctrine")->persist($work);
+        $this->get("app.twake_doctrine")->flush();
 
         return $work;
+    }
+
+    public function newChannel($group,$workspace,$user){
+        $channel = new Channel();
+        $channel->setDirect(false);
+        $channel->setOriginalWorkspaceId($workspace->getId());
+        $channel->setOriginalGroup($group);
+
+        $this->getDoctrine()->persist($channel);
+        $this->getDoctrine()->flush();
+
+        $linkUserChannel = new ChannelMember($user->getId()."",$channel);
+        $this->getDoctrine()->persist($linkUserChannel);
+        $this->getDoctrine()->flush();
+        return $channel;
     }
 
     public function newSubscription($group,$pricing_plan, $balanceInit, $start_date, $end_date, $autowithdraw, $autorenew){
@@ -115,5 +156,17 @@ class WebTestCaseExtended extends WebTestCase
         return $sub;
     }
 
+    public function login($username,$password=null){
+        if(!$password){
+            $password = $username;
+        }
+        $result = $this->doPost("/ajax/users/login", Array(
+            "_username" => $username,
+            "_password" => $password
+        ));
+    }
 
+    public function logout(){
+        $this->doPost("/ajax/users/logout", Array());
+    }
 }

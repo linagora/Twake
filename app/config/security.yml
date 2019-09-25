@@ -5,7 +5,7 @@ security:
 
     providers:
          main:
-            id: fos_user.user_provider.username_email #app.core_user_provider
+            id: user.provider.twake
 
 #    access_control:
 #        - { path: ^/, roles: IS_AUTHENTICATED_ANONYMOUSLY, requires_channel: https, host: dev\.citigo\.fr$ }

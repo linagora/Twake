@@ -1,12 +1,16 @@
 services:
   api.v1.check:
         class: DevelopersApiV1\CoreBundle\Services\CheckService
-        arguments: ["@app.doctrine_adapter", "@api.v1.access_log"]
+        arguments: ["@app.twake_doctrine", "@api.v1.access_log"]
 
   api.v1.api_status:
         class: DevelopersApiV1\CoreBundle\Services\ApiStatus
-        arguments: ["@app.doctrine_adapter"]
+        arguments: ["@app.twake_doctrine"]
 
   api.v1.access_log:
         class: DevelopersApiV1\CoreBundle\Services\AccessLogSystem
-        arguments: ["@app.doctrine_adapter"]
+        arguments: ["@app.twake_doctrine"]
+
+  api.v1.check_user_data:
+    class: DevelopersApiV1\CoreBundle\Services\CheckUserInfo
+    arguments: ["@app.twake_doctrine"]

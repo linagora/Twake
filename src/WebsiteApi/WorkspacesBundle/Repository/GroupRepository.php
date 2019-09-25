@@ -11,13 +11,4 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
 class GroupRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
-    public function getGroup($group_id){
-        $qb = $this->createQueryBuilder('g')
-            ->select('g')
-            ->where('g.id = :id')
-            ->setParameter('id', $group_id)
-            ->getQuery();
-
-        return $qb->getQuery()->getResult();
-    }
 }

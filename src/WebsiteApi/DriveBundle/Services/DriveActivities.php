@@ -42,13 +42,12 @@ class DriveActivities implements DriveActivityInterface
             $workspace = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace);
         }
         error_log("WORKSPACE");
-        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'drive'));
-        // $application = $this->get("app.doctrine_adapter")->getManager()->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'drive'));
+        $application = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publickey' => 'drive'));
+        // $application = $this->get("app.twake_doctrine")->getRepository("TwakeMarketBundle:Application")->findOneBy(Array('publicKey' => 'drive'));
 
         error_log("APPLICATION");
         $driveActivity = new DriveActivity($application, $workspace, $user);
 
-        error_log("driveActivity avant modif ");
         $data = Array(
             "type" => "add",
             "workspace_id" => ($workspace != null ? $workspace->getId() : null),
@@ -69,11 +68,9 @@ class DriveActivities implements DriveActivityInterface
         if($title)
             $driveActivity->setTitle($title);
 
-        error_log("driveActivity apres modif ");
 
         $this->doctrine->persist($driveActivity);
         //$this->doctrine->flush();
-        error_log("Yo apres modif ");
 
         $data = Array("action" => "addActiviy");
         $this->pusher->push($data, "drive/workspace/" . $workspace->getId());

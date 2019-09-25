@@ -1,146 +1,42 @@
-calendar_get_calendars:
-    path:     /calendars/get
-    defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendars }
+#Events
+calendar_event_get:
+    path:     /event/get
+    defaults: { _controller: TwakeCalendarBundle:Event:get}
     methods: [POST]
 
-calendar_get_autoParticipate:
-    path:     /calendars/get/autoParticipate
-    defaults: { _controller: TwakeCalendarBundle:Calendar:getAutoParticipateByCalendar}
+calendar_event_save:
+    path:     /event/save
+    defaults: { _controller: TwakeCalendarBundle:Event:save}
     methods: [POST]
 
-calendar_get_calendars_id:
-    path:     /calendars/getById
-    defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendarById }
+calendar_event_remove:
+    path:     /event/remove
+    defaults: { _controller: TwakeCalendarBundle:Event:remove}
     methods: [POST]
 
-calendar_create_calendar:
-    path:     /calendars/create
-    defaults: { _controller: TwakeCalendarBundle:Calendar:createCalendar }
+#Calendars
+calendar_calendar_get:
+    path:     /calendar/get
+    defaults: { _controller: TwakeCalendarBundle:Calendar:get}
     methods: [POST]
 
-calendar_update_calendar:
-    path:     /calendars/update
-    defaults: { _controller: TwakeCalendarBundle:Calendar:updateCalendar }
+calendar_calendar_save:
+    path:     /calendar/save
+    defaults: { _controller: TwakeCalendarBundle:Calendar:save}
     methods: [POST]
 
-calendar_remove_calendar:
-    path:     /calendars/remove
-    defaults: { _controller: TwakeCalendarBundle:Calendar:removeCalendar }
+calendar_calendar_remove:
+    path:     /calendar/remove
+    defaults: { _controller: TwakeCalendarBundle:Calendar:remove}
     methods: [POST]
 
-calendar_share_calendar:
-    path:     /calendars/share
-    defaults: { _controller: TwakeCalendarBundle:Calendar:shareCalendar }
-    methods: [POST]
+#Export
+calendar_export:
+    path:     /export
+    defaults: { _controller: TwakeCalendarBundle:Export:export}
+    methods: [POST,GET]
 
-calendar_unshare_calendar:
-    path:     /calendars/unshare
-    defaults: { _controller: TwakeCalendarBundle:Calendar:unshareCalendar }
-    methods: [POST]
-
-calendar_get_share_calendar:
-    path:     /calendars/getShare
-    defaults: { _controller: TwakeCalendarBundle:Calendar:getShareCalendar }
-    methods: [POST]
-
-calendar_do_import:
-    path:     /calendars/import
-    defaults: { _controller: TwakeCalendarBundle:Calendar:importCalendar }
-    methods: [POST]
-
-calendar_do_export:
-    path:     /calendars/export/{workspaceId}/{calendarsIds}/{useMine}/{from}/{to}
-    defaults: { _controller: TwakeCalendarBundle:Calendar:exportCalendar }
-    requirements:
-              workspaceId: "[0-9]+"
-              calendarsIds: "[0-9]+(,[0-9]+)*"
-              useMine: "[0-1]"
-              from: "[0-9]+"
-              to: "[0-9]+"
-    methods: [GET]
-
-calendar_get_export_token:
-    path:     /calendars/getExportToken/{workspaceId}/{calendarId}/{useMine}/{from}/{to}
-    defaults: { _controller: TwakeCalendarBundle:Calendar:getCalendarExportToken }
-    requirements:
-              workspaceId: "[0-9]+"
-              calendarsIds: "[0-9]+"
-              useMine: "[0-1]"
-              from: "[0-9]+"
-              to: "[0-9]+"
-    methods: [GET]
-
-calendar_do_export_token:
-    path:     /calendars/export/{token}
-    defaults: { _controller: TwakeCalendarBundle:Calendar:exportCalendarWithToken }
-    methods: [GET]
-
-calendar_events_get:
-    path:     /events/get
-    defaults: { _controller: TwakeCalendarBundle:Event:get }
-    methods: [POST]
-
-calendar_events_get_one_event:
-    path:     /events/getOneEvent
-    defaults: { _controller: TwakeCalendarBundle:Event:getOneEvent }
-    methods: [POST]
-
-calendar_events_get_users:
-    path:     /events/get/users
-    defaults: { _controller: TwakeCalendarBundle:Event:getUsers }
-    methods: [POST]
-
-calendar_events_create:
-    path:     /events/create
-    defaults: { _controller: TwakeCalendarBundle:Event:create }
-    methods: [POST]
-
-calendar_events_update:
-    path:     /events/update
-    defaults: { _controller: TwakeCalendarBundle:Event:update }
-    methods: [POST]
-
-calendar_events_remove:
-    path:     /events/remove
-    defaults: { _controller: TwakeCalendarBundle:Event:remove }
-    methods: [POST]
-
-calendar_events_share:
-    path:     /events/addUsers
-    defaults: { _controller: TwakeCalendarBundle:Event:addUsers }
-    methods: [POST]
-
-calendar_events_unshare:
-    path:     /events/removeUsers
-    defaults: { _controller: TwakeCalendarBundle:Event:removeUsers }
-    methods: [POST]
-
-calendar_activities_create:
-    path: /calendarActivities/create
-    defaults: { _controller: TwakeCalendarBundle:CalendarActivity:create }
-    methods: [POST]
-
-calendar_activities_get:
-    path: /calendarActivities/get
-    defaults: { _controller: TwakeCalendarBundle:CalendarActivity:get }
-    methods: [POST]
-
-calendar_activities_readAll:
-    path: /calendarActivities/readAll
-    defaults: { _controller: TwakeCalendarBundle:CalendarActivity:readAll }
-    methods: [POST]
-
-calendar_activities_readOne:
-    path: /calendarActivities/readOne
-    defaults: { _controller: TwakeCalendarBundle:CalendarActivity:readOne}
-    methods: [POST]
-
-calendar_activities_delete:
-    path: /calendarActivities/delete
-    defaults: { _controller: TwakeCalendarBundle:CalendarActivity:delete}
-    methods: [POST]
-
-calendar_activities_getActivityToDisplay:
-    path: /calendarActivities/getActivityToDisplay
-    defaults: { _controller: TwakeCalendarBundle:CalendarActivity:getActivityToDisplay}
+calendar_token_export:
+    path:     /token_export
+    defaults: { _controller: TwakeCalendarBundle:Export:generateToken}
     methods: [POST]

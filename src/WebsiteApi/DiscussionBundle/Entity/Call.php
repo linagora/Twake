@@ -3,6 +3,7 @@
 namespace WebsiteApi\DiscussionBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
@@ -16,10 +17,9 @@ class Call implements ObjectLinksInterface
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
+     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Id
+ */
 	private $id;
 
     /**
@@ -33,7 +33,7 @@ class Call implements ObjectLinksInterface
     private $token;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      */
     private $object_link_cache;
 
@@ -44,6 +44,11 @@ class Call implements ObjectLinksInterface
 		$this->setName($name);
 	}
 
+
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
 
     public function getId()
     {
@@ -76,22 +81,23 @@ class Call implements ObjectLinksInterface
         );
     }
 
-    public function synchroniseField($fieldName, $value)
+    public function synchroniseField($fieldname, $value)
     {
-        if(!property_exists($this, $fieldName))
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $setter = "set".ucfirst($fieldName);
+        $setter = "set" . ucfirst($fieldname);
         $this->$setter($value);
 
         return true;
     }
 
-    public function get($fieldName){
-        if(!property_exists($this, $fieldName))
+    public function get($fieldname)
+    {
+        if (!property_exists($this, $fieldname))
             return false;
 
-        $getter = "get".ucfirst($fieldName);
+        $getter = "get" . ucfirst($fieldname);
 
         return $this->$getter();
     }

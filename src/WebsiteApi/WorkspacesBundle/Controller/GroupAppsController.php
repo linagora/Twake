@@ -23,24 +23,14 @@ class GroupAppsController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("group_id");
 
-        $apps_obj = $this->get("app.group_apps")->getApps($groupId);
+        $apps = $this->get("app.group_apps")->getApps($groupId);
 
-        if(!is_array($apps_obj)){
+        if (!is_array($apps)) {
             $response["errors"][] = "notallowed";
         }else{
-            //Apps
-            $apps = Array();
-            $limit = $this->get("app.pricing_plan")->getLimitation($groupId,"apps",PHP_INT_MAX);
-            foreach ($apps_obj as $app_obj){
-                $tmp = Array(
-                    "app" => $app_obj->getApp()->getAsArray(),
-                    "workspaceDefault" => $app_obj->getWorkspaceDefault());
-                $apps[] = $tmp;
-            }
-            $response["data"]["apps"] = $apps;
-            $response["data"]["maxApp"] = $limit;
+            $response["data"] = $apps;
         }
 
         return new JsonResponse($response);
@@ -49,13 +39,13 @@ class GroupAppsController extends Controller
     public function setWorkspaceDefaultAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
-        $appId = $request->request->getInt("appId");
-        $boolean = $request->request->getInt("boolean");
+        $groupId = $request->request->get("group_id");
+        $appid = $request->request->get("app_id");
+        $boolean = $request->request->getInt("state");
 
-        $apps_obj = $this->get("app.group_apps")->setWorkspaceDefault($groupId,$appId,$boolean,$this->getUser()->getId());
+        $res = $this->get("app.group_apps")->setWorkspaceDefault($groupId, $appid, $boolean, $this->getUser()->getId());
 
-        if(!is_array($apps_obj)){
+        if (!$res) {
             $response["errors"][] = "notallowed";
         }else{
             $response["data"][] = true;
@@ -67,12 +57,12 @@ class GroupAppsController extends Controller
     public function removeApplicationAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
-        $appId = $request->request->getInt("appId");
+        $groupId = $request->request->get("group_id");
+        $appid = $request->request->get("app_id");
 
-        $apps_obj = $this->get("app.group_apps")->removeApplication($groupId,$appId,$this->getUser()->getId());
+        $res = $this->get("app.group_apps")->removeApplication($groupId, $appid, $this->getUser()->getId());
 
-        if(!is_array($apps_obj)){
+        if (!$res) {
             $response["errors"][] = "notallowed";
         }else{
             $response["data"][] = true;
@@ -84,12 +74,12 @@ class GroupAppsController extends Controller
     public function forceApplicationAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
-        $appId = $request->request->getInt("appId");
+        $groupId = $request->request->get("group_id");
+        $appid = $request->request->get("app_id");
 
-        $apps_obj = $this->get("app.workspaces_apps")->forceApplication($groupId,$appId,$this->getUser()->getId());
+        $res = $this->get("app.workspaces_apps")->forceApplication($groupId, $appid, $this->getUser()->getId());
 
-        if(!is_array($apps_obj)){
+        if (!$res) {
             $response["errors"][] = "notallowed";
         }else{
             $response["data"][] = true;
@@ -106,11 +96,11 @@ class GroupAppsController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
-        $workspaceId = $request->request->getInt("workspaceId");
-        $appId = $request->request->getInt("appId");
+        $groupId = $request->request->get("groupId");
+        $workspaceId = $request->request->get("workspaceId");
+        $appid = $request->request->get("appid");
 
-        $res = $this->get("app.group_apps")->useApp($groupId, $workspaceId, $this->getUser()->getId(), $appId);
+        $res = $this->get("app.group_apps")->useApp($groupId, $workspaceId, $this->getUser()->getId(), $appid);
 
         if(!$res){
             $response["errors"][] = "notallowed";

@@ -23,7 +23,7 @@ class GroupManagerController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("groupId");
 
         $managers = $this->get("app.group_managers")->getManagers($groupId, $this->getUser()->getId());
 
@@ -47,18 +47,40 @@ class GroupManagerController extends Controller
     }
 
     /**
+     * toggle status d'un utilisateur (manager ou non)
+     */
+    public function toggleManagerAction(Request $request){
+        $response = Array("errors"=>Array(), "data"=>Array());
+
+        $groupId = $request->request->get("groupId");
+        $userId = $request->request->get("userId");
+        $isManager = $request->request->get("isManager",null);
+        $result = $this->get("app.group_managers")->toggleManager($groupId, $userId, $isManager,$this->getUser()->getId());
+
+
+        if(!$result){
+            $response["errors"][] = "notallowed";
+        }else {
+            $response["data"] = "success";
+        }
+
+        return new JsonResponse($response);
+    }
+
+
+    /**
      * Ajoute un manager au groupe
      */
     public function addManagersAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("groupId");
         $username = $request->request->get("username");
 
         $username = str_replace(Array("@", " "), "", $username);
 
-        $userRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("username"=>$username));
+        $userRepository = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => $username));
 
         if(!$user){
             $response["errors"][] = "usernotfound";
@@ -83,7 +105,7 @@ class GroupManagerController extends Controller
     public function removeManagersAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("groupId");
         $userId = $request->request->get("userId");
 
         $result = $this->get("app.group_managers")->removeManager($groupId, $userId, $this->getUser()->getId());
@@ -103,7 +125,7 @@ class GroupManagerController extends Controller
     public function editManagersAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $groupId = $request->request->getInt("groupId");
+        $groupId = $request->request->get("groupId");
         $userId = $request->request->get("userId");
         $level = $request->request->get("level");
 

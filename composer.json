@@ -1,5 +1,5 @@
 {
-    "name": "romaricportable/Twake",
+    "name": "twake/twake_core",
     "license": "proprietary",
     "type": "project",
     "autoload": {
@@ -34,13 +34,11 @@
         "hwi/oauth-bundle": "^0.5.3",
         "gos/web-socket-bundle": "^1.8",
         "qandidate/symfony-json-request-transformer": "^1.2",
-        "symfony/finder": "^3.2",
         "nelmio/api-doc-bundle": "^2.13",
         "react/zmq": "^0.3.0",
         "krlove/async-service-call-bundle": "^1.0",
         "richsage/rms-push-notifications-bundle": "^0.2.3",
         "cmen/google-charts-bundle": "^3.0",
-        "easycorp/easyadmin-bundle": "^1.17",
         "google/apiclient": "^2.0",
         "eluceo/ical": "^0.14.0",
         "johngrogg/ics-parser": "^2",
@@ -48,12 +46,22 @@
         "aws/aws-sdk-php-symfony": "~2.0",
         "maennchen/zipstream-php": "^0.5.1",
         "onurb/doctrine-yuml-bundle": "~1.0",
-        "phpunit/phpunit": ">=5.7"
+        "phpunit/phpunit": "5.7",
+        "m6web/cassandra-bundle": "~1.1.0",
+        "ramsey/uuid-doctrine": "^1.5",
+        "reprovinci/doctrine-encrypt": "~3.0",
+        "easycorp/easyadmin-bundle": ">=1.0",
+        "php-opencloud/openstack": "^3.0",
+        "atoum/atoum": "^3.3",
+        "emojione/emojione": "3.1",
+        "twakeapp/prometheus-bundle": "dev-master",
+        "spatie/pdf-to-text": "*",
+        "dilab/resumable.php": "0.1.4",
+        "ci/restclientbundle": "^2.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
-        "symfony/phpunit-bridge": "^4.0",
-      "ci/restclientbundle": "^2.0"
+        "symfony/phpunit-bridge": "^4.0"
     },
     "scripts": {
         "symfony-scripts": [
@@ -78,5 +86,11 @@
         "symfony-tests-dir": "tests",
         "symfony-assets-install": "relative",
         "branch-alias": null
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/TwakeApp/prometheus-bundle"
+        }
+    ]
 }

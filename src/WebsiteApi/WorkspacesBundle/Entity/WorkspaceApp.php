@@ -3,6 +3,7 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 
 
@@ -10,7 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * WorkspaceApp
  *
- * @ORM\Table(name="workspace_app",options={"engine":"MyISAM"})
+ * @ORM\Table(name="workspace_app",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id": "ASC", "groupapp_id": "ASC", "app_id": "ASC", "id":"ASC"}, {"groupapp_id": "ASC"}, {"id":"ASC"}}})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceAppRepository")
  */
 class WorkspaceApp
@@ -19,39 +20,53 @@ class WorkspaceApp
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
-	 */
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\Id
+     */
 	private $workspace;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupApp")
+     * @ORM\Column(name="groupapp_id", type="twake_timeuuid")
+     * @ORM\Id
 	 */
-	private $groupapp;
+    private $groupapp_id;
+
+    /**
+     * @ORM\Column(name="app_id", type="twake_timeuuid")
+     * @ORM\Id
+     */
+    private $app_id;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date_added;
 
-	public function __construct($workspace, $groupapp) {
+    public function __construct($workspace, $groupapp_id, $app_id)
+    {
 		$this->workspace = $workspace;
-		$this->groupapp = $groupapp;
+        $this->groupapp_id = $groupapp_id;
+        $this->app_id = $app_id;
 		$this->date_added = new \DateTime();
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	/**
@@ -77,5 +92,21 @@ class WorkspaceApp
 	{
 		return $this->date_added;
 	}
+
+    /**
+     * @return mixed
+     */
+    public function getAppId()
+    {
+        return $this->app_id;
+    }
+
+    /**
+     * @param mixed $app_id
+     */
+    public function setAppId($app_id)
+    {
+        $this->app_id = $app_id;
+    }
 
 }

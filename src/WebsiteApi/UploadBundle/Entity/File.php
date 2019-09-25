@@ -3,6 +3,7 @@
 namespace WebsiteApi\UploadBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * File
@@ -17,37 +18,36 @@ class File
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+ */
     private $id;
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="type", type="string", length=8)
+     * @ORM\Column(name="type", type="string", length=8)
 	 */
 	private $type; //Define where this file is used
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255)
 	 */
 	private $name; //Name of the file in server (md5)
 
 	/**
 	 * @var string
 	 *
-	 * @ORM\Column(name="realName", type="string", length=255)
+     * @ORM\Column(name="real_name", type="string", length=255)
 	 */
-	private $realName; //Original name of the files on user computer
+    private $realname; //Original name of the files on user computer
 
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="sizes", type="integer")
+     * @ORM\Column(name="sizes", type="integer")
 	 */
 	private $sizes; //Size (binary position) : 0 = original
 				    //		1 = 512
@@ -60,7 +60,7 @@ class File
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="date", type="bigint")
+     * @ORM\Column(name="date", type="twake_bigint")
 	 */
 	private $date; //Creation date
 
@@ -73,7 +73,8 @@ class File
 
     /**
      *
-     * @ORM\Column(name="aws_pubblic_link", type="string", length=1024)
+     * @ORM\Column(name="aws_public_link", type="twake_text")
+     * @Encrypted
      */
     private $aws_public_link = false;
 
@@ -92,6 +93,11 @@ class File
      *
      * @return int
      */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -105,7 +111,7 @@ class File
 	public function getPublicURL($size = 0){
 
         if ($this->aws_public_link) {
-            return $this->aws_public_link;
+            return $this->aws_public_link . "";
         }
 
 		if(!$this->size_exists($size)){
@@ -128,7 +134,7 @@ class File
 
 
 	/**
-	 * @ORM\PostRemove()
+     * @ORM\PostRemove()
 	 */
 	public function deleteFromDisk(){ //Delete files from disk
 		for($i=0;$i<=4;$i++){
@@ -221,21 +227,21 @@ class File
 	 */
 	public function getRealName()
 	{
-		return $this->realName;
+        return $this->realname;
 	}
 
 	/**
-	 * @param string $realName
+     * @param string $realname
 	 */
-	public function setRealName($realName)
-	{
-		$this->realName = $realName;
+    public function setRealName($realname)
+    {
+        $this->realname = $realname;
 	}
 
     /**
      * @return mixed
      */
-    public function getAwsPublicLink()
+    public function getPublicLink()
     {
         return $this->aws_public_link;
     }
@@ -243,7 +249,7 @@ class File
     /**
      * @param mixed $aws_public_link
      */
-    public function setAwsPublicLink($aws_public_link)
+    public function setPublicLink($aws_public_link)
     {
         $this->aws_public_link = $aws_public_link;
     }

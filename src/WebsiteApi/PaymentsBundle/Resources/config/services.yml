@@ -1,24 +1,24 @@
 services:
     app.mail_sender:
             class: WebsiteApi\PaymentsBundle\Services\MailSender
-            arguments: ["@app.doctrine_adapter", "@app.twake_mailer"]
+            arguments: ["@app.twake_doctrine", "@app.twake_mailer"]
 
     app.billing:
                 class: WebsiteApi\PaymentsBundle\Services\Billing
-                arguments: ["@app.doctrine_adapter"]
+                arguments: ["@app.twake_doctrine"]
 
     app.pdf_builder_system:
                 class: WebsiteApi\PaymentsBundle\Services\PDFBuilderSystem
-                arguments: ["@app.doctrine_adapter", "@templating"]
+                arguments: ["@app.twake_doctrine", "@templating"]
 
     app.subscription_system:
                 class: WebsiteApi\PaymentsBundle\Services\SubscriptionSystem
-                arguments: ["@app.doctrine_adapter"]
+                arguments: ["@app.twake_doctrine"]
 
     app.subscription_manager:
                 class: WebsiteApi\PaymentsBundle\Services\SubscriptionManagerSystem
-                arguments: ["@app.doctrine_adapter", "@app.subscription_system", "@app.mail_sender", "@app.billing","@app.pdf_builder_system", "@app.groups", "@app.group_apps"]
+                arguments: ["@app.twake_doctrine", "@app.subscription_system", "@app.mail_sender", "@app.billing","@app.pdf_builder_system", "@app.groups", "@app.group_apps"]
 
     app.group_identitys:
                 class: WebsiteApi\PaymentsBundle\Services\GroupIdentitys
-                arguments: ["@app.doctrine_adapter"]
+                arguments: ["@app.twake_doctrine"]

@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: Syma
+ * User: Romaric Mourgues
  * Date: 19/01/2017
  * Time: 10:38
  */
@@ -25,7 +25,7 @@ class WorkspaceLevelsController extends Controller
 
         $response = Array("errors" => Array(), "data" => Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
 
         $levels = $this->get("app.workspace_levels")->getLevels($workspaceId, $this->getUser()->getId());
         $workspaceApps = $this->get("app.workspaces_apps")->getApps($workspaceId, $this->getUser()->getId(), false, true);
@@ -57,7 +57,7 @@ class WorkspaceLevelsController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
         $label = $request->request->get("label","");
         if ($label == null){
             $response["errors"] = "emptylabel";
@@ -84,8 +84,8 @@ class WorkspaceLevelsController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
-        $levelId = $request->request->getInt("levelId");
+        $workspaceId = $request->request->get("workspaceId");
+        $levelId = $request->request->get("levelId");
 
         $res = $this->get("app.workspace_levels")->removeLevel($workspaceId,$levelId, $this->getUser()->getId());
 
@@ -105,8 +105,8 @@ class WorkspaceLevelsController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
-        $levelId = $request->request->getInt("levelId");
+        $workspaceId = $request->request->get("workspaceId");
+        $levelId = $request->request->get("levelId");
 
         $res = $this->get("app.workspace_levels")->setDefaultLevel($workspaceId,$levelId, $this->getUser()->getId());
 
@@ -126,8 +126,8 @@ class WorkspaceLevelsController extends Controller
 
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
-        $levelId = $request->request->getInt("levelId");
+        $workspaceId = $request->request->get("workspaceId");
+        $levelId = $request->request->get("levelId");
         $rights = $request->request->get("rights");
         $label = $request->request->get("label","");
 
@@ -145,7 +145,7 @@ class WorkspaceLevelsController extends Controller
     public function getByLabelAction(Request $request){
         $response = Array("errors"=>Array(), "data"=>Array());
 
-        $workspaceId = $request->request->getInt("workspaceId");
+        $workspaceId = $request->request->get("workspaceId");
         $label = $request->request->get("label","");
 
         $res = $this->get("app.workspace_levels")->getByLabel($workspaceId, $label);

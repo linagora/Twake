@@ -41,6 +41,11 @@ class TranslationObject {
         $lang = $this->translator->getDefaultLanguage();
         return $this->setVariables($this->translator->translate($this->key, $lang));
     }
+
+    public function toCqlString()
+    {
+        return $this->__toString();
+    }
 }
 
 class Translate

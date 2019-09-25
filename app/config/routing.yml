@@ -1,35 +1,7 @@
 
-#[REMOVE_ONPREMISE]
-administration_authentication:
-    resource: "@AdministrationAuthenticationBundle/Resources/config/routing.yml"
-    prefix:   /administration/ajax/authentication
-
-easy_admin_bundle:
-    resource: "@EasyAdminBundle/Controller/AdminController.php"
-    type:     annotation
-    prefix:   /administration/V2/
-
-easy_admin_bundle_dashboard:
-    defaults: {_controller: AdministrationAuthenticationBundle:Dashboard:show}
-    path:   /administration/V2/dashboard
-
-easy_admin_bundle_workspace_data:
-    defaults: {_controller: AdministrationAuthenticationBundle:Workspace:show}
-    path:   /administration/V2/workspace
-
-easy_admin_bundle_group_data:
-    defaults: {_controller: AdministrationAuthenticationBundle:Workspace:showGroup}
-    path:   /administration/V2/group
-
-easy_admin_bundle_user_data:
-    defaults: {_controller: AdministrationAuthenticationBundle:User:show}
-    path:   /administration/V2/user
-
-#website_group:
-#    resource: "@WebsiteGroupBundle/Resources/config/routing.yml"
-#    prefix:   /group/
-#[/REMOVE_ONPREMISTwakeCheckBundleE]
-
+tweede_golf_prometheus:
+    resource: "@TweedeGolfPrometheusBundle/Resources/config/routing.yml"
+    prefix: /api/prometheus
 
 fos_user_resetting:
     resource: "@FOSUserBundle/Resources/config/routing/resetting.xml"
@@ -40,73 +12,78 @@ NelmioApiDocBundle:
     resource: "@NelmioApiDocBundle/Resources/config/routing.yml"
     prefix:   /api/doc
 
-#[REMOVE_ONPREMISE]
-#Administration
-administration_general:
-    resource: "@AdministrationGeneralBundle/Resources/config/routing.yml"
-    prefix:   /administration/
-#[/REMOVE_ONPREMISE]
-
 
 #API pour le site (et pas les developpeurs)
 calendar:
     resource: "@TwakeCalendarBundle/Resources/config/routing.yml"
     prefix:   /ajax/calendar/
 
-project:
-    resource: "@TwakeProjectBundle/Resources/config/routing.yml"
-    prefix:   /ajax/project/
-
-citi_go_discussion:
+twake_discussion:
     resource: "@TwakeDiscussionBundle/Resources/config/routing.yml"
     prefix:   /ajax/discussion/
     methods: [POST]
 
-citi_go_calls:
+twake_channels:
+    resource: "@TwakeChannelsBundle/Resources/config/routing.yml"
+    prefix:   /ajax/channels/
+    methods: [POST]
+
+twake_calls:
     resource: "@TwakeCallsBundle/Resources/config/routing.yml"
     prefix:   /ajax/calls/
     methods: [POST]
 
-citi_go_upload:
+twake_upload:
     resource: "@TwakeUploadBundle/Resources/config/routing.yml"
     prefix:   /ajax/upload/
     methods: [POST]
 
-citi_go_payments:
+twake_payments:
     resource: "@TwakePaymentsBundle/Resources/config/routing.yml"
     prefix:   /ajax/payments/
     methods: [POST]
 
-citi_go_workspaces:
+twake_workspaces:
     resource: "@TwakeWorkspacesBundle/Resources/config/routing.yml"
     prefix:   /ajax/workspace/
     methods: [POST]
 
-citi_go_users:
+twake_globalsearch:
+    resource: "@TwakeGlobalSearchBundle/Resources/config/routing.yml"
+    prefix:   /ajax/globalsearch/
+    methods: [POST]
+
+twake_driveupload:
+    resource: "@TwakeDriveUploadBundle/Resources/config/routing.yml"
+    prefix:   /ajax/driveupload/
+    methods: [POST,GET]
+
+twake_users:
     resource: "@TwakeUsersBundle/Resources/config/routing.yml"
     prefix:   /ajax/users/
 
-citi_go_core:
+twake_core:
     resource: "@TwakeCoreBundle/Resources/config/routing.yml"
     prefix:   /ajax/core/
 
-citi_go_core_remote:
+twake_core_remote:
     resource: "@TwakeCoreBundle/Resources/config/routing_remote.yml"
     prefix:   /api/remote/
 
-citi_go_marketplace:
+twake_marketplace:
     resource: "@TwakeMarketBundle/Resources/config/routing.yml"
     prefix:   /ajax/market/
     methods: [POST]
-
-twake_drive_download:
-    path:     ajax/drive/download
-    defaults: { _controller: TwakeDriveBundle:Files:download }
 
 twake_drive:
     resource: "@TwakeDriveBundle/Resources/config/routing.yml"
     prefix:   ajax/drive/
     methods: [POST, GET]
+
+twake_tasks:
+    resource: "@TwakeTasksBundle/Resources/config/routing.yml"
+    prefix:   ajax/tasks/
+    methods: [POST]
 
 twake_notifications:
     resource: "@TwakeNotificationsBundle/Resources/config/routing.yml"
@@ -130,58 +107,58 @@ twake_api_error:
     requirements:
       req: ".*"
 
-
-#API pour les developpeurs
-#[REMOVE_ONPREMISE]
-developers_api_users:
-    resource: "@DevelopersApiUsersBundle/Resources/config/routing.yml"
-    prefix:   /api/users/
-    methods: [POST]
-
-developers_api_groups:
-    resource: "@DevelopersApiGroupsBundle/Resources/config/routing.yml"
-    prefix:   /api/group/
-    methods: [POST]
-
-developers_api_drive:
-    resource: "@DevelopersApiDriveBundle/Resources/config/routing.yml"
-    prefix:   /api/drive/
-    methods: [POST]
-
-developers_api_messages:
-    resource: "@DevelopersApiMessagesBundle/Resources/config/routing.yml"
-    prefix:   /api/messages/
-    methods: [POST]
-#[/REMOVE_ONPREMISE]
-
 #API V1 pour les developpeurs
 developers_api_v1_messages:
     resource: "@DevelopersApiV1MessagesBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
+    prefix:   /api/v1/messages/
 
-developers_api_v1_drive:
-    resource: "@DevelopersApiV1DriveBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
+developers_api_v1_users:
+    resource: "@DevelopersApiV1UsersBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/users/
 
-developers_api_v1_drive:
-    resource: "@DevelopersApiV1CalendarBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
+developers_api_v1_channels:
+    resource: "@DevelopersApiV1ChannelsBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/channels/
+
+developers_api_v1_general:
+    resource: "@DevelopersApiV1GeneralBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/general/
 
 developers_api_v1_calendar:
     resource: "@DevelopersApiV1CalendarBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
+    prefix:   /api/v1/calendar/
 
-developers_api_v1_project:
-    resource: "@DevelopersApiV1ProjectBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
+developers_api_v1_drive:
+    resource: "@DevelopersApiV1DriveBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/drive/
 
-developers_api_v1_workspaces:
-    resource: "@DevelopersApiV1WorkspacesBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
+developers_api_v1_tasks:
+    resource: "@DevelopersApiV1TasksBundle/Resources/config/routing.yml"
+    prefix:   /api/v1/tasks/
 
 developers_api_v1_core:
     resource: "@DevelopersApiV1CoreBundle/Resources/config/routing.yml"
-    prefix:   /api/v1/
+    prefix:   /api/v1/core/
+
+administration_users:
+    resource: "@AdministrationApiUsersBundle/Resources/config/routing.yml"
+    prefix:   /api/backend/users/
+
+administration_group:
+    resource: "@AdministrationApiGroupBundle/Resources/config/routing.yml"
+    prefix:   /api/backend/group/
+
+administration_workspaces:
+    resource: "@AdministrationApiWorkspacesBundle/Resources/config/routing.yml"
+    prefix:   /api/backend/workspaces/
+
+administration_apps:
+    resource: "@AdministrationApiAppsBundle/Resources/config/routing.yml"
+    prefix:   /api/backend/apps/
+
+administration_counter:
+    resource: "@AdministrationApiCounterBundle/Resources/config/routing.yml"
+    prefix:   /api/backend/counter/
 
 developers_api_error:
     path:     /api/{req}

@@ -11,6 +11,7 @@ namespace WebsiteApi\PaymentsBundle\Entity;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\UsersBundle\Entity\User;
 
@@ -30,7 +31,6 @@ class BillingUserList
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-     * @ORM\Id
      */
     private $user;
 

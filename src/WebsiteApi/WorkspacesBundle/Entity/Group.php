@@ -3,8 +3,9 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
-
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
+use Ramsey\Uuid\Doctrine\UuidOrderedTimeGenerator;
+use WebsiteApi\CoreBundle\Entity\SearchableObject;
 
 
 /**
@@ -13,36 +14,39 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="group_entity",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\GroupRepository")
  */
-class Group
+class Group extends SearchableObject
 {
+
+    protected $es_type = "group";
+
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
+     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Id
 	 */
 	protected $id;
 
 	/**
-	 * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, options={"index"=true})
 	 */
 	protected $name;
 
 	/**
-	 * @ORM\Column(name="display_name", type="string", length=255)
+     * @ORM\Column(name="display_name", type="twake_text")
+     * @Encrypted
 	 */
-	protected $displayName;
+    protected $displayname;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
 	 */
 	protected $logo;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\PricingPlan")
      */
-    protected $pricingPlan;
+    protected $pricingplan;
 
     /**
      * @ORM\Column(name="free_offer_end", type="integer", nullable=true)
@@ -50,33 +54,34 @@ class Group
     protected $free_offer_end = null;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace", mappedBy="group")
+     * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace", mappedBy="group")
 	 */
 	private $workspaces;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupUser", mappedBy="group")
+     * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupUser", mappedBy="group")
 	 */
 	private $managers;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date_added;
 
     /**
-     * @ORM\Column(name="on_creation_data", type="string", length=1000)
+     * @ORM\Column(name="on_creation_data", type="twake_text")
+     * @Encrypted
      */
     protected $on_creation_data = "{}";
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="isblocked", type="twake_boolean")
      */
-    private $isBlocked = false;
+    private $isblocked = false;
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="isprivate", type="twake_boolean")
      */
-    private $isPrivate = false;
+    private $isprivate = false;
 
 
     public function __construct($name) {
@@ -84,7 +89,33 @@ class Group
 		$this->date_added = new \DateTime();
 	}
 
-	public function getId(){
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
+    }
+
+
+    public function getIndexationArray()
+    {
+        $return = Array(
+            "id" => $this->getId()."",
+            "name" => $this->getName(),
+            "creation_date" => ($this->getDateAdded() ? ($this->getDateAdded()->format('U')*1000) : null),
+        );
+        return $return;
+    }
+
+
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
 		return $this->id;
 	}
 
@@ -109,15 +140,15 @@ class Group
 	 */
 	public function getDisplayName()
 	{
-		return $this->displayName;
+        return $this->displayname;
 	}
 
 	/**
-	 * @param mixed $displayName
+     * @param mixed $displayname
 	 */
-	public function setDisplayName($displayName)
-	{
-		$this->displayName = $displayName;
+    public function setDisplayName($displayname)
+    {
+        $this->displayname = $displayname;
 	}
 
 	/**
@@ -141,15 +172,15 @@ class Group
 	 */
 	public function getPricingPlan()
 	{
-		return $this->pricingPlan;
+        return $this->pricingplan;
 	}
 
 	/**
-	 * @param mixed $pricingPlan
+     * @param mixed $pricing_plan
 	 */
-	public function setPricingPlan($pricingPlan)
-	{
-		$this->pricingPlan = $pricingPlan;
+    public function setPricingPlan($pricing_plan)
+    {
+        $this->pricingplan = $pricing_plan;
 	}
 
 	/**
@@ -205,15 +236,15 @@ class Group
      */
     public function getisPrivate()
     {
-        return $this->isPrivate;
+        return $this->isprivate;
     }
 
     /**
-     * @param mixed $isPrivate
+     * @param mixed $isprivate
      */
-    public function setIsPrivate($isPrivate)
+    public function setIsPrivate($isprivate)
     {
-        $this->isPrivate = $isPrivate;
+        $this->isprivate = $isprivate;
     }
 
     /**
@@ -221,15 +252,15 @@ class Group
      */
     public function getIsBlocked()
     {
-        return $this->isBlocked;
+        return $this->isblocked;
     }
 
     /**
-     * @param mixed $isBlocked
+     * @param mixed $isblocked
      */
-    public function setIsBlocked($isBlocked)
+    public function setIsBlocked($isblocked)
     {
-        $this->isBlocked = $isBlocked;
+        $this->isblocked = $isblocked;
     }
 
     /**
@@ -277,10 +308,10 @@ class Group
 
 	public function getAsArray(){
 		return Array(
+            "id" => $this->getId(),
 			"unique_name" => $this->getName(),
 			"name" => $this->getDisplayName(),
-			"plan" => $this->getPricingPlan()->getLabel(),
-			"id" => $this->getId(),
+            "plan" => (($this->getPricingPlan() != null) ? $this->getPricingPlan()->getLabel() : null),
 			"logo" => (($this->getLogo()!=null)?$this->getLogo()->getPublicURL(2):""),
             "isBlocked" => $this->getIsBlocked(),
             "free_offer_end" => $this->getFreeOfferEnd()

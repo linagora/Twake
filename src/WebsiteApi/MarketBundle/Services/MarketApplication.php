@@ -7,7 +7,7 @@ use WebsiteApi\MarketBundle\Model\MarketApplicationInterface;
 use WebsiteApi\WorkspacesBundle\Entity\AppPricingInstance;
 use WebsiteApi\WorkspacesBundle\Entity\GroupApp;
 
-class MarketApplication implements MarketApplicationInterface
+class MarketApplication
 {
     private $doctrine;
     private $gms;
@@ -20,214 +20,265 @@ class MarketApplication implements MarketApplicationInterface
         $this->pricingPlan = $pricing;
     }
 
-    private function convertToEntity($var, $repository)
+    public function findBySimpleName($name, $entity = false)
     {
-        if (is_string($var)) {
-            $var = intval($var);
-        }
-
-        if (is_int($var)) {
-            return $this->doctrine->getRepository($repository)->find($var);
-        } else if (is_object($var)) {
-            return $var;
-        } else {
-            return null;
-        }
-
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $app = $repo->findOneBy(Array("simple_name" => $name));
+        return ($app && !$entity) ? $app->getAsArray() : $app;
     }
-    public function getApps()
+
+    public function find($id, $entity = false)
     {
-        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $applications = $applicationRepository->findBy(Array('enabled'=>true),array('name' => 'ASC'), 18);
-
-        return $applications;
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $app = $repo->findOneBy(Array("id" => $id));
+        return ($app && !$entity) ? $app->getAsArray() : $app;
     }
 
-    public function getAppsByKeyword($keywords){
-        if(count($keywords)==0)
-            return false;
-        $searchterm = "";
-        foreach ($keywords as $keyword)
-            $searchterm .= $keyword." ";
-        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-
-        $applications = $applicationRepository->createQueryBuilder('p')
-            ->addSelect("MATCH_AGAINST (p.shortDescription, p.description, p.searchWords, :searchterm 'IN NATURAL MODE') as score")
-            ->add('where', 'MATCH_AGAINST(p.shortDescription, p.description, p.searchWords, :searchterm) > 0.8')
-            ->setParameter('searchterm', $searchterm)
-            ->andWhere('p.enabled = true')
-            ->andWhere('p.urlApp = true')
-            ->orderBy('score', 'desc')
-            ->getQuery()
-            ->getResult();
-
-        return $applications;
-    }
-
-    public function getDefaultUrlOpener(){
-        return $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "default_url_opener"));
-    }
-
-    public function addSearchWord($app, $searchWork){
-        $app = $this->convertToEntity($app,"TwakeMarketBundle:Application");
-        $app->addSearchWord($searchWork);
-        $this->doctrine->persist($app);
-        $this->doctrine->flush();
-    }
-
-    public function getAppsByName($name, $limit = 30)
+    public function createApp($workspace_id, $name, $simple_name, $app_group_name, $current_user_id)
     {
 
-        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $applications = $applicationRepository->findApplicationByName($name, $limit);
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
+        $group = $workspace->getGroup();
 
-        return $applications;
-    }
-
-    public function getAppByPublicKey($publicKey){
-        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $applications = $applicationRepository->findOneBy(Array("publicKey" => $publicKey));
-
-        return $applications;
-    }
-
-    public function addFreeApplication($groupId, $appId, $currentUserId = null, $init = null)
-    {
-        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        /** @var Application $application */
-        $application = $applicationRepository->find($appId);
-
-        if ($application->getPriceMonthly() == 0 && $application->getPriceUser() == 0) {
-            $this->addApplication($groupId, $appId);
-        }
-
-    }
-
-    public function addApplication($groupId, $appId, $currentUserId = null, $init = null)
-    {
-
-        if($groupId == null || $appId == null){
-            return false;
-        }
-
-        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
-        $group = $groupRepository->find($groupId);
-
-        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
-        $application = $applicationRepository->find($appId);
-
-        $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
-        $groupApplication = $groupAppRepository->findOneBy(Array("group" => $group, "app" => $application));
-
-        if($groupApplication!=null){
-            return "app déjà existante";
-        }
-
-        $limit = $this->pricingPlan->getLimitation($groupId,"apps",PHP_INT_MAX);
-        $listApp = $groupAppRepository->findBy(Array("group"=>$group));
-
-        if(count($listApp) >= $limit){
-            return "nombre d'application max atteinte" ;
-        }
-
-        if ( $currentUserId == null
+        if ($current_user_id == null
             || $this->gms->hasPrivileges(
-                $this->gms->getLevel($groupId, $currentUserId),
+                $this->gms->getLevel($group->getId(), $current_user_id),
                 "MANAGE_APPS"
             )
         ) {
-            $groupapp = new GroupApp($group, $application);
-            $appPricingInstance = new AppPricingInstance($groupapp);
-            if($init){
-                if($application->getDefault()) {
-                    $groupapp->setWorkspaceDefault(true);
-                }
-            }
-            $this->doctrine->persist($groupapp);
-            $this->doctrine->persist($appPricingInstance);
-            $application->increaseInstall();
-            $this->doctrine->persist($application);
 
-            $this->doctrine->flush();
-
-            return true;
-        }
-        return false ;
-    }
-
-    public function getAppForUrl($url){
-        if ($url != null){
-
-            $pattern = "/\/\/([^\/]+)\//";
-            $subject = $url;
-            preg_match($pattern, $subject, $matches, PREG_OFFSET_CAPTURE);
-
-            // if link is like "https://trello.com"
-            if(count($matches)<2){
+            if (!$name || !$simple_name || !$workspace_id) {
                 return false;
             }
 
-            $tmp = $matches[1][0];
-            if(substr($tmp,0,4)=="www."){
-                $domain_name = substr($tmp,4);
-            }else{
-                $domain_name = $tmp;
+            $application = new Application($group->getId(), $name);
+            $application->setCreationDate(new \DateTime());
+            $application->setAppGroupName($app_group_name);
+
+            $application->setSimpleName($simple_name);
+
+            $application->setApiPrivateKey(Application::generatePrivateApiKey());
+
+            $this->doctrine->persist($application);
+            $this->doctrine->flush();
+
+            return $application->getAsArrayForDevelopers();
+
+        }
+        return false;
+    }
+
+    public function getGroupDevelopedApps($workspace_id, $current_user_id)
+    {
+
+        $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
+        $workspace = $groupRepository->findOneBy(Array("id" => $workspace_id));
+        $group = $workspace->getGroup();
+
+        if ($current_user_id == null
+            || $this->gms->hasPrivileges(
+                $this->gms->getLevel($group->getId(), $current_user_id),
+                "MANAGE_APPS"
+            )
+        ) {
+
+            $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+            $apps = $repo->findBy(Array("group_id" => $group->getId()));
+
+            $list = [];
+
+            foreach ($apps as $app) {
+                $list[] = $app->getAsArrayForDevelopers();
             }
 
-            //Look up to 2 sub dir in url
-            $url_tmp = str_replace("://", "", $url);
-            $url_tmp = str_replace("//", "/", $url_tmp);
-            $pattern = '/\/[^\/]+/';
-            preg_match_all($pattern, $url_tmp, $matches, PREG_OFFSET_CAPTURE);
+            return $list;
 
-            //Test without first sub_domain (ex. twake.atlassian.net)
-            $tmp = explode(".", $domain_name);
-            array_shift($tmp);
-            $domain_name_2 = join(".", $tmp);
+        }
+        return [];
+    }
 
-            $i = 1;
-            $to_test = Array($domain_name);
-            foreach ($matches[0] as $match) {
-                $to_test[] = $to_test[count($to_test) - 1] . $match[0];
-                $i++;
-                if ($i >= 2) {
-                    preg_match("/([a-z0-9-]+)\.[a-z]+($|[^a-z])/", strtolower($domain_name), $result);
-                    if (isset($result[1])) {
-                        $to_test[] = preg_replace("/[^a-z0-9]/", "", $result[1]);
-                    }
-                    break;
-                }
-            }
-            $to_test[] = $domain_name_2;
-            foreach ($matches[0] as $match) {
-                $to_test[] = $to_test[count($to_test) - 1] . $match[0];
-                $i++;
-                if ($i >= 2) {
-                    preg_match("/([a-z0-9-]+)\.[a-z]+($|[^a-z])/", strtolower($domain_name_2), $result);
-                    if (isset($result[1])) {
-                        $to_test[] = preg_replace("/[^a-z0-9]/", "", $result[1]);
-                    }
-                    break;
-                }
-            }
+    public function findAppBySimpleName($simple_name, $include_private_apps = false)
+    {
 
-            //For microsoft office apps...
-            if (strpos($url, "app=") > 0) {
-                preg_match("/(?:&|\?)app=([A-Za-z0-9]+)/", $url, $app, PREG_OFFSET_CAPTURE);
-                $to_test[] = $domain_name . "/" . $app[1][0];
-            }
+        $repo = $this->doctrine->getRepository("TwakeMarketBundle:Application");
 
-            $to_test[] = "any_url";
+        $app = $repo->findOneBy(Array("simple_name" => $simple_name));
 
-            foreach ($to_test as $url) {
-                $url = strtolower($url);
-                $app = $this->doctrine->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("domain_name" => $url));
-                if ($app) {
-                    return $app;
-                }
-            }
-
+        if (!$app) {
             return false;
         }
+
+        if (!$include_private_apps && !$app->getisAvailableToPublic()) {
+            return false;
+        }
+
+        return $app->getAsArray();
     }
+
+    public function update($application, $current_user_id)
+    {
+
+        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        /**
+         * @var Application $application_original
+         */
+        $application_original = $applicationRepository->findOneBy(Array('id' => $application["id"]));
+
+        if ($application_original) {
+
+            $group_id = $application_original->getGroupId();
+            if ($current_user_id == null
+                || $this->gms->hasPrivileges(
+                    $this->gms->getLevel($group_id, $current_user_id),
+                    "MANAGE_APPS"
+                )
+            ) {
+
+                if (!$application_original->getPublic()) {
+
+                    $application_original->setSimpleName($application["simple_name"]);
+                    $application_original->setName($application["name"]);
+                    $application_original->setDescription($application["description"]);
+                    $application_original->setIconUrl($application["icon_url"]);
+                    $application_original->setWebsite($application["website"]);
+                    $application_original->setCategories($application["categories"]);
+
+                    $old_privileges = $application_original->getPrivileges();
+                    $old_capabilities = $application_original->getCapabilities();
+                    $changed = false;
+                    foreach ($application["privileges"] as $pr) {
+                        if (!in_array($pr, $old_privileges)) {
+                            $changed = true;
+                        }
+                    }
+                    foreach ($application["capabilities"] as $pr) {
+                        if (!in_array($pr, $old_capabilities)) {
+                            $changed = true;
+                        }
+                    }
+
+                    if ($changed) {
+                        $application_original->setPrivilegesCapabilitiesLastUpdate(new \DateTime());
+                        $application_original->setTwakeTeamValidation(false);
+                        $application_original->setIsAvailableToPublic(false);
+                    }
+
+                    $application_original->setPrivileges($application["privileges"]);
+                    $application_original->setCapabilities($application["capabilities"]);
+                    $application_original->setHooks($application["hooks"]);
+
+                    $application_original->setDisplayConfiguration($application["display"]);
+                }
+
+                $application_original->setApiAllowedIp($application["api_allowed_ips"]);
+
+                if (strpos($application["api_event_url"], "https") === 0 || !$application_original->getisAvailableToPublic()) {
+                    $application_original->setApiEventsUrl($application["api_event_url"]);
+                }
+
+                $application_original->setPublic($application["public"]);
+                if (!$application["public"]) {
+                    $application_original->setTwakeTeamValidation(false);
+                    $application_original->setIsAvailableToPublic(false);
+                }
+
+                $this->doctrine->persist($application_original);
+                $this->doctrine->flush();
+
+                return $application_original->getAsArrayForDevelopers();
+
+            }
+
+        }
+
+        return false;
+
+    }
+
+    public function remove($application_id, $current_user_id)
+    {
+
+        $applicationRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
+        $application = $applicationRepository->findOneBy(Array('id' => $application_id));
+
+        if ($application) {
+
+            $group_id = $application->getGroupId();
+            if ($current_user_id == null
+                || $this->gms->hasPrivileges(
+                    $this->gms->getLevel($group_id, $current_user_id),
+                    "MANAGE_APPS"
+                )
+            ) {
+
+                if (!$application->getisAvailableToPublic()) {
+
+                    $this->doctrine->getRepository("TwakeMarketBundle:ApplicationResource")->removeBy(Array("application_id" => $application->getId()));
+                    //TODO REMOVE EVERYWHERE
+
+                    $this->doctrine->remove($application);
+                    $this->doctrine->flush();
+
+                    return true;
+
+                }
+
+            }
+
+        }
+
+        return false;
+
+    }
+
+
+    public function search($group_id, $query, $current_user_id = null)
+    {
+
+        $allows_unpublished_apps_from_group_id = "null";
+        if ($current_user_id == null
+            || $this->gms->hasPrivileges(
+                $this->gms->getLevel($group_id, $current_user_id),
+                "MANAGE_APPS"
+            )
+        ) {
+            $allows_unpublished_apps_from_group_id = $group_id;
+        }
+
+        $options = Array(
+            "repository" => "TwakeMarketBundle:Application",
+            "index" => "applications",
+            "fallback_keys" => Array(
+                "name" => $query
+            ),
+            "query" => Array(
+                "bool" => Array(
+                    "filter" => Array(
+                        "query_string" => Array(
+                            "query" => "group_id:" . $allows_unpublished_apps_from_group_id . " OR public:true"
+                        )
+                    ),
+                    "must" => Array(
+                        "query_string" => Array(
+                            "query" => "*" . $query . "*"
+                        )
+                    )
+                )
+            )
+        );
+
+        $applications = $this->doctrine->es_search($options);
+
+        $result = [];
+        foreach ($applications["result"] as $application) {
+            $application = $application[0];
+            if ($allows_unpublished_apps_from_group_id == $application->getGroupId() || $application->getPublic()) {
+                $result[] = $application->getAsArray();
+            }
+        }
+
+        return $result;
+    }
+
 }

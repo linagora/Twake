@@ -3,21 +3,21 @@
 namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\UsersBundle\Entity\User;
 
 /**
  * UserToNotify
  *
- * @ORM\Table(name="user_to_notify_drive",options={"engine":"MyISAM"})
+ * @ORM\Table(name="user_to_notify_drive",options={"engine":"MyISAM", "scylladb_keys": {{ "id": "ASC", "user_id":"ASC" }, { "user_id": "ASC" }, { "drivefile": "ASC" }} })
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\UserToNotifyRepository")
  */
 class UserToNotify
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
 
@@ -27,29 +27,29 @@ class UserToNotify
     private $user;
 
     /**
-     * @ORM\Column(type="string", length=512)
+     * @ORM\Column(name="drivefile", type="string", length=512)
      */
-    private $driveFile;
+    private $drivefile;
 
 
     /**
      * @ORM\Column(type="string", length=512)
      */
-    private $driveType;
+    private $drivetype;
 
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      */
-    private $additionalData;
+    private $additionaldata;
 
 
-    public function __construct($user, $driveFile, $driveType, $additionalData=Array())
+    public function __construct($user, $drivefile, $drivetype, $additionalData = Array())
     {
         $this->setUser($user);
-        $this->setDriveFile($driveFile);
-        $this->setDriveType($driveType);
-        $this->setAdditionalData($additionalData);
+        $this->setDriveFile($drivefile);
+        $this->setDriveType($drivetype);
+        $this->setAdditionalData($additionaldata);
     }
 
     public function getAsArray()
@@ -57,7 +57,7 @@ class UserToNotify
         return Array(
             "id" => $this->getId(),
             "user" => $this->getUser(),
-            "driveFile" => $this->getDriveFile(),
+            "drivefile" => $this->getDriveFile(),
             "driveType" => $this->getDriveType(),
             "additionalData" => $this->getAdditionalData()
         );
@@ -82,6 +82,11 @@ class UserToNotify
     /**
      * @return mixed
      */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -92,15 +97,15 @@ class UserToNotify
      */
     public function getDriveFile()
     {
-        return $this->driveFile;
+        return $this->drivefile;
     }
 
     /**
-     * @param mixed $driveFile
+     * @param mixed $drivefile
      */
-    public function setDriveFile($driveFile)
+    public function setDriveFile($drivefile)
     {
-        $this->driveFile = strval($driveFile);
+        $this->drivefile = strval($drivefile);
     }
 
     /**
@@ -108,15 +113,15 @@ class UserToNotify
      */
     public function getDriveType()
     {
-        return $this->driveType;
+        return $this->drivetype;
     }
 
     /**
-     * @param mixed $driveType
+     * @param mixed $drivetype
      */
-    public function setDriveType($driveType)
+    public function setDriveType($drivetype)
     {
-        $this->driveType = $driveType;
+        $this->drivetype = $drivetype;
     }
 
     /**
@@ -124,15 +129,15 @@ class UserToNotify
      */
     public function getAdditionalData()
     {
-        return json_decode($this->additionalData, true);
+        return json_decode($this->additionaldata, true);
     }
 
     /**
-     * @param mixed $additionalData
+     * @param mixed $additionaldata
      */
-    public function setAdditionalData($additionalData)
+    public function setAdditionalData($additionaldata)
     {
-        $this->additionalData = json_encode($additionalData);
+        $this->additionaldata = json_encode($additionaldata);
     }
 
 }

@@ -3,6 +3,8 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
+use WebsiteApi\CoreBundle\Entity\SearchableObject;
 
 
 
@@ -13,31 +15,34 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="workspace",options={"engine":"MyISAM"})
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceRepository")
  */
-class Workspace
+class Workspace extends SearchableObject
 {
+
+    protected $es_type = "workspace";
 
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+ */
     private $id;
 
 	/**
-	 * @ORM\Column(name="name", type="string", length=50, nullable=true)
+     * @ORM\Column(name="name", type="twake_text", nullable=true)
+     * @Encrypted
 	 */
 	private $name;
 
     /**
-     * @ORM\Column(name="uniquename", type="string", length=50, nullable=true)
+     * @ORM\Column(name="uniquename", type="twake_text", nullable=true)
+     * @Encrypted
      */
-    private $uniqueName;
+    private $uniquename;
 
 
     /**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
 	 */
 	private $logo;
 
@@ -52,17 +57,17 @@ class Workspace
     private $color = "#7E7A6D";
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
 	 */
 	private $group;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
 	 */
 	private $user;
 
 	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser", mappedBy="workspace")
+     * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser", mappedBy="workspace")
 	 */
 	private $members;
 
@@ -72,24 +77,24 @@ class Workspace
     private $member_count = 0;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date_added;
 
 	/**
-	 * @ORM\Column(type="boolean")
+     * @ORM\Column(name="isdeleted", type="twake_boolean")
 	 */
-	private $isDeleted = false;
+    private $is_deleted = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="isarchived", type="twake_boolean")
      */
-    private $isArchived = false;
+    private $isarchived = false;
 
     /**
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(name="isnew", type="twake_boolean")
      */
-    private $isNew = true;
+    private $isnew = true;
 
     /**
      * @ORM\Column(type="integer")
@@ -105,12 +110,45 @@ class Workspace
 		$this->date_added = new \DateTime();
 	}
 
+    public function getIndexationArray()
+    {
+        $return = Array(
+            "id" => $this->getId()."",
+            "name" => $this->getName(),
+            "group_id" => $this->getGroup()->getId()."",
+            "creation_date" => ($this->getDateAdded() ? $this->getDateAdded()->format('Y-m-d') : null),
+        );
+        return $return;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEsType()
+    {
+        return $this->es_type;
+    }
+
+    /**
+     * @param string $es_type
+     */
+    public function setEsType($es_type)
+    {
+        $this->es_type = $es_type;
+    }
+
+
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	/**
@@ -142,7 +180,7 @@ class Workspace
      */
     public function getUniqueName()
     {
-        return $this->uniqueName;
+        return $this->uniquename;
     }
 
     /**
@@ -150,7 +188,7 @@ class Workspace
      */
     public function setUniqueName($name)
     {
-        $this->uniqueName = $name;
+        $this->uniquename = $name;
     }
 
 	/**
@@ -220,17 +258,17 @@ class Workspace
 	/**
 	 * @return mixed
 	 */
-	public function getisDeleted()
-	{
-		return $this->isDeleted;
+    public function getis_deleted()
+    {
+        return $this->is_deleted;
 	}
 
 	/**
-	 * @param mixed $isDeleted
+     * @param mixed $is_deleted
 	 */
-	public function setIsDeleted($isDeleted)
-	{
-		$this->isDeleted = $isDeleted;
+    public function setis_deleted($is_deleted)
+    {
+        $this->is_deleted = $is_deleted;
 	}
 
 	/**
@@ -281,15 +319,15 @@ class Workspace
      */
     public function getisArchived()
     {
-        return $this->isArchived;
+        return $this->isarchived;
     }
 
     /**
-     * @param mixed $isArchived
+     * @param mixed $isarchived
      */
-    public function setIsArchived($isArchived)
+    public function setIsArchived($isarchived)
     {
-        $this->isArchived = $isArchived;
+        $this->isarchived = $isarchived;
     }
 
     /**
@@ -297,15 +335,15 @@ class Workspace
      */
     public function getisNew()
     {
-        return $this->getGroup() != null && $this->isNew;
+        return $this->getGroup() != null && $this->isnew;
     }
 
     /**
-     * @param mixed $isNew
+     * @param mixed $isnew
      */
-    public function setIsNew($isNew)
+    public function setIsNew($isnew)
     {
-        $this->isNew = $isNew;
+        $this->isnew = $isnew;
     }
 
     /**
@@ -313,7 +351,13 @@ class Workspace
      */
     public function getTotalActivity()
     {
-        return intval($this->total_activity);
+        if ($this->member_count < 1) {
+            $this->member_count = 1;
+        }
+        $date_interval = (date("U") - $this->date_added->getTimestamp()) / (60 * 60 * 24) + 1;
+        $val = intval($this->total_activity) / ($date_interval / 2);
+        $by_user = $val / $this->member_count;
+        return $by_user;
     }
 
     /**
@@ -321,7 +365,7 @@ class Workspace
      */
     public function setTotalActivity($total_activity)
     {
-        $this->total_activity = $total_activity;
+        $this->total_activity += 1;
     }
 
 

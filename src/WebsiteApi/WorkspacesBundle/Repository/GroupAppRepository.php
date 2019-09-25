@@ -10,4 +10,5 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  */
 class GroupAppRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
+
 }

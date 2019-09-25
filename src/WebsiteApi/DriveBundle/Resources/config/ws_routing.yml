@@ -4,4 +4,4 @@ drive_topic:
         callback: 'drive.topic'
     requirements:
         workspace_id:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"

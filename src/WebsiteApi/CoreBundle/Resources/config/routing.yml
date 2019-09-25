@@ -31,3 +31,28 @@ twake_quote:
     path:     /quote
     defaults: { _controller: TwakeCoreBundle:Version:quote }
     methods:  [GET]
+
+twake_grouped_query:
+    path:     /grouped_query
+    defaults: { _controller: TwakeCoreBundle:GroupedQuery:query }
+    methods:  [POST]
+
+twake_websocket_init:
+    path:     /collections/init
+    defaults: { _controller: TwakeCoreBundle:Websockets:init }
+    methods:  [POST]
+
+twake_accessmanager:
+    path:     /access
+    defaults: { _controller: TwakeCoreBundle:Access:has_access }
+    methods:  [POST]
+
+twake_user_workspace_access:
+    path:     /workspaceaccess
+    defaults: { _controller: TwakeCoreBundle:Access:user_has_workspace_access }
+    methods:  [POST]
+
+twake_export_version:
+    path:     /exportversion
+    defaults: { _controller: TwakeCoreBundle:ImportExport:export_version }
+    methods:  [POST]

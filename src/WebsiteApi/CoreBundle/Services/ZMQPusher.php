@@ -28,6 +28,7 @@ class ZMQPusher
         $this->host = $host;
         $this->port = $port;
         $this->doctrine = $em;
+        $this->connection = null;
     }
 
     public function push($data, $route)
@@ -79,11 +80,15 @@ class ZMQPusher
             ));
         }
 
-        $context = new \ZMQContext(1);
-        $this->connection = $context->getSocket(\ZMQ::SOCKET_PUSH);
-        $this->connection->setSockOpt(\ZMQ::SOCKOPT_LINGER, $config['linger']);
-        $this->connection->connect($config['protocol'] . "://" . $config['host'] . ":" . $config['port']);
-        $this->connection->send($data);
+        if ($this->connection) {
+            $this->connection->send($data);
+        } else {
+            $context = new \ZMQContext(1);
+            $this->connection = $context->getSocket(\ZMQ::SOCKET_PUSH);
+            $this->connection->setSockOpt(\ZMQ::SOCKOPT_LINGER, $config['linger']);
+            $this->connection->connect($config['protocol'] . "://" . $config['host'] . ":" . $config['port']);
+            $this->connection->send($data);
+        }
 
     }
 

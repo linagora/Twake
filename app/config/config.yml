@@ -1,22 +1,26 @@
 imports:
-    - { resource: aws_config.yml }
     - { resource: parameters.yml }
     - { resource: security.yml }
     - { resource: services.yml }
     - { resource: ws_routing.yml }
-    - { resource: admin_config.yml }
     - { resource: "@TwakeCalendarBundle/Resources/config/services.yml" }
-    - { resource: "@TwakeProjectBundle/Resources/config/services.yml" }
     - { resource: "@TwakeUsersBundle/Resources/config/services.yml" }
     - { resource: "@TwakeCoreBundle/Resources/config/services.yml" }
     - { resource: "@TwakeDiscussionBundle/Resources/config/services.yml" }
+    - { resource: "@TwakeChannelsBundle/Resources/config/services.yml" }
     - { resource: "@TwakeObjectLinksBundle/Resources/config/services.yml" }
     - { resource: "@TwakeMarketBundle/Resources/config/services.yml" }
     - { resource: "@TwakePaymentsBundle/Resources/config/services.yml" }
     - { resource: "@TwakeUploadBundle/Resources/config/services.yml" }
-#[REMOVE_ONPREMISE]
-    - { resource: "@AdministrationAuthenticationBundle/Resources/config/services.yml" }
-#[/REMOVE_ONPREMISE]
+    - { resource: "@TwakeGlobalSearchBundle/Resources/config/services.yml" }
+    - { resource: "@TwakeDriveUploadBundle/Resources/config/services.yml" }
+    - { resource: "@TwakeTasksBundle/Resources/config/services.yml" }
+    - { resource: "@AdministrationApiCoreBundle/Resources/config/services.yml" }
+    - { resource: "@AdministrationApiUsersBundle/Resources/config/services.yml" }
+    - { resource: "@AdministrationApiGroupBundle/Resources/config/services.yml" }
+    - { resource: "@AdministrationApiWorkspacesBundle/Resources/config/services.yml" }
+    - { resource: "@AdministrationApiAppsBundle/Resources/config/services.yml" }
+    - { resource: "@AdministrationApiCounterBundle/Resources/config/services.yml"}
 
 # Put parameters here that don't need to change on each machine where the app is deployed
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
@@ -41,8 +45,9 @@ framework:
     trusted_proxies: ~
     session:
         # http://symfony.com/doc/current/reference/configuration/framework.html#handler-id
-        handler_id:  session.handler.pdo
+        handler_id:  session.handler.twake
         save_path:   "%kernel.root_dir%/../var/sessions/%kernel.environment%"
+        cookie_lifetime: 3600000 #1 000h
     fragments:       ~
     http_method_override: true
     assets: ~
@@ -57,6 +62,22 @@ twig:
 # Doctrine Configuration
 doctrine:
     dbal:
+        driver: "pdo_mysql"
+#        driver_class:  WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Driver\PDOCassandra\Driver
+        host:     "%database_host%"
+        port:     "%database_port%"
+        dbname:   "%database_dbname%"
+        user:     "%database_user%"
+        password: "%database_password%"
+        charset:  UTF8
+
+    orm:
+        auto_generate_proxy_classes: %kernel.debug%
+        auto_mapping: true
+
+# Doctrine Configuration
+doctrine:
+    dbal:
         driver:   pdo_mysql
         host:     "%database_host%"
         port:     "%database_port%"
@@ -64,12 +85,6 @@ doctrine:
         user:     "%database_user%"
         password:     "%database_password%"
         charset:  UTF8
-        # if using pdo_sqlite as your database driver:
-        #   1. add the path in parameters.yml
-        #     e.g. database_path: "%kernel.root_dir%/data/data.db3"
-        #   2. Uncomment database_path in parameters.yml.dist
-        #   3. Uncomment next line:
-        #     path:     "%database_path%"
 
     orm:
         auto_generate_proxy_classes: false #"%kernel.debug%"
@@ -80,6 +95,7 @@ doctrine:
             string_functions:
             # Match agains should have the path to the MatchAgainst class created in the previous step
                 MATCH_AGAINST: WebsiteApi\CoreBundle\Extensions\MatchAgainst
+
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -110,7 +126,8 @@ gos_web_socket:
         host: "%websocket_host%"   #The host ip to bind to
     client:
         firewall: main #can be an array of firewalls
-        session_handler: '@session.handler.pdo'
+        session_handler: '@session.handler.no_sessions'
+    shared_config: true
     periodic:
         - '@websocket.pdo.ping'
     pushers:
@@ -128,3 +145,33 @@ nelmio_api_doc: ~
 
 cmen_google_charts:
     version: "current"
+
+tweede_golf_prometheus:
+    storage_adapter_service: TweedeGolf\PrometheusClient\Storage\ApcuAdapter
+    metrics_path: metrics
+    make_memory_adapter: true
+    register_defaults: true
+    collectors:
+        app_collectors_call_count:
+            counter:
+                labels: [app, route]
+                help: Number of call to the API
+        app_collectors_response_code:
+            counter:
+                labels: [app, route, status_code]
+                help: number of call to the API per response code
+        app_collectors_memory_usage:
+            gauge:
+                labels: [app, route]
+                help: Memory in byte per route
+                initializer: 0
+        app_collectors_response_time:
+            gauge:
+                labels: [app, route]
+                help: Request execution time in seconds
+                initializer: 0.0
+        app_collectors_response_size:
+            gauge:
+                labels: [app, route]
+                help: Response size in bytes
+                initializer: 0

@@ -2,4 +2,4 @@ services:
 
   app.objectLinks:
     class : WebsiteApi\ObjectLinksBundle\Services\ObjectLinksSystem
-    arguments: ["@app.doctrine_adapter", '@app.pusher']
+    arguments: ["@app.twake_doctrine", '@app.pusher']

@@ -11,6 +11,7 @@ namespace WebsiteApi\PaymentsBundle\Entity;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\UsersBundle\Entity\User;
 
@@ -23,77 +24,81 @@ use WebsiteApi\UsersBundle\Entity\User;
 class Receipt
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+ */
     private $id;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
      */
-    private $issueDate;
+    private $issuedate;
 
     /**
-     * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
      */
-    private $startDateOfService;
+    private $startdateofservice;
     /**
      * @ORM\Column(type="string", length=255)
      */
-    private $billId;
+    private $billid;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\PaymentsBundle\Entity\GroupIdentity")
      */
-    private $groupIdentity;
+    private $groupidentity;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\PricingPlan")
      */
-    private $pricingPlan;
+    private $pricingplan;
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance",cascade={"persist"})
      */
-    private $groupPricingInstance;
+    private $grouppricinginstance;
 
     /**
-     * @ORM\Column(type="text")
+     * @ORM\Column(type="twake_text")
      */
-    private $groupPeriods;
+    private $groupperiods;
 
     /**
-     * @ORM\Column(type="text", nullable=true)
+     * @ORM\Column(type="twake_text", nullable=true)
      */
     private $discount;
 
     /**
      * Receipt constructor.
      * @param $id
-     * @param $issueDate
-     * @param $startDateOfService
-     * @param $billId
-     * @param $groupIdentity
-     * @param $pricingPlan
-     * @param $groupPricingInstance
-     * @param $groupPeriods
+     * @param $issuedate
+     * @param $startdateofservice
+     * @param $billid
+     * @param $groupidentity
+     * @param $pricingplan
+     * @param $grouppricinginstance
+     * @param $groupperiods
      * @param $discount
      */
-    public function __construct($issueDate, $startDateOfService, $billId, $groupIdentity, $pricingPlan, $groupPricingInstance, $groupPeriods, $discount = null)
+    public function __construct($issuedate, $startdateofservice, $billid, $groupidentity, $pricingplan, $grouppricinginstance, $groupperiods, $discount = null)
     {
-        $this->issueDate = $issueDate;
-        $this->startDateOfService = $startDateOfService;
-        $this->billId = $billId;
-        $this->groupIdentity = $groupIdentity;
-        $this->pricingPlan = $pricingPlan;
-        $this->groupPricingInstance = $groupPricingInstance;
-        $this->groupPeriods = json_encode($groupPeriods->getAsArray());
+        $this->issuedate = $issuedate;
+        $this->startdateofservice = $startdateofservice;
+        $this->billid = $billid;
+        $this->groupidentity = $groupidentity;
+        $this->pricingplan = $pricingplan;
+        $this->grouppricinginstance = $grouppricinginstance;
+        $this->groupperiods = json_encode($groupperiods->getAsArray());
         $this->discount = $discount;
     }
 
     /**
      * @return mixed
      */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -104,7 +109,7 @@ class Receipt
      */
     public function getIssueDate()
     {
-        return $this->issueDate;
+        return $this->issuedate;
     }
 
     /**
@@ -112,7 +117,7 @@ class Receipt
      */
     public function getStartDateOfService()
     {
-        return $this->startDateOfService;
+        return $this->startdateofservice;
     }
 
     /**
@@ -120,7 +125,7 @@ class Receipt
      */
     public function getBillId()
     {
-        return $this->billId;
+        return $this->billid;
     }
 
     /**
@@ -128,7 +133,7 @@ class Receipt
      */
     public function getGroupIdentity()
     {
-        return $this->groupIdentity;
+        return $this->groupidentity;
     }
 
     /**
@@ -136,7 +141,7 @@ class Receipt
      */
     public function getPricingPlan()
     {
-        return $this->pricingPlan;
+        return $this->pricingplan;
     }
 
     /**
@@ -144,7 +149,7 @@ class Receipt
      */
     public function getGroupPricingInstance()
     {
-        return $this->groupPricingInstance;
+        return $this->grouppricinginstance;
     }
 
     /**
@@ -152,7 +157,7 @@ class Receipt
      */
     public function getGroupPeriods()
     {
-        return $this->groupPeriods;
+        return $this->groupperiods;
     }
 
     /**
@@ -164,11 +169,11 @@ class Receipt
     }
 
     /**
-     * @param mixed $billId
+     * @param mixed $billid
      */
-    public function setBillId($billId)
+    public function setBillId($billid)
     {
-        $this->billId = $billId;
+        $this->billid = $billid;
     }
 
 

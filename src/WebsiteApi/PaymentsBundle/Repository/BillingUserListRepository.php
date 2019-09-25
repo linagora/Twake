@@ -15,7 +15,7 @@ class BillingUserListRepository extends \WebsiteApi\CoreBundle\Services\Doctrine
         $qb = $this->createQueryBuilder('u');
         $qb->delete();
         $qb->where('u.user = :user');
-        $qb->setParameter('user', $user);
+        $qb->setParameter('user', $this->queryBuilderUuid($user));
         $qb->getQuery()->execute();
     }
 }

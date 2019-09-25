@@ -14,8 +14,10 @@ use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 class UsersConnectionsController extends Controller
 {
 
-	public function aliveAction(){
-		if($this->getUser()) {
+    public function aliveAction(Request $request)
+    {
+        $focus = $request->request->get("focus", true);
+        if ($this->getUser() && $focus) {
 			$this->get("app.user")->alive($this->getUser()->getId());
 		}
         return new JsonResponse(Array("data" => "ok"));
@@ -31,7 +33,7 @@ class UsersConnectionsController extends Controller
     {
         $response = new Response();
         $response->setContent("<script>document.location='" . base64_decode($request->query->get("redirect")) . "'</script>");
-        return $response;;
+        return $response;
     }
 
 	public function loginAction(Request $request)
@@ -54,6 +56,7 @@ class UsersConnectionsController extends Controller
 			$device = $request->request->get("device", false);
             if ($device && isset($device["type"]) && isset($device["value"])) {
                 $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], isset($device["version"]) ? $device["version"] : null);
+                $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
 			}
 
 			$data["data"]["status"] = "connected";
@@ -104,6 +107,7 @@ class UsersConnectionsController extends Controller
 		$device = $request->request->get("device", false);
 		if($device && isset($device["type"])) {
 			$this->get("app.user")->removeDevice($this->getUser()->getId(), $device["type"], $device["value"]);
+            $this->get("administration.counter")->incrementCounter("total_devices_linked", -1);
 		}
 		$this->get("app.user")->logout();
 		return new JsonResponse(Array());
@@ -125,12 +129,33 @@ class UsersConnectionsController extends Controller
 
         srand($seed1);
 
-        $colors = ["#FEF380", "#4581F0", "#F1656F", "#0C1F43", "#FDB64C", "#86CE53", "#B001E5", "#23430C", "#47300D"];
+        $colors = [
+            ["#FFD300", "#A90DFF", "#1A60FF", "#531DFF"],
+            ["#FF0000", "#00FFFF", "#AAFF00", "#00FF00"],
+            ["#00FF00", "#FF7400", "#FF0090", "#FF0000"],
+            ["#531DFF", "#FFFF00", "#FFAA00", "#FFD300"],
+            ["#FCFF00", "#FF008B", "#551CFF", "#AD0DFF"],
+            ["#1A60FF", "#FFD300", "#FF7400", "#FFAA00"],
+            ["#FF7400", "#1A60FF", "#00FF00", "#00FFFF"],
+            ["#BA0BFF", "#9EFF00", "#FFD900", "#F2FF00"]
+        ];
 
-        $choosenColors = Array();
-        for ($i = 0; $i < 2; $i++) {
+        $colors = [
+            ["#FF0000", "#FF7400", "#DD0000"],
+            ["#FFAA00", "#FFD300", "#FF7400"],
+            ["#531DFF", "#A90DFF", "#FF0090"],
+            ["#1A60FF", "#531DFF", "#00FFFF"]
+        ];
+
+        //#3b5490 0%, #9e85ab 6%, #8d8ecc 11%, #108ee9 16%, #2359d1 53%, #4c6b9c 58%, #434c74 62%, #34446c 70%, #1a2a52 88%, #34446c 96%, #3b5490
+
+        $colors = $colors[rand(0, count($colors) - 1)];
+
+        /*$choosenColors = Array();
+        for ($i = 0; $i < 4; $i++) {
             $choosenColors[] = $colors[rand(0, count($colors) - 1)];
-        }
+        }*/
+        $choosenColors = $colors;
 
         $equilateralMultiplicator = 0.86602540378;
         $triangleSize = 140;
@@ -139,12 +164,12 @@ class UsersConnectionsController extends Controller
         srand($seed2);
         $colored = Array(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0);
         for ($i = 0; $i < 36; $i++) {
-            if ($username != "admin") {
-                $colored[$i] = rand(0, 1 + $colored[$i] * 3);
-            }
+            $colored[$i] = rand(0, 1 + $colored[$i] * 3);
         }
 
         $draw = new \ImagickDraw();
+
+        $background = $choosenColors[rand(0, count($choosenColors) - 1)];
 
         srand($seed3);
         for ($i = 0; $i < 36; $i++) {
@@ -164,7 +189,7 @@ class UsersConnectionsController extends Controller
                     ['x' => $offsetX, 'y' => $offsetY + $triangleSize]
                 ];
             }
-            $draw->setFillColor("#FFF");
+            $draw->setFillColor($background);
             if ($colored[$i]) {
                 $draw->setFillColor($choosenColors[rand(0, count($choosenColors) - 1)]);
             }
@@ -205,40 +230,50 @@ class UsersConnectionsController extends Controller
 			"data" => Array()
 		);
 
-
 		$ok = $this->get("app.user")->current();
 		if(!$ok){
 			$data["errors"][] = "disconnected";
 		}else{
-
             $device = $request->request->get("device", false);
+
             if ($device && isset($device["type"]) && isset($device["value"]) && $device["value"]) {
                 $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], $device["version"]);
+                $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
             }
 
-			$data["data"] = $this->getUser()->getAsArray();
+            $this->get("app.user")->updateTimezone($this->getUser(), $request->request->get("timezone", false));
+
+            $data["data"] = $this->getUser()->getAsArray();
+            $data["data"]["workspaces_preferences"] = $this->getUser()->getWorkspacesPreference();
+            $data["data"]["notifications_preferences"] = $this->getUser()->getNotificationPreference();
+            $data["data"]["tutorial_status"] = $this->getUser()->getTutorialStatus();
 
 			$data["data"]["status"] = "connected";
 
-			$this->get("app.user_stats")->create($this->getUser());
 
-			$private = $this->get("app.workspaces")->getPrivate($this->getUser()->getId());
             $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
 
 			$workspaces = Array();
 			foreach ($workspaces_obj as $workspace_obj){
                 $value = $workspace_obj["workspace"]->getAsArray();
-                $value["last_access"] = $workspace_obj["last_access"]->getTimestamp();
-                $value["isHidden"] = $workspace_obj["isHidden"];
-                $value["hasNotifications"] = $workspace_obj["hasNotifications"];
-                $value["isFavorite"] = $workspace_obj["isFavorite"];
+                $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
+                $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
 
                 $workspaces[] = $value;
+            }
 
+            $mails = $this->get("app.user")->getSecondaryMails($this->getUser());
+
+            $data["data"]["mails"] = Array();
+            foreach ($mails as $mail){
+                $data["data"]["mails"][] = Array(
+                    "id" => $mail->getId(),
+                    "main" => ($this->getUser()->getEmail() == $mail->getMail()),
+                    "email" => $mail->getMail()
+                );
             }
 
 			$data["data"]["workspaces"] = $workspaces;
-			$data["data"]["privateworkspace"] = $private->getAsArray();
 
 		}
 

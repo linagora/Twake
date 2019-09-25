@@ -4,6 +4,7 @@ namespace WebsiteApi\PaymentsBundle\Entity;
 
 use Doctrine\Common\Persistence\ObjectManager;
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\UsersBundle\Entity\User;
 
@@ -18,24 +19,23 @@ class PaymentsHistory
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+ */
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
 	private $workspace;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date;
 
 	/**
-	 * @ORM\Column(type="decimal")
+     * @ORM\Column(type="decimal")
 	 */
 	private $price;
 
@@ -46,8 +46,14 @@ class PaymentsHistory
 		$this->setWorkspace($workspace);
 	}
 
-	public function getId() {
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	public function getDate() {

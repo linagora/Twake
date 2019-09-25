@@ -16,8 +16,9 @@ class Groups implements GroupsInterface
     private $string_cleaner;
     private $gps;
     private $wms;
+    private $pusher;
 
-	public function __construct($doctrine, $group_managers_service, $market_service,$clean,$group_period_service,$workspace_member_service)
+	public function __construct($doctrine, $group_managers_service, $market_service,$clean,$group_period_service,$workspace_member_service,$pusher)
 	{
 		$this->doctrine = $doctrine;
 		$this->gms = $group_managers_service;
@@ -25,6 +26,7 @@ class Groups implements GroupsInterface
 		$this->string_cleaner = $clean;
 		$this->gps = $group_period_service;
         $this->wms = $workspace_member_service;
+        $this->pusher = $pusher;
     }
 
     public function create($userId, $name, $uniquename, $planId, $group_data_on_create = Array())
@@ -48,7 +50,8 @@ class Groups implements GroupsInterface
 			}
 		}
 
-		$group = new Group($uniquenameIncremented);
+
+        $group = new Group($uniquenameIncremented);
 		$group->setDisplayName($name);
 		$group->setPricingPlan($plan);
         $group->setOnCreationData($group_data_on_create);
@@ -67,7 +70,7 @@ class Groups implements GroupsInterface
 
 	public function changeData($groupId, $name, $currentUserId = null)
 	{
-		if($currentUserId==null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_DATA")){
+		if($currentUserId!=null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_DATA")){
 
 			$groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
 			$group = $groupRepository->find($groupId);
@@ -94,6 +97,9 @@ class Groups implements GroupsInterface
 
 			return true;
 		}
+		else{
+		    error_log("NOT ALLOWED");
+        }
 
 		return false;
 	}
@@ -176,60 +182,91 @@ class Groups implements GroupsInterface
 		return false;
 	}
 
+
+
+    public function changeLogo($groupId, $logo, $currentUserId = null, $uploader = null)
+    {
+        if($currentUserId!=null || $this->gms->hasPrivileges($this->gms->getLevel($groupId, $currentUserId), "MANAGE_DATA")){
+
+            $groupRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group");
+            $group = $groupRepository->find($groupId);
+
+            if ($group->getLogo()) {
+                if ($uploader) {
+                    $uploader->removeFile($group->getLogo(), false);
+                } else {
+                    $group->getLogo()->deleteFromDisk();
+                }
+                $this->doctrine->remove($group->getLogo());
+            }
+            $group->setLogo($logo);
+
+            $this->doctrine->persist($group);
+            $this->doctrine->flush();
+
+            return $group;
+        }
+
+        return false;
+    }
+
     public function init($group){
         $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
         $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
 
         $groupApps = $groupAppRepository->findBy(Array("group" => $group));
 
-        $listApps = $appRepository->findBy(Array("default"=>true));
+        $listApps = $appRepository->findBy(Array("is_default" => true));
 
         if(count($groupApps) != 0){
             return false;
         }else{
             foreach ( $listApps as $app ){
-                $this->market->addApplication($group->getId(),$app->getId(),null,true);
+                $groupapp = new GroupApp($group, $app->getId());
+                $groupapp->setWorkspaceDefault(true);
+                $this->doctrine->persist($groupapp);
             }
             $this->doctrine->flush();
             return true;
         }
+        return true;
     }
 
     public function remove($group){
 
 	    //TODO REMOVE USERS FROM WORKSPACE
         if ($group != null){
-            $groupappsRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupApp");
+            $groupappsRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:GroupApp");
             $groupapps = $groupappsRepository->findBy(Array("group" => $group));
 
-            $workspaceRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:Workspace");
+            $workspaceRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace");
             $workspace = $workspaceRepository->findOneBy(Array("name" => "phpunit"));
 
-            $workspaceUserRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
+            $workspaceUserRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspaceUsers = $workspaceUserRepository->findBy(Array("workspace" => $workspace));
 
-            $workspaceappsRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
+            $workspaceappsRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
             $workspaceapps = $workspaceappsRepository->findBy(Array("workspace" => $workspace));
 
-            $workspacelevelRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
+            $workspacelevelRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceLevel");
             $workspacelevels = $workspacelevelRepository->findBy(Array("workspace" => $workspace));
 
-            $workspacestatsRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:WorkspaceStats");
+            $workspacestatsRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:WorkspaceStats");
             $workspacestats = $workspacestatsRepository->findOneBy(Array("workspace" => $workspace));
 
-            $streamRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeDiscussionBundle:Stream");
+            $streamRepository = $this->get("app.twake_doctrine")->getRepository("TwakeDiscussionBundle:Stream");
             $streams = $streamRepository->findBy(Array("workspace" => $workspace));
 
-            $groupUserdRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupUser");
+            $groupUserdRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:GroupUser");
             $groupUsers = $groupUserdRepository->findBy(Array("group" => $group));
 
-            $groupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupPeriod");
+            $groupPeriodRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:GroupPeriod");
             $groupPeriod = $groupPeriodRepository->findOneBy(Array("group" => $group));
 
-            $groupPricingRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
+            $groupPricingRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:GroupPricingInstance");
             $groupPricing = $groupPricingRepository->findOneBy(Array("group" => $group));
 
-            $closedGroupPeriodRepository = $this->get("app.doctrine_adapter")->getRepository("TwakeWorkspacesBundle:closedGroupPeriod");
+            $closedGroupPeriodRepository = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:closedGroupPeriod");
             $closedGroupPeriods = $closedGroupPeriodRepository->findBy(Array("group" => $group));
         }
 
@@ -239,69 +276,69 @@ class Groups implements GroupsInterface
             if ($groupapps != null ){
                 if (is_array($groupapps)){
                     foreach($groupapps as $groupapp){
-                        $this->get("app.doctrine_adapter")->remove($groupapp);
+                        $this->get("app.twake_doctrine")->remove($groupapp);
                     }
                 }
             }
             if ($workspaceapps != null ) {
                 if (is_array($workspaceapps)) {
                     foreach ($workspaceapps as $workspaceapp) {
-                        $this->get("app.doctrine_adapter")->remove($workspaceapp);
+                        $this->get("app.twake_doctrine")->remove($workspaceapp);
                     }
                 }
             }
             if ($workspaceUsers != null ) {
                 if (is_array($workspaceUsers)) {
                     foreach ($workspaceUsers as $workspaceUser) {
-                        $this->get("app.doctrine_adapter")->remove($workspaceUser);
+                        $this->get("app.twake_doctrine")->remove($workspaceUser);
                     }
                 }
             }
             if($groupPricing != null){
-                $this->get("app.doctrine_adapter")->remove($groupPricing);
+                $this->get("app.twake_doctrine")->remove($groupPricing);
             }
             if ($closedGroupPeriods != null ) {
                 if (is_array($closedGroupPeriods)) {
                     foreach ($closedGroupPeriods as $closedGroupPeriod) {
-                        $this->get("app.doctrine_adapter")->remove($closedGroupPeriod);
+                        $this->get("app.twake_doctrine")->remove($closedGroupPeriod);
                     }
                 }
             }
             if ($workspacelevels != null ) {
                 if (is_array($workspacelevels)) {
                     foreach ($workspacelevels as $workspacelevel) {
-                        $this->get("app.doctrine_adapter")->remove($workspacelevel);
+                        $this->get("app.twake_doctrine")->remove($workspacelevel);
                     }
                 }
             }
             if ($streams != null ) {
                 if (is_array($streams)) {
                     foreach ($streams as $stream) {
-                        $this->get("app.doctrine_adapter")->remove($stream);
+                        $this->get("app.twake_doctrine")->remove($stream);
                     }
                 }
             }
             if($workspacestats != null){
-                $this->get("app.doctrine_adapter")->remove($workspacestats);
+                $this->get("app.twake_doctrine")->remove($workspacestats);
             }
             if($workspace != null){
-                $this->get("app.doctrine_adapter")->remove($workspace);
+                $this->get("app.twake_doctrine")->remove($workspace);
             }
             if (is_array($groupUsers)){
-                foreach($groupUsers as $groupUser){
-                    $this->get("app.doctrine_adapter")->remove($groupUser);
+                foreach ($groupUsers as $groupuser) {
+                    $this->get("app.twake_doctrine")->remove($groupuser);
                 }
             }
             if($groupPeriod != null){
-                $this->get("app.doctrine_adapter")->remove($groupPeriod);
+                $this->get("app.twake_doctrine")->remove($groupPeriod);
             }
         }
 
         if($group != null){
-            $this->get("app.doctrine_adapter")->remove($group);
+            $this->get("app.twake_doctrine")->remove($group);
         }
 
-        $this->get("app.doctrine_adapter")->flush();
+        $this->get("app.twake_doctrine")->flush();
     }
 
     public function countUsersGroup($groupId)
@@ -310,9 +347,14 @@ class Groups implements GroupsInterface
         $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
         $group = $groupRepository->find($groupId);
-        $managers = $groupManagerRepository->getUsers($group,0,0, false);
-
-        return count($managers);
+        $groupLinks = $groupManagerRepository->findBy(Array("group"=>$group));
+        $count = 0;
+        foreach ($groupLinks as $link){
+            if($link->getNbWorkspace()>0){
+                $count++;
+            }
+        }
+        return $count;
 
     }
 
@@ -324,23 +366,19 @@ class Groups implements GroupsInterface
             $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             $group = $groupRepository->find($groupId);
-            if($onlyExterne){
-                $managerLinks = $groupManagerRepository->getExternalUsers($group,$limit,$offset);
-            }else{
-                $managerLinks = $groupManagerRepository->getUsers($group,$limit,$offset);
-            }
-
+            $groupLinks = $groupManagerRepository->findBy(Array("group"=>$group));
             $users = Array();
-            foreach ($managerLinks as $managerLink){
-                $users[] = Array(
-                    "user" => $managerLink->getUser(),
-                    "externe" => $managerLink->getExterne(),
-                    "level" => $managerLink->getLevel(),
-                    "nbWorkspace" => $managerLink->getNbWorkspace()
-                );
+            foreach ($groupLinks as $link){
+                if (!$onlyExterne || $link->getExterne()) {
+                    $users[] = Array(
+                        "user" => $link->getUser(),
+                        "externe" => $link->getExterne(),
+                        "level" => $link->getLevel(),
+                        "nbWorkspace" => $link->getNbWorkspace()
+                    );
+                }
             }
             return $users;
-
         }
         return false;
 
@@ -355,7 +393,7 @@ class Groups implements GroupsInterface
             $groupManagerRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupUser");
 
             $group = $groupRepository->find($groupId);
-            $user = $groupManagerRepository->findOneBy(Array("group" => $group, "user" => $userId ));
+            $user = $groupManagerRepository->findOneBy(Array("user" => $user->getId(), "group" => $groupId));
 
             $user->setExterne($externe);
             $this->doctrine->persist($user);

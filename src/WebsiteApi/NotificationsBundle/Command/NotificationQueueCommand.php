@@ -18,9 +18,8 @@ class NotificationQueueCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
 
-        $doctrine = $this->getContainer()->get('doctrine');
-        $em = $doctrine->getManager();
         $services = $this->getApplication()->getKernel()->getContainer();
+        $em = $services->get('app.twake_doctrine');
         $circle = $services->get("circle.restclient");
         $key = $this->getContainer()->getParameter('LICENCE_KEY');
         $server = $this->getContainer()->getParameter('PUSH_NOTIFICATION_SERVER');
@@ -51,7 +50,7 @@ class NotificationQueueCommand extends ContainerAwareCommand
                     foreach ($notifications as $notification) {
                         $dataArray["data"][] = $notification->getText();
                     }
-                    $circle->post($masterServer, json_encode($dataArray), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
+                    $circle->post($masterServer, json_encode($dataArray), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 3, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
 
                 } else {
                     foreach ($notifications as $notification) {

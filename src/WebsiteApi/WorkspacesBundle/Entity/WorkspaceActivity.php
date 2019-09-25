@@ -3,6 +3,7 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 
 
@@ -19,19 +20,18 @@ class WorkspaceActivity
     /**
      * @var int
      *
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+ */
     private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
 	 */
 	private $workspace;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
 	 */
 	private $user;
 
@@ -41,7 +41,7 @@ class WorkspaceActivity
     private $app;
 
 	/**
-	 * @ORM\Column(type="datetime")
+     * @ORM\Column(type="twake_datetime")
 	 */
 	private $date_added;
 
@@ -53,29 +53,35 @@ class WorkspaceActivity
     /**
      * @ORM\Column(type="string", nullable=true)
      */
-    private $objectRepository;
+    private $objectrepository;
 
     /**
-     * @ORM\Column(type="integer", nullable=true)
+     * @ORM\Column(type="twake_timeuuid", nullable=true)
      */
-    private $objectId = 0;
+    private $objectid = 0;
 
-	public function __construct($workspace, $user, $app, $title, $objectRepository, $objectId) {
+    public function __construct($workspace, $user, $app, $title, $objectrepository, $objectid)
+    {
 		$this->workspace = $workspace;
 		$this->date_added = new \DateTime();
 		$this->user = $user;
 		$this->app = $app;
 		$this->title = $title;
-		$this->objectRepository = $objectRepository;
-		$this->objectId = $objectId;
+        $this->objectrepository = $objectrepository;
+        $this->objectid = $objectid;
 	}
 
 	/**
 	 * @return int
 	 */
-	public function getId()
-	{
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	/**
@@ -149,15 +155,15 @@ class WorkspaceActivity
      */
     public function getObjectId()
     {
-        return $this->objectId;
+        return $this->objectid;
     }
 
     /**
-     * @param mixed $objectId
+     * @param mixed $objectid
      */
-    public function setObjectId($objectId)
+    public function setObjectId($objectid)
     {
-        $this->objectId = $objectId;
+        $this->objectid = $objectid;
     }
 
     /**
@@ -165,7 +171,7 @@ class WorkspaceActivity
      */
     public function getObjectRepository()
     {
-        return $this->objectRepository;
+        return $this->objectrepository;
     }
 
 }

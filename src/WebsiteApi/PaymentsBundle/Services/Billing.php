@@ -23,17 +23,17 @@ class Billing implements BillingInterface{
     }
 
     public function recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt){
-        $groupPricingInstance = new GroupPricingInstance($group,$billedType,$pricingPlan);
+        $grouppricinginstance = new GroupPricingInstance($group, $billedType, $pricingPlan);
 
-        $groupPricingInstance->setCost($cost);
-        $groupPricingInstance->setStartedAt($startDateOfService);
-        $groupPricingInstance->setEndAt($endedAt);
+        $grouppricinginstance->setCost($cost);
+        $grouppricinginstance->setStartedAt($startDateOfService);
+        $grouppricinginstance->setEndAt($endedAt);
 
         $issueDate = new \DateTime();
 
         $groupIdentity = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity")->findOneBy(Array("group" => $group));
 
-        $transaction = new Receipt($issueDate,$startDateOfService,"null", $groupIdentity, $pricingPlan,$groupPricingInstance,$period);
+        $transaction = new Receipt($issueDate, $startDateOfService, "null", $groupIdentity, $pricingPlan, $grouppricinginstance, $period);
 
         $this->doctrine->persist($transaction);
         $this->doctrine->flush();

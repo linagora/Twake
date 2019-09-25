@@ -3,6 +3,7 @@
 namespace WebsiteApi\OnlyOfficeBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
@@ -14,21 +15,20 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class OnlyofficeFileKeys
 {
     /**
-     * @ORM\Column(name="id", type="integer")
+     * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-     * @ORM\GeneratedValue(strategy="AUTO")
-     */
+ */
     private $id;
 
     /**
-     * @ORM\Column(name="workspace_id", type="integer")
+     * @ORM\Column(name="workspace_id", type="string", length=256)
      */
-    private $workspaceId;
+    private $workspaceid;
 
     /**
-     * @ORM\Column(name="file_id", type="integer")
+     * @ORM\Column(name="file_id", type="string", length=256)
      */
-    private $fileId;
+    private $fileid;
 
     /**
      * @ORM\Column(name="versionkey", type="string", length=512)
@@ -36,21 +36,27 @@ class OnlyofficeFileKeys
     private $key;
 
     /**
-     * @ORM\Column(name="name", type="text")
+     * @ORM\Column(name="name", type="twake_text")
+     * @Encrypted
      */
     private $name;
 
 
-    public function __construct($workspaceId, $fileId)
+    public function __construct($workspaceid, $fileid)
     {
-        $this->fileId = $fileId;
-        $this->workspaceId = $workspaceId;
+        $this->fileid = $fileid;
+        $this->workspaceid = $workspaceid;
         $this->newKey();
     }
 
     /**
      * @return mixed
      */
+    public function setId($id)
+    {
+        $this->id = $id;
+    }
+
     public function getId()
     {
         return $this->id;
@@ -61,7 +67,7 @@ class OnlyofficeFileKeys
      */
     public function getWorkspaceId()
     {
-        return $this->workspaceId;
+        return $this->workspaceid;
     }
 
     /**
@@ -69,7 +75,7 @@ class OnlyofficeFileKeys
      */
     public function getFileId()
     {
-        return $this->fileId;
+        return $this->fileid;
     }
 
     /**

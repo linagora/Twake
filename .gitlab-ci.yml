@@ -1,0 +1,90 @@
+image: node:9.4.0
+image: docker
+
+        
+
+
+services:
+    - docker:dind
+
+before_script: #permet de lancer une série de commandes à executer pour préparer notre environnement...
+    - apk update && apk add git
+
+stages:
+    - test
+
+test:
+    stage: test
+    only:
+        refs:
+            - schedules #permet d'executer le test selon le schedule
+    script:
+        - mv Docker/twake-php twake-php
+        - mv Docker/docker-compose-test.yml docker-compose.yml
+        - mv Docker/parameters-test.yml app/config/parameters.yml
+        - apk add python python-dev py-pip build-base libffi-dev openssl-dev
+        - pip install docker-compose
+        - docker-compose up -d --build
+        - docker ps #To get the name of the existing container (juste pour info)
+        - docker-compose exec -T php php -dmemory_limit=-1 composer.phar update
+        - docker-compose exec -T php php /twake-core/bin/console cache:clear
+        - set +e #Do something. If something fails with exit!=0 the script continues anyway
+        - docker-compose exec -T php php /twake-core/bin/console cache:clear --env=prod
+        - docker-compose exec -T php chmod -R 777 /twake-core/var/
+        - docker-compose exec -T php chmod -R 777 /tmp/
+        - docker-compose exec -T php php ./bin/console twake:init #Init install
+        - docker-compose exec -T php php composer.phar show
+        
+        - docker-compose exec -T php  ./vendor/bin/phpunit
+
+    when: always
+
+
+manual_test:
+    stage: test
+    only:
+        refs:
+            - dev 
+    script:
+    
+        - docker-compose exec -T php  ./vendor/bin/phpunit
+        
+    when: manual
+
+
+
+front_test:
+
+    stage: test
+
+    script:
+    
+        - echo on met en place le FRONT- echo on met en place le FRONT
+        - git clone https://oauth2:sU6C_fg6M6HRowGQYCr5@gitlab.com/Twake/Twake-react.git #attention, ce token expire le 30/09 et il est sur mon compte gitlab donc je suppose que si je n'ai plus accès au git de Twake cette commande ne fonctionnera plus....
+
+        - cd Twake-react
+        - git fetch
+        - git checkout 1.2
+        
+        - apk update && apk add yarn
+        - yarn install
+        - yarn run dev-build
+        
+ 
+        #- yarn add puppeteer --only=dev  #installation de la librairie puppeter et installation des dépendances pour le serveur localhost8080 -> pas besoin de cette ligne car déja prise en compte quand j'ai push
+
+
+        - node run_server.js & #permet de lancer le code permettant de générer le serveur
+        
+        #puppeteer n'installe pas automatiquement TOUTES les dépendances -> installer les suivantes : https://github.com/GoogleChrome/puppeteer/blob/master/docs/troubleshooting.md#chrome-headless-doesnt-launch-on-unix
+        
+        #execution des tests que je souhaite faire => attention dans tous les tests, on a besoin d'ajouter --no-sandbox
+        #- node src/test/screenshotTest.js
+        #- node src/test/loginTest.js
+        - node src/test/creationAccountTest.js
+        #- node src/test/pwdForgottenTest.js
+
+        
+    when: manual    
+
+    

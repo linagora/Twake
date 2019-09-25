@@ -115,7 +115,7 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
 		$linkStream = $this->doctrine->getRepository("TwakeDiscussionBundle:StreamMember")
 			->findby(Array("stream" => $stream, "mute" => false));
 		foreach($linkStream as $link){
-			if(!in_array($link->getUser()->getId(), $except_users_ids)){
+            if (!in_array($link->getUser()->getId() . "", $except_users_ids)) {
 
 				$users[] = $link->getUser()->getId();
 
@@ -177,8 +177,8 @@ class MessagesNotificationsCenter implements MessagesNotificationsCenterInterfac
         $data = Array("app" => $application->getId(), "shortcut" => $message->getId() . "_" . $stream->getId());
         $code = $stream->getId();
 
-		if ($message->getStreamReciever()->getType() != "user") {
-			$channelName = $message->getStreamReciever()->getName();
+        if ($message->getstreamreciever()->getType() != "user") {
+            $channelName = $message->getstreamreciever()->getName();
 			if($channelName[0]==":"){
 				$channelName = substr($channelName, 1);
 			}

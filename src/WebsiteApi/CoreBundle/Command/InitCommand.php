@@ -6,6 +6,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\OutputInterface;
+use WebsiteApi\CoreBundle\Services\DoctrineAdapter\FakeCassandraTimeuuid;
 use WebsiteApi\DiscussionBundle\Entity\Channel;
 use WebsiteApi\MarketBundle\Entity\Application;
 use WebsiteApi\MarketBundle\Entity\LinkAppWorkspace;
@@ -20,7 +21,7 @@ use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;
 
 /**
  * Created by PhpStorm.
- * User: Syma
+ * User: Romaric Mourgues
  * Date: 20/06/2017
  * Time: 09:45
  */
@@ -60,14 +61,12 @@ class InitCommand extends ContainerAwareCommand
          * Doctrine Schema Update
          */
 
-        $command = $this->getApplication()->find('doctrine:schema:update');
+        $command = $this->getApplication()->find('twake:schema:update');
 
         $arguments = array(
-            'command' => 'doctrine:schema:update',
-            '--force' => true,
-            '--complete' => true,
+            'command' => 'twake:schema:update',
+            '--force' => true
         );
-
         $greetInput = new ArrayInput($arguments);
         $returnCode = $command->run($greetInput, $output);
 
@@ -78,8 +77,7 @@ class InitCommand extends ContainerAwareCommand
             $output->writeln('WARNING : doctrine schema update failed, error was ignored');
         }
 
-        $doctrine = $this->getContainer()->get('doctrine');
-        $manager = $doctrine->getManager();
+        $manager = $this->getContainer()->get('app.twake_doctrine');
 
 
         /**
@@ -107,48 +105,76 @@ class InitCommand extends ContainerAwareCommand
             $manager->persist($plan);
         }
 
-        //Création de l'user twake_bot
-        $twake_bot = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("username"=>"twake_bot"));
-        if($twake_bot==null){
-            $twake_bot = new User();
-        }
-        $twake_bot->setIsNew(false);
-        $twake_bot->setIsRobot(true);
-        $twake_bot->setPassword(bin2hex(random_bytes(20)));
-        $twake_bot->setUsername("twake_bot");
-        $twake_bot->setFirstName("Twake");
-        $twake_bot->setLastName("Bot");
-        $twake_bot->setEmail("twake_bot@twakeapp.com");
-        $manager->persist($twake_bot);
+        $manager->flush();
 
-        // Création des applications de base
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "messages"));
+
+        // Création des applications    de base
+        error_log("> Creating basic apps");
+        $app = null;
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "twake_drive"));
         if (!$app) {
-            $app = new Application();
+            $app = new Application(new FakeCassandraTimeuuid(), "Documents");
+            $app->setApiPrivateKey($app->generatePrivateApiKey());
         }
-        $app->setPublicKey("messages");
-        $app->setName("Messages");
-        $app->setDescription("The powerful Twake messaging app.");
-        $app->setShortDescription("The powerful Twake messaging app.");
-        $app->setUrl("messages-auto");
-        $app->setUserRights(json_decode('{"general":{"create":true, "view":true, "post":true, "pin":true}}', true));
-        $app->setApplicationRights(json_decode('{"messages":"manage"}', true));
-        $app->setEnabled(1);
-        $app->setColor("0992D6");
-        $app->setCanCreateFile(0);
-        $app->setIsCapable(1);
-        $app->setDefault(1);
-        $app->setCreateFileData(json_decode("", true));
-        $app->setMessageModule(0);
-        $app->setOrder(0);
-
-        $app->setThumbnail($serverbase . "/medias/apps/messages.png");
-        $app->setMessageModuleUrl("");
-        $app->setEditableRights(1);
-        $app->setCgu("");
+        $app->setEsIndexed(false);
+        $app->setIconUrl("/public/img/twake-emoji/twake-drive.png");
+        $app->setWebsite("https://twakeapp.com");
+        $app->setDescription("Application de stockage de fichier de Twake.");
+        $app->setSimpleName("twake_drive");
+        $app->setAppGroupName("twake");
+        $app->setPublic(true);
+        $app->setIsAvailableToPublic(true);
+        $app->setTwakeTeamValidation(true);
+        $app->setDisplayConfiguration(json_decode('{"messages_module":{"in_plus":true},"channel_tab":true,"app":true}', true));
+        $app->setDefault(true);
         $manager->persist($app);
+        $manager->flush();
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "drive"));
+        $app = null;
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "twake_calendar"));
+        if (!$app) {
+            $app = new Application(new FakeCassandraTimeuuid(), "Calendar");
+            $app->setApiPrivateKey($app->generatePrivateApiKey());
+        }
+        $app->setEsIndexed(false);
+        $app->setIconUrl("/public/img/twake-emoji/twake-calendar.png");
+        $app->setWebsite("https://twakeapp.com");
+        $app->setDescription("Application calendrier partagé de Twake.");
+        $app->setSimpleName("twake_calendar");
+        $app->setAppGroupName("twake");
+        $app->setPublic(true);
+        $app->setIsAvailableToPublic(true);
+        $app->setTwakeTeamValidation(true);
+        $app->setDisplayConfiguration(json_decode(/*'{"messages_module":{"in_plus":true},"channel_tab":true,*/
+            '{"app":true}', true));
+        $app->setDefault(true);
+        $manager->persist($app);
+        $manager->flush();
+
+        $app = null;
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "twake_tasks"));
+        if (!$app) {
+            $app = new Application(new FakeCassandraTimeuuid(), "Tasks");
+            $app->setApiPrivateKey($app->generatePrivateApiKey());
+        }
+        $app->setEsIndexed(false);
+        $app->setIconUrl("/public/img/twake-emoji/twake-tasks.png");
+        $app->setWebsite("https://twakeapp.com");
+        $app->setDescription("Application gestion de tâches de Twake.");
+        $app->setSimpleName("twake_tasks");
+        $app->setAppGroupName("twake");
+        $app->setPublic(true);
+        $app->setIsAvailableToPublic(true);
+        $app->setTwakeTeamValidation(true);
+        $app->setDisplayConfiguration(json_decode(/*'{"messages_module":{"in_plus":true},*/
+            '{"channel_tab":true, "app":true}', true));
+        $app->setDefault(true);
+        $manager->persist($app);
+        $manager->flush();
+
+        /*
+
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "drive"));
         if (!$app) {
             $app = new Application();
         }
@@ -173,7 +199,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setCgu("");
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calendar"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "calendar"));
         if (!$app) {
             $app = new Application();
         }
@@ -198,7 +224,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setCgu("");
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "tasks"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "tasks"));
         if (!$app) {
             $app = new Application();
         }
@@ -223,7 +249,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setCgu("");
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "imageviewer"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "imageviewer"));
         if (!$app) {
             $app = new Application();
         }
@@ -249,7 +275,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setFilesTypes(Array("main" => Array("png","jpg","jpeg","gif","bmp","tiff"), "other" => Array()));
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "pdfviewer"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "pdfviewer"));
         if (!$app) {
             $app = new Application();
         }
@@ -275,7 +301,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setFilesTypes(Array("main" => Array("pdf"), "other" => Array()));
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "note"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "note"));
         if (!$app) {
             $app = new Application();
         }
@@ -301,7 +327,7 @@ class InitCommand extends ContainerAwareCommand
         $app->setFilesTypes(Array("main" => Array("php", "c", "cpp", "py", "html", "yml", "json", "txt", "md", "js", "xml", "php"), "other" => Array()));
         $manager->persist($app);
 
-        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => "calls"));
+        $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => "calls"));
         if (!$app) {
             $app = new Application();
         }
@@ -911,7 +937,7 @@ class InitCommand extends ContainerAwareCommand
         ];
 
         foreach ($apps as $application){
-            $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("publicKey" => $application[3]));
+            $app = $manager->getRepository("TwakeMarketBundle:Application")->findOneBy(Array("simple_name" => $application[3]));
             if (!$app) {
                 $app = new Application();
             }
@@ -940,6 +966,7 @@ class InitCommand extends ContainerAwareCommand
         }
 
         $manager->flush();
+        */
 
         /*
          * Init pour la future mise a jour

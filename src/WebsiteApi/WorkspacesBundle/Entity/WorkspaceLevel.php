@@ -2,11 +2,12 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * WorkspaceLevel
  *
- * @ORM\Table(name="workspace_level",options={"engine":"MyISAM"})
+ * @ORM\Table(name="workspace_level",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC","id":"ASC"}} } )
  * @ORM\Entity(repositoryClass="WebsiteApi\WorkspacesBundle\Repository\WorkspaceLevelRepository")
  */
 class WorkspaceLevel
@@ -14,36 +15,37 @@ class WorkspaceLevel
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
+     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Id
+ */
 	protected $id;
 
 	/**
-	 * @ORM\Column(name="label", type="string", length=255)
+     * @ORM\Column(name="label", type="twake_text")
+     * @Encrypted
 	 */
 	protected $label;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
+	 * @ORM\Id
 	 */
 	protected $workspace;
 
 	/**
-	 * @ORM\Column(name="rights", type="string", length=100000)
+     * @ORM\Column(name="rights", type="string", length=100000)
 	 */
 	protected $rights;
 
 	/**
-	 * @ORM\Column(name="isDefault", type="boolean", length=1)
+     * @ORM\Column(name="is_default", type="twake_boolean", length=1)
 	 */
-	protected $isDefault = false;
+    protected $isdefault = false;
 
 	/**
-	 * @ORM\Column(name="isAdmin", type="boolean", length=1)
+     * @ORM\Column(name="is_admin", type="twake_boolean", length=1)
 	 */
-	protected $isAdmin = false;
+    protected $isadmin = false;
 
 
 	function __construct()
@@ -51,8 +53,13 @@ class WorkspaceLevel
 		$this->rights = "{}";
 	}
 
-	public function getId()
-	{
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
 		return $this->id;
 	}
 
@@ -107,33 +114,33 @@ class WorkspaceLevel
 	/**
 	 * @return mixed
 	 */
-	public function getisDefault()
+    public function getIsDefault()
 	{
-		return $this->isDefault;
+        return $this->isdefault;
 	}
 
 	/**
-	 * @param mixed $isDefault
+     * @param mixed $isdefault
 	 */
-	public function setIsDefault($isDefault)
-	{
-		$this->isDefault = $isDefault;
+    public function setIsDefault($isdefault)
+    {
+        $this->isdefault = $isdefault;
 	}
 
 	/**
 	 * @return mixed
 	 */
-	public function getisAdmin()
+    public function getIsAdmin()
 	{
-		return $this->isAdmin;
+        return $this->isadmin;
 	}
 
 	/**
-	 * @param mixed $isAdmin
+     * @param mixed $isadmin
 	 */
-	public function setIsAdmin($isAdmin)
-	{
-		$this->isAdmin = $isAdmin;
+    public function setIsAdmin($isadmin)
+    {
+        $this->isadmin = $isadmin;
 	}
 
 
@@ -142,8 +149,8 @@ class WorkspaceLevel
 		return Array(
 			"id" => $this->getId(),
 			"name" => $this->getLabel(),
-			"admin" => $this->getisAdmin(),
-			"default" => $this->getisDefault(),
+            "admin" => $this->getIsAdmin(),
+            "default" => $this->getIsDefault(),
 			"rights" => $this->getRights()
 		);
 	}

@@ -30,15 +30,13 @@ class DailyCommand extends ContainerAwareCommand
 
         $this->output = $output;
 
-        $doctrine = $this->getContainer()->get('doctrine');
-        $manager = $doctrine->getManager();
-
 
         /**
          * Récupération des repository, de Twake et des applis de base
          */
 
         $services = $this->getApplication()->getKernel()->getContainer();
+        $manager = $services->get('app.twake_doctrine');
 
         $services->get("app.pricing_plan")->dailyDataGroupUser();
         $services->get("app.pricing_plan")->groupPeriodUsage();
@@ -80,20 +78,20 @@ class DailyCommand extends ContainerAwareCommand
             /** @var Group[] $groups */
             $groups = $manager->getRepository("TwakeWorkspacesBundle:Group")->findBy(Array());
             foreach ($groups as $group) {
-                $report["groups"][$group->getId()] = Array(
+                $report["groups"][$group->getId() . ""] = Array(
                     "name" => $group->getDisplayName(),
                     "unique_name" => $group->getName(),
                     "workspaces" => 0,
                     "usage" => Array()
                 );
 
-                $workspaces = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array("group" => $group, "isDeleted" => 0));
-                $report["groups"][$group->getId()]["workspaces"] = count($workspaces);
+                $workspaces = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array("group" => $group, "is_deleted" => 0));
+                $report["groups"][$group->getId() . ""]["workspaces"] = count($workspaces);
 
                 /** @var GroupPeriod $group_period */
                 $group_period = $manager->getRepository("TwakeWorkspacesBundle:GroupPeriod")->findOneBy(Array("group" => $group));
                 if ($group_period) {
-                    $report["groups"][$group->getId()]["usage"] = Array(
+                    $report["groups"][$group->getId() . ""]["usage"] = Array(
                         "apps_usage" => $group_period->getAppsUsagePeriod(),
                         "connexions" => $group_period->getConnexions()
                     );

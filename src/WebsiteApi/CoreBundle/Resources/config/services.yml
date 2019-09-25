@@ -6,15 +6,24 @@ services:
 
     app.pusher:
         class: WebsiteApi\CoreBundle\Services\ZMQPusher
-        arguments: ["%websocket_pusher_remote_host%", "%websocket_pusher_port%", "@app.doctrine_adapter"]
+        arguments: ["%websocket_pusher_remote_host%", "%websocket_pusher_port%", "@app.twake_doctrine"]
 
     app.translate:
         class: WebsiteApi\CoreBundle\Services\Translate
         arguments: []
 
-    app.doctrine_adapter:
+    app.twake_doctrine:
         class: WebsiteApi\CoreBundle\Services\DoctrineAdapter\ManagerAdapter
-        arguments: ["@doctrine.orm.entity_manager"]
+        arguments: ["@doctrine.orm.entity_manager", "%ELASTIC_SERVER%", "@circle.restclient", "%database_driver%", "%database_host%", "%database_port%", "%database_user%", "%database_password%", "%database_dbname%", "%database_encrypt_key%"]
+
+    app.websockets:
+        class: WebsiteApi\CoreBundle\Services\Websockets
+        arguments: ["@app.twake_doctrine", "@app.pusher"]
+
+    app.websockets.collections.topic:
+        class: WebsiteApi\CoreBundle\Topic\CollectionsTopic
+        tags:
+            - { name: gos_web_socket.topic }
 
     websocket.pdo.ping:
         class: WebsiteApi\CoreBundle\Services\PDOPinger
@@ -28,3 +37,29 @@ services:
             - '@?monolog.logger.websocket'
         tags:
             - { name: console.command, command: twake:websocket:run }
+
+
+    #ACCESS MANAGER
+
+    app.accessmanager:
+        class: WebsiteApi\CoreBundle\Services\AccessManager
+        arguments: ["@app.twake_doctrine", "@app.workspace_members"]
+
+    #EXPORT AND IMPORT VERSION
+
+    app.exportversion:
+        class: WebsiteApi\CoreBundle\Services\ExportManager
+        arguments: ["@app.twake_doctrine"]
+
+    #MONITORING
+
+    app.monitoring_collector_registry:
+        class: WebsiteApi\CoreBundle\Services\Monitoring\CollectorRegistry
+        arguments: ["twake-core", '@TweedeGolf\PrometheusClient\CollectorRegistry']
+
+    app.monitoring_event_listener:
+        arguments: ["@app.monitoring_collector_registry"]
+        class: WebsiteApi\CoreBundle\Services\Monitoring\MonitoringCollectionSubscriber
+        tags:
+            - { name: kernel.event_listener, event: kernel.response }
+            - { name: kernel.event_listener, event: kernel.terminate }

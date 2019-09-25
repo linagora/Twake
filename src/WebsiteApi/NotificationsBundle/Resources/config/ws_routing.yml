@@ -4,19 +4,4 @@ notifications_topic:
         callback: 'notifications.topic' #related to the getName() of your topic
     requirements:
          id_user:
-            pattern: "[0-9]+"
-
-drive_activity_topic:
-    channel: drive/activity
-    handler:
-        callback: 'drive.activity.topic'
-
-calendar_activity_topic:
-    channel: calendar/activity
-    handler:
-        callback: 'calendar.activity.topic'
-        
-project_activity_topic:
-    channel: project/activity
-    handler:
-        callback: 'project.activity.topic'
+            pattern: "[a-zA-Z0-9-]+"

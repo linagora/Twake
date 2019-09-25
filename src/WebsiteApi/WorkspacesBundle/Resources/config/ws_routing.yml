@@ -1,7 +1,39 @@
-group_topic:
+groups_topic:
     channel: group/{id}
     handler:
-        callback: 'group.topic'
+        callback: 'groups.topic'
     requirements:
         id:
-            pattern: "[0-9]+"
+            pattern: "[a-zA-Z0-9-]+"
+
+workspaces_topic:
+    channel: workspace/{id}
+    handler:
+        callback: 'workspaces.topic'
+    requirements:
+        id:
+            pattern: "[a-zA-Z0-9-]+"
+
+workspaces_apps_topic:
+    channel: workspace_apps/{id}
+    handler:
+        callback: 'workspaces_apps.topic'
+    requirements:
+        id:
+            pattern: "[a-zA-Z0-9-]+"
+
+workspaces_users_topic:
+    channel: workspace_users/{id}
+    handler:
+        callback: 'workspaces_users.topic'
+    requirements:
+        id:
+            pattern: "[a-zA-Z0-9-]+"
+
+workspaces_of_user_topic:
+    channel: workspaces_of_user/{id}
+    handler:
+        callback: 'workspaces_of_user.topic'
+    requirements:
+        id:
+            pattern: "[a-zA-Z0-9-]+"

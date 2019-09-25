@@ -11,18 +11,4 @@ namespace WebsiteApi\MarketBundle\Repository;
 class ApplicationRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
-    public function findApplicationByName($name, $limit = 30)
-    {
-        // automatically knows to select Products
-        // the "p" is an alias you'll use in the rest of the query
-        $qb = $this->createQueryBuilder('p')
-            ->andWhere('p.name like :name')
-            ->andWhere('p.enabled = true')
-            ->setParameter('name', '%' . ($name) . '%')
-            ->orderBy('p.name', 'ASC')
-            ->setMaxResults($limit)
-            ->getQuery();
-
-        return $qb->execute();
-    }
 }

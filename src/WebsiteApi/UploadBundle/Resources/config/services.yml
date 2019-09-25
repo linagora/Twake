@@ -8,9 +8,14 @@ services:
 
     app.uploader:
         class: WebsiteApi\UploadBundle\Services\Uploader
-        arguments: ["@app.doctrine_adapter", "@app.upload", "@app.images_modifiers"]
+        arguments: ["@app.twake_doctrine", "@app.upload", "@app.images_modifiers"]
 
     #AWS
     app.aws_uploader:
         class: WebsiteApi\UploadBundle\Services\AWS_Uploader
-        arguments: [%aws%, "@app.doctrine_adapter", "@app.upload", "@app.images_modifiers"]
+        arguments: [%aws%, "@app.twake_doctrine", "@app.upload", "@app.images_modifiers"]
+
+    #OpenStack
+    app.openstack_uploader:
+        class: WebsiteApi\UploadBundle\Services\OpenStack_Uploader
+        arguments: [%openstack%, "@app.twake_doctrine", "@app.upload", "@app.images_modifiers"]

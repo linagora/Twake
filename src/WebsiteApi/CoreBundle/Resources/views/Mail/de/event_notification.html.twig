@@ -1,0 +1,34 @@
+{% extends "TwakeCoreBundle:Mail:en/all.html.twig" %}
+
+{% block title %}📅 Twake, {{ text }}{% endblock %}
+
+{% block secondtitle %}Twake, {{ text }}{% endblock %}
+
+{% block body %}
+
+    <b>Guten Tag 👋,</b>
+    <b>sie haben bald eine Veranstaltung!</b>
+    <br>
+    <br>
+    <div style="border: 1px solid #000;padding: 16px;">
+
+        {% if event.title %}
+            <b>{{ event.title }}</b><br/><br/>
+        {% else %}
+            <b>Untitled</b><br/><br/>
+        {% endif %}
+
+        {% if event.location %}
+            <b>Where: </b> {{ event.location }}<br/><br/>
+        {% endif %}
+
+
+        <b>When: </b> in {{ delay }}<br/><br/>
+
+        {% if event.location %}
+            <b>Where: </b> {{ event.location }} <br/><br/>
+        {% endif %}
+
+    </div>
+
+{% endblock %}

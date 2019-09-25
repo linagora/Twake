@@ -1,0 +1,38 @@
+{
+    "_source": {
+        "includes": [
+            "id"
+        ],
+        "excludes": [
+            "workspace_id",
+            "name",
+            "group_id",
+            "last_activity",
+            "members",
+            "ext_members"
+        ]
+    },
+    "properties": {
+        "id": {
+            "type": "keyword"
+        },
+        "workspace_id": {
+            "type": "keyword"
+        },
+        "group_id": {
+            "type": "keyword"
+        },
+        "name": {
+            "type": "keyword"
+        },
+        "last_activity": {
+            "type": "integer"
+        },
+        "members": {
+            "type": "keyword"
+        },
+        "ext_members": {
+            "type": "keyword"
+        }            
+    }
+}

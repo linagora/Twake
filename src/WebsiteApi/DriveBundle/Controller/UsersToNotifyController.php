@@ -19,19 +19,19 @@ class UsersToNotifyController extends Controller
     {
         //TODO : check auth
 
-        $driveFileId = $request->request->get("driveFileId", 0);
+        $drivefileId = $request->request->get("driveFileId", 0);
 
         $data = Array(
             "errors" => Array(),
             "data" => Array()
         );
 
-        if ($driveFileId == 0) {
+        if ($drivefileId . "" == "0") {
             $data["errors"][] = "Error file not found";
             return new JsonResponse($data);
         }
 
-        $usersList = $this->get("app.drive.UserToNotifyService")->get($driveFileId);
+        $usersList = $this->get("app.drive.UserToNotifyService")->get($drivefileId);
         $data["data"]["usersList"] = Array();
 
         foreach ($usersList as $user) {
@@ -54,11 +54,11 @@ class UsersToNotifyController extends Controller
 
         //TODO : check auth
 
-        $driveFileId = $request->request->get("driveFileId", 0);
+        $drivefileId = $request->request->get("driveFileId", 0);
         $rootDirectory = $request->request->get("directory", false);
         $usersList = $request->request->get("usersList", 0);
 
-        $this->get("app.drive.UserToNotifyService")->setUsersList($driveFileId, $rootDirectory, $usersList);
+        $this->get("app.drive.UserToNotifyService")->setUsersList($drivefileId, $rootDirectory, $usersList);
 
         return $this->getUsersAction($request);
     }

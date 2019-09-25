@@ -3,9 +3,7 @@
 namespace WebsiteApi\WorkspacesBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-
-
-
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 /**
  * Group
@@ -18,31 +16,25 @@ class PricingPlan
 	/**
 	 * @var int
 	 *
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
+     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Id
+     */
 	protected $id;
 
 	/**
-	 * @ORM\Column(name="name", type="string", length=255)
+     * @ORM\Column(name="name", type="string", length=255, options={"index"=true})
 	 */
 	protected $label = "";
 
 	/**
-	 * @ORM\Column(name="month_price", type="float")
+     * @ORM\Column(name="month_price", type="twake_float")
 	 */
 	protected $month_price = 0;
 
 	/**
-	 * @ORM\Column(name="year_price", type="float")
+     * @ORM\Column(name="year_price", type="twake_float")
 	 */
 	protected $year_price = 0;
-
-	/**
-	 * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group", mappedBy="pricingPlan")
-	 */
-	private $groups;
 
     /**
      * @ORM\Column(type="text")
@@ -57,8 +49,14 @@ class PricingPlan
         ]);
 	}
 
-	public function getId(){
-		return $this->id;
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
+        return $this->id;
 	}
 
 	/**
@@ -109,14 +107,6 @@ class PricingPlan
 		$this->label = $label;
 	}
 
-	/**
-	 * @return mixed
-	 */
-	public function getGroups()
-	{
-		return $this->groups;
-	}
-
     public function setLimitation($limit)
     {
         $this->limitation = json_encode($limit);
@@ -130,13 +120,16 @@ class PricingPlan
         return json_decode($this->limitation, 1);
     }
 
+    public function  __toString(){
+	    $r = "id : ".$this->getId().",   ".$this->getLabel();
+	    return $r;
+    }
     public function getAsArray(){
         return Array(
             "id"=> $this->getId(),
             "label" => $this->getLabel(),
             "month_price" => $this->getMonthPrice(),
             "year_price" => $this->getYearPrice(),
-            "groups" => $this->getGroups(),
             "limitation" => $this->getLimitation()
         );
     }

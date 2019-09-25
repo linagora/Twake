@@ -44,7 +44,7 @@ interface UserInterface
 	public function checkNumberForSubscribe($token, $number);
 
 	// @subscribe terminate subscribtion
-	public function subscribe($token, $number, $pseudo, $password);
+	public function subscribe($token, $number, $pseudo, $password, $name, $firstname, $phone);
 
 	// @checkPassword check password for an user
 	public function checkPassword($userId, $password);

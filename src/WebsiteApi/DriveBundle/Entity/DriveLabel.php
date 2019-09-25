@@ -3,6 +3,7 @@
 namespace WebsiteApi\DriveBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
@@ -16,25 +17,25 @@ class DriveLabel
 
 
 	/**
-	 * @ORM\Column(name="id", type="integer")
-	 * @ORM\Id
-	 * @ORM\GeneratedValue(strategy="AUTO")
-	 */
+     * @ORM\Column(name="id", type="twake_timeuuid")
+     * @ORM\Id
+ */
 	private $id;
 
 	/**
-	 * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
-	 * @ORM\JoinColumn(nullable=false)
+     * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
+     * @ORM\JoinColumn(nullable=false)
 	 */
 	private $workspace;
 
 	/**
-	 * @ORM\Column(type="string", length=32)
+     * @ORM\Column(type="twake_text")
+     * @Encrypted
 	 */
 	private $name;
 
 	/**
-	 * @ORM\Column(type="string", length=6)
+     * @ORM\Column(type="string", length=6)
 	 */
 	private $color;
 
@@ -53,8 +54,13 @@ class DriveLabel
 	/**
 	 * @return mixed
 	 */
-	public function getId()
-	{
+	public function setId($id)
+    {
+        $this->id = $id;
+    }
+
+    public function getId()
+    {
 		return $this->id;
 	}
 
