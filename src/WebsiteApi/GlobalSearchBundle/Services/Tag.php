@@ -97,7 +97,9 @@ Class Tag{
             $workspace_id = $object["workspace_id"];
             if($this->checkname($workspace_id,$name)){
                 $tag = new WorkspaceTag($workspace_id, $name);
-
+                if ($object["front_id"]) {
+                    $tag->setFrontId($object["front_id"]);
+                }
             }
             $did_create = true;
         }
