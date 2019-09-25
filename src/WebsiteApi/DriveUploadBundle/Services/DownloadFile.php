@@ -128,7 +128,7 @@ class DownloadFile
 
                 $version = null;
 
-                if (isset($versionId) && $versionId !=0 ) {    //if($versionId !=0 { }
+                if (isset($versionId) && $versionId != $file->getLastVersionId()) {
 
                     $version = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->find($versionId);
 
@@ -138,6 +138,7 @@ class DownloadFile
 
                     $download_name = date("Y-m-d_h:i", $version->getDateAdded()->getTimestamp()) . "_" . $version->getFileName();
                 } else {
+
                     $version = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->find($file->getLastVersionId());
                 }
 
@@ -247,6 +248,7 @@ class DownloadFile
             $options = new Archive();
             $options->setSendHttpHeaders(true);
             $options->setZeroHeader(true);
+            $options->setEnableZip64(false);
 
             # create a new zipstream object
             $zip_archive = new ZipStream($name, $options);

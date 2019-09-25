@@ -126,7 +126,7 @@ class Adapter_AWS implements AdapterInterface{
 
     }
 
-    public function read($destination, $chunkNo, $param_bag, UploadState $uploadState, &$zip = null, $zip_prefix)
+    public function read($destination, $chunkNo, $param_bag, UploadState $uploadState, &$zip = null, $zip_prefix = null)
     {
 
         $key = "AWS" . $param_bag->getSalt() . $param_bag->getKey();
