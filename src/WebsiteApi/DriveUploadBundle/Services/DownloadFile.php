@@ -62,9 +62,17 @@ class DownloadFile
     public function addOneFile($file, $version, &$zip = null, $zip_prefix = null)
     {
         $oldFileSystem = $this->oldFileSystem;
-        if (!$version) {
+        if (!$version && !$file->getUrl()) {
             error_log("no version found");
             return false;
+        }
+        if (!$version && $file->getUrl()) {
+            $url = $file->getUrl();
+            if (isset($url)) {
+                //on ajoute un fichier url dans le zip
+                $zip->addFile($file->getName() . ".url", "[InternetShortcut]" . "\n" . "URL=" . $url);
+            }
+            return true;
         }
         if (isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
             $this->downloadFile($version->getData()["identifier"],$file->getName(), $zip, $zip_prefix);
@@ -72,6 +80,7 @@ class DownloadFile
         } else {
             if ($oldFileSystem) {
                 $completePath = $oldFileSystem->getRoot() . $file->getPath();
+
                 //START - Woodpecker files import !
                 $test_old_version = explode("/previews/", $file->getPreviewLink());
                 if (count($test_old_version) == 2) {
@@ -128,11 +137,15 @@ class DownloadFile
 
                 $version = null;
 
-                if (isset($versionId) && $versionId != $file->getLastVersionId()) {
+                if ($file->getUrl()) {
+
+                    $version = null;
+
+                } else if (isset($versionId) && $versionId != $file->getLastVersionId()) {
 
                     $version = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->find($versionId);
 
-                    if ($version->getFileId() != $file->getId()) {
+                    if (!$version || $version->getFileId() != $file->getId()) {
                         continue;
                     }
 
