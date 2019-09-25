@@ -148,6 +148,13 @@ class Adapter_AWS implements AdapterInterface{
                 echo $object["Body"];
                 return true;
             }
+            elseif($destination == "original_stream"){
+                # add a file named 'goodbye.txt' from an open stream resource
+                $fp = tmpfile();
+                fwrite($fp, $object["Body"]);
+                rewind($fp);
+                return $fp;
+            }
 
             file_put_contents($destination, $object["Body"]);
             return $destination;

@@ -118,14 +118,27 @@ class TwakeFileStream implements StreamInterface
 
     public function read($length){
 
-
+        //error_log(print_r(stream_get_meta_data($this->stream),true));
         $retour = fread($this->stream, $length);
         if ($retour === false) {
             throw new RuntimeException;
         }
         if($this->eof()){
             if($this->current_chunk < $this->totalchunk){
-                fclose($this->stream);
+                //todo : probleme avec les close des stream des differents chunk
+//                try{
+//                    fclose($this->stream);
+//                }catch (\Exception $e) {
+//                    error_log($e->getTraceAsString());
+//                    error_log($e->getMessage());
+//                    die("ERROR with fclose");
+//                }
+                $path = realpath(stream_get_meta_data($this->stream)["uri"]);
+                $valid = preg_match("/\/tmp\/.*/", $path);
+                if(file_exists($path) && !is_dir($path) && $valid){
+                    error_log(print_r($path,true));
+                    @unlink($path);
+                }
 
                 $this->current_chunk = $this->current_chunk +1;
                 $this->stream = $this->manager->read("original_stream", $this->current_chunk, $this->param_bag, $this->uploadstate);
@@ -133,6 +146,15 @@ class TwakeFileStream implements StreamInterface
                 if($length - strlen($retour) > 0) {
                     $retour = $retour . $this->read($length - strlen($retour));
                 }
+            }
+            else{
+                $path = stream_get_meta_data($this->stream)["uri"];
+                $valid = preg_match("/\/tmp\/.*/", $path);
+                if(file_exists($path) && !is_dir($path) && $valid){
+                    error_log(print_r($path,true));
+                    @unlink($path);
+                }
+                //fclose($this->stream);
             }
         }
         return $retour;
