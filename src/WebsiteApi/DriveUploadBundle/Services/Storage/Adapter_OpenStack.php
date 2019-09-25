@@ -212,6 +212,7 @@ class Adapter_OpenStack implements AdapterInterface {
                         }
                         // Be sure to close the stream resource when you're done with it
                         fclose($stream);
+                        unlink($decodedPath);
                 }
                 return true;
             }

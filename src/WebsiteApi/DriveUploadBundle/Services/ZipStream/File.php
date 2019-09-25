@@ -418,7 +418,6 @@ class File
         // makes this second read unnecessary
         // but it is only available from PHP 7.0
         if (!$this->deflate && $stream instanceof DeflateStream && $this->method->equals(Method::DEFLATE())) {
-            error_log("PASSAGE DANS LE IF PHP 7");
             $stream->addDeflateFilter($this->opt);
             $this->zlen = new Bigint();
             while (!$stream->eof()) {
