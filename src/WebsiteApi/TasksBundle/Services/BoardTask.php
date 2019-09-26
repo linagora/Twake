@@ -196,7 +196,7 @@ class BoardTask
         if (count($get_diff["del"]) > 0) {
             $users_in_task = $this->doctrine->getRepository("TwakeTasksBundle:TaskUser")->findBy(Array("task_id" => $task->getId()));
             foreach ($users_in_task as $user) {
-                if (!$this->inArrayUsingKeys($get_diff["del"], Array("user_id_or_mail" => $user->getUserIdOrMail()), ["user_id_or_mail"]) || $replace_all) {
+                if ($this->inArrayUsingKeys($get_diff["del"], Array("user_id_or_mail" => $user->getUserIdOrMail()), ["user_id_or_mail"]) || $replace_all) {
                     //Remove old participants
                     $this->doctrine->remove($user);
 

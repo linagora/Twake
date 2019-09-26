@@ -213,7 +213,6 @@ class CalendarEvent
             if (isset($object["workspaces_calendars"]) && is_array($object["workspaces_calendars"])) {
                 $event->setWorkspaceId($object["workspaces_calendars"][0]["workspace_id"]);
             }
-
             $did_create = true;
         }
 
@@ -439,11 +438,11 @@ class CalendarEvent
         $updated_participants_fixed = $current_participants;
 
         $get_diff = $this->getArrayDiffUsingKeys($updated_participants, $current_participants, ["user_id_or_mail"]);
-
+        error_log("get diff".json_encode($get_diff));
         if (count($get_diff["del"]) > 0 || $replace_all) {
             $users_in_event = $this->doctrine->getRepository("TwakeCalendarBundle:EventUser")->findBy(Array("event_id" => $event->getId()));
             foreach ($users_in_event as $user) {
-                if (!$this->inArrayUsingKeys($get_diff["del"], Array("user_id_or_mail" => $user->getUserIdOrMail()), ["user_id_or_mail"]) || $replace_all) {
+                if ($this->inArrayUsingKeys($get_diff["del"], Array("user_id_or_mail" => $user->getUserIdOrMail()), ["user_id_or_mail"]) || $replace_all) {
                     //Remove old participants
                     $this->doctrine->remove($user);
 
@@ -499,7 +498,6 @@ class CalendarEvent
             $_updated_participants_fixed[] = $v;
         }
         $updated_participants_fixed = $_updated_participants_fixed;
-
         $event->setParticipants($updated_participants_fixed);
         $this->doctrine->persist($event);
 
