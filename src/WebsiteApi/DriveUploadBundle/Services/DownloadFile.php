@@ -141,7 +141,7 @@ class DownloadFile
 
                     $version = null;
 
-                } else if (isset($versionId) && $versionId != $file->getLastVersionId()) {
+                } else if (isset($versionId) && $versionId && strlen($versionId) > 10 && $versionId != $file->getLastVersionId()) {
 
                     $version = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileVersion")->find($versionId);
 

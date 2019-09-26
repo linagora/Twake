@@ -33,7 +33,6 @@ class AccessManager
 //        }
 
 
-
         if($type == "Workspace"){
             if(!$this->user_has_workspace_access($current_user_id,$id)){
                 return false;
@@ -47,10 +46,12 @@ class AccessManager
                 $workspace_id = $channel["original_workspace"];
                 $members = $channel["members"];
                 $ext_members = $channel["ext_members"];
-                if( !$this->user_has_workspace_access($current_user_id,$workspace_id) || ((!in_array($current_user_id,$members)) && (!in_array($current_user_id,$ext_members)))  )
-                {
-                    return false;
-                }
+                if (in_array($current_user_id, $members) || in_array($current_user_id, $ext_members)) {
+                    return true;
+                } else
+                    if (!$this->user_has_workspace_access($current_user_id, $workspace_id) || ((!in_array($current_user_id, $members)) && (!in_array($current_user_id, $ext_members)))) {
+                        return false;
+                    }
             }
             else{
                 return false;
@@ -126,9 +127,12 @@ class AccessManager
                 }
 
                 //Access to workspace
-                if ($this->user_has_workspace_access($current_user_id, $workspace_id)) {
+                if (!$workspace_id) {
                     return true;
-                }
+                } else
+                    if ($this->user_has_workspace_access($current_user_id, $workspace_id)) {
+                        return true;
+                    }
 
             }
 
