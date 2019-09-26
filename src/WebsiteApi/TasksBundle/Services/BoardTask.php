@@ -46,14 +46,49 @@ class BoardTask
             return false;
         }
 
-        $tasks = $this->doctrine->getRepository("TwakeTasksBundle:Task")->findBy(Array("board_id" => $board_id));
+        if (explode("_", $board_id)[0] == "user") {
+            $tasks = [];
+            $user_id = explode("_", $board_id)[1];
+            $workspaces = Array();
+            if ($user_id != $current_user->getId() . "") {
+                //Get available workspaces
+                $workspaceUsers = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("user" => $user_id));
+                foreach ($workspaceUsers as $wu) {
+                    $available = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("user" => $current_user->getId(), "workspace" => $wu->getWorkspace()->getId()));
+                    if ($available) {
+                        $workspaces[] = $wu->getWorkspace()->getId();
+                    }
+                }
+            }
+            $tasks_user = $this->doctrine->getRepository("TwakeTasksBundle:TaskUser")->findBy(Array("user_id_or_mail" => $user_id));
+            foreach ($tasks_user as $taskuser) {
+                $t = $this->doctrine->getRepository("TwakeTasksBundle:Task")->findOneBy(Array("id" => $taskuser->getTaskId()));
+                if ($t) {
+                    if ($user_id != $current_user->getId() . "") {
+                        $ok = false;
+                        foreach ($workspaces as $workspace_id) {
+                            if ($workspace_id == $t->getWorkspaceId()) {
+                                $ok = true;
+                                break;
+                            }
+                        }
+                    } else {
+                        $ok = true;
+                    }
+                    if ($ok) $tasks[] = $t;
+                } else {
+                    $this->doctrine->remove($taskuser);
+                    $this->doctrine->flush();
+                }
+            }
+        } else {
+            $tasks = $this->doctrine->getRepository("TwakeTasksBundle:Task")->findBy(Array("board_id" => $board_id));
+        }
 
         $ret = [];
         foreach ($tasks as $task) {
             $ret[] = $task->getAsArray();
         }
-
-        //TODO get tasks by user or users
 
         return $ret;
     }
