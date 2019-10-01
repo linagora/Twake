@@ -86,10 +86,14 @@ class BoardList
         $tasks = $this->doctrine->getRepository("TwakeTasksBundle:Task")->findBy(Array("list_id" => $id));
         $count = 0;
         foreach ($tasks as $task) {
-            if (!$task->getArchived()) {
-                $count++;
-            }
             if (!$only_archived || $task->getArchived()) {
+
+                //TODO send websocket notification
+
+                if (!$task->getArchived()) {
+                    $count++;
+                }
+
                 $this->doctrine->remove($task);
             }
         }
@@ -120,6 +124,9 @@ class BoardList
         $count = 0;
         foreach ($tasks as $task) {
             if (!$task->getArchived()) {
+
+                //TODO send websocket notification
+
                 $task->setArchived(true);
                 $this->doctrine->persist($task);
                 $count++;

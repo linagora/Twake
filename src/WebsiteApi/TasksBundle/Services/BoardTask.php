@@ -151,6 +151,11 @@ class BoardTask
                 $object["participants"] = [];
             }
             foreach ($list->getAutoParticipants() as $participant) {
+                if (is_string($participant)) {
+                    $participant = Array(
+                        "user_id_or_mail" => $participant
+                    );
+                }
                 $object["participants"][] = $participant;
             }
         }
