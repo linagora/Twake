@@ -95,7 +95,7 @@ class Users
         $scroll_id = $result["scroll_id"];
 
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("usernamecanonical" => substr($name)));
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => strtolower($name)));
 
         if ($user) {
             $this->list_users["users"][] = $user;
