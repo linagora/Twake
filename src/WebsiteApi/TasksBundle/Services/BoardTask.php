@@ -143,6 +143,18 @@ class BoardTask
         /* @var Board $board */
         $board = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $task->getBoardId()));
 
+        /* @var \WebsiteApi\TasksBundle\Entity\BoardList $list */
+        $list = $this->doctrine->getRepository("TwakeTasksBundle:BoardList")->findOneBy(Array("id" => $task->getListId()));
+
+        if ($did_create) {
+            if (!isset($object["participants"]) || !$object["participants"]) {
+                $object["participants"] = [];
+            }
+            foreach ($list->getAutoParticipants() as $participant) {
+                $object["participants"][] = $participant;
+            }
+        }
+
         //Manage infos
         if (isset($object["title"])) $task->setTitle($object["title"]);
         if (isset($object["description"])) $task->setDescription($object["description"]);

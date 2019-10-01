@@ -11,7 +11,7 @@ use WebsiteApi\CoreBundle\Entity\SearchableObject;
 /**
  * Task
  *
- * @ORM\Table(name="tasks_task",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "id":"ASC"}, {"id":"ASC"}} })
+ * @ORM\Table(name="tasks_task",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "id":"ASC"}, {"id":"ASC"}, {"list_id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\TasksBundle\Repository\TaskRepository")
  */
 class Task extends SearchableObject

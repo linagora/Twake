@@ -58,10 +58,79 @@ class BoardList
             return false;
         }
 
+        $this->removeAllTasks($object, $options, $current_user = null);
+
         $this->doctrine->remove($board_list);
         $this->doctrine->flush();
 
         return $object;
+    }
+
+    public function removeAllTasks($object, $options, $current_user = null)
+    {
+
+        $id = $object["id"];
+
+        if (!$this->hasAccess($object, $current_user)) {
+            return false;
+        }
+
+        $only_archived = $options["only_archived_tasks"];
+
+        $board_list = $this->doctrine->getRepository("TwakeTasksBundle:BoardList")->findOneBy(Array("id" => $id));
+        if (!$board_list) {
+            return false;
+        }
+
+        //Remove all tasks and update count in board
+        $tasks = $this->doctrine->getRepository("TwakeTasksBundle:Task")->findBy(Array("list_id" => $id));
+        $count = 0;
+        foreach ($tasks as $task) {
+            if (!$task->getArchived()) {
+                $count++;
+            }
+            if (!$only_archived || $task->getArchived()) {
+                $this->doctrine->remove($task);
+            }
+        }
+        $board = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $board_list->getBoardId()));
+        $board->setActiveTasks($board->getActiveTasks() - $count);
+        $this->doctrine->persist($board);
+
+        $this->doctrine->flush();
+
+    }
+
+    public function archiveAllTasks($object, $options, $current_user = null)
+    {
+
+        $id = $object["id"];
+
+        if (!$this->hasAccess($object, $current_user)) {
+            return false;
+        }
+
+        $board_list = $this->doctrine->getRepository("TwakeTasksBundle:BoardList")->findOneBy(Array("id" => $id));
+        if (!$board_list) {
+            return false;
+        }
+
+        //Remove all tasks and update count in board
+        $tasks = $this->doctrine->getRepository("TwakeTasksBundle:Task")->findBy(Array("list_id" => $id));
+        $count = 0;
+        foreach ($tasks as $task) {
+            if (!$task->getArchived()) {
+                $task->setArchived(true);
+                $this->doctrine->persist($task);
+                $count++;
+            }
+        }
+        $board = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $board_list->getBoardId()));
+        $board->setActiveTasks($board->getActiveTasks() - $count);
+        $this->doctrine->persist($board);
+
+        $this->doctrine->flush();
+
     }
 
     public function save($object, $options, $current_user)
