@@ -69,4 +69,4 @@ services:
 
     app.drive_refacto:
         class: WebsiteApi\DriveBundle\Services\DriveFileRefacto
-        arguments: ["@app.twake_doctrine", "@app.applications_api"]
+        arguments: ["@app.twake_doctrine", "@app.applications_api","@app.websockets"]

@@ -213,6 +213,14 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
      */
     private $tags;
 
+    /**
+     * @ORM\Column(name="attachements", type="twake_text")
+     */
+    private $attachements = "[]";
+
+
+
+
     protected $es_type = "drive_file";
 
     public function __construct($workspace_id, $parent_id, $isdirectory = false)
@@ -775,7 +783,8 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "application_id" => $this->getApplicationId(),
             "external_storage" => $this->getExternalStorage(),
             "hidden_data" => $this->getHiddenData(),
-            "tags" => $this->getTags()
+            "tags" => $this->getTags(),
+            "attachements" => $this->getAttachements(),
 
         );
     }
@@ -832,6 +841,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "key" => "drive",
             "type" => "file",
             "code" => "twake/" . ($this->getParent() ? $this->getParent()->getId() : 0) . "/" . $this->getId(),
+            "attachements" => $this->getAttachements(),
         );
     }
 
@@ -959,5 +969,21 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
         $this->hidden_data = json_encode($hidden_data);
     }
 
+
+    /**
+     * @return mixed
+     */
+    public function getAttachements()
+    {
+        return json_decode($this->attachements, true);
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setAttachements($attachements)
+    {
+        $this->attachements = json_encode($attachements);
+    }
 
 }

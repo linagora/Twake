@@ -7,6 +7,7 @@ use WebsiteApi\CalendarBundle\Entity\Event;
 use WebsiteApi\CalendarBundle\Entity\EventNotification;
 use WebsiteApi\CalendarBundle\Entity\EventUser;
 use WebsiteApi\CalendarBundle\Entity\EventCalendar;
+use WebsiteApi\CoreBundle\CommonObjects\AttachementManager;
 
 class CalendarEvent
 {
@@ -18,6 +19,7 @@ class CalendarEvent
         $this->enc_pusher = $enc_pusher;
         $this->applications_api = $application_api;
         $this->notifications = $notifications;
+        $this->attachementMananger = new AttachementManager($this->doctrine,$this->enc_pusher);
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -105,7 +107,9 @@ class CalendarEvent
         $entities = array_merge($entities, $this->doctrine->getRepository("TwakeCalendarBundle:EventNotification")->findBy(Array("event_id" => $id)));
         $entities = array_merge($entities, $this->doctrine->getRepository("TwakeCalendarBundle:EventUser")->findBy(Array("event_id" => $id)));
         foreach ($entities as $entity) {
+            $this->attachementManager->removeAttachementsFromEntity($entity);
             $this->doctrine->remove($entity);
+
         }
         $this->doctrine->flush();
     }
@@ -258,6 +262,10 @@ class CalendarEvent
         $this->doctrine->persist($event);
         $this->doctrine->flush();
 
+        if (isset($object["attachements"]) || $did_create) {
+            $this->attachementMananger->updateAttachements($event, $object["attachements"]?$object["attachements"]:Array());
+        }
+
         $old_participants = $event->getParticipants();
         if (isset($object["participants"]) || $did_create || $sort_key_has_changed) {
 
@@ -285,6 +293,8 @@ class CalendarEvent
                 }
             }
 
+
+
             $this->updateParticipants($event, $object["participants"] ? $object["participants"] : Array(), $sort_key_has_changed || $did_create);
         }
         if (isset($object["workspaces_calendars"]) || $sort_key_has_changed) {
@@ -299,6 +309,7 @@ class CalendarEvent
 
             $this->updateCalendars($event, $object["workspaces_calendars"] ? $object["workspaces_calendars"] : Array(), $sort_key_has_changed || $did_create);
         }
+
 
         //After checking user id or mails, we verify event is somewere
         if (count($event->getParticipants()) == 0 && count($event->getWorkspacesCalendars()) == 0) {
@@ -605,6 +616,7 @@ class CalendarEvent
         return $in;
     }
 
+
     public function formatArrayInput($array, $id_keys = [])
     {
         $updated_array = [];
@@ -642,7 +654,6 @@ class CalendarEvent
         }
         return $updated_array;
     }
-
 
     public function checkReminders()
     {

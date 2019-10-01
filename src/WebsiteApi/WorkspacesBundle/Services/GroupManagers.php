@@ -179,6 +179,7 @@ class GroupManagers implements GroupManagersInterface
                 "privileges" => $this->getPrivileges($this->getLevel($groupId, $userId))
             );
             $this->pusher->push($dataToPush, "workspaces_of_user/" . $userId);
+
             return true;
 
         }

@@ -102,6 +102,12 @@ class Task extends SearchableObject
     protected $workspace_id;
 
 
+    /**
+     * @ORM\Column(name="attachements", type="twake_text")
+     */
+    private $attachements = "[]";
+
+
     public function __construct($board_id, $list_id, $title)
     {
         $this->setTitle($title);
@@ -399,6 +405,22 @@ class Task extends SearchableObject
         $this->archived = $archived;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAttachements()
+    {
+        return json_decode($this->attachements, true);
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setAttachements($attachements)
+    {
+        $this->attachements = json_encode($attachements);
+    }
+
     public function getAsArray()
     {
         return Array(
@@ -418,7 +440,8 @@ class Task extends SearchableObject
             "participants" => $this->getParticipants(),
             "notifications" => $this->getNotifications(),
             "tags" => $this->getTags(),
-            "workspace_id" => $this->getWorkspaceId()
+            "workspace_id" => $this->getWorkspaceId(),
+            "attachements" => $this->getAttachements()
         );
     }
 

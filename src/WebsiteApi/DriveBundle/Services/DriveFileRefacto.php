@@ -6,15 +6,18 @@ namespace WebsiteApi\DriveBundle\Services;
 
 use WebsiteApi\DriveBundle\Entity\DriveFile;
 use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
+use WebsiteApi\CoreBundle\CommonObjects\AttachementManager;
 
 class DriveFileRefacto
 {
 
-    function __construct($entity_manager, $application_api)
+    function __construct($entity_manager, $application_api,$ws)
     {
         $this->em = $entity_manager;
         $this->applications_api = $application_api;
         $this->drive_resumable = false;
+        $this->ws = $ws;
+        $this->attachementMananger = new AttachementManager($this->em,$this->ws);
     }
 
     function setDriveResumable($drive_resumable)
@@ -256,7 +259,7 @@ class DriveFileRefacto
             }
             else{ // on a un parent ce n'est pas une creation c'est un déplacement
                 $fileordirectory_parent_id = $fileordirectory->getParentId()."";
-                if ($fileordirectory_parent_id != $parent_id) { //changement de parent id donc le fichier a été déplacé.7
+                if ($fileordirectory_parent_id != $parent_id) { //changement de parent id donc le fichier a été déplacé.
                     $this->move($fileordirectory, $fileordirectory_parent_id, $parent_id, $current_user);
                 }
             }
@@ -376,6 +379,9 @@ class DriveFileRefacto
 
         if(isset($object["tags"])){
             $fileordirectory->setTags($object["tags"]);
+        }
+        if (isset($object["attachements"]) || $did_create) {
+            $this->attachementMananger->updateAttachements($fileordirectory, $object["attachements"]?$object["attachements"]:Array());
         }
 
 

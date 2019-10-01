@@ -111,6 +111,11 @@ class Event extends SearchableObject
      */
     protected $workspace_id;
 
+    /**
+     * @ORM\Column(name="attachements", type="twake_text")
+     */
+    private $attachements = "[]";
+
 
     public function __construct($title, $from, $to)
     {
@@ -132,8 +137,8 @@ class Event extends SearchableObject
             'date_to' => ($this->getTo() ? date('Y-m-d',$this->getTo()) : null),
             "date_last_modified" => ($this->getEventLastModified() ? date('Y-m-d',$this->getEventLastModified()) : null),
             "workspace_id" => $this->getWorkspaceId(),
-            "participants" => $this->getParticipants()
-
+            "participants" => $this->getParticipants(),
+            "attachements" => $this->getAttachements()
         );
 
     }
@@ -420,6 +425,22 @@ class Event extends SearchableObject
         $this->tags = json_encode($tags);
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAttachements()
+    {
+        return json_decode($this->attachements, true);
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setAttachements($attachements)
+    {
+        $this->attachements = json_encode($attachements);
+    }
+
     public function getSortKey()
     {
         $after_sort_date = floor($this->getFrom() / (60 * 60 * 24 * 7));
@@ -468,7 +489,8 @@ class Event extends SearchableObject
             "workspaces_calendars" => $this->getWorkspacesCalendars(),
             "notifications" => $this->getNotifications(),
             "tags" => $this->getTags(),
-            "event_last_modified" => $this->getEventLastModified()
+            "event_last_modified" => $this->getEventLastModified(),
+            "attachements" => $this->getAttachements()
         );
     }
 
