@@ -323,54 +323,29 @@ class AccessTest extends WebTestCaseExtended
 
             //test que le user1 a acces au message 1 par exemple (doit aussi fonctionner avec les messages 2, 3 et 4)
         $data = Array("type" => "Message", "object_id" => $message1_ID);
-
         $result = $this->doPost("/ajax/core/access", Array(
             "data" => $data
         ));
-
         $this->assertEquals(true,$result["data"], "User 1 don't have acces to the message 1 , he should");
 
             //test que le user 1 n'a pas acces au message 5 par exemple (doit aussi fonctionner aves les messages 6, 7 et 8)
         $data = Array("type" => "Message", "object_id" => $message5_ID);
-
         $result = $this->doPost("/ajax/core/access", Array(
             "data" => $data
         ));
-
         $this->assertEquals(false,$result["data"], "User 1 have acces to the message 1 , he shouldn't");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_parent);
-
         $result = $this->doPost("/ajax/core/access", Array(
             "data" => $data
         ));
-
         $this->assertEquals(true,$result["data"], "User 1 don't have access to filefortest , he should");
 
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_detached);
-
         $result = $this->doPost("/ajax/core/access", Array(
             "data" => $data
         ));
-
         $this->assertEquals(false,$result["data"], "User 1 have access to detached file , he should not");
-
-        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
-
-        $result = $this->doPost("/ajax/core/access", Array(
-            "data" => $data
-        ));
-        $this->assertEquals(false,$result["data"], "User 1 have access to shared file , he shouldn't");
-
-        $token = $publicdata["token"];
-        $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
-
-        $result = $this->doPost("/ajax/core/access", Array(
-            "data" => $data,
-            "options" => Array("token" => $token)
-        ));
-
-        $this->assertEquals(false,$result["data"], "User 1 have access to shared file , he shouldn't");
 
         $result = $this->doPost("/ajax/core/workspaceaccess", Array(
             "workspace_id" => $workspace1_id,
@@ -389,7 +364,7 @@ class AccessTest extends WebTestCaseExtended
 //// =================================================================================================================================================
 //// =================================================================================================================================================
 
-        //FOR USER 2
+        //FOR USER 2testSaveFiletestSaveFile
 
         $result = $this->doPost("/ajax/users/logout", Array(
         ));

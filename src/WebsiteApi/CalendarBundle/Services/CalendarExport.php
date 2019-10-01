@@ -20,18 +20,24 @@ class CalendarExport
     public function generateToken($request, $current_user = null){
 
         $user_id = $current_user->getId();
-        /*$entity = $this->doctrine->getRepository("TwakeCalendarBundle:ExportToken")->findOneBy(Array("user_id" =>$user_id ));
-        if (!$entity){*/
-            $workspace_id = $request->request->get('workspace_id');
-            $calendars =$request->request->get('calendars');
+        $workspace_id = $request->request->get('workspace_id');
+        $calendars = $request->request->get('calendars');
+
+        if ($workspace_id && ($calendars["mode"] == "both" || $calendars["mode"] == "workspace")) {
+            if (!isset($calendars["calendar_list"]) || !$calendars["calendar_list"] || count($calendars["calendar_list"]) == 0) {
+                $calendars["calendar_list"] = [];
+                $calendars_entities = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findBy(Array("workspace_id" => $workspace_id));
+                foreach ($calendars_entities as $calendar_entity) {
+                    $calendars["calendar_list"][] = ["workspace_id" => $workspace_id, "calendar_id" => $calendar_entity->getId()];
+                }
+            }
+        }
 
         $token = bin2hex(random_bytes(64));
 
-            //Insert to export_token table
-            $entity = new ExportToken($user_id, $workspace_id, $calendars, $token);
-            $this->doctrine->persist($entity);
-            $this->doctrine->flush();
-        //}
+        $entity = new ExportToken($user_id, $workspace_id, $calendars, $token);
+        $this->doctrine->persist($entity);
+        $this->doctrine->flush();
 
         return $token;
 

@@ -61,16 +61,12 @@ class DriveCollectionTest extends WebTestCaseExtended
 
         //ON CREE UN FICHIER QUI VA SE TROUVER A LA RACINE DU WORKSPACE EN SPECIFIANT UN PARENT
 
-        $data = Array("upload_mode" => "chunk", "identifier" => "identifier", "nb_chunk" => 1);
-        $upload_data = Array("data" => $data, "size" => 100000);
-
         $object = Array("parent_id" => $root_id, "workspace_id" => $workspace_id, "front_id" => "14005200-48b1-11e9-a0b4-0242ac120005", "name" => "filefortest", "is_directory" => false);
         $data = Array("upload_mode" => "chunk", "identifier" => "identifier" ,"nb_chunk" => 1);
         $options = Array("new" => true, "data" => $data, "version" => true);
         $result = $this->doPost("/ajax/drive/v2/save", Array(
             "object" => $object,
             "options" => $options,
-            "upload_data" => $upload_data
         ));
         $idtofind_parent = $result["data"]["object"]["id"];
 
@@ -81,7 +77,6 @@ class DriveCollectionTest extends WebTestCaseExtended
         $this->assertEquals("filefortest",$result["data"]["object"]["name"], "Wrong name for file create with a parent");
         $this->assertEquals(false,$result["data"]["object"]["trash"], "Wrong is in trash attribut for file create with a parent");
         $this->assertEquals($user1_id,$result["data"]["object"]["last_user"], "Wrong last user for file create with a parent");
-        $this->assertEquals(100000,$result["data"]["object"]["size"], "Wrong size for file create with a parent");
 
         $fileordirectory = $this->getDoctrine()->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $root_id));
         $this->assertEquals(100000,$fileordirectory->getSize(), "Wrong size for the file root");
