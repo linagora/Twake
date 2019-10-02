@@ -128,7 +128,7 @@ class Websockets
     public function push($route, $event, $route_entity = null)
     {
 
-        if (is_array($event)) {
+        if (is_array($event) && !array_diff_key($event, array_keys(array_keys($event)))) {
             $event = ["multiple" => $event];
         }
 
