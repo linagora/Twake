@@ -380,8 +380,8 @@ class DriveFileRefacto
         if(isset($object["tags"])){
             $fileordirectory->setTags($object["tags"]);
         }
-        if (isset($object["attachements"]) || $did_create) {
-            $this->attachementMananger->updateAttachements($fileordirectory, $object["attachements"]?$object["attachements"]:Array());
+        if (isset($object["attachments"]) || $did_create) {
+            $this->attachementMananger->updateAttachements($fileordirectory, $object["attachments"] ? $object["attachments"] : Array());
         }
 
 

@@ -138,7 +138,7 @@ class Event extends SearchableObject
             "date_last_modified" => ($this->getEventLastModified() ? date('Y-m-d',$this->getEventLastModified()) : null),
             "workspace_id" => $this->getWorkspaceId(),
             "participants" => $this->getParticipants(),
-            "attachements" => $this->getAttachements()
+            "attachments" => $this->getAttachements()
         );
 
     }
@@ -490,7 +490,7 @@ class Event extends SearchableObject
             "notifications" => $this->getNotifications(),
             "tags" => $this->getTags(),
             "event_last_modified" => $this->getEventLastModified(),
-            "attachements" => $this->getAttachements()
+            "attachments" => $this->getAttachements()
         );
     }
 

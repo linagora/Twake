@@ -128,6 +128,10 @@ class Websockets
     public function push($route, $event, $route_entity = null)
     {
 
+        if (is_array($event)) {
+            $event = ["multiple" => $event];
+        }
+
         if (!$route_entity) {
             $routes = $this->doctrine->getRepository("TwakeCoreBundle:WebsocketsRoute");
             $route_entity = $routes->findOneBy(Array("route" => $route));

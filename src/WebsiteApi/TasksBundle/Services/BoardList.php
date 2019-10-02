@@ -82,19 +82,35 @@ class BoardList
             return false;
         }
 
+        $ws_events = [];
+        $ws_task_users = [];
+
         //Remove all tasks and update count in board
         $tasks = $this->doctrine->getRepository("TwakeTasksBundle:Task")->findBy(Array("list_id" => $id));
         $count = 0;
         foreach ($tasks as $task) {
             if (!$only_archived || $task->getArchived()) {
 
-                //TODO send websocket notification
-
                 if (!$task->getArchived()) {
                     $count++;
                 }
 
                 $this->doctrine->remove($task);
+
+                //Send websocket notification
+                $ws_events[] = Array(
+                    "client_id" => "system",
+                    "action" => "remove",
+                    "object_type" => "",
+                    "front_id" => $task->getFrontId()
+                );
+                foreach ($task->getParticipants() as $participant) {
+                    if (!is_string($participant)) {
+                        $participant = $participant["user_id_or_mail"];
+                    }
+                    $ws_task_users[] = $participant;
+                }
+
             }
         }
         $board = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $board_list->getBoardId()));
@@ -102,6 +118,12 @@ class BoardList
         $this->doctrine->persist($board);
 
         $this->doctrine->flush();
+
+        $this->enc_pusher->push("board_tasks/" . $task->getBoardId(), $ws_events);
+        $ws_task_users = array_unique($ws_task_users);
+        foreach ($ws_task_users as $ws_task_user) {
+            $this->enc_pusher->push("board_tasks/user_" . $ws_task_user, $ws_events);
+        }
 
     }
 
@@ -122,21 +144,46 @@ class BoardList
         //Remove all tasks and update count in board
         $tasks = $this->doctrine->getRepository("TwakeTasksBundle:Task")->findBy(Array("list_id" => $id));
         $count = 0;
+
+        $ws_events = [];
+        $ws_task_users = [];
+
         foreach ($tasks as $task) {
             if (!$task->getArchived()) {
-
-                //TODO send websocket notification
 
                 $task->setArchived(true);
                 $this->doctrine->persist($task);
                 $count++;
+
+                //Send websocket notification
+                $ws_events[] = Array(
+                    "client_id" => "system",
+                    "action" => "save",
+                    "object_type" => "",
+                    "object" => $task->getAsArray()
+                );
+                foreach ($task->getParticipants() as $participant) {
+                    if (!is_string($participant)) {
+                        $participant = $participant["user_id_or_mail"];
+                    }
+                    $ws_task_users[] = $participant;
+                }
+
             }
         }
+
         $board = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $board_list->getBoardId()));
         $board->setActiveTasks($board->getActiveTasks() - $count);
         $this->doctrine->persist($board);
 
         $this->doctrine->flush();
+
+        $this->enc_pusher->push("board_tasks/" . $task->getBoardId(), $ws_events);
+        $ws_task_users = array_unique($ws_task_users);
+        foreach ($ws_task_users as $ws_task_user) {
+            $this->enc_pusher->push("board_tasks/user_" . $ws_task_user, $ws_events);
+        }
+
 
     }
 

@@ -206,10 +206,11 @@ class BoardTask
             $this->updateParticipants($task, $object["participants"] ? $object["participants"] : Array());
         }
 
-        if (isset($object["attachements"]) || $did_create) {
-            $this->attachementManager->updateAttachements($task, $object["attachements"]?$object["attachements"]:Array());
+        if (isset($object["attachments"]) || $did_create) {
+            $this->attachementManager->updateAttachements($task, $object["attachments"] ? $object["attachments"] : Array());
         }
         //TODO notify participants for the "by user" task view
+
 
         //Notify connectors
         $resources = [];

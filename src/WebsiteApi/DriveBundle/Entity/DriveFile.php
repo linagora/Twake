@@ -784,7 +784,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "external_storage" => $this->getExternalStorage(),
             "hidden_data" => $this->getHiddenData(),
             "tags" => $this->getTags(),
-            "attachements" => $this->getAttachements(),
+            "attachments" => $this->getAttachements(),
 
         );
     }
@@ -841,7 +841,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "key" => "drive",
             "type" => "file",
             "code" => "twake/" . ($this->getParent() ? $this->getParent()->getId() : 0) . "/" . $this->getId(),
-            "attachements" => $this->getAttachements(),
+            "attachments" => $this->getAttachements(),
         );
     }
 

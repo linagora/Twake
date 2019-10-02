@@ -441,7 +441,7 @@ class Task extends SearchableObject
             "notifications" => $this->getNotifications(),
             "tags" => $this->getTags(),
             "workspace_id" => $this->getWorkspaceId(),
-            "attachements" => $this->getAttachements()
+            "attachments" => $this->getAttachements()
         );
     }
 

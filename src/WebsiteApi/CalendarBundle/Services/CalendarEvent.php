@@ -262,8 +262,8 @@ class CalendarEvent
         $this->doctrine->persist($event);
         $this->doctrine->flush();
 
-        if (isset($object["attachements"]) || $did_create) {
-            $this->attachementMananger->updateAttachements($event, $object["attachements"]?$object["attachements"]:Array());
+        if (isset($object["attachments"]) || $did_create) {
+            $this->attachementMananger->updateAttachements($event, $object["attachments"] ? $object["attachments"] : Array());
         }
 
         $old_participants = $event->getParticipants();
