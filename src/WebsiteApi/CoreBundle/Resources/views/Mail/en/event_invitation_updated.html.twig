@@ -25,10 +25,6 @@
         <b>When: </b> {{ (event.from - (user_timezone_delay*60)) | date('F j, Y, g:i a') }}
         - {{ (event.to - (user_timezone_delay*60)) | date('F j, Y, g:i a') }} ({{ user_timezone_text }})<br/><br/>
 
-        {% if event.location %}
-            <b>Where: </b> {{ event.location }} <br/><br/>
-        {% endif %}
-
         <b>Invited by: </b> {{ sender_fullname }} {{ sender_email }}<br/><br/>
 
     </div>

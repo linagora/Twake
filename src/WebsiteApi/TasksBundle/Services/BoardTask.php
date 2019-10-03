@@ -168,6 +168,9 @@ class BoardTask
         if (isset($object["description"])) $task->setDescription($object["description"]);
         if (isset($object["checklist"])) $task->setCheckList($object["checklist"]);
 
+        if (isset($object["before"])) $task->setBefore($object["before"]);
+        if (isset($object["start"])) $task->setStartTime($object["start"]);
+
         if (isset($object["list_id"])) $task->setListId($object["list_id"]);
         if (isset($object["order"])) $task->setOrder($object["order"]);
 
@@ -209,6 +212,7 @@ class BoardTask
         if (isset($object["attachments"]) || $did_create) {
             $this->attachementManager->updateAttachements($task, $object["attachments"] ? $object["attachments"] : Array());
         }
+
         //TODO notify participants for the "by user" task view
 
 
@@ -319,8 +323,26 @@ class BoardTask
     private function updateNotifications(Task $task, $notifications = Array())
     {
 
-        if (!$task->getBefore() || $task->getBefore() < date("U")) {
+        $has_before = true;
+        if (!$task->getBefore() || $task->getBefore() < date("U") || $task->getArchived()) {
+            $has_before = false;
             $notifications = Array();
+        }
+
+        if ($task->getBefore()) {
+            //Add deadline
+            $notifications = Array(
+                "delay" => 0,
+                "mode" => "push"
+            );
+        }
+
+        if ($task->getStartTime() > 0 && $task->getStartTime() > date("U")) {
+            //Add start time as notification
+            $notifications = Array(
+                "delay" => $has_before ? ($task->getBefore() - $task->getStartTime()) : ($task->getStartTime()),
+                "mode" => "push"
+            );
         }
 
         $notifications = $notifications ? $notifications : [];
@@ -336,14 +358,21 @@ class BoardTask
             $notifications_in_task = $this->doctrine->getRepository("TwakeTasksBundle:TaskNotification")->findBy(Array("task_id" => $task->getId()));
             foreach ($notifications_in_task as $notification) {
                 if (!$this->inArrayUsingKeys($get_diff["del"], ["delay" => $notification->getDelay(), "mode" => $notification->getMode()], ["mode", "delay"]) || $replace_all) {
-                    //Remove old participants
+                    //Remove old notifications
                     $this->doctrine->remove($notification);
                 }
             }
         }
 
         foreach (($replace_all ? $updated_notifications : $get_diff["add"]) as $notification) {
-            $notification = new TaskNotification($task->getId(), $notification["delay"], $task->getBefore() - $notification["delay"], $notification["mode"]);
+            if ($has_before) {
+                $notification_date = $task->getBefore() - $notification["delay"];
+                $delay = $notification["delay"];
+            } else {
+                $notification_date = $notification["delay"];
+                $delay = "0";
+            }
+            $notification = new TaskNotification($task->getId(), $delay, $notification_date, $notification["mode"]);
             $this->doctrine->persist($notification);
         }
 
@@ -501,6 +530,11 @@ class BoardTask
                 //Send notification
                 $task = $this->doctrine->getRepository("TwakeTasksBundle:Task")->findOneBy(Array("id" => $notification->getTaskId()));
 
+                $is_deadline = false;
+                if ($task->getBefore() && abs($task->getBefore() - ($notification->getWhenTs() + $notification->getDelay())) < 60) {
+                    $is_deadline = true;
+                }
+
 
                 $delay = floor($notification->getDelay() / 60) . "min";
                 if ($notification->getDelay() > 60 * 60) {
@@ -517,7 +551,7 @@ class BoardTask
                 if ($task->getTitle()) {
                     $title = $task->getTitle();
                 }
-                $text = $title . " in " . $delay;
+                $text = $title . ($is_deadline ? " (deadline)" : "") . " in " . $delay;
 
                 $participants = $task->getParticipants();
 

@@ -119,10 +119,12 @@ class BoardList
 
         $this->doctrine->flush();
 
-        $this->enc_pusher->push("board_tasks/" . $task->getBoardId(), $ws_events);
-        $ws_task_users = array_unique($ws_task_users);
-        foreach ($ws_task_users as $ws_task_user) {
-            $this->enc_pusher->push("board_tasks/user_" . $ws_task_user, $ws_events);
+        if (count($ws_events) > 0) {
+            $this->enc_pusher->push("board_tasks/" . $board_list->getBoardId(), $ws_events);
+            $ws_task_users = array_unique($ws_task_users);
+            foreach ($ws_task_users as $ws_task_user) {
+                $this->enc_pusher->push("board_tasks/user_" . $ws_task_user, $ws_events);
+            }
         }
 
     }
@@ -178,12 +180,13 @@ class BoardList
 
         $this->doctrine->flush();
 
-        $this->enc_pusher->push("board_tasks/" . $task->getBoardId(), $ws_events);
-        $ws_task_users = array_unique($ws_task_users);
-        foreach ($ws_task_users as $ws_task_user) {
-            $this->enc_pusher->push("board_tasks/user_" . $ws_task_user, $ws_events);
+        if (count($ws_events) > 0) {
+            $this->enc_pusher->push("board_tasks/" . $board_list->getBoardId(), $ws_events);
+            $ws_task_users = array_unique($ws_task_users);
+            foreach ($ws_task_users as $ws_task_user) {
+                $this->enc_pusher->push("board_tasks/user_" . $ws_task_user, $ws_events);
+            }
         }
-
 
     }
 

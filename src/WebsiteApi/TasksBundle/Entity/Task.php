@@ -47,6 +47,11 @@ class Task extends SearchableObject
     private $before = 0;
 
     /**
+     * @ORM\Column(name="start_time", type="twake_bigint")
+     */
+    private $start_time = 0;
+
+    /**
      * @ORM\Column(name="title", type="twake_text")
      */
     private $title = "";
@@ -360,6 +365,22 @@ class Task extends SearchableObject
     /**
      * @return mixed
      */
+    public function getStartTime()
+    {
+        return $this->start_time;
+    }
+
+    /**
+     * @param mixed $before
+     */
+    public function setStartTime($start_time)
+    {
+        $this->start_time = $start_time;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getTaskCreatedAt()
     {
         return $this->task_created_at;
@@ -433,6 +454,7 @@ class Task extends SearchableObject
             "task_last_modified" => $this->getTaskLastModified(),
             "archived" => !!$this->getArchived(),
             "before" => $this->getBefore(),
+            "start" => $this->getStartTime(),
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
             "checklist" => $this->getCheckList(),
