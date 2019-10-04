@@ -111,6 +111,4 @@ class DailyCommand extends ContainerAwareCommand
     }
 
 
-
-
 }

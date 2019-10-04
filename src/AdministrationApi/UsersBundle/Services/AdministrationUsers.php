@@ -16,7 +16,8 @@ class AdministrationUsers
         $this->em = $em;
     }
 
-    public function getAllUsers($options) {
+    public function getAllUsers($options)
+    {
 
         $options = Array(
             "repository" => "TwakeUsersBundle:User",
@@ -54,7 +55,8 @@ class AdministrationUsers
         return $this->list_user ?: null;
     }
 
-    public function getOneUser($user_id) {
+    public function getOneUser($user_id)
+    {
         try {
             $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
@@ -127,7 +129,8 @@ class AdministrationUsers
         return $groups;
     }
 
-    public function findUserById($id) {
+    public function findUserById($id)
+    {
 
         $usersRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
@@ -166,7 +169,7 @@ class AdministrationUsers
                             "bool" => Array(
                                 "filter" => Array(
                                     "regexp" => Array(
-                                        "mail" => ".*".$mail.".*"
+                                        "mail" => ".*" . $mail . ".*"
                                     )
                                 )
                             )
@@ -184,7 +187,7 @@ class AdministrationUsers
         $scroll_id = $result["scroll_id"];
 
         //on traite les données recu d'Elasticsearch
-        foreach ($result["result"] as $mail){
+        foreach ($result["result"] as $mail) {
             $mail = $mail[0];
             $user = $mail->getUser();
             $user_tab = $user->getAsArray();

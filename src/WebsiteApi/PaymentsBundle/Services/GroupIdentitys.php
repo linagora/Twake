@@ -6,7 +6,7 @@
  * Time: 17:21
  */
 
-namespace  WebsiteApi\PaymentsBundle\Services;
+namespace WebsiteApi\PaymentsBundle\Services;
 
 use WebsiteApi\PaymentsBundle\Entity\GroupIdentity;
 use WebsiteApi\PaymentsBundle\Model\GroupIdentityInterface;
@@ -30,7 +30,6 @@ class GroupIdentitys implements GroupIdentityInterface
         return $group;
 
     }
-
 
 
 }

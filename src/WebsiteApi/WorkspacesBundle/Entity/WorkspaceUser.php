@@ -23,22 +23,22 @@ class WorkspaceUser
      */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
      * @ORM\Id
-	 */
-	private $workspace;
+     */
+    private $workspace;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
      * @ORM\Id
-	 */
-	private $user;
+     */
+    private $user;
 
-	/**
+    /**
      * @ORM\Column(name="level_id", type="twake_timeuuid")
-	 */
-	private $level_id;
+     */
+    private $level_id;
 
     /**
      * @ORM\Column(type="twake_datetime")
@@ -67,66 +67,66 @@ class WorkspaceUser
 
     public function __construct($workspace, $user, $level_id)
     {
-		$this->workspace = $workspace;
-		$this->user = $user;
+        $this->workspace = $workspace;
+        $this->user = $user;
 
         $this->level_id = $level_id;
-		$this->date_added = new \DateTime();
+        $this->date_added = new \DateTime();
         $this->last_access = new \DateTime();
-	}
+    }
 
-	/**
-	 * @return int
-	 */
+    /**
+     * @return int
+     */
     public function setId($id)
     {
         $this->id = $id;
     }
 
     public function getId()
-	{
-		return $this->id;
-	}
+    {
+        return $this->id;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getWorkspace()
-	{
-		return $this->workspace;
-	}
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getUser()
-	{
-		return $this->user;
-	}
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
 
-	/**
-	 * @return mixed
-	 */
+    /**
+     * @return mixed
+     */
     public function getLevelId()
-	{
-		return $this->level_id;
-	}
+    {
+        return $this->level_id;
+    }
 
-	/**
-	 * @param mixed $level
-	 */
+    /**
+     * @param mixed $level
+     */
     public function setLevelId($level)
     {
         $this->level_id = $level;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getDateAdded()
-	{
-		return $this->date_added;
-	}
+    /**
+     * @return mixed
+     */
+    public function getDateAdded()
+    {
+        return $this->date_added;
+    }
 
     /**
      * @return mixed
@@ -224,7 +224,8 @@ class WorkspaceUser
         $this->auto_add_externe = $auto_add_externe;
     }
 
-    public function getAsArray(){
+    public function getAsArray()
+    {
         return Array(
             "id" => $this->getId(),
             "user" => $this->getUser()->getAsArray(),

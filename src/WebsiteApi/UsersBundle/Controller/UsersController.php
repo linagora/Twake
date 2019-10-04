@@ -22,10 +22,9 @@ class UsersController extends Controller
             $options = Array("name" => $options);
         }
 
-        if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
-        }
-        else{
+        if (isset($scroll_id) && isset($repository)) {
+            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
+        } else {
             $globalresult = $this->get("app.users")->search($options);
         }
 

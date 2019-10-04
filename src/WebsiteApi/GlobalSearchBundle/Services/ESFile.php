@@ -15,7 +15,8 @@ class ESFile
         $this->doctrine = $doctrine;
     }
 
-    public function index(){
+    public function index()
+    {
         //need the string with the name of the file
         //check the extension of the file
 //        $finfo = finfo_open(FILEINFO_MIME_TYPE);
@@ -35,13 +36,13 @@ class ESFile
 //                ->text();
         $document = "stage.txt";
         $content = file_get_contents($document);
-        $content = str_replace(array("\\'", "'")," ",$content);
+        $content = str_replace(array("\\'", "'"), " ", $content);
         $size = substr_count($content, ' ');
 
-        $words = str_word_count(strtolower($content),1, 'ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒàâäçéèêëîïôöùûüÿæœ');
-        $totalwords=1;
+        $words = str_word_count(strtolower($content), 1, 'ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒàâäçéèêëîïôöùûüÿæœ');
+        $totalwords = 1;
 
-        $keywords=Array();
+        $keywords = Array();
 
         $regex = <<<'END'
 /
@@ -56,32 +57,29 @@ class ESFile
 /x
 END;
 
-        foreach ($words as $value){
+        foreach ($words as $value) {
             $value = preg_replace($regex, '$1', $value);
             $value = strtolower($value);
-            if (strlen($value) > 3 && is_numeric($value)==false) {
-                if ($totalwords < floor($size*0.20)) //we define the weight of word trough the text
+            if (strlen($value) > 3 && is_numeric($value) == false) {
+                if ($totalwords < floor($size * 0.20)) //we define the weight of word trough the text
                     $weight = 20;
-                elseif ($totalwords > floor($size*80))
+                elseif ($totalwords > floor($size * 80))
                     $weight = 20;
                 else
                     $weight = 3;
-                if(!($keywords[$value]) || substr($value, -1) == "s"){ //if the word is not in our table
+                if (!($keywords[$value]) || substr($value, -1) == "s") { //if the word is not in our table
                     if (substr($value, -1) == "s") { //we check if it's a plural
                         $maybesinglar = substr($value, 0, strlen($value) - 1);
                         if ($keywords[$maybesinglar]) { // we check if their is already a singular for this word
-                            $keywords[$maybesinglar] += $weight+max(strlen($maybesinglar)-4,0)*2; //if we find a singular we add the singular version of the word instead of the plural
+                            $keywords[$maybesinglar] += $weight + max(strlen($maybesinglar) - 4, 0) * 2; //if we find a singular we add the singular version of the word instead of the plural
+                        } else { // if not we add the new words or it's the first time we saw the word so we need to add it
+                            $keywords[$value] = $weight + max(strlen($value) - 4, 0) * 2;
                         }
-                        else { // if not we add the new words or it's the first time we saw the word so we need to add it
-                            $keywords[$value] = $weight +max(strlen($value)-4,0)*2;
-                        }
+                    } else {
+                        $keywords[$value] = $weight + max(strlen($value) - 4, 0) * 2; // we add the new word which is not a plural or it the first time we saw it
                     }
-                    else {
-                        $keywords[$value] = $weight+max(strlen($value)-4,0)*2; // we add the new word which is not a plural or it the first time we saw it
-                    }
-                }
-                else{ //if the word is in the table
-                    $keywords[$value] += $weight+max(strlen($value)-4,0)*2; // we adjust his weight in the table
+                } else { //if the word is in the table
+                    $keywords[$value] += $weight + max(strlen($value) - 4, 0) * 2; // we adjust his weight in the table
                 }
             }
             $totalwords++; //we add our total of word to alter the weight of futur word.
@@ -104,7 +102,7 @@ END;
             );
         }
 
-        $file = new DriveFile("14005200-48b1-11e9-a0b4-0242ac120005","14005200-48b1-11e9-a0b4-0242ac120005");
+        $file = new DriveFile("14005200-48b1-11e9-a0b4-0242ac120005", "14005200-48b1-11e9-a0b4-0242ac120005");
         $file->setName(explode(".", $document)[0]);
         $file->setContentKeywords($keywords_score);
         $this->doctrine->persist($file);
@@ -113,27 +111,28 @@ END;
 
     }
 
-    public function search($termslist,$workspaces){ //rajouter le must sur les workspace id
+    public function search($termslist, $workspaces)
+    { //rajouter le must sur les workspace id
 
         $terms = Array();
         $should_workspaces = Array();
 
 
-        foreach($termslist as $term){
+        foreach ($termslist as $term) {
             $st = new StringCleaner();
-            $term= $st->simplifyInArray($term);
+            $term = $st->simplifyInArray($term);
             $terms[] = Array(
                 "bool" => Array(
                     "filter" => Array(
                         "regexp" => Array(
-                            "keywords.keyword" => ".*".$term.".*"
+                            "keywords.keyword" => ".*" . $term . ".*"
                         )
                     )
                 )
             );
         }
 
-        foreach($workspaces as $workspace) {
+        foreach ($workspaces as $workspace) {
             $should_workspaces[] = Array(
                 "match_phrase" => Array(
                     "workspace_id" => $workspace["id"]
@@ -142,7 +141,7 @@ END;
         }
 
 
-            $nested  = Array(
+        $nested = Array(
             "nested" => Array(
                 "path" => "keywords",
                 "score_mode" => "avg",
@@ -194,9 +193,9 @@ END;
         );
 
         $files = $this->doctrine->es_search($options);
-        $files_final=Array();
-        foreach ($files["result"] as $file){
-            $files_final[]= Array($file[0]->getAsArray(),$file[1][0]);
+        $files_final = Array();
+        foreach ($files["result"] as $file) {
+            $files_final[] = Array($file[0]->getAsArray(), $file[1][0]);
         }
         return $files_final;
     }
@@ -211,7 +210,8 @@ END;
 //    }
 
 
-    public function advancedsearch($options,$workspaces){
+    public function advancedsearch($options, $workspaces)
+    {
 
 //        $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => "c213d80a-cf14-11e9-86c0-0242ac1d0005"));
 //        $file->setTags(Array("4f3b9286-cef7-11e9-9732-0242ac1d0005"));
@@ -223,9 +223,9 @@ END;
 
         //PARTIE SUR LE NAME
 
-        if(isset($options["name"])) {
+        if (isset($options["name"])) {
             $name = Array(
-                "bool" =>Array(
+                "bool" => Array(
                     "should" => Array(
                         "bool" => Array(
                             "filter" => Array(
@@ -248,33 +248,33 @@ END;
         $size_gte = 0;
         $size_lte = 2000000000;
 
-        if(isset($options["size_lte"])){
-            $size_lte= $options["size_lte"];
+        if (isset($options["size_lte"])) {
+            $size_lte = $options["size_lte"];
         }
 
-        if(isset($options["size_gte"])){
-            $size_gte= $options["size_gte"];
+        if (isset($options["size_gte"])) {
+            $size_gte = $options["size_gte"];
         }
 
-        if(isset($options["date_create_before"])){
+        if (isset($options["date_create_before"])) {
             $create_before = $options["date_create_before"];
         }
 
-        if(isset($options["date_create_after"])){
+        if (isset($options["date_create_after"])) {
             $create_after = $options["date_create_after"];
         }
 
-        if(isset($options["date_modified_before"])){
+        if (isset($options["date_modified_before"])) {
             $modified_before = $options["date_modified_before"];
         }
 
-        if(isset($options["date_modified_after"])){
+        if (isset($options["date_modified_after"])) {
             $modified_after = $options["date_modified_after"];
         }
 
         //PARTIES SUR LES WORKSPACES
         $should_workspaces = Array();
-        foreach($workspaces as $wp) {
+        foreach ($workspaces as $wp) {
             $should_workspaces[] = Array(
                 "match_phrase" => Array(
                     "workspace_id" => $wp
@@ -283,9 +283,9 @@ END;
         }
 
         //PARTIES SUR LES TAGS
-        if(isset($options["tags"])){
+        if (isset($options["tags"])) {
             $should_tags = Array();
-            foreach($options["tags"] as $tag) {
+            foreach ($options["tags"] as $tag) {
                 $should_tags[] = Array(
                     "match_phrase" => Array(
                         "tags" => $tag
@@ -310,8 +310,7 @@ END;
         );
 
 
-
-        if(isset($options["creator"])){
+        if (isset($options["creator"])) {
             $must[] = Array(
                 "match_phrase" => Array(
                     "creator" => $options["creator"]
@@ -320,8 +319,7 @@ END;
         }
 
 
-
-        if(isset($options["type"])){
+        if (isset($options["type"])) {
             $must[] = Array(
                 "match_phrase" => Array(
                     "type" => strtolower($options["type"])
@@ -329,7 +327,7 @@ END;
             );
         }
 
-        if(isset($name)){
+        if (isset($name)) {
             $must[] = $name;
         }
 
@@ -382,7 +380,7 @@ END;
         $scroll_id = $result["scroll_id"];
 
         //on traite les données recu d'Elasticsearch
-        foreach ($result["result"] as $file){
+        foreach ($result["result"] as $file) {
             $this->list_files["files"][] = $file[0]->getAsArray();
         }
         $this->list_files["scroll_id"] = $scroll_id;

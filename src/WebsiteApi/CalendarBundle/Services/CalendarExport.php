@@ -2,10 +2,11 @@
 
 
 namespace WebsiteApi\CalendarBundle\Services;
+
 use ICal\ICal;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
-use \Eluceo\iCal\Component ;
+use \Eluceo\iCal\Component;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\CalendarBundle\Entity\ExportToken;
 
@@ -17,7 +18,8 @@ class CalendarExport
         $this->doctrine = $doctrine;
     }
 
-    public function generateToken($request, $current_user = null){
+    public function generateToken($request, $current_user = null)
+    {
 
         $user_id = $current_user->getId();
         $workspace_id = $request->request->get('workspace_id');
@@ -46,12 +48,12 @@ class CalendarExport
 
     public function exportCalendar($token, $calendarEventService)
     {
-        $entity = $this->doctrine->getRepository("TwakeCalendarBundle:ExportToken")->findOneBy(Array("user_token" =>$token ));
+        $entity = $this->doctrine->getRepository("TwakeCalendarBundle:ExportToken")->findOneBy(Array("user_token" => $token));
         if ($entity) {
             $calendars = $entity->getCalendars();
             $mode = $calendars["mode"];
             $options = Array("mode" => $mode,
-                "calendar_list" => isset($calendars["calendar_list"])?$calendars["calendar_list"]:"",
+                "calendar_list" => isset($calendars["calendar_list"]) ? $calendars["calendar_list"] : "",
                 "after_ts" => date("U", strtotime("-2 months")),
                 "before_ts" => date("U", strtotime("+10 months")));
             $user_entity = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $entity->getUserId()));
@@ -69,21 +71,22 @@ class CalendarExport
 
                         'Content-Disposition' => 'attachment; filename="cal.ics"',
 
-                        'Expires' =>  '0',
-                        'Cache-Control' =>  'must-revalidate',
+                        'Expires' => '0',
+                        'Cache-Control' => 'must-revalidate',
                         'Pragma' => 'public',
                     )
                 );
-            }else{
+            } else {
                 return new JsonResponse("Errors : Events not found in data-base");
             }
-        }else
+        } else
             return new JsonResponse("Errors : Token not found in data-base");
 
 
     }
 
-    public function generateIcs($events){
+    public function generateIcs($events)
+    {
         $time_zone = new \DateTimeZone("Etc/UTC");
         date_default_timezone_set("Etc/UTC");
 
@@ -228,8 +231,6 @@ class CalendarExport
 
         return $vCalendar->render();
     }
-
-
 
 
 }

@@ -12,23 +12,23 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
  */
 class WorkspaceUserByMail
 {
-	/**
+    /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
-	 * @ORM\Id
-	 */
-	private $workspace;
+     * @ORM\Id
+     */
+    private $workspace;
 
-	/**
+    /**
      * @ORM\Column(name="mail", type="string", length=255)
-	 * @ORM\Id
-	 */
-	private $mail;
+     * @ORM\Id
+     */
+    private $mail;
 
     /**
      * @ORM\Column(name="is_externe", type="twake_boolean")
@@ -41,39 +41,39 @@ class WorkspaceUserByMail
     private $is_auto_add_externe;
 
 
-	function __construct($workspace, $mail)
-	{
-		$this->workspace = $workspace;
-		$this->mail = $mail;
+    function __construct($workspace, $mail)
+    {
+        $this->workspace = $workspace;
+        $this->mail = $mail;
         $this->externe = false;
         $this->is_auto_add_externe = false;
     }
 
-	public function setId($id)
+    public function setId($id)
     {
         $this->id = $id;
     }
 
     public function getId()
     {
-		return $this->id;
-	}
+        return $this->id;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getWorkspace()
-	{
-		return $this->workspace;
-	}
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getMail()
-	{
-		return $this->mail;
-	}
+    /**
+     * @return mixed
+     */
+    public function getMail()
+    {
+        return $this->mail;
+    }
 
     /**
      * @return mixed
@@ -90,6 +90,7 @@ class WorkspaceUserByMail
     {
         $this->externe = $externe;
     }
+
     /**
      * @return mixed
      */

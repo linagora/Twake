@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 
-
-
 /**
  * GroupApp
  *
@@ -25,22 +23,22 @@ class GroupApp
      */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
      * @ORM\Id
      */
-	private $group;
+    private $group;
 
-	/**
+    /**
      * @ORM\Column(name="app_id", type="twake_timeuuid")
      * @ORM\Id
-	 */
+     */
     private $app_id;
 
-	/**
+    /**
      * @ORM\Column(type="twake_datetime")
-	 */
-	private $date_added;
+     */
+    private $date_added;
 
     /**
      * @ORM\Column(type="twake_boolean")
@@ -75,19 +73,20 @@ class GroupApp
 
     public function __construct($group, $app_id)
     {
-		$this->group = $group;
+        $this->group = $group;
         $this->app_id = $app_id;
 
-		$this->date_added = new \DateTime();
+        $this->date_added = new \DateTime();
         $this->workspacedefault = false;
 
         $this->setPrivilegesCapabilitiesLastRead(new \DateTime());
-	}
+    }
 
 
-    public function getAsArray(){
-	    return Array(
-	        "id" => $this->getId(),
+    public function getAsArray()
+    {
+        return Array(
+            "id" => $this->getId(),
             "group_id" => $this->getGroup()->getId(),
             "app_id" => $this->getAppId(),
             "date_added" => $this->getDateAdded()->getTimestamp(),
@@ -96,10 +95,10 @@ class GroupApp
         );
     }
 
-	/**
-	 * @return int
-	 */
-	public function setId($id)
+    /**
+     * @return int
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -107,23 +106,23 @@ class GroupApp
     public function getId()
     {
         return $this->id;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getGroup()
-	{
-		return $this->group;
-	}
+    /**
+     * @return mixed
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getDateAdded()
-	{
-		return $this->date_added;
-	}
+    /**
+     * @return mixed
+     */
+    public function getDateAdded()
+    {
+        return $this->date_added;
+    }
 
     /**
      * @return mixed
@@ -239,7 +238,6 @@ class GroupApp
     {
         $this->hooks = json_encode($hooks);
     }
-
 
 
 }

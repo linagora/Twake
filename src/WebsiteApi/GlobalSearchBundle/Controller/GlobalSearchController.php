@@ -78,14 +78,14 @@ class GlobalSearchController extends Controller
 
     public function AdvancedBlocAction(Request $request)
     {
-         $scroll_id = $request->request->get("scroll_id");
+        $scroll_id = $request->request->get("scroll_id");
         //$scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAABgNFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYDBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAGA4WeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAABgPFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAYEBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
         $repository = "TwakeGlobalSearchBundle:Bloc";
 
         $options = $request->request->get("options");
         $channels = $request->request->get("channel_id");
 
-        if(isset($scroll_id) && isset($repository)){
+        if (isset($scroll_id) && isset($repository)) {
             $options["scroll_id"] = $scroll_id;
         }
 
@@ -129,7 +129,7 @@ class GlobalSearchController extends Controller
         $options = $request->request->get("options");
         $workspaces = $request->request->get("workspace_id");
 
-        if(isset($scroll_id) && isset($repository)){
+        if (isset($scroll_id) && isset($repository)) {
             $options["scroll_id"] = $scroll_id;
         }
 
@@ -174,7 +174,7 @@ class GlobalSearchController extends Controller
         $options = $request->request->get("options");
         $workspaces = $request->request->get("workspace_id");
 
-        if(isset($scroll_id) && isset($repository)){
+        if (isset($scroll_id) && isset($repository)) {
             $options["scroll_id"] = $scroll_id;
         }
 
@@ -216,7 +216,7 @@ class GlobalSearchController extends Controller
         $options = $request->request->get("options");
         $workspaces = $request->request->get("workspace_id");
 
-        if(isset($scroll_id) && isset($repository)){
+        if (isset($scroll_id) && isset($repository)) {
             $options["scroll_id"] = $scroll_id;
         }
 

@@ -12,7 +12,8 @@ use WebsiteApi\UsersBundle\Entity\Token;
  */
 class TokenRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
-    public function deleteToken(Token $userToken){
+    public function deleteToken(Token $userToken)
+    {
         $qb = $this->createQueryBuilder('s');
         $qb->delete();
         $qb->where('s.id = :id');

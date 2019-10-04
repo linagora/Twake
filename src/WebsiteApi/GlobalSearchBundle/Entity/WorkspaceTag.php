@@ -11,7 +11,6 @@ use WebsiteApi\CoreBundle\Entity\FrontObject;
  *
  * @ORM\Table(name="workspacetag",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id": "ASC", "id": "DESC"}, {"id": "ASC"} } })
  * @ORM\Entity(repositoryClass="WebsiteApi\GlobalSearchBundle\Repository\BlocRepository")
-
  */
 class WorkspaceTag extends FrontObject
 {
@@ -74,7 +73,6 @@ class WorkspaceTag extends FrontObject
     {
         $this->id = $id;
     }
-
 
 
     /**

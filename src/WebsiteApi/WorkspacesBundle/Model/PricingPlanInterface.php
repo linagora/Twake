@@ -8,10 +8,10 @@ namespace WebsiteApi\WorkspacesBundle\Model;
 interface PricingPlanInterface
 {
 
-	// @init pricings
-	public function init();
+    // @init pricings
+    public function init();
 
-	// @getMinimalPricing return a pricing plan
-	public function getMinimalPricing();
+    // @getMinimalPricing return a pricing plan
+    public function getMinimalPricing();
 
 }

@@ -16,7 +16,8 @@ class Reindex
 
     }
 
-    public function Reindex(){
+    public function Reindex()
+    {
 
 
 //        $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array());
@@ -35,17 +36,17 @@ class Reindex
 //        }
 
         $groups = $this->doctrine->getRepository("TwakeWorkspacesBundle:Group")->findBy(Array());
-        foreach ($groups as $group){
+        foreach ($groups as $group) {
             $this->doctrine->es_put($group, $group->getEsType());
         }
 
         $workspaces = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspaces")->findBy(Array());
-        foreach ($workspaces as $workspace){
+        foreach ($workspaces as $workspace) {
             $this->doctrine->es_put($workspace, $workspace->getEsType());
         }
 
         $mails = $this->doctrine->getRepository("TwakeUsersBundle:Mail")->findBy(Array());
-        foreach ($mails as $mail){
+        foreach ($mails as $mail) {
             $this->doctrine->es_put($mail, $mail->getEsType());
         }
 

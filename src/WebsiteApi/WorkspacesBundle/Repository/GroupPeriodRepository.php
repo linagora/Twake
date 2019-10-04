@@ -10,7 +10,8 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  */
 class GroupPeriodRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
-    public function getLastGroupPeriod($group){
+    public function getLastGroupPeriod($group)
+    {
         $qb = $this->createQueryBuilder('f')
             ->select('max(f.periodStartedAt)')
             ->where('f.group = :group')

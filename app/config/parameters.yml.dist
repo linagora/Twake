@@ -2,7 +2,6 @@
 parameters:
     LICENCE_KEY: A
     STANDALONE: false
-    ONLYOFFICE_SERVER: http://onlyoffice.apps.twakeapp.com
     MAIL_FROM: noreply@twakeapp.com
     SERVER_NAME: https://twakeapp.com
     DRIVE_SALT: SecretPassword

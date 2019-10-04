@@ -54,54 +54,54 @@ class ApplicationController extends Controller
 
     }
 
-	public function getUserTokenAction(Request $request){
+    public function getUserTokenAction(Request $request)
+    {
 
         $manager = $this->get("app.twake_doctrine");
 
-		$data = array(
-			"data" => Array(),
-			'errors' => Array()
-		);
+        $data = array(
+            "data" => Array(),
+            'errors' => Array()
+        );
 
 
         $appid = $request->request->get("appid", 0);
         $groupId = $request->request->get("workspaceId", 0);
 
-		$app = $manager->getRepository("TwakeMarketBundle:Application")
+        $app = $manager->getRepository("TwakeMarketBundle:Application")
             ->find($appid);
 
-		if (!$this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "")) {
-			$data['errors'][] = "notallowed";
-		} else {
+        if (!$this->get('app.workspace_levels')->can($groupId, $this->getUser()->getId(), "")) {
+            $data['errors'][] = "notallowed";
+        } else {
 
-			$useringroup = $manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")
-				->findOneBy(Array("user"=>$this->getUser(),"workspace"=>$groupId));
+            $useringroup = $manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")
+                ->findOneBy(Array("user" => $this->getUser(), "workspace" => $groupId));
 
-			//Delete old tokens (1 minutes)
-			$qb = $manager->createQueryBuilder();
-			$qb->delete('DevelopersApiUsersBundle:Token', 't');
-			$qb->where('t.date < :mindate');
-			$qb->setParameter('mindate', (new \DateTime())->modify('-1 minute'));
+            //Delete old tokens (1 minutes)
+            $qb = $manager->createQueryBuilder();
+            $qb->delete('DevelopersApiUsersBundle:Token', 't');
+            $qb->where('t.date < :mindate');
+            $qb->setParameter('mindate', (new \DateTime())->modify('-1 minute'));
 
-			//Ok
-			$tokenE = new Token();
-			$tokenE->setUser($this->getUser());
-			$tokenE->setWorkspace($useringroup->getWorkspace());
-			$tokenE->setApplication($app);
+            //Ok
+            $tokenE = new Token();
+            $tokenE->setUser($this->getUser());
+            $tokenE->setWorkspace($useringroup->getWorkspace());
+            $tokenE->setApplication($app);
 
-			$manager->persist($tokenE);
-			$manager->flush();
+            $manager->persist($tokenE);
+            $manager->flush();
 
-			$token = $tokenE->getToken();
+            $token = $tokenE->getToken();
 
-			$data["data"]["token"] = $token;
+            $data["data"]["token"] = $token;
 
-		}
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
-
+    }
 
 
 }

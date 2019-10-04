@@ -19,16 +19,17 @@ class AdvancedBloc
 
     }
 
-    public function SearchInBloc($current_user_id,$options,$channels){
+    public function SearchInBloc($current_user_id, $options, $channels)
+    {
         $channel_acces = Array();
-        foreach ($channels as $channel){
-            $member = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id"=> $current_user_id, "channel_id" => $channel));
-            if(isset($member)){
+        foreach ($channels as $channel) {
+            $member = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $current_user_id, "channel_id" => $channel));
+            if (isset($member)) {
                 $channel_acces[] = $channel;
             }
         }
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
-        if(isset($channel_acces) && $channel_acces != Array()){
+        if (isset($channel_acces) && $channel_acces != Array()) {
             $messages = $this->blocservice->search($options, $channel_acces);
 //            if (isset($messages))
 //            {
@@ -40,12 +41,12 @@ class AdvancedBloc
         }
     }
 
-    public function AdvancedBloc($current_user_id,$options,$channels)
+    public function AdvancedBloc($current_user_id, $options, $channels)
     {
 
         $this->globalresult = Array();
 
-        $this->SearchInBloc($current_user_id,$options,$channels);
+        $this->SearchInBloc($current_user_id, $options, $channels);
 //        $files = $this->fileservice->search($words);
 //        foreach ($files as $file){
 //            $globalresult[]=Array( $file["id"] => "file");

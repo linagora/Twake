@@ -1,4 +1,5 @@
 <?php
+
 namespace WebsiteApi\DriveUploadBundle\Services\Resumable\Network;
 
 use Symfony\Component\HttpFoundation\Request;
@@ -9,8 +10,9 @@ class SimpleRequest
 
     public function __construct($request)
     {
-       $this->symfonyrequest = $request;
+        $this->symfonyrequest = $request;
     }
+
     /**
      * @param $type get/post
      * @return boolean
@@ -19,14 +21,15 @@ class SimpleRequest
     {
         switch (strtolower($type)) {
             case 'post':
-                return isset($_POST)&&!empty($_POST);
+                return isset($_POST) && !empty($_POST);
                 break;
             case 'get':
-                return isset($_GET)&&!empty($_GET);
+                return isset($_GET) && !empty($_GET);
                 break;
         }
         return false;
     }
+
     /**
      * @param $requestType GET/POST
      * @return mixed
@@ -35,14 +38,15 @@ class SimpleRequest
     {
         switch (strtolower($requestType)) {
             case 'post':
-                return isset($_POST)?$_POST:array();
+                return isset($_POST) ? $_POST : array();
                 break;
             case 'get':
-                return isset($_GET)?$_GET:array();
+                return isset($_GET) ? $_GET : array();
                 break;
         }
         return array();
     }
+
     /**
      * @return FILES data
      */

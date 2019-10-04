@@ -360,10 +360,10 @@ class MessageSystem
                     //Noop
                 } else if (!$user_reaction) {
                     $this->em->remove($message_reaction);
-                    $reaction["remove"] = Array( $message_reaction->getReaction() => Array("user" => $user->getId() ));
+                    $reaction["remove"] = Array($message_reaction->getReaction() => Array("user" => $user->getId()));
                 } else {
-                    $reaction["remove"] = Array( $message_reaction->getReaction() => Array("user" => $user->getId() ) );
-                    $reaction["add"] = Array( $user_reaction => $user->getId());
+                    $reaction["remove"] = Array($message_reaction->getReaction() => Array("user" => $user->getId()));
+                    $reaction["add"] = Array($user_reaction => $user->getId());
 
                     $message_reaction->setReaction($user_reaction);
                     $this->em->persist($message_reaction);
@@ -371,28 +371,27 @@ class MessageSystem
 
             } else if ($user_reaction) {
                 $message_reaction = new MessageReaction($message->getId(), $user->getId());
-                $reaction["add"] = Array( $user_reaction => Array("user" => $user->getId() ));
+                $reaction["add"] = Array($user_reaction => Array("user" => $user->getId()));
                 $message_reaction->setReaction($user_reaction);
                 $this->em->persist($message_reaction);
             }
 
             if (isset($reaction["add"])) {
                 $key_first = array_keys($reaction["add"])[0];
-                if(array_key_exists($key_first,$current_reactions)){
+                if (array_key_exists($key_first, $current_reactions)) {
                     $current_reactions[$key_first]["users"][] = $user->getId();
-                }
-                else{
+                } else {
                     $current_reactions[$key_first]["users"] = Array($user->getId());
                 }
                 $current_reactions[$key_first]["count"]++;
             }
             if (isset($reaction["remove"])) {
                 $key_first = array_keys($reaction["remove"])[0];
-                if(array_key_exists($key_first,$current_reactions)){
+                if (array_key_exists($key_first, $current_reactions)) {
                     $keytoremove = array_search($user->getId(), $current_reactions[$key_first]["users"]);
                     unset($current_reactions[$key_first]["users"][$keytoremove]);
                     $current_reactions[$key_first]["count"]--;
-                    if($current_reactions[$key_first]["count"]==0){
+                    if ($current_reactions[$key_first]["count"] == 0) {
                         unset($current_reactions[$key_first]);
                     }
                 }
@@ -401,7 +400,7 @@ class MessageSystem
             $message->setReactions($current_reactions);
         }
 
-        if(isset($object["tags"])){
+        if (isset($object["tags"])) {
             $message->setTags($object["tags"]);
         }
 
@@ -484,20 +483,20 @@ class MessageSystem
         return $array;
     }
 
-    public function indexbloc($message,$workspace_id,$channel_id)
+    public function indexbloc($message, $workspace_id, $channel_id)
     {
-        $message_id = $message->getId()."";
+        $message_id = $message->getId() . "";
 
         $lastbloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
 
         if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
-            $messages= Array();
+            $messages = Array();
             $id_messages = Array();
             $blocbdd = new Bloc($workspace_id, $channel_id, $messages, $id_messages);
 
         } else
             $blocbdd = $lastbloc;
-        if($blocbdd->getNbMessage() == 9){
+        if ($blocbdd->getNbMessage() == 9) {
             $blocbdd->setLock(true);
         }
 
@@ -506,17 +505,18 @@ class MessageSystem
         $content = $this->mdToText($message->getContent());
         $blocbdd->addmessage($message, $content, $content_id);
         $this->em->persist($blocbdd);
-        $message->setBlockId($blocbdd->getId()."");
+        $message->setBlockId($blocbdd->getId() . "");
         $this->em->persist($message);
         $this->em->flush();
 
-        if ($blocbdd->getNbMessage() == 10){
+        if ($blocbdd->getNbMessage() == 10) {
             // indexer le bloc de message
-            $this->em->es_put($blocbdd,$blocbdd->getEsType());
+            $this->em->es_put($blocbdd, $blocbdd->getEsType());
         }
     }
 
-    public function updateinbloc($message,$new_content,$reaction){  //this param is a message ENTITY
+    public function updateinbloc($message, $new_content, $reaction)
+    {  //this param is a message ENTITY
 
         if (!$message->getBlockId()) {
             return false;
@@ -528,7 +528,7 @@ class MessageSystem
             return false;
         }
 
-        $position = array_search($message->getId()."",$bloc->getIdMessages());
+        $position = array_search($message->getId() . "", $bloc->getIdMessages());
         $messages = $bloc->getMessages();
         $messages[$position]["content"] = $this->mdToText($new_content);
 
@@ -539,12 +539,12 @@ class MessageSystem
         $this->em->persist($bloc);
 
         $pinned = $message->getPinned();
-        if (isset($pinned) &&  $messages[$position]["pinned"] != $pinned){
+        if (isset($pinned) && $messages[$position]["pinned"] != $pinned) {
             $messages[$position]["pinned"] = $pinned;
         }
 
         $tags = $message->getTags();
-        if (isset($tags) &&  $messages[$position]["tags"] != $tags){
+        if (isset($tags) && $messages[$position]["tags"] != $tags) {
             $messages[$position]["tags"] = $tags;
         }
 
@@ -564,7 +564,7 @@ class MessageSystem
         }
 
 
-        if(isset($reaction["add"]) || isset($reaction["remove"]) ){
+        if (isset($reaction["add"]) || isset($reaction["remove"])) {
             $current_reactions = $messages[$position]["reactions"];
 
             if (isset($reaction["add"])) {
@@ -585,10 +585,9 @@ class MessageSystem
             if (isset($reaction["remove"])) {
                 foreach ($current_reactions as $key => $value) {
                     if ($value["reaction"] == array_keys($reaction["remove"])[0]) {
-                        if($value["count"] == 1){
+                        if ($value["count"] == 1) {
                             unset($current_reactions[$key]);
-                        }
-                        else{
+                        } else {
                             $current_reactions[$key]['count']--;
                         }
                     }
@@ -608,14 +607,15 @@ class MessageSystem
         $this->em->flush();
 
         // Need to reindex the bloc in ES if he is already indexed
-        if($bloc->getLock() == true){
-            $this->em->es_put($bloc,$bloc->getEsType());
+        if ($bloc->getLock() == true) {
+            $this->em->es_put($bloc, $bloc->getEsType());
         }
 
     }
 
 
-    public function deleteinbloc($message){
+    public function deleteinbloc($message)
+    {
 
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
 
@@ -626,12 +626,12 @@ class MessageSystem
         $position = array_search($message->getId() . "", $bloc->getIdMessages());
 
 
-        $bloc->setNbMessage($bloc->getNbMessage()-1);
+        $bloc->setNbMessage($bloc->getNbMessage() - 1);
 
         $messages = $bloc->getMessages();
         $id_messages = $bloc->getIdMessages();
 
-        array_splice( $messages, $position, 1);
+        array_splice($messages, $position, 1);
         array_splice($id_messages, $position, 1);
 
         $bloc->setMessages($messages);
@@ -640,8 +640,8 @@ class MessageSystem
         $this->em->persist($bloc);
         $this->em->flush();
 
-        if($bloc->getLock() == true){
-            $this->em->es_put($bloc,$bloc->getEsType());
+        if ($bloc->getLock() == true) {
+            $this->em->es_put($bloc, $bloc->getEsType());
 
         }
 

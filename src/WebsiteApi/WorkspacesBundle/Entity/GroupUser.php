@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 
-
-
 /**
  * GroupUser
  *
@@ -16,30 +14,30 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
  */
 class GroupUser
 {
-	/**
-	 * @var int
-	 *
+    /**
+     * @var int
+     *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      */
-	protected $id;
+    protected $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
      * @ORM\Id
-	 */
-	protected $user;
+     */
+    protected $user;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
      * @ORM\Id
-	 */
-	protected $group;
+     */
+    protected $group;
 
-	/**
+    /**
      * @ORM\Column(name="level", type="integer")
-	 */
-	protected $level;
+     */
+    protected $level;
 
     /**
      * @ORM\Column(name="did_connect_today", type="twake_boolean")
@@ -62,10 +60,10 @@ class GroupUser
      */
     protected $nbworkspace;
 
-	/**
+    /**
      * @ORM\Column(type="twake_datetime")
-	 */
-	private $date_added;
+     */
+    private $date_added;
 
     /**
      * @ORM\Column(name="last_update_day", type="integer")
@@ -87,12 +85,13 @@ class GroupUser
      */
     private $hasnotifications = false;
 
-	public function __construct($group, $user) {
-		$this->group = $group;
-		$this->user = $user;
+    public function __construct($group, $user)
+    {
+        $this->group = $group;
+        $this->user = $user;
 
-		$this->level = 0;
-		$this->date_added = new \DateTime();
+        $this->level = 0;
+        $this->date_added = new \DateTime();
         $this->nbworkspace = 0;
         $this->didconnecttoday = false;
         $this->usedappstoday = "[]";
@@ -100,9 +99,9 @@ class GroupUser
         $this->connectionsperiod = 0;
         $this->appsusage_period = "[]";
         $this->externe = false;
-	}
+    }
 
-	public function setId($id)
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -110,39 +109,39 @@ class GroupUser
     public function getId()
     {
         return $this->id;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getUser()
-	{
-		return $this->user;
-	}
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getGroup()
-	{
-		return $this->group;
-	}
+    /**
+     * @return mixed
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getLevel()
-	{
-		return $this->level;
-	}
+    /**
+     * @return mixed
+     */
+    public function getLevel()
+    {
+        return $this->level;
+    }
 
-	/**
-	 * @param mixed $level
-	 */
-	public function setLevel($level)
-	{
-		$this->level = $level;
-	}
+    /**
+     * @param mixed $level
+     */
+    public function setLevel($level)
+    {
+        $this->level = $level;
+    }
 
     /**
      * @return mixed
@@ -194,7 +193,7 @@ class GroupUser
     {
         if ($this->nbworkspace == 0) {
             return $this->nbworkspace;
-        }else{
+        } else {
             return $this->nbworkspace = $this->nbworkspace - 1;
         }
     }

@@ -11,7 +11,8 @@ class AccessManager
         $this->memberservice = $memberservice;
     }
 
-    public function has_access($current_user_id, $data, $options = null){
+    public function has_access($current_user_id, $data, $options = null)
+    {
 
         if ($current_user_id && !is_string($current_user_id)) {
             $current_user_id = $current_user_id->getId();
@@ -33,15 +34,13 @@ class AccessManager
 //        }
 
 
-        if($type == "Workspace"){
-            if(!$this->user_has_workspace_access($current_user_id,$id)){
+        if ($type == "Workspace") {
+            if (!$this->user_has_workspace_access($current_user_id, $id)) {
                 return false;
             }
-        }
-
-        else if($type == "Channel"){
+        } else if ($type == "Channel") {
             $channel = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $id));
-            if(isset($channel)){
+            if (isset($channel)) {
                 $channel = $channel->getAsArray();
                 $workspace_id = $channel["original_workspace"];
                 $members = $channel["members"];
@@ -52,28 +51,22 @@ class AccessManager
                     if (!$this->user_has_workspace_access($current_user_id, $workspace_id) || ((!in_array($current_user_id, $members)) && (!in_array($current_user_id, $ext_members)))) {
                         return false;
                     }
-            }
-            else{
+            } else {
                 return false;
             }
-        }
-
-        else if($type == "Message"){
+        } else if ($type == "Message") {
             $message = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $id));
-            if(isset($message)){
+            if (isset($message)) {
                 $message = $message->getAsArray();
                 $channel_id = $message["channel_id"];
                 $data = Array("type" => "Channel", "object_id" => $channel_id);
                 if (!$this->has_access($current_user_id, $data)) {
                     return false;
                 }
-            }
-            else{
+            } else {
                 return false;
             }
-        }
-
-        else if($type == "DriveFile"){ //pensez au parent id tous ca tous ca et a detached
+        } else if ($type == "DriveFile") { //pensez au parent id tous ca tous ca et a detached
 
             if ($id == "root" || $id == "trash") {
                 if (!$data["workspace_id"]) {
@@ -87,7 +80,7 @@ class AccessManager
             }
             $df = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $id));
 
-            if(isset($df)){
+            if (isset($df)) {
                 $df = $df->getAsArray();
                 $workspace_id = $df["workspace_id"];
 
@@ -138,18 +131,15 @@ class AccessManager
 
             return false;
 
-        }
-
-        else if($type == "Calendar"){ //pensez au parent id tous ca tous ca et a detached
+        } else if ($type == "Calendar") { //pensez au parent id tous ca tous ca et a detached
             $calendar = $this->doctrine->getRepository("TwakeCalendarBundle:Calendar")->findOneBy(Array("id" => $id));
-            if(isset($calendar)){
+            if (isset($calendar)) {
                 $calendar = $calendar->getAsArray();
                 $workspace_id = $calendar["workspace_id"];
-                if( !$this->user_has_workspace_access($current_user_id,$workspace_id) ){
+                if (!$this->user_has_workspace_access($current_user_id, $workspace_id)) {
                     return false;
                 }
-            }
-            else{
+            } else {
                 return false;
             }
         }
@@ -158,16 +148,17 @@ class AccessManager
         return true;
     }
 
-    public function user_has_workspace_access($current_user_id,$workspace_id){
+    public function user_has_workspace_access($current_user_id, $workspace_id)
+    {
         $wp = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id));
         $members = $wp->getMembers();
         $access = false;
-        foreach ($members as $member){
-            if($member->getUser()->getId() == $current_user_id){
+        foreach ($members as $member) {
+            if ($member->getUser()->getId() == $current_user_id) {
                 $access = true;
             }
         }
-        if(!$access){
+        if (!$access) {
             return false;
         }
 

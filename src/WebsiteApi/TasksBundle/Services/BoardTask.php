@@ -20,7 +20,7 @@ class BoardTask
         $this->enc_pusher = $enc_pusher;
         $this->applications_api = $application_api;
         $this->notifications = $notifications;
-        $this->attachementManager = new AttachementManager($this->doctrine,$this->enc_pusher);
+        $this->attachementManager = new AttachementManager($this->doctrine, $this->enc_pusher);
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -194,7 +194,7 @@ class BoardTask
 
         $task->setTaskLastModified();
 
-        if(isset($object["tags"])){
+        if (isset($object["tags"])) {
             $task->setTags($object["tags"]);
         }
 
@@ -380,16 +380,17 @@ class BoardTask
 
     }
 
-    public function updateAttachements(Task $task,$attachements = Array()){
-        $oldAttachements = $task->getAttachements()?$task->getAttachements():Array();
+    public function updateAttachements(Task $task, $attachements = Array())
+    {
+        $oldAttachements = $task->getAttachements() ? $task->getAttachements() : Array();
         $newAttachement = $oldAttachements;
-        $get_diff = $this->getArrayDiffUsingKeys($attachements,$oldAttachements, ["id"]);
-        foreach($get_diff["del"] as $att){
+        $get_diff = $this->getArrayDiffUsingKeys($attachements, $oldAttachements, ["id"]);
+        foreach ($get_diff["del"] as $att) {
             foreach ($newAttachement as $index => $attac) {
-                if($attac["id"] == $att["id"] && $attac["type"] == $att["type"]){
+                if ($attac["id"] == $att["id"] && $attac["type"] == $att["type"]) {
                     $attachedRepo = $this->getAttachementRepository($att["type"]);
-                    if($attachedRepo){
-                        $entityAttached = $attachedRepo->findOneBy(Array("id"=>$att["id"]));
+                    if ($attachedRepo) {
+                        $entityAttached = $attachedRepo->findOneBy(Array("id" => $att["id"]));
                         $attachmentInEntityAttached = $entityAttached->getAttachements();
                         foreach ($attachmentInEntityAttached as $index1 => $attac1) {
                             if ($attac1["id"] == $task->getId() && $attac1["type"] == "task" && $attac1["isAtttached"]) {
@@ -404,13 +405,13 @@ class BoardTask
                 }
             }
         }
-        foreach ($get_diff["add"] as $att){
+        foreach ($get_diff["add"] as $att) {
             $att["isAttached"] = false;
             $newAttachement[] = $att;
             $attachedRepo = $this->getAttachementRepository($att["type"]);
-            if($attachedRepo) {
+            if ($attachedRepo) {
                 $entityAttached = $attachedRepo->findOneBy(Array("id" => $att["id"]));
-                if($entityAttached){
+                if ($entityAttached) {
                     $attachmentInEntityAttached = $entityAttached->getAttachements();
                     $attachmentOfAttached = Array(
                         "type" => "task",
@@ -429,14 +430,13 @@ class BoardTask
         $this->doctrine->flush();
     }
 
-    public function getAttachementRepository($type){
-        if($type == "file"){
+    public function getAttachementRepository($type)
+    {
+        if ($type == "file") {
             return $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
-        }
-        elseif($type == "task"){
+        } elseif ($type == "task") {
             return $this->doctrine->getRepository("TwakeTasksBundle:Task");
-        }
-        elseif($type == "event"){
+        } elseif ($type == "event") {
             return $this->doctrine->getRepository("TwakeCalendarBundle:Event");
         }
         return false;

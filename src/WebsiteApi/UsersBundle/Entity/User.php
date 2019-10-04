@@ -34,43 +34,43 @@ class User extends SearchableObject implements UserInterface
      */
     public $id_as_string_for_session_handler;
 
-	/**
+    /**
      * @ORM\Column(name="banned", type="twake_boolean")
-	 */
-	protected $banned = false;
+     */
+    protected $banned = false;
 
     /**
      * @ORM\Column(name="is_robot", type="twake_boolean", options={"default" : false } )
      */
     protected $isrobot;
 
-	/**
+    /**
      * @ORM\Column(name="first_name", type="twake_text")
      * @Encrypted
-	 */
+     */
     protected $firstname = "";
 
-	/**
+    /**
      * @ORM\Column(name="last_name", type="twake_text")
      * @Encrypted
-	 */
+     */
     protected $lastname = "";
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
-	 */
-	protected $thumbnail;
+     */
+    protected $thumbnail;
 
-	/**
+    /**
      * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser", mappedBy="User")
-	 */
-	protected $workspaces;
+     */
+    protected $workspaces;
 
-	/**
-	 * @var int
+    /**
+     * @var int
      * @ORM\Column(name="connections", type="integer")
-	 */
-	protected $connections;
+     */
+    protected $connections;
 
     /**
      * @var int
@@ -84,10 +84,10 @@ class User extends SearchableObject implements UserInterface
      */
     protected $status_icon = '["", ""]';
 
-	/**
-	 * @var int
+    /**
+     * @var int
      * @ORM\Column(name="last_activity", type="twake_bigint")
-	 */
+     */
     protected $lastactivity = 0;
 
     /**
@@ -96,10 +96,10 @@ class User extends SearchableObject implements UserInterface
      */
     protected $creationdate;
 
-	/**
+    /**
      * @ORM\Column(name="language", type="string", length=64)
-	 */
-	protected $language = "en";
+     */
+    protected $language = "en";
 
     /**
      * @ORM\Column(name="notification_preference", type="twake_text")
@@ -202,25 +202,24 @@ class User extends SearchableObject implements UserInterface
     protected $roles;
 
 
-
     public function __construct()
-	{
+    {
         parent::__construct();
-		$this->enabled = true;
-		$this->connections = 0;
-		$this->connected = 1;
+        $this->enabled = true;
+        $this->connections = 0;
+        $this->connected = 1;
         $this->isrobot = false;
         $this->roles = array();
         $this->lastlogin = new \DateTime();
         $this->passwordrequestedat = new \DateTime();
 
         $this->setCreationDate(new \DateTime());
-	}
+    }
 
-	/**
-	 * @return int
-	 */
-	public function setId($id)
+    /**
+     * @return int
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -228,7 +227,7 @@ class User extends SearchableObject implements UserInterface
     public function getId()
     {
         return $this->id;
-	}
+    }
 
     public function setIdAsString()
     {
@@ -237,37 +236,37 @@ class User extends SearchableObject implements UserInterface
         }
     }
 
-	/**
-	 * @return mixed
-	 */
-	public function getBanned()
-	{
-		return $this->banned;
-	}
+    /**
+     * @return mixed
+     */
+    public function getBanned()
+    {
+        return $this->banned;
+    }
 
-	/**
-	 * @param mixed $banned
-	 */
-	public function setBanned($banned)
-	{
-		$this->banned = $banned;
-	}
+    /**
+     * @param mixed $banned
+     */
+    public function setBanned($banned)
+    {
+        $this->banned = $banned;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getFirstName()
-	{
+    /**
+     * @return mixed
+     */
+    public function getFirstName()
+    {
         return $this->firstname;
-	}
+    }
 
-	/**
+    /**
      * @param mixed $firstname
-	 */
+     */
     public function setFirstName($firstname)
     {
         $this->firstname = $firstname;
-	}
+    }
 
     /**
      * @return dateTime
@@ -285,107 +284,108 @@ class User extends SearchableObject implements UserInterface
         $this->creationdate = $creationdate;
     }
 
-	/**
-	 * @return mixed
-	 */
-	public function getLastName()
-	{
+    /**
+     * @return mixed
+     */
+    public function getLastName()
+    {
         return $this->lastname;
-	}
+    }
 
-	/**
+    /**
      * @param mixed $lastname
-	 */
+     */
     public function setLastName($lastname)
     {
         $this->lastname = $lastname;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getThumbnail()
-	{
-		return $this->thumbnail;
-	}
+    /**
+     * @return mixed
+     */
+    public function getThumbnail()
+    {
+        return $this->thumbnail;
+    }
 
-	/**
-	 * @param mixed $thumbnail
-	 */
-	public function setThumbnail($thumbnail)
-	{
-		$this->thumbnail = $thumbnail;
-	}
+    /**
+     * @param mixed $thumbnail
+     */
+    public function setThumbnail($thumbnail)
+    {
+        $this->thumbnail = $thumbnail;
+    }
 
-	public function getWorkspaces()
-	{
+    public function getWorkspaces()
+    {
 
-		$workspaces = Array();
+        $workspaces = Array();
 
-		for ($i = 0; $i < count($this->workspaces); ++$i) {
-			$workspaces[] = $this->workspaces[$i]->getWorkspace();
-		}
+        for ($i = 0; $i < count($this->workspaces); ++$i) {
+            $workspaces[] = $this->workspaces[$i]->getWorkspace();
+        }
 
-		return $workspaces;
-	}
+        return $workspaces;
+    }
 
-	public function isActive(){
+    public function isActive()
+    {
         $this->lastactivity = date("U");
         $this->connected = true;
-	}
+    }
 
-	/* Manage connections with websocket */
-	public function getConnections()
-	{
-		return $this->connections;
-	}
+    /* Manage connections with websocket */
+    public function getConnections()
+    {
+        return $this->connections;
+    }
 
-	public function isConnected()
-	{
+    public function isConnected()
+    {
         if (date("U") - $this->lastactivity > 60 * 5) {
-			$this->connected = false;
-			return false;
-		}
-		return $this->connected;
-	}
+            $this->connected = false;
+            return false;
+        }
+        return $this->connected;
+    }
 
-	public function resetConnection()
-	{
-		$this->connections = 0;
-		$this->connected = false;
-	}
+    public function resetConnection()
+    {
+        $this->connections = 0;
+        $this->connected = false;
+    }
 
-	public function addConnection()
-	{
+    public function addConnection()
+    {
         if (date("U") - $this->lastactivity > 120) {
-			$this->connections = 0;
-		}
+            $this->connections = 0;
+        }
         $this->lastactivity = date("U");
-		$this->connections += 1;
-		$this->connected = true;
-	}
+        $this->connections += 1;
+        $this->connected = true;
+    }
 
-	public function remConnection()
-	{
-		$this->connections = max(0, $this->connections - 1);
-		$this->connected = $this->connections > 0;
-	}
+    public function remConnection()
+    {
+        $this->connections = max(0, $this->connections - 1);
+        $this->connected = $this->connections > 0;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getLanguage()
-	{
-		return $this->language;
-	}
+    /**
+     * @return mixed
+     */
+    public function getLanguage()
+    {
+        return $this->language;
+    }
 
-	/**
-	 * @param mixed $language
-	 */
-	public function setLanguage($language)
-	{
-		$this->language = $language;
-	}
+    /**
+     * @param mixed $language
+     */
+    public function setLanguage($language)
+    {
+        $this->language = $language;
+    }
 
     /**
      * @return mixed
@@ -438,38 +438,38 @@ class User extends SearchableObject implements UserInterface
         $this->origin = $origin;
     }
 
-	/**
-	 * @return mixed
-	 */
-	public function getNotificationPreference()
-	{
-		$preferences = json_decode($this->notification_preference, 1);
+    /**
+     * @return mixed
+     */
+    public function getNotificationPreference()
+    {
+        $preferences = json_decode($this->notification_preference, 1);
         $preferences["devices"] = (isset($preferences["devices"])) ? $preferences["devices"] : 0;
-		$preferences["dont_disturb_between"] = (isset($preferences["dont_disturb_between"]))?$preferences["dont_disturb_between"]:null;
-		$preferences["dont_disturb_and"] = (isset($preferences["dont_disturb_and"]))?$preferences["dont_disturb_and"]:null;
-		$preferences["privacy"] = (isset($preferences["privacy"]))?$preferences["privacy"]:0;
-		$preferences["dont_use_keywords"] = (isset($preferences["dont_use_keywords"]))?$preferences["dont_use_keywords"]:1;
-		$preferences["keywords"] = (isset($preferences["keywords"]))?$preferences["keywords"]:"";
-        $preferences["disabled_workspaces"] = (isset($preferences["disabled_workspaces"]))?$preferences["disabled_workspaces"]:[];
-        $preferences["workspace"] = (isset($preferences["workspace"]))?$preferences["workspace"]:[];
+        $preferences["dont_disturb_between"] = (isset($preferences["dont_disturb_between"])) ? $preferences["dont_disturb_between"] : null;
+        $preferences["dont_disturb_and"] = (isset($preferences["dont_disturb_and"])) ? $preferences["dont_disturb_and"] : null;
+        $preferences["privacy"] = (isset($preferences["privacy"])) ? $preferences["privacy"] : 0;
+        $preferences["dont_use_keywords"] = (isset($preferences["dont_use_keywords"])) ? $preferences["dont_use_keywords"] : 1;
+        $preferences["keywords"] = (isset($preferences["keywords"])) ? $preferences["keywords"] : "";
+        $preferences["disabled_workspaces"] = (isset($preferences["disabled_workspaces"])) ? $preferences["disabled_workspaces"] : [];
+        $preferences["workspace"] = (isset($preferences["workspace"])) ? $preferences["workspace"] : [];
         $preferences["mail_notifications"] = (isset($preferences["mail_notifications"])) ? $preferences["mail_notifications"] : 2;
         $preferences["disable_until"] = (isset($preferences["disable_until"])) ? $preferences["disable_until"] : 0;
 
-		return $preferences;
-	}
+        return $preferences;
+    }
 
-	/**
-	 * @param mixed $notification_preference
-	 */
-	public function setNotificationPreference($notification_preference)
-	{
-		$preferences = Array();
-		@$preferences["devices"] = intval($notification_preference["devices"]);
-		@$preferences["dont_disturb_between"] = intval($notification_preference["disturb_before"]);
-		@$preferences["dont_disturb_and"] = intval($notification_preference["disturb_after"]);
-		@$preferences["privacy"] = intval($notification_preference["privacy"]);
-		@$preferences["dont_use_keywords"] = intval($notification_preference["use_keywords"]);
-		@$preferences["keywords"] = substr($notification_preference["keywords"], 0, 512);
+    /**
+     * @param mixed $notification_preference
+     */
+    public function setNotificationPreference($notification_preference)
+    {
+        $preferences = Array();
+        @$preferences["devices"] = intval($notification_preference["devices"]);
+        @$preferences["dont_disturb_between"] = intval($notification_preference["disturb_before"]);
+        @$preferences["dont_disturb_and"] = intval($notification_preference["disturb_after"]);
+        @$preferences["privacy"] = intval($notification_preference["privacy"]);
+        @$preferences["dont_use_keywords"] = intval($notification_preference["use_keywords"]);
+        @$preferences["keywords"] = substr($notification_preference["keywords"], 0, 512);
         @$preferences["mail_notifications"] = intval($notification_preference["mail_notifications"]);
         @$preferences["disable_until"] = (isset($notification_preference["disable_until"])) ? $notification_preference["disable_until"] : 0;
 
@@ -477,8 +477,8 @@ class User extends SearchableObject implements UserInterface
             @$preferences["disabled_workspaces"][] = intval($item);
         }
 
-		$this->notification_preference = json_encode($notification_preference);
-	}
+        $this->notification_preference = json_encode($notification_preference);
+    }
 
 
     public function getTutorialStatus()
@@ -503,24 +503,24 @@ class User extends SearchableObject implements UserInterface
         return ucwords($name);
     }
 
-	public function getAsArray()
-	{
-		$return = Array(
-			"id" => $this->getId(),
-			"username" => $this->getUsername(),
-			"firstname" => $this->getFirstName(),
-			"lastname" => $this->getLastName(),
+    public function getAsArray()
+    {
+        $return = Array(
+            "id" => $this->getId(),
+            "username" => $this->getUsername(),
+            "firstname" => $this->getFirstName(),
+            "lastname" => $this->getLastName(),
             "thumbnail" => (($this->getThumbnail() == null) ? null : $this->getThumbnail()->getPublicURL(2)) . "",
             "connected" => $this->isConnected(),
-			"language" => $this->getLanguage(),
+            "language" => $this->getLanguage(),
             "isNew" => $this->getisNew(),
             "isRobot" => $this->getisRobot(),
             "status_icon" => $this->getStatusIcon(),
             "front_id" => $this->getFrontId(),
             "timezone_offset" => $this->timezone
-		);
-		return $return;
-	}
+        );
+        return $return;
+    }
 
     public function getIndexationArray()
     {

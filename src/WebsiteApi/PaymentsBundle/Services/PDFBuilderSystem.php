@@ -23,19 +23,20 @@ class PDFBuilderSystem implements PDFBuilderInterface
 
     public function makeBillPDF($data)
     {
-        $html =  $this->templating->render(
+        $html = $this->templating->render(
             "TwakePaymentsBundle:Pdf:bill.html.twig",
             $data
         );
-        $name = $data["bill_id"].".pdf";
+        $name = $data["bill_id"] . ".pdf";
 
-        $this->makePDFFromHtml($html,$name);
+        $this->makePDFFromHtml($html, $name);
 
         return $name;
     }
 
 
-    public function makePDFFromHtml($html, $name){
+    public function makePDFFromHtml($html, $name)
+    {
         $dompdf = new Dompdf();
         $dompdf->loadHtml($html);
 
@@ -49,15 +50,16 @@ class PDFBuilderSystem implements PDFBuilderInterface
         return $name;
     }
 
-    public function makeUsageStatPDF($data){
-        $html =  $this->templating->render(
+    public function makeUsageStatPDF($data)
+    {
+        $html = $this->templating->render(
             "TwakePaymentsBundle:Pdf:stat.html.twig",
             $data
         );
 
-        $name = $data["stat_id"].".pdf";
+        $name = $data["stat_id"] . ".pdf";
 
-        $this->makePDFFromHtml($html,$name);
+        $this->makePDFFromHtml($html, $name);
 
 
         return $name;

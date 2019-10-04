@@ -187,17 +187,16 @@ class ManagerAdapter
 
         if (method_exists($object, "getEsIndexed")) {
             //This is a searchable object
-            if (method_exists($object,"getLock()") ){
-                if($object->getLock() == true) {
-                    $this->es_updates[$object->getId().""] = $object;
+            if (method_exists($object, "getLock()")) {
+                if ($object->getLock() == true) {
+                    $this->es_updates[$object->getId() . ""] = $object;
                     unset($this->es_removes[$object->getId() . ""]);
                     $object->setEsIndexed(true);
                 }
-            }
-            else{
+            } else {
                 if (!$object->getEsIndexed() || $object->changesInIndexationArray()) {
-                    $this->es_updates[$object->getId().""] = $object;
-                    unset($this->es_removes[$object->getId().""]);
+                    $this->es_updates[$object->getId() . ""] = $object;
+                    unset($this->es_removes[$object->getId() . ""]);
                     $object->setEsIndexed(true);
                 }
             }
@@ -234,7 +233,8 @@ class ManagerAdapter
 
     //update for important keywords from title or extension of a file only in ES to not repeat info in scyllaDB
 
-    public function update_ES_keyword($keywords,$word){
+    public function update_ES_keyword($keywords, $word)
+    {
 
 
         $keywords[] = Array(
@@ -265,7 +265,7 @@ class ManagerAdapter
                 $data = Array("content" => $data);
             }
         } else {
-            $id = $entity->getId()."";
+            $id = $entity->getId() . "";
             if (method_exists($entity, "getIndexationArray")) {
                 $data = $entity->getIndexationArray();
             }
@@ -273,19 +273,18 @@ class ManagerAdapter
                 $keywords = $entity->getContentKeywords();
                 //partie sur la verification du format des mots clés
                 $keywords_verif = Array();
-                foreach ($keywords as $keyword_score){
+                foreach ($keywords as $keyword_score) {
                     $keys = array_keys($keyword_score);
-                    if(count($keys) != 2 || $keys[0] != "keyword" || $keys[1]  != "score" ||
-                        gettype($keyword_score["keyword"]) != "string" || gettype($keyword_score["keyword"]) != "string"){
+                    if (count($keys) != 2 || $keys[0] != "keyword" || $keys[1] != "score" ||
+                        gettype($keyword_score["keyword"]) != "string" || gettype($keyword_score["keyword"]) != "string") {
                         error_log("Wrong format for keyword data");
-                    }
-                    else{
+                    } else {
                         $keywords_verif[] = $keyword_score;
                     }
                 }
 
-                $name= $entity->getName();
-                $keywords = $this->update_ES_keyword($keywords_verif,$name);
+                $name = $entity->getName();
+                $keywords = $this->update_ES_keyword($keywords_verif, $name);
                 $data["keywords"] = $keywords;
 
             }
@@ -294,7 +293,6 @@ class ManagerAdapter
         $st = new StringCleaner();
         $data = $st->simplifyInArray($data);
         $route = "http://" . $this->es_server . "/" . $index . "/_doc/" . $id;
-
 
 
         try {
@@ -331,11 +329,10 @@ class ManagerAdapter
     public function es_search($options = Array(), $index = null, $server = "twake")
     {
 
-        if(isset($options["scroll_id"])){
-            $route = "http://" . $this->es_server . "/_search/scroll" ;
+        if (isset($options["scroll_id"])) {
+            $route = "http://" . $this->es_server . "/_search/scroll";
             $res = $this->circle->post($route, json_encode(Array("scroll" => "5m", "scroll_id" => $options["scroll_id"])), array(CURLOPT_CONNECTTIMEOUT => 1, CURLOPT_TIMEOUT => 1, CURLOPT_HTTPHEADER => ['Content-Type: application/json']));
-        }
-        else {
+        } else {
             if (!$this->es_server) {
 
                 if (isset($options["repository"]) && isset($options["fallback_keys"])) {
@@ -400,7 +397,7 @@ class ManagerAdapter
 
         if ($res) {
             $res = json_decode($res, 1);
-            if($res["hits"]["total"] > $options["size"] && isset($res["_scroll_id"])){
+            if ($res["hits"]["total"] > $options["size"] && isset($res["_scroll_id"])) {
                 //on a plus de 10 resultat et un ID il faut paginer
                 $scroll_id = $res["_scroll_id"];
             }

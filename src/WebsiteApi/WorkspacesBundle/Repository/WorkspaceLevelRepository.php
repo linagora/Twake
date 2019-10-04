@@ -11,11 +11,12 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
 class WorkspaceLevelRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
-    public function getByLabel($label,$workspace){
+    public function getByLabel($label, $workspace)
+    {
         $qb = $this->createQueryBuilder('p')
             ->andWhere('p.label like :label')
             ->andWhere('p.workspace = :workspace')
-            ->setParameter('label', '%'.$label.'%')
+            ->setParameter('label', '%' . $label . '%')
             ->setParameter('workspace', $this->queryBuilderUuid($workspace))
             ->setMaxResults(10)
             ->getQuery();

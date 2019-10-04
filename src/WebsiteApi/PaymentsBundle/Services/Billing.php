@@ -13,7 +13,8 @@ use WebsiteApi\PaymentsBundle\Entity\Receipt;
 use WebsiteApi\PaymentsBundle\Model\BillingInterface;
 use WebsiteApi\WorkspacesBundle\Entity\GroupPricingInstance;
 
-class Billing implements BillingInterface{
+class Billing implements BillingInterface
+{
 
     var $doctrine;
 
@@ -22,7 +23,8 @@ class Billing implements BillingInterface{
         $this->doctrine = $doctrine;
     }
 
-    public function recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt){
+    public function recordTransaction($group, $pricingPlan, $period, $startDateOfService, $cost, $billedType, $endedAt)
+    {
         $grouppricinginstance = new GroupPricingInstance($group, $billedType, $pricingPlan);
 
         $grouppricinginstance->setCost($cost);
@@ -38,10 +40,10 @@ class Billing implements BillingInterface{
         $this->doctrine->persist($transaction);
         $this->doctrine->flush();
 
-        $transaction = $this->doctrine->getRepository("TwakePaymentsBundle:Receipt")->findOneBy(Array("billId"=> "null"));
+        $transaction = $this->doctrine->getRepository("TwakePaymentsBundle:Receipt")->findOneBy(Array("billId" => "null"));
 
         $id = $transaction->getId();
-        $billId = "Web-".$id;
+        $billId = "Web-" . $id;
 
         $transaction->setBillId($billId);
 
@@ -51,7 +53,8 @@ class Billing implements BillingInterface{
         return $transaction->getAsArray();
     }
 
-    public function getAllReceipt(){
+    public function getAllReceipt()
+    {
         $subscriptionRepo = $this->doctrine->getRepository("TwakePaymentsBundle:Receipt");
 
         return $subscriptionRepo->findBy(array(), array('startDateOfService' => 'DESC'));

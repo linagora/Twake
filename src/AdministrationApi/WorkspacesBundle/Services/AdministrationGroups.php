@@ -15,7 +15,8 @@ class AdministrationGroups
         $this->em = $em;
     }
 
-    public function getAllGroups($options) {
+    public function getAllGroups($options)
+    {
 
         $options = Array(
             "repository" => "TwakeWorkspacesBundle:Group",
@@ -44,13 +45,13 @@ class AdministrationGroups
 
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
-        foreach ($result["result"] as $group){
+        foreach ($result["result"] as $group) {
             //var_dump($file->getAsArray());
             $group_tab = $group[0]->getAsArray();
             $group_tab["nb_workspaces"] = count($group[0]->getWorkspaces());
             $group_tab["nb_members"] = count($this->getGroupMembers($group[0]));
             $group_tab["creation_data"] = $group[0]->getOnCreationData();
-            $this->list_group["group"][]= Array($group_tab,$group[1][0]);
+            $this->list_group["group"][] = Array($group_tab, $group[1][0]);
         }
         //var_dump("nombre de resultat : " . count($this->list_files));
         //var_dump($this->list_group);
@@ -59,7 +60,8 @@ class AdministrationGroups
         return $this->list_group ?: null;
     }
 
-    public function getOneGroup($group_id) {
+    public function getOneGroup($group_id)
+    {
 
         $groupsRepository = $this->em->getRepository("TwakeWorkspacesBundle:Group");
 
@@ -68,7 +70,8 @@ class AdministrationGroups
         return $group;
     }
 
-    public function getGroupWorkspaces($group_id) {
+    public function getGroupWorkspaces($group_id)
+    {
         $groupsRepository = $this->em->getRepository("TwakeWorkspacesBundle:Group");
 
         $group = $groupsRepository->find($group_id);
@@ -87,7 +90,8 @@ class AdministrationGroups
         return $rep;
     }
 
-    public function getGroupMembers($group) {
+    public function getGroupMembers($group)
+    {
         $membersRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
 
         $members_tab = $membersRepository->findBy(Array("group" => $group));
@@ -101,7 +105,8 @@ class AdministrationGroups
         return $members;
     }
 
-    public function getGroupApps($group) {
+    public function getGroupApps($group)
+    {
         $groupAppRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupApp");
 
         $apps_tab = $groupAppRepository->findBy(array("group" => $group));
@@ -113,7 +118,7 @@ class AdministrationGroups
         foreach ($apps_tab as $grpApp) {
             $app_id = $grpApp->getAppId();
 
-            $app = $appsRepository->findby(array('id'=> $app_id));
+            $app = $appsRepository->findby(array('id' => $app_id));
 
             if (count($app) == 1) {
                 $apps[] = $app[0]->getAsArray();
@@ -140,7 +145,7 @@ class AdministrationGroups
                             "bool" => Array(
                                 "filter" => Array(
                                     "regexp" => Array(
-                                        "name" => ".*".strtolower($name).".*"
+                                        "name" => ".*" . strtolower($name) . ".*"
                                     )
                                 )
                             )
@@ -165,7 +170,7 @@ class AdministrationGroups
 
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
-        foreach ($result["result"] as $group){
+        foreach ($result["result"] as $group) {
             //var_dump($file->getAsArray());
             $group_tab = $group[0]->getAsArray();
             $group_tab["nb_workspaces"] = count($group[0]->getWorkspaces());

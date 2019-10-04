@@ -28,7 +28,7 @@ class Subscription
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
     /**
@@ -273,7 +273,8 @@ class Subscription
     }
 
 
-    public function getAsArray() {
+    public function getAsArray()
+    {
 
         return Array(
             "id" => $this->getId(),

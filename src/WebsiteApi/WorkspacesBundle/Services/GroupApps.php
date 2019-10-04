@@ -142,12 +142,12 @@ class GroupApps implements GroupAppsInterface
 
         if ($groupuser == null || $groupApp == null || $groupId == null) {//if no user or app not in group app's list or private workspace
             return false;
-        }else{
+        } else {
 
             $appUsed = $groupuser->getUsedAppsToday();
             if (in_array($appid . "", $appUsed)) {
                 return true;
-            }else{
+            } else {
 
                 if ($workspaceId) {
                     $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");

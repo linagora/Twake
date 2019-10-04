@@ -13,17 +13,17 @@ use WebsiteApi\DriveBundle\Entity\DriveFile;
 class FilesSharingController extends Controller
 {
 
-	public function shareAction(Request $request)
-	{
+    public function shareAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
 }

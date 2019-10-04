@@ -7,7 +7,6 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\WorkspacesBundle\Entity\GroupPeriod;
 
 
-
 /**
  * GroupPeriod
  *
@@ -22,13 +21,13 @@ class ClosedGroupPeriod
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
-	 */
-	private $group;
+     */
+    private $group;
 
     /**
      * @ORM\Column(name="connexions", type="string", length=100000)
@@ -40,9 +39,9 @@ class ClosedGroupPeriod
      */
     protected $appsusage;
 
-	/**
+    /**
      * @ORM\Column(type="twake_datetime")
-	 */
+     */
     private $periodstartedat;
 
     /**
@@ -88,7 +87,7 @@ class ClosedGroupPeriod
         $this->estimatedcost = $groupperiod->getEstimatedCost();
         $this->expectedcost = $groupperiod->getExpectedCost();
         $this->billed = false;
-	}
+    }
 
     /**
      * @return mixed
@@ -111,7 +110,7 @@ class ClosedGroupPeriod
      */
     public function getConnexions()
     {
-        return json_decode($this->connexions,true);
+        return json_decode($this->connexions, true);
     }
 
     /**
@@ -263,20 +262,20 @@ class ClosedGroupPeriod
         $this->billed = $billed;
     }
 
-    public function getAsArray(){
+    public function getAsArray()
+    {
         return Array(
             "connexions" => $this->getConnexions(),
             "appUsage" => $this->getAppsUsagePeriod(),
             "periodstartedat" => $this->getPeriodStartedAt(),
             "periodendedat" => $this->getPeriodEndedAt(),
             "periodexpectedtoendat" => $this->getPeriodExpectedToEndAt(),
-        "currentCost" => $this->getCurrentCost(),
-        "estimatedCost" => $this->getEstimatedCost(),
-        "expectedCost" => $this->getExpectedCost(),
-        "billed" => $this->getBilled()
+            "currentCost" => $this->getCurrentCost(),
+            "estimatedCost" => $this->getEstimatedCost(),
+            "expectedCost" => $this->getExpectedCost(),
+            "billed" => $this->getBilled()
         );
     }
-
 
 
 }

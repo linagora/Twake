@@ -11,7 +11,8 @@ namespace WebsiteApi\PaymentsBundle\Repository;
 class BillingUserListRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
 
-    public function removeUser($user){
+    public function removeUser($user)
+    {
         $qb = $this->createQueryBuilder('u');
         $qb->delete();
         $qb->where('u.user = :user');

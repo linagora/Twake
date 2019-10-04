@@ -15,15 +15,15 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class ExternalDrive
 {
 
-	/**
+    /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
-	private $id;
+     */
+    private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\Token")
-	 */
+     */
     private $externaltoken;
 
     /**
@@ -47,11 +47,11 @@ class ExternalDrive
 
     public function __construct($fileid, $token, $workspace)
     {
-	    $this->setExternalToken($token);
+        $this->setExternalToken($token);
         $this->setFileId($fileid);
-	    $this->setWorkspace($workspace);
-	    $this->setCompleted(false);
-	}
+        $this->setWorkspace($workspace);
+        $this->setCompleted(false);
+    }
 
     /**
      * @return mixed
@@ -88,8 +88,8 @@ class ExternalDrive
     /**
      * @return mixed
      */
-public function getId()
-{
+    public function getId()
+    {
         return $this->id;
     }
 

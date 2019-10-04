@@ -25,12 +25,12 @@ class Mail extends SearchableObject
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-	 */
+     */
     private $user;
 
     /**
@@ -63,7 +63,6 @@ class Mail extends SearchableObject
     {
         return $this->es_type;
     }
-
 
 
     /**
@@ -117,7 +116,7 @@ class Mail extends SearchableObject
     public function getIndexationArray()
     {
         $return = Array(
-            "id" => $this->getId()."",
+            "id" => $this->getId() . "",
             "mail" => $this->getMail()
         );
         return $return;

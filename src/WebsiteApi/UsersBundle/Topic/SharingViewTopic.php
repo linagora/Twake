@@ -24,6 +24,7 @@ class SharingViewTopic implements TopicInterface, PushableTopicInterface
     {
         $this->clientManipulator = $clientManipulator;
     }
+
     /**
      * @param Topic $topic
      * @param WampRequest $request
@@ -53,7 +54,7 @@ class SharingViewTopic implements TopicInterface, PushableTopicInterface
         $currentUser = $this->clientManipulator->getClient($connection);
 
         //Verify user is logged in
-        if ($currentUser == null || is_string($currentUser)){
+        if ($currentUser == null || is_string($currentUser)) {
             return; //Cancel operation
         }
 

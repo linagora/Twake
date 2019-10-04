@@ -5,13 +5,14 @@ namespace WebsiteApi\GlobalSearchBundle\Services;
 class Mapping
 {
 
-    public function Mapping(){
+    public function Mapping()
+    {
 
         $mapping_workspace = Array(
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "name","group_id"
+                    "name", "group_id"
                 )
             ),
             "properties" => Array(
@@ -25,7 +26,7 @@ class Mapping
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "workspace_id","channel_id","content"
+                    "workspace_id", "channel_id", "content"
                 )
             ),
             "properties" => Array(
@@ -43,43 +44,43 @@ class Mapping
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "workspace_id","name","group_id","last_activity"
+                    "workspace_id", "name", "group_id", "last_activity"
                 )
             ),
             "properties" => Array(
-            "id" => Array("type" => "keyword"),
-            "workspace_id" => Array("type" => "keyword"),
-            "group_id" => Array("type" => "keyword"),
-            "name" => Array("type" => "keyword"),
-            "last_activity" => Array("type" => "integer")
-        )
+                "id" => Array("type" => "keyword"),
+                "workspace_id" => Array("type" => "keyword"),
+                "group_id" => Array("type" => "keyword"),
+                "name" => Array("type" => "keyword"),
+                "last_activity" => Array("type" => "integer")
+            )
         );
 
         $mapping_file = Array(
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "name","type","creation_date","workspace_id","keywords"
+                    "name", "type", "creation_date", "workspace_id", "keywords"
                 )
             ),
             "properties" => Array(
-            "id" => Array("type" => "keyword"),
-            "name" => Array("type" => "keyword"),
-            "type" => Array("type" => "keyword"),
-            "creation_date" => Array("type" => "date"),
-            "workspace_id" => Array("type" => "keyword"),
-            "keywords" => Array(
-                "type" => "nested",
-                "properties" => Array(
-                    "keyword" => Array("type" => "text"),
-                    "score" => Array("type" => "float")
+                "id" => Array("type" => "keyword"),
+                "name" => Array("type" => "keyword"),
+                "type" => Array("type" => "keyword"),
+                "creation_date" => Array("type" => "date"),
+                "workspace_id" => Array("type" => "keyword"),
+                "keywords" => Array(
+                    "type" => "nested",
+                    "properties" => Array(
+                        "keyword" => Array("type" => "text"),
+                        "score" => Array("type" => "float")
+                    )
                 )
             )
-        )
         );
         $mapping_channel = json_encode($mapping_channel);
         $mapping_workspace = json_encode($mapping_workspace);
-        $mapping_file=json_encode($mapping_file);
+        $mapping_file = json_encode($mapping_file);
         $mapping_message_bloc = json_encode($mapping_message_bloc);
 
 

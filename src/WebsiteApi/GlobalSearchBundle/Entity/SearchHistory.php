@@ -51,7 +51,8 @@ class SearchHistory
         return $return;
     }
 
-    public function addSearch($temp){
+    public function addSearch($temp)
+    {
         $this->search[] = $temp;
     }
 

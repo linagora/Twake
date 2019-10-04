@@ -113,11 +113,11 @@ class Notifications implements NotificationsInterface
         //End title and text construction
 
         $data = Array(
-            "type"=>"add",
+            "type" => "add",
             "application_id" => ($application != null ? $application->getId() : null),
             "sender_application_id" => ($sender_application != null ? $sender_application->getId() : null),
             "sender_user_id" => ($sender_user != null ? $sender_user->getId() : null),
-            "workspace_id"=>($workspace!=null?$workspace->getId():null),
+            "workspace_id" => ($workspace != null ? $workspace->getId() : null),
             "channel_id" => ($channel != null ? $channel->getId() : null),
             "title" => $title,
             "original_text" => $text,
@@ -137,7 +137,7 @@ class Notifications implements NotificationsInterface
         $toPush = true;
 
         $count = count($users);
-        for($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; $i++) {
 
             $data["text"] = $data["original_text"];
 
@@ -162,13 +162,13 @@ class Notifications implements NotificationsInterface
             $mail_preferences = isset($notificationPreference["mail_notifications"]) ? $notificationPreference["mail_notifications"] : 2;
 
             $useDevices = false;
-            if( $data["workspace_id"] != null){
+            if ($data["workspace_id"] != null) {
                 $workspace_id = $data["workspace_id"];
                 $disabled_workspaces = $notificationPreference["disabled_workspaces"];
                 if (in_array($workspace_id . "", $disabled_workspaces)) {
                     return false;
                 }
-                if($application!=null){
+                if ($application != null) {
                     if (isset($notificationPreference["workspace"][$workspace_id . ""])) {
                         if (isset($notificationPreference["workspace"][$workspace_id . ""][$application->getId() . ""])) {
                             $toPush = false;
@@ -176,13 +176,13 @@ class Notifications implements NotificationsInterface
                     }
                 }
             }
-            if($notificationPreference["devices"]==0){
+            if ($notificationPreference["devices"] == 0) {
                 $useDevices = true;
             }
-            if($notificationPreference["devices"]==1 && !$user->isConnected()){
+            if ($notificationPreference["devices"] == 1 && !$user->isConnected()) {
                 $useDevices = true;
             }
-            if($useDevices) {
+            if ($useDevices) {
                 $currentDate = gmdate("H") + floor(gmdate("i") / 30) / 2;
                 if ($notificationPreference["dont_disturb_between"] != null && $notificationPreference["dont_disturb_and"] != null) {
 
@@ -201,22 +201,22 @@ class Notifications implements NotificationsInterface
 
                 }
             }
-            if(!$notificationPreference["dont_use_keywords"]){
-                $keywords = explode(",",$notificationPreference["keywords"]);
+            if (!$notificationPreference["dont_use_keywords"]) {
+                $keywords = explode(",", $notificationPreference["keywords"]);
                 $keywords[] = $user->getUsername();
                 $present = false;
-                foreach($keywords as $keyword){
+                foreach ($keywords as $keyword) {
                     $keyword = trim($keyword);
-                    $keyword = " ".$keyword." ";
-                    if(strrpos(strtolower($title." ".$text." "), strtolower($keyword))>=0) {
+                    $keyword = " " . $keyword . " ";
+                    if (strrpos(strtolower($title . " " . $text . " "), strtolower($keyword)) >= 0) {
                         $present = true;
                     }
                 }
-                if(!$present){
+                if (!$present) {
                     continue;
                 }
             }
-            if($notificationPreference["privacy"]){
+            if ($notificationPreference["privacy"]) {
                 $data["text"] = "[Private]";
             }
 
@@ -227,13 +227,13 @@ class Notifications implements NotificationsInterface
             if ($additionnal_data) {
                 $n->setData($additionnal_data);
             }
-            if($code){
+            if ($code) {
                 $n->setCode($code);
             }
-            if($text){
+            if ($text) {
                 $n->setText($text);
             }
-            if($title){
+            if ($title) {
                 $n->setTitle($title);
             }
 
@@ -249,14 +249,14 @@ class Notifications implements NotificationsInterface
             if (in_array("push", $type) && $toPush && !$notification_disabled) {
 
                 $totalNotifications = 1;
-                if($useDevices) {
+                if ($useDevices) {
                     @$this->pushDevice($user, $data["text"], $title, $totalNotifications, $device_minimal_data, false);
-                }else{
+                } else {
                     @$this->updateDeviceBadge($user, $totalNotifications, Array(), false);
                 }
 
             }
-            if(in_array("mail", $type)){
+            if (in_array("mail", $type)) {
                 @$this->sendMail($application, $workspace, $user, $text);
             }
 
@@ -276,7 +276,7 @@ class Notifications implements NotificationsInterface
 
     }
 
-    public function deleteAll($application, $workspace, $user, $code = null, $force=false)
+    public function deleteAll($application, $workspace, $user, $code = null, $force = false)
     {
 
         //TODO
@@ -397,10 +397,10 @@ class Notifications implements NotificationsInterface
     {
 
         $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
-        $devices = $devicesRepo->findBy(Array("user"=>$user));
+        $devices = $devicesRepo->findBy(Array("user" => $user));
 
         $count = count($devices);
-        for($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             $device = $devices[$i];
 
             $token = $device->getValue();
@@ -421,13 +421,13 @@ class Notifications implements NotificationsInterface
     {
 
         $devicesRepo = $this->doctrine->getRepository("TwakeUsersBundle:Device");
-        $devices = $devicesRepo->findBy(Array("user"=>$user));
+        $devices = $devicesRepo->findBy(Array("user" => $user));
 
         $title = html_entity_decode($this->emojione_client->shortnameToUnicode($title), ENT_NOQUOTES, 'UTF-8');
         $text = html_entity_decode($this->emojione_client->shortnameToUnicode($text), ENT_NOQUOTES, 'UTF-8');
 
         $count = count($devices);
-        for($i = 0; $i < $count; $i++) {
+        for ($i = 0; $i < $count; $i++) {
             $device = $devices[$i];
 
             $token = $device->getValue();
@@ -478,10 +478,10 @@ class Notifications implements NotificationsInterface
 
         $this->mailer->send($user->getEmail(), "notification", Array(
             "_language" => $user ? $user->getLanguage() : "en",
-            "application_name"=>($application)?$application->getName():"Twake",
-            "workspace_name"=>($workspace)?$workspace->getName():"Account",
-            "username"=>$user->getUsername(),
-            "text"=>$text
+            "application_name" => ($application) ? $application->getName() : "Twake",
+            "workspace_name" => ($workspace) ? $workspace->getName() : "Account",
+            "username" => $user->getUsername(),
+            "text" => $text
         ));
     }
 
@@ -533,7 +533,8 @@ class Notifications implements NotificationsInterface
 
     }
 
-    public function deleteAllExceptMessages($user, $force=false){
+    public function deleteAllExceptMessages($user, $force = false)
+    {
 
         return true;
 

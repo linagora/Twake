@@ -86,7 +86,7 @@ class PricingPlan implements PricingPlanInterface
         if ($group == null) {
             $pricing = $pricingRepository->findOneBy(Array("label" => "private"));
         } else {
-            if($group->getIsBlocked())
+            if ($group->getIsBlocked())
                 $pricing = $this->getMinimalPricing();
             else
                 $pricing = $pricingRepository->findOneBy(Array("id" => ($group->getPricingPlan())));
@@ -184,7 +184,7 @@ class PricingPlan implements PricingPlanInterface
         foreach ($listGroupUser as $ga) {
             $groupPeriod = $groupPeriodUsageRepository->findOneBy(Array("group" => $ga->getGroup()));
             if (!$groupPeriod) {
-                $this->groupPeriod->init($ga->getGroup(),$this->getMinimalPricing());
+                $this->groupPeriod->init($ga->getGroup(), $this->getMinimalPricing());
                 $groupPeriod = $groupPeriodUsageRepository->findOneBy(Array("group" => $ga->getGroup()));
             }
             $connexions = $groupPeriod->getConnexions();
@@ -269,8 +269,8 @@ class PricingPlan implements PricingPlanInterface
         // calcul du prix
 
         foreach ($AllgroupPeriod as $gp) {
-            $cost = 0 ;
-            $realCost = 0 ;
+            $cost = 0;
+            $realCost = 0;
             $now = new DateTime();
             $this->nbDays = $now->diff($gp->getPeriodStartedAt()->setTime(0, 0, 0), true)->format('%a');
             $calculTemps = min($this->month_length, $this->nbDays) / $this->month_length;
@@ -292,17 +292,17 @@ class PricingPlan implements PricingPlanInterface
             $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
 
             $appPricingRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:AppPricingInstance");
-            $chargeApps=0;
+            $chargeApps = 0;
             $groupAppRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
             $appCostTotal = 0;
 
             foreach ($apps as $key => $value) {
                 $currentApp = $appRepository->find($key);
-                $appCost = 0 ;
+                $appCost = 0;
                 if ($currentApp != null) {
                     $groupApp = $groupAppRepository->findOneBy(Array("group" => $gp->getGroup(), "app" => $currentApp));
                     $appPricing = $appPricingRepository->findOneBy(Array("groupapp" => $groupApp, "group" => $gp->getGroup()));
-                    if($appPricing != null){
+                    if ($appPricing != null) {
                         $appCost = $appPricing->getCostMonthly();
 
                         // Payable par utilisateur par mois
@@ -334,9 +334,9 @@ class PricingPlan implements PricingPlanInterface
             $nbuserGroup = $groupUserRepository->findBy(Array("group" => $gp->getGroup()));
 
             $minCost = max(1, $this->min_paid_users_percentage * count($nbuserGroup)) * $pricing;
-            
+
             $realCost = max($minCost, $cost);
-            $realCost+= $appCostTotal;
+            $realCost += $appCostTotal;
 
             $monthDays = $this->nbDays == 0 ? 1 : $this->nbDays;
             $monthDays = $monthDays > 20 ? 20 : $monthDays;

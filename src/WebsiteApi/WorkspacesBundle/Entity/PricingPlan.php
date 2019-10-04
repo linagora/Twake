@@ -13,28 +13,28 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
  */
 class PricingPlan
 {
-	/**
-	 * @var int
-	 *
+    /**
+     * @var int
+     *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      */
-	protected $id;
+    protected $id;
 
-	/**
+    /**
      * @ORM\Column(name="name", type="string", length=255, options={"index"=true})
-	 */
-	protected $label = "";
+     */
+    protected $label = "";
 
-	/**
+    /**
      * @ORM\Column(name="month_price", type="twake_float")
-	 */
-	protected $month_price = 0;
+     */
+    protected $month_price = 0;
 
-	/**
+    /**
      * @ORM\Column(name="year_price", type="twake_float")
-	 */
-	protected $year_price = 0;
+     */
+    protected $year_price = 0;
 
     /**
      * @ORM\Column(type="text")
@@ -42,14 +42,15 @@ class PricingPlan
     protected $limitation;
 
 
-	public function __construct($name) {
-		$this->label = $name;
-		$this->limitation = json_encode([
-            "drive"=>0
+    public function __construct($name)
+    {
+        $this->label = $name;
+        $this->limitation = json_encode([
+            "drive" => 0
         ]);
-	}
+    }
 
-	public function setId($id)
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -57,55 +58,55 @@ class PricingPlan
     public function getId()
     {
         return $this->id;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getLabel()
-	{
-		return $this->label;
-	}
+    /**
+     * @return mixed
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getMonthPrice()
-	{
-		return $this->month_price;
-	}
+    /**
+     * @return mixed
+     */
+    public function getMonthPrice()
+    {
+        return $this->month_price;
+    }
 
-	/**
-	 * @param mixed $month_price
-	 */
-	public function setMonthPrice($month_price)
-	{
-		$this->month_price = $month_price;
-	}
+    /**
+     * @param mixed $month_price
+     */
+    public function setMonthPrice($month_price)
+    {
+        $this->month_price = $month_price;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getYearPrice()
-	{
-		return $this->year_price;
-	}
+    /**
+     * @return mixed
+     */
+    public function getYearPrice()
+    {
+        return $this->year_price;
+    }
 
-	/**
-	 * @param mixed $year_price
-	 */
-	public function setYearPrice($year_price)
-	{
-		$this->year_price = $year_price;
-	}
+    /**
+     * @param mixed $year_price
+     */
+    public function setYearPrice($year_price)
+    {
+        $this->year_price = $year_price;
+    }
 
-	/**
-	 * @param mixed $label
-	 */
-	public function setLabel($label)
-	{
-		$this->label = $label;
-	}
+    /**
+     * @param mixed $label
+     */
+    public function setLabel($label)
+    {
+        $this->label = $label;
+    }
 
     public function setLimitation($limit)
     {
@@ -114,19 +115,22 @@ class PricingPlan
 
     public function getLimitation()
     {
-        if($this->limitation == null){
+        if ($this->limitation == null) {
             return [];
         }
         return json_decode($this->limitation, 1);
     }
 
-    public function  __toString(){
-	    $r = "id : ".$this->getId().",   ".$this->getLabel();
-	    return $r;
+    public function __toString()
+    {
+        $r = "id : " . $this->getId() . ",   " . $this->getLabel();
+        return $r;
     }
-    public function getAsArray(){
+
+    public function getAsArray()
+    {
         return Array(
-            "id"=> $this->getId(),
+            "id" => $this->getId(),
             "label" => $this->getLabel(),
             "month_price" => $this->getMonthPrice(),
             "year_price" => $this->getYearPrice(),

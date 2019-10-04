@@ -18,23 +18,23 @@ use WebsiteApi\UsersBundle\Model\UserInterface;
 class User
 {
 
-	private $em;
-	private $pusher;
-	private $encoder_factory;
-	private $authorization_checker;
-	private $core_remember_me_manager;
-	private $event_dispatcher;
-	private $request_stack;
-	private $twake_mailer;
-	private $string_cleaner;
-	private $token_storage;
-	private $workspace_members_service;
-	private $group_service;
-	private $workspace_service;
+    private $em;
+    private $pusher;
+    private $encoder_factory;
+    private $authorization_checker;
+    private $core_remember_me_manager;
+    private $event_dispatcher;
+    private $request_stack;
+    private $twake_mailer;
+    private $string_cleaner;
+    private $token_storage;
+    private $workspace_members_service;
+    private $group_service;
+    private $workspace_service;
     private $pricing_plan;
     private $restClient;
     private $circle;
-    /* @var Translate $translate*/
+    /* @var Translate $translate */
     var $translate;
     private $standalone;
     private $licenceKey;
@@ -42,16 +42,16 @@ class User
 
     public function __construct($em, $pusher, $encoder_factory, $authorization_checker, $token_storage, $core_remember_me_manager, $event_dispatcher, $request_stack, $twake_mailer, $string_cleaner, $workspace_members_service, $group_service, $workspace_service, $pricing_plan, $restClient, $translate, $standalone, $licenceKey)
     {
-		$this->em = $em;
-		$this->pusher = $pusher;
-		$this->encoder_factory = $encoder_factory;
-		$this->core_remember_me_manager = $core_remember_me_manager;
-		$this->event_dispatcher = $event_dispatcher;
-		$this->request_stack = $request_stack;
-		$this->twake_mailer = $twake_mailer;
-		$this->string_cleaner = $string_cleaner;
-		$this->authorization_checker = $authorization_checker;
-		$this->token_storage= $token_storage;
+        $this->em = $em;
+        $this->pusher = $pusher;
+        $this->encoder_factory = $encoder_factory;
+        $this->core_remember_me_manager = $core_remember_me_manager;
+        $this->event_dispatcher = $event_dispatcher;
+        $this->request_stack = $request_stack;
+        $this->twake_mailer = $twake_mailer;
+        $this->string_cleaner = $string_cleaner;
+        $this->authorization_checker = $authorization_checker;
+        $this->token_storage = $token_storage;
         $this->workspace_members_service = $workspace_members_service;
         $this->group_service = $group_service;
         $this->workspace_service = $workspace_service;
@@ -60,32 +60,32 @@ class User
         $this->translate = $translate;
         $this->standalone = $standalone;
         $this->licenceKey = $licenceKey;
-	}
+    }
 
-	public function current()
-	{
-		$securityContext = $this->authorization_checker;
+    public function current()
+    {
+        $securityContext = $this->authorization_checker;
 
-		if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-			return true;
-		}
+        if ($securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+            return true;
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function alive($userId)
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+    public function alive($userId)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-		$user = $userRepository->find($userId);
+        $user = $userRepository->find($userId);
 
-		if($user != null){
-			$user->isActive();
-			$this->em->persist($user);
-			$this->em->flush();
+        if ($user != null) {
+            $user->isActive();
+            $this->em->persist($user);
+            $this->em->flush();
 
-		}
-	}
+        }
+    }
 
     public function loginWithUsernameOnly($usernameOrMail)
     {
@@ -121,8 +121,8 @@ class User
 
     }
 
-	public function login($usernameOrMail, $password, $rememberMe = false, $request = null, $response = null)
-	{
+    public function login($usernameOrMail, $password, $rememberMe = false, $request = null, $response = null)
+    {
 
         $usernameOrMail = trim(strtolower($usernameOrMail));
 
@@ -130,46 +130,46 @@ class User
 
         $user = $userRepository->findOneBy(Array("usernamecanonical" => $this->string_cleaner->simplifyUsername($usernameOrMail)));
 
-        if($user==null){
+        if ($user == null) {
             $user = $userRepository->findOneBy(Array("emailcanonical" => $this->string_cleaner->simplifyMail($usernameOrMail)));
-		}
+        }
 
-		if($user==null){
-			return false;
-		}
+        if ($user == null) {
+            return false;
+        }
 
-		$passwordValid = $this->encoder_factory
-			->getEncoder($user)
-			->isPasswordValid($user->getPassword(), $password, $user->getSalt());
+        $passwordValid = $this->encoder_factory
+            ->getEncoder($user)
+            ->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
         if ($passwordValid && !$user->getBanned() && $user->getMailVerified()) {
 
-			// User log in
-			$token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
+            // User log in
+            $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
             if ($rememberMe && $request && $response) {
-				$this->core_remember_me_manager->doRemember($request, $response, $token);
-			}
-			$this->token_storage->setToken($token);
+                $this->core_remember_me_manager->doRemember($request, $response, $token);
+            }
+            $this->token_storage->setToken($token);
 
-			$request = $this->request_stack->getCurrentRequest();
+            $request = $this->request_stack->getCurrentRequest();
             if ($request) {
                 $event = new InteractiveLoginEvent($request, $token);
                 $this->event_dispatcher->dispatch("security.interactive_login", $event);
             }
 
-			return $user;
+            return $user;
 
-		}
+        }
 
-		return false;
+        return false;
 
-	}
+    }
 
-	public function logout()
-	{
-		$response = new Response();
-		$response->headers->clearCookie('REMEMBERME');
-		$response->sendHeaders();
+    public function logout()
+    {
+        $response = new Response();
+        $response->headers->clearCookie('REMEMBERME');
+        $response->sendHeaders();
 
         $this->token_storage->setToken(null);
 
@@ -178,104 +178,105 @@ class User
             $request->getSession()->invalidate();
         }
 
-		(new Session())->invalidate();
+        (new Session())->invalidate();
 
-		return true;
-	}
+        return true;
+    }
 
-	public function ban($userId)
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$user = $userRepository->find($userId);
-		$user->setBanned(true);
-		$this->em->persist($user);
-		$this->em->flush();
-	}
+    public function ban($userId)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($userId);
+        $user->setBanned(true);
+        $this->em->persist($user);
+        $this->em->flush();
+    }
 
-	public function unban($userId)
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$user = $userRepository->find($userId);
-		$user->setBanned(false);
-		$this->em->persist($user);
-		$this->em->flush();
-	}
+    public function unban($userId)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($userId);
+        $user->setBanned(false);
+        $this->em->persist($user);
+        $this->em->flush();
+    }
 
-	public function requestNewPassword($mail)
-	{
+    public function requestNewPassword($mail)
+    {
 
-		$mail = $this->string_cleaner->simplifyMail($mail);
+        $mail = $this->string_cleaner->simplifyMail($mail);
 
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		/* @var \WebsiteApi\UsersBundle\Entity\User $user */
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        /* @var \WebsiteApi\UsersBundle\Entity\User $user */
         $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
-		if($user != null) {
-			$verificationNumberMail = new VerificationNumberMail($mail);
+        if ($user != null) {
+            $verificationNumberMail = new VerificationNumberMail($mail);
 
-			$code = $verificationNumberMail->getCode();
+            $code = $verificationNumberMail->getCode();
 
-			$this->twake_mailer->send($mail, "requestPassword", Array(
+            $this->twake_mailer->send($mail, "requestPassword", Array(
                 "_language" => $user ? $user->getLanguage() : "en",
-			    "code"=>$code,
+                "code" => $code,
                 "username" => $user->getUsername()
-                ));
+            ));
 
-			$this->em->persist($verificationNumberMail);
-			$this->em->flush();
-			return $verificationNumberMail->getToken();
-		}
+            $this->em->persist($verificationNumberMail);
+            $this->em->flush();
+            return $verificationNumberMail->getToken();
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function checkNumberForNewPasswordRequest($token, $code)
-	{
-		$verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
-		$ticket = $verificationRepository->findOneBy(Array("token"=>$token));
+    public function checkNumberForNewPasswordRequest($token, $code)
+    {
+        $verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
+        $ticket = $verificationRepository->findOneBy(Array("token" => $token));
 
-		if($ticket != null) {
-			return $ticket->verifyCode($code);
-		}
+        if ($ticket != null) {
+            return $ticket->verifyCode($code);
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function setNewPasswordAfterNewPasswordRequest($token, $code, $password)
-	{
+    public function setNewPasswordAfterNewPasswordRequest($token, $code, $password)
+    {
 
-		$verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$ticket = $verificationRepository->findOneBy(Array("token"=>$token));
-		$factory = $this->encoder_factory;
+        $verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $ticket = $verificationRepository->findOneBy(Array("token" => $token));
+        $factory = $this->encoder_factory;
 
-		if($ticket != null) {
-			if($ticket->verifyCode($code)){
+        if ($ticket != null) {
+            if ($ticket->verifyCode($code)) {
                 $user = $userRepository->findOneBy(Array("emailcanonical" => $ticket->getMail()));
-				if($user != null){
+                if ($user != null) {
 
-					$encoder = $factory->getEncoder($user);
-					$user->setPassword($encoder->encodePassword($password, $user->getSalt()));
+                    $encoder = $factory->getEncoder($user);
+                    $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
 
-					$token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
-					$this->token_storage->setToken($token);
+                    $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
+                    $this->token_storage->setToken($token);
 
-					$request = $this->request_stack->getCurrentRequest();
-					$event = new InteractiveLoginEvent($request, $token);
-					$this->event_dispatcher->dispatch("security.interactive_login", $event);
+                    $request = $this->request_stack->getCurrentRequest();
+                    $event = new InteractiveLoginEvent($request, $token);
+                    $this->event_dispatcher->dispatch("security.interactive_login", $event);
 
-					$this->em->remove($ticket);
-					$this->em->persist($user);
-					$this->em->flush();
+                    $this->em->remove($ticket);
+                    $this->em->persist($user);
+                    $this->em->flush();
 
-					return true;
-				}
-			}
-		}
+                    return true;
+                }
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function getAvaibleMailPseudo($mail,$pseudo){
+    public function getAvaibleMailPseudo($mail, $pseudo)
+    {
         $mail = $this->string_cleaner->simplifyMail($mail);
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
         $retour = Array();
@@ -303,7 +304,7 @@ class User
             }
         }
 
-        if(count($retour)<=0){
+        if (count($retour) <= 0) {
             return true;
         }
         return $retour;
@@ -337,7 +338,8 @@ class User
 
     }
 
-    public function testRecaptcha($recaptcha){
+    public function testRecaptcha($recaptcha)
+    {
         if ($this->standalone) {
 
             return $this->verifyReCaptchaAction($recaptcha, $_SERVER['REMOTE_ADDR']);
@@ -367,8 +369,8 @@ class User
         $mail = $this->string_cleaner->simplifyMail($mail);
         $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
 
-        $avaible = $this->getAvaibleMailPseudo($mail,$pseudo);
-        if(is_bool($avaible) && !$avaible){
+        $avaible = $this->getAvaibleMailPseudo($mail, $pseudo);
+        if (is_bool($avaible) && !$avaible) {
             return $avaible;
         }
         if ($mail == null || $password == null || $pseudo == null || !filter_var($mail, FILTER_VALIDATE_EMAIL)) {
@@ -380,7 +382,7 @@ class User
 
         $token = $this->subscribeMail($mail, $pseudo, $password, $lastName, $firstName, $phone, $language, false, false);
         $user = $this->verifyMail($mail, $token, "", true);
-        if($user==null || $user== false){
+        if ($user == null || $user == false) {
             return false;
         }
         $user->setFirstName($firstName);
@@ -407,36 +409,36 @@ class User
             return false;
         }
 
-		$mail = $this->string_cleaner->simplifyMail($mail);
+        $mail = $this->string_cleaner->simplifyMail($mail);
 
         if (!$this->string_cleaner->verifyMail($mail)) {
             return false;
         }
 
-		//Check mail doesn't exists
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        //Check mail doesn't exists
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
         if ($user != null && $user->getMailVerified()) {
-			return false;
-		}
-		$mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-		$mailExists = $mailsRepository->findOneBy(Array("mail"=>$mail));
-		if($mailExists != null){
-			return false;
-		}
+            return false;
+        }
+        $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+        $mailExists = $mailsRepository->findOneBy(Array("mail" => $mail));
+        if ($mailExists != null) {
+            return false;
+        }
 
         if ($user && !$user->getMailVerified() && $user->getisNew()) { //This user never verified his email, so we remove it.
             $this->em->remove($user);
             $this->em->flush();
         }
 
-		$verificationNumberMail = new VerificationNumberMail($mail);
-		$code = $verificationNumberMail->getCode();
+        $verificationNumberMail = new VerificationNumberMail($mail);
+        $code = $verificationNumberMail->getCode();
         $this->em->persist($verificationNumberMail);
 
         $magic_link = "?verify_mail=1&m=" . $mail . "&c=" . $code . "&token=" . $verificationNumberMail->getToken();
 
-		if($sendEmail){
+        if ($sendEmail) {
             $this->twake_mailer->send($mail, "subscribeMail", Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "magic_link" => $magic_link));
         }
 
@@ -454,7 +456,7 @@ class User
         $user->setLanguage($language ? $language : "en");
         $this->em->persist($user);
 
-		$this->em->flush();
+        $this->em->flush();
 
         if ($sendEmail) {
             try {
@@ -489,7 +491,7 @@ class User
             }
         }
         return $verificationNumberMail->getToken();
-	}
+    }
 
     public function verifyMail($mail, $token, $code, $force = false, $response = null)
     {
@@ -541,132 +543,133 @@ class User
         return false;
     }
 
-	public function checkPassword($userId, $password)
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+    public function checkPassword($userId, $password)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-		$user = $userRepository->find($userId);
+        $user = $userRepository->find($userId);
 
-		if($user==null){
-			return false;
-		}
+        if ($user == null) {
+            return false;
+        }
 
-		$passwordValid = $this->encoder_factory
-			->getEncoder($user)
-			->isPasswordValid($user->getPassword(), $password, $user->getSalt());
+        $passwordValid = $this->encoder_factory
+            ->getEncoder($user)
+            ->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
         $res = false;
-		if($passwordValid){
+        if ($passwordValid) {
             $res = true;
-		}
-		return $res;
-	}
+        }
+        return $res;
+    }
 
-	public function addDevice($userId, $type, $value, $version = "?")
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
-		$user = $userRepository->find($userId);
+    public function addDevice($userId, $type, $value, $version = "?")
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
+        $user = $userRepository->find($userId);
 
         $res = false;
-		if($user != null) {
+        if ($user != null) {
             $device = $devicesRepository->findOneBy(Array("value" => $value));
-			if(!$device){
-				$newDevice = new Device($user, $type, $value, $version);
-			}else if($device->getUser()!=$user) {
-				$this->em->remove($device);
-				$newDevice = new Device($user, $type, $value, $version);
-			}else{
-				$newDevice = $device;
-				$device->setVersion($version);
-			}
+            if (!$device) {
+                $newDevice = new Device($user, $type, $value, $version);
+            } else if ($device->getUser() != $user) {
+                $this->em->remove($device);
+                $newDevice = new Device($user, $type, $value, $version);
+            } else {
+                $newDevice = $device;
+                $device->setVersion($version);
+            }
 
-			$this->em->persist($newDevice);
-			$this->em->flush();
+            $this->em->persist($newDevice);
+            $this->em->flush();
 
-			$res = true;
-		}
+            $res = true;
+        }
 
-		return $res;
+        return $res;
 
-	}
+    }
 
-	public function removeDevice($userId, $type, $value)
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
-		$user = $userRepository->find($userId);
+    public function removeDevice($userId, $type, $value)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $devicesRepository = $this->em->getRepository("TwakeUsersBundle:Device");
+        $user = $userRepository->find($userId);
 
         $res = false;
-		if($user != null) {
+        if ($user != null) {
             $device = $devicesRepository->findOneBy(Array("value" => $value));
             if ($device && $device->getUser()->getId() == $userId) {
-				$this->em->remove($device);
-				$this->em->flush();
-			}
+                $this->em->remove($device);
+                $this->em->flush();
+            }
             $res = true;
-		}
+        }
 
-		return $res;
-	}
+        return $res;
+    }
 
-	public function getSecondaryMails($userId){
+    public function getSecondaryMails($userId)
+    {
 
-		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$user = $userRepository->find($userId);
+        $mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($userId);
 
-		return $mailRepository->findBy(Array("user" => $user));
+        return $mailRepository->findBy(Array("user" => $user));
 
-	}
+    }
 
-	public function addNewMail($userId, $mail)
-	{
+    public function addNewMail($userId, $mail)
+    {
 
-		$mail = $this->string_cleaner->simplifyMail($mail);
+        $mail = $this->string_cleaner->simplifyMail($mail);
 
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-		$user = $userRepository->find($userId);
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+        $user = $userRepository->find($userId);
 
         $userWithThisMailAsMainMail = $userRepository->findOneBy(Array("emailcanonical" => $mail));
 
         $res = false;
 
-		if($user != null && $userWithThisMailAsMainMail==null) {
-			$mailExists = $mailRepository->findOneBy(Array("mail"=>$mail));
+        if ($user != null && $userWithThisMailAsMainMail == null) {
+            $mailExists = $mailRepository->findOneBy(Array("mail" => $mail));
 
-			if($mailExists == null) {
+            if ($mailExists == null) {
 
-				$verificationNumberMail = new VerificationNumberMail($mail);
+                $verificationNumberMail = new VerificationNumberMail($mail);
 
-				$code = $verificationNumberMail->getCode();
+                $code = $verificationNumberMail->getCode();
 
-				$this->twake_mailer->send($mail, "addMail",
+                $this->twake_mailer->send($mail, "addMail",
                     Array("_language" => $user ? $user->getLanguage() : "en", "code" => $code, "username" => $user->getUsername()));
 
-				$this->em->persist($verificationNumberMail);
-				$this->em->flush();
+                $this->em->persist($verificationNumberMail);
+                $this->em->flush();
                 $res = $verificationNumberMail->getToken();
 
-			}
+            }
 
-		}
+        }
 
-		return $res;
-	}
+        return $res;
+    }
 
-	public function removeSecondaryMail($userId, $mailId)
-	{
+    public function removeSecondaryMail($userId, $mailId)
+    {
 
 
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-		$user = $userRepository->find($userId);
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+        $user = $userRepository->find($userId);
 
-		$res = false;
+        $res = false;
 
-		if($user != null) {
+        if ($user != null) {
             $mail = $mailRepository->findOneBy(Array("id" => $mailId));
             if ($mail && $mail->getUser()->getId() == $userId) {
                 $this->em->remove($mail);
@@ -674,49 +677,49 @@ class User
                 $res = true;
             }
 
-		}
+        }
 
-		return $res;
-	}
+        return $res;
+    }
 
-	public function checkNumberForAddNewMail($userId, $token, $code)
-	{
+    public function checkNumberForAddNewMail($userId, $token, $code)
+    {
 
-		$verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-		$ticket = $verificationRepository->findOneBy(Array("token"=>$token));
-		$user = $userRepository->find($userId);
+        $verificationRepository = $this->em->getRepository("TwakeUsersBundle:VerificationNumberMail");
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+        $ticket = $verificationRepository->findOneBy(Array("token" => $token));
+        $user = $userRepository->find($userId);
 
-		if($ticket != null && $user!=null) {
-			if($ticket->verifyCode($code)){
+        if ($ticket != null && $user != null) {
+            if ($ticket->verifyCode($code)) {
                 $userWithMail = $userRepository->findOneBy(Array("emailcanonical" => $ticket->getMail()));
                 if ($userWithMail == null || $userWithMail->getId() != $userId) {
                     $mailExists = $mailRepository->findOneBy(Array("mail" => $ticket->getMail()));
 
-					if($mailExists == null) {
-						$mail = new Mail();
-						$mail->setMail($ticket->getMail());
-						$mail->setUser($user);
+                    if ($mailExists == null) {
+                        $mail = new Mail();
+                        $mail->setMail($ticket->getMail());
+                        $mail->setUser($user);
 
-						$this->em->remove($ticket);
-						$this->em->persist($mail);
-						$this->em->flush();
+                        $this->em->remove($ticket);
+                        $this->em->persist($mail);
+                        $this->em->flush();
 
-						$this->workspace_members_service->autoAddMemberByNewMail($ticket->getMail(), $user->getId());
+                        $this->workspace_members_service->autoAddMemberByNewMail($ticket->getMail(), $user->getId());
 
-						return $mail->getId();
+                        return $mail->getId();
 
-					}
-				}
-			}
-		}
+                    }
+                }
+            }
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function changePassword($userId, $oldPassword, $password)
-	{
+    public function changePassword($userId, $oldPassword, $password)
+    {
 
         if (!$password) {
             return false;
@@ -726,54 +729,54 @@ class User
             return false;
         }
 
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$user = $userRepository->find($userId);
-		$factory = $this->encoder_factory;
-		if($user != null){
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($userId);
+        $factory = $this->encoder_factory;
+        if ($user != null) {
 
-			$passwordValid = $factory
-				->getEncoder($user)
-				->isPasswordValid($user->getPassword(), $oldPassword, $user->getSalt());
+            $passwordValid = $factory
+                ->getEncoder($user)
+                ->isPasswordValid($user->getPassword(), $oldPassword, $user->getSalt());
 
-			if($passwordValid) {
+            if ($passwordValid) {
 
-				$encoder = $factory->getEncoder($user);
-				$user->setPassword($encoder->encodePassword($password, $user->getSalt()));
+                $encoder = $factory->getEncoder($user);
+                $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
 
-				$this->em->persist($user);
-				$this->em->flush();
+                $this->em->persist($user);
+                $this->em->flush();
 
-				return true;
-			}
+                return true;
+            }
 
-		}
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	public function changePseudo($userId, $pseudo)
-	{
+    public function changePseudo($userId, $pseudo)
+    {
 
-		$pseudo = $this->string_cleaner->simplifyUsername($pseudo);
+        $pseudo = $this->string_cleaner->simplifyUsername($pseudo);
 
         if (!$pseudo) {
             return false;
         }
 
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$user = $userRepository->find($userId);
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($userId);
 
         $otherUser = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
-		if($otherUser != null && $otherUser->getId()!=$userId){
-			return false;
-		}
+        if ($otherUser != null && $otherUser->getId() != $userId) {
+            return false;
+        }
 
-		if($user != null){
+        if ($user != null) {
 
-			$user->setUsername($pseudo);
+            $user->setUsername($pseudo);
 
-			$this->em->persist($user);
-			$this->em->flush();
+            $this->em->persist($user);
+            $this->em->flush();
 
             $datatopush = Array(
                 "type" => "USER",
@@ -781,59 +784,59 @@ class User
             );
             $this->pusher->push($datatopush, "notifications/" . $user->getId());
 
-			return true;
+            return true;
 
-		}
+        }
 
-		return false;
-	}
+        return false;
+    }
 
-	/**
-	 * @param $userId
-	 * @param $mail
-	 * @return bool
-	 */
-	public function changeMainMail($userId, $mailId)
-	{
-
-
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
-
-		$user = $userRepository->find($userId);
-
-		if($user != null){
-			$mailObj = $mailRepository->findOneBy(Array("id"=>$mailId));
+    /**
+     * @param $userId
+     * @param $mail
+     * @return bool
+     */
+    public function changeMainMail($userId, $mailId)
+    {
 
 
-			if($mailObj != null){
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $mailRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
 
-				$user->setEmail($mailObj->getMail());
+        $user = $userRepository->find($userId);
 
-				$this->em->persist($user);
-				$this->em->persist($mailObj);
-				$this->em->flush();
+        if ($user != null) {
+            $mailObj = $mailRepository->findOneBy(Array("id" => $mailId));
 
-				return true;
 
-			}
+            if ($mailObj != null) {
 
-		}
+                $user->setEmail($mailObj->getMail());
 
-		return false;
-	}
+                $this->em->persist($user);
+                $this->em->persist($mailObj);
+                $this->em->flush();
+
+                return true;
+
+            }
+
+        }
+
+        return false;
+    }
 
     public function updateUserBasicData($userId, $firstName, $lastName, $thumbnail = null, $uploader = null)
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-		$user = $userRepository->find($userId);
+        $user = $userRepository->find($userId);
 
-		if($user != null){
+        if ($user != null) {
 
-			$user->setFirstName($firstName);
-			$user->setLastName($lastName);
-			if ($thumbnail == 'false' || $thumbnail == 'null') {
+            $user->setFirstName($firstName);
+            $user->setLastName($lastName);
+            if ($thumbnail == 'false' || $thumbnail == 'null') {
                 $user->setThumbnail(null);
             } else if ($thumbnail != null && !is_string($thumbnail)) {
                 if ($user->getThumbnail()) {
@@ -844,10 +847,10 @@ class User
                     }
                     $this->em->remove($user->getThumbnail());
                 }
-				$user->setThumbnail($thumbnail);
-			}
+                $user->setThumbnail($thumbnail);
+            }
             $this->em->persist($user);
-			$this->em->flush();
+            $this->em->flush();
 
             $datatopush = Array(
                 "type" => "USER",
@@ -857,17 +860,17 @@ class User
 
             return $user;
 
-		}
+        }
 
-	}
+    }
 
-	public function setNotificationPreferences($userId, $notification)
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+    public function setNotificationPreferences($userId, $notification)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-		$user = $userRepository->find($userId);
+        $user = $userRepository->find($userId);
 
-		if($user != null){
+        if ($user != null) {
 
             $all_notification = $user->getNotificationPreference();
 
@@ -876,25 +879,25 @@ class User
             }
 
             $user->setNotificationPreference($all_notification);
-			$this->em->persist($user);
-			$this->em->flush();
+            $this->em->persist($user);
+            $this->em->flush();
 
-		}
-	}
+        }
+    }
 
-	public function getNotificationPreferences($userId)
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+    public function getNotificationPreferences($userId)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-		$user = $userRepository->find($userId);
+        $user = $userRepository->find($userId);
 
-		if($user != null){
-			return $user->getNotificationPreference();
-		}
+        if ($user != null) {
+            return $user->getNotificationPreference();
+        }
 
-		return false;
+        return false;
 
-	}
+    }
 
     public function setWorkspacesPreferences($userId, $preferences)
     {
@@ -918,17 +921,17 @@ class User
         }
     }
 
-	public function updateLanguage($userId, $language)
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+    public function updateLanguage($userId, $language)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-		$user = $userRepository->find($userId);
+        $user = $userRepository->find($userId);
 
-		if($user != null){
+        if ($user != null) {
 
-			$user->setLanguage($language);
-			$this->em->persist($user);
-			$this->em->flush();
+            $user->setLanguage($language);
+            $this->em->persist($user);
+            $this->em->flush();
 
             if ($userId) {
                 $datatopush = Array(
@@ -937,14 +940,15 @@ class User
                 $this->pusher->push($datatopush, "notifications/" . $userId);
             }
 
-		}
-	}
+        }
+    }
 
-	public function setIsNew($value, $userId){
+    public function setIsNew($value, $userId)
+    {
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->find($userId);
 
-        if($user != null){
+        if ($user != null) {
 
             $user->setisNew($value);
             $this->em->persist($user);
@@ -953,13 +957,14 @@ class User
         }
     }
 
-    public function updateNotificationPreferenceByWorkspace($workspaceId, $appNotif, $user){
-	    /* @var \WebsiteApi\UsersBundle\Entity\User $user */
-	    $pref = $user->getNotificationPreference();
+    public function updateNotificationPreferenceByWorkspace($workspaceId, $appNotif, $user)
+    {
+        /* @var \WebsiteApi\UsersBundle\Entity\User $user */
+        $pref = $user->getNotificationPreference();
 
         $pref["workspace"][$workspaceId . ""] = $appNotif;
 
-	    $user->setNotificationPreference($pref);
+        $user->setNotificationPreference($pref);
 
         $this->em->persist($user);
         $this->em->flush();

@@ -10,11 +10,13 @@ class AdministrationWorkspaces
     private $em;
     private $list_workspace = Array("workspace" => Array(), "scroll_id" => "");
 
-    public function __construct($em) {
+    public function __construct($em)
+    {
         $this->em = $em;
     }
 
-    public function getOneWorkspace($workspace_id) {
+    public function getOneWorkspace($workspace_id)
+    {
         $workspacesRepository = $this->em->getRepository("TwakeWorkspacesBundle:Workspace");
 
         $workspace = $workspacesRepository->find($workspace_id);
@@ -22,7 +24,8 @@ class AdministrationWorkspaces
         return $workspace;
     }
 
-    public function getWorkspaceMembers($workspace) {
+    public function getWorkspaceMembers($workspace)
+    {
         $membersRepository = $this->em->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
         $members_tab = $membersRepository->findBy(array("workspace" => $workspace));
@@ -36,7 +39,8 @@ class AdministrationWorkspaces
         return $members;
     }
 
-    public function getWorkspaceApps($workspace) {
+    public function getWorkspaceApps($workspace)
+    {
         $workspaceAppsRepository = $this->em->getrepository("TwakeWorkspacesBundle:WorkspaceApp");
 
         $apps_tab = $workspaceAppsRepository->findBy(array("workspace" => $workspace));
@@ -58,7 +62,8 @@ class AdministrationWorkspaces
         return $apps;
     }
 
-    public function getInvitedUsers($workspace) {
+    public function getInvitedUsers($workspace)
+    {
         $workspaceMailRepository = $this->em->getrepository("TwakeWorkspacesBundle:WorkspaceUserByMail");
 
         $mails_tab = $workspaceMailRepository->findBy(array('workspace' => $workspace));
@@ -72,7 +77,8 @@ class AdministrationWorkspaces
         return $mails;
     }
 
-    public function getWpbyName($options){
+    public function getWpbyName($options)
+    {
 
         if (isset($options["name"])) {
             $name = $options["name"];
@@ -87,7 +93,7 @@ class AdministrationWorkspaces
                             "bool" => Array(
                                 "filter" => Array(
                                     "regexp" => Array(
-                                        "name" => ".*".strtolower($name).".*"
+                                        "name" => ".*" . strtolower($name) . ".*"
                                     )
                                 )
                             )
@@ -111,9 +117,9 @@ class AdministrationWorkspaces
 
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
-        foreach ($result["result"] as $workspace){
+        foreach ($result["result"] as $workspace) {
             //var_dump($file->getAsArray());
-            $this->list_workspace["workspace"][]= Array($workspace[0]->getAsArray(),$workspace[1][0]);;
+            $this->list_workspace["workspace"][] = Array($workspace[0]->getAsArray(), $workspace[1][0]);;
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);
@@ -160,8 +166,8 @@ class AdministrationWorkspaces
 
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
-        foreach ($result["result"] as $wp){
-            $this->list_group["group"][]= Array($wp[0]->getAsArray(),$wp[1][0]);;
+        foreach ($result["result"] as $wp) {
+            $this->list_group["group"][] = Array($wp[0]->getAsArray(), $wp[1][0]);;
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);

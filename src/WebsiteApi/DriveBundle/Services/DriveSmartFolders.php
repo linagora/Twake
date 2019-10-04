@@ -15,43 +15,44 @@ use WebsiteApi\DriveBundle\Model\DriveSmartFoldersInterface;
 class DriveSmartFolders implements DriveSmartFoldersInterface
 {
 
-	var $doctrine;
+    var $doctrine;
 
-	public function __construct($doctrine){
-		$this->doctrine = $doctrine;
-	}
+    public function __construct($doctrine)
+    {
+        $this->doctrine = $doctrine;
+    }
 
-	public function create($group, $name, $labels)
-	{
-		$folder = new DriveSmartFolder($group, $name, $labels);
-		$this->doctrine->persist($folder);
-		$this->doctrine->flush();
-	}
+    public function create($group, $name, $labels)
+    {
+        $folder = new DriveSmartFolder($group, $name, $labels);
+        $this->doctrine->persist($folder);
+        $this->doctrine->flush();
+    }
 
-	public function remove($group, $id)
-	{
-		$folder = $this->doctrine->getRepository("TwakeDriveBundle:DriveSmartFolder")->find($id);
-		if($folder != null){
-			$this->doctrine->remove($folder);
-		}
-		$this->doctrine->flush();
-	}
+    public function remove($group, $id)
+    {
+        $folder = $this->doctrine->getRepository("TwakeDriveBundle:DriveSmartFolder")->find($id);
+        if ($folder != null) {
+            $this->doctrine->remove($folder);
+        }
+        $this->doctrine->flush();
+    }
 
-	public function edit($group, $id, $name, $labels)
-	{
-		$folder = $this->doctrine->getRepository("TwakeDriveBundle:DriveSmartFolder")->find($id);
+    public function edit($group, $id, $name, $labels)
+    {
+        $folder = $this->doctrine->getRepository("TwakeDriveBundle:DriveSmartFolder")->find($id);
         if ($folder != null && $folder->getWorkspaceId() == $group) {
-			$folder->setName($name);
-			$folder->setLabels($labels);
-			$this->doctrine->persist($folder);
-			$this->doctrine->flush();
-		}
-	}
+            $folder->setName($name);
+            $folder->setLabels($labels);
+            $this->doctrine->persist($folder);
+            $this->doctrine->flush();
+        }
+    }
 
-	public function get($group)
-	{
-		$folder = $this->doctrine->getRepository("TwakeDriveBundle:DriveSmartFolder")->findBy(Array("group"=>$group));
-		return $folder;
-	}
+    public function get($group)
+    {
+        $folder = $this->doctrine->getRepository("TwakeDriveBundle:DriveSmartFolder")->findBy(Array("group" => $group));
+        return $folder;
+    }
 
 }

@@ -21,26 +21,27 @@ class PriceLevel
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
-	/**
+    /**
      * @ORM\Column(type="string")
-	 */
-	private $name;
+     */
+    private $name;
 
-	/**
+    /**
      * @ORM\Column(type="decimal")
-	 */
-	private $price;
+     */
+    private $price;
 
 
-	public function __construct($name, $price) {
-		$this->setName($name);
-		$this->setPrice($price);
-	}
+    public function __construct($name, $price)
+    {
+        $this->setName($name);
+        $this->setPrice($price);
+    }
 
-	public function setId($id)
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -48,27 +49,32 @@ class PriceLevel
     public function getId()
     {
         return $this->id;
-	}
+    }
 
-	public function getName() {
-		return $this->name;
-	}
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	public function setName($name) {
-		$this->name = $name;
-	}
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-	public function getPrice() {
-		return $this->price;
-	}
+    public function getPrice()
+    {
+        return $this->price;
+    }
 
-	public function setPrice($price) {
-		$this->price = $price;
-	}
+    public function setPrice($price)
+    {
+        $this->price = $price;
+    }
 
-    public function getAsArray(){
-        return Array(  "id" => $this->getId(),
-        "name" => $this->getName(),
-        "price" => $this->getPrice() );
+    public function getAsArray()
+    {
+        return Array("id" => $this->getId(),
+            "name" => $this->getName(),
+            "price" => $this->getPrice());
     }
 }

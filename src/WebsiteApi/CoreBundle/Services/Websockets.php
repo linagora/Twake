@@ -171,6 +171,8 @@ class Websockets
             "key_version" => $key_version
         ), "collections/" . $route_endpoint);
 
+        return true;
+
     }
 
 }

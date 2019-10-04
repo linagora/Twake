@@ -17,7 +17,9 @@ class ExternalFilesController extends Controller
     {
         return base64_decode(strtr($inputStr, '-_,', '+/='));
     }
-    public function fetchAccessTokenWithAuthCodeAction(Request $request){
+
+    public function fetchAccessTokenWithAuthCodeAction(Request $request)
+    {
         $code = $request->query->get('code');
         $state = $this->base64UrlDecode($request->query->get('state'));
         $state = json_decode($state, true);
@@ -26,12 +28,13 @@ class ExternalFilesController extends Controller
 
         $authCode = trim($code);
 
-        $this->get("app.drive.ExternalDriveSystem")->addNewExternalDrive($fileId, $workspaceId,$authCode,$this->getUser());
+        $this->get("app.drive.ExternalDriveSystem")->addNewExternalDrive($fileId, $workspaceId, $authCode, $this->getUser());
 
         return new Response("<script>window.close();</script>");
     }
 
-    public function addNewExternalDriveAction(Request $request){
+    public function addNewExternalDriveAction(Request $request)
+    {
         $data = Array(
             "errors" => Array(),
             "data" => Array()
@@ -40,9 +43,9 @@ class ExternalFilesController extends Controller
         $targetUrl = $request->request->get("externalDriveUrl");
         $workspaceId = $request->request->get("workspaceId");
 
-        if(count(explode("google",$targetUrl))>1){
-            $targetUrl = explode("folders/",$targetUrl);
-            if(count($targetUrl)<2)
+        if (count(explode("google", $targetUrl)) > 1) {
+            $targetUrl = explode("folders/", $targetUrl);
+            if (count($targetUrl) < 2)
                 $folderId = "root";
             else
                 $folderId = $targetUrl[1];
@@ -51,14 +54,14 @@ class ExternalFilesController extends Controller
 
             $data["data"]["status"] = "auth req";
             $data["data"]["url"] = $authUrl;
-        }
-        else
+        } else
             $data["error"][] = "External drive system not handled";
 
         return new JsonResponse($data);
     }
 
-    public function getExternalDrivesAction(Request $request){
+    public function getExternalDrivesAction(Request $request)
+    {
         $data = Array(
             "errors" => Array(),
             "data" => Array()
@@ -66,7 +69,7 @@ class ExternalFilesController extends Controller
 
         $workspaceId = $request->request->get("workspaceId");
 
-        $externalDrives  = $this->get("app.drive.ExternalDriveSystem")->getExternalDrives($workspaceId);
+        $externalDrives = $this->get("app.drive.ExternalDriveSystem")->getExternalDrives($workspaceId);
 
         foreach ($externalDrives as $externalDrive) {
             $data["data"][] = $this->get("app.drive.GDriveApiSystem")->getGDriveBasicInfo($externalDrive->getFileId(), $externalDrive->getExternalToken());

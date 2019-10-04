@@ -49,8 +49,8 @@ class WorkspacesActivities
 
     public function recordActivity($workspace, $user, $appPublicKey, $title, $objectrepository = null, $objectid = null)
     {
-        $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
-        $user = $this->convertToEntity($user,"TwakeUsersBundle:User");
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        $user = $this->convertToEntity($user, "TwakeUsersBundle:User");
         $app = $this->applicationManager->getAppByPublicKey($appPublicKey);
 
         $workspaceActivity = new WorkspaceActivity($workspace, $user, $app, $title, $objectrepository, $objectid);
@@ -59,37 +59,39 @@ class WorkspacesActivities
         $this->doctrine->flush();
     }
 
-    public function getRecordByWorkspace($workspace){
-        $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
-        return $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace));
+    public function getRecordByWorkspace($workspace)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
+        return $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace" => $workspace));
     }
 
-    public function getWorkspaceActivityResumed($workspace, $userIdsList, $limit=100, $offset=0){
-        $workspace = $this->convertToEntity($workspace,"TwakeWorkspacesBundle:Workspace");
+    public function getWorkspaceActivityResumed($workspace, $userIdsList, $limit = 100, $offset = 0)
+    {
+        $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
         $users = [];
 
-        foreach ($userIdsList as $user){
-            $users[] = $this->convertToEntity($user["user"],"TwakeUsersBundle:User");
+        foreach ($userIdsList as $user) {
+            $users[] = $this->convertToEntity($user["user"], "TwakeUsersBundle:User");
         }
 
         /* @var WorkspaceActivity[] $activities */
-        $activities = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace"=>$workspace), Array("id"=>"desc"), $limit, $offset);
+        $activities = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceActivity")->findBy(Array("workspace" => $workspace), Array("id" => "desc"), $limit, $offset);
 
         // Get activity by unique user/app id
         $activities_by_user_app = Array();
         $last_date_by_user_app = Array();
-        foreach ($activities as $activity){
+        foreach ($activities as $activity) {
 
-            $key = ($activity->getApp()?$activity->getApp()->getId():"")."_".($activity->getUser()?$activity->getUser()->getId():"");
+            $key = ($activity->getApp() ? $activity->getApp()->getId() : "") . "_" . ($activity->getUser() ? $activity->getUser()->getId() : "");
 
-            if(!isset($activities_by_user_app[$key])){
+            if (!isset($activities_by_user_app[$key])) {
                 $activities_by_user_app[$key] = Array();
             }
             $addToPrevious = false;
             if (isset($last_date_by_user_app[$key]) && abs($activity->getDateAdded()->getTimestamp() - $last_date_by_user_app[$key]) < 60) {
                 $addToPrevious = true;
             }
-            if($addToPrevious) {
+            if ($addToPrevious) {
                 end($activities_by_user_app[$key]);
                 $end_pos = key($activities_by_user_app[$key]);
                 if ($activity->getObjectRepository()) {
@@ -111,7 +113,7 @@ class WorkspacesActivities
                         error_log($e);
                     }
                 }
-            }else{
+            } else {
                 $objects = Array();
                 if ($activity->getObjectRepository()) {
                     try {
@@ -140,7 +142,7 @@ class WorkspacesActivities
 
 
         $resumed = Array();
-        foreach ($activities_by_user_app as $grouped_activity){
+        foreach ($activities_by_user_app as $grouped_activity) {
             $resumed = array_merge($resumed, $grouped_activity);
         }
 
@@ -149,7 +151,8 @@ class WorkspacesActivities
         return $resumed;
     }
 
-    public static function cmpResumed($a, $b){
-        return $b["date"]-$a["date"];
+    public static function cmpResumed($a, $b)
+    {
+        return $b["date"] - $a["date"];
     }
 }

@@ -23,7 +23,7 @@ class Channel extends SearchableObject
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
     /**
@@ -153,14 +153,14 @@ class Channel extends SearchableObject
     public function getIndexationArray()
     {
         $return = Array(
-                "id" => $this->getId()."",
-                "workspace_id" => $this->getOriginalWorkspaceId(),
-                "group_id" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
-                "name" => $this->getName(),
-                "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
-                "members" => $this->getMembers(),
-                "ext_members" => $this->getExtMembers()
-            );
+            "id" => $this->getId() . "",
+            "workspace_id" => $this->getOriginalWorkspaceId(),
+            "group_id" => ($this->getOriginalGroup()) ? $this->getOriginalGroup()->getId() : null,
+            "name" => $this->getName(),
+            "last_activity" => $this->getLastActivity() ? $this->getLastActivity()->getTimestamp() : null,
+            "members" => $this->getMembers(),
+            "ext_members" => $this->getExtMembers()
+        );
 
         return $return;
     }
@@ -192,8 +192,9 @@ class Channel extends SearchableObject
         );
     }
 
-    public function getTotalMembers(){
-        return array_merge($this->getMembers(),$this->getExtMembers());
+    public function getTotalMembers()
+    {
+        return array_merge($this->getMembers(), $this->getExtMembers());
     }
 
 
@@ -621,7 +622,6 @@ class Channel extends SearchableObject
     {
         $this->auto_mute = $auto_mute;
     }
-
 
 
 }

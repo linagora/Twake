@@ -20,7 +20,8 @@ class Blocmessage
         $this->doctrine = $doctrine;
     }
 
-    public function verif_valid($message_id_in_bloc, $options){
+    public function verif_valid($message_id_in_bloc, $options)
+    {
         $valid = true;
         $message_bdd = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message_id_in_bloc));
         if ($valid && isset($options["sender"])) {
@@ -35,20 +36,20 @@ class Blocmessage
             $valid = false;
         }
 
-        if ($valid && isset($options["pinned"]) && $message_bdd->getPinned() != $options["pinned"]){
+        if ($valid && isset($options["pinned"]) && $message_bdd->getPinned() != $options["pinned"]) {
             $valid = false;
         }
 
 
-        if($valid && isset($options["application_id"]) && ($message_bdd->getApplicationId() != $options["application_id"])){
+        if ($valid && isset($options["application_id"]) && ($message_bdd->getApplicationId() != $options["application_id"])) {
             $valid = false;
         }
 
-        if ($valid && isset($options["tags"])){
+        if ($valid && isset($options["tags"])) {
             $tags = $message_bdd->gettags();
             $tags_search = true;
             $i = 0;
-            if(isset($tags)) {
+            if (isset($tags)) {
                 while ($tags_search && $i < count($options["tags"])) {
                     $trouve = false;
                     foreach ($message_bdd->gettags() as $tag) {
@@ -62,8 +63,7 @@ class Blocmessage
                     }
                     $i++;
                 }
-            }
-            else {
+            } else {
                 $valid = false;
             }
             if (!$tags_search) {
@@ -118,12 +118,13 @@ class Blocmessage
         if ($valid && !in_array($message_id_in_bloc, $this->doublon_id)) {
             $this->doublon_id[] = $message_id_in_bloc;
             $channel_entity = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $message_bdd->getChannelId()));
-            $this->list_messages["messages"][]= Array("message" => $message_bdd->getAsArray(), "channel"=> $channel_entity->getAsArray());
+            $this->list_messages["messages"][] = Array("message" => $message_bdd->getAsArray(), "channel" => $channel_entity->getAsArray());
         }
 
     }
 
-    public function search($options,$channels){
+    public function search($options, $channels)
+    {
 
         $final_words = Array();
         $options_save = $options;
@@ -133,7 +134,7 @@ class Blocmessage
 
 
         //PARTIE SUR LES MOTS
-        if(isset($options["words"])) {
+        if (isset($options["words"])) {
             foreach ($options["words"] as $word) {
                 if (strlen($word) > 3) {
                     $final_words[] = strtolower($word);
@@ -141,7 +142,7 @@ class Blocmessage
             }
         }
 
-        if(isset($final_words) && $final_words != Array()) {
+        if (isset($final_words) && $final_words != Array()) {
             $terms = Array();
             foreach ($final_words as $word) {
                 $terms[] = Array(
@@ -155,207 +156,234 @@ class Blocmessage
                 );
             }
         }
-            $now = new \DateTime();
-            $before = $now->format('Y-m-d');
-            $after = "2000-01-01";
+        $now = new \DateTime();
+        $before = $now->format('Y-m-d');
+        $after = "2000-01-01";
 
-            if(isset($options["date_before"])){
-                $before = $options["date_before"];
-            }
+        if (isset($options["date_before"])) {
+            $before = $options["date_before"];
+        }
 
-            if(isset($options["date_after"])){
-                $after = $options["date_after"];
-            }
+        if (isset($options["date_after"])) {
+            $after = $options["date_after"];
+        }
 
-            //PARTIES SUR LES CHANNELS
-            $should_channels = Array();
-            foreach($channels as $channel) {
-                $should_channels[] = Array(
-                    "match_phrase" => Array(
-                        "channel_id" => $channel
-                    )
-                );
-            }
+        //PARTIES SUR LES CHANNELS
+        $should_channels = Array();
+        foreach ($channels as $channel) {
+            $should_channels[] = Array(
+                "match_phrase" => Array(
+                    "channel_id" => $channel
+                )
+            );
+        }
 
-            //PARTIE SUR LES REACTION
-            if(isset($options["reactions"])){
-                $reactions = Array();
-                foreach ($options["reactions"] as $reaction) {
-                    $reactions[]= Array(
-                        "bool" => Array(
-                            "filter" => Array(
-                                "regexp" => Array(
-                                    "messages.reactions.reaction" => ".*".$reaction.".*"
-                                )
-                            )
-                        )
-                    );
-                }
-
-            }
-
-            if(isset($options["pinned"])){
-
-            }
-
-            //PARTIES SUR LES TAGS
-
-            if(isset($options["tags"])){
-                $should_tags = Array();
-                foreach($options["tags"] as $tag) {
-                    $should_tags[] = Array(
-                        "match_phrase" => Array(
-                            "messages.tags" => $tag
-                        )
-                    );
-                }
-
-                $must[] = Array(
+        //PARTIE SUR LES REACTION
+        if (isset($options["reactions"])) {
+            $reactions = Array();
+            foreach ($options["reactions"] as $reaction) {
+                $reactions[] = Array(
                     "bool" => Array(
-                        "should" => $should_tags,
-                        "minimum_should_match" => count($should_tags)
+                        "filter" => Array(
+                            "regexp" => Array(
+                                "messages.reactions.reaction" => ".*" . $reaction . ".*"
+                            )
+                        )
                     )
                 );
             }
 
-            //PARTIE SUR PINNED
-            if(isset($options["pinned"])){
-                $must[] = Array(
-                  "match_phrase" => Array(
-                      "messages.pinned" => $options["pinned"]
-                  )
-                );
-            }
+        }
 
-            // PARTIE SUR LES MENTIONS
-            if (isset($options["mentions"])) {
-                $mentions = Array();
-                foreach ($options["mentions"] as $mention) {
-                    $mentions[] = Array(
-                        "bool" => Array(
-                            "must" => Array(
-                                "match_phrase" => Array(
-                                    "messages.mentions" => $mention
-                                )
-                            )
-                        )
-                    );
-                }
+        if (isset($options["pinned"])) {
+
+        }
+
+        //PARTIES SUR LES TAGS
+
+        if (isset($options["tags"])) {
+            $should_tags = Array();
+            foreach ($options["tags"] as $tag) {
+                $should_tags[] = Array(
+                    "match_phrase" => Array(
+                        "messages.tags" => $tag
+                    )
+                );
             }
 
             $must[] = Array(
-                "range" => Array(
-                    "messages.date" => Array(
-                        "lte" => $before,
-                        "gte" => $after
+                "bool" => Array(
+                    "should" => $should_tags,
+                    "minimum_should_match" => count($should_tags)
+                )
+            );
+        }
+
+        //PARTIE SUR PINNED
+        if (isset($options["pinned"])) {
+            $must[] = Array(
+                "match_phrase" => Array(
+                    "messages.pinned" => $options["pinned"]
+                )
+            );
+        }
+
+        // PARTIE SUR LES MENTIONS
+        if (isset($options["mentions"])) {
+            $mentions = Array();
+            foreach ($options["mentions"] as $mention) {
+                $mentions[] = Array(
+                    "bool" => Array(
+                        "must" => Array(
+                            "match_phrase" => Array(
+                                "messages.mentions" => $mention
+                            )
+                        )
+                    )
+                );
+            }
+        }
+
+        $must[] = Array(
+            "range" => Array(
+                "messages.date" => Array(
+                    "lte" => $before,
+                    "gte" => $after
+                )
+            )
+        );
+
+        if (isset($options["sender"])) {
+            $must[] = Array(
+                "match_phrase" => Array(
+                    "messages.sender" => $options["sender"]
+                )
+            );
+        }
+
+        if (isset($options["mentions"])) {
+            $must[] = Array(
+                "bool" => Array(
+                    "should" => $mentions,
+                    "minimum_should_match" => count($options["mentions"])
+                )
+            );
+        }
+
+        if (isset($options["reactions"])) {
+            $must[] = Array(
+                "bool" => Array(
+                    "must" => Array(
+                        "nested" => Array(
+                            "path" => "messages.reactions",
+                            "score_mode" => "avg",
+                            "query" => Array(
+                                "bool" => Array(
+                                    "should" => $reactions,
+                                    "minimum_should_match" => count($options["reactions"])
+                                )
+                            )
+                        )
                     )
                 )
             );
+        }
 
-            if(isset($options["sender"])){
-                $must[] = Array(
-                    "match_phrase" => Array(
-                        "messages.sender" => $options["sender"]
-                    )
-                );
-            }
+        if (isset($options["application_id"])) {
+            $must[] = Array(
+                "match_phrase" => Array(
+                    "messages.application_id" => $options["application_id"]
+                )
+            );;
+        }
 
-            if(isset($options["mentions"])){
-                $must[] = Array(
-                    "bool" => Array(
-                        "should" => $mentions,
-                        "minimum_should_match" => count($options["mentions"])
-                    )
-                );
-            }
+        if (isset($terms) && $terms != Array()) {
+            $must[] = Array(
+                "bool" => Array(
+                    "should" => Array(
+                        $terms
+                    ),
+                    "minimum_should_match" => count($terms)
+                )
+            );
+        }
 
-            if(isset($options["reactions"])){
-                $must[] = Array(
-                    "bool" => Array(
-                        "must" => Array(
+        $options = Array(
+            "repository" => "TwakeGlobalSearchBundle:Bloc",
+            "index" => "message_bloc",
+            "size" => 1,
+            "query" => Array(
+                "bool" => Array(
+                    "must" => Array(
+                        Array(
+                            "bool" => Array(
+                                "should" => Array(
+                                    $should_channels
+                                ),
+                                "minimum_should_match" => 1
+                            )
+                        ),
+                        Array(
                             "nested" => Array(
-                                "path" => "messages.reactions",
+                                "path" => "messages",
                                 "score_mode" => "avg",
                                 "query" => Array(
                                     "bool" => Array(
-                                        "should" => $reactions,
-                                        "minimum_should_match" => count($options["reactions"])
-                                    )
-                                )
-                            )
-                        )
-                    )
-                );
-            }
-
-            if(isset($options["application_id"])){
-                $must[] = Array(
-                    "match_phrase" => Array(
-                        "messages.application_id" => $options["application_id"]
-                    )
-                );;
-            }
-
-            if(isset($terms) && $terms != Array()){
-                $must[]= Array(
-                    "bool" => Array(
-                        "should" => Array(
-                            $terms
-                        ),
-                        "minimum_should_match" => count($terms)
-                    )
-                );
-            }
-
-            $options = Array(
-                "repository" => "TwakeGlobalSearchBundle:Bloc",
-                "index" => "message_bloc",
-                "size" => 1,
-                "query" => Array(
-                    "bool" => Array(
-                        "must" => Array(
-                            Array(
-                                "bool" => Array(
-                                    "should" => Array(
-                                        $should_channels
-                                    ),
-                                    "minimum_should_match" => 1
-                                )
-                            ),
-                            Array(
-                                "nested" => Array(
-                                    "path" => "messages",
-                                    "score_mode" => "avg",
-                                    "query" => Array(
-                                        "bool" => Array(
-                                            "must" => $must
-                                        )
+                                        "must" => $must
                                     )
                                 )
                             )
                         )
                     )
                 )
-            );
+            )
+        );
 
 
-            // search in ES
-            $result = $this->doctrine->es_search($options);
+        // search in ES
+        $result = $this->doctrine->es_search($options);
 
-            array_slice($result["result"], 0, 5);
+        array_slice($result["result"], 0, 5);
 
-            $scroll_id = $result["scroll_id"];
+        $scroll_id = $result["scroll_id"];
 
-            //on traite les données recu d'Elasticsearch
+        //on traite les données recu d'Elasticsearch
 
-            foreach ($result["result"] as $bloc) {
-                $bloc = $bloc[0];
-                $messages = $bloc->getMessages();
-                $compt = 0;
-                foreach ($messages as $message) {
-                    if(isset($options_save["words"])){
+        foreach ($result["result"] as $bloc) {
+            $bloc = $bloc[0];
+            $messages = $bloc->getMessages();
+            $compt = 0;
+            foreach ($messages as $message) {
+                if (isset($options_save["words"])) {
+                    $word_valid = true;
+
+                    foreach ($final_words as $word) {
+                        if ($word_valid && strpos(strtolower($message["content"]), strtolower($word)) !== false) {
+                        } else {
+                            $word_valid = false;
+                        }
+                    }
+                    if ($word_valid) {
+                        $message_id_in_bloc = $bloc->getIdMessages()[$compt];
+                        $this->verif_valid($message_id_in_bloc, $options_save);
+                    }
+                } elseif (!isset($options["words"]) && isset($options_save["application_id"]) && isset($message["application_id"])) {
+                    //POUR LES MESSAGES D APPLICATION COMME LES ENVOIES DE FICHIER QUI ONT PAS DE TEXTE
+                    $message_id_in_bloc = $bloc->getIdMessages()[$compt];
+                    $this->verif_valid($message_id_in_bloc, $options_save);
+                }
+                $compt++;
+            }
+        }
+
+        // on cherche dans le bloc en cours de construction de tout les channels demandés
+        foreach ($channels as $channel) {
+            $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("channel_id" => $channel));
+            $compt = 0;
+            if (isset($lastbloc) && $lastbloc->getLock() == false) {
+                foreach ($lastbloc->getMessages() as $message) {
+                    if (isset($options_save["words"])) {
                         $word_valid = true;
-
                         foreach ($final_words as $word) {
                             if ($word_valid && strpos(strtolower($message["content"]), strtolower($word)) !== false) {
                             } else {
@@ -363,52 +391,23 @@ class Blocmessage
                             }
                         }
                         if ($word_valid) {
-                            $message_id_in_bloc = $bloc->getIdMessages()[$compt];
+                            $message_id_in_bloc = $lastbloc->getIdMessages()[$compt];
                             $this->verif_valid($message_id_in_bloc, $options_save);
                         }
-                    }
-                    elseif (!isset($options["words"]) && isset($options_save["application_id"]) && isset($message["application_id"])){
+                    } elseif (!isset($options["words"]) && isset($options_save["application_id"]) && isset($message["application_id"])) {
                         //POUR LES MESSAGES D APPLICATION COMME LES ENVOIES DE FICHIER QUI ONT PAS DE TEXTE
-                        $message_id_in_bloc = $bloc->getIdMessages()[$compt];
+
+                        $message_id_in_bloc = $lastbloc->getIdMessages()[$compt];
                         $this->verif_valid($message_id_in_bloc, $options_save);
                     }
                     $compt++;
                 }
             }
-
-            // on cherche dans le bloc en cours de construction de tout les channels demandés
-            foreach ($channels as $channel) {
-                $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("channel_id" => $channel));
-                $compt = 0;
-                if (isset($lastbloc) && $lastbloc->getLock() == false) {
-                    foreach ($lastbloc->getMessages() as $message) {
-                        if(isset($options_save["words"])) {
-                            $word_valid = true;
-                            foreach ($final_words as $word) {
-                                if ($word_valid && strpos(strtolower($message["content"]), strtolower($word)) !== false) {
-                                } else {
-                                    $word_valid = false;
-                                }
-                            }
-                            if ($word_valid) {
-                                $message_id_in_bloc = $lastbloc->getIdMessages()[$compt];
-                                $this->verif_valid($message_id_in_bloc, $options_save);
-                            }
-                        }
-                        elseif (!isset($options["words"]) && isset($options_save["application_id"]) && isset($message["application_id"])){
-                            //POUR LES MESSAGES D APPLICATION COMME LES ENVOIES DE FICHIER QUI ONT PAS DE TEXTE
-
-                            $message_id_in_bloc = $lastbloc->getIdMessages()[$compt];
-                            $this->verif_valid($message_id_in_bloc, $options_save);
-                        }
-                            $compt++;
-                        }
-                }
-            }
-            $this->list_messages["scroll_id"] = $scroll_id;
+        }
+        $this->list_messages["scroll_id"] = $scroll_id;
 
 
-    return $this->list_messages ?: null;
+        return $this->list_messages ?: null;
 
     }
 
@@ -416,9 +415,9 @@ class Blocmessage
     public function TestMessage()
     {
         $lastbloc = $this->doctrine->getRepository("TwakeGlobalSearchBundle:Bloc")->findBy(Array());
-        foreach($lastbloc as $bloc){
-           $this->doctrine->remove($bloc);
-           $this->doctrine->flush();
+        foreach ($lastbloc as $bloc) {
+            $this->doctrine->remove($bloc);
+            $this->doctrine->flush();
         }
 
     }

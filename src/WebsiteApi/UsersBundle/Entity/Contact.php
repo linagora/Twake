@@ -14,97 +14,96 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
  */
 class Contact
 {
-	/**
-	 * @var int
-	 *
+    /**
+     * @var int
+     *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
-	protected $id;
+     */
+    protected $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User",)
-	 */
-	private $from;
+     */
+    private $from;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
      */
-	private $to;
+    private $to;
 
-	/**
+    /**
      * @ORM\Column(type="integer")
-	 */
-	private $status = 0;
+     */
+    private $status = 0;
 
-	/**
-	 * @var \DateTime
-	 *
+    /**
+     * @var \DateTime
+     *
      * @ORM\Column(name="date", type="twake_datetime")
-	 */
-	private $date = "";
+     */
+    private $date = "";
 
 
-	public function __construct($from, $to)
-	{
-		$this->from = $from;
-		$this->to = $to;
-		$this->date = new \DateTime();
-	}
+    public function __construct($from, $to)
+    {
+        $this->from = $from;
+        $this->to = $to;
+        $this->date = new \DateTime();
+    }
 
-	/**
-	 * @return int
-	 */
-	public function setId($id)
+    /**
+     * @return int
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
 
     public function getId()
     {
-		return $this->id;
-	}
+        return $this->id;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getStatus()
-	{
-		return $this->status;
-	}
+    /**
+     * @return mixed
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
 
-	/**
-	 * @param mixed $status
-	 */
-	public function setStatus($status)
-	{
-		$this->status = $status;
-	}
+    /**
+     * @param mixed $status
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getFrom()
-	{
-		return $this->from;
-	}
+    /**
+     * @return mixed
+     */
+    public function getFrom()
+    {
+        return $this->from;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getTo()
-	{
-		return $this->to;
-	}
+    /**
+     * @return mixed
+     */
+    public function getTo()
+    {
+        return $this->to;
+    }
 
-	/**
-	 * @return \DateTime
-	 */
-	public function getDate()
-	{
-		return $this->date;
-	}
-
+    /**
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
 
 
 }

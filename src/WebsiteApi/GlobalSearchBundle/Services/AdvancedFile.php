@@ -20,24 +20,24 @@ class AdvancedFile
     }
 
 
-    public function AdvancedFile($current_user_id,$options,$workspaces)
+    public function AdvancedFile($current_user_id, $options, $workspaces)
     {
         $this->globalresult = Array();
 
         $workspace_access = Array();
-        foreach ($workspaces as $wp){
+        foreach ($workspaces as $wp) {
             //$member = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace_id" => $wp, "user_id"=> $current_user_id));
             $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $wp));
             $members = $wp_entity->getMembers();
-            foreach ($members as $member){
-                if($member->getUser()->getId()."" === $current_user_id){
+            foreach ($members as $member) {
+                if ($member->getUser()->getId() . "" === $current_user_id) {
                     $workspace_access[] = $wp;
                 }
             }
         }
 
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
-        if(isset($workspace_access) && $workspace_access != Array()){
+        if (isset($workspace_access) && $workspace_access != Array()) {
             //do search
         }
 

@@ -19,14 +19,14 @@ class AdvancedTask
     }
 
 
-    public function AdvancedTask($current_user_id,$options,$workspaces)
+    public function AdvancedTask($current_user_id, $options, $workspaces)
     {
         $workspace_access = Array();
-        foreach ($workspaces as $wp){
+        foreach ($workspaces as $wp) {
             $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $wp));
             $members = $wp_entity->getMembers();
-            foreach ($members as $member){
-                if($member->getUser()->getId()."" === $current_user_id){
+            foreach ($members as $member) {
+                if ($member->getUser()->getId() . "" === $current_user_id) {
                     $workspace_access[] = $wp;
                 }
             }
@@ -34,16 +34,16 @@ class AdvancedTask
 
 
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
-        if(isset($workspace_access) && $workspace_access != Array()){
+        if (isset($workspace_access) && $workspace_access != Array()) {
 
             $options_save = $options;
             $must = Array();
 
             //PARTIE SUR LE NAME
 
-            if(isset($options["title"])) {
-                $title= Array(
-                    "bool" =>Array(
+            if (isset($options["title"])) {
+                $title = Array(
+                    "bool" => Array(
                         "should" => Array(
                             "bool" => Array(
                                 "filter" => Array(
@@ -60,9 +60,9 @@ class AdvancedTask
 
             }
 
-            if(isset($options["description"])) {
-                $description= Array(
-                    "bool" =>Array(
+            if (isset($options["description"])) {
+                $description = Array(
+                    "bool" => Array(
                         "should" => Array(
                             "bool" => Array(
                                 "filter" => Array(
@@ -84,25 +84,25 @@ class AdvancedTask
             $modified_before = $now->format('Y-m-d');
             $modified_after = "2000-01-01";
 
-            if(isset($options["date_from"])){
+            if (isset($options["date_from"])) {
                 $date_from = $options["date_from"];
             }
 
-            if(isset($options["date_to"])){
+            if (isset($options["date_to"])) {
                 $date_to = $options["date_to"];
             }
 
-            if(isset($options["date_modified_before"])){
+            if (isset($options["date_modified_before"])) {
                 $modified_before = $options["date_modified_before"];
             }
 
-            if(isset($options["date_modified_after"])){
+            if (isset($options["date_modified_after"])) {
                 $modified_after = $options["date_modified_after"];
             }
 
             //PARTIES SUR LES WORKSPACES
             $should_workspaces = Array();
-            foreach($workspaces as $wp) {
+            foreach ($workspaces as $wp) {
                 $should_workspaces[] = Array(
                     "match_phrase" => Array(
                         "workspace_id" => $wp
@@ -111,9 +111,9 @@ class AdvancedTask
             }
 
             //PARTIES SUR LES TAGS
-            if(isset($options["tags"])){
+            if (isset($options["tags"])) {
                 $should_tags = Array();
-                foreach($options["tags"] as $tag) {
+                foreach ($options["tags"] as $tag) {
                     $should_tags[] = Array(
                         "match_phrase" => Array(
                             "tags" => $tag
@@ -130,10 +130,10 @@ class AdvancedTask
             }
 
             //PARTIES SUR LES PARTICIPANTS
-            if(isset($options["participants"])){
+            if (isset($options["participants"])) {
 
                 $should_participants = Array();
-                foreach($options["participants"] as $participant) {
+                foreach ($options["participants"] as $participant) {
                     $should_participants[] = Array(
                         "nested" => Array(
                             "path" => "participants",
@@ -154,7 +154,7 @@ class AdvancedTask
                                             "bool" => Array(
                                                 "filter" => Array(
                                                     "regexp" => Array(
-                                                        "participants.email" => ".*".$participant.".*"
+                                                        "participants.email" => ".*" . $participant . ".*"
                                                     )
                                                 )
                                             )
@@ -177,7 +177,6 @@ class AdvancedTask
             }
 
 
-
             $must[] = Array(
                 "bool" => Array(
                     "should" => $should_workspaces,
@@ -186,8 +185,7 @@ class AdvancedTask
             );
 
 
-
-            if(isset($options["owner"])){
+            if (isset($options["owner"])) {
                 $must[] = Array(
                     "match_phrase" => Array(
                         "owner" => $options["owner"]
@@ -249,7 +247,7 @@ class AdvancedTask
             $scroll_id = $result["scroll_id"];
 
             //on traite les données recu d'Elasticsearch
-            foreach ($result["result"] as $task){
+            foreach ($result["result"] as $task) {
                 $this->list_tasks["tasks"][] = $task[0]->getAsArray();
             }
             $this->list_tasks["scroll_id"] = $scroll_id;

@@ -15,17 +15,17 @@ use Symfony\Component\Validator\Constraints\DateTime;
 class DriveFileLabel
 {
 
-	/**
+    /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
-	private $id;
+     */
+    private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveFile",cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
-	 */
-	private $file;
+     */
+    private $file;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\DriveBundle\Entity\DriveLabel",cascade={"persist"})
@@ -33,54 +33,55 @@ class DriveFileLabel
      */
     private $label;
 
-	public function __construct($file, $label){
-		$this->label = $label;
-		$this->file = $file;
-	}
+    public function __construct($file, $label)
+    {
+        $this->label = $label;
+        $this->file = $file;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function setId($id)
+    /**
+     * @return mixed
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
 
     public function getId()
     {
-		return $this->id;
-	}
+        return $this->id;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getFile()
-	{
-		return $this->file;
-	}
+    /**
+     * @return mixed
+     */
+    public function getFile()
+    {
+        return $this->file;
+    }
 
-	/**
-	 * @param mixed $file
-	 */
-	public function setFile($file)
-	{
-		$this->file = $file;
-	}
+    /**
+     * @param mixed $file
+     */
+    public function setFile($file)
+    {
+        $this->file = $file;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getLabel()
-	{
-		return $this->label;
-	}
+    /**
+     * @return mixed
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
 
-	/**
-	 * @param mixed $label
-	 */
-	public function setLabel($label)
-	{
-		$this->label = $label;
-	}
+    /**
+     * @param mixed $label
+     */
+    public function setLabel($label)
+    {
+        $this->label = $label;
+    }
 
 }

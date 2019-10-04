@@ -9,37 +9,39 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 class RememberMe
 {
 
-	private $container;
+    private $container;
 
-	public function __construct(ContainerInterface $container) {
-		$this->container = $container;
-	}
+    public function __construct(ContainerInterface $container)
+    {
+        $this->container = $container;
+    }
 
-	public function doRemember($request, &$response, $token){
+    public function doRemember($request, &$response, $token)
+    {
 
-		$providerKey = $this->container->getParameter('fos_user.firewall_name');
-		$key = $this->container->getParameter('secret');
+        $providerKey = $this->container->getParameter('fos_user.firewall_name');
+        $key = $this->container->getParameter('secret');
 
-		$userManager = $this->container->get('fos_user.user_manager');
-		$userProvider = new EmailUserProvider($userManager);
+        $userManager = $this->container->get('fos_user.user_manager');
+        $userProvider = new EmailUserProvider($userManager);
 
-		$rememberMeService = new TokenBasedRememberMeServices(
-			array($userProvider),
-			$key,
-			$providerKey,
-			array(
-				'path' => '/',
-				'name' => 'REMEMBERME',
-				'domain' => null,
-				'secure' => false,
+        $rememberMeService = new TokenBasedRememberMeServices(
+            array($userProvider),
+            $key,
+            $providerKey,
+            array(
+                'path' => '/',
+                'name' => 'REMEMBERME',
+                'domain' => null,
+                'secure' => false,
                 "httponly" => true,
-				'lifetime' => 60*60*24*360,
-				'always_remember_me' => true,
-				'remember_me_parameter' => '_remember_me')
-		);
+                'lifetime' => 60 * 60 * 24 * 360,
+                'always_remember_me' => true,
+                'remember_me_parameter' => '_remember_me')
+        );
 
-		$rememberMeService->loginSuccess($request, $response, $token);
+        $rememberMeService->loginSuccess($request, $response, $token);
 
-	}
+    }
 
 }

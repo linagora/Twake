@@ -26,7 +26,7 @@ class Receipt
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
     /**
@@ -177,9 +177,10 @@ class Receipt
     }
 
 
-    public function getAsArray() {
+    public function getAsArray()
+    {
 
-        $receipt =  Array(
+        $receipt = Array(
             "id" => $this->getId(),
             "issue_date" => date_format($this->getIssueDate(), "d-m-Y"),
             "start_date_of_service" => date_format($this->getStartDateOfService(), "d-m-Y"),
@@ -189,14 +190,14 @@ class Receipt
         );
 
         //if ($this->getGroupIdentity() != null){
-            $group_identity = $this->getGroupIdentity()->getAsArray();
+        $group_identity = $this->getGroupIdentity()->getAsArray();
         //}
 
         $pricing_plan = $this->getPricingPlan()->getAsArray();
 
         $group_princing_instance = $this->getGroupPricingInstance()->getAsArray();
 
-        $res = array_merge($receipt, $group_identity,$pricing_plan, $group_princing_instance);
+        $res = array_merge($receipt, $group_identity, $pricing_plan, $group_princing_instance);
         $res["id"] = $this->getId();
 
         return $res;

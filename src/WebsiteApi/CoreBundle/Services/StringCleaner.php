@@ -23,7 +23,8 @@ END;
 
     }
 
-    public function removeAccents($str){
+    public function removeAccents($str)
+    {
         $str = preg_replace('#Ç#', 'C', $str);
         $str = preg_replace('#ç#', 'c', $str);
         $str = preg_replace('#è|é|ê|ë#', 'e', $str);
@@ -42,7 +43,8 @@ END;
         return $str;
     }
 
-    public function simplifyInArray($data){
+    public function simplifyInArray($data)
+    {
         if (is_string($data)) {
             return strtolower($this->removeSpecialChars(strtolower($data)));
         }
@@ -53,24 +55,30 @@ END;
         }
         return $data;
     }
-    public function simplify($str){
-        return preg_replace("/[^a-z0-9_-]/","",strtolower($this->removeAccents($str)));
+
+    public function simplify($str)
+    {
+        return preg_replace("/[^a-z0-9_-]/", "", strtolower($this->removeAccents($str)));
     }
 
-    public function simplifyWithoutRemovingUpperCase($str){
-        return preg_replace("/[^a-z0-9A-Z]/","",$this->removeAccents($str));
+    public function simplifyWithoutRemovingUpperCase($str)
+    {
+        return preg_replace("/[^a-z0-9A-Z]/", "", $this->removeAccents($str));
     }
 
-    public function simplifyWithoutRemovingSpaces($str){
-        return preg_replace("/[^a-z0-9 ]/","",strtolower($this->removeAccents($str)));
+    public function simplifyWithoutRemovingSpaces($str)
+    {
+        return preg_replace("/[^a-z0-9 ]/", "", strtolower($this->removeAccents($str)));
     }
 
-    public function simplifyWithoutRemovingSpacesOrUpperCase($str){
+    public function simplifyWithoutRemovingSpacesOrUpperCase($str)
+    {
         return preg_replace("/[^a-z0-9A-Z ]/", "", $this->removeAccents($str));
     }
 
-    public function simplifyMail($str){
-        return preg_replace("/[^a-z0-9@\.\-\_\:]/","",strtolower($this->removeAccents($str)));
+    public function simplifyMail($str)
+    {
+        return preg_replace("/[^a-z0-9@\.\-\_\:]/", "", strtolower($this->removeAccents($str)));
     }
 
     public function simplifyUsername($str)
@@ -78,7 +86,8 @@ END;
         return preg_replace("/[^a-z0-9_.-]/", "", strtolower($this->removeAccents($str)));
     }
 
-    public function simplifyURL($str){
+    public function simplifyURL($str)
+    {
         return preg_replace("/[^a-z0-9@\.\-\_\/\:]/", "", strtolower($this->removeAccents($str)));
     }
 

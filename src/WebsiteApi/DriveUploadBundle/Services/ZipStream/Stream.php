@@ -72,8 +72,9 @@ class Stream implements StreamInterface
     {
         try {
             $this->seek(0);
-        } catch (\RuntimeException $e) {}
-        return (string) stream_get_contents($this->stream);
+        } catch (\RuntimeException $e) {
+        }
+        return (string)stream_get_contents($this->stream);
     }
 
     /**

@@ -14,17 +14,17 @@ use WebsiteApi\WorkspacesBundle\Model\WorkspacesInterface;
 class WorkspacesApps implements WorkspacesAppsInterface
 {
 
-	private $wls;
-	private $doctrine;
+    private $wls;
+    private $doctrine;
     private $gms;
     private $pusher;
     private $channel_system;
     private $application_api;
 
     public function __construct($doctrine, $workspaces_levels_service, $group_managers_service, $pusher, $channel_system, $application_api)
-	{
-		$this->doctrine = $doctrine;
-		$this->wls = $workspaces_levels_service;
+    {
+        $this->doctrine = $doctrine;
+        $this->wls = $workspaces_levels_service;
         $this->gms = $group_managers_service;
         $this->pusher = $pusher;
         $this->channel_system = $channel_system;
@@ -32,17 +32,17 @@ class WorkspacesApps implements WorkspacesAppsInterface
 
     }
 
-    public function getApps($workspaceId, $currentUserId = null, $onlymessageModule = false , $onlyEditableRights = false)
+    public function getApps($workspaceId, $currentUserId = null, $onlymessageModule = false, $onlyEditableRights = false)
     {
 
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
         $workspace = $workspaceRepository->find($workspaceId);
 
-        if($workspace==null){
+        if ($workspace == null) {
             return false;
         }
 
-        if($currentUserId==null
+        if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "")) {
 
             //Group apps
@@ -53,7 +53,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
 
             $apps = array();
-            foreach ( $workspaceapps as $wa ){
+            foreach ($workspaceapps as $wa) {
 
                 $app = $applicationRepository->findOneBy(Array("id" => $wa->getAppId()));
 
@@ -100,7 +100,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
             )
         ) {
             $workspaces = $group->getWorkspaces();
-            foreach ($workspaces as $workspace){
+            foreach ($workspaces as $workspace) {
 
                 $this->enableApp($workspace->getId(), $appid, null);
 
@@ -121,18 +121,18 @@ class WorkspacesApps implements WorkspacesAppsInterface
         $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
         $app = $appRepository->findOneBy(Array("id" => $applicationId));
 
-        if($workspace==null || $app==null){
+        if ($workspace == null || $app == null) {
             return false;
         }
 
-        if($currentUserId==null
+        if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
 
             //Search in  GroupApp if the targeted app exists
             $groupappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupApp");
             $groupapp = $groupappsRepository->findOneBy(Array("group" => $workspace->getGroup(), "app_id" => $app->getId()));
 
-            if ($groupapp == null){
+            if ($groupapp == null) {
                 $groupapp = new GroupApp($workspace->getGroup(), $app->getId());
                 $this->doctrine->persist($groupapp);
             }
@@ -146,7 +146,7 @@ class WorkspacesApps implements WorkspacesAppsInterface
             $workspaceappsRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceApp");
             $workspaceapp = $workspaceappsRepository->findOneBy(Array("workspace" => $workspace, "groupapp_id" => $groupapp->getId()));
 
-            if($workspaceapp){
+            if ($workspaceapp) {
                 $this->doctrine->persist($groupapp);
                 $this->doctrine->flush();
                 return true;
@@ -201,18 +201,18 @@ class WorkspacesApps implements WorkspacesAppsInterface
         $appRepository = $this->doctrine->getRepository("TwakeMarketBundle:Application");
         $app = $appRepository->findOneBy(Array("id" => $applicationId));
 
-        if($workspace==null || $app==null){
+        if ($workspace == null || $app == null) {
             return false;
         }
 
-        if($currentUserId==null
+        if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "workspace:write")) {
 
             if ($workspace->getUser() != null
                 && ($workspace->getUser()->getId() == $currentUserId || $currentUserId == null)
             ) {
                 //cant disable in Private ws apps
-               return false;
+                return false;
             }
 
             //Search WorkspaceApp targeting the app

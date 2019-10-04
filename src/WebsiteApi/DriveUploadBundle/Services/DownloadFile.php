@@ -36,27 +36,24 @@ class DownloadFile
     {
         $uploadstate = $this->doctrine->getRepository("TwakeDriveUploadBundle:UploadState")->findOneBy(Array("identifier" => $identifier));
         $param_bag = new EncryptionBag($uploadstate->getEncryptionKey(), $this->parameter_drive_salt, "OpenSSL-2");
-        if(isset($uploadstate)){
-            if(isset($zip_prefix) && isset($zip)) {
+        if (isset($uploadstate)) {
+            if (isset($zip_prefix) && isset($zip)) {
                 $stream_zip = new TwakeFileStream($this->storagemanager->getAdapter(), $param_bag, $uploadstate);
                 $zip->addFileFromPsr7Stream($zip_prefix . DIRECTORY_SEPARATOR . $name, $stream_zip);
-            }
-            else{
+            } else {
                 for ($i = 1; $i <= $uploadstate->getChunk(); $i++) {
                     $this->storagemanager->getAdapter()->read("stream", $i, $param_bag, $uploadstate);
                 }
             }
-        }
-        else{
+        } else {
             $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("id" => $identifier));
             $url = $file->getUrl();
-            if(isset($url)){
+            if (isset($url)) {
                 //on ajoute un fichier url dans le zip
-                $zip->addFile("google.url","[InternetShortcut]" . "\r\n" . "URL=" . $url);
+                $zip->addFile("google.url", "[InternetShortcut]" . "\r\n" . "URL=" . $url);
             }
         }
     }
-
 
 
     public function addOneFile($file, $version, &$zip = null, $zip_prefix = null)
@@ -75,7 +72,7 @@ class DownloadFile
             return true;
         }
         if (isset($version->getData()["identifier"]) && isset($version->getData()["upload_mode"]) && $version->getData()["upload_mode"] == "chunk") {
-            $this->downloadFile($version->getData()["identifier"],$file->getName(), $zip, $zip_prefix);
+            $this->downloadFile($version->getData()["identifier"], $file->getName(), $zip, $zip_prefix);
             return true;
         } else {
             if ($oldFileSystem) {
@@ -194,26 +191,23 @@ class DownloadFile
                     }
                 }
 
-                if(isset($zip_prefix)) {
-                    if ($file->getIsDirectory()){
-                        if($zip_prefix == "/"){
+                if (isset($zip_prefix)) {
+                    if ($file->getIsDirectory()) {
+                        if ($zip_prefix == "/") {
                             $next_zip_prefix = $zip_prefix . $file->getName();
-                        }
-                        else{
+                        } else {
                             $next_zip_prefix = $zip_prefix . DIRECTORY_SEPARATOR . $file->getName();
                         }
 
                         $files_son = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $file->getWorkspaceId(), "parent_id" => $file->getId()));
                         foreach ($files_son as $son) {
 
-                            $this->downloadList(Array($son->getId().""), $zip, $next_zip_prefix);
+                            $this->downloadList(Array($son->getId() . ""), $zip, $next_zip_prefix);
                         }
+                    } else {
+                        $this->addOneFile($file, $version, $zip, $zip_prefix);
                     }
-                    else{
-                        $this->addOneFile($file, $version,$zip, $zip_prefix);
-                    }
-                }
-                else{
+                } else {
                     $this->addOneFile($file, $version);
                 }
             }
@@ -238,24 +232,23 @@ class DownloadFile
         $this->workspace_id = $workspace_id;
         $name = null;
 
-        if(count($files_ids)> 1){
+        if (count($files_ids) > 1) {
             $zip = true;
             $name = "Document.zip";
-        }
-        elseif (count($files_ids) == 1){
+        } elseif (count($files_ids) == 1) {
             $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $files_ids[0]));
-            if($file->getIsDirectory()){
+            if ($file->getIsDirectory()) {
                 $name = $file->getName() . ".zip";
                 $zip = true;
                 $files_ids = Array();
                 $files_son = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $file->getWorkspaceId(), "parent_id" => $file->getId()));
-                foreach ($files_son as $son){
-                    $files_ids[] = $son->getId()."";
+                foreach ($files_son as $son) {
+                    $files_ids[] = $son->getId() . "";
                 }
             }
         }
 
-        if(isset($zip) && $zip ){
+        if (isset($zip) && $zip) {
             //plusieurs fichiers ou un dossier, on fait un zip
             # enable output of HTTP headers
             $options = new Archive();
@@ -268,13 +261,13 @@ class DownloadFile
             //error_log(print_r($files_ids,true));
             $this->downloadList($files_ids, $zip_archive, "/");
 
-        }else{
+        } else {
             //téléchargement classique
             $this->downloadList($files_ids);
         }
 
 
-        if(isset($zip) && $zip ) {
+        if (isset($zip) && $zip) {
             //on ajoute un fichier url dans le zip
 
             # finish the zip stream

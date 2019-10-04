@@ -26,9 +26,9 @@ class ApplicationApiController extends Controller
         $workspace_id = $request->request->get("workspace_id", null);
         $group_id = $request->request->get("group_id", null);
 
-        if($user != null ){
+        if ($user != null) {
             $data = array("token" => $this->get("app.applications_api")->generatedToken($app_id, $workspace_id, $group_id, $user->getId()));
-        }else{
+        } else {
             $data = array("error" => "unknown_error");
         }
 

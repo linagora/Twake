@@ -1,4 +1,5 @@
 <?php
+
 namespace WebsiteApi\CoreBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -26,7 +27,7 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "name","group_id","creation_date"
+                    "name", "group_id", "creation_date"
                 )
             ),
             "properties" => Array(
@@ -41,7 +42,7 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "name","creation_date"
+                    "name", "creation_date"
                 )
             ),
             "properties" => Array(
@@ -101,7 +102,7 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "title","description","owner","date_from","date_to","tags","participants","workspace_id","date_last_modified"
+                    "title", "description", "owner", "date_from", "date_to", "tags", "participants", "workspace_id", "date_last_modified"
                 )
             ),
             "properties" => Array(
@@ -122,7 +123,7 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "title","description","owner","date_from","date_to","tags","participants","workspace_id","date_last_modified"
+                    "title", "description", "owner", "date_from", "date_to", "tags", "participants", "workspace_id", "date_last_modified"
                 )
             ),
             "properties" => Array(
@@ -144,7 +145,7 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "workspace_id","name","group_id","last_activity"
+                    "workspace_id", "name", "group_id", "last_activity"
                 )
             ),
             "properties" => Array(
@@ -160,7 +161,7 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "name","type","creation_date","workspace_id","keywords","creator","date_last_modified","tags","size")
+                    "name", "type", "creation_date", "workspace_id", "keywords", "creator", "date_last_modified", "tags", "size")
             ),
             "properties" => Array(
                 "id" => Array("type" => "keyword"),
@@ -186,7 +187,7 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "firstname","lastname","username","language","creation_date"
+                    "firstname", "lastname", "username", "language", "creation_date"
                 )
             ),
             "properties" => Array(
@@ -202,7 +203,7 @@ class MappingCommand extends ContainerAwareCommand
 
         $mapping_channel = json_encode($mapping_channel);
         $mapping_workspace = json_encode($mapping_workspace);
-        $mapping_file=json_encode($mapping_file);
+        $mapping_file = json_encode($mapping_file);
         $mapping_message_bloc = json_encode($mapping_message_bloc);
         $mapping_group = json_encode($mapping_group);
         $mapping_mail = json_encode($mapping_mail);
@@ -216,9 +217,9 @@ class MappingCommand extends ContainerAwareCommand
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_task)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($mapping_task)));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_task);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $mapping_task);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
@@ -228,9 +229,9 @@ class MappingCommand extends ContainerAwareCommand
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_event)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($mapping_event)));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_event);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $mapping_event);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
@@ -240,9 +241,9 @@ class MappingCommand extends ContainerAwareCommand
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_channel)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($mapping_channel)));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_channel);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $mapping_channel);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
@@ -252,9 +253,9 @@ class MappingCommand extends ContainerAwareCommand
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_group)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($mapping_group)));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_group);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $mapping_group);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
@@ -265,9 +266,9 @@ class MappingCommand extends ContainerAwareCommand
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_mail)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($mapping_mail)));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_mail);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $mapping_mail);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
@@ -278,9 +279,9 @@ class MappingCommand extends ContainerAwareCommand
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_workspace)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($mapping_workspace)));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_workspace);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $mapping_workspace);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
@@ -291,9 +292,9 @@ class MappingCommand extends ContainerAwareCommand
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_users)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($mapping_users)));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_users);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $mapping_users);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
@@ -303,9 +304,9 @@ class MappingCommand extends ContainerAwareCommand
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_file)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($mapping_file)));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_file);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $mapping_file);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);
@@ -315,9 +316,9 @@ class MappingCommand extends ContainerAwareCommand
 
         $ch = curl_init();
         curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_message_bloc)));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($mapping_message_bloc)));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_message_bloc);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $mapping_message_bloc);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
         curl_exec($ch);
         curl_close($ch);

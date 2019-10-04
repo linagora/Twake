@@ -13,7 +13,7 @@ class ChannelSystemAbstract
 {
     private $workspaceUser;
 
-    function __construct($entity_manager, $applicationsApi = null,$workspaceUser)
+    function __construct($entity_manager, $applicationsApi = null, $workspaceUser)
     {
         $this->entity_manager = $entity_manager;
         $this->applicationsApi = $applicationsApi;
@@ -30,9 +30,9 @@ class ChannelSystemAbstract
             $members = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("channel_id" => $object->getId()));
             foreach ($members as $member) {
                 $this->entity_manager->remove($member);
-                $linkWorkspaceUser = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $object->getOriginalWorkspaceId(),"user"=>$member->getUserId()));
-                if($linkWorkspaceUser->getExterne() && !$linkWorkspaceUser->getAutoAddExterne()){
-                    $this->removeExterneIfNotAnymoreInChannel($object->getOriginalWorkspaceId(),$object->getId(),$member->getUserId());
+                $linkWorkspaceUser = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $object->getOriginalWorkspaceId(), "user" => $member->getUserId()));
+                if ($linkWorkspaceUser->getExterne() && !$linkWorkspaceUser->getAutoAddExterne()) {
+                    $this->removeExterneIfNotAnymoreInChannel($object->getOriginalWorkspaceId(), $object->getId(), $member->getUserId());
                 }
             }
 
@@ -89,12 +89,12 @@ class ChannelSystemAbstract
                 $_ext_members[] = $ext_member;
             }
         }
-        if(!$channel_entity->getPrivate()){
+        if (!$channel_entity->getPrivate()) {
             // si le channel n'est pas privé, on rajoute tous les autoadd
-            $workspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id"=>$channel_entity->getOriginalWorkspaceId()));
-            $membersWorkspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace"=>$workspace));
-            foreach($membersWorkspace as $members){
-                if($members->getAutoAddExterne() && !in_array($members->getUser()->getId(),$_ext_members)){
+            $workspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $channel_entity->getOriginalWorkspaceId()));
+            $membersWorkspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $workspace));
+            foreach ($membersWorkspace as $members) {
+                if ($members->getAutoAddExterne() && !in_array($members->getUser()->getId(), $_ext_members)) {
                     $_ext_members[] = $members->getUser()->getId();
                 }
             }
@@ -112,41 +112,38 @@ class ChannelSystemAbstract
 
         foreach ($_ext_members as $member) {
             // dans le cas où c'est un id
-            if(strrpos($member, "@")<=0){
+            if (strrpos($member, "@") <= 0) {
                 if (!in_array($member, $current_ext)) {
                     $member_id = $member;
-                    $user = $usersRepo->findOneBy(Array("id"=>$member_id));
-                    if($user){
-                        $this->addUserToChannel($user,$channel_entity);
+                    $user = $usersRepo->findOneBy(Array("id" => $member_id));
+                    if ($user) {
+                        $this->addUserToChannel($user, $channel_entity);
                         $did_something = true;
                     }
                 }
-            }
-            else{
+            } else {
                 // dans le cas où c'est une adresse mail
                 $mail = $member;
-                if(!in_array($mail, $current_ext)){
-                    $user = $this->entity_manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("emailcanonical"=>$mail));
-                    if($user && !in_array($user->getId(), $current_ext)){
-                        $_ext_members[array_search($mail,$_ext_members)]= $user->getId();
-                        $this->addUserToChannel($user,$channel_entity);
+                if (!in_array($mail, $current_ext)) {
+                    $user = $this->entity_manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("emailcanonical" => $mail));
+                    if ($user && !in_array($user->getId(), $current_ext)) {
+                        $_ext_members[array_search($mail, $_ext_members)] = $user->getId();
+                        $this->addUserToChannel($user, $channel_entity);
                         $did_something = true;
-                    }
-                    else{
-                        $secondMail = $this->entity_manager->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail"=>$mail));
-                        if($secondMail && !in_array($secondMail->getUser()->getId(), $current_ext)){
+                    } else {
+                        $secondMail = $this->entity_manager->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail" => $mail));
+                        if ($secondMail && !in_array($secondMail->getUser()->getId(), $current_ext)) {
                             // c'est un email secondaire
                             $user = $secondMail->getUser();
-                            $_ext_members[array_search($mail,$_ext_members)]= $user->getId();
-                            $this->addUserToChannel($user,$channel_entity);
+                            $_ext_members[array_search($mail, $_ext_members)] = $user->getId();
+                            $this->addUserToChannel($user, $channel_entity);
                             $did_something = true;
-                        }
-                        else{
+                        } else {
                             $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($mail, $channel_entity);
                             $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
                             $member->setExterne(true);
                             $this->entity_manager->persist($member);
-                            $this->workspaceUser->addMemberByMail($channel_entity->getOriginalWorkspaceId(), $mail, true,false);
+                            $this->workspaceUser->addMemberByMail($channel_entity->getOriginalWorkspaceId(), $mail, true, false);
                             $did_something = true;
                         }
                     }
@@ -161,7 +158,7 @@ class ChannelSystemAbstract
                 $member = $membersRepo->findOneBy(Array("direct" => $channel_entity->getDirect(), "channel_id" => $channel_entity->getId(), "user_id" => $member_id));
                 if ($member) {
                     $this->entity_manager->remove($member);
-                    $this->removeExterneIfNotAnymoreInChannel($channel_entity->getOriginalWorkspaceId(),$channel_entity->getId(),$member_id);
+                    $this->removeExterneIfNotAnymoreInChannel($channel_entity->getOriginalWorkspaceId(), $channel_entity->getId(), $member_id);
                     // vérifier si l'utilisateur est dans un autre channel
                 }
                 $did_something = true;
@@ -178,36 +175,38 @@ class ChannelSystemAbstract
         }
     }
 
-    public function addUserToChannel($user,$channel){
-        $link = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct"=>false,"user_id"=>$user->getId(),"channel_id"=>$channel->getId()));
-        if(!$link){
+    public function addUserToChannel($user, $channel)
+    {
+        $link = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $user->getId(), "channel_id" => $channel->getId()));
+        if (!$link) {
             $member = new \WebsiteApi\ChannelsBundle\Entity\ChannelMember($user->getId(), $channel);
             $member->setLastMessagesIncrement($channel->getMessagesIncrement());
             $member->setExterne(true);
             $this->entity_manager->persist($member);
 
             $workspace_id = $channel->getOriginalWorkspaceId();
-            $link = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $workspace_id,"user"=>$user->getId()));
-            if(!$link){
-                $this->workspaceUser->addMember($workspace_id,$user->getId(),true,false);
+            $link = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("workspace" => $workspace_id, "user" => $user->getId()));
+            if (!$link) {
+                $this->workspaceUser->addMember($workspace_id, $user->getId(), true, false);
             }
         }
     }
 
-    public function removeExterneIfNotAnymoreInChannel($workspaceId,$channelId,$userId){
-        $channel_in_current_workspace = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findBy(Array("direct"=>false,"original_workspace_id"=> $workspaceId));
+    public function removeExterneIfNotAnymoreInChannel($workspaceId, $channelId, $userId)
+    {
+        $channel_in_current_workspace = $this->entity_manager->getRepository("TwakeChannelsBundle:Channel")->findBy(Array("direct" => false, "original_workspace_id" => $workspaceId));
         $isInChannel = false;
-        foreach ($channel_in_current_workspace as $chan){
-            $link_user_channel = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct"=>0,"user_id"=>$userId,"channel_id"=>$chan->getId()));
-            if($link_user_channel && $link_user_channel->getChannelId()!=$channelId){
+        foreach ($channel_in_current_workspace as $chan) {
+            $link_user_channel = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => 0, "user_id" => $userId, "channel_id" => $chan->getId()));
+            if ($link_user_channel && $link_user_channel->getChannelId() != $channelId) {
                 $isInChannel = true;
                 break;
             }
         }
-        if(!$isInChannel){
-            $linkUserWorkspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $workspaceId,"user"=>$userId));
-            if($linkUserWorkspace){
-                $this->workspaceUser->removeMember($workspaceId,$userId);
+        if (!$isInChannel) {
+            $linkUserWorkspace = $this->entity_manager->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $workspaceId, "user" => $userId));
+            if ($linkUserWorkspace) {
+                $this->workspaceUser->removeMember($workspaceId, $userId);
             }
         }
 
@@ -351,13 +350,12 @@ class ChannelSystemAbstract
             foreach ($members as $member) {
                 if (!$member->getExterne()) {
                     $idsMembers[] = $member->getUser()->getId();
-                }
-                elseif( $member->getAutoAddExterne()){
+                } elseif ($member->getAutoAddExterne()) {
                     $idsExt[] = $member->getUser()->getId();
                 }
             }
             $this->updateChannelMembers($channel, $idsMembers);
-            $this->updateExtChannelMembers($channel,$idsExt);
+            $this->updateExtChannelMembers($channel, $idsExt);
 
         }
     }

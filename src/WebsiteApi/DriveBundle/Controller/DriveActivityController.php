@@ -56,17 +56,19 @@ class DriveActivityController extends Controller
         return new JsonResponse();
     }
 
-    public function readOneAction(Request $request){
+    public function readOneAction(Request $request)
+    {
 
         $activity_id = $request->request->get("activityId");
-        $workspace_id= $request->request->get("workspaceId");
+        $workspace_id = $request->request->get("workspaceId");
 
         $workspaceId = $this->get("app.twake_doctrine")->getRepository("TwakeWorkspacesBundle:Workspace")->find($workspace_id);
-        $read = $this->get('app.driveActivity')->readOne($workspaceId,$activity_id);
+        $read = $this->get('app.driveActivity')->readOne($workspaceId, $activity_id);
         return new JsonResponse();
     }
 
-    public function getActivityToDisplayAction(Request $request){
+    public function getActivityToDisplayAction(Request $request)
+    {
 
 
         $user = $this->getUser();
@@ -76,7 +78,7 @@ class DriveActivityController extends Controller
 
         $data = Array(
             'errors' => Array(),
-            'data' => $this->get('app.driveActivity')->getActivityToDisplay($user, $workspace,$offset,$limit)
+            'data' => $this->get('app.driveActivity')->getActivityToDisplay($user, $workspace, $offset, $limit)
         );
         return new JsonResponse($data);
 

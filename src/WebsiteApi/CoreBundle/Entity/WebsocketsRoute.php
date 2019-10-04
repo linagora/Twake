@@ -18,7 +18,7 @@ class WebsocketsRoute
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
     /**
@@ -157,7 +157,6 @@ class WebsocketsRoute
     {
         $this->key_version = $key_version;
     }
-
 
 
 }

@@ -20,13 +20,13 @@ class GroupPricingInstance
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
-	 */
-	private $group;
+     */
+    private $group;
 
     /**
      * @ORM\Column(name="cost", type="integer")
@@ -43,9 +43,9 @@ class GroupPricingInstance
      */
     private $originalpricingreference;
 
-	/**
+    /**
      * @ORM\Column(type="twake_datetime")
-	 */
+     */
     private $startedat;
 
     /**
@@ -54,14 +54,15 @@ class GroupPricingInstance
     private $endat;
 
 
-	public function __construct($group,$billtype,$pricing) {
-		$this->group = $group;
+    public function __construct($group, $billtype, $pricing)
+    {
+        $this->group = $group;
         $this->cost = $billtype == "monthly" ? $pricing->getMonthPrice() : $pricing->getYearPrice();
         $this->billedtype = $billtype;
         $this->originalpricingreference = $pricing;
         $this->startedat = new \DateTime();
         $this->endat = new \DateTime();
-	}
+    }
 
     /**
      * @return mixed
@@ -173,8 +174,8 @@ class GroupPricingInstance
     }
 
 
-
-    public function getAsArray(){
+    public function getAsArray()
+    {
         return Array(
             "id" => $this->getId(),
             "group" => $this->getGroup(),

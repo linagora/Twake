@@ -10,10 +10,10 @@ namespace WebsiteApi\UsersBundle\Model;
 interface UserStatsInterface
 {
 
-	// @login when an user log in
-	public function create($user);
+    // @login when an user log in
+    public function create($user);
 
-	// @sendMessage when an user send a message
-	public function sendMessage($user, $private=true);
+    // @sendMessage when an user send a message
+    public function sendMessage($user, $private = true);
 
 }

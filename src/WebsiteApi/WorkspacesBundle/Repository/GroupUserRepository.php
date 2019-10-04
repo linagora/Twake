@@ -1,8 +1,8 @@
 <?php
 
 namespace WebsiteApi\WorkspacesBundle\Repository;
-use Doctrine\Common\Collections\Criteria;
 
+use Doctrine\Common\Collections\Criteria;
 
 
 /**
@@ -16,25 +16,25 @@ class GroupUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
 
     public function getManagers($group)
     {
-       $criteria = Criteria::create();
-       $criteria->where(Criteria::expr()->eq('group', $group));
-       $criteria->andWhere(Criteria::expr()->neq('level', 0));
-       return  $this->matching( $criteria);
+        $criteria = Criteria::create();
+        $criteria->where(Criteria::expr()->eq('group', $group));
+        $criteria->andWhere(Criteria::expr()->neq('level', 0));
+        return $this->matching($criteria);
     }
 
-    public function getUsers($group,$limit,$offset, $restrict = true)
+    public function getUsers($group, $limit, $offset, $restrict = true)
     {
         $criteria = Criteria::create();
-        if ($restrict){
+        if ($restrict) {
             $criteria->setMaxResults($limit);
             $criteria->setFirstResult($offset);
         }
         $criteria->where(Criteria::expr()->eq('group', $group));
         $criteria->andWhere(Criteria::expr()->neq('nbworkspace', 0));
-        return  $this->matching( $criteria);
+        return $this->matching($criteria);
     }
 
-    public function getExternalUsers($group,$limit,$offset)
+    public function getExternalUsers($group, $limit, $offset)
     {
         $criteria = Criteria::create();
         $criteria->setMaxResults($limit);
@@ -42,7 +42,7 @@ class GroupUserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
         $criteria->where(Criteria::expr()->eq('group', $group));
         $criteria->andWhere(Criteria::expr()->neq('nbworkspace', 0));
         $criteria->andWhere(Criteria::expr()->eq('externe', true));
-        return  $this->matching( $criteria);
+        return $this->matching($criteria);
     }
 
     public function findOneBy(array $array)

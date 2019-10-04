@@ -12,148 +12,148 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
  */
 class WorkspaceLevel
 {
-	/**
-	 * @var int
-	 *
+    /**
+     * @var int
+     *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
-	protected $id;
+     */
+    protected $id;
 
-	/**
+    /**
      * @ORM\Column(name="label", type="twake_text")
      * @Encrypted
-	 */
-	protected $label;
+     */
+    protected $label;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
-	 * @ORM\Id
-	 */
-	protected $workspace;
+     * @ORM\Id
+     */
+    protected $workspace;
 
-	/**
+    /**
      * @ORM\Column(name="rights", type="string", length=100000)
-	 */
-	protected $rights;
+     */
+    protected $rights;
 
-	/**
+    /**
      * @ORM\Column(name="is_default", type="twake_boolean", length=1)
-	 */
+     */
     protected $isdefault = false;
 
-	/**
+    /**
      * @ORM\Column(name="is_admin", type="twake_boolean", length=1)
-	 */
+     */
     protected $isadmin = false;
 
 
-	function __construct()
-	{
-		$this->rights = "{}";
-	}
+    function __construct()
+    {
+        $this->rights = "{}";
+    }
 
-	public function setId($id)
+    public function setId($id)
     {
         $this->id = $id;
     }
 
     public function getId()
     {
-		return $this->id;
-	}
+        return $this->id;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getLabel()
-	{
-		return $this->label;
-	}
+    /**
+     * @return mixed
+     */
+    public function getLabel()
+    {
+        return $this->label;
+    }
 
-	/**
-	 * @param mixed $label
-	 */
-	public function setLabel($label)
-	{
-		$this->label = $label;
-	}
+    /**
+     * @param mixed $label
+     */
+    public function setLabel($label)
+    {
+        $this->label = $label;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getWorkspace()
-	{
-		return $this->workspace;
-	}
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
 
-	/**
-	 * @param mixed $workspace
-	 */
-	public function setWorkspace($workspace)
-	{
-		$this->workspace = $workspace;
-	}
+    /**
+     * @param mixed $workspace
+     */
+    public function setWorkspace($workspace)
+    {
+        $this->workspace = $workspace;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getRights()
-	{
-		return json_decode($this->rights, true);
-	}
+    /**
+     * @return mixed
+     */
+    public function getRights()
+    {
+        return json_decode($this->rights, true);
+    }
 
-	/**
-	 * @param mixed $rights
-	 */
-	public function setRights($rights)
-	{
-		$this->rights = json_encode($rights);
-	}
+    /**
+     * @param mixed $rights
+     */
+    public function setRights($rights)
+    {
+        $this->rights = json_encode($rights);
+    }
 
-	/**
-	 * @return mixed
-	 */
+    /**
+     * @return mixed
+     */
     public function getIsDefault()
-	{
+    {
         return $this->isdefault;
-	}
+    }
 
-	/**
+    /**
      * @param mixed $isdefault
-	 */
+     */
     public function setIsDefault($isdefault)
     {
         $this->isdefault = $isdefault;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
+    /**
+     * @return mixed
+     */
     public function getIsAdmin()
-	{
+    {
         return $this->isadmin;
-	}
+    }
 
-	/**
+    /**
      * @param mixed $isadmin
-	 */
+     */
     public function setIsAdmin($isadmin)
     {
         $this->isadmin = $isadmin;
-	}
+    }
 
 
-	public function getAsArray()
-	{
-		return Array(
-			"id" => $this->getId(),
-			"name" => $this->getLabel(),
+    public function getAsArray()
+    {
+        return Array(
+            "id" => $this->getId(),
+            "name" => $this->getLabel(),
             "admin" => $this->getIsAdmin(),
             "default" => $this->getIsDefault(),
-			"rights" => $this->getRights()
-		);
-	}
+            "rights" => $this->getRights()
+        );
+    }
 }
 
 ?>

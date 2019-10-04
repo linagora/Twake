@@ -20,19 +20,16 @@ class AccessController extends Controller
         $data = $request->request->get("data");
         $options = $request->request->get("options");
 
-        if(!(isset($current_user)))
-        {
+        if (!(isset($current_user))) {
             $current_user_id = "d8a1136c-544e-11e9-9f85-0242ac120005";
-        }
-        else
-        {
-            $current_user_id= $current_user->getId();
+        } else {
+            $current_user_id = $current_user->getId();
         }
         //$current_user_id= $current_user->getId();
         //$data = Array("type" => "Workspace", "object_id" => "0f34eff8-48af-11e9-9dd1-0242ac120005");
         //$data = Array("type" => "Channel", "object_id" => "test");
 
-        $acces = $this->get('app.accessmanager')->has_access($current_user_id,$data,$options);
+        $acces = $this->get('app.accessmanager')->has_access($current_user_id, $data, $options);
         $data = Array("data" => $acces);
 
         //return new Response("Hello !");
@@ -43,15 +40,12 @@ class AccessController extends Controller
     {
         $workspace_id = $request->request->get("workspace_id");
         $current_user = $this->getUser();
-        if(!(isset($current_user)))
-        {
+        if (!(isset($current_user))) {
             $current_user_id = "d8a1136c-544e-11e9-9f85-0242ac120005";
+        } else {
+            $current_user_id = $current_user->getId();
         }
-        else
-        {
-            $current_user_id= $current_user->getId();
-        }
-        $publicaccess = $this->get('app.accessmanager')->user_has_workspace_access($current_user_id,$workspace_id);
+        $publicaccess = $this->get('app.accessmanager')->user_has_workspace_access($current_user_id, $workspace_id);
         $data = Array("data" => $publicaccess);
 
         return new JsonResponse($data);

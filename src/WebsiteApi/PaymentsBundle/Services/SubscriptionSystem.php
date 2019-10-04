@@ -37,7 +37,8 @@ class SubscriptionSystem implements SubscriptionInterface
 
     }
 
-    public function get($group){
+    public function get($group)
+    {
         $subscriptionRepo = $this->doctrine->getRepository("TwakePaymentsBundle:Subscription");
 
         $subscription = $subscriptionRepo->findLastActiveSub($group);
@@ -45,26 +46,29 @@ class SubscriptionSystem implements SubscriptionInterface
         return $subscription;
     }
 
-    public function getAll(){
+    public function getAll()
+    {
         $subscriptionRepo = $this->doctrine->getRepository("TwakePaymentsBundle:Subscription");
 
         return $subscriptionRepo->findBy(array(), array('startDate' => 'DESC'));
     }
 
-    public function getStartDate($group){
+    public function getStartDate($group)
+    {
         $sub = $this->get($group);
 
-        if($sub)
+        if ($sub)
             return $sub->getStartDate();
 
         throw new SubscriptionNotFound();
     }
 
 
-    public function getEndDate($group){
+    public function getEndDate($group)
+    {
         $sub = $this->get($group);
 
-        if($sub)
+        if ($sub)
             return $sub->getEndDate();
 
         throw new SubscriptionNotFound();
@@ -74,7 +78,7 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $sub = $this->get($group);
 
-        if($sub)
+        if ($sub)
             return $sub->getAutoWithdrawal();
 
         throw new SubscriptionNotFound();
@@ -84,11 +88,11 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $sub = $this->get($group);
 
-        if($sub) {
+        if ($sub) {
             $sub->setAutoWithdrawal($autoWithdrawal);
             $this->doctrine->persist($sub);
             $this->doctrine->flush();
-            return ;
+            return;
         }
 
         throw new SubscriptionNotFound();
@@ -98,11 +102,11 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $sub = $this->get($group);
 
-        if($sub) {
+        if ($sub) {
             $sub->setAutoRenew($autoRenew);
             $this->doctrine->persist($sub);
             $this->doctrine->flush();
-            return ;
+            return;
         }
 
         throw new SubscriptionNotFound();
@@ -112,7 +116,7 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $sub = $this->get($group);
 
-        if($sub)
+        if ($sub)
             return $sub->getAutoRenew();
 
         throw new SubscriptionNotFound();
@@ -120,10 +124,10 @@ class SubscriptionSystem implements SubscriptionInterface
 
     public function create($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew)
     {
-        $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
+        $group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Group");
         $group->setIsBlocked(false);
-        $pricing_plan = $this->convertToEntity($pricing_plan,"TwakeWorkspacesBundle:PricingPlan");
-        $newSub = new Subscription($group,$pricing_plan,$balance,$start_date,$end_date,$auto_withdrawal,$auto_renew);
+        $pricing_plan = $this->convertToEntity($pricing_plan, "TwakeWorkspacesBundle:PricingPlan");
+        $newSub = new Subscription($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew);
 
         $gp = $this->getGroupPeriod($group);
         $gp->setExpectedCost($balance);
@@ -146,7 +150,8 @@ class SubscriptionSystem implements SubscriptionInterface
         return $newSub;
     }
 
-    public function getPricingPlans(){
+    public function getPricingPlans()
+    {
         return $this->doctrine->getRepository("TwakeWorkspacesBundle:PricingPlan")->findBy(Array());
     }
 
@@ -169,6 +174,7 @@ class SubscriptionSystem implements SubscriptionInterface
         $this->doctrine->flush();
 
     }
+
     public function addBalance($value, $group)
     {
         $sub = $this->get($group);
@@ -183,31 +189,33 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $sub = $this->get($group);
 
-        if(!$sub)
+        if (!$sub)
             return false;
 
         return $sub->getBalance() - $this->getCorrectBalanceConsumed($group);
     }
 
-    public function updateLockDate($group){
+    public function updateLockDate($group)
+    {
         $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
-        $identity = $groupIdentityRepo->findOneBy(Array("group"=>$group));
+        $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
 
-        if($identity==null)
+        if ($identity == null)
             return false;
 
         $lockDate = new \DateTime();
-        $fiveDays= new \DateInterval("P5D");
+        $fiveDays = new \DateInterval("P5D");
         $lockDate->add($fiveDays);
 
         $identity->setLockDate($lockDate);
     }
 
-    public function testChangeLockDate($group){
+    public function testChangeLockDate($group)
+    {
         $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
-        $identity = $groupIdentityRepo->findOneBy(Array("group"=>$group));
+        $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
 
-        if($identity==null)
+        if ($identity == null)
             return false;
 
         $lockDate = new \DateTime();
@@ -218,47 +226,51 @@ class SubscriptionSystem implements SubscriptionInterface
         return $identity->getLockDate();
     }
 
-    public function checkLockDate($group){
+    public function checkLockDate($group)
+    {
 
         $groupIdentityRepo = $this->doctrine->getRepository("TwakePaymentsBundle:GroupIdentity");
-        $identity = $groupIdentityRepo->findOneBy(Array("group"=>$group));
+        $identity = $groupIdentityRepo->findOneBy(Array("group" => $group));
 
-        if($identity==null)
+        if ($identity == null)
             return false;
 
         return $identity->getLockDate();
     }
 
-    public function getGroupPeriod($group){
+    public function getGroupPeriod($group)
+    {
         $groupPeriodRepo = $this->doctrine->getRepository("TwakeWorkspacesBundle:GroupPeriod");
 
-        return  $groupPeriodRepo->getLastGroupPeriod($group);
+        return $groupPeriodRepo->getLastGroupPeriod($group);
     }
 
-    public function getExpectedUserCount($group){
-        $group = $this->convertToEntity($group,"TwakeWorkspacesBundle:Group");
+    public function getExpectedUserCount($group)
+    {
+        $group = $this->convertToEntity($group, "TwakeWorkspacesBundle:Group");
         $sub = $this->get($group);
-        return $sub->getBalance()/$sub->getPricingPlan()->getMonthPrice();
+        return $sub->getBalance() / $sub->getPricingPlan()->getMonthPrice();
     }
 
-    public function getCorrectBalanceConsumed($group){
+    public function getCorrectBalanceConsumed($group)
+    {
         $sub = $this->get($group);
-        if(!$sub)
+        if (!$sub)
             return false;
 
         $gp = $this->getGroupPeriod($group);
 
-        return $sub->getBalanceConsumed()+$gp->getCurrentCost();
+        return $sub->getBalanceConsumed() + $gp->getCurrentCost();
     }
 
     public function groupIsOverUsingALittle($group)
     {
         $delta = $this->getRemainingBalance($group);
 
-        if($delta===false)
+        if ($delta === false)
             throw new GroupNotFoundExecption();
 
-        if($delta>=0)
+        if ($delta >= 0)
             return false;
 
         $delta *= -1;
@@ -266,13 +278,14 @@ class SubscriptionSystem implements SubscriptionInterface
         return $delta < 1000;
     }
 
-    public function getOverCost($group){
+    public function getOverCost($group)
+    {
         $delta = $this->getRemainingBalance($group);
 
-        if($delta===false)
+        if ($delta === false)
             throw new GroupNotFoundExecption();
 
-        if($delta>0)
+        if ($delta > 0)
             return false;
 
         $delta *= -1;
@@ -291,15 +304,15 @@ class SubscriptionSystem implements SubscriptionInterface
     {
         $delta = $this->getRemainingBalance($group);
 
-        if($delta===false)
+        if ($delta === false)
             throw new GroupNotFoundExecption();
 
-        if($delta>=0)
+        if ($delta >= 0)
             return false;
 
         $delta *= -1;
 
-        return $delta >=1000;
+        return $delta >= 1000;
     }
 
     public function getEndPeriodTimeLeft($group)

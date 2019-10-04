@@ -128,14 +128,14 @@ class Event extends SearchableObject
     public function getIndexationArray()
     {
         return Array(
-            "id" => $this->getId()."",
+            "id" => $this->getId() . "",
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
             "owner" => $this->getOwner(),
             "tags" => $this->getTags(),
-            'date_from' => ($this->getFrom() ?  date('Y-m-d',$this->getFrom()) : null),
-            'date_to' => ($this->getTo() ? date('Y-m-d',$this->getTo()) : null),
-            "date_last_modified" => ($this->getEventLastModified() ? date('Y-m-d',$this->getEventLastModified()) : null),
+            'date_from' => ($this->getFrom() ? date('Y-m-d', $this->getFrom()) : null),
+            'date_to' => ($this->getTo() ? date('Y-m-d', $this->getTo()) : null),
+            "date_last_modified" => ($this->getEventLastModified() ? date('Y-m-d', $this->getEventLastModified()) : null),
             "workspace_id" => $this->getWorkspaceId(),
             "participants" => $this->getParticipants(),
             "attachments" => $this->getAttachements()
@@ -158,7 +158,6 @@ class Event extends SearchableObject
     {
         $this->workspace_id = $workspace_id;
     }
-
 
 
     /**

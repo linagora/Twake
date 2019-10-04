@@ -72,7 +72,7 @@ class UsersToNotifyController extends Controller
         $fileChangedId = $id[0];
         $workspaceId = $id[1];
 
-        $this->get("app.drive.UserToNotifyService")->notifyUsers($fileChangedId,$workspaceId, "Google Drive","");
+        $this->get("app.drive.UserToNotifyService")->notifyUsers($fileChangedId, $workspaceId, "Google Drive", "");
         /*      $s = (new DateTime())->format('Y-m-d H:i:s');
                 $file = fopen($s.'notif.txt', 'w+');
                 fputs($file, $fileChangedId);//x-goog-channel-token

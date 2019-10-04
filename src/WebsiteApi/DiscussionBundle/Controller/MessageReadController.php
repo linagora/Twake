@@ -12,7 +12,8 @@ use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 
 class MessageReadController extends Controller
 {
-    public function readMessageAction(Request $request){
+    public function readMessageAction(Request $request)
+    {
         $data = Array(
             'errors' => Array(),
             'data' => Array()
@@ -22,13 +23,12 @@ class MessageReadController extends Controller
 
         if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             $data['errors'][] = "notconnected";
-        }
-        else {
-            if($request->request->get("stream_id") != null){
+        } else {
+            if ($request->request->get("stream_id") != null) {
                 $tmp = $this->get('app.messages')->readStream($request->request->get("stream_id"), $this->getUser());
-                if($tmp != null){
+                if ($tmp != null) {
                     $data["errors"][] = "errorSystem";
-                }else{
+                } else {
                     $data["data"][] = "success";
                 }
             }
@@ -36,7 +36,8 @@ class MessageReadController extends Controller
         return new JsonResponse($data);
     }
 
-    public function readAllMessagesAction(Request $request){
+    public function readAllMessagesAction(Request $request)
+    {
         $data = Array(
             'errors' => Array(),
             'data' => Array()
@@ -46,13 +47,12 @@ class MessageReadController extends Controller
 
         if (!$securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             $data['errors'][] = "notconnected";
-        }
-        else {
+        } else {
             $user = $this->getUser();
             $tmp = $this->get("app.messagesNotificationsCenter")->readAll($user);
-            if($tmp) {
+            if ($tmp) {
                 $data["errors"][] = "errorSystem";
-            }else{
+            } else {
                 $data["data"][] = "success";
             }
         }

@@ -34,15 +34,18 @@ class TwakeFileStream implements StreamInterface
         $this->close();
     }
 
-    public function __toString(){
+    public function __toString()
+    {
         try {
             $this->seek(0);
-        } catch (\RuntimeException $e) {}
-        return (string) stream_get_contents($this->stream);
+        } catch (\RuntimeException $e) {
+        }
+        return (string)stream_get_contents($this->stream);
 
     }
 
-    public function close(){
+    public function close()
+    {
         if (is_resource($this->stream)) {
             fclose($this->stream);
         }
@@ -50,18 +53,21 @@ class TwakeFileStream implements StreamInterface
 
     }
 
-    public function detach(){
+    public function detach()
+    {
         $result = $this->stream;
         $this->stream = null;
         return $result;
     }
 
-    public function getSize(){
+    public function getSize()
+    {
         $stats = fstat($this->stream);
         return $stats['size'] + 1;
     }
 
-    public function tell(){
+    public function tell()
+    {
 
         $position = ftell($this->stream);
         if ($position === false) {
@@ -71,12 +77,14 @@ class TwakeFileStream implements StreamInterface
 
     }
 
-    public function isSeekable(){
+    public function isSeekable()
+    {
         return (bool)$this->getMetadata('seekable');
 
     }
 
-    public function seek($offset, $whence = SEEK_SET){
+    public function seek($offset, $whence = SEEK_SET)
+    {
         if (!$this->isSeekable()) {
             throw new RuntimeException;
         }
@@ -86,26 +94,31 @@ class TwakeFileStream implements StreamInterface
 
     }
 
-    public function rewind(){
+    public function rewind()
+    {
         $this->seek(0);
         $this->current_chunk = 1;
         $this->manager->read("original_stream", $this->current_chunk, $this->param_bag, $this->uploadstate);
 
     }
 
-    public function isWritable(){
+    public function isWritable()
+    {
         return false;
     }
 
-    public function write($string){
+    public function write($string)
+    {
         return false;
     }
 
-    public function isReadable(){
+    public function isReadable()
+    {
         return true;
     }
 
-    public function getContents(){
+    public function getContents()
+    {
         if (!$this->isReadable()) {
             throw new RuntimeException;
         }
@@ -116,15 +129,16 @@ class TwakeFileStream implements StreamInterface
         return $result;
     }
 
-    public function read($length){
+    public function read($length)
+    {
 
         //error_log(print_r(stream_get_meta_data($this->stream),true));
         $retour = fread($this->stream, $length);
         if ($retour === false) {
             throw new RuntimeException;
         }
-        if($this->eof()){
-            if($this->current_chunk < $this->totalchunk){
+        if ($this->eof()) {
+            if ($this->current_chunk < $this->totalchunk) {
                 //todo : probleme avec les close des stream des differents chunk
 //                try{
 //                    fclose($this->stream);
@@ -135,23 +149,22 @@ class TwakeFileStream implements StreamInterface
 //                }
                 $path = realpath(stream_get_meta_data($this->stream)["uri"]);
                 $valid = preg_match("/\/tmp\/.*/", $path);
-                if(file_exists($path) && !is_dir($path) && $valid){
-                    error_log(print_r($path,true));
+                if (file_exists($path) && !is_dir($path) && $valid) {
+                    error_log(print_r($path, true));
                     @unlink($path);
                 }
 
-                $this->current_chunk = $this->current_chunk +1;
+                $this->current_chunk = $this->current_chunk + 1;
                 $this->stream = $this->manager->read("original_stream", $this->current_chunk, $this->param_bag, $this->uploadstate);
 
-                if($length - strlen($retour) > 0) {
+                if ($length - strlen($retour) > 0) {
                     $retour = $retour . $this->read($length - strlen($retour));
                 }
-            }
-            else{
+            } else {
                 $path = stream_get_meta_data($this->stream)["uri"];
                 $valid = preg_match("/\/tmp\/.*/", $path);
-                if(file_exists($path) && !is_dir($path) && $valid){
-                    error_log(print_r($path,true));
+                if (file_exists($path) && !is_dir($path) && $valid) {
+                    error_log(print_r($path, true));
                     @unlink($path);
                 }
                 //fclose($this->stream);
@@ -161,12 +174,14 @@ class TwakeFileStream implements StreamInterface
     }
 
 
-    public function eof(){
+    public function eof()
+    {
 
         return feof($this->stream);
     }
 
-    public function getMetadata($key = null){
+    public function getMetadata($key = null)
+    {
 
         $metadata = stream_get_meta_data($this->stream);
         return $key !== null ? @$metadata[$key] : $metadata;

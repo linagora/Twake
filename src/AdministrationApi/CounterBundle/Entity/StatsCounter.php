@@ -1,4 +1,5 @@
 <?php
+
 namespace AdministrationApi\CounterBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -31,7 +32,7 @@ class StatsCounter
      */
     protected $value;
 
-    public function __construct($counter_key,$date)
+    public function __construct($counter_key, $date)
     {
         $this->counter_key = $counter_key;
         $this->date = $date;
@@ -70,7 +71,8 @@ class StatsCounter
         $this->value = $value;
     }
 
-    public function getAsArray() {
+    public function getAsArray()
+    {
         $date = \DateTime::createFromFormat("d-m-Y", "01-01-" . intdiv($this->getDate(), 1000));
         $days = $this->getDate() % 1000;
         $date->add(new \DateInterval("P" . $days . "D"));

@@ -26,7 +26,7 @@ class GroupIdentity
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
@@ -155,21 +155,21 @@ class GroupIdentity
     }
 
 
+    public function getAsArray()
+    {
 
-    public function getAsArray() {
-
-        $group_identity =  Array(
+        $group_identity = Array(
             "id" => $this->getId(),
             "billing_address" => $this->getBillingAddress(),
             "address" => $this->getAddress(),
             "mail" => $this->getMail(),
             "phone_number" => $this->getPhoneNumber(),
-            "lock_date" => $this-> getLockDate()
+            "lock_date" => $this->getLockDate()
         );
 
         $group = $this->getGroup()->getAsArray();
 
-        return array_merge($group_identity,$group);
+        return array_merge($group_identity, $group);
     }
 
     /**

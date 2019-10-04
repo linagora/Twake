@@ -125,14 +125,14 @@ class Task extends SearchableObject
     public function getIndexationArray()
     {
         return Array(
-            "id" => $this->getId()."",
+            "id" => $this->getId() . "",
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
             "owner" => $this->getOwner(),
             "tags" => $this->getTags(),
-            'date_from' =>  ($this->getTaskCreatedAt() ? date('Y-m-d',$this->getTaskCreatedAt()) : null),
-            'date_to' => ($this->getTaskCreatedAt() ? date('Y-m-d',$this->getTaskCreatedAt()) : null),
-            "date_last_modified" =>  ($this->getTaskLastModified() ? date('Y-m-d',$this->getTaskLastModified()) : null),
+            'date_from' => ($this->getTaskCreatedAt() ? date('Y-m-d', $this->getTaskCreatedAt()) : null),
+            'date_to' => ($this->getTaskCreatedAt() ? date('Y-m-d', $this->getTaskCreatedAt()) : null),
+            "date_last_modified" => ($this->getTaskLastModified() ? date('Y-m-d', $this->getTaskLastModified()) : null),
             "workspace_id" => $this->getWorkspaceId(),
             "participants" => $this->getParticipants()
         );

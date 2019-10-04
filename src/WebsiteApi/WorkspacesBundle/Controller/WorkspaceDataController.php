@@ -7,6 +7,7 @@
  */
 
 namespace WebsiteApi\WorkspacesBundle\Controller;
+
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -16,54 +17,55 @@ use Symfony\Component\HttpFoundation\Request;
 
 class WorkspaceDataController extends Controller
 {
-	/**
-	 * Get workspace data
-	 */
-	public function getDetailsAction(Request $request){
+    /**
+     * Get workspace data
+     */
+    public function getDetailsAction(Request $request)
+    {
 
-		$response = Array("errors"=>Array(), "data"=>Array());
+        $response = Array("errors" => Array(), "data" => Array());
 
         $workspaceId = $request->request->get("workspaceId");
 
-		$ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
+        $ws = $this->get("app.workspaces")->get($workspaceId, $this->getUser()->getId());
 
-		if(!$ws){
-			$response["errors"][] = "notallowed";
-		}else{
-			$response["data"] = $ws->getAsArray();
-			$mw = $this->get("app.workspace_members");
+        if (!$ws) {
+            $response["errors"][] = "notallowed";
+        } else {
+            $response["data"] = $ws->getAsArray();
+            $mw = $this->get("app.workspace_members");
             $response["data"]["total_members"] = count($mw->getMembers($workspaceId)) + count($mw->getPendingMembers($workspaceId)) - 1;
-			$response["data"]["isArchived"] = $ws->getisArchived();
-		}
+            $response["data"]["isArchived"] = $ws->getisArchived();
+        }
 
-		return new JsonResponse($response);
-	}
+        return new JsonResponse($response);
+    }
 
-	public function setNameAction(Request $request)
-	{
+    public function setNameAction(Request $request)
+    {
 
-		$response = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $response = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
         $workspaceId = $request->request->get("workspaceId");
-		$name = $request->request->get("name", null);
+        $name = $request->request->get("name", null);
 
-		$ok = false;
-		if($name!=null) {
-			$ok = $this->get("app.workspaces")->changeName($workspaceId, $name, $this->getUser()->getId());
-		}
+        $ok = false;
+        if ($name != null) {
+            $ok = $this->get("app.workspaces")->changeName($workspaceId, $name, $this->getUser()->getId());
+        }
 
-		if(!$ok){
-			$response["errors"][] = "error";
-		}else{
-			$response["data"] = "success";
-		}
+        if (!$ok) {
+            $response["errors"][] = "error";
+        } else {
+            $response["data"] = "success";
+        }
 
-		return new JsonResponse($response);
+        return new JsonResponse($response);
 
-	}
+    }
 
     public function getUploader()
     {
@@ -78,77 +80,77 @@ class WorkspaceDataController extends Controller
         return $this->get("app.uploader");
     }
 
-	public function setLogoAction(Request $request)
-	{
+    public function setLogoAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
         $workspaceId = $request->request->get("workspaceId");
 
-		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:write")){
-			$data["errors"][] = "notallowed";
-		}else {
+        if (!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:write")) {
+            $data["errors"][] = "notallowed";
+        } else {
 
-			if (isset($_FILES["logo"])) {
+            if (isset($_FILES["logo"])) {
                 $thumbnail = $this->getUploader()->uploadFiles($this->getUser(), $_FILES["logo"], "wslogo");
-				$thumbnail = $thumbnail[0];
+                $thumbnail = $thumbnail[0];
 
-				if (count($thumbnail["errors"]) > 0) {
-					$data["errors"][] = "badimage";
-				} else {
+                if (count($thumbnail["errors"]) > 0) {
+                    $data["errors"][] = "badimage";
+                } else {
 
                     $workspace = $this->get("app.workspaces")->changeLogo($workspaceId, $thumbnail["file"], $this->getUser()->getId(), $this->getUploader());
-				}
-			} else {
+                }
+            } else {
                 $workspace = $this->get("app.workspaces")->changeLogo($workspaceId, null, $this->getUser()->getId(), $this->getUploader());
-			}
+            }
 
-		}
+        }
 
         if ($workspace) {
             $data["data"] = $workspace->getAsArray();
         }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
-	public function setWallpaperAction(Request $request)
-	{
+    public function setWallpaperAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
         $workspaceId = $request->request->get("workspaceId");
 
-		if(!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:write")){
-			$data["errors"][] = "notallowed";
-		}else {
+        if (!$this->get("app.workspace_levels")->can($workspaceId, $this->getUser()->getId(), "workspace:write")) {
+            $data["errors"][] = "notallowed";
+        } else {
 
-			if (isset($_FILES["wallpaper"])) {
+            if (isset($_FILES["wallpaper"])) {
                 $thumbnail = $this->getUploader()->uploadFiles($this->getUser(), $_FILES["wallpaper"], "wswall");
 
-				$thumbnail = $thumbnail[0];
+                $thumbnail = $thumbnail[0];
 
-				if (count($thumbnail["errors"]) > 0) {
-					$data["errors"][] = "badimage";
-				} else {
+                if (count($thumbnail["errors"]) > 0) {
+                    $data["errors"][] = "badimage";
+                } else {
                     $color = null;
                     $this->get("app.workspaces")->changeWallpaper($workspaceId, $thumbnail["file"], $color, $this->getUser()->getId(), $this->getUploader());
-				}
-			} else {
+                }
+            } else {
                 $this->get("app.workspaces")->changeWallpaper($workspaceId, null, null, $this->getUser()->getId(), $this->getUploader());
-			}
+            }
 
-		}
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
 }

@@ -12,8 +12,6 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
  * @ORM\Table(name="uploadstate",options={"engine":"MyISAM", "scylladb_keys": {{"id": "ASC"}, {"identifier": "ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveUploadBundle\Repository\UploadStateRepository")
  */
-
-
 class UploadState
 {
     /**
@@ -102,10 +100,11 @@ class UploadState
         $this->chunklist = json_encode($chunklist);
     }
 
-    public function addChunk($chunk){
+    public function addChunk($chunk)
+    {
 
         $chunklist = $this->getChunklist();
-        array_push($chunklist ,$chunk);
+        array_push($chunklist, $chunk);
         $this->setChunklist($chunklist);
 
         $this->setChunk(count($this->getChunklist()));

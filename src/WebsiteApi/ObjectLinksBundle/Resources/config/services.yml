@@ -1,5 +1,0 @@
-services:
-
-  app.objectLinks:
-    class : WebsiteApi\ObjectLinksBundle\Services\ObjectLinksSystem
-    arguments: ["@app.twake_doctrine", '@app.pusher']

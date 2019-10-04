@@ -10,7 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 class GroupController extends Controller
 {
 
-    public function getAllGroupAction(Request $request) {
+    public function getAllGroupAction(Request $request)
+    {
 
 //        $data = Array(
 //            "data" => Array(),
@@ -45,10 +46,9 @@ class GroupController extends Controller
 //        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAAAezFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAB7UWeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAAAe2FnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtxZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
 //      $repository = "TwakeWorkspacesBundle:Group";
 
-        if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
-        }
-        else{
+        if (isset($scroll_id) && isset($repository)) {
+            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
+        } else {
 
             $globalresult = $this->get('administration.group')->getAllGroups();
         }
@@ -58,16 +58,16 @@ class GroupController extends Controller
         return new JsonResponse($data);
     }
 
-    public function getAllWorkspaceAction(Request $request){
+    public function getAllWorkspaceAction(Request $request)
+    {
 
         $scroll_id = $request->request->get("scroll_id");
 //        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAAAezFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAB7UWeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAAAe2FnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtxZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
 //      $repository = "TwakeWorkspacesBundle:Group";
 
-        if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
-        }
-        else{
+        if (isset($scroll_id) && isset($repository)) {
+            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
+        } else {
 
             $globalresult = $this->get('administration.group')->getAllWorkspace();
         }
@@ -78,16 +78,16 @@ class GroupController extends Controller
 
     }
 
-    public function getGroupbynameAction(Request $request){
+    public function getGroupbynameAction(Request $request)
+    {
 
         $scroll_id = $request->request->get("scroll_id");
 //        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAAAezFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAB7UWeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAAAe2FnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtxZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
 //      $repository = "TwakeWorkspacesBundle:Group";
 
-        if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
-        }
-        else{
+        if (isset($scroll_id) && isset($repository)) {
+            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
+        } else {
             $options = Array(
                 "name" => "test"
             );
@@ -100,17 +100,17 @@ class GroupController extends Controller
 
     }
 
-    public function getWpbynameAction(Request $request){
+    public function getWpbynameAction(Request $request)
+    {
 
 
         $scroll_id = $request->request->get("scroll_id");
 //        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAAAezFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAB7UWeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAAAe2FnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtxZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
 //      $repository = "TwakeWorkspacesBundle:Group";
 
-        if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
-        }
-        else{
+        if (isset($scroll_id) && isset($repository)) {
+            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
+        } else {
             $options = Array(
                 "name" => "test"
             );
@@ -123,17 +123,17 @@ class GroupController extends Controller
 
     }
 
-    public function getUserbyMailAction(Request $request){
+    public function getUserbyMailAction(Request $request)
+    {
 
 
         $scroll_id = $request->request->get("scroll_id");
 //        $scroll_id = "DnF1ZXJ5VGhlbkZldGNoBQAAAAAAAAezFnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtBZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FRAAAAAAAAB7UWeFZ5Z1FkT0VScXV4VVFzMWhyWWNRUQAAAAAAAAe2FnhWeWdRZE9FUnF1eFVRczFoclljUVEAAAAAAAAHtxZ4VnlnUWRPRVJxdXhVUXMxaHJZY1FR";
 //      $repository = "TwakeWorkspacesBundle:Group";
 
-        if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
-        }
-        else{
+        if (isset($scroll_id) && isset($repository)) {
+            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
+        } else {
             $options = Array(
                 "mail" => "romar"
             );
@@ -146,7 +146,8 @@ class GroupController extends Controller
 
     }
 
-    public function getOneGroupAction(Request $request) {
+    public function getOneGroupAction(Request $request)
+    {
 
 //        $data = Array(
 //            "data" => Array(),
@@ -194,7 +195,8 @@ class GroupController extends Controller
 //        return new JsonResponse($data);
     }
 
-    public function findGroupAction(Request $request) {
+    public function findGroupAction(Request $request)
+    {
 
 //        $data = array(
 //            "data" => Array(),

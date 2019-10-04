@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 
-
-
 /**
  * WorkspaceApp
  *
@@ -25,16 +23,16 @@ class WorkspaceApp
      */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
      * @ORM\Id
      */
-	private $workspace;
+    private $workspace;
 
-	/**
+    /**
      * @ORM\Column(name="groupapp_id", type="twake_timeuuid")
      * @ORM\Id
-	 */
+     */
     private $groupapp_id;
 
     /**
@@ -43,23 +41,23 @@ class WorkspaceApp
      */
     private $app_id;
 
-	/**
+    /**
      * @ORM\Column(type="twake_datetime")
-	 */
-	private $date_added;
+     */
+    private $date_added;
 
     public function __construct($workspace, $groupapp_id, $app_id)
     {
-		$this->workspace = $workspace;
+        $this->workspace = $workspace;
         $this->groupapp_id = $groupapp_id;
         $this->app_id = $app_id;
-		$this->date_added = new \DateTime();
-	}
+        $this->date_added = new \DateTime();
+    }
 
-	/**
-	 * @return int
-	 */
-	public function setId($id)
+    /**
+     * @return int
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -67,31 +65,31 @@ class WorkspaceApp
     public function getId()
     {
         return $this->id;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getWorkspace()
-	{
-		return $this->workspace;
-	}
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getGroupApp()
-	{
-		return $this->groupapp;
-	}
+    /**
+     * @return mixed
+     */
+    public function getGroupApp()
+    {
+        return $this->groupapp;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getDateAdded()
-	{
-		return $this->date_added;
-	}
+    /**
+     * @return mixed
+     */
+    public function getDateAdded()
+    {
+        return $this->date_added;
+    }
 
     /**
      * @return mixed

@@ -1,4 +1,5 @@
 <?php
+
 namespace WebsiteApi\CoreBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -25,8 +26,6 @@ use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;
  * Date: 20/06/2017
  * Time: 09:45
  */
-
-
 class InitCommand extends ContainerAwareCommand
 {
     var $leveladmin;

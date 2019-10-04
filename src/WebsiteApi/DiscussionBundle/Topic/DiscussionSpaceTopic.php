@@ -1,4 +1,5 @@
 <?php
+
 namespace WebsiteApi\DiscussionBundle\Topic;
 
 use Gos\Bundle\WebSocketBundle\Topic\TopicInterface;

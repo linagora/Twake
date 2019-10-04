@@ -43,7 +43,8 @@ class CounterService
         $this->em->flush();
     }
 
-    public function getCounter($key, $beginDate = null, $endDate = null) {
+    public function getCounter($key, $beginDate = null, $endDate = null)
+    {
         $counter_repository = $this->em->getRepository("AdministrationApiCounterBundle:StatsCounter");
 
         $counter_tab = $counter_repository->findBy(Array('counter_key' => $key), array(), 20, null, 'date', 'DESC');

@@ -20,7 +20,7 @@ class DefaultController extends Controller
             $obj = $notif->getAsArray();
             $data[] = $obj;
         }
-        return new JsonResponse(Array("data"=>$data));
+        return new JsonResponse(Array("data" => $data));
 
     }
 
@@ -50,7 +50,8 @@ class DefaultController extends Controller
         return new JsonResponse($data);
     }
 
-    public function deleteAllExceptMessagesAction(Request $request){
+    public function deleteAllExceptMessagesAction(Request $request)
+    {
         $data = Array(
             'errors' => Array(),
             'data' => Array()
@@ -59,16 +60,17 @@ class DefaultController extends Controller
         $user = $this->getUser();
         $delete = $this->get('app.notifications')->deleteAllExceptMessages($user);
 
-        if (!$delete){
+        if (!$delete) {
             $data["errors"][] = "no removal made";
-        } else{
+        } else {
             $data["data"][] = "success";
         }
 
         return new JsonResponse($data);
     }
 
-    public function readAllExceptMessagesAction(Request $request){
+    public function readAllExceptMessagesAction(Request $request)
+    {
         $data = Array(
             'errors' => Array(),
             'data' => Array()
@@ -77,9 +79,9 @@ class DefaultController extends Controller
         $user = $this->getUser();
         $delete = $this->get('app.notifications')->readAllExceptMessages($user);
 
-        if (!$delete){
+        if (!$delete) {
             $data["errors"][] = "no read made";
-        } else{
+        } else {
             $data["data"][] = "success";
         }
 
@@ -96,9 +98,9 @@ class DefaultController extends Controller
 
         $user = $this->getUser();
         $delete = $this->get('app.notifications')->readAll($user);
-        if (!$delete){
+        if (!$delete) {
             $data["errors"][] = "no read made";
-        } else{
+        } else {
             $data["data"][] = "success";
         }
 

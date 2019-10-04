@@ -1,4 +1,5 @@
 <?php
+
 namespace WebsiteApi\CoreBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -63,21 +64,21 @@ class ReindexCommand extends ContainerAwareCommand
 //            $manager->es_put($mail, $mail->getEsType());
 //        }
         $users = $manager->getRepository("TwakeUsersBundle:User")->findBy(Array());
-        foreach ($users as $user){
+        foreach ($users as $user) {
 //            error_log("passage");
 //            error_log(print_r($user->getEsType(),true));
             $manager->es_put($user, $user->getEsType());
         }
 
         $tasks = $manager->getRepository("TwakeTasksBundle:Task")->findBy(Array());
-        foreach ($tasks as $task){
+        foreach ($tasks as $task) {
 //            error_log("passage");
 //            error_log(print_r($user->getEsType(),true));
             $manager->es_put($task, $task->getEsType());
         }
 
         $events = $manager->getRepository("TwakeCalendarBundle:Event")->findBy(Array());
-        foreach ($events as $event){
+        foreach ($events as $event) {
 //            error_log("passage");
 //            error_log(print_r($user->getEsType(),true));
             $manager->es_put($event, $event->getEsType());

@@ -7,6 +7,7 @@
  */
 
 namespace WebsiteApi\WorkspacesBundle\Controller;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -28,17 +29,18 @@ class GroupController extends Controller
         return $this->get("app.uploader");
     }
 
-    public function changeNameAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function changeNameAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("groupId");
         $name = $request->request->get("name");
 
-        $res = $this->get("app.groups")->changeData($groupId,$name,$this->getUser()->getId());
+        $res = $this->get("app.groups")->changeData($groupId, $name, $this->getUser()->getId());
 
-        if(!$res){
+        if (!$res) {
             $response["errors"][] = "notallowed";
-        }else {
+        } else {
             $response["data"][] = true;
         }
 
@@ -78,8 +80,9 @@ class GroupController extends Controller
 
     }
 
-    public function getUsersAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function getUsersAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("groupId");
         $limit = $request->request->get("limit");
@@ -87,11 +90,11 @@ class GroupController extends Controller
         $onlyExterne = $request->request->getBoolean("onlyExterne");
 
         $nb = $this->get("app.groups")->countUsersGroup($groupId);
-        $users = $this->get("app.groups")->getUsersGroup($groupId,$onlyExterne,$limit, $offset,$this->getUser()->getId());
+        $users = $this->get("app.groups")->getUsersGroup($groupId, $onlyExterne, $limit, $offset, $this->getUser()->getId());
 
         if (!is_array($users)) {
             $response["errors"][] = "notallowed";
-        }else {
+        } else {
             $list = Array();
             foreach ($users as $user) {
                 $temp = Array();
@@ -108,52 +111,55 @@ class GroupController extends Controller
         return new JsonResponse($response);
     }
 
-    public function removeUserAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function removeUserAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("groupId");
         $userId = $request->request->get("userId");
 
-        $users = $this->get("app.groups")->removeUserFromGroup($groupId,$userId,$this->getUser()->getId());
+        $users = $this->get("app.groups")->removeUserFromGroup($groupId, $userId, $this->getUser()->getId());
 
-        if(!$users){
+        if (!$users) {
             $response["errors"][] = "notallowed";
-        }else {
+        } else {
             $response["data"][] = "success";
         }
 
         return new JsonResponse($response);
     }
 
-    public function editUserAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function editUserAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("groupId");
         $userId = $request->request->get("userId");
         $externe = $request->request->getBoolean("editExterne");
 
-        $users = $this->get("app.groups")->editUserFromGroup($groupId,$userId,$externe,$this->getUser()->getId());
+        $users = $this->get("app.groups")->editUserFromGroup($groupId, $userId, $externe, $this->getUser()->getId());
 
-        if(!$users){
+        if (!$users) {
             $response["errors"][] = "notallowed";
-        }else {
+        } else {
             $response["data"][] = "success";
         }
 
         return new JsonResponse($response);
     }
 
-    public function getWorkspacesAction(Request $request){
+    public function getWorkspacesAction(Request $request)
+    {
         $response = Array(
-            "errors"=>Array(),
-            "data"=>Array()
+            "errors" => Array(),
+            "data" => Array()
         );
 
         $groupId = $request->request->get("groupId");
 
-        $workspaces =  $this->get("app.groups")->getWorkspaces($groupId, $this->getUser()->getId());
+        $workspaces = $this->get("app.groups")->getWorkspaces($groupId, $this->getUser()->getId());
 
-        foreach ($workspaces as $workspace){
+        foreach ($workspaces as $workspace) {
             $is_deleted = $workspace->getis_deleted();
 
             if (!$is_deleted) {
@@ -163,7 +169,7 @@ class GroupController extends Controller
             }
         }
 
-        if (count($workspaces)==0){
+        if (count($workspaces) == 0) {
             $response["errors"][] = "empty list";
         }
 

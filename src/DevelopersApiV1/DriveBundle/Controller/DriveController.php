@@ -2,6 +2,7 @@
 
 
 namespace DevelopersApiV1\DriveBundle\Controller;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -9,7 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 class DriveController extends Controller
 {
 
-    public function saveAction (Request $request){
+    public function saveAction(Request $request)
+    {
         $capabilities = ["drive_save"];
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
@@ -118,8 +120,7 @@ class DriveController extends Controller
         if ($workspace_id && $element_id) {
             $object = $this->get("app.drive_refacto")->find(
                 Array("workspace_id" => $workspace_id, "element_id" => $element_id), $user);
-        }
-        else{
+        } else {
             return new JsonResponse(Array("error" => "unknown error or malformed query."));
         }
 
@@ -176,7 +177,6 @@ class DriveController extends Controller
 
         return $response;
     }
-
 
 
 }

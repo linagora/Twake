@@ -20,13 +20,13 @@ class GroupPeriod
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
-	 */
-	private $group;
+     */
+    private $group;
 
     /**
      * @ORM\Column(name="connexions", type="string", length=100000)
@@ -38,9 +38,9 @@ class GroupPeriod
      */
     protected $appsusage;
 
-	/**
+    /**
      * @ORM\Column(type="twake_datetime")
-	 */
+     */
     private $periodstartedat;
 
     /**
@@ -73,9 +73,10 @@ class GroupPeriod
      */
     protected $estimatedcost;
 
-	public function __construct($group) {
-		$this->group = $group;
-		$this->connexions = "{}";
+    public function __construct($group)
+    {
+        $this->group = $group;
+        $this->connexions = "{}";
         $this->appsusage = "{}";
         $this->periodstartedat = new \DateTime();
         $this->periodendedat = null;
@@ -86,11 +87,12 @@ class GroupPeriod
         $this->currentcost = 0;
         $this->estimatedcost = 0;
         $this->expectedcost = 0;
-	}
+    }
 
-	public function getAsArray(){
-	    return Array(
-	        "groupId" => $this->group->getId(),
+    public function getAsArray()
+    {
+        return Array(
+            "groupId" => $this->group->getId(),
             "connexions" => $this->getConnexions(),
             "appsUsage" => $this->getAppsUsagePeriod(),
             "periodstartedat" => $this->periodstartedat,
@@ -104,47 +106,55 @@ class GroupPeriod
     }
 
 
-    public function isEquivalentTo($group_period){
+    public function isEquivalentTo($group_period)
+    {
         /*var_dump("Connexions");
 	    var_dump($this->getConnexions());
         var_dump($group_period->getConnexions());
-        */if ($this->getConnexions() != $group_period->getConnexions()) {
+        */
+        if ($this->getConnexions() != $group_period->getConnexions()) {
             return false;
         }
         /*var_dump("Apps");
         var_dump($this->getAppsUsagePeriod());
         var_dump($group_period->getAppsUsagePeriod());
-        */if ($this->getAppsUsagePeriod() != $group_period->getAppsUsagePeriod()) {
+        */
+        if ($this->getAppsUsagePeriod() != $group_period->getAppsUsagePeriod()) {
             return false;
         }
         /*var_dump("Period start");
         var_dump($this->getPeriodStartedAt());
         var_dump($group_period->getPeriodStartedAt());
-        */if ($this->getPeriodStartedAt() != $group_period->getPeriodStartedAt()) {
+        */
+        if ($this->getPeriodStartedAt() != $group_period->getPeriodStartedAt()) {
             return false;
         }
         /*var_dump("Period expected to end");
         var_dump($this->getPeriodExpectedToEndAt());
         var_dump($group_period->getPeriodExpectedToEndAt());
-        */if ($this->getPeriodExpectedToEndAt() != $group_period->getPeriodExpectedToEndAt()) {
+        */
+        if ($this->getPeriodExpectedToEndAt() != $group_period->getPeriodExpectedToEndAt()) {
             return false;
         }
         /*var_dump("Current cost");
         var_dump($this->getCurrentCost());
         var_dump($group_period->getCurrentCost());
-        */if ($this->getCurrentCost() != $group_period->getCurrentCost()) {
+        */
+        if ($this->getCurrentCost() != $group_period->getCurrentCost()) {
             return false;
         }
         /*var_dump("Expected cost");
         var_dump($this->getExpectedCost());
         var_dump($group_period->getExpectedCost());
-        */if ($this->getExpectedCost() != $group_period->getExpectedCost()) {
+        */
+        if ($this->getExpectedCost() != $group_period->getExpectedCost()) {
             return false;
         }
         /*var_dump("Estimated cost");
         var_dump($this->getEstimatedCost());
         var_dump($group_period->getEstimatedCost());
-        */if ($this->getEstimatedCost() != $group_period->getEstimatedCost()) {
+        */
+        if ($this->getEstimatedCost() != $group_period->getEstimatedCost()) {
             return false;
         }
         return true;
@@ -172,7 +182,7 @@ class GroupPeriod
      */
     public function getConnexions()
     {
-        return json_decode($this->connexions,true);
+        return json_decode($this->connexions, true);
     }
 
     /**
@@ -297,6 +307,7 @@ class GroupPeriod
     {
         $this->expectedcost = $expectedcost;
     }
+
     /**
      * @return mixed
      */
@@ -312,6 +323,7 @@ class GroupPeriod
     {
         $this->estimatedcost = $estimatedcost;
     }
+
     /**
      * @return int
      */
@@ -324,8 +336,6 @@ class GroupPeriod
     {
         return $this->id;
     }
-
-
 
 
 }

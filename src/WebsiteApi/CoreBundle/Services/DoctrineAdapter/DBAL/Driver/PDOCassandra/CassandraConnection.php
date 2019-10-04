@@ -473,7 +473,6 @@ class CassandraConnection
         }
 
 
-
         return $sql;
     }
 

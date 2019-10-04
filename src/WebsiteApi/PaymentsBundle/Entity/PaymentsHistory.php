@@ -21,32 +21,33 @@ class PaymentsHistory
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
-	 */
-	private $workspace;
+     */
+    private $workspace;
 
-	/**
+    /**
      * @ORM\Column(type="twake_datetime")
-	 */
-	private $date;
+     */
+    private $date;
 
-	/**
+    /**
      * @ORM\Column(type="decimal")
-	 */
-	private $price;
+     */
+    private $price;
 
 
-	public function __construct($workspace, $price) {
-		$this->setPrice($price);
-		$this->setDate(new \DateTime());
-		$this->setWorkspace($workspace);
-	}
+    public function __construct($workspace, $price)
+    {
+        $this->setPrice($price);
+        $this->setDate(new \DateTime());
+        $this->setWorkspace($workspace);
+    }
 
-	public function setId($id)
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -54,40 +55,47 @@ class PaymentsHistory
     public function getId()
     {
         return $this->id;
-	}
+    }
 
-	public function getDate() {
-		return $this->date;
-	}
+    public function getDate()
+    {
+        return $this->date;
+    }
 
-	public function setDate($date) {
-		return $this->setDate($date);
-	}
+    public function setDate($date)
+    {
+        return $this->setDate($date);
+    }
 
-	public function getWorkspace() {
-		return $this->workspace;
-	}
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
 
-	public function setWorkspace($workspace) {
-		$this->workspace = $workspace;
-	}
+    public function setWorkspace($workspace)
+    {
+        $this->workspace = $workspace;
+    }
 
-	public function getPrice() {
-		return $this->price;
-	}
+    public function getPrice()
+    {
+        return $this->price;
+    }
 
-	public function setPrice($price) {
-		$this->price = $price;
-	}
+    public function setPrice($price)
+    {
+        $this->price = $price;
+    }
 
-	public function getAsSimpleArray() {
+    public function getAsSimpleArray()
+    {
 
-		return Array(
-			"id" => $this->getId(),
-			"price" => $this->getPrice(),
-			"date" => $this->getDate()->getTimestamp(),
-			"groupId" => $this->getWorkspace()->getId()
-		);
-	}
+        return Array(
+            "id" => $this->getId(),
+            "price" => $this->getPrice(),
+            "date" => $this->getDate()->getTimestamp(),
+            "groupId" => $this->getWorkspace()->getId()
+        );
+    }
 }
 

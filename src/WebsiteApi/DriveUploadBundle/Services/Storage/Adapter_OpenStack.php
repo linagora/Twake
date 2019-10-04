@@ -21,7 +21,8 @@ use WebsiteApi\DriveUploadBundle\Services\ZipStream\File;
 use WebsiteApi\DriveUploadBundle\Services\ZipStream\Option\File as FileOptions;
 use WebsiteApi\DriveUploadBundle\Services\ZipStream\TwakeFileStream;
 
-class Adapter_OpenStack implements AdapterInterface {
+class Adapter_OpenStack implements AdapterInterface
+{
 
     protected $openstack;
     protected $openstack_buckets;
@@ -37,7 +38,7 @@ class Adapter_OpenStack implements AdapterInterface {
     protected $preview;
     protected $doctrine;
 
-    public function __construct($openstack,$preview,$doctrine)
+    public function __construct($openstack, $preview, $doctrine)
     {
 
         $this->openstack_buckets = $openstack["buckets"];
@@ -73,7 +74,7 @@ class Adapter_OpenStack implements AdapterInterface {
             'authUrl' => $this->openstack_auth_url,
             'region' => $this->openstack_region_id,
             'tenantId' => $this->openstack_project_id,
-            'username' => $this->openstack_credentials_key."",
+            'username' => $this->openstack_credentials_key . "",
             'password' => $this->openstack_credentials_secret,
             'identityService' => Service::factory($httpClient)
         ]);
@@ -168,9 +169,9 @@ class Adapter_OpenStack implements AdapterInterface {
 
     public function write($chunkFile, $chunkNo, $param_bag, UploadState $uploadState)
     {
-        $this->encode($chunkFile,$param_bag);
+        $this->encode($chunkFile, $param_bag);
 
-        $chunkFile = $chunkFile.".encrypt";
+        $chunkFile = $chunkFile . ".encrypt";
 
         try {
 
@@ -205,19 +206,19 @@ class Adapter_OpenStack implements AdapterInterface {
 
             if ($destination == "stream") {
                 if ($stream = fopen($decodedPath, 'r')) {
-                        // While the stream is still open
-                        while (!feof($stream)) {
-                            // Read 1,024 bytes from the stream
-                            echo fread($stream, 1024);
-                        }
-                        // Be sure to close the stream resource when you're done with it
-                        fclose($stream);
-                        unlink($decodedPath);
+                    // While the stream is still open
+                    while (!feof($stream)) {
+                        // Read 1,024 bytes from the stream
+                        echo fread($stream, 1024);
+                    }
+                    // Be sure to close the stream resource when you're done with it
+                    fclose($stream);
+                    unlink($decodedPath);
                 }
                 return true;
             }
 
-            if ($destination == "original_stream"){
+            if ($destination == "original_stream") {
                 if ($stream = fopen($decodedPath, 'r')) {
                     return $stream;
                 }
@@ -232,7 +233,7 @@ class Adapter_OpenStack implements AdapterInterface {
         return false;
     }
 
-    private function encode($chunkFile,$param_bag)
+    private function encode($chunkFile, $param_bag)
     {
         //error_log(print_r($chunkFile,true));
 
@@ -254,7 +255,7 @@ class Adapter_OpenStack implements AdapterInterface {
 
         //rename($path, $pathTemp);
 
-        $finalpath = $lib->encryptFile($chunkFile , $key , $pathTemp);
+        $finalpath = $lib->encryptFile($chunkFile, $key, $pathTemp);
         //error_log(print_r($finalpath,true));
         @unlink($chunkFile);
 
@@ -262,7 +263,7 @@ class Adapter_OpenStack implements AdapterInterface {
     }
 
 
-    protected function decode($chunkFile,$param_bag)
+    protected function decode($chunkFile, $param_bag)
     {
         $key = $param_bag->getKey();
         if ($param_bag->getMode() == "AES") {

@@ -81,7 +81,7 @@ class Bloc extends SearchableObject
             "workspace_id" => $this->getWorkspaceId(),
             "nb_message" => $this->getNbMessage(),
             "messages" => $this->getMessages(),
-            "id_messages" =>$this->getIdMessages()
+            "id_messages" => $this->getIdMessages()
 
         );
         return $return;
@@ -89,15 +89,14 @@ class Bloc extends SearchableObject
 
     public function getIndexationArray()
     {
-        if($this->getLock() == true){
+        if ($this->getLock() == true) {
             $return = Array(
-                "id" => $this->getId()."",
+                "id" => $this->getId() . "",
                 "channel_id" => $this->getChannelId(),
                 "workspace_id" => $this->getWorkspaceId(),
                 "messages" => $this->getMessages()
             );
-        }
-        else
+        } else
             $return = Array();
         return $return;
     }
@@ -107,7 +106,7 @@ class Bloc extends SearchableObject
      */
     public function getIdMessages()
     {
-        return json_decode($this->id_messages,true);
+        return json_decode($this->id_messages, true);
     }
 
 
@@ -132,7 +131,7 @@ class Bloc extends SearchableObject
      */
     public function getMessages()
     {
-        return json_decode($this->messages,true);
+        return json_decode($this->messages, true);
     }
 
     /**
@@ -206,6 +205,7 @@ class Bloc extends SearchableObject
     {
         $this->channel_id = $channel_id;
     }
+
     /**
      * @return mixed
      */
@@ -270,12 +270,12 @@ class Bloc extends SearchableObject
         if (!$messages) $messages = Array();
         array_push($messages, $add);
         $this->setMessages($messages);
-        $this->setNbMessage($this->getNbMessage()+1);
+        $this->setNbMessage($this->getNbMessage() + 1);
 
         $id_messages = $this->getIdMessages();
         if (!$id_messages) $id_messages = Array();
-        $id= $message_entity->getId()."";
-        array_push( $id_messages, $id);
+        $id = $message_entity->getId() . "";
+        array_push($id_messages, $id);
         $this->setIdMessages($id_messages);
     }
 

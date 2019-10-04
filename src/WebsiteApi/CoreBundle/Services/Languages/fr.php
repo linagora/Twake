@@ -8,14 +8,14 @@
 
 $translation = Array(
     "general" => "Général",
-    
+
     "drive.move_file" => "Fichier déplacé",
     "drive.new_file" => "Nouveau fichier",
     "drive.has_been_added" => "$1 a été ajouté dans $2",
     "drive.has_been_moved" => "$1 a été déplacé dans $2",
     "drive.file_updated" => "Fichier mis à jour",
     "drive.has_been_update" => "$1 a été mis à jour",
-    
+
     "project.generalBoardDescription" => "Tableau général de tâches",
     "project.discover_twake" => "Découvrir Twake",
     "project.project" => "Mon projet",

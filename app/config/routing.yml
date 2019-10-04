@@ -28,11 +28,6 @@ twake_channels:
     prefix:   /ajax/channels/
     methods: [POST]
 
-twake_calls:
-    resource: "@TwakeCallsBundle/Resources/config/routing.yml"
-    prefix:   /ajax/calls/
-    methods: [POST]
-
 twake_upload:
     resource: "@TwakeUploadBundle/Resources/config/routing.yml"
     prefix:   /ajax/upload/
@@ -88,17 +83,6 @@ twake_tasks:
 twake_notifications:
     resource: "@TwakeNotificationsBundle/Resources/config/routing.yml"
     prefix:   /ajax/notifications/
-    methods: [POST, GET]
-
-
-twake_objectLinks:
-    resource: "@TwakeObjectLinksBundle/Resources/config/routing.yml"
-    prefix:   /ajax/objectLinks/
-    methods: [POST]
-
-twake_onlyoffice:
-    resource: "@TwakeOnlyOfficeBundle/Resources/config/routing.yml"
-    prefix:   /ajax/onlyoffice/
     methods: [POST, GET]
 
 twake_api_error:

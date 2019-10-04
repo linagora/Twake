@@ -13,7 +13,6 @@ use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceApp;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Model\WorkspacesInterface;
-use WebsiteApi\CoreBundle\Services\TranslationObject;
 
 
 class Workspaces implements WorkspacesInterface
@@ -29,7 +28,7 @@ class Workspaces implements WorkspacesInterface
     private $string_cleaner;
     private $pusher;
     private $translate;
-    /* @var WorkspacesActivities $workspacesActivities*/
+    /* @var WorkspacesActivities $workspacesActivities */
     var $workspacesActivities;
     var $calendarEventService;
     var $calendarService;
@@ -156,111 +155,6 @@ class Workspaces implements WorkspacesInterface
 
         $this->doctrine->flush();
 
-        $links = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("user"=>$user));
-       /* if(count($links)<=1){
-            $t = microtime(true);
-            $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
-            $content = new TranslationObject($this->translate,"message.hello1",$user->getUsername());
-            $message = new Message($twakebot, "S", $streamGeneral, false, null, false, new \DateTime(date('Y-m-d H:i:s.' . $micro, $t)), $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), null);
-            $message->setFrontId("");
-            $this->doctrine->persist($message);
-
-            $t = microtime(true);
-            $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
-            $content = new TranslationObject($this->translate,"message.hello2");
-            $message = new Message($twakebot, "S", $streamGeneral, false, null, false, new \DateTime(date('Y-m-d H:i:s.' . $micro, $t)), $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), null);
-            $message->setFrontId("");
-            $this->doctrine->persist($message);
-
-            $t = microtime(true);
-            $micro = sprintf("%06d", ($t - floor($t)) * 1000000);
-            $content = new TranslationObject($this->translate,"message.hello3");
-            $message = new Message($twakebot, "S", $streamGeneral, false, null, false, new \DateTime(date('Y-m-d H:i:s.' . $micro, $t)), $content, $this->string_cleaner->simplifyWithoutRemovingSpaces($content), null);
-            $message->setFrontId("");
-            $this->doctrine->persist($message);
-
-
-
-            $board = new Board(new TranslationObject($this->translate,"general"),new TranslationObject($this->translate,"project.generalBoardDescription"), false);
-            $this->doctrine->persist($board);
-
-            $boardWorkspace = new LinkBoardWorkspace($workspace,$board,true,true);
-            $this->doctrine->persist($boardWorkspace);
-
-            $list1 = new ListOfTasks($board, new TranslationObject($this->translate, "project.discover_twake"), "f49d41", Array());
-            $this->doctrine->persist($list1);
-            $list2 = new ListOfTasks($board, new TranslationObject($this->translate, "project.project"), "00bb4d", Array());
-            $this->doctrine->persist($list2);
-            $this->doctrine->flush();
-
-            $task1 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate, "project.createTwakeWorkspace"), new TranslationObject($this->translate, "project.createTwakeWorkspaceDescription"), 0, 0, NULL, NULL, Array(), Array(), 1, Array(), "current");
-            $task2 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate, "project.discoverTwake"), new TranslationObject($this->translate, "project.discoverTwakeDescription"), 0, 0, NULL, NULL, Array(), Array(), 1, Array(), "todo");
-            $task3 = $this->taskService->createTask($list1, Array(), new TranslationObject($this->translate, "project.signin"), "", 0, 0, NULL, NULL, Array(), Array(), 1, Array(), "done");
-            $task4 = $this->taskService->createTask($list2, Array(), new TranslationObject($this->translate, "project.invitePartner"), new TranslationObject($this->translate, "project.invitePartnerDescription"), 0, 0, NULL, NULL, Array(), Array(), 1, Array(), "todo");
-
-
-            $calendar1 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate, "general"), "#3DE8A0", $currentUserId = null, $icsLink = null);
-            $calendar2 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate, "calendar.communication"), "#F0434B", $currentUserId = null, $icsLink = null);
-            $calendar3 = $this->calendarService->createCalendar($workspace->getId(), new TranslationObject($this->translate, "calendar.customer"), "#017ABA", $currentUserId = null, $icsLink = null);
-
-            $monday = strtotime("last Monday");
-            $times = Array(
-                Array(
-                    "from" => strtotime("+14 hours",$monday),
-                    "to" => strtotime("+16 hours",$monday),
-                    "name" => "calendar.generalMeeting",
-                    "calendar" => $calendar1->getId()
-                ),
-                Array(
-                    "from" => strtotime("+1 day 10 hours 30 minutes",$monday),
-                    "to" => strtotime("+1 day 12 hours",$monday),
-                    "name" => "calendar.meetingDurant",
-                    "calendar" => $calendar3->getId()
-                ),
-                Array(
-                    "from" => strtotime("+1 day 12 hours 0 minutes",$monday),
-                    "to" => strtotime("+1 day 12 hours",$monday),
-                    "name" => "calendar.meetingNextAds",
-                    "calendar" => $calendar2->getId()
-                ),
-                Array(
-                    "from" => strtotime("+3 day 16 hours 0 minutes",$monday),
-                    "to" => strtotime("+3 day 17 hours",$monday),
-                    "name" => "calendar.meetingXu",
-                    "calendar" => $calendar3->getId()
-                ),
-                Array(
-                    "from" => strtotime("+4 day 8 hours 30 minutes",$monday),
-                    "to" => strtotime("+4 day 12 hours",$monday),
-                    "name" => "calendar.interview",
-                    "calendar" => $calendar2->getId()
-                ),
-            );
-            foreach ($times as $time){
-                $eventJSON = Array(
-                    "start" => new \DateTime(date('Y-m-d H:i:s.000000' , $time["from"])),
-                    "end" => new \DateTime(date('Y-m-d H:i:s.000000' , $time["to"])),
-                    "from" => $time["from"],
-                    "to" => $time["to"],
-                    "calendar" => $time["calendar"],
-                    "id" => "",
-                    "new" => false,
-                    "participant" => Array(),
-                    "color" => "E2333A",
-                    "title" => strval(new TranslationObject($this->translate,$time["name"])),
-                    "typeEvent"=> "event"
-                );
-                $event = $this->calendarEventService->createEvent($workspace->getId(), $time["calendar"], $eventJSON);
-            }
-
-            $dirTwake = $this->driveAdapteService->getFileSystem()->create($workspace, null, (new TranslationObject($this->translate, "drive.twake")) . "", "", true, false, null, $twakebotId, null);
-            $fileRule = $this->driveAdapteService->getFileSystem()->create($workspace, $dirTwake->getId(), (new TranslationObject($this->translate, "drive.rules")) . "", (new TranslationObject($this->translate, "drive.ruleText")) . "", false, false, null, $twakebotId, null);
-            $fileWelcome = $this->driveAdapteService->getFileSystem()->create($workspace, null, (new TranslationObject($this->translate, "drive.welcome")) . "", (new TranslationObject($this->translate, "drive.welcomeText")) . "", false, false, null, $twakebotId, null);
-
-
-        }
-        */
-
 
         //Create admin level
         $levelAdmin = new WorkspaceLevel();
@@ -285,7 +179,7 @@ class Workspaces implements WorkspacesInterface
 
         //Add user in workspace
         if ($userId != null) {
-            $this->wms->addMember($workspace->getId(), $userId, false,false, $levelAdmin->getId());
+            $this->wms->addMember($workspace->getId(), $userId, false, false, $levelAdmin->getId());
         }
 
         return $workspace;
@@ -356,7 +250,7 @@ class Workspaces implements WorkspacesInterface
                             //Add user with good level
                             if (isset($old_levels_id_to_new_levels[$member->getLevelId() . ""])) {
                                 $level_id = $old_levels_id_to_new_levels[$member->getLevelId() . ""]->getId();
-                                $this->wms->addMember($workspace->getId(), $member->getUser()->getId(), false,false, $level_id);
+                                $this->wms->addMember($workspace->getId(), $member->getUser()->getId(), false, false, $level_id);
                             }
 
                         }
@@ -588,7 +482,7 @@ class Workspaces implements WorkspacesInterface
                     "workspaceId" => $workspace->getId(),
                 )
             );
-            $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.change_wallpaper","TwakeWorkspacesBundle:Workspace", $workspaceId);
+            $this->workspacesActivities->recordActivity($workspace, $currentUserId, "workspace", "workspace.activity.workspace.change_wallpaper", "TwakeWorkspacesBundle:Workspace", $workspaceId);
             $this->pusher->push($datatopush, "group/" . $workspace->getId());
 
             return true;
@@ -617,7 +511,7 @@ class Workspaces implements WorkspacesInterface
 
         $arr = explode("@", $string, 2);
 
-        if (count($arr) != 2){
+        if (count($arr) != 2) {
             return false;
         }
 
@@ -635,9 +529,9 @@ class Workspaces implements WorkspacesInterface
         $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
         $workspace = $workspaceRepository->findOneBy(Array("uniquename" => $workspaceName, "group" => $group, "is_deleted" => 0));
 
-        if($workspace != null){
+        if ($workspace != null) {
             return $workspace->getAsArray();
-        }else {
+        } else {
             return false;
         }
 
@@ -678,7 +572,8 @@ class Workspaces implements WorkspacesInterface
     }
 
 
-    public function archive($groupId, $workspaceId, $currentUserId = null){
+    public function archive($groupId, $workspaceId, $currentUserId = null)
+    {
 
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
@@ -694,7 +589,7 @@ class Workspaces implements WorkspacesInterface
 
             if ($is_deleted == false && $isArchived == false) {
                 $workspace->setIsArchived(true);
-                $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.archive","TwakeWorkspacesBundle:Workspace", $workspaceId);
+                $this->workspacesActivities->recordActivity($workspace, $currentUserId, "workspace", "workspace.activity.workspace.archive", "TwakeWorkspacesBundle:Workspace", $workspaceId);
             }
 
             $this->doctrine->persist($workspace);
@@ -714,7 +609,8 @@ class Workspaces implements WorkspacesInterface
 
     }
 
-    public function unarchive($groupId, $workspaceId, $currentUserId = null){
+    public function unarchive($groupId, $workspaceId, $currentUserId = null)
+    {
 
         if ($currentUserId == null
             || ($this->wls->can($workspaceId, $currentUserId, "workspace:write")
@@ -730,7 +626,7 @@ class Workspaces implements WorkspacesInterface
 
             if ($is_deleted == false && $isArchived == true) {
                 $workspace->setIsArchived(false);
-                $this->workspacesActivities->recordActivity($workspace,$currentUserId,"workspace","workspace.activity.workspace.unarchive","TwakeWorkspacesBundle:Workspace", $workspaceId);
+                $this->workspacesActivities->recordActivity($workspace, $currentUserId, "workspace", "workspace.activity.workspace.unarchive", "TwakeWorkspacesBundle:Workspace", $workspaceId);
             }
 
             $this->doctrine->persist($workspace);
@@ -751,7 +647,7 @@ class Workspaces implements WorkspacesInterface
     }
 
 
-    public function hideOrUnhideWorkspace($workspaceId, $currentUserId = null, $wanted_value=null)
+    public function hideOrUnhideWorkspace($workspaceId, $currentUserId = null, $wanted_value = null)
     {
         if ($currentUserId != null) {
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -763,7 +659,7 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
-            if($wanted_value === null) {
+            if ($wanted_value === null) {
                 $ishidden = $workspaceUser->getisHidden();
                 $workspaceUser->setisHidden(!$ishidden);
             }
@@ -787,7 +683,8 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function haveNotificationsOrNotWorkspace($workspaceId, $currentUserId = null, $wanted_value = null){
+    public function haveNotificationsOrNotWorkspace($workspaceId, $currentUserId = null, $wanted_value = null)
+    {
         if ($currentUserId != null) {
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
             $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
@@ -798,7 +695,7 @@ class Workspaces implements WorkspacesInterface
             $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
             $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspace, "user" => $currentUser));
 
-            if($wanted_value === null) {
+            if ($wanted_value === null) {
                 $hasnotifications = $workspaceUser->getHasNotifications();
                 $workspaceUser->setHasNotifications(!$hasnotifications);
             }
@@ -807,7 +704,7 @@ class Workspaces implements WorkspacesInterface
             $notificationPreference = $currentUser->getNotificationPreference();
             $disabled_ws = $notificationPreference["disabled_workspaces"];
             if (in_array($workspaceId . "", $disabled_ws) && $workspaceUser->getHasNotifications()) {
-                $position = array_search($workspaceId,$disabled_ws);
+                $position = array_search($workspaceId, $disabled_ws);
                 unset($disabled_ws[$position]);
             }
 
@@ -822,8 +719,9 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function favoriteOrUnfavoriteWorkspace($workspaceId, $currentUserId = null){
-        $result = Array ();
+    public function favoriteOrUnfavoriteWorkspace($workspaceId, $currentUserId = null)
+    {
+        $result = Array();
 
         if ($currentUserId != null) {
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
@@ -861,12 +759,13 @@ class Workspaces implements WorkspacesInterface
         return $result;
     }
 
-    public function setIsNew($value, $workspaceId, $currentUserId = null){
+    public function setIsNew($value, $workspaceId, $currentUserId = null)
+    {
         if ($currentUserId != null) {
             $workspaceRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace");
-            $workspace = $workspaceRepository->findOneBy(Array("id" =>$workspaceId));
+            $workspace = $workspaceRepository->findOneBy(Array("id" => $workspaceId));
 
-            if($workspace != null){
+            if ($workspace != null) {
 
                 $workspace->setisNew($value);
                 $this->doctrine->persist($workspace);
@@ -879,7 +778,8 @@ class Workspaces implements WorkspacesInterface
         return false;
     }
 
-    public function search($group_id){
+    public function search($group_id)
+    {
 
 //        $terms = Array();
 //        foreach ($words as $word){

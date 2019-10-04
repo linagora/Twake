@@ -13,20 +13,27 @@ use WebsiteApi\UsersBundle\Entity\User;
 class NotificationsTopic implements TopicInterface, PushableTopicInterface
 {
 
-    public function getName(){ return 'notifications.topic'; }
-
-    public function onSubscribe( ConnectionInterface $connection, Topic $topic, WampRequest $request ){
+    public function getName()
+    {
+        return 'notifications.topic';
     }
 
-	public function onPush(Topic $topic, WampRequest $request, $data, $provider)
-	{
-		$topic->broadcast($data);
-	}
+    public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
+    {
+    }
 
-	public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible){
-	}
-	public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request){
-	}
+    public function onPush(Topic $topic, WampRequest $request, $data, $provider)
+    {
+        $topic->broadcast($data);
+    }
+
+    public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
+    {
+    }
+
+    public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
+    {
+    }
 
 }
 

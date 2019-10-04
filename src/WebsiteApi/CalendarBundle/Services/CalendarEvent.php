@@ -19,7 +19,7 @@ class CalendarEvent
         $this->enc_pusher = $enc_pusher;
         $this->applications_api = $application_api;
         $this->notifications = $notifications;
-        $this->attachementMananger = new AttachementManager($this->doctrine,$this->enc_pusher);
+        $this->attachementMananger = new AttachementManager($this->doctrine, $this->enc_pusher);
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -254,7 +254,7 @@ class CalendarEvent
 
         $event->setEventLastModified();
 
-        if(isset($object["tags"])){
+        if (isset($object["tags"])) {
             $event->setTags($object["tags"]);
         }
 
@@ -292,7 +292,6 @@ class CalendarEvent
                     return false;
                 }
             }
-
 
 
             $this->updateParticipants($event, $object["participants"] ? $object["participants"] : Array(), $sort_key_has_changed || $did_create);
@@ -449,7 +448,7 @@ class CalendarEvent
         $updated_participants_fixed = $current_participants;
 
         $get_diff = $this->getArrayDiffUsingKeys($updated_participants, $current_participants, ["user_id_or_mail"]);
-        error_log("get diff".json_encode($get_diff));
+        error_log("get diff" . json_encode($get_diff));
         if (count($get_diff["del"]) > 0 || $replace_all) {
             $users_in_event = $this->doctrine->getRepository("TwakeCalendarBundle:EventUser")->findBy(Array("event_id" => $event->getId()));
             foreach ($users_in_event as $user) {

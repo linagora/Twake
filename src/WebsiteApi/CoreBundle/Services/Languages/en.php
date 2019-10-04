@@ -48,7 +48,6 @@ $translation = Array(
     "message.hello3" => "Ready to use Twake ? :grinning:",
 
 
-
     "mail.request_new_password" => "Your request for a new password",
     "mail.hello" => "Hello",
     "mail.request_new_password_body" => "You requested a new password, there is the activation code you need",

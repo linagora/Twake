@@ -106,7 +106,8 @@ class FilesController extends Controller
 
     }
 
-    public function previewAction(Request $request){
+    public function previewAction(Request $request)
+    {
 
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
 
@@ -125,7 +126,8 @@ class FilesController extends Controller
 
     }
 
-    public function openAction(Request $request){
+    public function openAction(Request $request)
+    {
         $data = Array(
             "data" => Array(),
             "errors" => Array()
@@ -136,16 +138,16 @@ class FilesController extends Controller
 
         $fileSystem = $this->get("app.drive.adapter_selector")->getFileSystem();
 
-        if($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
+        if ($externalDrive && $this->get('app.drive.ExternalDriveSystem')->isAValideRootDirectory($directory)) {
             $fileSystem = $this->get('app.drive.FileSystemExternalDrive');
             $fileSystem->setRootDirectory($directory);
         }
 
         $bool = $fileSystem->open($file);
 
-        if ($bool){
-            $data["data"][] ="success";
-        }else{
+        if ($bool) {
+            $data["data"][] = "success";
+        } else {
             $data["data"][] = "error";
         }
 

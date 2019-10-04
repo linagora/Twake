@@ -11,87 +11,87 @@ use Symfony\Component\HttpFoundation\Response;
 class UsersRecoverController extends Controller
 {
 
-	
-	public function mailAction(Request $request)
-	{
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+    public function mailAction(Request $request)
+    {
 
-		$email = $request->request->get("email", "");
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		$res = $this->get("app.user")->requestNewPassword($email);
-		if ($res) {
+        $email = $request->request->get("email", "");
 
-			$data["data"]["token"] = $res;
+        $res = $this->get("app.user")->requestNewPassword($email);
+        if ($res) {
 
-		} else {
+            $data["data"]["token"] = $res;
 
-			$data["errors"][] = "nosuchmail";
+        } else {
 
-		}
+            $data["errors"][] = "nosuchmail";
 
-		return new JsonResponse($data);
+        }
 
-	}
+        return new JsonResponse($data);
 
-
-	public function codeVerificationAction(Request $request)
-	{
-
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
-
-		$code = $request->request->get("code", "");
-		$token = $request->request->get("token", "");
-
-		$res = $this->get("app.user")->checkNumberForNewPasswordRequest($token, $code);
-
-		if ($res) {
-
-			$data["data"]["status"] = "success";
-
-		} else {
-
-			$data["errors"][] = "badcodeortoken";
-
-		}
-
-		return new JsonResponse($data);
-
-	}
+    }
 
 
-	public function newPasswordAction(Request $request)
-	{
+    public function codeVerificationAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		$code = $request->request->get("code", "");
-		$token = $request->request->get("token", "");
-		$password = $request->request->get("password", "");
+        $code = $request->request->get("code", "");
+        $token = $request->request->get("token", "");
 
-		$res = $this->get("app.user")->setNewPasswordAfterNewPasswordRequest($token, $code, $password);
+        $res = $this->get("app.user")->checkNumberForNewPasswordRequest($token, $code);
 
-		if ($res) {
+        if ($res) {
 
-			$data["data"]["status"] = "success";
+            $data["data"]["status"] = "success";
 
-		} else {
+        } else {
 
-			$data["errors"][] = "badcodeortoken";
+            $data["errors"][] = "badcodeortoken";
 
-		}
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
+
+
+    public function newPasswordAction(Request $request)
+    {
+
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $code = $request->request->get("code", "");
+        $token = $request->request->get("token", "");
+        $password = $request->request->get("password", "");
+
+        $res = $this->get("app.user")->setNewPasswordAfterNewPasswordRequest($token, $code, $password);
+
+        if ($res) {
+
+            $data["data"]["status"] = "success";
+
+        } else {
+
+            $data["errors"][] = "badcodeortoken";
+
+        }
+
+        return new JsonResponse($data);
+
+    }
 
 }

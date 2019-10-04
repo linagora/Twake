@@ -1,4 +1,5 @@
 <?php
+
 namespace WebsiteApi\DriveUploadBundle\Services\Resumable\Network;
 
 use Symfony\Component\HttpFoundation\Response;
@@ -12,16 +13,17 @@ class SimpleResponse
     {
         $this->symfonyresponse = $response;
     }
+
     /**
      * @param $statusCode
      * @return mixed
      */
     public function header($statusCode)
     {
-        if (200==$statusCode) {
+        if (200 == $statusCode) {
             return $this->symfonyresponse->setStatusCode(Response::HTTP_OK);
-        } else if (404==$statusCode) {
-            return $this->symfonyresponse->setStatusCode(Response::HTTP_NOT_FOUND );
+        } else if (404 == $statusCode) {
+            return $this->symfonyresponse->setStatusCode(Response::HTTP_NOT_FOUND);
         }
         return $this->symfonyresponse->setStatusCode(Response::HTTP_NO_CONTENT);
     }

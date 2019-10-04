@@ -11,46 +11,46 @@ use Symfony\Component\HttpFoundation\Response;
 class UsersAccountController extends Controller
 {
 
-	public function setLanguageAction(Request $request)
-	{
+    public function setLanguageAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
+        if ($this->getUser()) {
 
-			$language = $request->request->get("language", "");
-			$this->get("app.user")->updateLanguage($this->getUser()->getId(), $language);
+            $language = $request->request->get("language", "");
+            $this->get("app.user")->updateLanguage($this->getUser()->getId(), $language);
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
-	public function getNotificationPreferencesAction(Request $request)
-	{
+    public function getNotificationPreferencesAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
+        if ($this->getUser()) {
 
-			$data["data"] = $this->get("app.user")->getNotificationPreferences($this->getUser()->getId());
+            $data["data"] = $this->get("app.user")->getNotificationPreferences($this->getUser()->getId());
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
     public function setNotificationPreferencesAction(Request $request)
     {
@@ -94,7 +94,8 @@ class UsersAccountController extends Controller
 
     }
 
-	public function updateNotificationPreferenceByWorkspaceAction(Request $request){
+    public function updateNotificationPreferenceByWorkspaceAction(Request $request)
+    {
         $data = Array(
             "errors" => Array(),
             "data" => Array()
@@ -103,12 +104,12 @@ class UsersAccountController extends Controller
         $workspaceId = $request->request->get("workspaceId", 0);
         $appNotif = $request->request->get("appNotification", Array());
 
-        $res = $this->get("app.user")->updateNotificationPreferenceByWorkspace($workspaceId,$appNotif,$this->getUser());
+        $res = $this->get("app.user")->updateNotificationPreferenceByWorkspace($workspaceId, $appNotif, $this->getUser());
 
-        if($res){
+        if ($res) {
             $data["data"] = "success";
-        }else{
-            $data["error"][]  = "error";
+        } else {
+            $data["error"][] = "error";
         }
 
         return new JsonResponse($data);
@@ -169,226 +170,226 @@ class UsersAccountController extends Controller
         return $this->get("app.uploader");
     }
 
-	public function setIdentityAction(Request $request)
-	{
+    public function setIdentityAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
+        if ($this->getUser()) {
 
-			$firstname = $request->request->get("firstname", "");
-			$lastname = $request->request->get("lastname", "");
+            $firstname = $request->request->get("firstname", "");
+            $lastname = $request->request->get("lastname", "");
             $thumbnail = $request->request->get("thumbnail", null);
 
             $user = null;
 
-			if(isset($_FILES["thumbnail"])) {
+            if (isset($_FILES["thumbnail"])) {
                 $thumbnail = $this->getUploader()->uploadFiles($this->getUser(), $_FILES["thumbnail"], "prfl");
-				$thumbnail = $thumbnail[0];
+                $thumbnail = $thumbnail[0];
 
-				if (count($thumbnail["errors"])>0) {
-					$data["errors"][] = "badimage";
-				} else {
+                if (count($thumbnail["errors"]) > 0) {
+                    $data["errors"][] = "badimage";
+                } else {
                     $user = $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail["file"], $this->getUploader());
-				}
-			}else{
+                }
+            } else {
                 $user = $this->get("app.user")->updateUserBasicData($this->getUser()->getId(), $firstname, $lastname, $thumbnail, $this->getUploader());
-			}
+            }
 
             if ($user) {
                 $data["data"] = $user->getAsArray();
             }
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
-	public function setUsernameAction(Request $request)
-	{
+    public function setUsernameAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
+        if ($this->getUser()) {
 
-			$username = $request->request->get("username", "");
+            $username = $request->request->get("username", "");
 
-			if(!$this->get("app.user")->changePseudo($this->getUser()->getId(), $username)){
-				$data["errors"][] = "alreadyused";
-			}
+            if (!$this->get("app.user")->changePseudo($this->getUser()->getId(), $username)) {
+                $data["errors"][] = "alreadyused";
+            }
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
-	public function setPasswordAction(Request $request)
-	{
+    public function setPasswordAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
+        if ($this->getUser()) {
 
-			$oldPassword = $request->request->get("old_password", "");
-			$password = $request->request->get("password", "");
+            $oldPassword = $request->request->get("old_password", "");
+            $password = $request->request->get("password", "");
 
-			if(!$this->get("app.user")->changePassword($this->getUser()->getId(), $oldPassword, $password)){
-				$data["errors"][] = "badpassword";
-			}
+            if (!$this->get("app.user")->changePassword($this->getUser()->getId(), $oldPassword, $password)) {
+                $data["errors"][] = "badpassword";
+            }
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
-	public function setMainMailAction(Request $request)
-	{
+    public function setMainMailAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
+        if ($this->getUser()) {
 
-			$mail = $request->request->get("mail", "");
+            $mail = $request->request->get("mail", "");
 
-			if(!$this->get("app.user")->changeMainMail($this->getUser()->getId(), $mail)){
-				$data["errors"][] = "nosuchid";
-			}
+            if (!$this->get("app.user")->changeMainMail($this->getUser()->getId(), $mail)) {
+                $data["errors"][] = "nosuchid";
+            }
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
-	public function removeMailAction(Request $request)
-	{
+    public function removeMailAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
+        if ($this->getUser()) {
 
-			$mail = $request->request->get("mail", "");
+            $mail = $request->request->get("mail", "");
             $result = $this->get("app.user")->removeSecondaryMail($this->getUser()->getId(), $mail);
-			if(!$result){
-				$data["errors"][] = "badmail";
-			}
-			$data["statuts"] = $result;
+            if (!$result) {
+                $data["errors"][] = "badmail";
+            }
+            $data["statuts"] = $result;
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
-	public function addMailAction(Request $request)
-	{
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+    public function addMailAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
-			$mail = $request->request->get("mail", "");
+        if ($this->getUser()) {
+            $mail = $request->request->get("mail", "");
 
-			$token = $this->get("app.user")->addNewMail($this->getUser()->getId(), $mail);
-			if($token) {
-				$data["data"]["token"] = $token;
-			}else{
-				$data["errors"][] = "badmail";
-			}
+            $token = $this->get("app.user")->addNewMail($this->getUser()->getId(), $mail);
+            if ($token) {
+                $data["data"]["token"] = $token;
+            } else {
+                $data["errors"][] = "badmail";
+            }
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
-	public function addMailVerifyAction(Request $request)
-	{
+    public function addMailVerifyAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
+        if ($this->getUser()) {
 
-			$token = $request->request->get("token", "");
-			$number = $request->request->get("code", "");
+            $token = $request->request->get("token", "");
+            $number = $request->request->get("code", "");
 
-			$idMail = $this->get("app.user")->checkNumberForAddNewMail($this->getUser()->getId(), $token, $number);
+            $idMail = $this->get("app.user")->checkNumberForAddNewMail($this->getUser()->getId(), $token, $number);
 
-			if($idMail) {
-				$data["data"]["status"] = "success";
+            if ($idMail) {
+                $data["data"]["status"] = "success";
                 $data["data"]["idMail"] = $idMail;
 
-            }else{
-				$data["errors"][] = "badcode";
-			}
+            } else {
+                $data["errors"][] = "badcode";
+            }
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
-	public function getMailsAction(Request $request)
-	{
+    public function getMailsAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		if($this->getUser()){
+        if ($this->getUser()) {
 
-			$mails = $this->get("app.user")->getSecondaryMails($this->getUser());
-			foreach ($mails as $mail){
-				$data["data"][] = Array(
-					"id" => $mail->getId(),
-					"main" => $mail->getMail()==$this->getUser()->getEmail(),
-					"email" => $mail->getMail()
-				);
-			}
+            $mails = $this->get("app.user")->getSecondaryMails($this->getUser());
+            foreach ($mails as $mail) {
+                $data["data"][] = Array(
+                    "id" => $mail->getId(),
+                    "main" => $mail->getMail() == $this->getUser()->getEmail(),
+                    "email" => $mail->getMail()
+                );
+            }
 
-		}else{
-			$data["errors"][] = "unknown";
-		}
+        } else {
+            $data["errors"][] = "unknown";
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
 }

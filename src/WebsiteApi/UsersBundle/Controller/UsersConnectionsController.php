@@ -18,10 +18,10 @@ class UsersConnectionsController extends Controller
     {
         $focus = $request->request->get("focus", true);
         if ($this->getUser() && $focus) {
-			$this->get("app.user")->alive($this->getUser()->getId());
-		}
+            $this->get("app.user")->alive($this->getUser()->getId());
+        }
         return new JsonResponse(Array("data" => "ok"));
-	}
+    }
 
     public function autoLoginAction(Request $request)
     {
@@ -36,42 +36,42 @@ class UsersConnectionsController extends Controller
         return $response;
     }
 
-	public function loginAction(Request $request)
-	{
+    public function loginAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		$usernameOrMail = $request->request->get("_username", "");
-		$password = $request->request->get("_password", "");
-		$rememberMe = $request->request->get("_remember_me", true);
+        $usernameOrMail = $request->request->get("_username", "");
+        $password = $request->request->get("_password", "");
+        $rememberMe = $request->request->get("_remember_me", true);
 
-		$response = new JsonResponse();
-		$loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
+        $response = new JsonResponse();
+        $loginResult = $this->get("app.user")->login($usernameOrMail, $password, $rememberMe, $request, $response);
 
-		if ($loginResult) {
+        if ($loginResult) {
 
-			$device = $request->request->get("device", false);
+            $device = $request->request->get("device", false);
             if ($device && isset($device["type"]) && isset($device["value"])) {
                 $this->get("app.user")->addDevice($this->getUser()->getId(), $device["type"], $device["value"], isset($device["version"]) ? $device["version"] : null);
                 $this->get("administration.counter")->incrementCounter("total_devices_linked", 1);
-			}
+            }
 
-			$data["data"]["status"] = "connected";
+            $data["data"]["status"] = "connected";
 
-		} else {
+        } else {
 
-			$data["data"]["status"] = "disconnected";
+            $data["data"]["status"] = "disconnected";
 
-		}
+        }
 
-		$response->setContent(json_encode($data));
+        $response->setContent(json_encode($data));
 
-		return $response;
+        return $response;
 
-	}
+    }
 
     public function isLoggedAction(Request $request)
     {
@@ -101,18 +101,18 @@ class UsersConnectionsController extends Controller
         return $this->redirect($this->getParameter("SERVER_NAME"));
     }
 
-	public function logoutAction(Request $request)
-	{
+    public function logoutAction(Request $request)
+    {
 
-		$device = $request->request->get("device", false);
-		if($device && isset($device["type"])) {
-			$this->get("app.user")->removeDevice($this->getUser()->getId(), $device["type"], $device["value"]);
+        $device = $request->request->get("device", false);
+        if ($device && isset($device["type"])) {
+            $this->get("app.user")->removeDevice($this->getUser()->getId(), $device["type"], $device["value"]);
             $this->get("administration.counter")->incrementCounter("total_devices_linked", -1);
-		}
-		$this->get("app.user")->logout();
-		return new JsonResponse(Array());
+        }
+        $this->get("app.user")->logout();
+        return new JsonResponse(Array());
 
-	}
+    }
 
     public function identiconAction(Request $request)
     {
@@ -222,18 +222,18 @@ class UsersConnectionsController extends Controller
         die();
     }
 
-	public function currentUserAction(Request $request)
-	{
+    public function currentUserAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
-		$ok = $this->get("app.user")->current();
-		if(!$ok){
-			$data["errors"][] = "disconnected";
-		}else{
+        $ok = $this->get("app.user")->current();
+        if (!$ok) {
+            $data["errors"][] = "disconnected";
+        } else {
             $device = $request->request->get("device", false);
 
             if ($device && isset($device["type"]) && isset($device["value"]) && $device["value"]) {
@@ -248,13 +248,13 @@ class UsersConnectionsController extends Controller
             $data["data"]["notifications_preferences"] = $this->getUser()->getNotificationPreference();
             $data["data"]["tutorial_status"] = $this->getUser()->getTutorialStatus();
 
-			$data["data"]["status"] = "connected";
+            $data["data"]["status"] = "connected";
 
 
             $workspaces_obj = $this->get("app.workspace_members")->getWorkspaces($this->getUser()->getId());
 
-			$workspaces = Array();
-			foreach ($workspaces_obj as $workspace_obj){
+            $workspaces = Array();
+            foreach ($workspaces_obj as $workspace_obj) {
                 $value = $workspace_obj["workspace"]->getAsArray();
                 $value["_user_last_access"] = $workspace_obj["last_access"]->getTimestamp();
                 $value["_user_hasnotifications"] = $workspace_obj["hasnotifications"];
@@ -265,7 +265,7 @@ class UsersConnectionsController extends Controller
             $mails = $this->get("app.user")->getSecondaryMails($this->getUser());
 
             $data["data"]["mails"] = Array();
-            foreach ($mails as $mail){
+            foreach ($mails as $mail) {
                 $data["data"]["mails"][] = Array(
                     "id" => $mail->getId(),
                     "main" => ($this->getUser()->getEmail() == $mail->getMail()),
@@ -273,26 +273,27 @@ class UsersConnectionsController extends Controller
                 );
             }
 
-			$data["data"]["workspaces"] = $workspaces;
+            $data["data"]["workspaces"] = $workspaces;
 
-		}
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
-	public function setIsNewAction(Request $request){
+    public function setIsNewAction(Request $request)
+    {
         $data = Array(
             "errors" => Array(),
             "data" => Array()
         );
 
-        $value=$request->request->get("value");
+        $value = $request->request->get("value");
 
         $ok = $this->get("app.user")->current();
-        if(!$ok){
+        if (!$ok) {
             $data["errors"][] = "disconnected";
-        }else{
+        } else {
 
             $user = $this->getUser()->getId();
             $this->get("app.user")->setIsNew($value, $user);

@@ -1,6 +1,7 @@
 <?php
 
 namespace WebsiteApi\DriveBundle\Repository;
+
 use Doctrine\Common\Collections\Criteria;
 
 /**
@@ -41,7 +42,7 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
     public function listDirectory($group, $directory = null, $trash = false, $detached = false)
     {
 
-        if ($directory){
+        if ($directory) {
 
             $res = $this->findBy(Array(
                 "parent" => $directory
@@ -78,15 +79,15 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
             ->andWhere('f.isintrash = 0')
             ->andWhere('f.detached_file = 0');
 
-        foreach ($sorts as $key=>$sort){
-            $qb = $qb->addOrderBy("f.".$key, $sort);
+        foreach ($sorts as $key => $sort) {
+            $qb = $qb->addOrderBy("f." . $key, $sort);
         }
 
         //Query search
-        if(is_string($query)) {
-            $query = str_replace(Array("%", "_"),Array("!%","!_"), $query);
+        if (is_string($query)) {
+            $query = str_replace(Array("%", "_"), Array("!%", "!_"), $query);
             $qb = $qb->andWhere($qb->expr()->like("f.name", ":query"));
-            $qb = $qb->setParameter("query", "%".$query."%");
+            $qb = $qb->setParameter("query", "%" . $query . "%");
         }
 
         $qb = $qb->setParameter("group", $this->queryBuilderUuid($group));
@@ -103,10 +104,11 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
         $criteria->where(Criteria::expr()->neq('copyof', null));
         $criteria->orWhere(Criteria::expr()->eq('shared', true));
         $criteria->andWhere(Criteria::expr()->eq('group', $workspace));
-        return  $this->matching( $criteria);
+        return $this->matching($criteria);
     }
 
-    public function countEachExtension(){
+    public function countEachExtension()
+    {
         $req = $this->createQueryBuilder('f')
             ->select('f.extension, count(f.extension) AS nb')
             ->where('f.isDirectory = false')
@@ -115,17 +117,19 @@ class DriveFileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapte
         return $req->getQuery()->getResult();
     }
 
-    public function countEachExtensionByWorkspace($group){
+    public function countEachExtensionByWorkspace($group)
+    {
         $req = $this->createQueryBuilder('f')
             ->select('f.extension, count(f.extension) AS nb')
             ->where('f.group = \'' . $group . '\'')
             ->andWhere('f.isDirectory = false')
             ->groupBy('f.extension')
-            ->orderBy('nb','DESC');
+            ->orderBy('nb', 'DESC');
         return $req->getQuery()->getResult();
     }
 
-    public function decreaseOpeningRate(){
+    public function decreaseOpeningRate()
+    {
         $req = $this->createQueryBuilder('f')
             ->update()
             ->set('f.opening_rate', 'f.opening_rate*0.8');

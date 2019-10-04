@@ -7,9 +7,11 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
-class AppsController extends Controller {
+class AppsController extends Controller
+{
 
-    public function getAllAppsAction(Request $request) {
+    public function getAllAppsAction(Request $request)
+    {
 
         $data = Array(
             "data" => Array(),
@@ -40,7 +42,8 @@ class AppsController extends Controller {
         return new JsonResponse($data);
     }
 
-    public function getOneAppAction(Request $request) {
+    public function getOneAppAction(Request $request)
+    {
 
         $data = Array(
             "data" => Array(),
@@ -70,7 +73,8 @@ class AppsController extends Controller {
         return new JsonResponse($data);
     }
 
-    public function toggleValidationAction(Request $request) {
+    public function toggleValidationAction(Request $request)
+    {
 
         $data = Array(
             "data" => Array(),

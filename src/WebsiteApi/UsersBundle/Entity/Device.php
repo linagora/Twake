@@ -21,24 +21,24 @@ class Device
      */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-	 */
+     */
     private $user;
 
-	/**
-	 * @var string
-	 *
+    /**
+     * @var string
+     *
      * @ORM\Column(name="type", type="string", length=16)
-	 */
-	private $type;
+     */
+    private $type;
 
-	/**
-	 * @var string
-	 *
+    /**
+     * @var string
+     *
      * @ORM\Column(name="version", type="string", length=16)
-	 */
-	private $version;
+     */
+    private $version;
 
     /**
      * @var string
@@ -50,16 +50,16 @@ class Device
 
     public function __construct($user, $type, $value, $version)
     {
-    	$this->user = $user;
+        $this->user = $user;
         $this->setType($type);
         $this->setValue($value);
         $this->setVersion($version);
     }
 
-	/**
-	 * @return int
-	 */
-	public function setId($id)
+    /**
+     * @return int
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -67,71 +67,71 @@ class Device
     public function getId()
     {
         return $this->id;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getUser()
-	{
-		return $this->user;
-	}
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
 
-	/**
-	 * @param mixed $user
-	 */
-	public function setUser($user)
-	{
-		$this->user = $user;
-	}
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getType()
-	{
-		return $this->type;
-	}
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
 
-	/**
-	 * @param string $type
-	 */
-	public function setType($type)
-	{
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
         $this->type = isset($type) ? $type : "";
-	}
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getValue()
-	{
-		return $this->value;
-	}
+    /**
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
 
-	/**
-	 * @param string $value
-	 */
-	public function setValue($value)
-	{
+    /**
+     * @param string $value
+     */
+    public function setValue($value)
+    {
         $this->value = isset($value) ? $value : "";
-	}
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getVersion()
-	{
-		return $this->version;
-	}
+    /**
+     * @return string
+     */
+    public function getVersion()
+    {
+        return $this->version;
+    }
 
-	/**
-	 * @param string $version
-	 */
-	public function setVersion($version)
-	{
+    /**
+     * @param string $version
+     */
+    public function setVersion($version)
+    {
         $this->version = isset($version) ? $version : "unknown";
-	}
+    }
 
     public function getAsArray()
     {
