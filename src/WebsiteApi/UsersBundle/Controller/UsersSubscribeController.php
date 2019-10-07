@@ -32,13 +32,13 @@ class UsersSubscribeController extends Controller
 
         $res = $this->get("app.user")->subscribeMail($email, $username, $password, $name, $firstname, $phone, $language, $newsletter);
 
-        if ($res) {
+        if ($res && (!is_array($res) || !isset($res["error"]))) {
 
             $data["data"]["token"] = $res;
 
         } else {
 
-            $data["errors"][] = "error_mail_or_password";
+            $data["errors"][] = $res["error"];
 
         }
 

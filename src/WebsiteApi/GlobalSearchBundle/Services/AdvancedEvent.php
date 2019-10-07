@@ -8,7 +8,7 @@ class AdvancedEvent
 {
     private $doctrine;
     private $workspaceservice;
-    private $list_events = Array("events" => Array(), "scroll_id" => "");
+    private $list_events = Array("results" => Array(), "scroll_id" => "");
 
 
     public function __construct($doctrine, $workspaceservice)
@@ -22,16 +22,21 @@ class AdvancedEvent
     public function AdvancedEvent($current_user_id, $options, $workspaces)
     {
 
-        $workspace_access = Array();
-        foreach ($workspaces as $wp) {
-            $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $wp));
-            $members = $wp_entity->getMembers();
-            foreach ($members as $member) {
-                if ($member->getUser()->getId() . "" === $current_user_id) {
+        $workspace_access = [];
+        if (!$workspaces && !is_array($workspaces)) {
+            $workspace_access_tmp = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("user" => $current_user_id));
+            foreach ($workspace_access_tmp as $wp) {
+                $workspace_access[] = $wp->getWorkspace();
+            }
+        } else {
+            foreach ($workspaces as $wp) {
+                $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $wp->getId(), "user" => $current_user_id));
+                if ($wp_entity) {
                     $workspace_access[] = $wp;
                 }
             }
         }
+        $workspaces = $workspace_access;
 
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
         if (isset($workspace_access) && $workspace_access != Array()) {
@@ -103,6 +108,13 @@ class AdvancedEvent
             //PARTIES SUR LES WORKSPACES
             $should_workspaces = Array();
             foreach ($workspaces as $wp) {
+                if (!is_string($wp)) {
+                    if (is_array($wp)) {
+                        $wp = $wp["id"];
+                    } else {
+                        $wp = $wp->getId();
+                    }
+                }
                 $should_workspaces[] = Array(
                     "match_phrase" => Array(
                         "workspace_id" => $wp
@@ -247,7 +259,7 @@ class AdvancedEvent
 
             //on traite les données recu d'Elasticsearch
             foreach ($result["result"] as $event) {
-                $this->list_events["events"][] = $event[0]->getAsArray();
+                $this->list_events["results"][] = $event[0]->getAsArray();
             }
             $this->list_events["scroll_id"] = $scroll_id;
 

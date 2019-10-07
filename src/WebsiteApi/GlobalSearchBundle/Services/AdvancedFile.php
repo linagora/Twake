@@ -24,21 +24,25 @@ class AdvancedFile
     {
         $this->globalresult = Array();
 
-        $workspace_access = Array();
-        foreach ($workspaces as $wp) {
-            //$member = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace_id" => $wp, "user_id"=> $current_user_id));
-            $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $wp));
-            $members = $wp_entity->getMembers();
-            foreach ($members as $member) {
-                if ($member->getUser()->getId() . "" === $current_user_id) {
+        $workspace_access = [];
+        if (!$workspaces && !is_array($workspaces)) {
+            $workspace_access_tmp = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("user" => $current_user_id));
+            foreach ($workspace_access_tmp as $wp) {
+                $workspace_access[] = $wp->getWorkspace();
+            }
+        } else {
+            foreach ($workspaces as $wp) {
+                $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $wp->getId(), "user" => $current_user_id));
+                if ($wp_entity) {
                     $workspace_access[] = $wp;
                 }
             }
         }
+        $workspaces = $workspace_access;
 
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
         if (isset($workspace_access) && $workspace_access != Array()) {
-            //do search
+            $this->globalresult = $this->fileservice->advancedsearch($options, $workspaces);
         }
 
         return $this->globalresult;

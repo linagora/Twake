@@ -406,25 +406,25 @@ class User
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
         if ($user != null && $user->getMailVerified()) {
-            return false;
+            return ["error" => "usernamealreadytaken"];
         }
 
         $mail = $this->string_cleaner->simplifyMail($mail);
 
         if (!$this->string_cleaner->verifyMail($mail)) {
-            return false;
+            return ["error" => "mailalreadytaken"];
         }
 
         //Check mail doesn't exists
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
         if ($user != null && $user->getMailVerified()) {
-            return false;
+            return ["error" => "mailalreadytaken"];
         }
         $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
         $mailExists = $mailsRepository->findOneBy(Array("mail" => $mail));
         if ($mailExists != null) {
-            return false;
+            return ["error" => "mailalreadytaken"];
         }
 
         if ($user && !$user->getMailVerified() && $user->getisNew()) { //This user never verified his email, so we remove it.

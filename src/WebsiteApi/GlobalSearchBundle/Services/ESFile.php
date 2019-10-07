@@ -15,104 +15,8 @@ class ESFile
         $this->doctrine = $doctrine;
     }
 
-    public function index()
-    {
-        //need the string with the name of the file
-        //check the extension of the file
-//        $finfo = finfo_open(FILEINFO_MIME_TYPE);
-////        $filetype = finfo_file($finfo, $document);
-////
-////        if($ext === 'txt')
-////            $content = file_get_contents($document);
-////        elseif($ext === 'pdf')
-////            $content = (new \Spatie\PdfToText\Pdf())
-////                ->setPdf($document)
-////                ->text();
-///
-///
-
-//        $content = (new \Spatie\PdfToText\Pdf())
-//                ->setPdf($document)
-//                ->text();
-        $document = "stage.txt";
-        $content = file_get_contents($document);
-        $content = str_replace(array("\\'", "'"), " ", $content);
-        $size = substr_count($content, ' ');
-
-        $words = str_word_count(strtolower($content), 1, 'ÀÂÄÇÉÈÊËÎÏÔÖÙÛÜŸÆŒàâäçéèêëîïôöùûüÿæœ');
-        $totalwords = 1;
-
-        $keywords = Array();
-
-        $regex = <<<'END'
-/
- (
-   (?: [\x00-\x7F]                 #:00d2f4aa-605b-11e9-b23e-0242ac120005 single-byte sequences   0xxxxxxx
-   |   [\xC0-\xDF][\x80-\xBF]      #:00d2f4aa-605b-11e9-b23e-0242ac120005 double-byte sequences   110xxxxx 10xxxxxx
-   |   [\xE0-\xEF][\x80-\xBF]{2}   #:00d2f4aa-605b-11e9-b23e-0242ac120005 triple-byte sequences   1110xxxx 10xxxxxx * 2
-   |   [\xF0-\xF7][\x80-\xBF]{3}   #:00d2f4aa-605b-11e9-b23e-0242ac120005 quadruple-byte sequence 11110xxx 10xxxxxx * 3
-   ){1,100}                        #:00d2f4aa-605b-11e9-b23e-0242ac120005 ...one or more times
- )
-| .                                 #:00d2f4aa-605b-11e9-b23e-0242ac120005 anything else
-/x
-END;
-
-        foreach ($words as $value) {
-            $value = preg_replace($regex, '$1', $value);
-            $value = strtolower($value);
-            if (strlen($value) > 3 && is_numeric($value) == false) {
-                if ($totalwords < floor($size * 0.20)) //we define the weight of word trough the text
-                    $weight = 20;
-                elseif ($totalwords > floor($size * 80))
-                    $weight = 20;
-                else
-                    $weight = 3;
-                if (!($keywords[$value]) || substr($value, -1) == "s") { //if the word is not in our table
-                    if (substr($value, -1) == "s") { //we check if it's a plural
-                        $maybesinglar = substr($value, 0, strlen($value) - 1);
-                        if ($keywords[$maybesinglar]) { // we check if their is already a singular for this word
-                            $keywords[$maybesinglar] += $weight + max(strlen($maybesinglar) - 4, 0) * 2; //if we find a singular we add the singular version of the word instead of the plural
-                        } else { // if not we add the new words or it's the first time we saw the word so we need to add it
-                            $keywords[$value] = $weight + max(strlen($value) - 4, 0) * 2;
-                        }
-                    } else {
-                        $keywords[$value] = $weight + max(strlen($value) - 4, 0) * 2; // we add the new word which is not a plural or it the first time we saw it
-                    }
-                } else { //if the word is in the table
-                    $keywords[$value] += $weight + max(strlen($value) - 4, 0) * 2; // we adjust his weight in the table
-                }
-            }
-            $totalwords++; //we add our total of word to alter the weight of futur word.
-        }
-
-        arsort($keywords); // Sort based on frequency
-
-        $keywords_raw = array_slice($keywords, 0, 100);
-        $max = array_values(array_slice($keywords, 0, 1))[0];
-
-        foreach ($keywords_raw as $key => $score) {
-            $keywords_raw[$key] = ($score / $max);
-        }
-
-        $keywords_score = Array();
-        foreach ($keywords_raw as $key => $score) {
-            $keywords_score[] = Array(
-                "keyword" => $key,
-                "score" => $keywords_raw[$key]
-            );
-        }
-
-        $file = new DriveFile("14005200-48b1-11e9-a0b4-0242ac120005", "14005200-48b1-11e9-a0b4-0242ac120005");
-        $file->setName(explode(".", $document)[0]);
-        $file->setContentKeywords($keywords_score);
-        $this->doctrine->persist($file);
-
-        $this->doctrine->flush();
-
-    }
-
     public function search($termslist, $workspaces)
-    { //rajouter le must sur les workspace id
+    {
 
         $terms = Array();
         $should_workspaces = Array();
@@ -200,23 +104,8 @@ END;
         return $files_final;
     }
 
-//    public static function cmp($file1, $file2)
-//    {
-
-//        if ($file1[1] == $file2[1]) {
-//            return 0;
-//        }
-//        return ($file1[1] > $file2[1]) ? -1 : 1;
-//    }
-
-
     public function advancedsearch($options, $workspaces)
     {
-
-//        $file = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => "c213d80a-cf14-11e9-86c0-0242ac1d0005"));
-//        $file->setTags(Array("4f3b9286-cef7-11e9-9732-0242ac1d0005"));
-//        $this->doctrine->persist($file);
-//        $this->doctrine->flush();
 
         $options_save = $options;
         $must = Array();
@@ -275,6 +164,13 @@ END;
         //PARTIES SUR LES WORKSPACES
         $should_workspaces = Array();
         foreach ($workspaces as $wp) {
+            if (!is_string($wp)) {
+                if (is_array($wp)) {
+                    $wp = $wp["id"];
+                } else {
+                    $wp = $wp->getId();
+                }
+            }
             $should_workspaces[] = Array(
                 "match_phrase" => Array(
                     "workspace_id" => $wp
@@ -370,10 +266,8 @@ END;
             )
         );
 
-
         // search in ES
         $result = $this->doctrine->es_search($options);
-
 
         array_slice($result["result"], 0, 5);
 
@@ -381,29 +275,12 @@ END;
 
         //on traite les données recu d'Elasticsearch
         foreach ($result["result"] as $file) {
-            $this->list_files["files"][] = $file[0]->getAsArray();
+            $this->list_files["results"][] = $file[0]->getAsArray();
         }
         $this->list_files["scroll_id"] = $scroll_id;
 
-        return $this->list_files ?: null;
+        return $this->list_files;
 
-    }
-
-
-    public function TestSearch()
-    {
-
-//       $this->index("pdftest.pdf");
-//        $file= $this->doctrine->getRepository("TwakeDriveBundle:Drivefile")->findOneBy(Array("id" => "f155d92a-6cdf-11e9-9077-0242ac130002"));
-//        $file = new DriveFile("14005200-48b1-11e9-a0b4-0242ac120000","14005200-48b1-11e9-a0b4-0242ac120000");
-//        $file->setName("testbug");
-//        // $keywords_score=$this->update_keyword($keywords_score,explode(".", $document)[0]); //change this with document title
-//        $file->setExtension("PDF");
-//        $this->doctrine->es_put($file,$file->getEsType());
-
-//        $words=Array("stage","django");
-//        $workspaces = Array("d975075e-6028-11e9-b206-0242ac1200050","14005200-48b1-11e9-a0b4-0242ac120005");
-//        $result = $this->search($words, $workspaces);
     }
 
 }
