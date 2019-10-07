@@ -113,16 +113,38 @@ class ESFile
         //PARTIE SUR LE NAME
 
         if (isset($options["name"])) {
+
+            $terms = [];
+            $st = new StringCleaner();
+            foreach (explode(" ", $options["name"]) as $term) {
+                $term = $st->simplifyInArray($term);
+                $terms[] = Array(
+                    "bool" => Array(
+                        "filter" => Array(
+                            "regexp" => Array(
+                                "keywords.keyword" => ".*" . $term . ".*"
+                            )
+                        )
+                    )
+                );
+            }
+
+            $nested = Array(
+                "nested" => Array(
+                    "path" => "keywords",
+                    "score_mode" => "avg",
+                    "query" => Array(
+                        "bool" => Array(
+                            "should" => $terms
+                        )
+                    )
+                )
+            );
+
             $name = Array(
                 "bool" => Array(
                     "should" => Array(
-                        "bool" => Array(
-                            "filter" => Array(
-                                "regexp" => Array(
-                                    "name" => ".*" . $options["name"] . ".*"
-                                )
-                            )
-                        )
+                        $nested
                     ),
                     "minimum_should_match" => 1
                 )
@@ -258,7 +280,7 @@ class ESFile
         $options = Array(
             "repository" => "TwakeDriveBundle:DriveFile",
             "index" => "drive_file",
-            "size" => 1,
+            "size" => 10,
             "query" => Array(
                 "bool" => Array(
                     "must" => $must
@@ -268,6 +290,7 @@ class ESFile
 
         // search in ES
         $result = $this->doctrine->es_search($options);
+        $this->list_files["es"] = $options;
 
         array_slice($result["result"], 0, 5);
 

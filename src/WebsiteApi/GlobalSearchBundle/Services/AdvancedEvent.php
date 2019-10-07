@@ -3,6 +3,7 @@
 
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
+use WebsiteApi\CoreBundle\Services\StringCleaner;
 
 class AdvancedEvent
 {
@@ -21,6 +22,10 @@ class AdvancedEvent
 
     public function AdvancedEvent($current_user_id, $options, $workspaces)
     {
+
+        if (!$options["title"]) {
+            $options["title"] = $options["name"];
+        }
 
         $workspace_access = [];
         if (!$workspaces && !is_array($workspaces)) {
@@ -47,16 +52,25 @@ class AdvancedEvent
             //PARTIE SUR LE NAME
 
             if (isset($options["title"])) {
+                $terms = [];
+                $st = new StringCleaner();
+                foreach (explode(" ", $options["name"]) as $term) {
+                    $term = $st->simplifyInArray($term);
+                    $terms[] = Array(
+                        "bool" => Array(
+                            "filter" => Array(
+                                "regexp" => Array(
+                                    "title" => ".*" . $term . ".*"
+                                )
+                            )
+                        )
+                    );
+                }
+
                 $title = Array(
                     "bool" => Array(
                         "should" => Array(
-                            "bool" => Array(
-                                "filter" => Array(
-                                    "regexp" => Array(
-                                        "title" => ".*" . $options["title"] . ".*"
-                                    )
-                                )
-                            )
+                            $terms
                         ),
                         "minimum_should_match" => 1
                     )
@@ -66,16 +80,25 @@ class AdvancedEvent
             }
 
             if (isset($options["description"])) {
+                $terms = [];
+                $st = new StringCleaner();
+                foreach (explode(" ", $options["name"]) as $term) {
+                    $term = $st->simplifyInArray($term);
+                    $terms[] = Array(
+                        "bool" => Array(
+                            "filter" => Array(
+                                "regexp" => Array(
+                                    "description" => ".*" . $term . ".*"
+                                )
+                            )
+                        )
+                    );
+                }
+
                 $description = Array(
                     "bool" => Array(
                         "should" => Array(
-                            "bool" => Array(
-                                "filter" => Array(
-                                    "regexp" => Array(
-                                        "description" => ".*" . $options["description"] . ".*"
-                                    )
-                                )
-                            )
+                            $terms
                         ),
                         "minimum_should_match" => 1
                     )
@@ -146,6 +169,7 @@ class AdvancedEvent
 
                 $should_participants = Array();
                 foreach ($options["participants"] as $participant) {
+
                     $should_participants[] = Array(
                         "nested" => Array(
                             "path" => "participants",
@@ -252,6 +276,7 @@ class AdvancedEvent
 
             // search in ES
             $result = $this->doctrine->es_search($options);
+            $this->list_events["es"] = $options;
 
             array_slice($result["result"], 0, 5);
 

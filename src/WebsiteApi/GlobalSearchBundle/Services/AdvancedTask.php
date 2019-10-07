@@ -3,6 +3,8 @@
 
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
+use WebsiteApi\CoreBundle\Services\StringCleaner;
+
 
 class AdvancedTask
 {
@@ -21,6 +23,10 @@ class AdvancedTask
 
     public function AdvancedTask($current_user_id, $options, $workspaces)
     {
+
+        if (!$options["title"]) {
+            $options["title"] = $options["name"];
+        }
 
         $workspace_access = [];
         if (!$workspaces && !is_array($workspaces)) {
@@ -48,16 +54,25 @@ class AdvancedTask
             //PARTIE SUR LE NAME
 
             if (isset($options["title"])) {
+                $terms = [];
+                $st = new StringCleaner();
+                foreach (explode(" ", $options["name"]) as $term) {
+                    $term = $st->simplifyInArray($term);
+                    $terms[] = Array(
+                        "bool" => Array(
+                            "filter" => Array(
+                                "regexp" => Array(
+                                    "title" => ".*" . $term . ".*"
+                                )
+                            )
+                        )
+                    );
+                }
+
                 $title = Array(
                     "bool" => Array(
                         "should" => Array(
-                            "bool" => Array(
-                                "filter" => Array(
-                                    "regexp" => Array(
-                                        "title" => ".*" . $options["title"] . ".*"
-                                    )
-                                )
-                            )
+                            $terms
                         ),
                         "minimum_should_match" => 1
                     )
@@ -67,16 +82,25 @@ class AdvancedTask
             }
 
             if (isset($options["description"])) {
+                $terms = [];
+                $st = new StringCleaner();
+                foreach (explode(" ", $options["name"]) as $term) {
+                    $term = $st->simplifyInArray($term);
+                    $terms[] = Array(
+                        "bool" => Array(
+                            "filter" => Array(
+                                "regexp" => Array(
+                                    "description" => ".*" . $term . ".*"
+                                )
+                            )
+                        )
+                    );
+                }
+
                 $description = Array(
                     "bool" => Array(
                         "should" => Array(
-                            "bool" => Array(
-                                "filter" => Array(
-                                    "regexp" => Array(
-                                        "description" => ".*" . $options["description"] . ".*"
-                                    )
-                                )
-                            )
+                            $terms
                         ),
                         "minimum_should_match" => 1
                     )
@@ -253,6 +277,7 @@ class AdvancedTask
 
             // search in ES
             $result = $this->doctrine->es_search($options);
+            $this->list_tasks["es"] = $options;
 
             array_slice($result["result"], 0, 5);
 

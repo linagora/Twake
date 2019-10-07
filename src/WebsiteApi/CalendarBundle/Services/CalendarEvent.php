@@ -19,7 +19,7 @@ class CalendarEvent
         $this->enc_pusher = $enc_pusher;
         $this->applications_api = $application_api;
         $this->notifications = $notifications;
-        $this->attachementMananger = new AttachementManager($this->doctrine, $this->enc_pusher);
+        $this->attachementManager = new AttachementManager($this->doctrine, $this->enc_pusher);
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -103,11 +103,15 @@ class CalendarEvent
 
     private function removeEventDependancesById($id)
     {
+        $event = $this->doctrine->getRepository("TwakeCalendarBundle:Event")->findOneBy(Array("id" => $id));
+        if ($event) {
+            $this->attachementManager->removeAttachementsFromEntity($event);
+        }
+
         $entities = $this->doctrine->getRepository("TwakeCalendarBundle:EventCalendar")->findBy(Array("event_id" => $id));
         $entities = array_merge($entities, $this->doctrine->getRepository("TwakeCalendarBundle:EventNotification")->findBy(Array("event_id" => $id)));
         $entities = array_merge($entities, $this->doctrine->getRepository("TwakeCalendarBundle:EventUser")->findBy(Array("event_id" => $id)));
         foreach ($entities as $entity) {
-            $this->attachementManager->removeAttachementsFromEntity($entity);
             $this->doctrine->remove($entity);
 
         }
@@ -263,7 +267,7 @@ class CalendarEvent
         $this->doctrine->flush();
 
         if (isset($object["attachments"]) || $did_create) {
-            $this->attachementMananger->updateAttachements($event, $object["attachments"] ? $object["attachments"] : Array());
+            $this->attachementManager->updateAttachements($event, $object["attachments"] ? $object["attachments"] : Array());
         }
 
         $old_participants = $event->getParticipants();

@@ -17,7 +17,7 @@ class DriveFileRefacto
         $this->applications_api = $application_api;
         $this->drive_resumable = false;
         $this->ws = $ws;
-        $this->attachementMananger = new AttachementManager($this->em, $this->ws);
+        $this->attachementManager = new AttachementManager($this->em, $this->ws);
     }
 
     function setDriveResumable($drive_resumable)
@@ -377,7 +377,7 @@ class DriveFileRefacto
             $fileordirectory->setTags($object["tags"]);
         }
         if (isset($object["attachments"]) || $did_create) {
-            $this->attachementMananger->updateAttachements($fileordirectory, $object["attachments"] ? $object["attachments"] : Array());
+            $this->attachementManager->updateAttachements($fileordirectory, $object["attachments"] ? $object["attachments"] : Array());
         }
 
 

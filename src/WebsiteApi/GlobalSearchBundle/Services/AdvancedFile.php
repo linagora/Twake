@@ -3,6 +3,8 @@
 
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
+use WebsiteApi\CoreBundle\Services\StringCleaner;
+
 
 class AdvancedFile
 {

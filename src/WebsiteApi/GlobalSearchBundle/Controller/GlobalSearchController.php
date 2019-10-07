@@ -58,6 +58,8 @@ class GlobalSearchController extends Controller
         $current_user = $this->getUser();
         $current_user_id = $current_user->getId();
 
+        $options["words"] = $options["words"] ? $options["words"] : $request->request->get("words");
+
         $globalresult = $this->get('globalsearch.advancedbloc')->AdvancedBloc($current_user_id, $options, $channels);
 
         $this->get("administration.counter")->incrementCounter("total_search", 1);
@@ -104,6 +106,9 @@ class GlobalSearchController extends Controller
 //                $current_user_id = $current_user->getId();
 //            }
 //            $workspaces = Array("52a05d64-c356-11e9-8117-0242ac1d0005");
+
+        $options["name"] = $options["name"] ? $options["name"] : join(" ", $request->request->get("words"));
+
         $globalresult = $this->get('globalsearch.advancedfile')->AdvancedFile($current_user_id, $options, $workspaces);
 
         $data = Array("data" => $globalresult);
@@ -147,6 +152,9 @@ class GlobalSearchController extends Controller
 //            $current_user_id = $current_user->getId();
 //        }
 //        $workspaces = Array("52a05d64-c356-11e9-8117-0242ac1d0005");
+
+        $options["name"] = $options["name"] ? $options["name"] : join(" ", $request->request->get("words"));
+
         $globalresult = $this->get('globalsearch.advancedtask')->AdvancedTask($current_user_id, $options, $workspaces);
 
         $data = Array("data" => $globalresult);
@@ -189,6 +197,9 @@ class GlobalSearchController extends Controller
 //                $current_user_id = $current_user->getId();
 //            }
 //            $workspaces = Array("52a05d64-c356-11e9-8117-0242ac1d0005");
+
+        $options["name"] = $options["name"] ? $options["name"] : join(" ", $request->request->get("words"));
+
         $globalresult = $this->get('globalsearch.advancedevent')->AdvancedEvent($current_user_id, $options, $workspaces);
 
         $data = Array("data" => $globalresult);
