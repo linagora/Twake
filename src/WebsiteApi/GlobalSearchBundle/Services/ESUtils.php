@@ -201,6 +201,64 @@ class ESUtils
         return $tmp;
     }
 
+    static function createNestedRegexShouldMatch($terms, $parameter_name, $minimum_should_match = "all", &$must_list = NULL)
+    {
+
+        if ($terms && !is_array($terms)) {
+            $terms = [$terms];
+        }
+
+        if ($minimum_should_match == "all") {
+            $minimum_should_match = count($terms);
+        }
+
+        if (!$terms || count($terms) == 0) {
+            return;
+        }
+
+        $parameter_name_root = explode(".", $parameter_name)[0];
+
+        $array = Array();
+        foreach ($terms as $term) {
+
+            $array[] = Array(
+                "nested" => Array(
+                    "path" => $parameter_name_root,
+                    "score_mode" => "avg",
+                    "query" => Array(
+                        "bool" => Array(
+                            "should" => Array(
+                                Array(
+                                    "bool" => Array(
+                                        "filter" => Array(
+                                            "regexp" => Array(
+                                                "$parameter_name" => ESUtils::simplifyInArray($term)
+                                            )
+                                        )
+                                    )
+                                )
+                            ),
+                            "minimum_should_match" => 1
+                        )
+                    )
+                )
+            );
+        }
+
+        $tmp = Array(
+            "bool" => Array(
+                "should" => $array,
+                "minimum_should_match" => $minimum_should_match
+            )
+        );
+
+        if ($must_list !== NULL) {
+            $must_list[] = $tmp;
+        }
+
+        return $tmp;
+    }
+
     static function simplifyInArray($data)
     {
 
