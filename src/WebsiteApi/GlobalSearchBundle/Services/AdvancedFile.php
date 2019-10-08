@@ -24,6 +24,8 @@ class AdvancedFile
 
     public function AdvancedFile($current_user_id, $options, $workspaces)
     {
+        $known_workspaces_by_id = Array();
+
         //Prepare parameters
         if (!$options["title"]) {
             $options["title"] = $options["name"];
@@ -49,8 +51,10 @@ class AdvancedFile
         foreach ($workspaces as $wp) {
             if (!is_string($wp)) {
                 if (is_array($wp)) {
+                    $known_workspaces_by_id[$wp["id"]] = $wp;
                     $wp = $wp["id"];
                 } else {
+                    $known_workspaces_by_id[$wp->getId()] = $wp->getAsArray();
                     $wp = $wp->getId();
                 }
             }
@@ -106,11 +110,18 @@ class AdvancedFile
 
             //On traite les données recu d'Elasticsearch
             foreach ($result["result"] as $file) {
+
+                if (!isset($known_workspaces_by_id[$file[0]->getAsArray()["workspace_id"]])) {
+                    $workspace_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $file[0]->getAsArray()["workspace_id"]));
+                    $known_workspaces_by_id[$file[0]->getAsArray()["workspace_id"]] = $workspace_entity->getAsArray();
+                }
+                $workspace_array = $known_workspaces_by_id[$file[0]->getAsArray()["workspace_id"]];
+
                 $this->list_files["results"][] = Array(
                     "file" => $file[0]->getAsArray(),
                     "type" => "file",
                     "score" => $file[1][0],
-                    "workspace" => false, //TODO
+                    "workspace" => $workspace_array
                 );
             }
 

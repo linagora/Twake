@@ -134,8 +134,12 @@ class Blocmessage
     public function search($options, $channels)
     {
 
+        $known_channels_by_id = Array();
+        $known_workspaces_by_id = Array();
+
         $doublon_id = Array();
         $list_messages = Array("results" => Array(), "scroll_id" => "");
+
         $final_words = Array();
         if (isset($options["words"])) {
             foreach ($options["words"] as $word) {
@@ -148,9 +152,11 @@ class Blocmessage
         $channels_ids = [];
         foreach ($channels as $channel) {
             if (is_object($channel)) {
+                $known_channels_by_id[$channel->getId()] = $channel->getAsArray();
                 $channel = $channel->getId();
             }
             if (is_array($channel)) {
+                $known_channels_by_id[$channel["id"]] = $channel;
                 $channel = $channel["id"];
             }
             $channels_ids[] = $channel;
@@ -293,13 +299,29 @@ class Blocmessage
                     if ($valid && !in_array($message_id_in_bloc, $doublon_id)) {
 
                         $doublon_id[] = $message_id_in_bloc;
-                        $channel_entity = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $message_bdd->getChannelId()));
+
+                        if (!isset($known_channels_by_id[$message_bdd->getChannelId()])) {
+                            $channel_entity = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $message_bdd->getChannelId()));
+                            $known_channels_by_id[$message_bdd->getChannelId()] = $channel_entity->getAsArray();
+                        }
+
+                        $workspace_array = null;
+                        if ($channel_array["original_workspace"]) {
+                            if (!isset($known_workspaces_by_id[$channel_array["original_workspace"]])) {
+                                $workspace_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $channel_array["original_workspace"]));
+                                $known_workspaces_by_id[$channel_array["original_workspace"]] = $workspace_entity->getAsArray();
+                            }
+                            $workspace_array = $known_workspaces_by_id[$channel_array["original_workspace"]];
+                        }
+
+                        $channel_array = $known_channels_by_id[$message_bdd->getChannelId()];
+
                         $list_messages["results"][] = Array(
                             "score" => 1,
                             "type" => "message",
                             "message" => $message_bdd->getAsArray(),
-                            "channel" => $channel_entity->getAsArray(),
-                            "workspace" => false //TODO
+                            "channel" => $channel_array,
+                            "workspace" => $workspace_array
                         );
                     }
 

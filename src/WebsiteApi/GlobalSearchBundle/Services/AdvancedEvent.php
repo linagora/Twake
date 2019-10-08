@@ -22,6 +22,7 @@ class AdvancedEvent
 
     public function AdvancedEvent($current_user_id, $options, $workspaces)
     {
+        $known_workspaces_by_id = Array();
 
         //Prepare parameters
         if (!$options["title"]) {
@@ -48,8 +49,10 @@ class AdvancedEvent
         foreach ($workspaces as $wp) {
             if (!is_string($wp)) {
                 if (is_array($wp)) {
+                    $known_workspaces_by_id[$wp["id"]] = $wp;
                     $wp = $wp["id"];
                 } else {
+                    $known_workspaces_by_id[$wp->getId()] = $wp->getAsArray();
                     $wp = $wp->getId();
                 }
             }
@@ -108,11 +111,29 @@ class AdvancedEvent
 
             //On traite les données recu d'Elasticsearch
             foreach ($result["result"] as $event) {
+
+                $workspaces_calendars = $event->getWorkspacesCalendars();
+                $workspace_id = null;
+                if ($workspaces_calendars) {
+                    foreach ($workspaces_calendars as $workspace_calendar) {
+                        $workspace_id = $workspace_calendar["workspace_id"];
+                        break;
+                    }
+                }
+
+                if ($workspace_id) {
+                    if (!isset($known_workspaces_by_id[$workspace_id])) {
+                        $workspace_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id));
+                        $known_workspaces_by_id[$workspace_id] = $workspace_entity->getAsArray();
+                    }
+                    $workspace_array = $known_workspaces_by_id[$workspace_id];
+                }
+
                 $this->list_events["results"][] = Array(
                     "event" => $event[0]->getAsArray(),
                     "type" => "event",
                     "score" => $event[1][0],
-                    "workspace" => false, //TODO
+                    "workspace" => $workspace_array
                 );
             }
 

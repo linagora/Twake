@@ -23,6 +23,9 @@ class AdvancedTask
 
     public function AdvancedTask($current_user_id, $options, $workspaces)
     {
+        $known_workspaces_by_id = Array();
+        $known_boards_by_id = Array();
+        $known_lists_by_id = Array();
 
         //Prepare parameters
         if (!$options["title"]) {
@@ -49,8 +52,10 @@ class AdvancedTask
         foreach ($workspaces as $wp) {
             if (!is_string($wp)) {
                 if (is_array($wp)) {
+                    $known_workspaces_by_id[$wp["id"]] = $wp;
                     $wp = $wp["id"];
                 } else {
+                    $known_workspaces_by_id[$wp->getId()] = $wp->getAsArray();
                     $wp = $wp->getId();
                 }
             }
@@ -117,13 +122,36 @@ class AdvancedTask
 
             //On traite les données recu d'Elasticsearch
             foreach ($result["result"] as $task) {
+
+                $list_id = $task[0]->getAsArray()["list_id"];
+                $board_id = $task[0]->getAsArray()["board_id"];
+                $workspace_id = $task[0]->getAsArray()["workspace_id"];
+
+                if (!isset($known_workspaces_by_id[$workspace_id])) {
+                    $workspace_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id));
+                    $known_workspaces_by_id[$workspace_id] = $workspace_entity->getAsArray();
+                }
+                $workspace_array = $known_workspaces_by_id[$workspace_id];
+
+                if (!isset($known_lists_by_id[$list_id])) {
+                    $list_entity = $this->doctrine->getRepository("TwakeTasksBundle:BoardList")->findOneBy(Array("id" => $list_id));
+                    $known_lists_by_id[$list_id] = $list_entity->getAsArray();
+                }
+                $list_array = $known_lists_by_id[$list_id];
+
+                if (!isset($known_boards_by_id[$board_id])) {
+                    $board_entity = $this->doctrine->getRepository("TwakeTasksBundle:Board")->findOneBy(Array("id" => $board_id));
+                    $known_boards_by_id[$board_id] = $board_entity->getAsArray();
+                }
+                $board_array = $known_boards_by_id[$board_id];
+
                 $this->list_tasks["results"][] = Array(
                     "task" => $task[0]->getAsArray(),
                     "type" => "task",
                     "score" => $task[1][0],
-                    "workspace" => false, //TODO
-                    "board" => false, //TODO
-                    "list" => false //TODO
+                    "workspace" => $workspace_array,
+                    "board" => $board_array,
+                    "list" => $list_array
                 );
             }
 
