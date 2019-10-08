@@ -23,6 +23,7 @@ class AdvancedEvent
     public function AdvancedEvent($current_user_id, $options, $workspaces)
     {
 
+        //Prepare parameters
         if (!$options["title"]) {
             $options["title"] = $options["name"];
         }
@@ -43,219 +44,49 @@ class AdvancedEvent
         }
         $workspaces = $workspace_access;
 
+        $workspaces_ids = [];
+        foreach ($workspaces as $wp) {
+            if (!is_string($wp)) {
+                if (is_array($wp)) {
+                    $wp = $wp["id"];
+                } else {
+                    $wp = $wp->getId();
+                }
+            }
+            $workspaces_ids[] = $wp;
+        }
+        $workspaces = $workspaces_ids;
+
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
         if (isset($workspace_access) && $workspace_access != Array()) {
 
-            $options_save = $options;
             $must = Array();
 
-            //PARTIE SUR LE NAME
+            ESUtils::createShouldMatch($workspaces, "workspace_id", 1, $must);
 
-            if (isset($options["title"])) {
-                $terms = [];
-                $st = new StringCleaner();
-                foreach (explode(" ", $options["name"]) as $term) {
-                    $term = $st->simplifyInArray($term);
-                    $terms[] = Array(
-                        "bool" => Array(
-                            "filter" => Array(
-                                "regexp" => Array(
-                                    "title" => ".*" . $term . ".*"
-                                )
-                            )
-                        )
-                    );
-                }
+            $title = isset($options["title"]) ? preg_filter('/($|^)/', '.*', explode(" ", $options["title"])) : false;
+            ESUtils::createRegexShouldMatch($title, "title", "all", $must);
 
-                $title = Array(
-                    "bool" => Array(
-                        "should" => Array(
-                            $terms
-                        ),
-                        "minimum_should_match" => 1
-                    )
-                );
-                $must[] = $title;
+            $description = isset($options["description"]) ? preg_filter('/($|^)/', '.*', explode(" ", $options["description"])) : false;
+            ESUtils::createRegexShouldMatch($description, "description", "all", $must);
 
-            }
+            $participants = isset($options["participants"]) ? $options["participants"] : false;
+            ESUtils::createNestedShouldMatch($participants, "participants.user_id_or_mail", "all", $must);
 
-            if (isset($options["description"])) {
-                $terms = [];
-                $st = new StringCleaner();
-                foreach (explode(" ", $options["name"]) as $term) {
-                    $term = $st->simplifyInArray($term);
-                    $terms[] = Array(
-                        "bool" => Array(
-                            "filter" => Array(
-                                "regexp" => Array(
-                                    "description" => ".*" . $term . ".*"
-                                )
-                            )
-                        )
-                    );
-                }
+            $tags = isset($options["tags"]) ? $options["tags"] : false;
+            ESUtils::createShouldMatch($tags, "tags", "all", $must);
 
-                $description = Array(
-                    "bool" => Array(
-                        "should" => Array(
-                            $terms
-                        ),
-                        "minimum_should_match" => 1
-                    )
-                );
-                $must[] = $description;
-            }
-
-            $now = new \DateTime();
-            $date_from = $now->format('Y-m-d');
-            $date_to = "2000-01-01";
-            $modified_before = $now->format('Y-m-d');
-            $modified_after = "2000-01-01";
-
-            if (isset($options["date_from"])) {
-                $date_from = $options["date_from"];
-            }
-
-            if (isset($options["date_to"])) {
-                $date_to = $options["date_to"];
-            }
-
-            if (isset($options["date_modified_before"])) {
-                $modified_before = $options["date_modified_before"];
-            }
-
-            if (isset($options["date_modified_after"])) {
-                $modified_after = $options["date_modified_after"];
-            }
-
-            //PARTIES SUR LES WORKSPACES
-            $should_workspaces = Array();
-            foreach ($workspaces as $wp) {
-                if (!is_string($wp)) {
-                    if (is_array($wp)) {
-                        $wp = $wp["id"];
-                    } else {
-                        $wp = $wp->getId();
-                    }
-                }
-                $should_workspaces[] = Array(
-                    "match_phrase" => Array(
-                        "workspace_id" => $wp
-                    )
-                );
-            }
-
-            //PARTIES SUR LES TAGS
-            if (isset($options["tags"])) {
-                $should_tags = Array();
-                foreach ($options["tags"] as $tag) {
-                    $should_tags[] = Array(
-                        "match_phrase" => Array(
-                            "tags" => $tag
-                        )
-                    );
-                }
-
-                $must[] = Array(
-                    "bool" => Array(
-                        "should" => $should_tags,
-                        "minimum_should_match" => count($should_tags)
-                    )
-                );
-            }
-
-            //PARTIES SUR LES PARTICIPANTS
-            if (isset($options["participants"])) {
-
-                $should_participants = Array();
-                foreach ($options["participants"] as $participant) {
-
-                    $should_participants[] = Array(
-                        "nested" => Array(
-                            "path" => "participants",
-                            "score_mode" => "avg",
-                            "query" => Array(
-                                "bool" => Array(
-                                    "should" => Array(
-                                        Array(
-                                            "bool" => Array(
-                                                "must" => Array(
-                                                    "match_phrase" => Array(
-                                                        "participants.user_id_or_mail" => $participant
-                                                    )
-                                                )
-                                            )
-                                        ),
-                                        Array(
-                                            "bool" => Array(
-                                                "filter" => Array(
-                                                    "regexp" => Array(
-                                                        "participants.email" => ".*" . $participant . ".*"
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    ),
-                                    "minimum_should_match" => 1
-                                )
-                            )
-                        )
-                    );
-                }
+            $owner = isset($options["owner"]) ? $options["owner"] : false;
+            ESUtils::createMatchPhrase($owner, "owner", $must);
 
 
-                $must[] = Array(
-                    "bool" => Array(
-                        "should" => $should_participants,
-                        "minimum_should_match" => count($options["participants"])
-                    )
-                );
-            }
+            $date_from = isset($options["date_from"]) ? $options["date_from"] : false;
+            $date_to = isset($options["date_to"]) ? $options["date_to"] : false;
+            ESUtils::createRange($date_from, $date_to, "date_from", $must);
 
-
-            $must[] = Array(
-                "bool" => Array(
-                    "should" => $should_workspaces,
-                    "minimum_should_match" => 1
-                )
-            );
-
-
-            if (isset($options["owner"])) {
-                $must[] = Array(
-                    "match_phrase" => Array(
-                        "owner" => $options["owner"]
-                    )
-                );
-            }
-
-
-            $must[] = Array(
-                "range" => Array(
-                    "date_from" => Array(
-                        "lte" => $date_to,
-                        "gte" => $date_from
-                    )
-                )
-            );
-
-            $must[] = Array(
-                "range" => Array(
-                    "date_to" => Array(
-                        "lte" => $date_to,
-                        "gte" => $date_from
-                    )
-                )
-            );
-
-            $must[] = Array(
-                "range" => Array(
-                    "date_last_modified" => Array(
-                        "lte" => $modified_before,
-                        "gte" => $modified_after
-                    )
-                )
-            );
+            $modified_before = isset($options["date_modified_before"]) ? $options["date_modified_before"] : false;
+            $modified_after = isset($options["date_modified_after"]) ? $options["date_modified_after"] : false;
+            ESUtils::createRange($modified_after, $modified_before, "date_last_modified", $must);
 
             $options = Array(
                 "repository" => "TwakeCalendarBundle:Event",
@@ -273,23 +104,24 @@ class AdvancedEvent
                 )
             );
 
-
-            // search in ES
             $result = $this->doctrine->es_search($options);
-            $this->list_events["es"] = $options;
 
-            array_slice($result["result"], 0, 5);
+            //On traite les données recu d'Elasticsearch
+            foreach ($result["result"] as $event) {
+                $this->list_events["results"][] = Array(
+                    "event" => $event[0]->getAsArray(),
+                    "type" => "event",
+                    "score" => $event[1][0],
+                    "workspace" => false, //TODO
+                );
+            }
 
             $scroll_id = $result["scroll_id"];
-
-            //on traite les données recu d'Elasticsearch
-            foreach ($result["result"] as $event) {
-                $this->list_events["results"][] = $event[0]->getAsArray();
-            }
             $this->list_events["scroll_id"] = $scroll_id;
 
-            return $this->list_events ?: null;
-////
+            $this->list_events["es"] = $options;
+
+            return $this->list_events;
         }
 
     }

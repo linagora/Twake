@@ -130,8 +130,9 @@ class Task extends SearchableObject
             "description" => $this->getDescription(),
             "owner" => $this->getOwner(),
             "tags" => $this->getTags(),
-            'date_from' => ($this->getTaskCreatedAt() ? date('Y-m-d', $this->getTaskCreatedAt()) : null),
-            'date_to' => ($this->getTaskCreatedAt() ? date('Y-m-d', $this->getTaskCreatedAt()) : null),
+            'before' => ($this->getBefore() ? date('Y-m-d', $this->getBefore()) : null),
+            'start' => ($this->getStartTime() ? date('Y-m-d', $this->getStartTime()) : null),
+            'date_created' => ($this->getTaskCreatedAt() ? date('Y-m-d', $this->getTaskCreatedAt()) : null),
             "date_last_modified" => ($this->getTaskLastModified() ? date('Y-m-d', $this->getTaskLastModified()) : null),
             "workspace_id" => $this->getWorkspaceId(),
             "participants" => $this->getParticipants()

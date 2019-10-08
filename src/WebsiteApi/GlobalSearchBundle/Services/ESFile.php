@@ -36,15 +36,6 @@ class ESFile
             );
         }
 
-        foreach ($workspaces as $workspace) {
-            $should_workspaces[] = Array(
-                "match_phrase" => Array(
-                    "workspace_id" => $workspace["id"]
-                )
-            );
-        }
-
-
         $nested = Array(
             "nested" => Array(
                 "path" => "keywords",
@@ -56,6 +47,14 @@ class ESFile
                 )
             )
         );
+
+        foreach ($workspaces as $workspace) {
+            $should_workspaces[] = Array(
+                "match_phrase" => Array(
+                    "workspace_id" => $workspace["id"]
+                )
+            );
+        }
 
         $options = Array(
             "repository" => "TwakeDriveBundle:DriveFile",

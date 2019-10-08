@@ -68,7 +68,7 @@ class AccessManager
             }
         } else if ($type == "DriveFile") { //pensez au parent id tous ca tous ca et a detached
 
-            if ($id == "root" || $id == "trash") {
+            if ($id == "root" || $id == "trash" || $id == "") {
                 if (!$data["workspace_id"]) {
                     return false;
                 }
