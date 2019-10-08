@@ -61,7 +61,7 @@ class CalendarExport
 
             $events = $calendarEventService->get($options, $user_entity);
 
-            if ($events) {
+            if (is_array($events)) {
                 $vCalendar = $this->generateIcs($events);
 
                 return new Response(
