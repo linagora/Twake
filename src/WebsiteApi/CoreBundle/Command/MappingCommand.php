@@ -102,7 +102,7 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "title", "description", "owner", "date_from", "date_to", "tags", "participants", "workspace_id", "date_last_modified"
+                    "title", "description", "owner", "before", "start", "date_created", "tags", "participants", "workspace_id", "date_last_modified"
                 )
             ),
             "properties" => Array(
@@ -110,12 +110,13 @@ class MappingCommand extends ContainerAwareCommand
                 "title" => Array("type" => "keyword"),
                 "description" => Array("type" => "text"),
                 "owner" => Array("type" => "keyword"),
-                "date_from" => Array("type" => "date"),
-                "date_to" => Array("type" => "date"),
+                "before" => Array("type" => "date"),
+                "start" => Array("type" => "date"),
                 "tags" => Array("type" => "text"),
                 "participants" => Array("type" => "text"),
-                "workspace_id" => Array("type" => "keyword"),
-                "date_last_modified" => Array("type" => "date")
+                "workspace_id" => Array("type" => "text"),
+                "date_last_modified" => Array("type" => "date"),
+                "date_created" => Array("type" => "date")
             )
         );
 

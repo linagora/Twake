@@ -112,7 +112,7 @@ class AdvancedTask
                     )
                 ),
                 "sort" => Array(
-                    "before" => Array(
+                    "date_last_modified" => Array(
                         "order" => "desc",
                     )
                 )

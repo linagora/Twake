@@ -112,7 +112,7 @@ class AdvancedEvent
             //On traite les données recu d'Elasticsearch
             foreach ($result["result"] as $event) {
 
-                $workspaces_calendars = $event->getWorkspacesCalendars();
+                $workspaces_calendars = $event[0]->getWorkspacesCalendars();
                 $workspace_id = null;
                 if ($workspaces_calendars) {
                     foreach ($workspaces_calendars as $workspace_calendar) {
