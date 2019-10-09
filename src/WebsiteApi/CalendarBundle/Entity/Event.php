@@ -127,6 +127,11 @@ class Event extends SearchableObject
 
     public function getIndexationArray()
     {
+        $participants = [];
+        foreach ($this->getParticipants() as $p) {
+            $participants[] = $p["user_id_or_mail"];
+        }
+
         return Array(
             "id" => $this->getId() . "",
             "title" => $this->getTitle(),
@@ -137,7 +142,7 @@ class Event extends SearchableObject
             'date_to' => ($this->getTo() ? date('Y-m-d', $this->getTo()) : null),
             "date_last_modified" => ($this->getEventLastModified() ? date('Y-m-d', $this->getEventLastModified()) : null),
             "workspace_id" => $this->getWorkspaceId(),
-            "participants" => $this->getParticipants(),
+            "participants" => $participants,
             "attachments" => $this->getAttachements()
         );
 

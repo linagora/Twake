@@ -124,6 +124,11 @@ class Task extends SearchableObject
 
     public function getIndexationArray()
     {
+        $participants = [];
+        foreach ($this->getParticipants() as $p) {
+            $participants[] = $p["user_id_or_mail"];
+        }
+
         return Array(
             "id" => $this->getId() . "",
             "title" => $this->getTitle(),
@@ -135,7 +140,7 @@ class Task extends SearchableObject
             'date_created' => ($this->getTaskCreatedAt() ? date('Y-m-d', $this->getTaskCreatedAt()) : null),
             "date_last_modified" => ($this->getTaskLastModified() ? date('Y-m-d', $this->getTaskLastModified()) : null),
             "workspace_id" => $this->getWorkspaceId(),
-            "participants" => $this->getParticipants()
+            "participants" => $participants
         );
 
     }

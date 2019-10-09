@@ -24,7 +24,7 @@ class FakeCassandraRows extends PDOStatementAdapter
 
     public function current()
     {
-        if (!$this->list) {
+        if (!$this->list || !isset($this->list[$this->pointer])) {
             return null;
         }
         return $this->list[$this->pointer];
@@ -33,6 +33,11 @@ class FakeCassandraRows extends PDOStatementAdapter
     public function count()
     {
         return count($this->list);
+    }
+
+    public function isLastPage()
+    {
+        return true;
     }
 
 }
@@ -95,6 +100,11 @@ class PDOStatementAdapter
         }
         $res = $this->data->current();
         $this->data->next();
+
+        if (!$this->data->current() && !$this->data->isLastPage()) {
+            $this->data = $this->data->nextPage();
+        }
+
         return $this->stripslashesRow($res);
     }
 
@@ -381,8 +391,10 @@ class CassandraConnection
             } else {
                 $pdo = $pdoStatement;
             }
-            $tmp = $future->get();
-            $pdo->setData($tmp);
+
+
+            $rows = $future->get();
+            $pdo->setData($rows);
 
             return $pdo;
 

@@ -65,7 +65,12 @@ class AdvancedEvent
 
             $must = Array();
 
-            ESUtils::createShouldMatch($workspaces, "workspace_id", 1, $must);
+            $visible_match = ESUtils::createShouldMatch($workspaces, "workspace_id", 1);
+            $visible_match["bool"]["should"][] = Array(
+                "match_phrase" => Array(
+                    "participants" => $current_user_id
+                )
+            );
 
             $title = isset($options["title"]) ? preg_filter('/($|^)/', '.*', explode(" ", $options["title"])) : false;
             ESUtils::createRegexShouldMatch($title, "title", "all", $must);
@@ -74,7 +79,7 @@ class AdvancedEvent
             ESUtils::createRegexShouldMatch($description, "description", "all", $must);
 
             $participants = isset($options["participants"]) ? $options["participants"] : false;
-            ESUtils::createNestedShouldMatch($participants, "participants.user_id_or_mail", "all", $must);
+            ESUtils::createShouldMatch($participants, "participants", "all", $must);
 
             $tags = isset($options["tags"]) ? $options["tags"] : false;
             ESUtils::createShouldMatch($tags, "tags", "all", $must);
