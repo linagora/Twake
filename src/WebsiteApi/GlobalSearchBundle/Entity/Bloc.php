@@ -230,6 +230,12 @@ class Bloc extends SearchableObject
         $tags = $message_entity->getTags();
         $pinned = $message_entity->getPinned();
 
+        $reactions_tmp = $message_entity->getReactions();
+        $reactions = Array();
+        foreach ($reactions_tmp as $reaction => $count) {
+            $reactions[] = $reaction;
+        }
+
         preg_match_all("/\w*-\w*-\w*-\w*-\w*/i", $content_id, $matches);
         $matches = $matches[0];
         $matches = array_unique($matches);
@@ -242,29 +248,15 @@ class Bloc extends SearchableObject
 
         $application_id = $message_entity->getApplicationId();
 
-//        $mentions = Array();
-
-//        if (!is_string($message_entity->getContent()) && isset($message_entity->getContent()["prepared"]) && is_array($message_entity->getContent()["prepared"][0])) {
-//            foreach ($message_entity->getContent()["prepared"][0] as $elem) {
-//                if (is_array($elem)) {
-//                    $id = explode(":", $elem["content"])[1];
-//                    $mentions[] = $id;
-//                }
-//            }
-//            $mentions = array_unique($mentions);
-//        }
-
-
         $add = Array(
             "content" => $content,
             "sender" => $sender,
             "application_id" => $application_id,
             "mentions" => $matches,
             "date" => $date->format('Y-m-d'),
-            "reactions" => Array(),
+            "reactions" => $reactions,
             "tags" => $tags,
             "pinned" => $pinned
-
         );
 
         if (!$messages) $messages = Array();

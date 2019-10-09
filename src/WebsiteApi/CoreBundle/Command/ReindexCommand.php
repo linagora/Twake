@@ -22,14 +22,11 @@ class ReindexCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $doctrine = $this->getContainer()->get('doctrine');
-        $manager = $doctrine->getManager();
+        $manager = $this->getContainer()->get('app.twake_doctrine');
 
-//        $workspaces = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array());
-//        foreach ($workspaces as $workspace) {
-//            $manager->es_put($workspace, $workspace->getEsType());
-//        }
-//
+        $this->indexRepository("TwakeWorkspacesBundle:Workspace");
+
+        //
 //        $apps = $manager->getRepository("TwakeMarketBundle:Application")->findBy(Array());
 //        foreach ($apps as $app) {
 //            $manager->es_put($app, $app->getEsType());
@@ -63,25 +60,26 @@ class ReindexCommand extends ContainerAwareCommand
 //        foreach ($mails as $mail){
 //            $manager->es_put($mail, $mail->getEsType());
 //        }
-        $users = $manager->getRepository("TwakeUsersBundle:User")->findBy(Array());
-        foreach ($users as $user) {
-//            error_log("passage");
-//            error_log(print_r($user->getEsType(),true));
-            $manager->es_put($user, $user->getEsType());
+
+        $this->indexRepository("TwakeUsersBundle:User");
+
+        $this->indexRepository("TwakeTasksBundle:Task");
+
+        $this->indexRepository("TwakeCalendarBundle:Event");
+
+    }
+
+    private function indexRepository($repository)
+    {
+        $manager = $this->getContainer()->get('app.twake_doctrine');
+
+        error_log("index " . $repository);
+
+        $items = $manager->getRepository($repository)->findBy(Array());
+        error_log("   -> " . count($items));
+        foreach ($items as $item) {
+            $manager->es_put($item, $item->getEsType());
         }
 
-        $tasks = $manager->getRepository("TwakeTasksBundle:Task")->findBy(Array());
-        foreach ($tasks as $task) {
-//            error_log("passage");
-//            error_log(print_r($user->getEsType(),true));
-            $manager->es_put($task, $task->getEsType());
-        }
-
-        $events = $manager->getRepository("TwakeCalendarBundle:Event")->findBy(Array());
-        foreach ($events as $event) {
-//            error_log("passage");
-//            error_log(print_r($user->getEsType(),true));
-            $manager->es_put($event, $event->getEsType());
-        }
     }
 }

@@ -148,7 +148,14 @@ class Event extends SearchableObject
      */
     public function getWorkspaceId()
     {
-        return $this->workspace_id;
+        $workspace_id = $this->workspace_id;
+        if (!$workspace_id) {
+            $list = $this->getWorkspacesCalendars();
+            if (count($list) > 0) {
+                $workspace_id = $list[0]["workspace_id"];
+            }
+        }
+        return $workspace_id;
     }
 
     /**
