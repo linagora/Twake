@@ -397,6 +397,65 @@ class User
         return $user;
     }
 
+    public function createCompanyUser($mail, $fullname, $password, $language, $workspace_id, $current_user_id)
+    {
+
+        $pseudo = explode("@", $mail)[0] . "_" . date("U");
+        $firstname = explode(" ", $fullname)[0];
+        $lastname = explode(" ", $fullname . " ")[1];
+        $override_key = $workspace_id . "_" . $current_user_id;
+
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
+        if ($user != null) {
+            if ($user->getMailVerified() || $user->getMailVerificationOverride() != $override_key) {
+                return ["error" => "mailalreadytaken"];
+            } else if (!$user->getMailVerified() && $user->getMailVerificationOverride() == $override_key) {
+
+                $user->setSalt(bin2hex(random_bytes(40)));
+                $factory = $this->encoder_factory;
+                $encoder = $factory->getEncoder($user);
+                $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
+                $user->setUsername($pseudo);
+
+                $this->em->persist($user);
+                $this->em->flush();
+
+                return true;
+
+            } else {
+                return ["error" => "mailalreadytaken"];
+            }
+        }
+        $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
+        $mailExists = $mailsRepository->findOneBy(Array("mail" => $mail));
+        if ($mailExists != null) {
+            return ["error" => "mailalreadytaken"];
+        }
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
+        if ($user != null && $user->getMailVerified()) {
+            return ["error" => "usernamealreadytaken"];
+        }
+
+        $user = new \WebsiteApi\UsersBundle\Entity\User();
+        $user->setSalt(bin2hex(random_bytes(40)));
+        $factory = $this->encoder_factory;
+        $encoder = $factory->getEncoder($user);
+        $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
+        $user->setUsername($pseudo);
+        $user->setEmail($mail);
+        $user->setFirstName($firstname);
+        $user->setLastName($lastname);
+        $user->setPhone("");
+        $user->setLanguage($language ? $language : "en");
+        $user->setMailVerificationOverride($override_key);
+        $this->em->persist($user);
+
+        return true;
+
+    }
+
     public function subscribeMail($mail, $pseudo, $password, $name, $firstname, $phone, $language, $newsletter = false, $sendEmail = true)
     {
 

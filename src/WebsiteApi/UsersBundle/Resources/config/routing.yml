@@ -201,6 +201,10 @@ twake_user_subscribe_mailavaible:
     methods: [POST]
     defaults: { _controller: TwakeUsersBundle:UsersSubscribe:getAvaible }
 
+twake_user_external_create_account_company:
+    path:     /subscribe/company_subscribe
+    methods: [POST]
+    defaults: { _controller: TwakeUsersBundle:UsersSubscribe:createCompanyUser }
 
 # Recover
 

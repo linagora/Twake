@@ -211,5 +211,34 @@ class UsersSubscribeController extends Controller
         return new JsonResponse($data);
     }
 
+    public function createCompanyUserAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $mail = $request->request->get("mail", "");
+        $fullname = $request->request->get("fullname", "");
+        $password = $request->request->get("password", "");
+        $language = $request->request->get("language", "");
+        $workspace_id = $request->request->get("workspace_id", "");
+        $current_user_id = $this->getUser()->getId();
+
+        $can = $this->get('app.workspace_levels')->can($workspace_id, $this->getUser(), "external_accounts:write");
+        $res = ["not_allowed"];
+        if ($can) {
+            $res = $this->get("app.user")->createCompanyUser($mail, $fullname, $password, $language, $workspace_id, $current_user_id);
+        }
+
+        if ($res === true) {
+            $data["data"] = "success";
+        } else {
+            $data["errors"] = $res;
+        }
+
+        return new JsonResponse($data);
+    }
+
 
 }
