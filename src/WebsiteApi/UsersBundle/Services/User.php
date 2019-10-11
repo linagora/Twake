@@ -421,6 +421,8 @@ class User
                 $this->em->persist($user);
                 $this->em->flush();
 
+                $this->verifyMail($mail, "", "", true);
+
                 return true;
 
             } else {
@@ -451,6 +453,9 @@ class User
         $user->setLanguage($language ? $language : "en");
         $user->setMailVerificationOverride($override_key);
         $this->em->persist($user);
+        $this->em->flush();
+
+        $this->verifyMail($mail, "", "", true);
 
         return true;
 
