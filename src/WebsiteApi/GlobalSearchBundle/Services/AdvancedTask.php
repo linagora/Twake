@@ -40,7 +40,16 @@ class AdvancedTask
             }
         } else {
             foreach ($workspaces as $wp) {
-                $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $wp->getId(), "user" => $current_user_id));
+                if (!is_string($wp)) {
+                    if (is_array($wp)) {
+                        $known_workspaces_by_id[$wp["id"]] = $wp;
+                        $wp = $wp["id"];
+                    } else {
+                        $known_workspaces_by_id[$wp->getId()] = $wp->getAsArray();
+                        $wp = $wp->getId();
+                    }
+                }
+                $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $wp, "user" => $current_user_id));
                 if ($wp_entity) {
                     $workspace_access[] = $wp;
                 }

@@ -30,10 +30,11 @@ class Blocmessage
         $valid = true;
 
         foreach ($final_words as $word) {
-
-            if ($valid && isset($message_array["content"]) && strpos(strtolower($message_array["content"]), strtolower($word)) !== false) {
-            } else {
-                $valid = false;
+            if ($word) {
+                if ($valid && isset($message_array["content"]) && strpos(strtolower($message_array["content"]), strtolower($word)) !== false) {
+                } else {
+                    $valid = false;
+                }
             }
         }
 

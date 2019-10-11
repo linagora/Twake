@@ -390,6 +390,10 @@ class ManagerAdapter
             $repository = $this->getRepository($options["repository"]);
         }
 
+        if (!$res) {
+            return false;
+        }
+
         $res = $res->getContent();
 
         $result = [];

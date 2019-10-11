@@ -78,11 +78,13 @@ class ESUtils
 
         $array = Array();
         foreach ($terms as $term) {
-            $array[] = Array(
-                "match_phrase" => Array(
-                    "$parameter_name" => ESUtils::simplifyInArray($term)
-                )
-            );
+            if ($term) {
+                $array[] = Array(
+                    "match_phrase" => Array(
+                        "$parameter_name" => ESUtils::simplifyInArray($term)
+                    )
+                );
+            }
         }
 
         $tmp = Array(
@@ -118,15 +120,17 @@ class ESUtils
 
         $array = Array();
         foreach ($terms as $term) {
-            $array[] = Array(
-                "bool" => Array(
-                    "filter" => Array(
-                        "regexp" => Array(
-                            "$parameter_name" => ESUtils::simplifyInArray($term)
+            if ($term) {
+                $array[] = Array(
+                    "bool" => Array(
+                        "filter" => Array(
+                            "regexp" => Array(
+                                "$parameter_name" => ESUtils::simplifyInArray($term)
+                            )
                         )
                     )
-                )
-            );
+                );
+            }
         }
 
         $tmp = Array(

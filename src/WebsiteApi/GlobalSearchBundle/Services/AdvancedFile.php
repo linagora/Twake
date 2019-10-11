@@ -39,7 +39,16 @@ class AdvancedFile
             }
         } else {
             foreach ($workspaces as $wp) {
-                $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $wp->getId(), "user" => $current_user_id));
+                if (!is_string($wp)) {
+                    if (is_array($wp)) {
+                        $known_workspaces_by_id[$wp["id"]] = $wp;
+                        $wp = $wp["id"];
+                    } else {
+                        $known_workspaces_by_id[$wp->getId()] = $wp->getAsArray();
+                        $wp = $wp->getId();
+                    }
+                }
+                $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $wp, "user" => $current_user_id));
                 if ($wp_entity) {
                     $workspace_access[] = $wp;
                 }
@@ -79,21 +88,20 @@ class AdvancedFile
             $size_gte = isset($options["size_gte"]) ? $options["size_gte"] : false;
             ESUtils::createRange($size_gte, $size_lte, "size", $must);
 
-            $create_before = isset($options["date_create_before"]) ? $options["date_create_before"] : false;
-            $create_after = isset($options["date_create_after"]) ? $options["date_create_after"] : false;
+            $create_before = (isset($options["date_create_before"]) && $options["date_create_before"]) ? date('Y-m-d', intval($options["date_create_before"])) : false;
+            $create_after = (isset($options["date_create_after"]) && $options["date_create_after"]) ? date('Y-m-d', intval($options["date_create_after"])) : false;
             ESUtils::createRange($create_after, $create_before, "creation_date", $must);
 
-            $modified_before = isset($options["date_modified_before"]) ? $options["date_modified_before"] : false;
-            $modified_after = isset($options["date_modified_after"]) ? $options["date_modified_after"] : false;
+            $modified_before = (isset($options["date_modified_before"]) && $options["date_modified_before"]) ? date('Y-m-d', intval($options["date_modified_before"])) : false;
+            $modified_after = (isset($options["date_modified_after"]) && $options["date_modified_before"]) ? date('Y-m-d', intval($options["date_modified_after"])) : false;
             ESUtils::createRange($modified_after, $modified_before, "date_last_modified", $must);
 
 
             $creator = isset($options["creator"]) ? $options["creator"] : false;
             ESUtils::createMatchPhrase($creator, "creator", $must);
 
-
-            $type = isset($options["type"]) ? $options["type"] : false;
-            ESUtils::createMatchPhrase($type, "type", $must);
+            $type = isset($options["type"]) ? (is_array($options["type"]) ? $options["type"] : [$type]) : false;
+            ESUtils::createShouldMatch($type, "type", 1, $must);
 
             $options = Array(
                 "repository" => "TwakeDriveBundle:DriveFile",

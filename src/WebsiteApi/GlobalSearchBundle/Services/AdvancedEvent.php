@@ -37,7 +37,16 @@ class AdvancedEvent
             }
         } else {
             foreach ($workspaces as $wp) {
-                $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $wp->getId(), "user" => $current_user_id));
+                if (!is_string($wp)) {
+                    if (is_array($wp)) {
+                        $known_workspaces_by_id[$wp["id"]] = $wp;
+                        $wp = $wp["id"];
+                    } else {
+                        $known_workspaces_by_id[$wp->getId()] = $wp->getAsArray();
+                        $wp = $wp->getId();
+                    }
+                }
+                $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $wp, "user" => $current_user_id));
                 if ($wp_entity) {
                     $workspace_access[] = $wp;
                 }
@@ -71,6 +80,7 @@ class AdvancedEvent
                     "participants" => $current_user_id
                 )
             );
+            $must[] = $visible_match;
 
             $title = isset($options["title"]) ? preg_filter('/($|^)/', '.*', explode(" ", $options["title"])) : false;
             ESUtils::createRegexShouldMatch($title, "title", "all", $must);
