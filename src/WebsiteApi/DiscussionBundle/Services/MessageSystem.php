@@ -485,8 +485,10 @@ class MessageSystem
 
     public function indexbloc($message, $workspace_id, $channel_id)
     {
-        $message_id = $message->getId() . "";
-
+        if (!$workspace_id) {
+            $workspace_id = "00000000-0000-1000-0000-000000000000";
+        }
+        
         $lastbloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("workspace_id" => $workspace_id, "channel_id" => $channel_id));
 
         if (isset($lastbloc) == false || $lastbloc->getLock() == true) {
@@ -619,7 +621,7 @@ class MessageSystem
 
         $bloc = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
 
-        if (!$bloc->getIdMessages()) {
+        if (!$bloc || !$bloc->getIdMessages()) {
             return;
         }
 

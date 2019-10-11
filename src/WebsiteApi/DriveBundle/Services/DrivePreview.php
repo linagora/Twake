@@ -9,6 +9,8 @@
 namespace WebsiteApi\DriveBundle\Services;
 
 
+use Dompdf\Exception;
+
 class DrivePreview
 {
     var $doctrine;
@@ -246,9 +248,11 @@ END;
             $im->readimage($file . "[0]");
             $this->set_keyword($file, $entity);
         } elseif ($isOffice) {
-            $file = $this->convertToPDF($file);
-            $im->readimage($file . "[0]");
-            $this->set_keyword($file, $entity);
+            $file = $this->convertToPDF($file, $entity);
+            if ($file) {
+                $im->readimage($file . "[0]");
+                $this->set_keyword($file, $entity);
+            }
         } else {
             $im->readimage($file);
         }
@@ -298,13 +302,25 @@ END;
 
     }
 
-    public function convertToPDF($filepath)
+    public function convertToPDF($filepath, $entity)
     {
         putenv("PATH=/sbin:/bin:/usr/sbin:/usr/bin");
-        shell_exec("unoconv -vvvv -f pdf -e PageRange=1-1 " . $filepath);
+        error_log($filepath);
+        shell_exec("timeout 5s unoconv -T 5 -vvvv -f pdf -e PageRange=1-1 " . $filepath);
         $a = explode(".", $filepath);
         array_pop($a);
         $filepath = join(".", $a) . ".pdf";
+        if (!file_exists($filepath)) {
+
+            $name = "Unknown name";
+            if ($entity) {
+                $name = $entity->getName();
+            }
+
+            \Sentry\captureException(new Exception("Error generating preview with unoconv (timeout) ", 0, new Exception($name)));
+
+            return false;
+        }
         return $filepath;
     }
 

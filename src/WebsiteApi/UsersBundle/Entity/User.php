@@ -146,6 +146,11 @@ class User extends SearchableObject implements UserInterface
      */
     protected $mail_verified = false;
 
+    /**
+     * @ORM\Column(name="mail_verification_override", type="string")
+     */
+    protected $mail_verification_override = "";
+
 
     protected $username;
 
@@ -910,6 +915,40 @@ class User extends SearchableObject implements UserInterface
     public function setMailVerified($mail_verified)
     {
         $this->mail_verified = $mail_verified;
+    }
+
+    public function getMailVerifiedExtended($mail = null, $pseudo = null)
+    {
+        //Dans tous les cas si le mail est vérifié cet utilisateur est bloqué
+        if ($this->getMailVerified()) {
+            return true;
+        }
+
+        $override = (strlen($this->getMailVerificationOverride()) > 2);
+
+        if ($override && $mail != null && $pseudo != null) {
+            if (trim(strtolower($mail)) == trim(strtolower($this->getemailCanonical()))) {
+                return false; //Cas spécial ou on authorise l'inscription et l'écrasement de l'utilisateur
+            }
+        }
+
+        return $this->getMailVerified() || $override;
+    }
+
+    /**
+     * @return mixed
+     */
+    public function getMailVerificationOverride()
+    {
+        return $this->mail_verification_override;
+    }
+
+    /**
+     * @param mixed $mail_verification_override
+     */
+    public function setMailVerificationOverride($mail_verification_override): void
+    {
+        $this->mail_verification_override = $mail_verification_override;
     }
 
     /**

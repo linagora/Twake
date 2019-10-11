@@ -3,6 +3,7 @@
 namespace WebsiteApi\CoreBundle\Services\DoctrineAdapter\DBAL\Driver\PDOCassandra;
 
 use Cassandra;
+use Dompdf\Exception;
 
 class FakeCassandraRows extends PDOStatementAdapter
 {
@@ -169,7 +170,13 @@ class PDOStatementAdapter
                 } else if ($value == NULL && !is_string($value)) {
                     $value = "NULL";
                 } else if ($this->types[$position + 1] == \PDO::PARAM_INT || $this->types[$position + 1] == "twake_timeuuid" || $this->types[$position + 1] == "twake_bigint") {
-                    $value = $value;
+                    if ($value . "" != "" && preg_replace("/[0-9]/", "", $value) == "") {
+                        $value = $value;
+                    } else if (preg_match('/^[0-9A-Fa-f]{8}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{4}-[0-9A-Fa-f]{12}$/', $value)) {
+                        $value = $value;
+                    } else {
+                        $value = "00000000-0000-1000-0000-000000000000";
+                    }
                 } else if ($this->types[$position + 1] == "twake_counter") {
                     $there_is_a_counter = $position;
                     preg_match("/([a-z_]+) *= *$/", $query_part, $matches);
@@ -227,8 +234,10 @@ class PDOStatementAdapter
         try {
             $this->executor->exec($query, $this);
         } catch (\Exception $e) {
-            error_log("SCYLLADB > AN ERROR OCCURED WITH THIS QUERY : " . preg_replace("/AS .* FROM/", "AS [...] FROM", $query));
+            $message = "SCYLLADB > AN ERROR OCCURED WITH THIS QUERY : " . preg_replace("/AS .* FROM/", "AS [...] FROM", $query);
+            error_log($message);
             error_log($e);
+            \Sentry\captureException(new Exception($message, 0, $e));
         }
 
     }

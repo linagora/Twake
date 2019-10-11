@@ -169,42 +169,9 @@ class Blocmessage
         $words = count($final_words) > 0 ? preg_filter('/($|^)/', '.*', $final_words) : false;
         ESUtils::createRegexShouldMatch($words, "messages.content", "all", $must);
 
+        $reactions = isset($options["reactions"]) ? $options["reactions"] : false;
+        ESUtils::createShouldMatch($reactions, "messages.reactions", "all", $must);
 
-        //PARTIE SUR LES REACTION
-        if (isset($options["reactions"])) {
-            $reactions = Array();
-            foreach ($options["reactions"] as $reaction) {
-                $reactions[] = Array(
-                    "bool" => Array(
-                        "filter" => Array(
-                            "regexp" => Array(
-                                "messages.reactions.reaction" => ".*" . $reaction . ".*"
-                            )
-                        )
-                    )
-                );
-            }
-
-            if (count($reactions) > 0) {
-                $must[] = Array(
-                    "bool" => Array(
-                        "must" => Array(
-                            "nested" => Array(
-                                "path" => "messages.reactions",
-                                "score_mode" => "avg",
-                                "query" => Array(
-                                    "bool" => Array(
-                                        "should" => $reactions,
-                                        "minimum_should_match" => count($options["reactions"])
-                                    )
-                                )
-                            )
-                        )
-                    )
-                );
-            }
-
-        }
 
         $mentions = isset($options["mentions"]) ? $options["mentions"] : false;
         ESUtils::createShouldMatch($mentions, "messages.mentions", "all", $must);

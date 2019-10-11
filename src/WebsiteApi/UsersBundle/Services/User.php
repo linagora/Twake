@@ -142,7 +142,7 @@ class User
             ->getEncoder($user)
             ->isPasswordValid($user->getPassword(), $password, $user->getSalt());
 
-        if ($passwordValid && !$user->getBanned() && $user->getMailVerified()) {
+        if ($passwordValid && !$user->getBanned() && $user->getMailVerifiedExtended()) {
 
             // User log in
             $token = new UsernamePasswordToken($user, null, "main", $user->getRoles());
@@ -292,14 +292,14 @@ class User
             $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
             $mailExists = $mailsRepository->findOneBy(Array("mail" => $mail));
 
-            if (($user != null && $user->getMailVerified()) || $mailExists != null) {
+            if (($user != null && $user->getMailVerifiedExtended($mail, $pseudo)) || $mailExists != null) {
                 $retour[] = -1;
             }
 
             //Check pseudo doesn't exists
             $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
             $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
-            if ($user != null && $user->getMailVerified()) {
+            if ($user != null && $user->getMailVerifiedExtended($mail, $pseudo)) {
                 $retour[] = -2;
             }
         }
@@ -405,7 +405,7 @@ class User
         //Check pseudo doesn't exists
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("usernamecanonical" => $pseudo));
-        if ($user != null && $user->getMailVerified()) {
+        if ($user != null && $user->getMailVerifiedExtended($mail, $pseudo)) {
             return ["error" => "usernamealreadytaken"];
         }
 
@@ -418,7 +418,7 @@ class User
         //Check mail doesn't exists
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
-        if ($user != null && $user->getMailVerified()) {
+        if ($user != null && $user->getMailVerifiedExtended($mail, $pseudo)) {
             return ["error" => "mailalreadytaken"];
         }
         $mailsRepository = $this->em->getRepository("TwakeUsersBundle:Mail");
@@ -427,9 +427,14 @@ class User
             return ["error" => "mailalreadytaken"];
         }
 
-        if ($user && !$user->getMailVerified() && $user->getisNew()) { //This user never verified his email, so we remove it.
-            $this->em->remove($user);
-            $this->em->flush();
+        $complete_existing_user = null;
+        if ($user && !$user->getMailVerifiedExtended($mail, $pseudo) && $user->getisNew()) { //This user never verified his email, so we remove it.
+            if (strlen($user->getMailVerificationOverride()) > 2) {
+                $complete_existing_user = $user;
+            } else {
+                $this->em->remove($user);
+                $this->em->flush();
+            }
         }
 
         $verificationNumberMail = new VerificationNumberMail($mail);
@@ -448,8 +453,13 @@ class User
         $factory = $this->encoder_factory;
         $encoder = $factory->getEncoder($user);
         $user->setPassword($encoder->encodePassword($password, $user->getSalt()));
-        $user->setUsername($pseudo);
-        $user->setEmail($mail);
+        if (!$complete_existing_user) {
+            $user->setUsername($pseudo);
+            $user->setEmail($mail);
+        } else {
+            $user->setUsername("to_replace/" . $pseudo);
+            $user->setEmail("to_replace/" . $mail);
+        }
         $user->setFirstName($firstname);
         $user->setLastName($name);
         $user->setPhone($phone);
@@ -469,7 +479,7 @@ class User
                     ),
                     "Action" => "addforce"
                 );
-                //$this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345487/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+                $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345487/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
             } catch (\Exception $exception) {
                 error_log($exception->getMessage());
             }
@@ -485,7 +495,7 @@ class User
                     ),
                     "Action" => "addforce"
                 );
-                //$this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345532/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
+                $this->restClient->post("https://api.mailjet.com/v3/REST/contactslist/2345532/managecontact", json_encode($data), array(CURLOPT_CONNECTTIMEOUT => 60, CURLOPT_USERPWD => "370c5b74b337ff3cb1e455482213ffcc" . ":" . "2eb996d709315055fefb96901762ad0c"));
             } catch (\Exception $exception) {
                 error_log($exception->getMessage());
             }
@@ -511,6 +521,26 @@ class User
             $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
             $user = $userRepository->findOneBy(Array("emailcanonical" => $mail));
             if ($user) {
+
+                $user_to_replace = $userRepository->findOneBy(Array("emailcanonical" => "to_replace/" . $mail));
+                if ($user_to_replace) {
+
+                    $username = explode("/", $user_to_replace->getUsername());
+                    $username = $username[1];
+
+                    $user->setUsername($username);
+
+                    $user->setSalt($user_to_replace->getSalt());
+                    $user->setPassword($user_to_replace->getPassword());
+
+                    $user->setFirstName($user_to_replace->getFirstName());
+                    $user->setLastName($user_to_replace->getLastName());
+                    $user->setPhone($user_to_replace->getPhone());
+
+                    $this->em->remove($user_to_replace);
+                    $this->em->flush();
+
+                }
 
                 $user->setMailVerified(true);
                 $this->em->persist($user);
