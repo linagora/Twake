@@ -15,12 +15,13 @@ class ESFile
         $this->doctrine = $doctrine;
     }
 
-    public function search($termslist, $workspaces)
+    public function search($current_user_id, $termslist, $workspaces)
     {
 
         $terms = Array();
         $should_workspaces = Array();
 
+        
         foreach ($termslist as $term) {
             $st = new StringCleaner();
             $term = $st->simplifyInArray($term);

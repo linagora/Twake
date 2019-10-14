@@ -46,6 +46,9 @@ class ChannelsSystem extends ChannelSystemAbstract
 
         $result = [];
         foreach ($channels as $channel) {
+            if (!$current_user || !$channel) {
+                continue;
+            }
             $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $current_user->getId(), "channel_id" => $channel->getId()));
             if ($res) {
                 $tmp = $channel->getAsArray();

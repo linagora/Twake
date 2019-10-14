@@ -1,16 +1,12 @@
 services:
 
-  globalsearch.file:
-    class: WebsiteApi\GlobalSearchBundle\Services\ESFile
-    arguments: ["@app.twake_doctrine"]
-
   globalsearch.messagebloc:
     class: WebsiteApi\GlobalSearchBundle\Services\Blocmessage
     arguments: ["@app.twake_doctrine"]
 
   globalsearch.quicksearch:
     class: WebsiteApi\GlobalSearchBundle\Services\QuickSearch
-    arguments: ["@app.twake_doctrine", "@app.users", "@app.workspaces", "@app.channels.channels_system", "@globalsearch.file", "@app.workspace_members", "@globalsearch.messagebloc"]
+    arguments: ["@app.twake_doctrine", "@app.users", "@app.workspaces", "@app.channels.channels_system", "@globalsearch.advancedfile", "@app.workspace_members", "@globalsearch.messagebloc"]
 
   globalsearch.advancedbloc:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedBloc
@@ -18,7 +14,7 @@ services:
 
   globalsearch.advancedfile:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedFile
-    arguments: ["@app.twake_doctrine", "@globalsearch.file","@app.workspaces"]
+    arguments: ["@app.twake_doctrine","@app.workspaces"]
 
   globalsearch.advancedtask:
     class: WebsiteApi\GlobalSearchBundle\Services\AdvancedTask

@@ -75,14 +75,18 @@ class QuickSearch
         }
     }
 
-    public function SearchFile($words, $workspaces)
+    public function SearchFile($current_user_id, $words, $workspaces)
     {
-        $files = $this->fileservice->search($words, $workspaces);
-        foreach ($files as $file) {
-            if (isset($this->workspace_prio) && $this->workspace_prio == $file[0]["workspace_id"]) {
-                $this->priofileresult[] = Array("type" => "file", "file" => $file[0], "score" => $file[1], "workspace" => $workspaces[$file[0]["workspace_id"]]);
+
+        $options = Array();
+        $options["title"] = join(" ", $words);
+        
+        $files = $this->fileservice->AdvancedFile($current_user_id, $options, $workspaces);
+        foreach ($files["results"] as $file) {
+            if (isset($this->workspace_prio) && $this->workspace_prio == $file["file"]["workspace_id"]) {
+                $this->priofileresult[] = $file;
             } else {
-                $this->fileresult[] = Array("type" => "file", "file" => $file[0], "score" => $file[1], "workspace" => $workspaces[$file[0]["workspace_id"]]);
+                $this->fileresult[] = $file;
             }
             //$this->history->addSearch(Array("id" => $file[0]["id"],"type"=> "file", "compteur" => 0));
         }
@@ -150,7 +154,7 @@ class QuickSearch
         $user = $this->doctrine->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $current_user_id));
 
 
-        $this->SearchFile($words, $workspaces);
+        $this->SearchFile($current_user_id, $words, $workspaces);
         $this->SearchInWorkspace($words, $workspaces, $current_user_id);
         $this->SearchPrivateChannel($words, $user->getUsername(), $current_user_id);
 

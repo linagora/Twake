@@ -9,14 +9,12 @@ use WebsiteApi\CoreBundle\Services\StringCleaner;
 class AdvancedFile
 {
     private $doctrine;
-    private $fileservice;
     private $workspaceservice;
     private $globalresult;
 
-    public function __construct($doctrine, $fileservice, $workspaceservice)
+    public function __construct($doctrine, $workspaceservice)
     {
         $this->doctrine = $doctrine;
-        $this->fileservice = $fileservice;
         $this->workspaceservice = $workspaceservice;
 
     }
@@ -27,8 +25,8 @@ class AdvancedFile
         $known_workspaces_by_id = Array();
 
         //Prepare parameters
-        if (!$options["title"]) {
-            $options["title"] = $options["name"];
+        if (!$options["name"]) {
+            $options["name"] = $options["title"];
         }
 
         $workspace_access = [];
@@ -114,10 +112,19 @@ class AdvancedFile
                 )
             );
 
+            if (isset($options["scroll_id"])) {
+                $options["scroll_id"] = $options["scroll_id"];
+            }
+
             $result = $this->doctrine->es_search($options);
 
             //On traite les données recu d'Elasticsearch
             foreach ($result["result"] as $file) {
+
+                if ($file[0] && ($file[0]->getParentId() == "removed_trashes" || $file[0]->getIsInTrash())) {
+                    $this->doctrine->es_remove($file[0], $file[0]->getEsType(), $file[0]->getEsIndex());
+                    continue;
+                }
 
                 if (!isset($known_workspaces_by_id[$file[0]->getAsArray()["workspace_id"]])) {
                     $workspace_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $file[0]->getAsArray()["workspace_id"]));
@@ -131,6 +138,7 @@ class AdvancedFile
                     "score" => $file[1][0],
                     "workspace" => $workspace_array
                 );
+
             }
 
             $scroll_id = $result["scroll_id"];

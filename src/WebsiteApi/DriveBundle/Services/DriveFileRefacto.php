@@ -230,7 +230,6 @@ class DriveFileRefacto
             $fileordirectory->setCreator($current_user);
             $fileordirectory->setPreviewHasBeenGenerated(false);
             $fileordirectory->setHasPreview(false);
-            //$fileordirectory->setIsInTrash(false);
             if (isset($object["detached"]) && $object["detached"]) {
                 $fileordirectory->setDetachedFile(true);
                 $parent_id = "detached";

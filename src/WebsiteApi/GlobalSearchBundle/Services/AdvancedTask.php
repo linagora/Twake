@@ -127,6 +127,10 @@ class AdvancedTask
                 )
             );
 
+            if (isset($options["scroll_id"])) {
+                $options["scroll_id"] = $options["scroll_id"];
+            }
+
             $result = $this->doctrine->es_search($options);
 
             //On traite les données recu d'Elasticsearch
