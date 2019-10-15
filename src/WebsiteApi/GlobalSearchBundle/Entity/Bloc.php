@@ -280,6 +280,7 @@ class Bloc extends SearchableObject
         $mentions_matches = array_unique($mentions_matches);
 
         $formatted_message = Array(
+            "id" => $message->getId(),
             "mentions" => $mentions_matches,
             "reactions" => $reactions,
             "content" => $content,

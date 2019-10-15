@@ -39,33 +39,43 @@ class Blocmessage
         }
 
         if ($valid && isset($options["sender"])) {
-            if ($message_bdd->getSender()->getId() . "" != $options["sender"]) {
+            if ($message_array["sender"] . "" != $options["sender"]) {
                 $valid = false;
             }
         }
-        if ($valid && isset($options["date_before"]) && ($message_bdd->getCreationDate()->format('Y-m-d') > $options["date_before"])) {
+        if ($valid && isset($options["date_before"]) && (
+                (\DateTime::createFromFormat("Y-m-d", $message_array["date"]))->getTimestamp() >
+                intval($options["date_before"])
+            )
+        ) {
             $valid = false;
         }
-        if ($valid && isset($options["date_after"]) && ($message_bdd->getCreationDate()->format('Y-m-d') < $options["date_after"])) {
+        if ($valid && isset($options["date_after"]) && (
+                (\DateTime::createFromFormat("Y-m-d", $message_array["date"]))->getTimestamp() <
+                intval($options["date_after"])
+            )) {
             $valid = false;
         }
 
-        if ($valid && isset($options["pinned"]) && $message_bdd->getPinned() != $options["pinned"]) {
+        if ($valid && isset($options["pinned"]) && $message_array["pinned"] != $options["pinned"]) {
             $valid = false;
         }
 
-        if ($valid && isset($options["application_id"]) && ($message_bdd->getApplicationId() != $options["application_id"])) {
+        if ($valid && isset($options["application_id"]) && ($message_array["application_id"] != $options["application_id"])) {
             $valid = false;
         }
 
         if ($valid && isset($options["tags"])) {
-            $tags = $message_bdd->gettags();
+            $tags = $message_array["tags"];
+            if (!$message_array["tags"]) {
+                $message_array["tags"] = Array();
+            }
             $tags_search = true;
             $i = 0;
             if (isset($tags)) {
                 while ($tags_search && $i < count($options["tags"])) {
                     $trouve = false;
-                    foreach ($message_bdd->gettags() as $tag) {
+                    foreach ($message_array["tags"] as $tag) {
                         if ($tag == $options["tags"][$i]) {
                             $trouve = true;
                             break;
@@ -85,18 +95,7 @@ class Blocmessage
         }
 
         if ($valid && isset($options["mentions"])) {
-            $mentions = Array();
-            if (is_array($message_bdd->getContent()["prepared"][0])) {
-                foreach ($message_bdd->getContent()["prepared"][0] as $elem) {
-                    if (is_array($elem)) {
-                        $id = explode(":", $elem["content"])[1];
-                        $mentions[] = $id;
-                    }
-                }
-                $mentions = array_unique($mentions);
-            }
-
-            if (!array_intersect($options["mentions"], $mentions) == $options["mentions"]) {
+            if (!array_intersect($options["mentions"], $message_array["mentions"]) == $options["mentions"]) {
                 $valid = false;
             }
         }
@@ -105,11 +104,14 @@ class Blocmessage
             $react_search = true;
             $i = 0;
             // on parcours toute les reactions saisites
-            $reaction = $message_bdd->getReactions();
+            $reaction = $message_array["reactions"];
+            if (!$reaction) {
+                $reaction = Array();
+            }
             if (isset($reaction)) {
                 while ($react_search && $i < count($options["reactions"])) {
                     $trouve = false;
-                    foreach (array_keys($message_bdd->getReactions()) as $reaction) {
+                    foreach (array_keys($message_array["reactions"]) as $reaction) {
                         if (strpos(strtolower($reaction), strtolower($options["reactions"][$i])) !== false) {
                             $trouve = true;
                             break;
@@ -180,11 +182,11 @@ class Blocmessage
         $tags = isset($options["tags"]) ? $options["tags"] : false;
         ESUtils::createShouldMatch($tags, "messages.tags", "all", $must);
 
-        $pinned = isset($options["pinned"]) ? $options["pinned"] : false;
+        $pinned = (isset($options["pinned"]) && $options["pinned"]) ? $options["pinned"] : false;
         ESUtils::createMatchPhrase($pinned, "messages.pinned", $must);
 
-        $created_before = isset($options["date_before"]) ? $options["date_before"] : false;
-        $created_after = isset($options["date_after"]) ? $options["date_after"] : false;
+        $created_before = isset($options["date_before"]) ? date("Y-m-d", intval($options["date_before"])) : false;
+        $created_after = isset($options["date_after"]) ? date("Y-m-d", intval($options["date_after"])) : false;
         ESUtils::createRange($created_after, $created_before, "messages.date", $must);
 
         $sender = isset($options["sender"]) ? $options["sender"] : false;
@@ -192,7 +194,6 @@ class Blocmessage
 
         $application_id = isset($options["application_id"]) ? $options["application_id"] : false;
         ESUtils::createMatchPhrase($application_id, "messages.application_id", $must);
-
 
         $should_channels = Array();
         foreach ($channels as $channel) {
@@ -239,6 +240,8 @@ class Blocmessage
         $result = $this->doctrine->es_search($search_data);
         $list_messages["scroll_id"] = $result["scroll_id"];
 
+        $list_messages["es_res"] = [];
+
         $blocs = [];
         foreach ($result["result"] as $bloc) {
             $blocs[] = $bloc[0];
@@ -254,17 +257,21 @@ class Blocmessage
 
         foreach ($blocs as $bloc) {
             $messages = $bloc->getMessages();
-            foreach ($messages as $index => $message) {
+            foreach ($messages as $message) {
 
-                $message_id_in_bloc = $bloc->getIdMessages()[$index];
+                if (!is_array($message)) {
+                    continue;
+                }
+
+                $message_id_in_bloc = $message["id"];
 
                 if ($message_id_in_bloc) {
 
-                    $message_bdd = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message_id_in_bloc));
-
-                    $valid = $this->verif_valid($message_bdd, $message, $options);
+                    $valid = $this->verif_valid(null, $message, $options);
 
                     if ($valid && !in_array($message_id_in_bloc, $doublon_id)) {
+
+                        $message_bdd = $this->doctrine->getRepository("TwakeDiscussionBundle:Message")->findOneBy(Array("id" => $message["id"]));
 
                         $doublon_id[] = $message_id_in_bloc;
 
