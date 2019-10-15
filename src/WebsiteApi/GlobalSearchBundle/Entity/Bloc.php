@@ -222,13 +222,44 @@ class Bloc extends SearchableObject
         $this->nb_message = $nb_message;
     }
 
-    public function addmessage($message_entity, $content, $content_id)
+    public function removeMessage($message_id)
+    {
+        $messages = $this->getMessages();
+        if (!$messages) {
+            $messages = Array();
+        }
+
+        $id_messages = Array();
+        $new_messages = Array();
+        foreach ($messages as $index => $message) {
+            if ($message["id"] != $message_id) {
+                $new_messages[] = $message;
+                $id_messages[] = $message["id"];
+            }
+        }
+
+        $this->setNbMessage(count($messages));
+        $this->setMessages($messages);
+        $this->setIdMessages($id_messages);
+
+    }
+
+    public function addOrUpdateMessage($message, $content, $content_id)
     {
 
         $messages = $this->getMessages();
-        $date = $message_entity->getCreationDate();
-        $tags = $message_entity->getTags();
-        $pinned = $message_entity->getPinned();
+        if (!$messages) {
+            $messages = Array();
+        }
+
+        $id_messages = Array();
+        $message_exists = -1;
+        foreach ($messages as $index => $message) {
+            $id_messages[] = $message["id"];
+            if ($message["id"] == $message->getId()) {
+                $message_exists = $index;
+            }
+        }
 
         $reactions_tmp = $message_entity->getReactions();
         $reactions = Array();
@@ -236,39 +267,33 @@ class Bloc extends SearchableObject
             $reactions[] = $reaction;
         }
 
-        preg_match_all("/\w*-\w*-\w*-\w*-\w*/i", $content_id, $matches);
-        $matches = $matches[0];
-        $matches = array_unique($matches);
+        preg_match_all("/\w*-\w*-\w*-\w*-\w*/i", $content_id, $mentions_matches);
+        $mentions_matches = $mentions_matches[0];
+        $mentions_matches = array_unique($mentions_matches);
 
-        if ($message_entity->getSender()) {
-            $sender = $message_entity->getSender()->getId() . "";
-        } else {
-            $sender = null;
-        }
-
-        $application_id = $message_entity->getApplicationId();
-
-        $add = Array(
-            "content" => $content,
-            "sender" => $sender,
-            "application_id" => $application_id,
-            "mentions" => $matches,
-            "date" => $date->format('Y-m-d'),
+        $formatted_message = Array(
+            "mentions" => $mentions_matches,
             "reactions" => $reactions,
-            "tags" => $tags,
-            "pinned" => $pinned
+            "content" => $content,
+            "sender" => $message_entity->getSender() ? $message_entity->getSender()->getId() . "" : null,
+            "application_id" => $message_entity->getApplicationId(),
+            "date" => $message_entity->getCreationDate()->format('Y-m-d'),
+            "tags" => $message_entity->getTags(),
+            "pinned" => $message_entity->getPinned()
         );
 
-        if (!$messages) $messages = Array();
-        array_push($messages, $add);
-        $this->setMessages($messages);
-        $this->setNbMessage($this->getNbMessage() + 1);
+        if ($message_exists >= 0) {
+            $messages[$index] = $formatted_message;
+        } else {
+            $messages[] = $formatted_message;
+            $id_messages[] = $message->getId();
+            $this->setNbMessage($this->getNbMessage() + 1);
+        }
 
-        $id_messages = $this->getIdMessages();
-        if (!$id_messages) $id_messages = Array();
-        $id = $message_entity->getId() . "";
-        array_push($id_messages, $id);
+        $this->setNbMessage(count($messages));
+        $this->setMessages($messages);
         $this->setIdMessages($id_messages);
+
     }
 
 }
