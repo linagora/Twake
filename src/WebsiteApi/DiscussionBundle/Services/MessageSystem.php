@@ -512,11 +512,12 @@ class MessageSystem
             return false;
         }
 
-        $options = Array("keep_mentions" => true);
-        $content_id = $this->mdToText($message->getContent(), $options);
-        $content = $this->mdToText($message->getContent());
-
         try {
+
+            $options = Array("keep_mentions" => true);
+            $content_id = $this->mdToText($message->getContent(), $options);
+            $content = $this->mdToText($message->getContent());
+
             $blocbdd->addOrUpdateMessage($message, $content, $content_id);
 
             if ($blocbdd->getNbMessage() >= 10) {
@@ -534,7 +535,7 @@ class MessageSystem
             }
 
         } catch (\Exception $e) {
-
+            error_log($e->getMessage());
         }
 
     }
@@ -560,7 +561,7 @@ class MessageSystem
             }
 
         } catch (\Exception $e) {
-            
+            error_log($e->getMessage());
         }
 
     }

@@ -232,9 +232,11 @@ class Bloc extends SearchableObject
         $id_messages = Array();
         $new_messages = Array();
         foreach ($messages as $index => $message) {
-            if ($message["id"] != $message_id) {
-                $new_messages[] = $message;
-                $id_messages[] = $message["id"];
+            if ($message) {
+                if ($message["id"] != $message_id) {
+                    $new_messages[] = $message;
+                    $id_messages[] = $message["id"];
+                }
             }
         }
 
@@ -247,6 +249,10 @@ class Bloc extends SearchableObject
     public function addOrUpdateMessage($message, $content, $content_id)
     {
 
+        if (!$message) {
+            return false;
+        }
+
         $messages = $this->getMessages();
         if (!$messages) {
             $messages = Array();
@@ -254,14 +260,16 @@ class Bloc extends SearchableObject
 
         $id_messages = Array();
         $message_exists = -1;
-        foreach ($messages as $index => $message) {
-            $id_messages[] = $message["id"];
-            if ($message["id"] == $message->getId()) {
-                $message_exists = $index;
+        foreach ($messages as $index => $m) {
+            if ($m) {
+                $id_messages[] = $m["id"];
+                if ($m["id"] == $message->getId()) {
+                    $message_exists = $index;
+                }
             }
         }
 
-        $reactions_tmp = $message_entity->getReactions();
+        $reactions_tmp = $message->getReactions();
         $reactions = Array();
         foreach ($reactions_tmp as $reaction => $count) {
             $reactions[] = $reaction;
@@ -275,11 +283,11 @@ class Bloc extends SearchableObject
             "mentions" => $mentions_matches,
             "reactions" => $reactions,
             "content" => $content,
-            "sender" => $message_entity->getSender() ? $message_entity->getSender()->getId() . "" : null,
-            "application_id" => $message_entity->getApplicationId(),
-            "date" => $message_entity->getCreationDate()->format('Y-m-d'),
-            "tags" => $message_entity->getTags(),
-            "pinned" => $message_entity->getPinned()
+            "sender" => $message->getSender() ? $message->getSender()->getId() . "" : null,
+            "application_id" => $message->getApplicationId(),
+            "date" => $message->getCreationDate()->format('Y-m-d'),
+            "tags" => $message->getTags(),
+            "pinned" => $message->getPinned()
         );
 
         if ($message_exists >= 0) {
