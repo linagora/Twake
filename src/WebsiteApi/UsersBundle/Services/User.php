@@ -423,6 +423,10 @@ class User
 
                 $this->verifyMail($mail, "", "", true);
 
+                $user->setMailVerified(false);
+                $this->em->persist($user);
+                $this->em->flush();
+
                 return true;
 
             } else {
@@ -456,6 +460,10 @@ class User
         $this->em->flush();
 
         $this->verifyMail($mail, "", "", true);
+
+        $user->setMailVerified(false);
+        $this->em->persist($user);
+        $this->em->flush();
 
         return true;
 

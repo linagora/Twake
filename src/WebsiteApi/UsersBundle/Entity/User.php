@@ -522,7 +522,10 @@ class User extends SearchableObject implements UserInterface
             "isRobot" => $this->getisRobot(),
             "status_icon" => $this->getStatusIcon(),
             "front_id" => $this->getFrontId(),
-            "timezone_offset" => $this->timezone
+            "timezone_offset" => $this->timezone,
+            "mail_hash" => md5(trim(strtolower($this->getEmail()))),
+            "mail_verification_override" => $this->getMailVerified() ? null : $this->getMailVerificationOverride(),
+            "mail_verification_override_mail" => $this->getMailVerified() ? null : $this->getEmail()
         );
         return $return;
     }
