@@ -146,7 +146,7 @@ class Blocmessage
         $final_words = Array();
         if (isset($options["words"])) {
             foreach ($options["words"] as $word) {
-                if (strlen($word) > 3) {
+                if (strlen($word) >= 2) {
                     $final_words[] = strtolower($word);
                 }
             }
@@ -240,7 +240,7 @@ class Blocmessage
         $result = $this->doctrine->es_search($search_data);
         $list_messages["scroll_id"] = $result["scroll_id"];
 
-        $list_messages["es_res"] = [];
+        $list_messages["es_res"] = count($result["result"]);
 
         $blocs = [];
         foreach ($result["result"] as $bloc) {

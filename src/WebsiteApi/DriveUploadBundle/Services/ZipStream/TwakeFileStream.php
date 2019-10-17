@@ -36,6 +36,11 @@ class TwakeFileStream implements StreamInterface
 
     public function __toString()
     {
+
+        if (!$this->stream) {
+            return "";
+        }
+
         try {
             $this->seek(0);
         } catch (\RuntimeException $e) {
@@ -62,12 +67,18 @@ class TwakeFileStream implements StreamInterface
 
     public function getSize()
     {
+        if (!$this->stream) {
+            return 0;
+        }
         $stats = fstat($this->stream);
         return $stats['size'] + 1;
     }
 
     public function tell()
     {
+        if (!$this->stream) {
+            return 0;
+        }
 
         $position = ftell($this->stream);
         if ($position === false) {
@@ -85,6 +96,9 @@ class TwakeFileStream implements StreamInterface
 
     public function seek($offset, $whence = SEEK_SET)
     {
+        if (!$this->stream) {
+            return;
+        }
         if (!$this->isSeekable()) {
             throw new RuntimeException;
         }
@@ -96,6 +110,9 @@ class TwakeFileStream implements StreamInterface
 
     public function rewind()
     {
+        if (!$this->stream) {
+            return;
+        }
         $this->seek(0);
         $this->current_chunk = 1;
         $this->manager->read("original_stream", $this->current_chunk, $this->param_bag, $this->uploadstate);
@@ -119,6 +136,9 @@ class TwakeFileStream implements StreamInterface
 
     public function getContents()
     {
+        if (!$this->stream) {
+            return "";
+        }
         if (!$this->isReadable()) {
             throw new RuntimeException;
         }
@@ -131,6 +151,9 @@ class TwakeFileStream implements StreamInterface
 
     public function read($length)
     {
+        if (!$this->stream) {
+            return "";
+        }
 
         //error_log(print_r(stream_get_meta_data($this->stream),true));
         $retour = fread($this->stream, $length);
@@ -176,13 +199,17 @@ class TwakeFileStream implements StreamInterface
 
     public function eof()
     {
-
+        if (!$this->stream) {
+            return true;
+        }
         return feof($this->stream);
     }
 
     public function getMetadata($key = null)
     {
-
+        if (!$this->stream) {
+            return Array();
+        }
         $metadata = stream_get_meta_data($this->stream);
         return $key !== null ? @$metadata[$key] : $metadata;
     }
