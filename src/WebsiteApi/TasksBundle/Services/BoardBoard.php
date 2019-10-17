@@ -152,7 +152,7 @@ class BoardBoard
 
         //Notify connectors
         $workspace_id = $board->getWorkspaceId();
-        $resources = $this->applications_api->getResources($workspace_id, "workspace_board", $workspace_id);
+        $resources = $this->applications_api->getResources($workspace_id, "workspace_tasks", $workspace_id);
         $apps_ids = [];
         foreach ($resources as $resource) {
             if (in_array("board", $resource->getApplicationHooks())) {

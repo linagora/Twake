@@ -28,8 +28,7 @@ class TasksController extends Controller
             "object_type" => "",
             "front_id" => $object["front_id"]
         );
-
-        //TODO ws update
+        $this->enc_pusher->push("board_tasks/" . $object["board_id"], $event);
 
         $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
 
@@ -65,8 +64,7 @@ class TasksController extends Controller
                 "object_type" => "",
                 "object" => $object
             );
-
-            //TODO ws update
+            $this->enc_pusher->push("board_tasks/" . $object["board_id"], $event);
 
         }
 
@@ -88,6 +86,7 @@ class TasksController extends Controller
         $user_id = $request->request->get("user_id", "");
         $workspace_id = $request->request->get("workspace_id", "");
         if ($workspace_id) {
+            $user_entity = null;
             if ($user_id) {
                 $user_entity = $this->get("app.users")->getById($user_id, true);
             }
@@ -109,4 +108,77 @@ class TasksController extends Controller
 
         return new JsonResponse(Array("data" => $res));
     }
+
+    public function getListsInBoardAction(Request $request)
+    {
+        $privileges = ["workspace_tasks"];
+
+        $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
+        if (is_array($application) && $application["error"]) {
+            return new JsonResponse($application);
+        }
+        $objects = false;
+        $user_id = $request->request->get("user_id", "");
+        $board_id = $request->request->get("board_id", "");
+        $workspace_id = $request->request->get("workspace_id", "");
+        if ($workspace_id) {
+            $user_entity = null;
+            if ($user_id) {
+                $user_entity = $this->get("app.users")->getById($user_id, true);
+            }
+            if ($user_entity) {
+                $objects = $this->get("app.tasks.list")->get(Array("board_id" => $board_id, "workspace_id" => $workspace_id), $user_entity);
+            }
+        }
+
+        if ($objects === false) {
+            return new JsonResponse(Array("error" => "payload_error"));
+        }
+
+        $res = [];
+        foreach ($objects as $object) {
+            $res[] = $object;
+        }
+
+        $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
+
+        return new JsonResponse(Array("data" => $res));
+    }
+
+    public function getTasksInBoardAction(Request $request)
+    {
+        $privileges = ["workspace_tasks"];
+
+        $application = $this->get("app.applications_api")->getAppFromRequest($request, [], $privileges);
+        if (is_array($application) && $application["error"]) {
+            return new JsonResponse($application);
+        }
+        $objects = false;
+        $user_id = $request->request->get("user_id", "");
+        $board_id = $request->request->get("board_id", "");
+        $workspace_id = $request->request->get("workspace_id", "");
+        if ($workspace_id) {
+            $user_entity = null;
+            if ($user_id) {
+                $user_entity = $this->get("app.users")->getById($user_id, true);
+            }
+            if ($user_entity) {
+                $objects = $this->get("app.tasks.task")->get(Array("board_id" => $board_id, "workspace_id" => $workspace_id), $user_entity);
+            }
+        }
+
+        if ($objects === false) {
+            return new JsonResponse(Array("error" => "payload_error"));
+        }
+
+        $res = [];
+        foreach ($objects as $object) {
+            $res[] = $object;
+        }
+
+        $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
+
+        return new JsonResponse(Array("data" => $res));
+    }
+
 }
