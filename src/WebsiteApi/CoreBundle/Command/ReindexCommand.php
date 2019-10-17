@@ -24,6 +24,17 @@ class ReindexCommand extends ContainerAwareCommand
     {
         $manager = $this->getContainer()->get('app.twake_doctrine');
 
+        $channels = $manager->getRepository("TwakeChannelsBundle:Channel")->findBy(Array("direct" => true));
+        foreach ($channels as $i => $channel) {
+            $c = $this->indexChannel($channel, $manager);
+            error_log("index " . "Direct Channels " . $i . "/" . count($channels) . " " . $c . " messsages");
+        }
+        $channels = $manager->getRepository("TwakeChannelsBundle:Channel")->findBy(Array("direct" => false));
+        foreach ($channels as $i => $channel) {
+            $c = $this->indexChannel($channel, $manager);
+            error_log("index " . "Workspaces Channels " . $i . "/" . count($channels) . " " . $c . " messsages");
+        }
+
         $this->indexRepository("TwakeWorkspacesBundle:Workspace");
 
         $this->indexRepository("TwakeWorkspacesBundle:Group");
@@ -69,6 +80,18 @@ class ReindexCommand extends ContainerAwareCommand
         foreach ($items as $item) {
             $manager->es_put($item, $item->getEsType());
         }
+
+    }
+
+    private function indexChannel($channel, $manager)
+    {
+
+        $messages = $manager->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("channel_id" => $channel->getId()));
+        foreach ($messages as $message) {
+            $this->getContainer()->get('app.messages')->indexMessage($message, $channel->getOriginalWorkspaceId(), $channel->getId());
+        }
+
+        return count($messages);
 
     }
 }

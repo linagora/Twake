@@ -159,7 +159,11 @@ class DownloadFile
                     if (!isset($zip) || !isset($zip_prefix)) {
 
                         $final_download_name = $download_name;
-                        $final_download_size = $version->getSize();
+                        if ($version) {
+                            $final_download_size = $version->getSize();
+                        } else {
+                            $final_download_size = 0;
+                        }
 
                         header('Content-Description: File Transfer');
                         if ($download) {

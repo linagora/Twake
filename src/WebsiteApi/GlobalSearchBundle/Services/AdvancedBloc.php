@@ -32,9 +32,19 @@ class AdvancedBloc
                     $channel_acces[] = $channel;
                 }
             }
+            $channels_member = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findBy(Array("direct" => true, "user_id" => $current_user_id));
+            foreach ($channels_member as $cm) {
+                $channel = $this->doctrine->getRepository("TwakeChannelsBundle:Channel")->findOneBy(Array("id" => $cm->getChannelId()));
+                if ($channel) {
+                    $channel_acces[] = $channel;
+                }
+            }
         } else {
             foreach ($channels as $channel) {
                 $member = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $current_user_id, "channel_id" => $channel));
+                if (!$member) {
+                    $member = $this->doctrine->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => true, "user_id" => $current_user_id, "channel_id" => $channel));
+                }
                 if ($member) {
                     $channel_acces[] = $channel;
                 }

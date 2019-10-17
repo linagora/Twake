@@ -486,7 +486,7 @@ class MessageSystem
         }
 
         $blocbdd = null;
-        if ($current_bloc_id) {
+        if ($message->getBlockId()) {
             $blocbdd = $this->em->getRepository("TwakeGlobalSearchBundle:Bloc")->findOneBy(Array("id" => $message->getBlockId()));
         }
 
