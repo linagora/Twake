@@ -28,7 +28,7 @@ class TasksController extends Controller
             "object_type" => "",
             "front_id" => $object["front_id"]
         );
-        $this->enc_pusher->push("board_tasks/" . $object["board_id"], $event);
+        $this->get("app.websockets")->push("board_tasks/" . $object["board_id"], $event);
 
         $this->get("administration.counter")->incrementCounter("total_api_tasks_operation", 1);
 
@@ -64,7 +64,7 @@ class TasksController extends Controller
                 "object_type" => "",
                 "object" => $object
             );
-            $this->enc_pusher->push("board_tasks/" . $object["board_id"], $event);
+            $this->get("app.websockets")->push("board_tasks/" . $object["board_id"], $event);
 
         }
 
