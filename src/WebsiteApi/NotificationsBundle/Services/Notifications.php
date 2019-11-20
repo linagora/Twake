@@ -383,6 +383,11 @@ class Notifications implements NotificationsInterface
 
     }
 
+    public function get($options, $current_user)
+    {
+        return $this->getAll($current_user);
+    }
+
     public function getAll($user)
     {
         $nRepo = $this->doctrine->getRepository("TwakeNotificationsBundle:Notification");

@@ -595,8 +595,6 @@ class Application extends SearchableObject
             "drive_remove",
             "calendar_event_save",
             "calendar_event_remove",
-            "calendar_task_save",
-            "calendar_task_remove",
             "tasks_task_save",
             "tasks_task_remove",
             //"drive_add", //Ajouter un fichiers

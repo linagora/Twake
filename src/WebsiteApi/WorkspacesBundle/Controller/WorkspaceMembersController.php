@@ -31,34 +31,8 @@ class WorkspaceMembersController extends Controller
         $max = $request->request->get("max", null);
         $offset = $request->request->get("offset", null);
 
-        $members = $this->get("app.workspace_members")->getMembers($workspaceId, $this->getUser()->getId(), $order, $max, $offset);
-        $list = Array();
-        foreach ($members as $member) {
-            $user = $member["user"]->getAsArray();
-            $list[] = Array(
-                "user" => $user,
-                "last_access" => $member["last_access"],
-                "level" => $member["level"],
-                "externe" => $member["externe"],
-                "autoAddExterne" => $member["autoAddExterne"],
-                "groupLevel" => $member["groupLevel"]
-            );
-        }
-
-        $pendingMails = $this->get("app.workspace_members")->getPendingMembers($workspaceId, $this->getUser()->getId());
-
-        $listMails = Array();
-        foreach ($pendingMails as $mail) {
-            $listMails[] = Array(
-                "mail" => $mail->getMail(),
-                "externe" => $mail->getExterne()
-            );
-        }
-
-        $response["data"] = Array(
-            "mails" => $listMails,
-            "members" => $list
-        );
+        $all_info = $this->get("app.workspace_members")->getMembersAndPending($workspaceId, $this->getUser()->getId(), $order, $max, $offset);
+        $response["data"] = $all_info;
 
         return new JsonResponse($response);
     }

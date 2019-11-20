@@ -77,6 +77,9 @@ class WorkspaceController extends Controller
                 $limitUser = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(), "maxUser", PHP_INT_MAX);
                 $limitApps = $this->get("app.pricing_plan")->getLimitation($wp->getGroup()->getId(), "apps", PHP_INT_MAX);
 
+                $response["data"]["apps"] = $this->get("app.workspaces_apps")->getApps($workspaceId);
+                $response["data"]["members"] = $this->get("app.workspace_members")->getMembersAndPending($workspaceId, $this->getUser()->getId());
+
                 $response["data"]["maxWorkspace"] = $limit;
                 $response["data"]["currentNbWorkspace"] = count($nbWorkspace);
                 $response["data"]["maxUser"] = $limitUser;

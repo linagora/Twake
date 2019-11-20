@@ -468,7 +468,41 @@ class WorkspaceMembers implements WorkspaceMembersInterface
 
     }
 
-    public function getMembers($workspaceId, $currentUserId = null, $order = Array("last_access" => "DESC"), $max = 0, $offset = 0)
+    public function getMembersAndPending($workspaceId, $currentUserId, $order = Array("user" => "DESC"), $max = 100, $offset = 0)
+    {
+
+        $members = $this->getMembers($workspaceId, $currentUserId, $order, $max, $offset);
+        $list = Array();
+        foreach ($members as $member) {
+            $user = $member["user"]->getAsArray();
+            $list[] = Array(
+                "user" => $user,
+                "last_access" => $member["last_access"],
+                "level" => $member["level"],
+                "externe" => $member["externe"],
+                "autoAddExterne" => $member["autoAddExterne"],
+                "groupLevel" => $member["groupLevel"]
+            );
+        }
+
+        $pendingMails = $this->getPendingMembers($workspaceId, $currentUserId);
+
+        $listMails = Array();
+        foreach ($pendingMails as $mail) {
+            $listMails[] = Array(
+                "mail" => $mail->getMail(),
+                "externe" => $mail->getExterne()
+            );
+        }
+
+        return Array(
+            "mails" => $listMails,
+            "members" => $list
+        );
+
+    }
+
+    public function getMembers($workspaceId, $currentUserId = null, $order = Array("user" => "DESC"), $max = 0, $offset = 0)
     {
         if ($currentUserId == null
             || $this->wls->can($workspaceId, $currentUserId, "")
