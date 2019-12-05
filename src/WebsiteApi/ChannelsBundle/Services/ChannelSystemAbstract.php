@@ -143,7 +143,7 @@ class ChannelSystemAbstract
                             $member->setLastMessagesIncrement($channel_entity->getMessagesIncrement());
                             $member->setExterne(true);
                             $this->entity_manager->persist($member);
-                            $this->workspaceUser->addMemberByMail($channel_entity->getOriginalWorkspaceId(), $mail, true, false);
+                            $this->workspaceUser->addMemberByMail($channel_entity->getOriginalWorkspaceId(), $mail, true, false, $current_user_id);
                             $did_something = true;
                         }
                     }
