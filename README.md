@@ -1,3 +1,65 @@
+# Twake v1.2.1
+
+## Changelogs
+
+### General
+Full new design
+External users
+Task advanced search
+Event advanced search
+Files advanced search
+Message advanced search
+Export your company
+Quick search and chanel change
+Tabs system
+
+### Tasks
+Improved Tasks
+
+### Dive
+Upload for files over 100mo
+Link-files
+Files as tab
+Public directory/file link
+Files versioning
+
+### Calendar
+Improved calendar
+
+### Mobile
+Drive on native mobile app
+Tabs on mobile
+Tasks on mobile (v1)
+Messages on native mobile app
+
+### Connectors
+New public API and connectors manager
+Google Drive Sync
+Zapier integration enabled
+Gitlab (notifications in messages)
+Github (notifications in messages)
+Webhooks
+Reminder (reminder bot)
+Simple Poll (for messages)
+Giphy
+RSS (notifications for messages)
+Jitsi (video conferencing)
+ONLYOFFICE (integrated with drive)
+
+## Changelogs
+
+### General
+- Ability to link objects of type event, task, call or file
+- Apps open faster
+- Ability to app any link by choosing an application manual mode
+- New message modal for private messages
+- Objects fields synchronisation
+
+### On-premise
+- Obfuscator code
+- Integrate Onlyoffice in Twake core code
+
+
 # Twake v1.1.110
 
 ## Changelogs
