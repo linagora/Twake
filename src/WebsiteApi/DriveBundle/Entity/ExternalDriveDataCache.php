@@ -43,7 +43,8 @@ class ExternalDriveDataCache
      */
     private $lastupdate;
 
-    public function __construct($id,$drive){
+    public function __construct($id, $drive)
+    {
         $this->id = $id;
         $this->drive = $drive;
         $this->json = new JsonResponse();

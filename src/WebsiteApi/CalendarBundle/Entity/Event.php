@@ -111,6 +111,11 @@ class Event extends SearchableObject
      */
     protected $workspace_id;
 
+    /**
+     * @ORM\Column(name="attachements", type="twake_text")
+     */
+    private $attachements = "[]";
+
 
     public function __construct($title, $from, $to)
     {
@@ -122,18 +127,23 @@ class Event extends SearchableObject
 
     public function getIndexationArray()
     {
+        $participants = [];
+        foreach ($this->getParticipants() as $p) {
+            $participants[] = $p["user_id_or_mail"];
+        }
+
         return Array(
-            "id" => $this->getId()."",
+            "id" => $this->getId() . "",
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
             "owner" => $this->getOwner(),
             "tags" => $this->getTags(),
-            'date_from' => ($this->getFrom() ?  date('Y-m-d',$this->getFrom()) : null),
-            'date_to' => ($this->getTo() ? date('Y-m-d',$this->getTo()) : null),
-            "date_last_modified" => ($this->getEventLastModified() ? date('Y-m-d',$this->getEventLastModified()) : null),
+            'date_from' => ($this->getFrom() ? date('Y-m-d', $this->getFrom()) : null),
+            'date_to' => ($this->getTo() ? date('Y-m-d', $this->getTo()) : null),
+            "date_last_modified" => ($this->getEventLastModified() ? date('Y-m-d', $this->getEventLastModified()) : null),
             "workspace_id" => $this->getWorkspaceId(),
-            "participants" => $this->getParticipants()
-
+            "participants" => $participants,
+            "attachments" => $this->getAttachements()
         );
 
     }
@@ -143,7 +153,14 @@ class Event extends SearchableObject
      */
     public function getWorkspaceId()
     {
-        return $this->workspace_id;
+        $workspace_id = $this->workspace_id;
+        if (!$workspace_id) {
+            $list = $this->getWorkspacesCalendars();
+            if (count($list) > 0) {
+                $workspace_id = $list[0]["workspace_id"];
+            }
+        }
+        return $workspace_id;
     }
 
     /**
@@ -153,7 +170,6 @@ class Event extends SearchableObject
     {
         $this->workspace_id = $workspace_id;
     }
-
 
 
     /**
@@ -420,6 +436,22 @@ class Event extends SearchableObject
         $this->tags = json_encode($tags);
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAttachements()
+    {
+        return json_decode($this->attachements, true);
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setAttachements($attachements)
+    {
+        $this->attachements = json_encode($attachements);
+    }
+
     public function getSortKey()
     {
         $after_sort_date = floor($this->getFrom() / (60 * 60 * 24 * 7));
@@ -468,7 +500,8 @@ class Event extends SearchableObject
             "workspaces_calendars" => $this->getWorkspacesCalendars(),
             "notifications" => $this->getNotifications(),
             "tags" => $this->getTags(),
-            "event_last_modified" => $this->getEventLastModified()
+            "event_last_modified" => $this->getEventLastModified(),
+            "attachments" => $this->getAttachements()
         );
     }
 

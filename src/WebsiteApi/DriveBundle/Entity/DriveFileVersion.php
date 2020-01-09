@@ -18,12 +18,12 @@ class DriveFileVersion
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
-    */
+     */
     private $id;
 
-	/**
+    /**
      * @ORM\Column(name="file_id", type="twake_timeuuid")
-	 */
+     */
     private $file_id;
 
     /**
@@ -31,33 +31,33 @@ class DriveFileVersion
      */
     private $creator_id;
 
-	/**
+    /**
      * @ORM\Column(type="twake_text")
      * @Encrypted
-	 */
+     */
     private $realname;
 
-	/**
+    /**
      * @ORM\Column(name="aes_key", type="twake_text")
      * @Encrypted
-	 */
-	private $key;
+     */
+    private $key;
 
-	/**
+    /**
      * @ORM\Column(type="twake_text")
      * @Encrypted
-	 */
-	private $mode = "OpenSSL-2";
+     */
+    private $mode = "OpenSSL-2";
 
-	/**
+    /**
      * @ORM\Column(type="integer")
-	 */
-	private $size;
+     */
+    private $size;
 
-	/**
+    /**
      * @ORM\Column(type="twake_datetime")
-	 */
-	private $date_added;
+     */
+    private $date_added;
 
     /**
      * @ORM\Column(type="twake_text")
@@ -72,24 +72,23 @@ class DriveFileVersion
     private $data;
 
 
-
     public function __construct(DriveFile $file, $user_id)
-	{
+    {
         $this->file_id = $file->getId();
-		$this->setKey(base64_encode(random_bytes(256)));
-		$this->setSize(0);
-		$this->resetRealName();
-		$this->date_added = new \DateTime();
-		$this->setFileName($file->getName());
+        $this->setKey(base64_encode(random_bytes(256)));
+        $this->setSize(0);
+        $this->resetRealName();
+        $this->date_added = new \DateTime();
+        $this->setFileName($file->getName());
         $this->setUserId($user_id);
-	}
+    }
 
     /**
      * @return mixed
      */
     public function getData()
     {
-        return json_decode($this->data,true);
+        return json_decode($this->data, true);
     }
 
     /**
@@ -100,10 +99,10 @@ class DriveFileVersion
         $this->data = json_encode($data);
     }
 
-	/**
-	 * @return mixed
-	 */
-	public function setId($id)
+    /**
+     * @return mixed
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -111,59 +110,59 @@ class DriveFileVersion
     public function getId()
     {
         return $this->id;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getKey()
-	{
-		return $this->key;
-	}
+    /**
+     * @return mixed
+     */
+    public function getKey()
+    {
+        return $this->key;
+    }
 
-	/**
-	 * @param mixed $key
-	 */
-	public function setKey($key)
-	{
-		$this->key = $key;
-	}
+    /**
+     * @param mixed $key
+     */
+    public function setKey($key)
+    {
+        $this->key = $key;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getRealName()
-	{
+    /**
+     * @return mixed
+     */
+    public function getRealName()
+    {
         return $this->realname;
-	}
+    }
 
-	/**
+    /**
      * @param mixed $realname
-	 */
-	public function resetRealName()
-	{
+     */
+    public function resetRealName()
+    {
         $this->realname = sha1(microtime() . rand(0, 10000)) . ".tw";
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getSize()
-	{
-		return $this->size;
-	}
+    /**
+     * @return mixed
+     */
+    public function getSize()
+    {
+        return $this->size;
+    }
 
-	/**
-	 * @param mixed $size
-	 */
-	public function setSize($size)
-	{
-		$this->size = $size;
-	}
+    /**
+     * @param mixed $size
+     */
+    public function setSize($size)
+    {
+        $this->size = $size;
+    }
 
-	/**
-	 * @return mixed
-	 */
+    /**
+     * @return mixed
+     */
     public function getMode()
     {
         if (!$this->mode) {
@@ -177,9 +176,10 @@ class DriveFileVersion
         $this->mode = $mode;
     }
 
-	public function getAsArray(){
-	    return Array(
-	        "id" => $this->id,
+    public function getAsArray()
+    {
+        return Array(
+            "id" => $this->id,
             "name" => $this->getFileName(),
             "file_id" => $this->getFileId(),
             "added" => $this->date_added->getTimestamp(),
@@ -187,7 +187,7 @@ class DriveFileVersion
             //"user" => $this->user!=null ? $this->user->getId() != 0 ? $this->user->getAsArray() : "" : "",
             "creator" => $this->getUserId(),
             "data" => $this->getData()
-            );
+        );
     }
 
     /**
@@ -253,8 +253,6 @@ class DriveFileVersion
     {
         $this->file_id = $file_id;
     }
-
-
 
 
 }

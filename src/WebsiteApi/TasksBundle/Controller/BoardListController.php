@@ -21,6 +21,28 @@ class BoardListController extends Controller
         return new JsonResponse(Array("data" => Array("object" => $res)));
     }
 
+    public function archiveAllAction(Request $request)
+    {
+        $options = $request->request->get("options");
+        $object = $request->request->get("object");
+        $res = $this->get("app.tasks.list")->archiveAllTasks($object, $options, $this->getUser());
+        if ($res === false) {
+            return new JsonResponse(Array("status" => "error"));
+        }
+        return new JsonResponse(Array("status" => "ok"));
+    }
+
+    public function removeAllAction(Request $request)
+    {
+        $options = $request->request->get("options");
+        $object = $request->request->get("object");
+        $res = $this->get("app.tasks.list")->removeAllTasks($object, $options, $this->getUser());
+        if ($res === false) {
+            return new JsonResponse(Array("status" => "error"));
+        }
+        return new JsonResponse(Array("status" => "ok"));
+    }
+
     public function saveAction(Request $request)
     {
         $options = $request->request->get("options");

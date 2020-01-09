@@ -2,13 +2,14 @@
 
 namespace WebsiteApi\DriveUploadBundle\Services\Storage;
 
-class EncryptionBag{
+class EncryptionBag
+{
 
     private $salt;
     private $key;
     private $mode;
 
-    public function __construct($key, $salt="", $mode = "OpenSSL-2")
+    public function __construct($key, $salt = "", $mode = "OpenSSL-2")
     {
         $this->salt = $salt;
         $this->key = $key;
@@ -62,7 +63,6 @@ class EncryptionBag{
     {
         $this->mode = $mode;
     }
-
 
 
 }

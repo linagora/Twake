@@ -35,11 +35,11 @@ class AdministrationGroup
                             "bool" => Array(
                                 "filter" => Array(
                                     "regexp" => Array(
-                                        "name" => ".*".$name.".*"
+                                        "name" => ".*" . $name . ".*"
                                     )
                                 )
                             )
-                         )
+                        )
                     )
                 ),
                 "sort" => Array(
@@ -52,7 +52,7 @@ class AdministrationGroup
         // search in ES
         $result = $this->em->es_search($options);
 
-       //var_dump(json_encode($options,JSON_PRETTY_PRINT));
+        //var_dump(json_encode($options,JSON_PRETTY_PRINT));
 
         array_slice($result["result"], 0, 5);
 
@@ -60,9 +60,9 @@ class AdministrationGroup
 
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
-        foreach ($result["result"] as $group){
+        foreach ($result["result"] as $group) {
             //var_dump($file->getAsArray());
-            $this->list_group["group"][]= Array($group[0]->getAsArray(),$group[1][0]);;
+            $this->list_group["group"][] = Array($group[0]->getAsArray(), $group[1][0]);;
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);
@@ -71,7 +71,8 @@ class AdministrationGroup
         return $this->list_group ?: null;
     }
 
-    public function getAllUsers(){
+    public function getAllUsers()
+    {
         $options = Array(
             "repository" => "TwakeUsersBundle:User",
             "index" => "users",
@@ -106,7 +107,8 @@ class AdministrationGroup
         return $this->list_group ?: null;
     }
 
-    public function getWpbyName($options){
+    public function getWpbyName($options)
+    {
 
         if (isset($options["name"])) {
             $name = $options["name"];
@@ -121,7 +123,7 @@ class AdministrationGroup
                             "bool" => Array(
                                 "filter" => Array(
                                     "regexp" => Array(
-                                        "name" => ".*".$name.".*"
+                                        "name" => ".*" . $name . ".*"
                                     )
                                 )
                             )
@@ -145,9 +147,9 @@ class AdministrationGroup
 
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
-        foreach ($result["result"] as $group){
+        foreach ($result["result"] as $group) {
             //var_dump($file->getAsArray());
-            $this->list_group["group"][]= Array($group[0]->getAsArray(),$group[1][0]);;
+            $this->list_group["group"][] = Array($group[0]->getAsArray(), $group[1][0]);;
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);
@@ -168,7 +170,7 @@ class AdministrationGroup
             "index" => "group",
             "size" => 10,
             "query" => Array(
-               "match_all" => (object)[]
+                "match_all" => (object)[]
             ),
             "sort" => Array(
                 "creation_date" => Array(
@@ -189,13 +191,13 @@ class AdministrationGroup
 
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
-        foreach ($result["result"] as $group){
+        foreach ($result["result"] as $group) {
             //var_dump($file->getAsArray());
-            $this->list_group["group"][]= Array($group[0]->getAsArray(),$group[1][0]);;
+            $this->list_group["group"][] = Array($group[0]->getAsArray(), $group[1][0]);;
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);
-       $this->list_group["scroll_id"] = $scroll_id;
+        $this->list_group["scroll_id"] = $scroll_id;
 
         return $this->list_group ?: null;
     }
@@ -238,8 +240,8 @@ class AdministrationGroup
 
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
-        foreach ($result["result"] as $wp){
-            $this->list_group["group"][]= Array($wp[0]->getAsArray(),$wp[1][0]);;
+        foreach ($result["result"] as $wp) {
+            $this->list_group["group"][] = Array($wp[0]->getAsArray(), $wp[1][0]);;
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);
@@ -266,7 +268,7 @@ class AdministrationGroup
                             "bool" => Array(
                                 "filter" => Array(
                                     "regexp" => Array(
-                                        "mail" => ".*".$mail.".*"
+                                        "mail" => ".*" . $mail . ".*"
                                     )
                                 )
                             )
@@ -291,10 +293,10 @@ class AdministrationGroup
 
         //on traite les données recu d'Elasticsearch
         //var_dump(json_encode($options));
-        foreach ($result["result"] as $mail){
+        foreach ($result["result"] as $mail) {
             //var_dump($file->getAsArray());
             $this->list_group["group"][] = $mail[0]->getUser()
-                    ->getId()."";
+                    ->getId() . "";
         }
 //        var_dump("nombre de resultat : " . count($this->list_files));
 //        var_dump($this->list_group);

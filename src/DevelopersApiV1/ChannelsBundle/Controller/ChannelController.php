@@ -52,11 +52,11 @@ class ChannelController extends Controller
         $objects = false;
         $user_id = $request->request->get("user_id", "");
         $workspace_id = $request->request->get("workspace_id", "");
-        if ($workspace_id){
+        if ($workspace_id) {
             if ($user_id) {
                 $user_entity = $this->get("app.users")->getById($user_id, true);
             }
-            if($user_entity) {
+            if ($user_entity) {
                 $objects = $this->get("app.channels.channels_system")->get(Array("workspace_id" => $workspace_id), $user_entity);
             }
         }

@@ -8,10 +8,10 @@ namespace WebsiteApi\WorkspacesBundle\Model;
 interface GroupAppsInterface
 {
 
-	// @getApps return list of apps for a group
-	public function getApps($groupId, $currentUserId=null);
+    // @getApps return list of apps for a group
+    public function getApps($groupId, $currentUserId = null);
 
-	// @setWorkspaceDefault set workspaceDefault for an application
+    // @setWorkspaceDefault set workspaceDefault for an application
     public function setWorkspaceDefault($groupId, $appid, $boolean, $currentUserId = null);
 
     // @removeApplication the given application

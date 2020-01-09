@@ -12,6 +12,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 1 0     * * *   root    cd /twake-core/; php bin/console twake:cronDaily;
 1 0     * * *   root    cd /twake-core/; php bin/console twake:daily;
 */15 *	* * *   root    cd /twake-core/; php bin/console twake:calendar_check;
+*/15 *	* * *   root    cd /twake-core/; php bin/console twake:tasks_check_reminders;
 #*/15 *	* * *   root    cd /twake-core/; php bin/console twake:calendar_synchronization;
 * *	    * * *	  root	  cd /twake-core/; php bin/console twake:notifications_queue ;
 */10 *	  * * *	  root	  cd /twake-core/; php bin/console twake:notifications_mail;

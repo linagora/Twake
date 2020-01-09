@@ -16,7 +16,9 @@ class UsersTopic implements TopicInterface, PushableTopicInterface
         return 'users.topic';
     }
 
-    public function onSubscribe( ConnectionInterface $connection, Topic $topic, WampRequest $request ){}
+    public function onSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
+    {
+    }
 
     public function onPush(Topic $topic, WampRequest $request, $connected, $provider)
     {
@@ -26,10 +28,11 @@ class UsersTopic implements TopicInterface, PushableTopicInterface
     public function onPublish(ConnectionInterface $connection, Topic $topic, WampRequest $request, $event, array $exclude, array $eligible)
     {
         $topic->broadcast($event);
-	}
+    }
 
-	public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request){
-	}
+    public function onUnSubscribe(ConnectionInterface $connection, Topic $topic, WampRequest $request)
+    {
+    }
 
 }
 

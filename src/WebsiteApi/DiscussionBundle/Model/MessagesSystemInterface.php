@@ -5,19 +5,19 @@ namespace WebsiteApi\DiscussionBundle\Model;
 interface MessagesSystemInterface
 {
 
-	// @getStream returns a stream array object or null
-	// Array(
-	//   "type" : "user", "stream", "public"
-	//   "object" : stream entity entity
-	//   "key" : websocket chamber key
-	// )
-	public function getStream($streamKey, $currentUser=null);
+    // @getStream returns a stream array object or null
+    // Array(
+    //   "type" : "user", "stream", "public"
+    //   "object" : stream entity entity
+    //   "key" : websocket chamber key
+    // )
+    public function getStream($streamKey, $currentUser = null);
 
-	// @isInPrivate returns true or false if is in private stream
-	public function isInPrivate($streamObject, $currentUser);
+    // @isInPrivate returns true or false if is in private stream
+    public function isInPrivate($streamObject, $currentUser);
 
-	// @isAllowed returns true or false
-	public function isAllowed($streamObject, $currentUser, $action="read");
+    // @isAllowed returns true or false
+    public function isAllowed($streamObject, $currentUser, $action = "read");
 
     /**
      * Create message to send
@@ -31,7 +31,7 @@ interface MessagesSystemInterface
      * @param null $subjectId
      * @return mixed
      */
-    public function sendMessage($senderId, $recieverType, $recieverId,$isApplicationMessage,$applicationMessage,$isSystemMessage, $content,$workspace, $subjectId=null, $notify=true);
+    public function sendMessage($senderId, $recieverType, $recieverId, $isApplicationMessage, $applicationMessage, $isSystemMessage, $content, $workspace, $subjectId = null, $notify = true);
 
     public function notifySendMessage($stream, $excepts_array, $message_id);
 
@@ -42,7 +42,7 @@ interface MessagesSystemInterface
      * @param $user
      * @return mixed
      */
-    public function editMessage($id,$content,$user);
+    public function editMessage($id, $content, $user);
 
     /**
      * get list of messages
@@ -53,7 +53,7 @@ interface MessagesSystemInterface
      * @param $subjectId
      * @return mixed
      */
-    public function getMessages($key,$maxId,$subjectId,$user);
+    public function getMessages($key, $maxId, $subjectId, $user);
 
 
     /**
@@ -63,7 +63,7 @@ interface MessagesSystemInterface
      * @param $user
      * @return mixed
      */
-    public function pinMessage($id,$pinned,$user);
+    public function pinMessage($id, $pinned, $user);
 
 
     /**
@@ -77,14 +77,14 @@ interface MessagesSystemInterface
      * @param $user
      * @return mixed
      */
-    public function searchMessage($idDiscussion,$content,$from,$dateStart,$dateEnd,$application,$user);
+    public function searchMessage($idDiscussion, $content, $from, $dateStart, $dateEnd, $application, $user);
 
     /**
      * @param $discussionKey
      * @param $user
      * @return mixed
      */
-    public function searchDriveMessage($discussionKey,$user);
+    public function searchDriveMessage($discussionKey, $user);
 
     /**
      * drop message in other message to response
@@ -93,14 +93,14 @@ interface MessagesSystemInterface
      * @param $user
      * @return mixed
      */
-    public function moveMessageInMessage($idDrop,$idDragged,$user);
+    public function moveMessageInMessage($idDrop, $idDragged, $user);
 
     /**
      * @param $idDragged
      * @param $user
      * @return mixed
      */
-    public function moveMessageOutMessage($idDragged,$user);
+    public function moveMessageOutMessage($idDragged, $user);
 
     /**
      * @param $idSubject
@@ -108,20 +108,21 @@ interface MessagesSystemInterface
      * @param $user
      * @return mixed
      */
-    public function moveMessageInSubject($idSubject,$idMessage,$user);
+    public function moveMessageInSubject($idSubject, $idMessage, $user);
+
     /**
      * @param $id
      * @param $user
      * @return mixed
      */
-    public function deleteMessage($id,$user);
+    public function deleteMessage($id, $user);
 
     /**
      * get lists of message as array. Sort message by response, subject etc..
      * @param $message
      * @return mixed
      */
-    public function getMessageAsArray($message,$isSubject=false,$isResponse=false);
+    public function getMessageAsArray($message, $isSubject = false, $isResponse = false);
 
     /**
      * notify changement of message on discussion
@@ -130,6 +131,6 @@ interface MessagesSystemInterface
      * @param $message
      * @return mixed
      */
-    public function notify($discussionKey,$type,$message);
+    public function notify($discussionKey, $type, $message);
 
 }

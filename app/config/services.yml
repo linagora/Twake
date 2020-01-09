@@ -30,10 +30,6 @@ services:
         class: WebsiteApi\WorkspacesBundle\Services\UpdateGroup
         arguments: ['@app.pusher']
 
-    app.callSystem:
-            class: WebsiteApi\CallsBundle\Services\Calls
-            arguments: ["@app.string_cleaner", "@app.twake_doctrine", '@security.authorization_checker', "@app.messages", "@app.pusher"]
-
     app.command_executor:
                 class: WebsiteApi\DiscussionBundle\Services\CommandExecutor
                 arguments: ["@app.string_cleaner", "@app.twake_doctrine", '@security.authorization_checker',"@app.notifications"]

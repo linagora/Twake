@@ -11,7 +11,7 @@ use WebsiteApi\CoreBundle\Entity\SearchableObject;
 /**
  * Task
  *
- * @ORM\Table(name="tasks_task",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "id":"ASC"}, {"id":"ASC"}} })
+ * @ORM\Table(name="tasks_task",options={"engine":"MyISAM", "scylladb_keys": {{"board_id":"ASC", "id":"ASC"}, {"id":"ASC"}, {"list_id":"ASC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\TasksBundle\Repository\TaskRepository")
  */
 class Task extends SearchableObject
@@ -45,6 +45,11 @@ class Task extends SearchableObject
      * @ORM\Column(name="before", type="twake_bigint")
      */
     private $before = 0;
+
+    /**
+     * @ORM\Column(name="start_time", type="twake_bigint")
+     */
+    private $start_time = 0;
 
     /**
      * @ORM\Column(name="title", type="twake_text")
@@ -102,6 +107,12 @@ class Task extends SearchableObject
     protected $workspace_id;
 
 
+    /**
+     * @ORM\Column(name="attachements", type="twake_text")
+     */
+    private $attachements = "[]";
+
+
     public function __construct($board_id, $list_id, $title)
     {
         $this->setTitle($title);
@@ -113,17 +124,23 @@ class Task extends SearchableObject
 
     public function getIndexationArray()
     {
+        $participants = [];
+        foreach ($this->getParticipants() as $p) {
+            $participants[] = $p["user_id_or_mail"];
+        }
+
         return Array(
-            "id" => $this->getId()."",
+            "id" => $this->getId() . "",
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
             "owner" => $this->getOwner(),
             "tags" => $this->getTags(),
-            'date_from' =>  ($this->getTaskCreatedAt() ? date('Y-m-d',$this->getTaskCreatedAt()) : null),
-            'date_to' => ($this->getTaskCreatedAt() ? date('Y-m-d',$this->getTaskCreatedAt()) : null),
-            "date_last_modified" =>  ($this->getTaskLastModified() ? date('Y-m-d',$this->getTaskLastModified()) : null),
+            'before' => ($this->getBefore() ? date('Y-m-d', $this->getBefore()) : null),
+            'start' => ($this->getStartTime() ? date('Y-m-d', $this->getStartTime()) : null),
+            'date_created' => ($this->getTaskCreatedAt() ? date('Y-m-d', $this->getTaskCreatedAt()) : null),
+            "date_last_modified" => ($this->getTaskLastModified() ? date('Y-m-d', $this->getTaskLastModified()) : null),
             "workspace_id" => $this->getWorkspaceId(),
-            "participants" => $this->getParticipants()
+            "participants" => $participants
         );
 
     }
@@ -354,6 +371,22 @@ class Task extends SearchableObject
     /**
      * @return mixed
      */
+    public function getStartTime()
+    {
+        return $this->start_time;
+    }
+
+    /**
+     * @param mixed $before
+     */
+    public function setStartTime($start_time)
+    {
+        $this->start_time = $start_time;
+    }
+
+    /**
+     * @return mixed
+     */
     public function getTaskCreatedAt()
     {
         return $this->task_created_at;
@@ -399,6 +432,22 @@ class Task extends SearchableObject
         $this->archived = $archived;
     }
 
+    /**
+     * @return mixed
+     */
+    public function getAttachements()
+    {
+        return json_decode($this->attachements, true);
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setAttachements($attachements)
+    {
+        $this->attachements = json_encode($attachements);
+    }
+
     public function getAsArray()
     {
         return Array(
@@ -411,6 +460,7 @@ class Task extends SearchableObject
             "task_last_modified" => $this->getTaskLastModified(),
             "archived" => !!$this->getArchived(),
             "before" => $this->getBefore(),
+            "start" => $this->getStartTime(),
             "title" => $this->getTitle(),
             "description" => $this->getDescription(),
             "checklist" => $this->getCheckList(),
@@ -418,7 +468,8 @@ class Task extends SearchableObject
             "participants" => $this->getParticipants(),
             "notifications" => $this->getNotifications(),
             "tags" => $this->getTags(),
-            "workspace_id" => $this->getWorkspaceId()
+            "workspace_id" => $this->getWorkspaceId(),
+            "attachments" => $this->getAttachements()
         );
     }
 

@@ -21,24 +21,25 @@ class AccessLogSystem
 
     }
 
-    public function record($applicationId, $rightLevel){
+    public function record($applicationId, $rightLevel)
+    {
         $accessLogger = $this->doctrine->getRepository("DevelopersApiV1CoreBundle:AccessLog")->findOneBy(Array("appid" => $applicationId));
 
-        if($accessLogger==null) {
+        if ($accessLogger == null) {
             $accessLogger = new AccessLog();
             $accessLogger->setAppId($applicationId);
         }
 
         $minutes = $accessLogger->getMinutes();
 
-        if($minutes!=date("i"))
+        if ($minutes != date("i"))
             $accessLogger->clear(date("i"));
 
-        if($rightLevel==1) //read
+        if ($rightLevel == 1) //read
             $accessLogger->readAccessIncrease();
-        elseif($rightLevel==2) //write
+        elseif ($rightLevel == 2) //write
             $accessLogger->writeAccessIncrease();
-        elseif($rightLevel==3) //manage
+        elseif ($rightLevel == 3) //manage
             $accessLogger->manageAccessIncrease();
 
         $this->doctrine->persist($accessLogger);

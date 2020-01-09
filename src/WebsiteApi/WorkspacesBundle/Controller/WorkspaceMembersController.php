@@ -31,34 +31,8 @@ class WorkspaceMembersController extends Controller
         $max = $request->request->get("max", null);
         $offset = $request->request->get("offset", null);
 
-        $members = $this->get("app.workspace_members")->getMembers($workspaceId, $this->getUser()->getId(), $order, $max, $offset);
-        $list = Array();
-        foreach ($members as $member) {
-            $user = $member["user"]->getAsArray();
-            $list[] = Array(
-                "user" => $user,
-                "last_access" => $member["last_access"],
-                "level" => $member["level"],
-                "externe" => $member["externe"],
-                "autoAddExterne" => $member["autoAddExterne"],
-                "groupLevel" => $member["groupLevel"]
-            );
-        }
-
-        $pendingMails = $this->get("app.workspace_members")->getPendingMembers($workspaceId, $this->getUser()->getId());
-
-        $listMails = Array();
-        foreach ($pendingMails as $mail) {
-            $listMails[] = Array(
-                "mail" => $mail->getMail(),
-                "externe" => $mail->getExterne()
-            );
-        }
-
-        $response["data"] = Array(
-            "mails" => $listMails,
-            "members" => $list
-        );
+        $all_info = $this->get("app.workspace_members")->getMembersAndPending($workspaceId, $this->getUser()->getId(), $order, $max, $offset);
+        $response["data"] = $all_info;
 
         return new JsonResponse($response);
     }
@@ -78,7 +52,7 @@ class WorkspaceMembersController extends Controller
         $list = preg_replace('!\s+!', ' ', $list);
         $list = explode(" ", $list);
 
-        $added = Array("user"=>Array(),"pending"=>Array());
+        $added = Array("user" => Array(), "pending" => Array());
         $not_added = Array();
         foreach ($list as $element) {
             $element = trim($element);
@@ -90,14 +64,14 @@ class WorkspaceMembersController extends Controller
             $element = $element[0];
             if (strlen($element) > 0) {
                 if (strrpos($element, "@") <= 0) { //No mail or "@username"
-                    $res = $this->get("app.workspace_members")->addMemberByUsername($workspaceId, $element, $asExterne,true, $this->getUser()->getId());
+                    $res = $this->get("app.workspace_members")->addMemberByUsername($workspaceId, $element, $asExterne, true, $this->getUser()->getId());
                     if ($res) {
                         $added["user"][] = $element;
                     } else {
                         $not_added[] = $element;
                     }
                 } else {
-                    $res = $this->get("app.workspace_members")->addMemberByMail($workspaceId, $element, $asExterne,true, $this->getUser()->getId());
+                    $res = $this->get("app.workspace_members")->addMemberByMail($workspaceId, $element, $asExterne, true, $this->getUser()->getId());
                     if ($res == "user") {
                         $added["user"][] = $element;
                     } elseif ($res == "mail") {
@@ -202,7 +176,7 @@ class WorkspaceMembersController extends Controller
                 "ishidden" => $workspace["ishidden"],
                 "isfavorite" => $workspace["isfavorite"],
                 "hasnotifications" => $workspace["hasnotifications"],
-                "isArchived" => $workspace["isArchived"]            );
+                "isArchived" => $workspace["isArchived"]);
         }
 
         if (count($workspaces) == 0) {

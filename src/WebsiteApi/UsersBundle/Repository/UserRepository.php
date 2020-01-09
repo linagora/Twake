@@ -32,6 +32,11 @@ class UserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\Rep
             $message = sprintf('Unable to find active admin identified by %s', $username);
             throw new UsernameNotFoundException($message, 0, $e);
         }
+
+        if ($user) {
+            $user->setIdAsString();
+        }
+
         return $user;
     }
 
@@ -45,7 +50,18 @@ class UserRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\Rep
             throw new UnsupportedUserException($message);
         }
 
-        return $this->find($user->id_as_string_for_session_handler);
+        if ($user->id_as_string_for_session_handler) {
+            $res = $this->find($user->id_as_string_for_session_handler);
+        } else {
+            $res = $this->find($user->getId() . "");
+        }
+
+        if (!$res || !gettype($res) || gettype($res) == "NULL") {
+            error_log("refresh pass" . gettype($res) . " - " . $user->id_as_string_for_session_handler);
+            error_log($user->getId());
+        }
+
+        return $res;
     }
 
 

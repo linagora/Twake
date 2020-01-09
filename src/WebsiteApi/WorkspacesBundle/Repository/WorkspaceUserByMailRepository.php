@@ -10,44 +10,44 @@ namespace WebsiteApi\WorkspacesBundle\Repository;
  */
 class WorkspaceUserByMailRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
-	public function getSomeUsers($workspace,$type, $offset, $length)
-	{
-		$qb = $this->createQueryBuilder("l")
-			->select('l')
-			->where('l.workspace = :workspace');
-			//->andWhere('l.status = :type');
-		if($length>0) {
-			$qb = $qb->setMaxResults($length);
-		}
-		$qb = $qb->setFirstResult($offset)
+    public function getSomeUsers($workspace, $type, $offset, $length)
+    {
+        $qb = $this->createQueryBuilder("l")
+            ->select('l')
+            ->where('l.workspace = :workspace');
+        //->andWhere('l.status = :type');
+        if ($length > 0) {
+            $qb = $qb->setMaxResults($length);
+        }
+        $qb = $qb->setFirstResult($offset)
             ->setParameter('workspace', $this->queryBuilderUuid($workspace));
-			//->setParameter('type', $type);
+        //->setParameter('type', $type);
 
-		return $qb->getQuery()->getResult();
-	}
+        return $qb->getQuery()->getResult();
+    }
 
-	public function deleteUserFromGroup($workspaces_ids, $user)
-	{
-		$qb = $this->createQueryBuilder("l");
+    public function deleteUserFromGroup($workspaces_ids, $user)
+    {
+        $qb = $this->createQueryBuilder("l");
 
-		$qb = $qb->delete('l')
-			->andWhere('l.user = :user')
-			->andWhere('l.workspace_id IN (:ids)')
+        $qb = $qb->delete('l')
+            ->andWhere('l.user = :user')
+            ->andWhere('l.workspace_id IN (:ids)')
             ->setParameter('user', $this->queryBuilderUuid($user))
             ->setParameter('ids', $this->queryBuilderUuid($workspaces_ids));
 
-		return $qb->getQuery()->getResult();
-	}
+        return $qb->getQuery()->getResult();
+    }
 
-	public function getUserFromGroup($workspaces_ids)
-	{
-		$qb = $this->createQueryBuilder("l");
+    public function getUserFromGroup($workspaces_ids)
+    {
+        $qb = $this->createQueryBuilder("l");
 
-		$qb = $qb->select('l')
-			->andWhere('l.workspace_id IN (:ids)')
+        $qb = $qb->select('l')
+            ->andWhere('l.workspace_id IN (:ids)')
             ->setParameter('ids', $this->queryBuilderUuid($workspaces_ids));
 
-		return $qb->getQuery()->getResult();
-	}
+        return $qb->getQuery()->getResult();
+    }
 
 }

@@ -7,6 +7,7 @@ use WebsiteApi\CalendarBundle\Entity\Event;
 use WebsiteApi\CalendarBundle\Entity\EventNotification;
 use WebsiteApi\CalendarBundle\Entity\EventUser;
 use WebsiteApi\CalendarBundle\Entity\EventCalendar;
+use WebsiteApi\CoreBundle\CommonObjects\AttachementManager;
 
 class CalendarEvent
 {
@@ -18,6 +19,7 @@ class CalendarEvent
         $this->enc_pusher = $enc_pusher;
         $this->applications_api = $application_api;
         $this->notifications = $notifications;
+        $this->attachementManager = new AttachementManager($this->doctrine, $this->enc_pusher);
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -101,11 +103,17 @@ class CalendarEvent
 
     private function removeEventDependancesById($id)
     {
+        $event = $this->doctrine->getRepository("TwakeCalendarBundle:Event")->findOneBy(Array("id" => $id));
+        if ($event) {
+            $this->attachementManager->removeAttachementsFromEntity($event);
+        }
+
         $entities = $this->doctrine->getRepository("TwakeCalendarBundle:EventCalendar")->findBy(Array("event_id" => $id));
         $entities = array_merge($entities, $this->doctrine->getRepository("TwakeCalendarBundle:EventNotification")->findBy(Array("event_id" => $id)));
         $entities = array_merge($entities, $this->doctrine->getRepository("TwakeCalendarBundle:EventUser")->findBy(Array("event_id" => $id)));
         foreach ($entities as $entity) {
             $this->doctrine->remove($entity);
+
         }
         $this->doctrine->flush();
     }
@@ -213,7 +221,6 @@ class CalendarEvent
             if (isset($object["workspaces_calendars"]) && is_array($object["workspaces_calendars"])) {
                 $event->setWorkspaceId($object["workspaces_calendars"][0]["workspace_id"]);
             }
-
             $did_create = true;
         }
 
@@ -251,13 +258,17 @@ class CalendarEvent
 
         $event->setEventLastModified();
 
-        if(isset($object["tags"])){
+        if (isset($object["tags"])) {
             $event->setTags($object["tags"]);
         }
 
 
         $this->doctrine->persist($event);
         $this->doctrine->flush();
+
+        if (isset($object["attachments"]) || $did_create) {
+            $this->attachementManager->updateAttachements($event, $object["attachments"] ? $object["attachments"] : Array());
+        }
 
         $old_participants = $event->getParticipants();
         if (isset($object["participants"]) || $did_create || $sort_key_has_changed) {
@@ -286,6 +297,7 @@ class CalendarEvent
                 }
             }
 
+
             $this->updateParticipants($event, $object["participants"] ? $object["participants"] : Array(), $sort_key_has_changed || $did_create);
         }
         if (isset($object["workspaces_calendars"]) || $sort_key_has_changed) {
@@ -300,6 +312,7 @@ class CalendarEvent
 
             $this->updateCalendars($event, $object["workspaces_calendars"] ? $object["workspaces_calendars"] : Array(), $sort_key_has_changed || $did_create);
         }
+
 
         //After checking user id or mails, we verify event is somewere
         if (count($event->getParticipants()) == 0 && count($event->getWorkspacesCalendars()) == 0) {
@@ -439,11 +452,11 @@ class CalendarEvent
         $updated_participants_fixed = $current_participants;
 
         $get_diff = $this->getArrayDiffUsingKeys($updated_participants, $current_participants, ["user_id_or_mail"]);
-
+        error_log("get diff" . json_encode($get_diff));
         if (count($get_diff["del"]) > 0 || $replace_all) {
             $users_in_event = $this->doctrine->getRepository("TwakeCalendarBundle:EventUser")->findBy(Array("event_id" => $event->getId()));
             foreach ($users_in_event as $user) {
-                if (!$this->inArrayUsingKeys($get_diff["del"], Array("user_id_or_mail" => $user->getUserIdOrMail()), ["user_id_or_mail"]) || $replace_all) {
+                if ($this->inArrayUsingKeys($get_diff["del"], Array("user_id_or_mail" => $user->getUserIdOrMail()), ["user_id_or_mail"]) || $replace_all) {
                     //Remove old participants
                     $this->doctrine->remove($user);
 
@@ -499,7 +512,6 @@ class CalendarEvent
             $_updated_participants_fixed[] = $v;
         }
         $updated_participants_fixed = $_updated_participants_fixed;
-
         $event->setParticipants($updated_participants_fixed);
         $this->doctrine->persist($event);
 
@@ -607,6 +619,7 @@ class CalendarEvent
         return $in;
     }
 
+
     public function formatArrayInput($array, $id_keys = [])
     {
         $updated_array = [];
@@ -644,7 +657,6 @@ class CalendarEvent
         }
         return $updated_array;
     }
-
 
     public function checkReminders()
     {

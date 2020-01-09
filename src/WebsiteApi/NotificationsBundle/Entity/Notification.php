@@ -13,13 +13,13 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
  */
 class Notification
 {
-	/**
-	 * @var int
-	 *
+    /**
+     * @var int
+     *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
      */
-	private $id;
+    private $id;
 
     /**
      * @ORM\Column(type="twake_text")
@@ -32,17 +32,17 @@ class Notification
      */
     private $channel_id;
 
-	/**
+    /**
      * @ORM\Column(type="twake_text")
      * @ORM\Id
-	 */
+     */
     private $workspace_id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
      * @ORM\Id
      */
-	private $user;
+    private $user;
 
     /**
      * @ORM\Column(type="twake_text", nullable=true)
@@ -56,13 +56,13 @@ class Notification
 
     /**
      * @ORM\Column(type="twake_text",  nullable=true)
-	 */
-	private $title;
+     */
+    private $title;
 
-	/**
+    /**
      * @ORM\Column(type="twake_text",  nullable=true)
-	 */
-	private $text;
+     */
+    private $text;
 
     /**
      * @ORM\Column(type="twake_text")
@@ -90,126 +90,126 @@ class Notification
     private $isread;
 
     public function __construct($application_id, $workspace_id, $channel_id, $user)
-	{
-		$this->date = new \DateTime();
+    {
+        $this->date = new \DateTime();
         $this->application_id = $application_id;
         $this->workspace_id = $workspace_id;
         $this->channel_id = $channel_id;
-		$this->user = $user;
-		$this->setIsRead(false);
-	}
+        $this->user = $user;
+        $this->setIsRead(false);
+    }
 
-	/**
-	 * @return int
-	 */
-	public function setId($id)
+    /**
+     * @return int
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
 
     public function getId()
     {
-		return $this->id;
-	}
+        return $this->id;
+    }
 
-	/**
-	 * @return mixed
-	 */
+    /**
+     * @return mixed
+     */
     public function getApplicationId()
     {
         return $this->application_id;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
+    /**
+     * @return mixed
+     */
     public function getWorkspaceId()
     {
         return $this->workspace_id;
-	}
+    }
 
-	/**
-	 * @return \DateTime
-	 */
-	public function getDate()
-	{
-		return $this->date;
-	}
+    /**
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getUser()
-	{
-		return $this->user;
-	}
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getCode()
-	{
-		return $this->code;
-	}
+    /**
+     * @return mixed
+     */
+    public function getCode()
+    {
+        return $this->code;
+    }
 
-	/**
-	 * @param mixed $code
-	 */
-	public function setCode($code)
-	{
-		$this->code = $code;
-	}
+    /**
+     * @param mixed $code
+     */
+    public function setCode($code)
+    {
+        $this->code = $code;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getTitle()
-	{
-		return $this->title;
-	}
+    /**
+     * @return mixed
+     */
+    public function getTitle()
+    {
+        return $this->title;
+    }
 
-	/**
-	 * @param mixed $title
-	 */
-	public function setTitle($title)
-	{
-		$this->title = $title;
-	}
+    /**
+     * @param mixed $title
+     */
+    public function setTitle($title)
+    {
+        $this->title = $title;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getText()
-	{
-		return $this->text;
-	}
+    /**
+     * @return mixed
+     */
+    public function getText()
+    {
+        return $this->text;
+    }
 
-	/**
-	 * @param mixed $text
-	 */
-	public function setText($text)
-	{
-		$this->text = $text;
-	}
+    /**
+     * @param mixed $text
+     */
+    public function setText($text)
+    {
+        $this->text = $text;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getData()
-	{
-		if(!$this->data){
-			return null;
-		}
-		return json_decode($this->data, 1);
-	}
+    /**
+     * @return mixed
+     */
+    public function getData()
+    {
+        if (!$this->data) {
+            return null;
+        }
+        return json_decode($this->data, 1);
+    }
 
-	/**
-	 * @param mixed $data
-	 */
-	public function setData($data)
-	{
-		$this->data = json_encode($data);
-	}
+    /**
+     * @param mixed $data
+     */
+    public function setData($data)
+    {
+        $this->data = json_encode($data);
+    }
 
     /**
      * @return mixed
@@ -252,21 +252,21 @@ class Notification
     }
 
 
-
-	public function getAsArray(){
-		return Array(
-			"id" => $this->getId(),
-			"date" => $this->getDate()->getTimestamp(),
-			"code" => $this->getCode(),
+    public function getAsArray()
+    {
+        return Array(
+            "id" => $this->getId(),
+            "date" => $this->getDate()->getTimestamp(),
+            "code" => $this->getCode(),
             "workspace_id" => ($this->getWorkspaceId() ? $this->getWorkspaceId() : null),
             "application_id" => ($this->getApplicationId() ? $this->getApplication() : null),
             "channel_id" => ($this->getChannelId() ? $this->getChannelId() : null),
-			"title" => $this->getTitle(),
-			"text" => $this->getText(),
+            "title" => $this->getTitle(),
+            "text" => $this->getText(),
             "is_read" => $this->getisRead(),
-			"data" => $this->getData()
-		);
-	}
+            "data" => $this->getData()
+        );
+    }
 
     /**
      * @return mixed
@@ -299,7 +299,6 @@ class Notification
     {
         $this->shortcut = $shortcut;
     }
-
 
 
 }

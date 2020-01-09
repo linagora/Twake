@@ -7,8 +7,6 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use WebsiteApi\CoreBundle\Entity\SearchableObject;
 
 
-
-
 /**
  * Workspace
  *
@@ -25,14 +23,14 @@ class Workspace extends SearchableObject
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
-	/**
+    /**
      * @ORM\Column(name="name", type="twake_text", nullable=true)
      * @Encrypted
-	 */
-	private $name;
+     */
+    private $name;
 
     /**
      * @ORM\Column(name="uniquename", type="twake_text", nullable=true)
@@ -43,8 +41,8 @@ class Workspace extends SearchableObject
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
-	 */
-	private $logo;
+     */
+    private $logo;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UploadBundle\Entity\File")
@@ -56,34 +54,34 @@ class Workspace extends SearchableObject
      */
     private $color = "#7E7A6D";
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Group")
-	 */
-	private $group;
+     */
+    private $group;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-	 */
-	private $user;
+     */
+    private $user;
 
-	/**
+    /**
      * @ORM\OneToMany(targetEntity="WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser", mappedBy="workspace")
-	 */
-	private $members;
+     */
+    private $members;
 
     /**
      * @ORM\Column(name="member_count", type="integer")
      */
     private $member_count = 0;
 
-	/**
+    /**
      * @ORM\Column(type="twake_datetime")
-	 */
-	private $date_added;
+     */
+    private $date_added;
 
-	/**
+    /**
      * @ORM\Column(name="isdeleted", type="twake_boolean")
-	 */
+     */
     private $is_deleted = false;
 
     /**
@@ -105,17 +103,18 @@ class Workspace extends SearchableObject
      * Workspace constructor.
      * @param $name
      */
-	public function __construct($name) {
-		$this->name = $name;
-		$this->date_added = new \DateTime();
-	}
+    public function __construct($name)
+    {
+        $this->name = $name;
+        $this->date_added = new \DateTime();
+    }
 
     public function getIndexationArray()
     {
         $return = Array(
-            "id" => $this->getId()."",
+            "id" => $this->getId() . "",
             "name" => $this->getName(),
-            "group_id" => $this->getGroup()->getId()."",
+            "group_id" => $this->getGroup()->getId() . "",
             "creation_date" => ($this->getDateAdded() ? $this->getDateAdded()->format('Y-m-d') : null),
         );
         return $return;
@@ -138,10 +137,10 @@ class Workspace extends SearchableObject
     }
 
 
-	/**
-	 * @return int
-	 */
-	public function setId($id)
+    /**
+     * @return int
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -149,31 +148,31 @@ class Workspace extends SearchableObject
     public function getId()
     {
         return $this->id;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getDateAdded()
-	{
-		return $this->date_added;
-	}
+    /**
+     * @return mixed
+     */
+    public function getDateAdded()
+    {
+        return $this->date_added;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @param mixed $name
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
-	}
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
     /**
      * @return mixed
@@ -191,100 +190,100 @@ class Workspace extends SearchableObject
         $this->uniquename = $name;
     }
 
-	/**
-	 * @return mixed
-	 */
-	public function getLogo()
-	{
-		return $this->logo;
-	}
+    /**
+     * @return mixed
+     */
+    public function getLogo()
+    {
+        return $this->logo;
+    }
 
-	/**
-	 * @param mixed $logo
-	 */
-	public function setLogo($logo)
-	{
-		$this->logo = $logo;
-	}
+    /**
+     * @param mixed $logo
+     */
+    public function setLogo($logo)
+    {
+        $this->logo = $logo;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getWallpaper()
-	{
-		return $this->wallpaper;
-	}
+    /**
+     * @return mixed
+     */
+    public function getWallpaper()
+    {
+        return $this->wallpaper;
+    }
 
-	/**
-	 * @param mixed $logo
-	 */
-	public function setWallpaper($w)
-	{
-		$this->wallpaper = $w;
-	}
+    /**
+     * @param mixed $logo
+     */
+    public function setWallpaper($w)
+    {
+        $this->wallpaper = $w;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getGroup()
-	{
-		return $this->group;
-	}
+    /**
+     * @return mixed
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
 
-	/**
-	 * @param mixed $group
-	 */
-	public function setGroup($group)
-	{
-		$this->group = $group;
-	}
+    /**
+     * @param mixed $group
+     */
+    public function setGroup($group)
+    {
+        $this->group = $group;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getUser()
-	{
-		return $this->user;
-	}
+    /**
+     * @return mixed
+     */
+    public function getUser()
+    {
+        return $this->user;
+    }
 
-	/**
-	 * @param mixed $user
-	 */
-	public function setUser($user)
-	{
-		$this->user = $user;
-	}
+    /**
+     * @param mixed $user
+     */
+    public function setUser($user)
+    {
+        $this->user = $user;
+    }
 
-	/**
-	 * @return mixed
-	 */
+    /**
+     * @return mixed
+     */
     public function getis_deleted()
     {
         return $this->is_deleted;
-	}
+    }
 
-	/**
+    /**
      * @param mixed $is_deleted
-	 */
+     */
     public function setis_deleted($is_deleted)
     {
         $this->is_deleted = $is_deleted;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getMembers()
-	{
-		return $this->members;
-	}
+    /**
+     * @return mixed
+     */
+    public function getMembers()
+    {
+        return $this->members;
+    }
 
     /**
      * @return mixed
      */
     public function getMemberCount()
     {
-        if(!$this->member_count || $this->member_count<0){
+        if (!$this->member_count || $this->member_count < 0) {
             return 0;
         }
         return $this->member_count;
@@ -369,20 +368,21 @@ class Workspace extends SearchableObject
     }
 
 
-	public function getAsArray(){
-		return Array(
-			"id"=> $this->getId(),
-			"private" => $this->getUser()!=null,
-			"logo" => (($this->getLogo())?$this->getLogo()->getPublicURL():""),
-			"wallpaper" => (($this->getWallpaper())?$this->getWallpaper()->getPublicURL():""),
+    public function getAsArray()
+    {
+        return Array(
+            "id" => $this->getId(),
+            "private" => $this->getUser() != null,
+            "logo" => (($this->getLogo()) ? $this->getLogo()->getPublicURL() : ""),
+            "wallpaper" => (($this->getWallpaper()) ? $this->getWallpaper()->getPublicURL() : ""),
             "color" => $this->getColor(),
-			"group" => (($this->getGroup())?$this->getGroup()->getAsArray():null),
-			"name" => $this->getName(),
+            "group" => (($this->getGroup()) ? $this->getGroup()->getAsArray() : null),
+            "name" => $this->getName(),
             "total_members" => $this->getMemberCount() - 1, //Remove Twake bot
             "uniqueName" => $this->getUniqueName(),
             "isArchived" => $this->getisArchived(),
             "isNew" => $this->getisNew()
-		);
-	}
+        );
+    }
 
 }

@@ -208,7 +208,7 @@ class UserLoginTest extends WebTestCaseExtended
         $this->assertEquals(true, $ticket->getVerified());
 
 
-        $this->assertEquals(true, $user->getMailVerified());
+        $this->assertEquals(true, $user->getMailVerifiedExtended());
 
         $email = $this->getDoctrine()->getRepository("TwakeUsersBundle:Mail")->findOneBy(Array("mail" => "usertest001@twake_phpunit.fr"));
         $email = $email->getMail();

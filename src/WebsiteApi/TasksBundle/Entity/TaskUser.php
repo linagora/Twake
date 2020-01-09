@@ -75,6 +75,7 @@ class TaskUser
     {
         return $this->task_id;
     }
+
     /**
      * @return mixed
      */

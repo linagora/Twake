@@ -3,12 +3,13 @@
 
 namespace WebsiteApi\GlobalSearchBundle\Services;
 
+use WebsiteApi\CoreBundle\Services\StringCleaner;
 
 class AdvancedEvent
 {
     private $doctrine;
     private $workspaceservice;
-    private $list_events = Array("events" => Array(), "scroll_id" => "");
+    private $list_events = Array("results" => Array(), "scroll_id" => "");
 
 
     public function __construct($doctrine, $workspaceservice)
@@ -19,209 +20,91 @@ class AdvancedEvent
     }
 
 
-    public function AdvancedEvent($current_user_id,$options,$workspaces)
+    public function AdvancedEvent($current_user_id, $options, $workspaces)
     {
+        $known_workspaces_by_id = Array();
 
-        $workspace_access = Array();
-        foreach ($workspaces as $wp){
-            $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $wp));
-            $members = $wp_entity->getMembers();
-            foreach ($members as $member){
-                if($member->getUser()->getId()."" === $current_user_id){
+        //Prepare parameters
+        if (!$options["title"]) {
+            $options["title"] = $options["name"];
+        }
+
+        $workspace_access = [];
+        if (!$workspaces && !is_array($workspaces)) {
+            $workspace_access_tmp = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findBy(Array("user" => $current_user_id));
+            foreach ($workspace_access_tmp as $wp) {
+                $workspace_access[] = $wp->getWorkspace();
+            }
+        } else {
+            foreach ($workspaces as $wp) {
+                if (!is_string($wp)) {
+                    if (is_array($wp)) {
+                        $known_workspaces_by_id[$wp["id"]] = $wp;
+                        $wp = $wp["id"];
+                    } else {
+                        $known_workspaces_by_id[$wp->getId()] = $wp->getAsArray();
+                        $wp = $wp->getId();
+                    }
+                }
+                $wp_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser")->findOneBy(Array("workspace" => $wp, "user" => $current_user_id));
+                if ($wp_entity) {
                     $workspace_access[] = $wp;
                 }
             }
         }
+        $workspaces = $workspace_access;
+
+        $workspaces_ids = [];
+        foreach ($workspaces as $wp) {
+            if (!is_string($wp)) {
+                if (is_array($wp)) {
+                    $known_workspaces_by_id[$wp["id"]] = $wp;
+                    $wp = $wp["id"];
+                } else {
+                    $known_workspaces_by_id[$wp->getId()] = $wp->getAsArray();
+                    $wp = $wp->getId();
+                }
+            }
+            $workspaces_ids[] = $wp;
+        }
+        $workspaces = $workspaces_ids;
 
         //on regarde avant l'acces pour ne faire qu'une requete sur ES et pour pouvoir profitier de l'ordonnocement par pertinence
-        if(isset($workspace_access) && $workspace_access != Array()){
+        if (isset($workspace_access) && $workspace_access != Array()) {
 
-            $options_save = $options;
             $must = Array();
 
-            //PARTIE SUR LE NAME
-
-            if(isset($options["title"])) {
-                $title= Array(
-                    "bool" =>Array(
-                        "should" => Array(
-                            "bool" => Array(
-                                "filter" => Array(
-                                    "regexp" => Array(
-                                        "title" => ".*" . $options["title"] . ".*"
-                                    )
-                                )
-                            )
-                        ),
-                        "minimum_should_match" => 1
-                    )
-                );
-                $must[] = $title;
-
-            }
-
-            if(isset($options["description"])) {
-                $description= Array(
-                    "bool" =>Array(
-                        "should" => Array(
-                            "bool" => Array(
-                                "filter" => Array(
-                                    "regexp" => Array(
-                                        "description" => ".*" . $options["description"] . ".*"
-                                    )
-                                )
-                            )
-                        ),
-                        "minimum_should_match" => 1
-                    )
-                );
-                $must[] = $description;
-            }
-
-            $now = new \DateTime();
-            $date_from = $now->format('Y-m-d');
-            $date_to = "2000-01-01";
-            $modified_before = $now->format('Y-m-d');
-            $modified_after = "2000-01-01";
-
-            if(isset($options["date_from"])){
-                $date_from = $options["date_from"];
-            }
-
-            if(isset($options["date_to"])){
-                $date_to = $options["date_to"];
-            }
-
-            if(isset($options["date_modified_before"])){
-                $modified_before = $options["date_modified_before"];
-            }
-
-            if(isset($options["date_modified_after"])){
-                $modified_after = $options["date_modified_after"];
-            }
-
-            //PARTIES SUR LES WORKSPACES
-            $should_workspaces = Array();
-            foreach($workspaces as $wp) {
-                $should_workspaces[] = Array(
-                    "match_phrase" => Array(
-                        "workspace_id" => $wp
-                    )
-                );
-            }
-
-            //PARTIES SUR LES TAGS
-            if(isset($options["tags"])){
-                $should_tags = Array();
-                foreach($options["tags"] as $tag) {
-                    $should_tags[] = Array(
-                        "match_phrase" => Array(
-                            "tags" => $tag
-                        )
-                    );
-                }
-
-                $must[] = Array(
-                    "bool" => Array(
-                        "should" => $should_tags,
-                        "minimum_should_match" => count($should_tags)
-                    )
-                );
-            }
-
-            //PARTIES SUR LES PARTICIPANTS
-            if(isset($options["participants"])){
-
-                $should_participants = Array();
-                foreach($options["participants"] as $participant) {
-                    $should_participants[] = Array(
-                        "nested" => Array(
-                            "path" => "participants",
-                            "score_mode" => "avg",
-                            "query" => Array(
-                                "bool" => Array(
-                                    "should" => Array(
-                                        Array(
-                                            "bool" => Array(
-                                                "must" => Array(
-                                                    "match_phrase" => Array(
-                                                        "participants.user_id_or_mail" => $participant
-                                                    )
-                                                )
-                                            )
-                                        ),
-                                        Array(
-                                            "bool" => Array(
-                                                "filter" => Array(
-                                                    "regexp" => Array(
-                                                        "participants.email" => ".*".$participant.".*"
-                                                    )
-                                                )
-                                            )
-                                        )
-                                    ),
-                                    "minimum_should_match" => 1
-                                )
-                            )
-                        )
-                    );
-                }
-
-
-                $must[] = Array(
-                    "bool" => Array(
-                        "should" => $should_participants,
-                        "minimum_should_match" => count($options["participants"])
-                    )
-                );
-            }
-
-
-
-            $must[] = Array(
-                "bool" => Array(
-                    "should" => $should_workspaces,
-                    "minimum_should_match" => 1
+            $visible_match = ESUtils::createShouldMatch($workspaces, "workspace_id", 1);
+            $visible_match["bool"]["should"][] = Array(
+                "match_phrase" => Array(
+                    "participants" => $current_user_id
                 )
             );
+            $must[] = $visible_match;
+
+            $title = isset($options["title"]) ? preg_filter('/($|^)/', '.*', explode(" ", $options["title"])) : false;
+            ESUtils::createRegexShouldMatch($title, "title", "all", $must);
+
+            $description = isset($options["description"]) ? preg_filter('/($|^)/', '.*', explode(" ", $options["description"])) : false;
+            ESUtils::createRegexShouldMatch($description, "description", "all", $must);
+
+            $participants = isset($options["participants"]) ? $options["participants"] : false;
+            ESUtils::createShouldMatch($participants, "participants", "all", $must);
+
+            $tags = isset($options["tags"]) ? $options["tags"] : false;
+            ESUtils::createShouldMatch($tags, "tags", "all", $must);
+
+            $owner = isset($options["owner"]) ? $options["owner"] : false;
+            ESUtils::createMatchPhrase($owner, "owner", $must);
 
 
+            $date_from = isset($options["date_from"]) ? $options["date_from"] : false;
+            $date_to = isset($options["date_to"]) ? $options["date_to"] : false;
+            ESUtils::createRange($date_from, $date_to, "date_from", $must);
 
-            if(isset($options["owner"])){
-                $must[] = Array(
-                    "match_phrase" => Array(
-                        "owner" => $options["owner"]
-                    )
-                );
-            }
-
-
-            $must[] = Array(
-                "range" => Array(
-                    "date_from" => Array(
-                        "lte" => $date_to,
-                        "gte" => $date_from
-                    )
-                )
-            );
-
-            $must[] = Array(
-                "range" => Array(
-                    "date_to" => Array(
-                        "lte" => $date_to,
-                        "gte" => $date_from
-                    )
-                )
-            );
-
-            $must[] = Array(
-                "range" => Array(
-                    "date_last_modified" => Array(
-                        "lte" => $modified_before,
-                        "gte" => $modified_after
-                    )
-                )
-            );
+            $modified_before = isset($options["date_modified_before"]) ? $options["date_modified_before"] : false;
+            $modified_after = isset($options["date_modified_after"]) ? $options["date_modified_after"] : false;
+            ESUtils::createRange($modified_after, $modified_before, "date_last_modified", $must);
 
             $options = Array(
                 "repository" => "TwakeCalendarBundle:Event",
@@ -239,22 +122,46 @@ class AdvancedEvent
                 )
             );
 
+            if (isset($options["scroll_id"])) {
+                $options["scroll_id"] = $options["scroll_id"];
+            }
 
-            // search in ES
             $result = $this->doctrine->es_search($options);
 
-            array_slice($result["result"], 0, 5);
+            //On traite les données recu d'Elasticsearch
+            foreach ($result["result"] as $event) {
+
+                $workspaces_calendars = $event[0]->getWorkspacesCalendars();
+                $workspace_id = null;
+                if ($workspaces_calendars) {
+                    foreach ($workspaces_calendars as $workspace_calendar) {
+                        $workspace_id = $workspace_calendar["workspace_id"];
+                        break;
+                    }
+                }
+
+                if ($workspace_id) {
+                    if (!isset($known_workspaces_by_id[$workspace_id])) {
+                        $workspace_entity = $this->doctrine->getRepository("TwakeWorkspacesBundle:Workspace")->findOneBy(Array("id" => $workspace_id));
+                        $known_workspaces_by_id[$workspace_id] = $workspace_entity->getAsArray();
+                    }
+                    $workspace_array = $known_workspaces_by_id[$workspace_id];
+                }
+
+                $this->list_events["results"][] = Array(
+                    "event" => $event[0]->getAsArray(),
+                    "type" => "event",
+                    "score" => $event[1][0],
+                    "workspace" => $workspace_array
+                );
+            }
 
             $scroll_id = $result["scroll_id"];
-
-            //on traite les données recu d'Elasticsearch
-            foreach ($result["result"] as $event){
-                $this->list_events["events"][] = $event[0]->getAsArray();
-            }
             $this->list_events["scroll_id"] = $scroll_id;
 
-            return $this->list_events ?: null;
-////
+            $this->list_events["es"] = $options;
+
+            return $this->list_events;
         }
 
     }

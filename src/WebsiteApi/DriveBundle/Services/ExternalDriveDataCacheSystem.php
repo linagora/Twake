@@ -20,13 +20,14 @@ class ExternalDriveDataCacheSystem
         $this->doctrine = $doctrine;
     }
 
-    public function update($id, $drive, $data){
+    public function update($id, $drive, $data)
+    {
         $cache = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDriveDataCache")->findOneBy(Array(
             "id" => $id,
             "drive" => $drive));
 
-        if(!$cache)
-            $cache = new ExternalDriveDataCache($id,$drive);
+        if (!$cache)
+            $cache = new ExternalDriveDataCache($id, $drive);
 
         $cachedData = $cache->getData();
 

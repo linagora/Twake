@@ -6,8 +6,6 @@ use Doctrine\ORM\Mapping as ORM;
 use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 
 
-
-
 /**
  * WorkspacesActivities
  *
@@ -22,28 +20,28 @@ class WorkspaceActivity
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
-	 */
-	private $workspace;
+     */
+    private $workspace;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-	 */
-	private $user;
+     */
+    private $user;
 
     /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\MarketBundle\Entity\Application")
      */
     private $app;
 
-	/**
+    /**
      * @ORM\Column(type="twake_datetime")
-	 */
-	private $date_added;
+     */
+    private $date_added;
 
     /**
      * @ORM\Column(type="string")
@@ -62,19 +60,19 @@ class WorkspaceActivity
 
     public function __construct($workspace, $user, $app, $title, $objectrepository, $objectid)
     {
-		$this->workspace = $workspace;
-		$this->date_added = new \DateTime();
-		$this->user = $user;
-		$this->app = $app;
-		$this->title = $title;
+        $this->workspace = $workspace;
+        $this->date_added = new \DateTime();
+        $this->user = $user;
+        $this->app = $app;
+        $this->title = $title;
         $this->objectrepository = $objectrepository;
         $this->objectid = $objectid;
-	}
+    }
 
-	/**
-	 * @return int
-	 */
-	public function setId($id)
+    /**
+     * @return int
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
@@ -82,23 +80,23 @@ class WorkspaceActivity
     public function getId()
     {
         return $this->id;
-	}
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getWorkspace()
-	{
-		return $this->workspace;
-	}
+    /**
+     * @return mixed
+     */
+    public function getWorkspace()
+    {
+        return $this->workspace;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getDateAdded()
-	{
-		return $this->date_added;
-	}
+    /**
+     * @return mixed
+     */
+    public function getDateAdded()
+    {
+        return $this->date_added;
+    }
 
     /**
      * @return mixed
@@ -147,7 +145,6 @@ class WorkspaceActivity
     {
         $this->user = $user;
     }
-
 
 
     /**

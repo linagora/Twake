@@ -7,7 +7,8 @@ use Aws\S3\Exception\S3Exception;
 use WebsiteApi\DriveUploadBundle\Entity\UploadState;
 use WebsiteApi\DriveBundle\Entity\DriveFile;
 
-class Adapter_AWS implements AdapterInterface{
+class Adapter_AWS implements AdapterInterface
+{
 
     public function __construct($aws_config, $preview, $doctrine)
     {
@@ -126,7 +127,7 @@ class Adapter_AWS implements AdapterInterface{
 
     }
 
-    public function read($destination, $chunkNo, $param_bag, UploadState $uploadState, &$zip = null, $zip_prefix)
+    public function read($destination, $chunkNo, $param_bag, UploadState $uploadState, &$zip = null, $zip_prefix = null)
     {
 
         $key = "AWS" . $param_bag->getSalt() . $param_bag->getKey();
@@ -147,8 +148,7 @@ class Adapter_AWS implements AdapterInterface{
             if ($destination == "stream") {
                 echo $object["Body"];
                 return true;
-            }
-            elseif($destination == "original_stream"){
+            } elseif ($destination == "original_stream") {
                 # add a file named 'goodbye.txt' from an open stream resource
                 $fp = tmpfile();
                 fwrite($fp, $object["Body"]);

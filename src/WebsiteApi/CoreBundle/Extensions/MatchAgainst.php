@@ -9,13 +9,15 @@ use Doctrine\ORM\Query\AST\Functions\FunctionNode;
 /**
  * "MATCH_AGAINST" "(" {StateFieldPathExpression ","}* InParameter {Literal}? ")"
  */
-class MatchAgainst extends FunctionNode {
+class MatchAgainst extends FunctionNode
+{
 
     public $columns = array();
     public $needle;
     public $mode;
 
-    public function parse(\Doctrine\ORM\Query\Parser $parser) {
+    public function parse(\Doctrine\ORM\Query\Parser $parser)
+    {
         $parser->match(Lexer::T_IDENTIFIER);
         $parser->match(Lexer::T_OPEN_PARENTHESIS);
         do {
@@ -29,7 +31,8 @@ class MatchAgainst extends FunctionNode {
         $parser->match(Lexer::T_CLOSE_PARENTHESIS);
     }
 
-    public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker) {
+    public function getSql(\Doctrine\ORM\Query\SqlWalker $sqlWalker)
+    {
         $haystack = null;
         $first = true;
         foreach ($this->columns as $column) {

@@ -4,7 +4,8 @@ namespace WebsiteApi\GlobalSearchBundle\Services;
 
 use WebsiteApi\GlobalSearchBundle\Entity\WorkspaceTag;
 
-Class Tag{
+Class Tag
+{
 
     private $em;
 
@@ -33,17 +34,16 @@ Class Tag{
         }
 
 
-        $list= Array();
-        if(isset($options["workspace_id"])){
+        $list = Array();
+        if (isset($options["workspace_id"])) {
             $workspace_id = $options["workspace_id"];
-            if(isset($options["id"])){
+            if (isset($options["id"])) {
                 $tag = $this->em->getRepository("TwakeGlobalSearchBundle:WorkspaceTag")->findOneBy(Array("workspace_id" => $workspace_id, "id" => $options["id"]));
-                if(isset($tag)){
+                if (isset($tag)) {
                     $list[] = $tag->getAsArray();
                 }
 
-            }
-            else{
+            } else {
                 $tags = $this->em->getRepository("TwakeGlobalSearchBundle:WorkspaceTag")->findBy(Array("workspace_id" => $workspace_id));
                 foreach ($tags as $tag) {
                     $list[] = $tag->getAsArray();
@@ -61,14 +61,13 @@ Class Tag{
             return false;
         }
 
-        if(isset($object["id"])) { // on recoit un identifiant donc on supprime un tag
-            $tag= $this->em->getRepository("TwakeGlobalSearchBundle:WorkspaceTag")->findOneBy(Array("id" => $object["id"]));
+        if (isset($object["id"])) { // on recoit un identifiant donc on supprime un tag
+            $tag = $this->em->getRepository("TwakeGlobalSearchBundle:WorkspaceTag")->findOneBy(Array("id" => $object["id"]));
 
             $this->em->remove($tag);
             $this->em->flush();
 
-        }
-        else{
+        } else {
             return false;
         }
 
@@ -87,15 +86,14 @@ Class Tag{
 
         $tag = null;
         if (isset($object["id"]) && $object["id"]) { // on recoit un identifiant donc c'est un modification
-            $tag= $this->em->getRepository("TwakeGlobalSearchBundle:WorkspaceTag")->findOneBy(Array("id" => $object["id"]));
-            if(!$tag){
+            $tag = $this->em->getRepository("TwakeGlobalSearchBundle:WorkspaceTag")->findOneBy(Array("id" => $object["id"]));
+            if (!$tag) {
                 return false;
             }
-        }
-        else { // pas d'identifiant on veut donc créer un tag
-            $name= $object["name"];
+        } else { // pas d'identifiant on veut donc créer un tag
+            $name = $object["name"];
             $workspace_id = $object["workspace_id"];
-            if($this->checkname($workspace_id,$name)){
+            if ($this->checkname($workspace_id, $name)) {
                 $tag = new WorkspaceTag($workspace_id, $name);
                 if ($object["front_id"]) {
                     $tag->setFrontId($object["front_id"]);
@@ -109,13 +107,13 @@ Class Tag{
         }
 
         if (!$did_create && isset($object["name"])) {
-            if($this->checkname($tag->getWorkspaceId(),$object["name"])){
+            if ($this->checkname($tag->getWorkspaceId(), $object["name"])) {
                 $tag->setName($object["name"]);
             }
         }
 
 
-        if(isset($tag)){
+        if (isset($tag)) {
             $this->em->persist($tag);
             $this->em->flush();
         }
@@ -123,17 +121,18 @@ Class Tag{
         if ($return_entity) {
             return $tag;
         }
-        if(isset($tag)){
+        if (isset($tag)) {
             return $tag->getAsArray();
         }
 
     }
 
-    public function checkname($workspace_id, $name){
+    public function checkname($workspace_id, $name)
+    {
         $tags = $this->em->getRepository("TwakeGlobalSearchBundle:WorkspaceTag")->findBy(Array("workspace_id" => $workspace_id));
         $valid = true;
-        foreach ($tags as $tag){
-            if($tag->getName() == $name){
+        foreach ($tags as $tag) {
+            if ($tag->getName() == $name) {
                 $valid = false;
             }
         }

@@ -4,7 +4,8 @@ namespace WebsiteApi\DriveUploadBundle\Services\Storage;
 
 use WebsiteApi\DriveUploadBundle\Entity\UploadState;
 
-interface AdapterInterface{
+interface AdapterInterface
+{
 
     public function read($destination, $chunkNo, $param_bag, UploadState $uploadState, &$zip, $zip_prefixe);
 

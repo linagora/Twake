@@ -7,6 +7,7 @@
  */
 
 namespace WebsiteApi\WorkspacesBundle\Controller;
+
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -19,17 +20,18 @@ class GroupManagerController extends Controller
     /**
      * Récupère les managers d'un group
      */
-    public function getManagersAction(Request $request){
+    public function getManagersAction(Request $request)
+    {
 
-        $response = Array("errors"=>Array(), "data"=>Array());
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("groupId");
 
         $managers = $this->get("app.group_managers")->getManagers($groupId, $this->getUser()->getId());
 
-        if(!is_array($managers)){
+        if (!is_array($managers)) {
             $response["errors"][] = "notallowed";
-        }else {
+        } else {
             $list = Array();
             foreach ($managers as $manager) {
                 $list[] = Array(
@@ -49,18 +51,19 @@ class GroupManagerController extends Controller
     /**
      * toggle status d'un utilisateur (manager ou non)
      */
-    public function toggleManagerAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function toggleManagerAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("groupId");
         $userId = $request->request->get("userId");
-        $isManager = $request->request->get("isManager",null);
-        $result = $this->get("app.group_managers")->toggleManager($groupId, $userId, $isManager,$this->getUser()->getId());
+        $isManager = $request->request->get("isManager", null);
+        $result = $this->get("app.group_managers")->toggleManager($groupId, $userId, $isManager, $this->getUser()->getId());
 
 
-        if(!$result){
+        if (!$result) {
             $response["errors"][] = "notallowed";
-        }else {
+        } else {
             $response["data"] = "success";
         }
 
@@ -71,8 +74,9 @@ class GroupManagerController extends Controller
     /**
      * Ajoute un manager au groupe
      */
-    public function addManagersAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function addManagersAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("groupId");
         $username = $request->request->get("username");
@@ -82,7 +86,7 @@ class GroupManagerController extends Controller
         $userRepository = $this->get("app.twake_doctrine")->getRepository("TwakeUsersBundle:User");
         $user = $userRepository->findOneBy(Array("usernamecanonical" => $username));
 
-        if(!$user){
+        if (!$user) {
             $response["errors"][] = "usernotfound";
             return new JsonResponse($response);
         }
@@ -90,9 +94,9 @@ class GroupManagerController extends Controller
         $result = $this->get("app.group_managers")->addManager($groupId, $user->getId(), 1, false, $this->getUser()->getId());
 
 
-        if(!$result){
+        if (!$result) {
             $response["errors"][] = "notallowed";
-        }else {
+        } else {
             $response["data"] = "success";
         }
 
@@ -102,17 +106,18 @@ class GroupManagerController extends Controller
     /**
      * Retire un managers d'un group
      */
-    public function removeManagersAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function removeManagersAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("groupId");
         $userId = $request->request->get("userId");
 
         $result = $this->get("app.group_managers")->removeManager($groupId, $userId, $this->getUser()->getId());
 
-        if(!$result){
+        if (!$result) {
             $response["errors"][] = "notallowed";
-        }else {
+        } else {
             $response["data"] = "success";
         }
 
@@ -122,18 +127,19 @@ class GroupManagerController extends Controller
     /**
      * edite le managers d'un group
      */
-    public function editManagersAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function editManagersAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("groupId");
         $userId = $request->request->get("userId");
         $level = $request->request->get("level");
 
-        $result = $this->get("app.group_managers")->changeLevel($groupId,$userId,$level,$this->getUser()->getId());
+        $result = $this->get("app.group_managers")->changeLevel($groupId, $userId, $level, $this->getUser()->getId());
 
-        if(!$result){
+        if (!$result) {
             $response["errors"][] = "notallowed";
-        }else {
+        } else {
             $response["data"] = "success";
         }
 

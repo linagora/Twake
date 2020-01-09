@@ -10,39 +10,41 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 class CommandExecutor
 {
 
-	var $string_cleaner;
-	var $doctrine;
-	var $security;
+    var $string_cleaner;
+    var $doctrine;
+    var $security;
 
-	public function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker){
-		$this->string_cleaner = $string_cleaner;
-		$this->doctrine = $doctrine;
-		$this->security = $authorizationChecker;
-	}
+    public function __construct(StringCleaner $string_cleaner, $doctrine, AuthorizationChecker $authorizationChecker)
+    {
+        $this->string_cleaner = $string_cleaner;
+        $this->doctrine = $doctrine;
+        $this->security = $authorizationChecker;
+    }
 
-	public function execute($content, $url = '') {
+    public function execute($content, $url = '')
+    {
 
-		$final_actions =  Array(
-			"NOSAVE" => true,
-			"CONTENT" => $content,
-			"NONOTIF" => true
-		);
+        $final_actions = Array(
+            "NOSAVE" => true,
+            "CONTENT" => $content,
+            "NONOTIF" => true
+        );
 
-		if(!preg_match("/[a-z]/i",$content[1])){
-			$final_actions["NOSAVE"] = false;
-			$final_actions["NONOTIF"] = false;
-			return $final_actions;
-		}
+        if (!preg_match("/[a-z]/i", $content[1])) {
+            $final_actions["NOSAVE"] = false;
+            $final_actions["NONOTIF"] = false;
+            return $final_actions;
+        }
 
-		/*error_log("=============== EXECUTE ===============", 3, "D:/error_log.log");
+        /*error_log("=============== EXECUTE ===============", 3, "D:/error_log.log");
 
-		if (preg_match_all('!@(.+)(?:\s|$)!U', $content, $matches)) {
+        if (preg_match_all('!@(.+)(?:\s|$)!U', $content, $matches)) {
 
-			foreach ($matches as $match) {
-			}
-		}*/
+            foreach ($matches as $match) {
+            }
+        }*/
 
-		return $final_actions;
+        return $final_actions;
 
-	}
+    }
 }

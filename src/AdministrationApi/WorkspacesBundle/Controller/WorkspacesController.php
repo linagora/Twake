@@ -10,7 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 class WorkspacesController extends Controller
 {
 
-    public function getOneWorkspaceAction(Request $request) {
+    public function getOneWorkspaceAction(Request $request)
+    {
         $data = Array(
             "data" => Array(),
             "errors" => Array()
@@ -48,7 +49,8 @@ class WorkspacesController extends Controller
         return new JsonResponse($data);
     }
 
-    public function getAllWorkspacesAction(Request $request) {
+    public function getAllWorkspacesAction(Request $request)
+    {
         $data = Array(
             "data" => Array(),
             "errors" => Array()
@@ -64,7 +66,7 @@ class WorkspacesController extends Controller
 
             $options = Array();
 
-            if(isset($scroll_id) && isset($repository)){
+            if (isset($scroll_id) && isset($repository)) {
                 $options["scroll_id"] = $scroll_id;
             }
 

@@ -163,7 +163,8 @@ class AccessToken
         $this->user_id = $user_id;
     }
 
-    public function getAsArray(){
+    public function getAsArray()
+    {
         return Array(
             "user_id" => $this->getUserId(),
             "workspace_id" => $this->getWorkspaceId(),

@@ -5,7 +5,8 @@ namespace WebsiteApi\DriveUploadBundle\Services\Storage;
 use WebsiteApi\DriveUploadBundle\Services\Storage\Adapter_AWS;
 use WebsiteApi\DriveUploadBundle\Services\Storage\Adapter_OpenStack;
 
-class StorageManager{
+class StorageManager
+{
 
     private $aws;
     private $openstack;
@@ -13,7 +14,7 @@ class StorageManager{
     private $adapter;
     private $doctrine;
 
-    public function __construct($aws, $openstack, $root, $preview,$doctrine)
+    public function __construct($aws, $openstack, $root, $preview, $doctrine)
     {
         $this->aws = $aws;
         $this->openstack = $openstack;
@@ -22,12 +23,12 @@ class StorageManager{
         $this->doctrine = $doctrine;
     }
 
-    public function BindAdapter(){
+    public function BindAdapter()
+    {
 
         if (isset($this->aws["S3"]["use"]) && $this->aws["S3"]["use"]) {
             return new Adapter_AWS($this->aws, $this->preview, $this->doctrine);
-        }
-        elseif (isset($this->openstack["use"]) && $this->openstack["use"]) {
+        } elseif (isset($this->openstack["use"]) && $this->openstack["use"]) {
             return new Adapter_OpenStack($this->openstack, $this->preview, $this->doctrine);
         }
 
@@ -67,7 +68,6 @@ class StorageManager{
     {
         $this->adapter = $adapter;
     }
-
 
 
 }

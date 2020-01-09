@@ -9,11 +9,13 @@ class AdministrationApps
 
     private $em;
 
-    public function __construct($em) {
+    public function __construct($em)
+    {
         $this->em = $em;
     }
 
-    public function getAllApps($limit, $offset) {
+    public function getAllApps($limit, $offset)
+    {
 
         $appsRepository = $this->em->getRepository("TwakeMarketBundle:Application");
 
@@ -29,10 +31,11 @@ class AdministrationApps
 
     }
 
-    public function getOneApp($id) {
+    public function getOneApp($id)
+    {
         $appsRepository = $this->em->getRepository("TwakeMarketBundle:Application");
 
-        $app_tab = $appsRepository->findBy(array("id"=>$id));
+        $app_tab = $appsRepository->findBy(array("id" => $id));
 
         $app = false;
 
@@ -43,10 +46,11 @@ class AdministrationApps
         return $app;
     }
 
-    public function toggleAppValidation($id) {
+    public function toggleAppValidation($id)
+    {
         $appsRepository = $this->em->getRepository("TwakeMarketBundle:Application");
 
-        $app_tab = $appsRepository->findBy(array("id"=>$id));
+        $app_tab = $appsRepository->findBy(array("id" => $id));
 
         $rep = false;
 

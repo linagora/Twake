@@ -128,6 +128,10 @@ class Websockets
     public function push($route, $event, $route_entity = null)
     {
 
+        if (is_array($event) && !array_diff_key($event, array_keys(array_keys($event)))) {
+            $event = ["multiple" => $event];
+        }
+
         if (!$route_entity) {
             $routes = $this->doctrine->getRepository("TwakeCoreBundle:WebsocketsRoute");
             $route_entity = $routes->findOneBy(Array("route" => $route));
@@ -166,6 +170,8 @@ class Websockets
             "salt" => bin2hex($salt),
             "key_version" => $key_version
         ), "collections/" . $route_endpoint);
+
+        return true;
 
     }
 

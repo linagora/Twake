@@ -15,11 +15,12 @@ class Pagination
         $this->doctrine = $doctrine;
     }
 
-    public function getnextelement($scroll_id, $repository){
+    public function getnextelement($scroll_id, $repository)
+    {
 
         $option = Array(
-          "scroll_id" => $scroll_id,
-          "repository" => $repository
+            "scroll_id" => $scroll_id,
+            "repository" => $repository
         );
         $result = $this->doctrine->es_search($option);
         return $result;

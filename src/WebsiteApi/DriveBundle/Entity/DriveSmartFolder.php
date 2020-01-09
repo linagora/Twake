@@ -16,88 +16,89 @@ class DriveSmartFolder
 {
 
 
-	/**
+    /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
-	private $id;
+     */
+    private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace")
      * @ORM\JoinColumn(nullable=false)
-	 */
-	private $group;
+     */
+    private $group;
 
-	/**
+    /**
      * @ORM\Column(type="twake_text")
      * @Encrypted
-	 */
-	private $name;
+     */
+    private $name;
 
-	/**
+    /**
      * @ORM\Column(type="twake_text")
      * @Encrypted
-	 */
-	private $labels;
+     */
+    private $labels;
 
 
-	public function __construct($group, $name, $labels){
-		$this->group = $group;
-		$this->name = $name;
-		$this->setLabels($labels);
-	}
+    public function __construct($group, $name, $labels)
+    {
+        $this->group = $group;
+        $this->name = $name;
+        $this->setLabels($labels);
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function setId($id)
+    /**
+     * @return mixed
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
 
     public function getId()
     {
-		return $this->id;
-	}
+        return $this->id;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @param mixed $name
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
-	}
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getLabels()
-	{
-		return json_decode($this->labels, 1);
-	}
+    /**
+     * @return mixed
+     */
+    public function getLabels()
+    {
+        return json_decode($this->labels, 1);
+    }
 
-	/**
-	 * @param mixed $labels
-	 */
-	public function setLabels($labels)
-	{
-		$this->labels = json_encode($labels);
-	}
+    /**
+     * @param mixed $labels
+     */
+    public function setLabels($labels)
+    {
+        $this->labels = json_encode($labels);
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getGroup()
-	{
-		return $this->group;
-	}
+    /**
+     * @return mixed
+     */
+    public function getGroup()
+    {
+        return $this->group;
+    }
 
 }

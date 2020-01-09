@@ -26,7 +26,7 @@ class DriveActivity
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
     /**
@@ -82,8 +82,8 @@ class DriveActivity
     /**
      * @return mixed
      */
-public function getId()
-{
+    public function getId()
+    {
         return $this->id;
     }
 

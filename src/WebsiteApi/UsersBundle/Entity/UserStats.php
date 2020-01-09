@@ -19,11 +19,11 @@ use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
  */
 class UserStats
 {
-	/**
+    /**
      * @ORM\Id/**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User", inversedBy="stat")
      */
-	protected $user;
+    protected $user;
 
     /**
      * @var int
@@ -31,24 +31,25 @@ class UserStats
      */
     protected $publicmsgcount = 0;
 
-	/**
-	 * @var int
+    /**
+     * @var int
      * @ORM\Column(name="private_msg_count", type="integer")
-	 */
+     */
     protected $privatemsgcount = 0;
 
-	/**
-	 * UserStats constructor.
-	 * @param $user
-	 */
-	public function __construct($user)
-	{
-		$this->user = $user;
-	}
+    /**
+     * UserStats constructor.
+     * @param $user
+     */
+    public function __construct($user)
+    {
+        $this->user = $user;
+    }
 
-	public function getPublicMsgCount(){
+    public function getPublicMsgCount()
+    {
         return $this->publicmsgcount;
-	}
+    }
 
     /**
      * @param int $publicmsgcount
@@ -67,22 +68,24 @@ class UserStats
     }
 
 
-
-	public function addPublicMsgCount($val=1){
+    public function addPublicMsgCount($val = 1)
+    {
         $this->publicmsgcount += $val;
-	}
+    }
 
-	public function getPrivateMsgCount(){
+    public function getPrivateMsgCount()
+    {
         return $this->privatemsgcount;
-	}
+    }
 
-	public function addPrivateMsgCount($val=1){
+    public function addPrivateMsgCount($val = 1)
+    {
         $this->privatemsgcount += $val;
-	}
+    }
 
 
-
-    public function getUser(){
+    public function getUser()
+    {
         return $this->user;
     }
 }

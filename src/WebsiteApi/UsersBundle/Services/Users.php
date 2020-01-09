@@ -32,12 +32,12 @@ class Users
         $name = $options["name"];
         $should = Array();
 
-        if(isset($name)){
+        if (isset($name)) {
             $should[] = Array(
                 "bool" => Array(
                     "filter" => Array(
                         "regexp" => Array(
-                            "firstname" => ".*".$name.".*"
+                            "firstname" => ".*" . $name . ".*"
                         )
                     )
                 )
@@ -47,7 +47,7 @@ class Users
                 "bool" => Array(
                     "filter" => Array(
                         "regexp" => Array(
-                            "lastname" => ".*".$name.".*"
+                            "lastname" => ".*" . $name . ".*"
                         )
                     )
                 )
@@ -57,7 +57,7 @@ class Users
                 "bool" => Array(
                     "filter" => Array(
                         "regexp" => Array(
-                            "username" => ".*".$name.".*"
+                            "username" => ".*" . $name . ".*"
                         )
                     )
                 )
@@ -95,21 +95,21 @@ class Users
         $scroll_id = $result["scroll_id"];
 
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        $user = $userRepository->findOneBy(Array("usernamecanonical" => substr($name)));
+        $user = $userRepository->findOneBy(Array("usernamecanonical" => strtolower($name)));
 
         if ($user) {
             $this->list_users["users"][] = $user;
         }
 
         //on traite les données recu d'Elasticsearch
-        foreach ($result["result"] as $user){
+        foreach ($result["result"] as $user) {
             //var_dump($file->getAsArray());
             $this->list_users["users"][] = Array($user[0]->getAsArray(), $user[1][0]);;
         }
 
         $this->list_users["scroll_id"] = $scroll_id;
 
-       return $this->list_users ?: null;
+        return $this->list_users ?: null;
     }
 
     public function getById($id, $entity = false)

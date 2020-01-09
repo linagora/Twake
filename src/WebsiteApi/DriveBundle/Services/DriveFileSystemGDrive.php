@@ -23,7 +23,7 @@ class DriveFileSystemGDrive
     var $externalDriveSystem;
     var $userToken;
 
-    public function __construct($doctrine,GDriveApiSystem $gdriveApi, $pusher, $restClient, $externalDriveSystem)
+    public function __construct($doctrine, GDriveApiSystem $gdriveApi, $pusher, $restClient, $externalDriveSystem)
     {
         $this->doctrine = $doctrine;
         $this->gdriveApi = $gdriveApi;
@@ -49,7 +49,8 @@ class DriveFileSystemGDrive
 
     }
 
-    public function setRootDirectory($directory){
+    public function setRootDirectory($directory)
+    {
         $this->userToken = $this->externalDriveSystem->getTokenFromFileId($directory);
         $this->gdriveApi->getClient($this->userToken);
 
@@ -82,8 +83,8 @@ class DriveFileSystemGDrive
 
         $storageQuota = $content["storageQuota"];
 
-        if(isset($storageQuota["limit"]))
-        return intval($storageQuota["limit"]);
+        if (isset($storageQuota["limit"]))
+            return intval($storageQuota["limit"]);
         return 10000000000000000;
     }
 
@@ -103,7 +104,7 @@ class DriveFileSystemGDrive
 
     public function move($fileOrDirectory, $directory)
     {
-        return $this->gdriveApi->move($fileOrDirectory,$directory,$this->userToken);
+        return $this->gdriveApi->move($fileOrDirectory, $directory, $this->userToken);
     }
 
     public function getSharedWorkspace($groupId, $fileId)
@@ -137,7 +138,6 @@ class DriveFileSystemGDrive
         if ($fileOrDirectory == null || $fileOrDirectory->getIsDirectory() == false || $groupId == $targetgroupId) {
             return false;
         }
-
 
 
         $driveRepository = $this->doctrine->getRepository("TwakeDriveBundle:DriveFile");
@@ -247,7 +247,7 @@ class DriveFileSystemGDrive
 
         *///End update label
 
-        $this->gdriveApi->rename($fileOrDirectory,$filename,$description, $this->userToken);
+        $this->gdriveApi->rename($fileOrDirectory, $filename, $description, $this->userToken);
 
 
         $this->pusher->push(Array("action" => "update"), "drive/0");// . $fileOrDirectory->getWorkspaceId());
@@ -272,14 +272,14 @@ class DriveFileSystemGDrive
         );
         $json = "{";
 
-        if($isDirectory){
+        if ($isDirectory) {
             $json .= "\"name\": \"$filename\",";
-            if($directoryId!=0)
+            if ($directoryId != 0)
                 $json .= "\"parents\" : [\"$directoryId\"],";
             $json .= "\"mimeType\": \"application/vnd.google-apps.folder\"";
-        }else{
+        } else {
             $json .= "\"name\": \"$filename\"";
-            if($directoryId!=0)
+            if ($directoryId != 0)
                 $json .= ",\"parents\" : [\"$directoryId\"]";
         }
 
@@ -322,7 +322,7 @@ class DriveFileSystemGDrive
     public function getInfos($workspace, $fileOrDirectory)
     {
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
-        return $this->gdriveApi->getInfos($workspace,$fileOrDirectory, $this->userToken);
+        return $this->gdriveApi->getInfos($workspace, $fileOrDirectory, $this->userToken);
     }
 
     public function getWorkspace($fileOrDirectory)
@@ -340,11 +340,11 @@ class DriveFileSystemGDrive
         $workspace = $this->convertToEntity($workspaceId, "TwakeWorkspacesBundle:Workspace");
         if ($directory . "" == "0")
             $directory = "sharedWithMe or 'root'";//
-        else{
-            $directory = "'".$directory."'";
+        else {
+            $directory = "'" . $directory . "'";
         }
 
-        return $this->gdriveApi->listFiles($workspace,$directory, $this->userToken);
+        return $this->gdriveApi->listFiles($workspace, $directory, $this->userToken);
     }
 
     public function search($workspace, $query, $offset, $max)
@@ -359,7 +359,7 @@ class DriveFileSystemGDrive
             return false;
         }
 
-        return $this->gdriveApi->searchNameContains($workspace,$query,$offset,$max, $this->userToken);
+        return $this->gdriveApi->searchNameContains($workspace, $query, $offset, $max, $this->userToken);
     }
 
     public function byLabel($workspace, $label)
@@ -382,13 +382,13 @@ class DriveFileSystemGDrive
         /*$label = $this->doctrine->getRepository("TwakeDriveBundle:DriveLabel")->find($label);
         if ($label->getWorkspace()->getId() == $workspace->getId()) {
             /** @var DriveFileLabel[] $filesLabels */
-            /*$filesLabels = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("label" => $label), Array(), $max, $offset);
-            foreach ($filesLabels as $fileLabel) {
-                $list[] = $fileLabel->getFile();
-            }
+        /*$filesLabels = $this->doctrine->getRepository("TwakeDriveBundle:DriveFileLabel")->findBy(Array("label" => $label), Array(), $max, $offset);
+        foreach ($filesLabels as $fileLabel) {
+            $list[] = $fileLabel->getFile();
         }
+    }
 
-        return $list;*/
+    return $list;*/
 
     }
 
@@ -437,14 +437,15 @@ class DriveFileSystemGDrive
         // If already in trash force remove
         if ($file->getTrashed()) {
             return $this->delete($fileOrDirectory);
-        }else {
+        } else {
             return $this->toTrash($fileOrDirectory);
         }
 
         return true;
     }
 
-    public function toTrash($fileOrDirectory){
+    public function toTrash($fileOrDirectory)
+    {
         $rep = $this->gdriveApi->setTrashed($fileOrDirectory, true, $this->userToken);
 
         return true;
@@ -518,7 +519,7 @@ class DriveFileSystemGDrive
     {
         $workspace = $this->convertToEntity($workspace, "TwakeWorkspacesBundle:Workspace");
 
-        $file = $this->gdriveApi->upload($file, $directory,$this->userToken);
+        $file = $this->gdriveApi->upload($file, $directory, $this->userToken);
 
         $newFile = $this->gdriveApi->getDriveFileFromGDriveFile($workspace, $file);
 
@@ -530,11 +531,12 @@ class DriveFileSystemGDrive
     {
         $url = $this->gdriveApi->download($file);
 
-        if($url)
-            header('Location:'.$url);
+        if ($url)
+            header('Location:' . $url);
     }
 
-    public function open($file){
+    public function open($file)
+    {
         return true;
     }
 
@@ -558,27 +560,30 @@ class DriveFileSystemGDrive
 
     public function copyToExternalDrive($workspace, $directory, $file)
     {
-        $this->upload($workspace,$directory,$file);
+        $this->upload($workspace, $directory, $file);
     }
 
-    public function unwatchFile($fileId, $rootDirectory, $additionalData){
+    public function unwatchFile($fileId, $rootDirectory, $additionalData)
+    {
         $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findOneBy(Array("fileid" => $rootDirectory));
-        $this->gdriveApi->unwatchFile($fileId,$externalDrive->getWorkspace()->getId(),$externalDrive->getExternalToken(),$additionalData["resourceId"]);
+        $this->gdriveApi->unwatchFile($fileId, $externalDrive->getWorkspace()->getId(), $externalDrive->getExternalToken(), $additionalData["resourceId"]);
 
         return $additionalData;
     }
 
-    public function watchFile($fileId, $rootDirectory, $additionalData){
+    public function watchFile($fileId, $rootDirectory, $additionalData)
+    {
         $externalDrive = $this->doctrine->getRepository("TwakeDriveBundle:ExternalDrive")->findOneBy(Array("fileid" => $rootDirectory));
-        $data = $this->gdriveApi->watchFile($fileId,$externalDrive->getWorkspace()->getId(),$externalDrive->getExternalToken());
+        $data = $this->gdriveApi->watchFile($fileId, $externalDrive->getWorkspace()->getId(), $externalDrive->getExternalToken());
 
         $additionalData["resourceId"] = $data["resourceId"];
 
         return $additionalData;
     }
 
-    public function getDriveType($rootDirectory){
-        if($rootDirectory){
+    public function getDriveType($rootDirectory)
+    {
+        if ($rootDirectory) {
             return "gdrive";
         }
         return "twake";

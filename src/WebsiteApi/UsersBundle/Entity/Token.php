@@ -18,12 +18,12 @@ class Token
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\UsersBundle\Entity\User")
-	 */
+     */
     private $user;
 
     /**
@@ -92,7 +92,7 @@ class Token
     {
         var_dump($this->token);
         var_dump(json_decode("" . $this->token));
-        if($this->token==null)
+        if ($this->token == null)
             return null;
         return json_decode($this->token);
     }

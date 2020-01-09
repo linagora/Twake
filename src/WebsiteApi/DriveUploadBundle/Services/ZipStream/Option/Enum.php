@@ -3,6 +3,7 @@
  * @link    http://github.com/myclabs/php-enum
  * @license http://www.opensource.org/licenses/mit-license.php MIT (see the LICENSE file)
  */
+
 namespace WebsiteApi\DriveUploadBundle\Services\ZipStream\Option;
 /**
  * Base Enum class
@@ -27,6 +28,7 @@ abstract class Enum implements \JsonSerializable
      * @var array
      */
     protected static $cache = [];
+
     /**
      * Creates a new value of some type
      *
@@ -44,6 +46,7 @@ abstract class Enum implements \JsonSerializable
         }
         $this->value = $value;
     }
+
     /**
      * @return mixed
      */
@@ -51,6 +54,7 @@ abstract class Enum implements \JsonSerializable
     {
         return $this->value;
     }
+
     /**
      * Returns the enum key (i.e. the constant name).
      *
@@ -60,6 +64,7 @@ abstract class Enum implements \JsonSerializable
     {
         return static::search($this->value);
     }
+
     /**
      * @return string
      */
@@ -67,6 +72,7 @@ abstract class Enum implements \JsonSerializable
     {
         return (string)$this->value;
     }
+
     /**
      * Determines if Enum should be considered equal with the variable passed as a parameter.
      * Returns false if an argument is an object of different class or not an object.
@@ -81,6 +87,7 @@ abstract class Enum implements \JsonSerializable
             && $this->getValue() === $variable->getValue()
             && \get_called_class() === \get_class($variable);
     }
+
     /**
      * Returns the names (keys) of all constants in the Enum class
      *
@@ -90,6 +97,7 @@ abstract class Enum implements \JsonSerializable
     {
         return \array_keys(static::toArray());
     }
+
     /**
      * Returns instances of the Enum class of all Enum constants
      *
@@ -103,6 +111,7 @@ abstract class Enum implements \JsonSerializable
         }
         return $values;
     }
+
     /**
      * Returns all possible values as an array
      *
@@ -112,11 +121,12 @@ abstract class Enum implements \JsonSerializable
     {
         $class = \get_called_class();
         if (!isset(static::$cache[$class])) {
-            $reflection            = new \ReflectionClass($class);
+            $reflection = new \ReflectionClass($class);
             static::$cache[$class] = $reflection->getConstants();
         }
         return static::$cache[$class];
     }
+
     /**
      * Check if is valid enum value
      *
@@ -128,6 +138,7 @@ abstract class Enum implements \JsonSerializable
     {
         return \in_array($value, static::toArray(), true);
     }
+
     /**
      * Check if is valid enum key
      *
@@ -140,6 +151,7 @@ abstract class Enum implements \JsonSerializable
         $array = static::toArray();
         return isset($array[$key]) || \array_key_exists($key, $array);
     }
+
     /**
      * Return key for value
      *
@@ -151,11 +163,12 @@ abstract class Enum implements \JsonSerializable
     {
         return \array_search($value, static::toArray(), true);
     }
+
     /**
      * Returns a value when called statically like so: MyEnum::SOME_VALUE() given SOME_VALUE is a class constant
      *
      * @param string $name
-     * @param array  $arguments
+     * @param array $arguments
      *
      * @return static
      * @throws \BadMethodCallException
@@ -168,6 +181,7 @@ abstract class Enum implements \JsonSerializable
         }
         throw new \BadMethodCallException("No static method or enum constant '$name' in class " . \get_called_class());
     }
+
     /**
      * Specify data which should be serialized to JSON. This method returns data that can be serialized by json_encode()
      * natively.

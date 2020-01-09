@@ -7,6 +7,7 @@
  */
 
 namespace WebsiteApi\WorkspacesBundle\Controller;
+
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -19,9 +20,10 @@ class GroupAppsController extends Controller
     /**
      * Récupère les applications d'un group
      */
-    public function getAppsAction(Request $request){
+    public function getAppsAction(Request $request)
+    {
 
-        $response = Array("errors"=>Array(), "data"=>Array());
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("group_id");
 
@@ -29,15 +31,16 @@ class GroupAppsController extends Controller
 
         if (!is_array($apps)) {
             $response["errors"][] = "notallowed";
-        }else{
+        } else {
             $response["data"] = $apps;
         }
 
         return new JsonResponse($response);
     }
 
-    public function setWorkspaceDefaultAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function setWorkspaceDefaultAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("group_id");
         $appid = $request->request->get("app_id");
@@ -47,15 +50,16 @@ class GroupAppsController extends Controller
 
         if (!$res) {
             $response["errors"][] = "notallowed";
-        }else{
+        } else {
             $response["data"][] = true;
         }
 
         return new JsonResponse($response);
     }
 
-    public function removeApplicationAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function removeApplicationAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("group_id");
         $appid = $request->request->get("app_id");
@@ -64,15 +68,16 @@ class GroupAppsController extends Controller
 
         if (!$res) {
             $response["errors"][] = "notallowed";
-        }else{
+        } else {
             $response["data"][] = true;
         }
 
         return new JsonResponse($response);
     }
 
-    public function forceApplicationAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function forceApplicationAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("group_id");
         $appid = $request->request->get("app_id");
@@ -81,7 +86,7 @@ class GroupAppsController extends Controller
 
         if (!$res) {
             $response["errors"][] = "notallowed";
-        }else{
+        } else {
             $response["data"][] = true;
         }
 
@@ -94,7 +99,7 @@ class GroupAppsController extends Controller
     public function useAppAction(Request $request)
     {
 
-        $response = Array("errors"=>Array(), "data"=>Array());
+        $response = Array("errors" => Array(), "data" => Array());
 
         $groupId = $request->request->get("groupId");
         $workspaceId = $request->request->get("workspaceId");
@@ -102,9 +107,9 @@ class GroupAppsController extends Controller
 
         $res = $this->get("app.group_apps")->useApp($groupId, $workspaceId, $this->getUser()->getId(), $appid);
 
-        if(!$res){
+        if (!$res) {
             $response["errors"][] = "notallowed";
-        }else {
+        } else {
             $response["data"][] = "success";
         }
 

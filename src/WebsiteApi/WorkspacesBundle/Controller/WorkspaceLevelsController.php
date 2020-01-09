@@ -7,6 +7,7 @@
  */
 
 namespace WebsiteApi\WorkspacesBundle\Controller;
+
 use phpDocumentor\Reflection\Types\Array_;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceLevel;
 use WebsiteApi\WorkspacesBundle\Model\WorkspaceLevelsInterface;
@@ -35,12 +36,12 @@ class WorkspaceLevelsController extends Controller
             return new JsonResponse($response);
         }
 
-        $list = $this->get("app.workspace_levels")->fixLevels($levels,$workspaceApps);
+        $list = $this->get("app.workspace_levels")->fixLevels($levels, $workspaceApps);
 
         $list["apps"] = Array();
         $list["apps"]["workspace"] = "Workspace";
-        if ($workspaceApps != null){
-            foreach ($workspaceApps as $workspaceApp){
+        if ($workspaceApps != null) {
+            foreach ($workspaceApps as $workspaceApp) {
                 $list["apps"][$workspaceApp->getPublicKey()] = $workspaceApp->getName();
             }
         }
@@ -53,24 +54,25 @@ class WorkspaceLevelsController extends Controller
     /**
      * Create a workspace level
      */
-    public function createLevelAction(Request $request){
+    public function createLevelAction(Request $request)
+    {
 
-        $response = Array("errors"=>Array(), "data"=>Array());
+        $response = Array("errors" => Array(), "data" => Array());
 
         $workspaceId = $request->request->get("workspaceId");
-        $label = $request->request->get("label","");
-        if ($label == null){
+        $label = $request->request->get("label", "");
+        if ($label == null) {
             $response["errors"] = "emptylabel";
             return new JsonResponse($response);
         }
 
         $rights = $this->get("app.workspace_levels")->getDefaultLevel($workspaceId)->getRights();
 
-        $res = $this->get("app.workspace_levels")->addLevel($workspaceId,$label,$rights, $this->getUser()->getId());
+        $res = $this->get("app.workspace_levels")->addLevel($workspaceId, $label, $rights, $this->getUser()->getId());
 
-        if ($res){
+        if ($res) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "notauthorized";
         }
 
@@ -80,18 +82,19 @@ class WorkspaceLevelsController extends Controller
     /**
      * Delete a workspace level
      */
-    public function deleteLevelAction(Request $request){
+    public function deleteLevelAction(Request $request)
+    {
 
-        $response = Array("errors"=>Array(), "data"=>Array());
+        $response = Array("errors" => Array(), "data" => Array());
 
         $workspaceId = $request->request->get("workspaceId");
         $levelId = $request->request->get("levelId");
 
-        $res = $this->get("app.workspace_levels")->removeLevel($workspaceId,$levelId, $this->getUser()->getId());
+        $res = $this->get("app.workspace_levels")->removeLevel($workspaceId, $levelId, $this->getUser()->getId());
 
-        if ($res){
+        if ($res) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "notauthorized";
         }
 
@@ -101,18 +104,19 @@ class WorkspaceLevelsController extends Controller
     /**
      * Make a workspace levels default
      */
-    public function makeDefaulLevelAction(Request $request){
+    public function makeDefaulLevelAction(Request $request)
+    {
 
-        $response = Array("errors"=>Array(), "data"=>Array());
+        $response = Array("errors" => Array(), "data" => Array());
 
         $workspaceId = $request->request->get("workspaceId");
         $levelId = $request->request->get("levelId");
 
-        $res = $this->get("app.workspace_levels")->setDefaultLevel($workspaceId,$levelId, $this->getUser()->getId());
+        $res = $this->get("app.workspace_levels")->setDefaultLevel($workspaceId, $levelId, $this->getUser()->getId());
 
-        if ($res){
+        if ($res) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "notauthorized";
         }
 
@@ -122,38 +126,40 @@ class WorkspaceLevelsController extends Controller
     /**
      * Edit a level (name and or rights)
      */
-    public function editLevelAction(Request $request){
+    public function editLevelAction(Request $request)
+    {
 
-        $response = Array("errors"=>Array(), "data"=>Array());
+        $response = Array("errors" => Array(), "data" => Array());
 
         $workspaceId = $request->request->get("workspaceId");
         $levelId = $request->request->get("levelId");
         $rights = $request->request->get("rights");
-        $label = $request->request->get("label","");
+        $label = $request->request->get("label", "");
 
-        $res = $this->get("app.workspace_levels")->updateLevel($workspaceId,$levelId, $label,$rights ,$this->getUser()->getId());
+        $res = $this->get("app.workspace_levels")->updateLevel($workspaceId, $levelId, $label, $rights, $this->getUser()->getId());
 
-        if ($res){
+        if ($res) {
             $response["data"] = "success";
-        }else{
+        } else {
             $response["errors"] = "notauthorized";
         }
 
         return new JsonResponse($response);
     }
 
-    public function getByLabelAction(Request $request){
-        $response = Array("errors"=>Array(), "data"=>Array());
+    public function getByLabelAction(Request $request)
+    {
+        $response = Array("errors" => Array(), "data" => Array());
 
         $workspaceId = $request->request->get("workspaceId");
-        $label = $request->request->get("label","");
+        $label = $request->request->get("label", "");
 
         $res = $this->get("app.workspace_levels")->getByLabel($workspaceId, $label);
         $labels = [];
-        if (!$res ){
+        if (!$res) {
             $response["errors"] = "notauthorized";
-        }else{
-            foreach ($res as $label){
+        } else {
+            foreach ($res as $label) {
                 $labels[] = $label->getAsArray();
             }
             $response["data"] = $labels;

@@ -9,16 +9,19 @@
 namespace WebsiteApi\DriveBundle\Services;
 
 
+use Dompdf\Exception;
+
 class DrivePreview
 {
     var $doctrine;
     var $img_height;
     var $img_width;
 
-    public function __construct($doctrine){
+    public function __construct($doctrine)
+    {
         $this->doctrine = $doctrine;
-        $this->img_height = 300 ;
-        $this->img_width = 300 ;
+        $this->img_height = 300;
+        $this->img_width = 300;
     }
 
     public function isImage($ext)
@@ -60,7 +63,7 @@ class DrivePreview
             }
 
             if ($filetype === 'application/pdf') {
-                return $this->generateImagePreview($filename, $file, $path, $entity,true);
+                return $this->generateImagePreview($filename, $file, $path, $entity, true);
             }
             if ($filetype === 'application/msword' ||
                 $filetype === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document' ||
@@ -149,7 +152,8 @@ class DrivePreview
         return $image;
     }
 
-    public function set_keyword($file,$entity){
+    public function set_keyword($file, $entity)
+    {
 
         try {
             $content = (new \Spatie\PdfToText\Pdf())
@@ -175,35 +179,32 @@ class DrivePreview
 | .                                 #:00d2f4aa-605b-11e9-b23e-0242ac120005 anything else
 /x
 END;
-            foreach ($words as $value){
+            foreach ($words as $value) {
                 $value = preg_replace($regex, '$1', $value);
                 $value = strtolower($value);
-                if (strlen($value) > 3 && is_numeric($value)==false) {
-                    if ($totalwords < floor($size*0.20)) //we define the weight of word trough the text
+                if (strlen($value) > 3 && is_numeric($value) == false) {
+                    if ($totalwords < floor($size * 0.20)) //we define the weight of word trough the text
                         $weight = 20;
-                    elseif ($totalwords > floor($size*80))
+                    elseif ($totalwords > floor($size * 80))
                         $weight = 20;
                     else
                         $weight = 3;
                     if (!isset($keywords[$value])) {
                         $keywords[$value] = 0;
                     }
-                    if(!($keywords[$value]) || substr($value, -1) == "s"){ //if the word is not in our table
+                    if (!($keywords[$value]) || substr($value, -1) == "s") { //if the word is not in our table
                         if (substr($value, -1) == "s") { //we check if it's a plural
                             $maybesinglar = substr($value, 0, strlen($value) - 1);
                             if (isset($keywords[$maybesinglar])) { // we check if their is already a singular for this word
-                                $keywords[$maybesinglar] += $weight+max(strlen($maybesinglar)-4,0)*2; //if we find a singular we add the singular version of the word instead of the plural
+                                $keywords[$maybesinglar] += $weight + max(strlen($maybesinglar) - 4, 0) * 2; //if we find a singular we add the singular version of the word instead of the plural
+                            } else { // if not we add the new words or it's the first time we saw the word so we need to add it
+                                $keywords[$value] = $weight + max(strlen($value) - 4, 0) * 2;
                             }
-                            else { // if not we add the new words or it's the first time we saw the word so we need to add it
-                                $keywords[$value] = $weight +max(strlen($value)-4,0)*2;
-                            }
+                        } else {
+                            $keywords[$value] = $weight + max(strlen($value) - 4, 0) * 2; // we add the new word which is not a plural or it the first time we saw it
                         }
-                        else {
-                            $keywords[$value] = $weight+max(strlen($value)-4,0)*2; // we add the new word which is not a plural or it the first time we saw it
-                        }
-                    }
-                    else{ //if the word is in the table
-                        $keywords[$value] += $weight+max(strlen($value)-4,0)*2; // we adjust his weight in the table
+                    } else { //if the word is in the table
+                        $keywords[$value] += $weight + max(strlen($value) - 4, 0) * 2; // we adjust his weight in the table
                     }
                 }
                 $totalwords++; //we add our total of word to alter the weight of futur word.
@@ -229,13 +230,13 @@ END;
 
             $entity->setContentKeywords($keywords_score);
 
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
 
         }
 
     }
 
-    public function generateImagePreview($filename, $file, $path, $entity=null, $isText = false, $isOffice = false)
+    public function generateImagePreview($filename, $file, $path, $entity = null, $isText = false, $isOffice = false)
     {
         $filepath = $path . "/" . $filename;
         $width = $this->img_width;
@@ -243,15 +244,16 @@ END;
         $im = new \Imagick();
 
 
-
         if ($isText) {
             $im->readimage($file . "[0]");
-            $this->set_keyword($file,$entity);
-        }elseif ($isOffice){
-            $file = $this->convertToPDF($file);
-            $im->readimage($file . "[0]");
-            $this->set_keyword($file,$entity);
-        }else{
+            $this->set_keyword($file, $entity);
+        } elseif ($isOffice) {
+            $file = $this->convertToPDF($file, $entity);
+            if ($file) {
+                $im->readimage($file . "[0]");
+                $this->set_keyword($file, $entity);
+            }
+        } else {
             $im->readimage($file);
         }
 
@@ -262,11 +264,11 @@ END;
 
         $min_size = min((int)($geo['width']), (int)($geo['height']));
 
-        if($min_size > $this->img_width){
+        if ($min_size > $this->img_width) {
             $ox = 0;
-            $oy = (int)( ($geo['height'] - $min_size) / 2 );
-            if($min_size == (int)($geo['height'])){
-                $ox = (int)( ($geo['width'] - $min_size) / 2 );
+            $oy = (int)(($geo['height'] - $min_size) / 2);
+            if ($min_size == (int)($geo['height'])) {
+                $ox = (int)(($geo['width'] - $min_size) / 2);
                 $oy = 0;
             }
             $im->cropImage($min_size, $min_size, $ox, $oy);
@@ -290,22 +292,35 @@ END;
 
 
         $im->setImageFormat('png');
-        $im->writeImage($filepath.'.png');
+        $im->writeImage($filepath . '.png');
         $im->clear();
         $im->destroy();
 
-        if ($isOffice){
+        if ($isOffice) {
             unlink($file);
         }
 
     }
 
-    public function convertToPDF($filepath){
+    public function convertToPDF($filepath, $entity)
+    {
         putenv("PATH=/sbin:/bin:/usr/sbin:/usr/bin");
-        shell_exec("unoconv -vvvv -f pdf -e PageRange=1-1 " . $filepath);
-        $a = explode(".",$filepath);
+        error_log($filepath);
+        shell_exec("timeout 5s unoconv -T 5 -vvvv -f pdf -e PageRange=1-1 " . $filepath);
+        $a = explode(".", $filepath);
         array_pop($a);
-        $filepath = join(".",$a).".pdf";
+        $filepath = join(".", $a) . ".pdf";
+        if (!file_exists($filepath)) {
+
+            $name = "Unknown name";
+            if ($entity) {
+                $name = $entity->getName();
+            }
+
+            \Sentry\captureException(new Exception("Error generating preview with unoconv (timeout) ", 0, new Exception($name)));
+
+            return false;
+        }
         return $filepath;
     }
 

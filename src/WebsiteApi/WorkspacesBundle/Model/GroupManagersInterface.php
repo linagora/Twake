@@ -8,28 +8,28 @@ namespace WebsiteApi\WorkspacesBundle\Model;
 interface GroupManagersInterface
 {
 
-	// @hasPrivileges return boolean if privilege is in privileges
-	public function hasPrivileges($level, $privilege);
+    // @hasPrivileges return boolean if privilege is in privileges
+    public function hasPrivileges($level, $privilege);
 
-	// @getPrivileges return array of privileges for user
-	public function getPrivileges($level);
+    // @getPrivileges return array of privileges for user
+    public function getPrivileges($level);
 
-	// @getLevel get user level in group and returns null il no level (not a manager)
-	public function getLevel($groupId, $userId, $currentUserId=null);
+    // @getLevel get user level in group and returns null il no level (not a manager)
+    public function getLevel($groupId, $userId, $currentUserId = null);
 
-	// @changeLevel change user level in group
-	public function changeLevel($groupId, $userId, $level, $currentUserId=null);
+    // @changeLevel change user level in group
+    public function changeLevel($groupId, $userId, $level, $currentUserId = null);
 
-	// @addManager add user in group as manager
-	public function addManager($groupId, $userId, $level,$createdWorkspace ,$currentUserId=null);
+    // @addManager add user in group as manager
+    public function addManager($groupId, $userId, $level, $createdWorkspace, $currentUserId = null);
 
-	// @removeManager remove manager from group
-	public function removeManager($groupId, $userId, $currentUserId=null);
+    // @removeManager remove manager from group
+    public function removeManager($groupId, $userId, $currentUserId = null);
 
-	// @getManagers returns managers for group ([{user: OBJECT, level: INT}])
-	public function getManagers($groupId, $currentUserId=null);
+    // @getManagers returns managers for group ([{user: OBJECT, level: INT}])
+    public function getManagers($groupId, $currentUserId = null);
 
-	// @getGroups returns groups managed by an user ([{group: OBJECT, level: INT}])
-	public function getGroups($userId);
+    // @getGroups returns groups managed by an user ([{group: OBJECT, level: INT}])
+    public function getGroups($userId);
 
 }

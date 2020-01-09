@@ -8,35 +8,37 @@ use WebsiteApi\UsersBundle\Model\ContactsInterface;
 class Contacts implements ContactsInterface
 {
 
-	private $em;
-	private $notifications;
+    private $em;
+    private $notifications;
 
-	public function __construct($em, $notifications){
-		$this->em = $em;
-		$this->notifications = $notifications;
-	}
-
-	public function searchByUsername($username)
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-        return $userRepository->findOneBy(Array("usernamecanonical" => $username));
-	}
-    public function searchUsersByUsername($username,$restrictions,$groupId,$workspaceId)
+    public function __construct($em, $notifications)
     {
-        if($username == "")
+        $this->em = $em;
+        $this->notifications = $notifications;
+    }
+
+    public function searchByUsername($username)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        return $userRepository->findOneBy(Array("usernamecanonical" => $username));
+    }
+
+    public function searchUsersByUsername($username, $restrictions, $groupId, $workspaceId)
+    {
+        if ($username == "")
             return "empty username";
         $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
         $users = $userRepository->findByName($username);
 
-        if($restrictions == "all"){
+        if ($restrictions == "all") {
             return $users;
         }
-        $res = [] ;
-        if($restrictions == "group"){
+        $res = [];
+        if ($restrictions == "group") {
             $groupUserRepository = $this->em->getRepository("TwakeWorkspacesBundle:GroupUser");
 
-            foreach($users as $user){
+            foreach ($users as $user) {
                 $groupuser = $groupUserRepository->findOneBy(Array("user" => $user->getId(), "group" => $groupId));
                 if ($groupuser) {
                     $res[] = $user;
@@ -44,10 +46,10 @@ class Contacts implements ContactsInterface
             }
         }
 
-        if($restrictions == "workspace"){
+        if ($restrictions == "workspace") {
             $workspaceUsers = $this->em->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
-            foreach($users as $user){
+            foreach ($users as $user) {
                 $workspaceUser = $workspaceUsers->findOneBy(Array("workspace" => $workspaceId, "user" => $user));
                 if ($workspaceUser) {
                     $res[] = $user;
@@ -58,168 +60,169 @@ class Contacts implements ContactsInterface
         return $res;
 
     }
-	public function ask($current_user, $user)
-	{
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-		$current_user = $userRepository->find($current_user);
-		$user = $userRepository->find($user);
+    public function ask($current_user, $user)
+    {
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
 
-		$link = $this->get($current_user, $user);
+        $current_user = $userRepository->find($current_user);
+        $user = $userRepository->find($user);
 
-		if($current_user->getId()==$user->getId()){
-			return false;
-		}
+        $link = $this->get($current_user, $user);
 
-		if(!$link){
-			$link = new Contact($current_user, $user);
-			$this->em->persist($link);
-			$this->em->flush();
+        if ($current_user->getId() == $user->getId()) {
+            return false;
+        }
 
-			$this->notifications->pushNotification(
-				null,
-				null,
-				Array($user->getId()),
-				null,
-				"contact_request",
-				"@".$current_user->getUsername()." want to become your contact.",
-				Array("push", "mail")
-			);
+        if (!$link) {
+            $link = new Contact($current_user, $user);
+            $this->em->persist($link);
+            $this->em->flush();
 
-			return true;
-		}
+            $this->notifications->pushNotification(
+                null,
+                null,
+                Array($user->getId()),
+                null,
+                "contact_request",
+                "@" . $current_user->getUsername() . " want to become your contact.",
+                Array("push", "mail")
+            );
 
-		if($link->getFrom()->getId() == $user->getId()){
-			return $this->accept($current_user, $user);
-		}
+            return true;
+        }
 
-		return false;
-	}
+        if ($link->getFrom()->getId() == $user->getId()) {
+            return $this->accept($current_user, $user);
+        }
 
-	public function remove($current_user, $user)
-	{
-		$link = $this->get($current_user, $user);
+        return false;
+    }
 
-		if(!$link){
-			return false;
-		}
+    public function remove($current_user, $user)
+    {
+        $link = $this->get($current_user, $user);
 
-		$this->em->remove($link);
-		$this->em->flush();
+        if (!$link) {
+            return false;
+        }
 
-		return true;
-	}
+        $this->em->remove($link);
+        $this->em->flush();
 
-	public function accept($current_user, $user)
-	{
-		$link = $this->get($current_user, $user);
+        return true;
+    }
 
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$user = $userRepository->find($user);
+    public function accept($current_user, $user)
+    {
+        $link = $this->get($current_user, $user);
 
-		if(!$link || $link->getFrom()->getId()!=$user->getId()){
-			return false;
-		}
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $user = $userRepository->find($user);
 
-		$this->notifications->pushNotification(
-			null,
-			null,
-			Array($user->getId()),
-			null,
-			"contact_acceptation",
-			"@".$current_user->getUsername()." accepted to become your contact.",
-			Array("push", "mail")
-		);
+        if (!$link || $link->getFrom()->getId() != $user->getId()) {
+            return false;
+        }
 
-		$link->setStatus(1);
+        $this->notifications->pushNotification(
+            null,
+            null,
+            Array($user->getId()),
+            null,
+            "contact_acceptation",
+            "@" . $current_user->getUsername() . " accepted to become your contact.",
+            Array("push", "mail")
+        );
 
-		$this->em->persist($link);
-		$this->em->flush();
+        $link->setStatus(1);
 
-		return true;
-	}
+        $this->em->persist($link);
+        $this->em->flush();
 
-	public function get($current_user, $user)
-	{
-		$contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
+        return true;
+    }
 
-		$link = $contactRepository->findOneBy(Array("from"=>$user,"to"=>$current_user));
-		if(!$link) {
-			$link = $contactRepository->findOneBy(Array("from" => $current_user, "to" => $user));
-		}
+    public function get($current_user, $user)
+    {
+        $contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
 
-		return $link;
-	}
+        $link = $contactRepository->findOneBy(Array("from" => $user, "to" => $current_user));
+        if (!$link) {
+            $link = $contactRepository->findOneBy(Array("from" => $current_user, "to" => $user));
+        }
 
-	public function getAll($current_user, $ignore_notifications = false)
-	{
-		$contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
+        return $link;
+    }
 
-		$links = $contactRepository->findBy(Array("to"=>$current_user, "status"=>1));
-		$links = array_merge($links,
-			$contactRepository->findBy(Array("from" => $current_user, "status"=>1))
-		);
+    public function getAll($current_user, $ignore_notifications = false)
+    {
+        $contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
 
-		if(!$ignore_notifications) {
-			$this->notifications->readAll(null, null, $current_user, "contact_acceptation");
-		}
+        $links = $contactRepository->findBy(Array("to" => $current_user, "status" => 1));
+        $links = array_merge($links,
+            $contactRepository->findBy(Array("from" => $current_user, "status" => 1))
+        );
 
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$current_user = $userRepository->find($current_user);
+        if (!$ignore_notifications) {
+            $this->notifications->readAll(null, null, $current_user, "contact_acceptation");
+        }
 
-		$list = [];
-		foreach($links as $link){
-			if($link->getFrom()->getId()==$current_user->getId()){
-				$list[] = $link->getTo();
-			}else{
-				$list[] = $link->getFrom();
-			}
-		}
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $current_user = $userRepository->find($current_user);
 
-		return $list;
-	}
+        $list = [];
+        foreach ($links as $link) {
+            if ($link->getFrom()->getId() == $current_user->getId()) {
+                $list[] = $link->getTo();
+            } else {
+                $list[] = $link->getFrom();
+            }
+        }
 
-	public function getAllRequests($current_user)
-	{
-		$contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
+        return $list;
+    }
 
-		$links = $contactRepository->findBy(Array("to"=>$current_user, "status"=>0));
+    public function getAllRequests($current_user)
+    {
+        $contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
 
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$current_user = $userRepository->find($current_user);
+        $links = $contactRepository->findBy(Array("to" => $current_user, "status" => 0));
 
-		$this->notifications->readAll(null, null, $current_user, "contact_request");
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $current_user = $userRepository->find($current_user);
 
-		$list = [];
-		foreach($links as $link){
-			if($link->getFrom()->getId()==$current_user->getId()){
-				$list[] = $link->getTo();
-			}else{
-				$list[] = $link->getFrom();
-			}
-		}
+        $this->notifications->readAll(null, null, $current_user, "contact_request");
 
-		return $list;
-	}
+        $list = [];
+        foreach ($links as $link) {
+            if ($link->getFrom()->getId() == $current_user->getId()) {
+                $list[] = $link->getTo();
+            } else {
+                $list[] = $link->getFrom();
+            }
+        }
 
-	public function getAllRequestsFromMe($current_user)
-	{
-		$contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
+        return $list;
+    }
 
-		$links = $contactRepository->findBy(Array("from"=>$current_user, "status"=>0));
+    public function getAllRequestsFromMe($current_user)
+    {
+        $contactRepository = $this->em->getRepository("TwakeUsersBundle:Contact");
 
-		$userRepository = $this->em->getRepository("TwakeUsersBundle:User");
-		$current_user = $userRepository->find($current_user);
+        $links = $contactRepository->findBy(Array("from" => $current_user, "status" => 0));
 
-		$list = [];
-		foreach($links as $link){
-			if($link->getFrom()->getId()==$current_user->getId()){
-				$list[] = $link->getTo();
-			}else{
-				$list[] = $link->getFrom();
-			}
-		}
+        $userRepository = $this->em->getRepository("TwakeUsersBundle:User");
+        $current_user = $userRepository->find($current_user);
 
-		return $list;
-	}
+        $list = [];
+        foreach ($links as $link) {
+            if ($link->getFrom()->getId() == $current_user->getId()) {
+                $list[] = $link->getTo();
+            } else {
+                $list[] = $link->getFrom();
+            }
+        }
+
+        return $list;
+    }
 }

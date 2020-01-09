@@ -10,7 +10,8 @@ namespace WebsiteApi\PaymentsBundle\Repository;
  */
 class SubscriptionRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
-    public function findLastActiveSub($group){
+    public function findLastActiveSub($group)
+    {
         $qb = $this->createQueryBuilder('f')
             ->select('max(f.id)')
             ->where('f.group = :group')

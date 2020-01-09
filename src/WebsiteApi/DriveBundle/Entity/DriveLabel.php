@@ -16,28 +16,28 @@ class DriveLabel
 {
 
 
-	/**
+    /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
-	private $id;
+     */
+    private $id;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\Workspace",cascade={"persist"})
      * @ORM\JoinColumn(nullable=false)
-	 */
-	private $workspace;
+     */
+    private $workspace;
 
-	/**
+    /**
      * @ORM\Column(type="twake_text")
      * @Encrypted
-	 */
-	private $name;
+     */
+    private $name;
 
-	/**
+    /**
      * @ORM\Column(type="string", length=6)
-	 */
-	private $color;
+     */
+    private $color;
 
     /**
      * @ORM\Column(name="number", type="integer")
@@ -45,56 +45,57 @@ class DriveLabel
     private $number = 0;
 
 
-	public function __construct($workspace, $name, $color="000000"){
-		$this->workspace = $workspace;
-		$this->name = $name;
-		$this->setColor($color);
-	}
+    public function __construct($workspace, $name, $color = "000000")
+    {
+        $this->workspace = $workspace;
+        $this->name = $name;
+        $this->setColor($color);
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function setId($id)
+    /**
+     * @return mixed
+     */
+    public function setId($id)
     {
         $this->id = $id;
     }
 
     public function getId()
     {
-		return $this->id;
-	}
+        return $this->id;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * @return mixed
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @param mixed $name
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
-	}
+    /**
+     * @param mixed $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-	/**
-	 * @return mixed
-	 */
-	public function getColor()
-	{
-		return str_replace("#","", $this->color);
-	}
+    /**
+     * @return mixed
+     */
+    public function getColor()
+    {
+        return str_replace("#", "", $this->color);
+    }
 
-	/**
-	 * @param mixed $color
-	 */
-	public function setColor($color)
-	{
-		$this->color = str_replace("#","", $color);
-	}
+    /**
+     * @param mixed $color
+     */
+    public function setColor($color)
+    {
+        $this->color = str_replace("#", "", $color);
+    }
 
     /**
      * @return mixed
@@ -120,13 +121,14 @@ class DriveLabel
         $this->number = $number;
     }
 
-	public function getAsArray(){
-		return Array(
-			"id" => $this->id,
-			"name" => $this->name,
+    public function getAsArray()
+    {
+        return Array(
+            "id" => $this->id,
+            "name" => $this->name,
             "color" => "#" . $this->color,
             "number" => $this->number
-		);
-	}
+        );
+    }
 
 }

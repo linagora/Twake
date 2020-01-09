@@ -1,4 +1,5 @@
 <?php
+
 namespace WebsiteApi\CoreBundle\Command;
 
 use mageekguy\atoum\asserters\error;
@@ -299,9 +300,9 @@ class ImportCommand extends ContainerAwareCommand
                 if (filesize($workspace_file) > 0) {
                     $handle_workspace_file = fopen($workspace_file, 'r') or die('Cannot open file:  ' . $workspace_file);
                     $contents = json_decode(fread($handle_workspace_file, filesize($workspace_file)), true);
-                    if(isset($contents)){
+                    if (isset($contents)) {
                         $old_wp_id = $contents["id"];
-                        error_log(print_r("DEBUT WP : " . $contents["name"] ." ID : " . $old_wp_id));
+                        error_log(print_r("DEBUT WP : " . $contents["name"] . " ID : " . $old_wp_id));
                         $workspace_bdd = new Workspace($contents["name"]);
                         $workspace_bdd->setUniqueName($contents["uniquename"]);
                         $workspace_bdd->setColor($contents["color"]);
@@ -346,7 +347,7 @@ class ImportCommand extends ContainerAwareCommand
                                 $new_id = $this->match_table["user"][$user["user_id"]];
                                 $user_bdd = $manager->getRepository("TwakeUsersBundle:User")->findOneBy(Array("id" => $new_id));
                                 $workspaceuser = new WorkspaceUser($workspace_bdd, $user_bdd, $level_none_id);
-                                if($user["admin"]){
+                                if ($user["admin"]) {
                                     $workspaceuser->setLevelId($level_admin_id);
                                 }
                                 $manager->persist($workspaceuser);
@@ -504,14 +505,14 @@ class ImportCommand extends ContainerAwareCommand
                         if (filesize($channel_file) > 0) {
                             $contents = json_decode(fread($handle_channel_file, filesize($channel_file)), true);
                             if (isset($contents)) {
-                                error_log(print_r("NEW CHANNEL : ". $name . " ID : ". $contents["id"],true));
+                                error_log(print_r("NEW CHANNEL : " . $name . " ID : " . $contents["id"], true));
                                 $channel_bdd->setPrivate($contents["is_private"]);
                                 $channel_bdd->setDirect(false);
                                 $channel_bdd->setDescription($contents["description"]);
                                 $channel_bdd->setOriginalWorkspaceId($workspace_id);
                                 $channel_bdd->setOriginalGroup($group);
                                 $member_list = Array();
-                                foreach ($contents["members"] as $channel_member){
+                                foreach ($contents["members"] as $channel_member) {
                                     if (array_key_exists($channel_member["id"], $this->match_table["user"])) {
                                         array_push($member_list, $this->match_table["user"][$channel_member["id"]]);
                                     }
@@ -604,7 +605,7 @@ class ImportCommand extends ContainerAwareCommand
                                         $message_bdd->setSender($user);
                                     }
                                 }
-                                $message_bdd->setCreationDate(new DateTime("@". intval($message["creation_date"]/1000)));
+                                $message_bdd->setCreationDate(new DateTime("@" . intval($message["creation_date"] / 1000)));
 
                                 $manager->persist($message_bdd);
                             }
@@ -628,9 +629,9 @@ class ImportCommand extends ContainerAwareCommand
                 //  PARTIE SUR LA CREATION DE TOUT DES CALENDARS
                 if (file_exists("calendars")) {
                     chdir("calendars");
-                    $allcalendar= scandir("./");
+                    $allcalendar = scandir("./");
                     $calendars = array_values(array_diff($allcalendar, array('.', '..')));
-                    foreach($calendars as $calendar) {
+                    foreach ($calendars as $calendar) {
 
                         if ($calendar[0] == ".") {
                             continue;
@@ -639,7 +640,7 @@ class ImportCommand extends ContainerAwareCommand
                         $handle_calendar_file = fopen($calendar, 'r') or die('Cannot open file:  ' . $calendar);
                         if (filesize($calendar) > 0) {
                             $contents = json_decode(fread($handle_calendar_file, filesize($calendar)), true);
-                            error_log(print_r("NEW CALENDAR : " . $contents[0]["title"] . " ID : " . $contents[0]["id"],true));
+                            error_log(print_r("NEW CALENDAR : " . $contents[0]["title"] . " ID : " . $contents[0]["id"], true));
 
                             $color = $contents[0]["color"];
                             if ($color[0] != "#") {
@@ -647,9 +648,9 @@ class ImportCommand extends ContainerAwareCommand
                             }
 
                             $calendar_bdd = new Calendar($workspace_id, $contents[0]["title"], $color);
-                            if(isset($contents[0]["auto_participant"]) && $contents[0]["auto_participant"] != Array()){
+                            if (isset($contents[0]["auto_participant"]) && $contents[0]["auto_participant"] != Array()) {
                                 $participants = Array();
-                                foreach($contents[0]["auto_participant"] as $p){
+                                foreach ($contents[0]["auto_participant"] as $p) {
                                     $participants[] = $this->match_table["user"][$p];
                                 }
                                 $calendar_bdd->setAutoParticipants($participants);
@@ -665,7 +666,7 @@ class ImportCommand extends ContainerAwareCommand
                                 foreach ($events as $event) {
 
                                     $title = "";
-                                    if(isset($event["event"]["event"]["title"]) && is_string(($event["event"]["event"]["title"]))){
+                                    if (isset($event["event"]["event"]["title"]) && is_string(($event["event"]["event"]["title"]))) {
                                         $title = $event["event"]["event"]["title"];
                                     }
                                     $event_bdd = new Event($title, $event["event"]["from"], $event["event"]["to"]);
@@ -684,10 +685,10 @@ class ImportCommand extends ContainerAwareCommand
 
                                     $participants = Array();
                                     if (isset($event["event"]["participants"]) && is_array($event["event"]["participants"])) {
-                                        foreach($event["event"]["participants"] as $p){
-                                            if(is_int($p)){
+                                        foreach ($event["event"]["participants"] as $p) {
+                                            if (is_int($p)) {
                                                 $participants[] = $this->match_table["user"][$p];
-                                            } else{
+                                            } else {
                                                 $participants[] = $this->match_table["user"][$p["id"]];
                                             }
                                         }
@@ -710,11 +711,11 @@ class ImportCommand extends ContainerAwareCommand
 
                 error_log(">TASKS");
                 //  PARTIE SUR LA CREATION DES TACHES
-                if(file_exists("tasks")){
+                if (file_exists("tasks")) {
                     chdir("tasks");
-                    $allboard= scandir("./");
+                    $allboard = scandir("./");
                     $boards = array_values(array_diff($allboard, array('.', '..')));
-                    foreach($boards as $board) {
+                    foreach ($boards as $board) {
 
                         if ($board[0] == ".") {
                             continue;
@@ -723,7 +724,7 @@ class ImportCommand extends ContainerAwareCommand
                         $handle_board_file = fopen($board, 'r') or die('Cannot open file:  ' . $board);
                         if (filesize($board) > 0) {
                             $contents = json_decode(fread($handle_board_file, filesize($board)), true);
-                            error_log(print_r("NEW TASK : " . $contents["title"] . " ID : " . $contents["id"],true));
+                            error_log(print_r("NEW TASK : " . $contents["title"] . " ID : " . $contents["id"], true));
                             if (isset($contents)) {
                                 $board_bdd = new Board($workspace_id, str_replace(":", " ", $contents["title"]));
                                 $board_bdd->setGroupName($group->getName());
@@ -731,23 +732,23 @@ class ImportCommand extends ContainerAwareCommand
                                 $manager->flush();
                                 $board_id = $board_bdd->getId();
                                 $lists = $contents["lists"];
-                                if(isset($contents["lists"]) && $contents["lists"] != Array()){
-                                    foreach ($lists as $list){
-                                        $board_list = new BoardList($board_id,$list["title"],$list["color"]);
+                                if (isset($contents["lists"]) && $contents["lists"] != Array()) {
+                                    foreach ($lists as $list) {
+                                        $board_list = new BoardList($board_id, $list["title"], $list["color"]);
                                         $manager->persist($board_list);
                                         $manager->flush();
                                         $list_id = $board_list->getId();
                                         $tasks = $list["tasks"];
-                                        if(isset($list["tasks"]) && $list["tasks"] != Array()){
-                                            foreach ($tasks as $task){
-                                                $task_bdd = new Task($board_id,$list_id,$task["name"]);
+                                        if (isset($list["tasks"]) && $list["tasks"] != Array()) {
+                                            foreach ($tasks as $task) {
+                                                $task_bdd = new Task($board_id, $list_id, $task["name"]);
                                                 $task_bdd->setDescription($task["description"]);
                                                 $task_bdd->setOrder($task["order"]);
                                                 $task_bdd->setOwner($this->match_table["user"][$task["user"]]);
                                                 $task_bdd->setCheckList($task["checklist"]);
-                                                if(isset($task["participant"]) && $task["participant"] != Array()){
+                                                if (isset($task["participant"]) && $task["participant"] != Array()) {
                                                     $participants = Array();
-                                                    foreach($task["participant"] as $p){
+                                                    foreach ($task["participant"] as $p) {
                                                         $participants[] = $this->match_table["user"][$p];
                                                     }
                                                     $task_bdd->setParticipants($participants);

@@ -10,7 +10,7 @@ namespace WebsiteApi\NotificationsBundle\Model;
 interface NotificationsInterface
 {
 
-	// @pushNotification add new notification
+    // @pushNotification add new notification
     public function pushNotification(
         $application = null,
         $sender_application = null,
@@ -26,10 +26,10 @@ interface NotificationsInterface
         $save_notification = true
     );
 
-	// @readAll remove all notifications for this
+    // @readAll remove all notifications for this
     public function readAll($user);
 
-	// @getAll return list of notifications for an user
-	public function getAll($user);
+    // @getAll return list of notifications for an user
+    public function getAll($user);
 
 }

@@ -17,9 +17,9 @@ use OpenStack\Identity\v2\Service;
 class Adapter_OpenStack_DriveFileSystem extends DriveFileSystem
 {
 
-    public function __construct($openstack_config, $doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem, $drive_previews_tmp_folder)
+    public function __construct($openstack_config, $doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $drive_previews_tmp_folder)
     {
-        parent::__construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $objectLinkSystem, $drive_previews_tmp_folder);
+        parent::__construct($doctrine, $rootDirectory, $labelsService, $parameter_drive_salt, $pricing, $preview, $pusher, $applicationService, $userToNotifyService, $translate, $workspacesApps, $workspacesActivities, $drive_previews_tmp_folder);
 
         $this->openstack_buckets = $openstack_config["buckets"];
         $this->openstack_buckets_prefix = isset($openstack_config["buckets_prefix"]) ? $openstack_config["buckets_prefix"] : "";

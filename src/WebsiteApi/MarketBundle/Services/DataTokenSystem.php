@@ -18,8 +18,9 @@ class DataTokenSystem
         $this->doctrine = $doctrine;
     }
 
-    public function makeToken($workspaceId, $userId){
-        $dataToken = new DataToken($workspaceId,$userId);
+    public function makeToken($workspaceId, $userId)
+    {
+        $dataToken = new DataToken($workspaceId, $userId);
 
         $this->doctrine->persist($dataToken);
         $this->doctrine->flush();
@@ -27,10 +28,11 @@ class DataTokenSystem
         return $dataToken;
     }
 
-    public function getDataToken($token){
+    public function getDataToken($token)
+    {
         $dataTokenRepository = $this->doctrine->getRepository("TwakeMarketBundle:DataToken");
         $dataToken = $dataTokenRepository->findOneBy(Array("token" => $token));
-        if($dataToken==null)
+        if ($dataToken == null)
             return false;
 
         $data["workspaceId"] = $dataToken->getWorkspaceId();
@@ -41,11 +43,12 @@ class DataTokenSystem
         return $data;
     }
 
-    public function checkWorkspaceUser($workspaceId, $userId){
+    public function checkWorkspaceUser($workspaceId, $userId)
+    {
         $workspaceUserRepository = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceUser");
 
         $workspaceUser = $workspaceUserRepository->findOneBy(Array("workspace" => $workspaceId, "user" => $userId));
 
-        return $workspaceUser!=null;
+        return $workspaceUser != null;
     }
 }

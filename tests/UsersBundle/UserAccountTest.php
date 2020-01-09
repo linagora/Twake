@@ -362,7 +362,7 @@ class UserAccountTest extends WebTestCaseExtended
         $user = $this->getDoctrine()->getRepository("TwakeUsersBundle:User")->findOneBy(Array("usernamecanonical" => "usertest001"));
 
         $result = $this->doPost("/ajax/users/subscribe/mail", Array(
-            "email" => "usertest001@twake_phpunit.fr",
+            "email" => "usertest001_notused@twake_phpunit.fr",
             "username" => "usertest001",
             "password" => "usertest001",
             "name" => "namefortest",
@@ -371,7 +371,7 @@ class UserAccountTest extends WebTestCaseExtended
         ));
 
         $result = $result["errors"][0];
-        $this->assertEquals("error_mail_or_password", $result, "testing username available");
+        $this->assertEquals("usernamealreadytaken", $result, "testing username available");
 
 
         $result = $this->doPost("/ajax/users/subscribe/mail", Array(
@@ -383,7 +383,7 @@ class UserAccountTest extends WebTestCaseExtended
             "phone" => "phonefortest"
         ));
         $result = $result["errors"][0];
-        $this->assertEquals("error_mail_or_password", $result, "testing username available");
+        $this->assertEquals("mailalreadytaken", $result, "testing mail available");
 
         $result = $this->doPost("/ajax/users/subscribe/mail", Array(
             "email" => "123456",
@@ -394,7 +394,7 @@ class UserAccountTest extends WebTestCaseExtended
             "phone" => "phonefortest"
         ));
         $result = $result["errors"][0];
-        $this->assertEquals("error_mail_or_password", $result, "testing username available");
+        $this->assertEquals("usernamealreadytaken", $result, "testing username available");
 
 
         $mailfortest = new Mail();

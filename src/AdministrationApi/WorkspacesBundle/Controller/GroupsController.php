@@ -10,7 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 class GroupsController extends Controller
 {
 
-    public function getAllGroupsAction(Request $request) {
+    public function getAllGroupsAction(Request $request)
+    {
 
         $data = Array(
             "data" => Array(),
@@ -40,7 +41,7 @@ class GroupsController extends Controller
 
             $options = Array();
 
-            if(isset($scroll_id) && isset($repository)){
+            if (isset($scroll_id) && isset($repository)) {
                 $options["scroll_id"] = $scroll_id;
             }
 
@@ -55,7 +56,8 @@ class GroupsController extends Controller
         return new JsonResponse($data);
     }
 
-    public function getOneGroupAction(Request $request) {
+    public function getOneGroupAction(Request $request)
+    {
         $data = Array(
             "data" => Array(),
             "errors" => Array()
@@ -96,7 +98,8 @@ class GroupsController extends Controller
         return new JsonResponse($data);
     }
 
-    public function findGroupsAction(Request $request) {
+    public function findGroupsAction(Request $request)
+    {
         $data = Array(
             "data" => Array(),
             "errors" => Array()
@@ -121,7 +124,7 @@ class GroupsController extends Controller
                 "name" => $search_string
             );
 
-            if(isset($group_scroll_id) && isset($repository)){
+            if (isset($group_scroll_id) && isset($repository)) {
                 $options["scroll_id"] = $group_scroll_id;
             }
 
@@ -153,8 +156,7 @@ class GroupsController extends Controller
 
             if (isset($workspace_scroll_id) && isset($repository)) {
                 $globalresult = $this->get('globalsearch.pagination')->getnextelement($workspace_scroll_id, $repository);
-            }
-            else{
+            } else {
                 $options = Array(
                     "name" => $search_string
                 );

@@ -62,7 +62,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
         $link = $workspaceUserRepository->findOneBy(Array("user" => $user, "workspace" => $workspace));
         if ($link) {
             $level = $this->doctrine->getRepository("TwakeWorkspacesBundle:WorkspaceLevel")->findOneBy(Array("workspace" => $workspace->getId(), "id" => $link->getLevelId()));
-            if(!$link || !$level){
+            if (!$link || !$level) {
                 return false;
             }
 
@@ -70,11 +70,11 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
             $this->doctrine->persist($workspace);
             //No flush, if this is just a read we don't count the activity
 
-            if($level->getIsAdmin()){
+            if ($level->getIsAdmin()) {
                 return true; //Admin can do everything
             }
 
-            if($action=="" || $action==null){
+            if ($action == "" || $action == null) {
                 return true;
             }
 
@@ -83,9 +83,9 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
             //Compare with action asked
             $actions = explode(":", $action);
             $object = $actions[0];
-            $value = intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$actions[1]));
+            $value = intval(str_replace(Array("none", "read", "write", "manage"), Array(0, 1, 2, 3), $actions[1]));
 
-            if(!isset($rights[$object]) || intval(str_replace(Array("none", "read", "write", "manage"),Array(0,1,2,3),$rights[$object])) < $value){
+            if (!isset($rights[$object]) || intval(str_replace(Array("none", "read", "write", "manage"), Array(0, 1, 2, 3), $rights[$object])) < $value) {
                 return false;
             }
 
@@ -172,7 +172,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
         $levels = $levelRepository->findBy(Array("workspace" => $workspace));
 
 
-        foreach($levels as $level){
+        foreach ($levels as $level) {
             if ($level->getIsDefault()) {
                 $choosen = $level;
             }
@@ -361,7 +361,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
 
     public function getByLabel($workspaceId, $label, $currentUserId = null)
     {
-        if($currentUserId == null
+        if ($currentUserId == null
             || $this->can($workspaceId, $currentUserId, "workspace:read")
         ) {
 
@@ -374,7 +374,7 @@ class WorkspaceLevels implements WorkspaceLevelsInterface
                 return false;
             }
 
-            $levels = $levelRepository->getByLabel($label,$workspace);
+            $levels = $levelRepository->getByLabel($label, $workspace);
 
             return $levels;
         }

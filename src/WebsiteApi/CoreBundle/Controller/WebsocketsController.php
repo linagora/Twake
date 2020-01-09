@@ -16,22 +16,48 @@ class WebsocketsController extends Controller
     public function initAction(Request $request)
     {
 
-        $route = $request->request->get("collection_id", "");
-        $data = $request->request->get("options", "");
-
-        $result = $this->get("app.websockets")->init($route, $data, $this);
-        if ($result) {
-            return new JsonResponse(Array(
-                "data" => Array(
-                    "room_id" => $result["route_id"],
-                    "key" => $result["key"],
-                    "key_version" => $result["key_version"],
-                    "get" => $result["get"]
-                )
-            ));
+        $multiple_request = $request->request->get("multiple", false);
+        $multiple = $multiple_request;
+        if (!$multiple_request) {
+            $multiple = [Array(
+                "collection_id" => $request->request->get("collection_id", ""),
+                "options" => $request->request->get("options", "")
+            )];
         }
 
-        return new JsonResponse(Array("status" => "error_service_not_found_or_not_allowed"));
+        $final_result = [];
+
+        foreach ($multiple as $item) {
+            $route = $item["collection_id"];
+            $data = $item["options"];
+
+            try {
+                $result = $this->get("app.websockets")->init($route, $data, $this);
+                if ($result) {
+                    $final_result[] = Array(
+                        "data" => Array(
+                            "room_id" => $result["route_id"],
+                            "key" => $result["key"],
+                            "key_version" => $result["key_version"],
+                            "get" => $result["get"]
+                        )
+                    );
+                } else {
+                    $final_result[] = Array("status" => "error_service_not_found_or_not_allowed");
+                }
+            } catch (\Exception $e) {
+                $final_result[] = Array("status" => "error_service_not_found_or_not_allowed");
+            }
+
+        }
+
+        if (!$multiple_request) {
+            $final_result = $final_result[0];
+        } else {
+            $final_result = Array("data" => $final_result);
+        }
+
+        return new JsonResponse($final_result);
 
     }
 

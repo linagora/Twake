@@ -19,7 +19,8 @@ class ValidationService
      * ValidationService constructor.
      * @param $token
      */
-    public function __construct($token) {
+    public function __construct($token)
+    {
         $this->token = $token;
     }
 
@@ -27,14 +28,16 @@ class ValidationService
      * @param $token
      * @return bool
      */
-    public function validateAuthentication($token) {
+    public function validateAuthentication($token)
+    {
         return $token == $this->token;
     }
 
     /**
      * @return bool
      */
-    public function validateStructure($filter, $sort, $limit, $page) {
+    public function validateStructure($filter, $sort, $limit, $page)
+    {
         if ($limit <= 0) {
             return false;
         }

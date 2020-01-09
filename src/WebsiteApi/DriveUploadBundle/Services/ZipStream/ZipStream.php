@@ -350,7 +350,8 @@ class ZipStream
         string $name,
         StreamInterface $stream,
         ?FileOptions $options = null
-    ): void {
+    ): void
+    {
         $options = $options ?: new FileOptions();
         $options->defaultTo($this->opt);
 

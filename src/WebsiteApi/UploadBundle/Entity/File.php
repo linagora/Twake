@@ -20,49 +20,49 @@ class File
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
-	/**
-	 * @var string
-	 *
+    /**
+     * @var string
+     *
      * @ORM\Column(name="type", type="string", length=8)
-	 */
-	private $type; //Define where this file is used
+     */
+    private $type; //Define where this file is used
 
-	/**
-	 * @var string
-	 *
+    /**
+     * @var string
+     *
      * @ORM\Column(name="name", type="string", length=255)
-	 */
-	private $name; //Name of the file in server (md5)
+     */
+    private $name; //Name of the file in server (md5)
 
-	/**
-	 * @var string
-	 *
+    /**
+     * @var string
+     *
      * @ORM\Column(name="real_name", type="string", length=255)
-	 */
+     */
     private $realname; //Original name of the files on user computer
 
-	/**
-	 * @var int
-	 *
+    /**
+     * @var int
+     *
      * @ORM\Column(name="sizes", type="integer")
-	 */
-	private $sizes; //Size (binary position) : 0 = original
-				    //		1 = 512
-				    //      2 = 256
-					//      3 = 128
-					//      4 = 64
-					// Example : 00001 = 1 = only original
-					//          10111 = 23 = original, 512, 256 and 64 sizes
+     */
+    private $sizes; //Size (binary position) : 0 = original
+    //		1 = 512
+    //      2 = 256
+    //      3 = 128
+    //      4 = 64
+    // Example : 00001 = 1 = only original
+    //          10111 = 23 = original, 512, 256 and 64 sizes
 
-	/**
-	 * @var int
-	 *
+    /**
+     * @var int
+     *
      * @ORM\Column(name="date", type="twake_bigint")
-	 */
-	private $date; //Creation date
+     */
+    private $date; //Creation date
 
     /**
      * @var int
@@ -79,13 +79,13 @@ class File
     private $aws_public_link = false;
 
 
-
-	public function __construct(){
-		$this->name = "<null>";
-		$this->sizes = 31; //All sizes
-		$this->date = date("U");
-		$this->weight = -1;
-	}
+    public function __construct()
+    {
+        $this->name = "<null>";
+        $this->sizes = 31; //All sizes
+        $this->date = date("U");
+        $this->weight = -1;
+    }
 
 
     /**
@@ -103,140 +103,144 @@ class File
         return $this->id;
     }
 
-	/**
-	 * Return the url to get the file (public url)
-	 * @param int $size
-	 * @return string
-	 */
-	public function getPublicURL($size = 0){
+    /**
+     * Return the url to get the file (public url)
+     * @param int $size
+     * @return string
+     */
+    public function getPublicURL($size = 0)
+    {
 
         if ($this->aws_public_link) {
             return $this->aws_public_link . "";
         }
 
-		if(!$this->size_exists($size)){
-			return "";
-		}
-		return "/upload/".$this->type."/".$size."/".$this->name;
-	}
+        if (!$this->size_exists($size)) {
+            return "";
+        }
+        return "/upload/" . $this->type . "/" . $size . "/" . $this->name;
+    }
 
-	/**
-	 * Return the url to get the file (local url)
-	 * @param int $size
-	 * @return string
-	 */
-	public function getLocalServerURL($size = 0){
+    /**
+     * Return the url to get the file (local url)
+     * @param int $size
+     * @return string
+     */
+    public function getLocalServerURL($size = 0)
+    {
         if ($this->aws_public_link) {
             return false;
         }
-		return APPPATH."/../web/".$this->getPublicURL($size);
-	}
+        return APPPATH . "/../web/" . $this->getPublicURL($size);
+    }
 
 
-	/**
+    /**
      * @ORM\PostRemove()
-	 */
-	public function deleteFromDisk(){ //Delete files from disk
-		for($i=0;$i<=4;$i++){
-			if($this->size_exists($i)){
-				@unlink($this->getLocalServerURL($i));
-			}
-		}
-	}
+     */
+    public function deleteFromDisk()
+    { //Delete files from disk
+        for ($i = 0; $i <= 4; $i++) {
+            if ($this->size_exists($i)) {
+                @unlink($this->getLocalServerURL($i));
+            }
+        }
+    }
 
-	/**
-	 * Return true if this size is available
-	 * @param $size
-	 * @return bool
-	 */
-	private function size_exists($size){
-		$sizes = decbin($this->sizes);
-		if($sizes[strlen($sizes)-$size-1]!=1){
-			return false;
-		}
-		return true;
-	}
+    /**
+     * Return true if this size is available
+     * @param $size
+     * @return bool
+     */
+    private function size_exists($size)
+    {
+        $sizes = decbin($this->sizes);
+        if ($sizes[strlen($sizes) - $size - 1] != 1) {
+            return false;
+        }
+        return true;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getType()
-	{
-		return $this->type;
-	}
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
 
-	/**
-	 * @param string $type
-	 */
-	public function setType($type)
-	{
-		$this->type = $type;
-	}
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = $type;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getName()
-	{
-		return $this->name;
-	}
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
 
-	/**
-	 * @param string $name
-	 */
-	public function setName($name)
-	{
-		$this->name = $name;
-	}
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
 
-	/**
-	 * @return int
-	 */
-	public function getSizes()
-	{
-		return $this->sizes;
-	}
+    /**
+     * @return int
+     */
+    public function getSizes()
+    {
+        return $this->sizes;
+    }
 
-	/**
-	 * @param int $sizes
-	 */
-	public function setSizes($sizes)
-	{
-		$this->sizes = $sizes;
-	}
+    /**
+     * @param int $sizes
+     */
+    public function setSizes($sizes)
+    {
+        $this->sizes = $sizes;
+    }
 
 
-	/**
-	 * @return int
-	 */
-	public function getWeight()
-	{
-		return $this->weight;
-	}
+    /**
+     * @return int
+     */
+    public function getWeight()
+    {
+        return $this->weight;
+    }
 
-	/**
-	 * @param int $weight
-	 */
-	public function setWeight($weight)
-	{
-		$this->weight = $weight;
-	}
+    /**
+     * @param int $weight
+     */
+    public function setWeight($weight)
+    {
+        $this->weight = $weight;
+    }
 
-	/**
-	 * @return string
-	 */
-	public function getRealName()
-	{
+    /**
+     * @return string
+     */
+    public function getRealName()
+    {
         return $this->realname;
-	}
+    }
 
-	/**
+    /**
      * @param string $realname
-	 */
+     */
     public function setRealName($realname)
     {
         $this->realname = $realname;
-	}
+    }
 
     /**
      * @return mixed
@@ -253,7 +257,6 @@ class File
     {
         $this->aws_public_link = $aws_public_link;
     }
-
 
 
 }

@@ -14,11 +14,11 @@ use Symfony\Component\Validator\Constraints\DateTime;
  */
 class AccessLog
 {
-	/**
+    /**
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
-	private $id;
+     */
+    private $id;
 
     /**
      * @ORM\Column(type="integer")
@@ -28,7 +28,7 @@ class AccessLog
     /**
      * @ORM\Column(type="integer")
      */
-	private $minutes;
+    private $minutes;
 
     /**
      * @ORM\Column(type="integer")
@@ -134,6 +134,7 @@ class AccessLog
     {
         $this->manageAccessCount++;
     }
+
     /**
      * @param mixed $readaccesscount
      */
@@ -159,14 +160,16 @@ class AccessLog
         $this->manageaccesscount = $manageaccesscount;
     }
 
-    public function clear($minutes){
+    public function clear($minutes)
+    {
         $this->setMinutes($minutes);
         $this->setReadAccessCount(0);
         $this->setWriteAccessCount(0);
         $this->setManageAccessCount(0);
     }
 
-    public function __construct(){
+    public function __construct()
+    {
         $this->setId(0);
         $this->setAppId(0);
         $this->setMinutes(0);

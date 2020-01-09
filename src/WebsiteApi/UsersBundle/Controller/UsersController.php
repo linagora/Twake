@@ -16,16 +16,15 @@ class UsersController extends Controller
 
         $scroll_id = $request->request->get("scroll_id");
         $repository = "TwakeUsersBundle:User";
-        $options = $request->request->get("options");
+        $options = $request->request->get("query", $request->request->get("options", Array()));
 
-        if(isset($scroll_id) && isset($repository)){
-            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id,$repository);
+        if (is_string($options)) {
+            $options = Array("name" => $options);
         }
-        else{
-//            $name = $options["name"];
-//            $options = Array(
-//                "name" => "r"
-//            );
+
+        if (isset($scroll_id) && isset($repository)) {
+            $globalresult = $this->get('globalsearch.pagination')->getnextelement($scroll_id, $repository);
+        } else {
             $globalresult = $this->get("app.users")->search($options);
         }
 

@@ -68,10 +68,12 @@ class Resumable
 
         //$this->preProcess();
     }
+
     public function setResumableOption(array $resumableOption)
     {
         $this->resumableOption = array_merge($this->resumableOption, $resumableOption);
     }
+
     // sets original filename and extenstion, blah blah
     public function preProcess()
     {
@@ -95,6 +97,7 @@ class Resumable
             }
         }
     }
+
     /**
      * Get isUploadComplete
      *
@@ -104,6 +107,7 @@ class Resumable
     {
         return $this->isUploadComplete;
     }
+
     /**
      * Set final filename.
      *
@@ -114,6 +118,7 @@ class Resumable
         $this->filename = $filename;
         return $this;
     }
+
     /**
      * Get final filename.
      *
@@ -123,6 +128,7 @@ class Resumable
     {
         return $this->filename;
     }
+
     /**
      * Get final filename.
      *
@@ -135,6 +141,7 @@ class Resumable
         }
         return $this->originalFilename;
     }
+
     /**
      * Get final filapath.
      *
@@ -144,6 +151,7 @@ class Resumable
     {
         return $this->filepath;
     }
+
     /**
      * Get final extension.
      *
@@ -199,7 +207,7 @@ class Resumable
         $numOfChunks = $numOfChunks ? $numOfChunks : intval($_POST["resumableTotalChunks"]);
 
 
-        $finalname = $identifier.".chunk_".$chunkNumber;
+        $finalname = $identifier . ".chunk_" . $chunkNumber;
 
         if (!$this->isChunkUploaded($identifier, $finalname, $chunkNumber)) {
 
@@ -254,7 +262,7 @@ class Resumable
 
         }
 
-        if ( isset($uploadstate) && $uploadstate->getChunk() == $numOfChunks && count($uploadstate->getChunklist()) == $numOfChunks ) {
+        if (isset($uploadstate) && $uploadstate->getChunk() == $numOfChunks && count($uploadstate->getChunklist()) == $numOfChunks) {
 
             $this->isUploadComplete = true;
             $uploadstate->setSuccess(true);
@@ -281,8 +289,8 @@ class Resumable
                 $this->storagemanager->getAdapter()->genPreview($fileordirectory, $previewDestination);
             }
             $fileToReturn = $fileordirectory->getAsArray();
-            if(!$fileordirectory->getIsDirectory()){
-                $versions = $this->driverefacto->getFileVersion($fileordirectory,true);
+            if (!$fileordirectory->getIsDirectory()) {
+                $versions = $this->driverefacto->getFileVersion($fileordirectory, true);
                 $fileToReturn["versions"] = $versions;
                 return $fileToReturn;
             }
@@ -294,7 +302,7 @@ class Resumable
 
     public function isChunkUploaded($identifier, $filename, $chunkNumber)
     {
-        $part = explode("_",$filename)[0];
+        $part = explode("_", $filename)[0];
         $chemin = $this->tmpChunkDir($identifier) . DIRECTORY_SEPARATOR . $part . "_" . $chunkNumber;
 
 
@@ -410,6 +418,7 @@ class Resumable
         }
         return $resumableParams['resumable' . ucfirst($shortName)];
     }
+
     public function resumableParams()
     {
         if ($this->request->is('get')) {
@@ -435,6 +444,7 @@ class Resumable
     {
         $this->request = $request;
     }
+
     public function setResponse($response)
     {
         $this->response = $response;
@@ -446,11 +456,13 @@ class Resumable
             $this->log->addDebug($msg, $ctx);
         }
     }
+
     private function findExtension($filename)
     {
         $parts = explode('.', basename($filename));
         return end($parts);
     }
+
     private function removeExtension($filename)
     {
         $parts = explode('.', basename($filename));

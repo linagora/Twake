@@ -136,7 +136,7 @@ class PdoSessionHandler implements \SessionHandlerInterface
     public function write($sessionId, $data)
     {
         $session = $this->doctrineAdapter->getRepository("TwakeCoreBundle:Sessions")->find($sessionId);
-        if(!$session){
+        if (!$session) {
             $session = new Sessions();
         }
         $session->setSessId($sessionId);

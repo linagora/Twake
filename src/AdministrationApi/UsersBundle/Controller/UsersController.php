@@ -10,7 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 class UsersController extends Controller
 {
 
-    public function getAllUsersAction(Request $request) {
+    public function getAllUsersAction(Request $request)
+    {
 
         $data = Array(
             "data" => Array(),
@@ -29,7 +30,7 @@ class UsersController extends Controller
 
             $options = Array();
 
-            if(isset($scroll_id) && isset($repository)){
+            if (isset($scroll_id) && isset($repository)) {
                 $options["scroll_id"] = $scroll_id;
             }
 
@@ -44,7 +45,8 @@ class UsersController extends Controller
         return new JsonResponse($data);
     }
 
-    public function getOneUserAction(Request $request) {
+    public function getOneUserAction(Request $request)
+    {
 
         $data = Array(
             "data" => Array(),
@@ -92,7 +94,8 @@ class UsersController extends Controller
         return new JsonResponse($data);
     }
 
-    public function findUserAction(Request $request) {
+    public function findUserAction(Request $request)
+    {
 
         $data = array(
             "data" => Array(),

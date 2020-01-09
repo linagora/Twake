@@ -141,5 +141,4 @@ class ChannelTab extends FrontObject
     }
 
 
-
 }

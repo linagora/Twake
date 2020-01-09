@@ -6,15 +6,18 @@ namespace WebsiteApi\DriveBundle\Services;
 
 use WebsiteApi\DriveBundle\Entity\DriveFile;
 use WebsiteApi\DriveBundle\Entity\DriveFileVersion;
+use WebsiteApi\CoreBundle\CommonObjects\AttachementManager;
 
 class DriveFileRefacto
 {
 
-    function __construct($entity_manager, $application_api)
+    function __construct($entity_manager, $application_api, $ws)
     {
         $this->em = $entity_manager;
         $this->applications_api = $application_api;
         $this->drive_resumable = false;
+        $this->ws = $ws;
+        $this->attachementManager = new AttachementManager($this->em, $this->ws);
     }
 
     function setDriveResumable($drive_resumable)
@@ -56,7 +59,7 @@ class DriveFileRefacto
         foreach ($elements as $element) {
             $array = $element->getAsArray();
             $array["path"] = $path;
-            $array["versions"] = $this->getFileVersion($element,true);
+            $array["versions"] = $this->getFileVersion($element, true);
 
             $list[] = $array;
         }
@@ -99,7 +102,7 @@ class DriveFileRefacto
 
         $versions = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $element->getId()));
         $file_version = [];
-        foreach($versions as $version){
+        foreach ($versions as $version) {
             $file_version[] = $version->getAsArray();
         }
         $data = $data->getAsArray();
@@ -110,8 +113,9 @@ class DriveFileRefacto
 
     }
 
-    public function recursedelete($directory){
-        if($directory->getIsDirectory()){
+    public function recursedelete($directory)
+    {
+        if ($directory->getIsDirectory()) {
             $fileson = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $directory->getWorkspaceId() . "", "parent_id" => $directory->getId() . ""));
             if (isset($fileson)) {
                 foreach ($fileson as $file) {
@@ -128,24 +132,23 @@ class DriveFileRefacto
         if (!$this->hasAccess($options, $current_user)) {
             return false;
         }
-        if(isset($object["id"])) { // on recoit un identifiant donc on supprime un drive file
+        if (isset($object["id"])) { // on recoit un identifiant donc on supprime un drive file
             $fileordirectory = $this->em->getRepository("TwakeDriveBundle:DriveFile")
                 ->findOneBy(Array("id" => $object["id"]));
             if ($fileordirectory && $fileordirectory->getParentId() && $fileordirectory->getParentId() != "trash") {
                 //on change la taille de tous les dossiers parent a celui ci
-                if($fileordirectory->getIsInTrash()){
+                if ($fileordirectory->getIsInTrash()) {
                     //on delete definitevement de la corbeille donc on modifie pas la racine
                     $this->updateSize($fileordirectory->getParentId(), -$fileordirectory->getSize(), 2);
-                }
-                else{
+                } else {
                     $this->updateSize($fileordirectory->getParentId(), -$fileordirectory->getSize(), 0);
                 }
 
-                if($fileordirectory->getIsDirectory()){
+                if ($fileordirectory->getIsDirectory()) {
                     $fileson = $this->em->getRepository("TwakeDriveBundle:DriveFile")
-                        ->findBy(Array("workspace_id" => $fileordirectory->getWorkspaceId()."", "parent_id" => $object["id"].""));
-                    if(isset($fileson)){
-                        foreach ($fileson as $file){
+                        ->findBy(Array("workspace_id" => $fileordirectory->getWorkspaceId() . "", "parent_id" => $object["id"] . ""));
+                    if (isset($fileson)) {
+                        foreach ($fileson as $file) {
                             $this->recursedelete($file);
                         }
                     }
@@ -155,8 +158,7 @@ class DriveFileRefacto
 
                 $this->notifyConnectors($fileordirectory, "remove", $current_user);
 
-            }
-            else{
+            } else {
                 return false;
             }
         }
@@ -210,15 +212,14 @@ class DriveFileRefacto
         $fileordirectory = null;
         if (isset($object["id"]) && $object["id"]) { // on recoit un identifiant donc c'est un modification
             $fileordirectory = $this->em->getRepository("TwakeDriveBundle:DriveFile")
-                ->findOneBy(Array("id" => $object["id"].""));
-            if(!$fileordirectory){
+                ->findOneBy(Array("id" => $object["id"] . ""));
+            if (!$fileordirectory) {
                 return false;
             }
 
             $fileordirectory->setLastModified();
 
-        }
-        else{ // pas d'identifiant on veut donc créer un fichier
+        } else { // pas d'identifiant on veut donc créer un fichier
             if (!isset($object["workspace_id"])) {
                 return false;
             }
@@ -229,7 +230,6 @@ class DriveFileRefacto
             $fileordirectory->setCreator($current_user);
             $fileordirectory->setPreviewHasBeenGenerated(false);
             $fileordirectory->setHasPreview(false);
-            //$fileordirectory->setIsInTrash(false);
             if (isset($object["detached"]) && $object["detached"]) {
                 $fileordirectory->setDetachedFile(true);
                 $parent_id = "detached";
@@ -245,28 +245,26 @@ class DriveFileRefacto
 
         $did_move = false;
         if (isset($object["parent_id"]) && $object["parent_id"] != "" && $object["parent_id"] != $fileordirectory->getParentId() . "") {
-            $parent_id = $object["parent_id"]."";
+            $parent_id = $object["parent_id"] . "";
             $did_move = true;
 
-            if($did_create) { // on set le fichier avec le bon parent
-                $file_parent = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=> $object["parent_id"].""));
-                if($file_parent == null){
+            if ($did_create) { // on set le fichier avec le bon parent
+                $file_parent = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $object["parent_id"] . ""));
+                if ($file_parent == null) {
                     return false;
                 }
-            }
-            else{ // on a un parent ce n'est pas une creation c'est un déplacement
-                $fileordirectory_parent_id = $fileordirectory->getParentId()."";
-                if ($fileordirectory_parent_id != $parent_id) { //changement de parent id donc le fichier a été déplacé.7
+            } else { // on a un parent ce n'est pas une creation c'est un déplacement
+                $fileordirectory_parent_id = $fileordirectory->getParentId() . "";
+                if ($fileordirectory_parent_id != $parent_id) { //changement de parent id donc le fichier a été déplacé.
                     $this->move($fileordirectory, $fileordirectory_parent_id, $parent_id, $current_user);
                 }
             }
-        }
-        else{
+        } else {
             if (!isset($object["detached"]) && $did_create) {
                 $parent_id = $this->getRootEntity($workspace_id)->getId();
             }
         }
-        if(isset($parent_id)) {
+        if (isset($parent_id)) {
             $fileordirectory->setParentId($parent_id);
         }
 
@@ -302,7 +300,7 @@ class DriveFileRefacto
             $fileordirectory->setName($object["name"]);
         }
 
-        if (($name_changed || $did_create || $did_move) && !$fileordirectory->getIsInTrash()){
+        if (($name_changed || $did_create || $did_move) && !$fileordirectory->getIsInTrash()) {
 
             $repo = $this->em->getRepository("TwakeDriveBundle:DriveFile");
             $list = $repo->findBy(Array("workspace_id" => $fileordirectory->getWorkspaceId(), "parent_id" => $fileordirectory->getParentId(), "isintrash" => false));
@@ -374,15 +372,18 @@ class DriveFileRefacto
             $fileordirectory->setUrl($object["url"]);
         }
 
-        if(isset($object["tags"])){
+        if (isset($object["tags"])) {
             $fileordirectory->setTags($object["tags"]);
+        }
+        if (isset($object["attachments"]) || $did_create) {
+            $this->attachementManager->updateAttachements($fileordirectory, $object["attachments"] ? $object["attachments"] : Array());
         }
 
 
         $fileordirectory->setLastUser($current_user);
 
 
-        if(isset($fileordirectory)){
+        if (isset($fileordirectory)) {
             $fileordirectory->setEsIndex(false);
             $this->em->persist($fileordirectory);
             $this->em->flush();
@@ -391,8 +392,7 @@ class DriveFileRefacto
 
         if (isset($object["_once_new_version"])) {
             $new = $object["_once_new_version"];
-        }
-        else{
+        } else {
             $new = false;
         }
         //Update size if file was created AFTER versionning
@@ -403,10 +403,9 @@ class DriveFileRefacto
             $size_after = $upload_data["size"];
 
             if ($size_after - $size_before != 0) {
-                if($fileordirectory->getDetachedFile()){
+                if ($fileordirectory->getDetachedFile()) {
                     $fileordirectory->setSize($size_after);
-                }
-                else {
+                } else {
                     $this->updateSize($fileordirectory->getId() . "", $size_after - $size_before, false);
                 }
             }
@@ -420,16 +419,17 @@ class DriveFileRefacto
         return $fileordirectory->getAsArray();
     }
 
-    public function recursetrash($directory){ // permet de changer tous les in trash d'une arborescence
+    public function recursetrash($directory)
+    { // permet de changer tous les in trash d'une arborescence
 
-        $fileson = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $directory->getWorkspaceId()."", "parent_id" => $directory->getId().""));
-        if(isset($fileson)){
-            foreach ($fileson as $file){
+        $fileson = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array("workspace_id" => $directory->getWorkspaceId() . "", "parent_id" => $directory->getId() . ""));
+        if (isset($fileson)) {
+            foreach ($fileson as $file) {
                 $this->recursetrash($file);
             }
         }
         $file = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory->getId()));
-        if(isset($file)){
+        if (isset($file)) {
             $this->em->remove($file);
             $this->em->flush();
         }
@@ -447,8 +447,8 @@ class DriveFileRefacto
         if ($fileordirectory->getDetachedFile() == false) {
             //on doit modifer la taille recursivement de l'ancien dossier parent
             $this->updateSize($oldparent, -$size, $to_or_out_trash);
-            $trashcheck = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=> $newparent.""));
-            if(isset($trashcheck) && $trashcheck->getIsInTrash()){ // si on deplace un fichier sur un autre qui est présent a la corbeille mais sans passer par la mise a la corbeille
+            $trashcheck = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $newparent . ""));
+            if (isset($trashcheck) && $trashcheck->getIsInTrash()) { // si on deplace un fichier sur un autre qui est présent a la corbeille mais sans passer par la mise a la corbeille
                 $to_or_out_trash = 1;
                 $fileordirectory->setOldParent($oldparent);
                 //$fileordirectory->setIsInTrash(true);
@@ -530,21 +530,21 @@ class DriveFileRefacto
                 }
                 $directory = $this->getRootEntity($workspace_id);
             }
-            if(is_string($directory)){
-                $directory = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory.""));
+            if (is_string($directory)) {
+                $directory = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $directory . ""));
 
                 if (!$workspace_id) {
                     $workspace_id = $directory->getWorkspaceId();
                 }
 
             }
-            if (!$directory ){
+            if (!$directory) {
                 $directory = null;
 
             }
 
-            if($directory != null){
-                if(!($directory->getParentId() == "" && ( ($to_or_out_trash === 1 && $delta > 0) || ($to_or_out_trash === 2 && $delta < 0))) ){
+            if ($directory != null) {
+                if (!($directory->getParentId() == "" && (($to_or_out_trash === 1 && $delta > 0) || ($to_or_out_trash === 2 && $delta < 0)))) {
                     $currentSize = $directory->getSize();
                     $directory->setSize($currentSize + $delta);
                     $this->em->persist($directory);
@@ -560,7 +560,7 @@ class DriveFileRefacto
     public function getRootEntity($workspace_id)
     {
         $root = $this->em->getRepository("TwakeDriveBundle:DriveFile")
-            ->findOneBy(Array("workspace_id" => $workspace_id."", "isintrash" => false, "parent_id" => ""));
+            ->findOneBy(Array("workspace_id" => $workspace_id . "", "isintrash" => false, "parent_id" => ""));
         if (!$root) {
             $root = new DriveFile($workspace_id, "", true);
             $this->em->persist($root);
@@ -672,19 +672,20 @@ class DriveFileRefacto
 
     }
 
-    public function getFileVersion($fileOrFileId,$asArray=false){
-        if(!is_object($fileOrFileId)){
-            $file = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id"=>$fileOrFileId));
-        }else{
+    public function getFileVersion($fileOrFileId, $asArray = false)
+    {
+        if (!is_object($fileOrFileId)) {
+            $file = $this->em->getRepository("TwakeDriveBundle:DriveFile")->findOneBy(Array("id" => $fileOrFileId));
+        } else {
             $file = $fileOrFileId;
         }
-        if(!$file || $file->getIsDirectory()){
+        if (!$file || $file->getIsDirectory()) {
             return false;
         }
-        $versionsEntity = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id"=>$file->getId()));
-        if($asArray){
+        $versionsEntity = $this->em->getRepository("TwakeDriveBundle:DriveFileVersion")->findBy(Array("file_id" => $file->getId()));
+        if ($asArray) {
             $versions = Array();
-            foreach($versionsEntity as $version){
+            foreach ($versionsEntity as $version) {
                 $versions[] = $version->getAsArray();
             }
             return $versions;

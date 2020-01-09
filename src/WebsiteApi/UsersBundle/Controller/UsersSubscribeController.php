@@ -12,16 +12,16 @@ class UsersSubscribeController extends Controller
 {
 
 
-	public function mailAction(Request $request)
-	{
+    public function mailAction(Request $request)
+    {
 
-		$data = Array(
-			"errors" => Array(),
-			"data" => Array()
-		);
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
 
 
-		$email = $request->request->get("email", "");
+        $email = $request->request->get("email", "");
         $username = $request->request->get("username", "");
         $password = $request->request->get("password", "");
         $name = $request->request->get("name", "");
@@ -32,19 +32,19 @@ class UsersSubscribeController extends Controller
 
         $res = $this->get("app.user")->subscribeMail($email, $username, $password, $name, $firstname, $phone, $language, $newsletter);
 
-		if ($res) {
+        if ($res && (!is_array($res) || !isset($res["error"]))) {
 
-			$data["data"]["token"] = $res;
+            $data["data"]["token"] = $res;
 
-		} else {
+        } else {
 
-            $data["errors"][] = "error_mail_or_password";
+            $data["errors"][] = $res["error"];
 
-		}
+        }
 
-		return new JsonResponse($data);
+        return new JsonResponse($data);
 
-	}
+    }
 
     public function doVerifyMailAction(Request $request)
     {
@@ -121,7 +121,8 @@ class UsersSubscribeController extends Controller
 	}
     */
 
-	public function getAvaibleAction(Request $request){
+    public function getAvaibleAction(Request $request)
+    {
         $data = Array(
             "errors" => Array(),
             "data" => Array()
@@ -131,19 +132,17 @@ class UsersSubscribeController extends Controller
         $username = $request->request->get("username", "");
 
 
+        $res = $this->get("app.user")->getAvaibleMailPseudo($mail, $username);
 
-        $res = $this->get("app.user")->getAvaibleMailPseudo($mail,$username);
-
-        if(is_bool($res) && $res == true ){
+        if (is_bool($res) && $res == true) {
             $data["data"]["status"] = "success";
-        }
-        elseif(is_array($res)){
-            if(in_array(-1,$res)) {
+        } elseif (is_array($res)) {
+            if (in_array(-1, $res)) {
 
                 $data["errors"][] = "mailalreadytaken";
 
             }
-            if(in_array(-2,$res)) {
+            if (in_array(-2, $res)) {
 
                 $data["errors"][] = "usernamealreadytaken";
 
@@ -152,7 +151,9 @@ class UsersSubscribeController extends Controller
 
         return new JsonResponse($data);
     }
-    public function subscribeTotalyAction(Request $request){
+
+    public function subscribeTotalyAction(Request $request)
+    {
 
         $data = Array(
             "errors" => Array(),
@@ -172,30 +173,29 @@ class UsersSubscribeController extends Controller
 
         $res = $this->get("app.user")->subscribeInfo($mail, $password, $username, $firstName, $lastName, $phone, $recaptcha, $language, $origin);
 
-        if ( $res==true && is_bool($res)) {
+        if ($res == true && is_bool($res)) {
 
             $data["data"]["status"] = "success";
 
-        }
-        elseif(is_array($res)){
-            if(in_array(-1,$res)) {
+        } elseif (is_array($res)) {
+            if (in_array(-1, $res)) {
 
                 $data["errors"][] = "mailalreadytaken";
 
             }
-            if(in_array(-2,$res)) {
+            if (in_array(-2, $res)) {
 
                 $data["errors"][] = "usernamealreadytaken";
 
             }
-        }
-        else{
+        } else {
             $data["errors"][] = "error";
         }
         return new JsonResponse($data);
     }
 
-    public function testMailAction(Request $request){
+    public function testMailAction(Request $request)
+    {
 
         $data = Array(
             "errors" => Array(),
@@ -207,6 +207,35 @@ class UsersSubscribeController extends Controller
         $res = $this->get("app.user")->testMail($mail);
 
         $data["data"] = $res;
+
+        return new JsonResponse($data);
+    }
+
+    public function createCompanyUserAction(Request $request)
+    {
+        $data = Array(
+            "errors" => Array(),
+            "data" => Array()
+        );
+
+        $mail = $request->request->get("mail", "");
+        $fullname = $request->request->get("fullname", "");
+        $password = $request->request->get("password", "");
+        $language = $request->request->get("language", "");
+        $workspace_id = $request->request->get("workspace_id", "");
+        $current_user_id = $this->getUser()->getId();
+
+        $can = $this->get('app.workspace_levels')->can($workspace_id, $this->getUser(), "external_accounts:write");
+        $res = ["not_allowed"];
+        if ($can) {
+            $res = $this->get("app.user")->createCompanyUser($mail, $fullname, $password, $language, $workspace_id, $current_user_id);
+        }
+
+        if ($res === true) {
+            $data["data"] = "success";
+        } else {
+            $data["errors"] = $res;
+        }
 
         return new JsonResponse($data);
     }

@@ -2,6 +2,7 @@
 
 
 namespace WebsiteApi\CalendarBundle\Entity;
+
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -134,8 +135,6 @@ class ExportToken
     {
         $this->user_token = $token;
     }
-
-
 
 
 }

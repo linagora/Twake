@@ -32,8 +32,6 @@ class AppKernel extends Kernel
 			new WebsiteApi\UploadBundle\TwakeUploadBundle(),
 			new WebsiteApi\DiscussionBundle\TwakeDiscussionBundle(),
             new WebsiteApi\ChannelsBundle\TwakeChannelsBundle(),
-	        new WebsiteApi\CallsBundle\TwakeCallsBundle(),
-            new WebsiteApi\ObjectLinksBundle\TwakeObjectLinksBundle(),
 			new Gos\Bundle\WebSocketBundle\GosWebSocketBundle(),
 			new Gos\Bundle\PubSubRouterBundle\GosPubSubRouterBundle(),
 	        new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
@@ -44,7 +42,6 @@ class AppKernel extends Kernel
             new WebsiteApi\CalendarBundle\TwakeCalendarBundle(),
             new WebsiteApi\TasksBundle\TwakeTasksBundle(),
             new WebsiteApi\NotificationsBundle\TwakeNotificationsBundle(),
-            new WebsiteApi\OnlyOfficeBundle\TwakeOnlyOfficeBundle(),
             new DevelopersApiV1\CoreBundle\DevelopersApiV1CoreBundle(),
             new DevelopersApiV1\MessagesBundle\DevelopersApiV1MessagesBundle(),
             new DevelopersApiV1\UsersBundle\DevelopersApiV1UsersBundle(),
@@ -60,6 +57,7 @@ class AppKernel extends Kernel
             new AdministrationApi\AppsBundle\AdministrationApiAppsBundle(),
             new AdministrationApi\CounterBundle\AdministrationApiCounterBundle(),
             new AdministrationApi\GroupBundle\AdministrationApiGroupBundle(),
+            new Sentry\SentryBundle\SentryBundle(),
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

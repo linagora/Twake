@@ -21,10 +21,11 @@ class ApplicationApi
     }
 
 
-    public function generatedToken($app_id, $workspace_id, $group_id, $user_id){
+    public function generatedToken($app_id, $workspace_id, $group_id, $user_id)
+    {
 
         $entity = new AccessToken($app_id, $workspace_id, $group_id, $user_id);
-        $this->doctrine->useTTLOnFirstInsert(60*60);
+        $this->doctrine->useTTLOnFirstInsert(60 * 60);
         $this->doctrine->persist($entity);
         $this->doctrine->flush();
 

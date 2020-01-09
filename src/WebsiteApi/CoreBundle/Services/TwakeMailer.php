@@ -13,22 +13,22 @@ use Swift_Signers_DKIMSigner;
 class TwakeMailer
 {
 
-	private $mailer;
-	private $templating;
-	private $mailfrom;
-	private $twakeurl;
-	private $twakeaddress;
+    private $mailer;
+    private $templating;
+    private $mailfrom;
+    private $twakeurl;
+    private $twakeaddress;
     private $licenceKey;
     private $standalone;
     private $circle;
 
     public function __construct($mailer, $templating, $mailfrom, $twakeurl, $standalone, $licenceKey, $circle)
-	{
-		$this->mailer = $mailer;
-		$this->templating = $templating;
-		$this->mailfrom = $mailfrom;
-		$this->twakeurl = $twakeurl;
-		$this->twakeaddress = "Twake, 54000 Nancy, France";
+    {
+        $this->mailer = $mailer;
+        $this->templating = $templating;
+        $this->mailfrom = $mailfrom;
+        $this->twakeurl = $twakeurl;
+        $this->twakeaddress = "Twake, 54000 Nancy, France";
         $this->licenceKey = $licenceKey;
         $this->standalone = $standalone;
         $this->circle = $circle;
@@ -39,9 +39,9 @@ class TwakeMailer
     {
 
 
-		$data["mail"] = $mail;
-		$data["twakeaddress"] = $this->twakeaddress;
-		$data["twakeurl"] = $this->twakeurl;
+        $data["mail"] = $mail;
+        $data["twakeaddress"] = $this->twakeaddress;
+        $data["twakeurl"] = $this->twakeurl;
 
         $language = "en";
         if (isset($data["_language"])) {
@@ -54,10 +54,10 @@ class TwakeMailer
 
         $templateName = $templateDirectory . ":" . $language . "/" . $template . '.html.twig';
 
-		$html = $this->templating->render(
+        $html = $this->templating->render(
             $templateName,
-			$data
-		);
+            $data
+        );
 
         if ($this->standalone) {
             $this->sendHtml($mail, $html, $attachments);
@@ -153,10 +153,11 @@ DatZafd1kdkDFLEB6VpXkA2yyRfmL9JMKbnezGjN8aU=
         return $html;
     }
 
-	private function html2title($html){
-		$a = explode("<title>", $html, 2)[1];
-		$a = explode("<", $a, 2)[0];
-		return $a;
-	}
+    private function html2title($html)
+    {
+        $a = explode("<title>", $html, 2)[1];
+        $a = explode("<", $a, 2)[0];
+        return $a;
+    }
 
 }

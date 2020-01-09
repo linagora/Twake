@@ -1,4 +1,5 @@
 <?php
+
 namespace WebsiteApi\CoreBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -21,66 +22,76 @@ class ReindexCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $doctrine = $this->getContainer()->get('doctrine');
-        $manager = $doctrine->getManager();
+        $manager = $this->getContainer()->get('app.twake_doctrine');
 
-//        $workspaces = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array());
-//        foreach ($workspaces as $workspace) {
-//            $manager->es_put($workspace, $workspace->getEsType());
-//        }
-//
-//        $apps = $manager->getRepository("TwakeMarketBundle:Application")->findBy(Array());
-//        foreach ($apps as $app) {
-//            $manager->es_put($app, $app->getEsType());
-//        }
-//
-//        $files = $manager->getRepository("TwakeDriveBundle:DriveFile")->findBy(Array());
-//        foreach ($files as $file){
-//            $manager->es_put($file, $file->getEsType());
-//        }
-//
-//
-//        $channels= $manager->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
-//        foreach ($channels as $channel){
-//            if($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false)
-//            {
-//                $manager->es_put($channel,$channel->getEsType());
-//            }
-//        }
-//
-//        $groups = $manager->getRepository("TwakeWorkspacesBundle:Group")->findBy(Array());
-//        foreach ($groups as $group){
-//            $manager->es_put($group, $group->getEsType());
-//        }
-//
-//        $workspaces = $manager->getRepository("TwakeWorkspacesBundle:Workspaces")->findBy(Array());
-//        foreach ($workspaces as $workspace){
-//            $manager->es_put($workspace, $workspace->getEsType());
-//        }
-//
-//        $mails = $manager->getRepository("TwakeUsersBundle:Mail")->findBy(Array());
-//        foreach ($mails as $mail){
-//            $manager->es_put($mail, $mail->getEsType());
-//        }
-        $users = $manager->getRepository("TwakeUsersBundle:User")->findBy(Array());
-        foreach ($users as $user){
-//            error_log("passage");
-//            error_log(print_r($user->getEsType(),true));
-            $manager->es_put($user, $user->getEsType());
+        $channels = $manager->getRepository("TwakeChannelsBundle:Channel")->findBy(Array("direct" => true));
+        foreach ($channels as $i => $channel) {
+            $c = $this->indexChannel($channel, $manager);
+            error_log("index " . "Direct Channels " . $i . "/" . count($channels) . " " . $c . " messsages");
+        }
+        $channels = $manager->getRepository("TwakeChannelsBundle:Channel")->findBy(Array("direct" => false));
+        foreach ($channels as $i => $channel) {
+            $c = $this->indexChannel($channel, $manager);
+            error_log("index " . "Workspaces Channels " . $i . "/" . count($channels) . " " . $c . " messsages");
         }
 
-        $tasks = $manager->getRepository("TwakeTasksBundle:Task")->findBy(Array());
-        foreach ($tasks as $task){
-//            error_log("passage");
-//            error_log(print_r($user->getEsType(),true));
-            $manager->es_put($task, $task->getEsType());
+        $this->indexRepository("TwakeWorkspacesBundle:Workspace");
+
+        $this->indexRepository("TwakeWorkspacesBundle:Group");
+
+        $workspaces = $manager->getRepository("TwakeWorkspacesBundle:Workspace")->findBy(Array());
+        error_log("index " . "Files");
+        foreach ($workspaces as $workspace) {
+            $this->indexRepository("TwakeDriveBundle:DriveFile", Array("workspace_id" => $workspace->getId()));
         }
 
-        $events = $manager->getRepository("TwakeCalendarBundle:Event")->findBy(Array());
-        foreach ($events as $event){
-//            error_log("passage");
-//            error_log(print_r($user->getEsType(),true));
-            $manager->es_put($event, $event->getEsType());
+        error_log("index " . "TwakeChannelsBundle:Channel");
+        $channels = $manager->getRepository("TwakeChannelsBundle:Channel")->findBy(Array());
+        error_log("   -> " . count($channels));
+        foreach ($channels as $channel) {
+            if ($channel->getAsArray()["application"] == false && $channel->getAsArray()["direct"] == false) {
+                $manager->es_put($channel, $channel->getEsType());
+            }
         }
+
+        $this->indexRepository("TwakeMarketBundle:Application");
+
+        $this->indexRepository("TwakeGlobalSearchBundle:Bloc");
+
+        $this->indexRepository("TwakeUsersBundle:Mail");
+
+        $this->indexRepository("TwakeUsersBundle:User");
+
+        $this->indexRepository("TwakeTasksBundle:Task");
+
+        $this->indexRepository("TwakeCalendarBundle:Event");
+
+
+    }
+
+    private function indexRepository($repository, $options = Array())
+    {
+        $manager = $this->getContainer()->get('app.twake_doctrine');
+
+        error_log("index " . $repository);
+
+        $items = $manager->getRepository($repository)->findBy($options);
+        error_log("   -> " . count($items));
+        foreach ($items as $item) {
+            $manager->es_put($item, $item->getEsType());
+        }
+
+    }
+
+    private function indexChannel($channel, $manager)
+    {
+
+        $messages = $manager->getRepository("TwakeDiscussionBundle:Message")->findBy(Array("channel_id" => $channel->getId()));
+        foreach ($messages as $message) {
+            $this->getContainer()->get('app.messages')->indexMessage($message, $channel->getOriginalWorkspaceId(), $channel->getId());
+        }
+
+        return count($messages);
+
     }
 }

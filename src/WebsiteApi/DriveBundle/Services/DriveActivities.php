@@ -65,7 +65,7 @@ class DriveActivities implements DriveActivityInterface
             $driveActivity->setText($text);
         }
 
-        if($title)
+        if ($title)
             $driveActivity->setTitle($title);
 
 
@@ -117,9 +117,10 @@ class DriveActivities implements DriveActivityInterface
 
     }
 
-    public function readOne($workspace, $activityId){
+    public function readOne($workspace, $activityId)
+    {
         $repo = $this->doctrine->getRepository("TwakeDriveBundle:DriveActivity");
-        $search = Array( "id" => $activityId);
+        $search = Array("id" => $activityId);
 
         if ($workspace) {
             $search["workspace"] = $workspace;
@@ -127,7 +128,7 @@ class DriveActivities implements DriveActivityInterface
 
         $notif = $repo->findOneBy($search);
 
-        if($notif==null)
+        if ($notif == null)
             return false;
 
 
@@ -199,11 +200,12 @@ class DriveActivities implements DriveActivityInterface
         return $acti;
     }
 
-    public function getActivityToDisplay($user, $workspace, $offset, $limit){
+    public function getActivityToDisplay($user, $workspace, $offset, $limit)
+    {
         $nRepo = $this->doctrine->getRepository("TwakeDriveBundle:DriveActivity");
-        $acti = $nRepo->findBy(Array("user"=> $user, "workspace" => $workspace), Array("id" => "DESC"),$limit,$offset);
+        $acti = $nRepo->findBy(Array("user" => $user, "workspace" => $workspace), Array("id" => "DESC"), $limit, $offset);
         $data = Array();
-        foreach($acti as $a){
+        foreach ($acti as $a) {
 
             array_push($data, $a->getAsArray());
         }

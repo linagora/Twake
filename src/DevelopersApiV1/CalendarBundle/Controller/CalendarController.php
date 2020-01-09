@@ -2,13 +2,15 @@
 
 
 namespace DevelopersApiV1\CalendarBundle\Controller;
+
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 
 class CalendarController extends Controller
 {
-    public function removeEventAction (Request $request){
+    public function removeEventAction(Request $request)
+    {
         $capabilities = ["calendar_event_remove"];
 
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
@@ -40,7 +42,8 @@ class CalendarController extends Controller
         return new JsonResponse(Array("result" => $object));
     }
 
-    public function saveEventAction (Request $request){
+    public function saveEventAction(Request $request)
+    {
         $capabilities = ["calendar_event_save"];
         $application = $this->get("app.applications_api")->getAppFromRequest($request, $capabilities);
         if (is_array($application) && $application["error"]) {
@@ -94,11 +97,11 @@ class CalendarController extends Controller
         $objects = false;
         $user_id = $request->request->get("user_id", "");
         $workspace_id = $request->request->get("workspace_id", "");
-        if ($workspace_id){
+        if ($workspace_id) {
             if ($user_id) {
                 $user_entity = $this->get("app.users")->getById($user_id, true);
             }
-            if($user_entity) {
+            if ($user_entity) {
                 $objects = $this->get("app.calendar.calendar")->get(Array("workspace_id" => $workspace_id), $user_entity);
             }
         }

@@ -1,4 +1,5 @@
 <?php
+
 namespace WebsiteApi\CoreBundle\Command;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
@@ -26,13 +27,13 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "name","group_id","creation_date"
+                    "name", "group_id", "creation_date"
                 )
             ),
             "properties" => Array(
                 "id" => Array("type" => "keyword"),
                 "group_id" => Array("type" => "keyword"),
-                "name" => Array("type" => "keyword"),
+                "name" => Array("type" => "text"),
                 "creation_date" => Array("type" => "date")
             )
         );
@@ -41,12 +42,12 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "name","creation_date"
+                    "name", "creation_date"
                 )
             ),
             "properties" => Array(
                 "id" => Array("type" => "keyword"),
-                "name" => Array("type" => "keyword"),
+                "name" => Array("type" => "text"),
                 "creation_date" => Array("type" => "date")
             )
         );
@@ -83,15 +84,9 @@ class MappingCommand extends ContainerAwareCommand
                         "application_id" => Array("type" => "keyword"),
                         "mentions" => Array("type" => "text"),
                         "date" => Array("type" => "date"),
-                        "tags" => Array("type" => "text"),
+                        "tags" => Array("type" => "keyword"),
                         "pinned" => Array("type" => "boolean"),
-                        "reactions" => Array(
-                            "type" => "nested",
-                            "properties" => Array(
-                                "reaction" => Array("type" => "text"),
-                                "count" => Array("type" => "integer"),
-                            )
-                        )
+                        "reactions" => Array("type" => "keyword")
                     )
                 )
             )
@@ -101,20 +96,21 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "title","description","owner","date_from","date_to","tags","participants","workspace_id","date_last_modified"
+                    "title", "description", "owner", "before", "start", "date_created", "tags", "participants", "workspace_id", "date_last_modified"
                 )
             ),
             "properties" => Array(
                 "id" => Array("type" => "keyword"),
-                "title" => Array("type" => "keyword"),
+                "title" => Array("type" => "text"),
                 "description" => Array("type" => "text"),
                 "owner" => Array("type" => "keyword"),
-                "date_from" => Array("type" => "date"),
-                "date_to" => Array("type" => "date"),
-                "tags" => Array("type" => "text"),
-                "participants" => Array("type" => "text"),
+                "tags" => Array("type" => "keyword"),
+                "before" => Array("type" => "date"),
+                "start" => Array("type" => "date"),
+                "date_created" => Array("type" => "date"),
+                "date_last_modified" => Array("type" => "date"),
                 "workspace_id" => Array("type" => "keyword"),
-                "date_last_modified" => Array("type" => "date")
+                "participants" => Array("type" => "keyword")
             )
         );
 
@@ -122,20 +118,20 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "title","description","owner","date_from","date_to","tags","participants","workspace_id","date_last_modified"
+                    "title", "description", "owner", "date_from", "date_to", "tags", "participants", "workspace_id", "date_last_modified"
                 )
             ),
             "properties" => Array(
                 "id" => Array("type" => "keyword"),
-                "title" => Array("type" => "keyword"),
+                "title" => Array("type" => "text"),
                 "description" => Array("type" => "text"),
                 "owner" => Array("type" => "keyword"),
+                "tags" => Array("type" => "keyword"),
                 "date_from" => Array("type" => "date"),
                 "date_to" => Array("type" => "date"),
-                "tags" => Array("type" => "text"),
-                "participants" => Array("type" => "text"),
-                "workspace_id" => Array("type" => "keyword"),
-                "date_last_modified" => Array("type" => "date")
+                "date_last_modified" => Array("type" => "date"),
+                "participants" => Array("type" => "keyword"),
+                "workspace_id" => Array("type" => "keyword")
             )
         );
 
@@ -144,14 +140,14 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "workspace_id","name","group_id","last_activity"
+                    "workspace_id", "name", "group_id", "last_activity"
                 )
             ),
             "properties" => Array(
                 "id" => Array("type" => "keyword"),
                 "workspace_id" => Array("type" => "keyword"),
                 "group_id" => Array("type" => "keyword"),
-                "name" => Array("type" => "keyword"),
+                "name" => Array("type" => "text"),
                 "last_activity" => Array("type" => "integer")
             )
         );
@@ -160,17 +156,17 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "name","type","creation_date","workspace_id","keywords","creator","date_last_modified","tags","size")
+                    "name", "type", "creation_date", "workspace_id", "keywords", "creator", "date_last_modified", "tags", "size")
             ),
             "properties" => Array(
                 "id" => Array("type" => "keyword"),
-                "name" => Array("type" => "keyword"),
+                "name" => Array("type" => "text"),
                 "type" => Array("type" => "keyword"),
                 "creation_date" => Array("type" => "date"),
                 "creator" => Array("type" => "keyword"),
                 "date_last_modified" => Array("type" => "date"),
                 "workspace_id" => Array("type" => "keyword"),
-                "tags" => Array("type" => "text"),
+                "tags" => Array("type" => "keyword"),
                 "size" => Array("type" => "integer"),
                 "keywords" => Array(
                     "type" => "nested",
@@ -186,7 +182,7 @@ class MappingCommand extends ContainerAwareCommand
             "_source" => Array(
                 "includes" => Array("id"),
                 "excludes" => Array(
-                    "firstname","lastname","username","language","creation_date"
+                    "firstname", "lastname", "username", "language", "creation_date"
                 )
             ),
             "properties" => Array(
@@ -194,133 +190,64 @@ class MappingCommand extends ContainerAwareCommand
                 "firstname" => Array("type" => "text"),
                 "lastname" => Array("type" => "text"),
                 "username" => Array("type" => "text"),
-                "language" => Array("type" => "text"),
+                "language" => Array("type" => "keyword"),
                 "creation_date" => Array("type" => "date")
             )
         );
 
 
-        $mapping_channel = json_encode($mapping_channel);
-        $mapping_workspace = json_encode($mapping_workspace);
-        $mapping_file=json_encode($mapping_file);
-        $mapping_message_bloc = json_encode($mapping_message_bloc);
-        $mapping_group = json_encode($mapping_group);
-        $mapping_mail = json_encode($mapping_mail);
-        $mapping_users = json_encode($mapping_users);
-        $mapping_task = json_encode($mapping_task);
-        $mapping_event = json_encode($mapping_event);
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/task";
+        $this->updateMapping($url, $mapping_task, "/_mapping/_doc");
 
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/event";
+        $this->updateMapping($url, $mapping_event, "/_mapping/_doc");
 
-        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/task/_mapping/_doc";
-        //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/channel";
+        $this->updateMapping($url, $mapping_channel, "/_mapping/_doc");
 
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/group";
+        $this->updateMapping($url, $mapping_group, "/_mapping/_doc");
+
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/mail";
+        $this->updateMapping($url, $mapping_mail, "/_mapping/_doc");
+
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/workspace";
+        $this->updateMapping($url, $mapping_workspace, "/_mapping/_doc");
+
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/users";
+        $this->updateMapping($url, $mapping_users, "/_mapping/_doc");
+
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/drive_file";
+        $this->updateMapping($url, $mapping_file, "/_mapping/_doc");
+
+        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/message_bloc";
+        $this->updateMapping($url, $mapping_message_bloc, "/_mapping/_doc");
+
+    }
+
+    private function updateMapping($url, $mapping, $mapping_suffix)
+    {
+
+        error_log($url . $mapping_suffix);
+
+        try {
+            $this->getContainer()->get("circle.restclient")->put("http://" . $url, "");
+        } catch (\Exception $e) {
+
+        }
+
+        $mapping = json_encode($mapping);
         $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_task)));
+        curl_setopt($ch, CURLOPT_URL, "http://" . $url . $mapping_suffix);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json', 'Content-Length: ' . strlen($mapping)));
         curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_task);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $mapping);
         curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
+        curl_setopt($ch, CURLOPT_VERBOSE, 0);
+        $result = curl_exec($ch);
         curl_close($ch);
 
-        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/event/_mapping/_doc";
-        //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_event)));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_event);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        curl_close($ch);
-
-        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/channel/_mapping/_doc";
-        //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_channel)));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_channel);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        curl_close($ch);
-
-        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/group/_mapping/_doc";
-        //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_group)));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_group);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        curl_close($ch);
-
-
-        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/mail/_mapping/_doc";
-        //$url = "http://51.68.94.194:9200/channel/_mapping/_doc";
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_mail)));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_mail);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        curl_close($ch);
-//
-//        //$url = "http://51.68.94.194:9200/workspace/_mapping/_doc";
-        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/workspace/_mapping/_doc";
-
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_workspace)));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_workspace);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        curl_close($ch);
-
-        //$url = "http://51.68.94.194:9200/workspace/_mapping/_doc";
-        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/users/_mapping/_doc";
-
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_users)));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_users);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        curl_close($ch);
-
-//        $url = "http://51.68.91.127:9200/drive_file/_mapping/_doc";
-        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/drive_file/_mapping/_doc";
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_file)));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_file);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        curl_close($ch);
-
-        //$url = "http://51.68.91.127:9200/message_bloc/_mapping/_doc";
-        $url = $this->getContainer()->getParameter('ELASTIC_SERVER') . "/message_bloc/_mapping/_doc";
-
-        $ch = curl_init();
-        curl_setopt($ch, CURLOPT_URL, $url);
-        curl_setopt($ch, CURLOPT_HTTPHEADER,array('Content-Type: application/json','Content-Length: ' . strlen($mapping_message_bloc)));
-        curl_setopt($ch, CURLOPT_CUSTOMREQUEST, 'PUT');
-        curl_setopt($ch, CURLOPT_POSTFIELDS,$mapping_message_bloc);
-        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-        curl_exec($ch);
-        curl_close($ch);
-
+        error_log($result);
+        error_log("---------------");
     }
 }

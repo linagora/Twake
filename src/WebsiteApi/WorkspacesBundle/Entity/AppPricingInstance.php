@@ -20,7 +20,7 @@ class AppPricingInstance
      *
      * @ORM\Column(name="id", type="twake_timeuuid")
      * @ORM\Id
- */
+     */
     private $id;
 
     /**
@@ -28,10 +28,10 @@ class AppPricingInstance
      */
     private $group;
 
-	/**
+    /**
      * @ORM\ManyToOne(targetEntity="WebsiteApi\WorkspacesBundle\Entity\GroupApp")
-	 */
-	private $groupapp;
+     */
+    private $groupapp;
 
     /**
      * @ORM\Column(name="cost_monthly", type="integer")
@@ -43,19 +43,20 @@ class AppPricingInstance
      */
     protected $costuser;
 
-	/**
+    /**
      * @ORM\Column(type="twake_datetime")
-	 */
+     */
     private $startedat;
 
 
-	public function __construct($groupapp) {
-	    $this->group = $groupapp->getGroup();
-		$this->groupapp = $groupapp;
+    public function __construct($groupapp)
+    {
+        $this->group = $groupapp->getGroup();
+        $this->groupapp = $groupapp;
         $this->costmonthly = $groupapp->getApp()->getPriceMonthly();
         $this->costuser = $groupapp->getApp()->getPriceUser();
         $this->startedat = new \DateTime();
-	}
+    }
 
     /**
      * @return mixed

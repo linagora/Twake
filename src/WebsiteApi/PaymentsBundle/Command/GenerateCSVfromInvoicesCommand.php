@@ -32,8 +32,7 @@ class GenerateCSVfromInvoicesCommand extends ContainerAwareCommand
                 InputOption::VALUE_REQUIRED,
                 'How many data should be printed?',
                 10
-            )
-        ;
+            );
 
 
     }
@@ -41,7 +40,6 @@ class GenerateCSVfromInvoicesCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
 
 
         $DEFAULT_PATH = 'factures.csv';
@@ -61,7 +59,7 @@ class GenerateCSVfromInvoicesCommand extends ContainerAwareCommand
         $string_end = substr($pathFile, strlen($pathFile) - $len);
 
         //vérfifie que la fin est bien pour un fichier csv, sinon créé une fin par défaut
-        if(!preg_match("/[a-zA-Z]+.csv/", $string_end)){
+        if (!preg_match("/[a-zA-Z]+.csv/", $string_end)) {
             $pathFile .= "Factures.csv";
         }
 
@@ -85,34 +83,34 @@ class GenerateCSVfromInvoicesCommand extends ContainerAwareCommand
 
         $fichier_csv = fopen($pathFile, 'w+');
 
-        fprintf($fichier_csv, chr(0xEF).chr(0xBB).chr(0xBF)); //corrige les accent pour Excel
+        fprintf($fichier_csv, chr(0xEF) . chr(0xBB) . chr(0xBF)); //corrige les accent pour Excel
 
 
         //recupérations de data depusi les services
 
-        if($limit){
+        if ($limit) {
 
-            $i=1;
-            foreach($services->get("app.billing")->getAllReceipt() as $receipt){
+            $i = 1;
+            foreach ($services->get("app.billing")->getAllReceipt() as $receipt) {
 
                 // /!\ if value equals 0 its display nothing
-                if($receipt && $i<=$limit){
+                if ($receipt && $i <= $limit) {
 
                     $rEntity = $receipt;
                     $receipt = $receipt->getAsArray();
-                    $lignes[]= array(
-                        $receipt["id"]?$receipt["id"]: 0 ,
-                        $receipt["bill_id"] ? $receipt["bill_id"] : 0 ,
+                    $lignes[] = array(
+                        $receipt["id"] ? $receipt["id"] : 0,
+                        $receipt["bill_id"] ? $receipt["bill_id"] : 0,
 
-                        $receipt["label"]?$receipt["label"] : 0,
+                        $receipt["label"] ? $receipt["label"] : 0,
 
                         $receipt["month_price"] ? $receipt["month_price"] : 0,
                         $receipt["year_price"] ? $receipt["year_price"] : 0,
 
-                        $receipt["discount"]? $receipt["discount"] : 0,
-                        $receipt["start_date_of_service"]?$receipt["start_date_of_service"]:0,
-                        $receipt["issue_date"]?$receipt["issue_date"]: 0,
-                        $rEntity->getGroupIdentity()->getGroup()->getName()? $rEntity->getGroupIdentity()->getGroup()->getName():"NULL",
+                        $receipt["discount"] ? $receipt["discount"] : 0,
+                        $receipt["start_date_of_service"] ? $receipt["start_date_of_service"] : 0,
+                        $receipt["issue_date"] ? $receipt["issue_date"] : 0,
+                        $rEntity->getGroupIdentity()->getGroup()->getName() ? $rEntity->getGroupIdentity()->getGroup()->getName() : "NULL",
                         $rEntity->getGroupIdentity()->getId() ? $rEntity->getGroupIdentity()->getId() : 0,
 
                     );
@@ -121,15 +119,14 @@ class GenerateCSVfromInvoicesCommand extends ContainerAwareCommand
 
             }
 
-        }else{
+        } else {
             //pas de limite donc par défaut on récupère tout ?
             //limit est require + default
         }
 
 
-
         // Boucle foreach sur chaque ligne du tableau
-        foreach($lignes as $ligne){
+        foreach ($lignes as $ligne) {
             // chaque ligne en cours de lecture est insérée dans le fichier
             // les valeurs présentes dans chaque ligne seront séparées par $delimiteur
             fputcsv($fichier_csv, $ligne, $delimiteur);

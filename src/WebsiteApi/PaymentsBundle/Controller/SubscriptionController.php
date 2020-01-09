@@ -16,7 +16,8 @@ use WebsiteApi\PaymentsBundle\Services\SubscriptionManagerSystem;
 
 class SubscriptionController extends Controller
 {
-    public function newSubscriptionAction(Request $request){
+    public function newSubscriptionAction(Request $request)
+    {
         $group = $request->request->get("group");
         $pricing_plan = $request->request->get("pricing_plan");
         $balance = $request->request->get("balance");
@@ -27,50 +28,51 @@ class SubscriptionController extends Controller
         $cost = $balance;
         $data["errors"] = Array();
 
-        if(!is_numeric($group)){
+        if (!is_numeric($group)) {
             $data["errors"][] = "group error";
             return new JsonResponse($data);
         }
 
-        if(!is_numeric($pricing_plan)){
+        if (!is_numeric($pricing_plan)) {
             $data["errors"][] = "pricing_plan error";
             return new JsonResponse($data);
         }
 
-        if( ! ($auto_withdrawal===true || $auto_withdrawal===false)){
+        if (!($auto_withdrawal === true || $auto_withdrawal === false)) {
             $data["errors"][] = "auto_withdrawal error";
             return new JsonResponse($data);
         }
 
-        if( ! ($auto_renew===true || $auto_renew===false)){
+        if (!($auto_renew === true || $auto_renew === false)) {
             $data["errors"][] = "auto_renew error";
             return new JsonResponse($data);
         }
 
         $start_date = new \DateTime();
 
-        $monthlyOrYearly = $monthlyOrYearly==1 ? "M" : "Y";
+        $monthlyOrYearly = $monthlyOrYearly == 1 ? "M" : "Y";
 
-        $end_date = (new \DateTime())->add(new \DateInterval("P".$billPeriod.$monthlyOrYearly));
+        $end_date = (new \DateTime())->add(new \DateInterval("P" . $billPeriod . $monthlyOrYearly));
 
         $data["data"] = $this->get("app.subscription_manager")->newSubscription($group, $pricing_plan, $balance, $start_date, $end_date, $auto_withdrawal, $auto_renew, $cost);
 
         return new JsonResponse($data);
     }
 
-    public function getSubscriptionInfoAction(Request $request){
+    public function getSubscriptionInfoAction(Request $request)
+    {
         $group = $request->request->get("groupId");
 
         $data["errors"] = Array();
 
-        if(!is_numeric($group)){
+        if (!is_numeric($group)) {
             $data["errors"][] = "group error";
             return new JsonResponse($data);
         }
 
         $sub = $this->get("app.subscription_system")->get($group);
 
-        if($sub==null){
+        if ($sub == null) {
             $data["errors"][] = 0;
             $data["errors"][] = "no subscription for this group";
             return new JsonResponse($data);
@@ -80,7 +82,7 @@ class SubscriptionController extends Controller
 
         $gp = $this->get("app.subscription_system")->getGroupPeriod($group);
 
-        if($gp==null){
+        if ($gp == null) {
             $data["errors"][] = 0;
             $data["errors"][] = "no group period for this group";
             return new JsonResponse($data);
@@ -91,29 +93,33 @@ class SubscriptionController extends Controller
         $data["data"] = array_merge($sub->getAsArray(), $gp->getAsArray());
         $data["data"]["userCount"] = $this->get("app.subscription_system")->getExpectedUserCount($group);
         $data["data"]["closeGroupPeriod"] = Array();
-        foreach ($closedGroupPeriods as $closedGroupPeriod){
-            array_push($data["data"]["closeGroupPeriod"],$closedGroupPeriod->getAsArray());
+        foreach ($closedGroupPeriods as $closedGroupPeriod) {
+            array_push($data["data"]["closeGroupPeriod"], $closedGroupPeriod->getAsArray());
         }
 
         return new JsonResponse($data);
     }
 
-    public function getPricingPlansAction(){
+    public function getPricingPlansAction()
+    {
         $pricingPlans = $this->get("app.subscription_system")->getPricingPlans();
 
         $pricingPlansArray = Array();
 
-        foreach ($pricingPlans as $pp){
-            array_push($pricingPlansArray,$pp->getAsArray());
+        foreach ($pricingPlans as $pp) {
+            array_push($pricingPlansArray, $pp->getAsArray());
         }
 
         return new JsonResponse($pricingPlansArray);
     }
 
-    public function checkOverusingAction(){
+    public function checkOverusingAction()
+    {
         return new JsonResponse($this->get("app.subscription_manager")->checkOverusing());
     }
-    public function checkEndPeriodAction(){
+
+    public function checkEndPeriodAction()
+    {
         return new JsonResponse($this->get("app.subscription_manager")->checkEndPeriod());
     }
 }

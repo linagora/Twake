@@ -10,7 +10,8 @@ use Symfony\Component\HttpFoundation\Request;
 class CounterController extends Controller
 {
 
-    public function getCounterAction(Request $request) {
+    public function getCounterAction(Request $request)
+    {
 
         $data = Array(
             "data" => Array(),

@@ -10,10 +10,11 @@ namespace WebsiteApi\UploadBundle\Repository;
  */
 class FileRepository extends \WebsiteApi\CoreBundle\Services\DoctrineAdapter\RepositoryAdapter
 {
-    public function sumAllFileSize($idTwakeUser){
+    public function sumAllFileSize($idTwakeUser)
+    {
         $req = $this->createQueryBuilder('F')
             ->select('sum(F.sizes)');
-        $req->where('F.owner = \'' . $idTwakeUser .'\'');
+        $req->where('F.owner = \'' . $idTwakeUser . '\'');
         $req = $req->getQuery()->getResult();
         return $req;
     }

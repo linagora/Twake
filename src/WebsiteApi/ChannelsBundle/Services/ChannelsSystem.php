@@ -15,7 +15,7 @@ class ChannelsSystem extends ChannelSystemAbstract
     {
         $this->messages_service = $messages_service;
         $this->websockets_service = $websockets_service;
-        parent::__construct($entity_manager, $applicationsApi,$workspaceMembers);
+        parent::__construct($entity_manager, $applicationsApi, $workspaceMembers);
     }
 
     /** Called from Collections manager to verify user has access to websockets room, registered in CoreBundle/Services/Websockets.php */
@@ -46,6 +46,9 @@ class ChannelsSystem extends ChannelSystemAbstract
 
         $result = [];
         foreach ($channels as $channel) {
+            if (!$current_user || !$channel) {
+                continue;
+            }
             $res = $this->entity_manager->getRepository("TwakeChannelsBundle:ChannelMember")->findOneBy(Array("direct" => false, "user_id" => $current_user->getId(), "channel_id" => $channel->getId()));
             if ($res) {
                 $tmp = $channel->getAsArray();
@@ -271,25 +274,26 @@ class ChannelsSystem extends ChannelSystemAbstract
         return false;
     }
 
-    public function search($words,$workspaces,$current_user_id){
+    public function search($words, $workspaces, $current_user_id)
+    {
 
         $terms = Array();
         $should_workspaces = Array();
-        foreach ($words as $word){
+        foreach ($words as $word) {
             $st = new StringCleaner();
-            $word= $st->simplifyInArray($word);
+            $word = $st->simplifyInArray($word);
             $terms[] = Array(
                 "bool" => Array(
                     "filter" => Array(
                         "regexp" => Array(
-                            "name" => ".*".$word.".*"
+                            "name" => ".*" . $word . ".*"
                         )
                     )
                 )
             );
         }
 
-        foreach($workspaces as $workspace) {
+        foreach ($workspaces as $workspace) {
             $should_workspaces[] = Array(
                 "match_phrase" => Array(
                     "workspace_id" => $workspace["id"]
@@ -336,24 +340,25 @@ class ChannelsSystem extends ChannelSystemAbstract
 
         $result = [];
         foreach ($channels["result"] as $channel) {
-            $result[]= Array($channel[0]->getAsArray(),$channel[1][0]);
+            $result[] = Array($channel[0]->getAsArray(), $channel[1][0]);
         }
 
         return $result;
 
     }
 
-    public function searchprivate($words,$current_user_id){
+    public function searchprivate($words, $current_user_id)
+    {
 
         $terms = Array();
-        foreach ($words as $word){
+        foreach ($words as $word) {
             $st = new StringCleaner();
-            $word= $st->simplifyInArray($word);
+            $word = $st->simplifyInArray($word);
             $terms[] = Array(
                 "bool" => Array(
                     "filter" => Array(
                         "regexp" => Array(
-                            "name" => ".*".$word.".*"
+                            "name" => ".*" . $word . ".*"
                         )
                     )
                 )
@@ -373,7 +378,7 @@ class ChannelsSystem extends ChannelSystemAbstract
                     "should" => Array(
                         $terms
                     ),
-                "minimum_should_match" => 2
+                    "minimum_should_match" => 2
                 )
             ),
             "sort" => Array(
@@ -387,7 +392,7 @@ class ChannelsSystem extends ChannelSystemAbstract
 
         $result = [];
         foreach ($channels["result"] as $channel) {
-            $result[]= Array($channel[0]->getAsArray(),$channel[1][0]);
+            $result[] = Array($channel[0]->getAsArray(), $channel[1][0]);
         }
 
         return $result;

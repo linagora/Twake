@@ -7,7 +7,6 @@ use Reprovinci\DoctrineEncrypt\Configuration\Encrypted;
 use Symfony\Component\Validator\Constraints\DateTime;
 use WebsiteApi\CoreBundle\Entity\FrontObject;
 use WebsiteApi\CoreBundle\Entity\SearchableObject;
-use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
 
 /**
  * DriveFile
@@ -15,7 +14,7 @@ use WebsiteApi\ObjectLinksBundle\Model\ObjectLinksInterface;
  * @ORM\Table(name="drive_file",options={"engine":"MyISAM", "scylladb_keys": {{"workspace_id":"ASC", "parent_id":"ASC", "isintrash": "ASC", "id":"DESC"}, {"id": "DESC"}, {"previewhasbeengenerated": "DESC"}} })
  * @ORM\Entity(repositoryClass="WebsiteApi\DriveBundle\Repository\DriveFileRepository")
  */
-class DriveFile extends SearchableObject implements ObjectLinksInterface
+class DriveFile extends SearchableObject
 {
     /**
      * @ORM\Column(name="id", type="twake_timeuuid")
@@ -141,7 +140,6 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     private $copyof;
 
 
-
     /**
      * @ORM\Column(type="twake_boolean")
      */
@@ -213,6 +211,12 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
      */
     private $tags;
 
+    /**
+     * @ORM\Column(name="attachements", type="twake_text")
+     */
+    private $attachements = "[]";
+
+
     protected $es_type = "drive_file";
 
     public function __construct($workspace_id, $parent_id, $isdirectory = false)
@@ -262,9 +266,9 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     public function getIndexationArray()
     {
         return Array(
-            "id" => $this->getId()."",
+            "id" => $this->getId() . "",
             "type" => $this->getExtension(),
-            "name"=> $this->getName(),
+            "name" => $this->getName(),
             "creation_date" => ($this->getAdded() ? $this->getAdded()->format('Y-m-d') : null),
             "creator" => $this->getCreator(),
             "size" => $this->getSize(),
@@ -483,7 +487,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             return null;
         }
 
-        if($this->getDetachedFile()){
+        if ($this->getDetachedFile()) {
             return "" . $this->workspace_id . "/" . $this->getLastVersionId();
         }
         return $this->workspace_id . "/" . $this->getLastVersionId();
@@ -497,7 +501,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
         if ($this->getLastVersionId() == null) {
             return null;
         }
-        if($this->getDetachedFile()){
+        if ($this->getDetachedFile()) {
             return "" . $this->workspace_id . "/preview/" . $this->getLastVersionId() . ".png";
         }
         return $this->workspace_id . "/preview/" . $this->getLastVersionId() . ".png";
@@ -604,7 +608,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     public function setSize($size)
     {
         $this->size = $size;
-        if($this->size < 10){
+        if ($this->size < 10) {
             $this->size = 0;
         }
     }
@@ -635,7 +639,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     public function getCache()
     {
         $cache = json_decode($this->cache, 1);
-        return ($cache)?$cache:Array();
+        return ($cache) ? $cache : Array();
     }
 
     /**
@@ -699,28 +703,32 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     /**
      * @return mixed
      */
-    public function getUrl(){
+    public function getUrl()
+    {
         return $this->url;
     }
 
     /**
      * @param $url
      */
-    public function setUrl($url){
+    public function setUrl($url)
+    {
         $this->url = $url;
     }
 
     /**
      * @return mixed
      */
-    public function getOpeningRate(){
+    public function getOpeningRate()
+    {
         return $this->opening_rate;
     }
 
     /**
      * @param $opening_rate
      */
-    public function setOpeningRate($opening_rate){
+    public function setOpeningRate($opening_rate)
+    {
         $this->opening_rate = $opening_rate;
     }
 
@@ -755,9 +763,9 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             'name' => $this->getName(),
             'description' => $this->getDescription(),
             "last_user" => $this->getLastUser(),
-            'size' => $this->getSize()?$this->getSize():0,
+            'size' => $this->getSize() ? $this->getSize() : 0,
             'added' => $this->getAdded() ? $this->getAdded()->getTimestamp() : null,
-            'modified' => (($this->getLastModified())?$this->getLastModified()->getTimestamp():0),
+            'modified' => (($this->getLastModified()) ? $this->getLastModified()->getTimestamp() : 0),
             "last_modification_token" => $this->getLastModificationToken(),
             "extension" => $this->getExtension(),
             "cache" => $this->getCache(),
@@ -769,13 +777,13 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "has_preview" => $this->getHasPreview(),
             "preview_has_been_generated" => $this->getPreviewHasBeenGenerated(),
             "default_web_app_id" => $this->getDefaultWebApp() ? $this->getDefaultWebApp()->getId() : null,
-            "object_link_cache" => $this->getObjectLinkCache(),
             //"keywords" => $this->getContentKeywords()
             "acces_info" => $this->getAccesInfo(),
             "application_id" => $this->getApplicationId(),
             "external_storage" => $this->getExternalStorage(),
             "hidden_data" => $this->getHiddenData(),
-            "tags" => $this->getTags()
+            "tags" => $this->getTags(),
+            "attachments" => $this->getAttachements(),
 
         );
     }
@@ -813,11 +821,13 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     }
 
 
-    public function getRepository(){
+    public function getRepository()
+    {
         return "TwakeDriveBundle:DriveFile";
     }
 
-    public function getAsArrayFormated(){
+    public function getAsArrayFormated()
+    {
         return Array(
             "id" => $this->getId(),
             "title" => "File",
@@ -832,6 +842,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
             "key" => "drive",
             "type" => "file",
             "code" => "twake/" . ($this->getParent() ? $this->getParent()->getId() : 0) . "/" . $this->getId(),
+            "attachments" => $this->getAttachements(),
         );
     }
 
@@ -857,7 +868,7 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
 
     public function getPushRoute()
     {
-        return "drive/".$this->getId();
+        return "drive/" . $this->getId();
     }
 
     /**
@@ -896,16 +907,6 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
     public function finishSynchroniseField($data)
     {
         // TODO: Implement finishSynchroniseField($data) method.
-    }
-
-    public function setObjectLinkCache($cache)
-    {
-        $this->object_link_cache = json_encode($cache);
-    }
-
-    public function getObjectLinkCache()
-    {
-        return json_decode($this->object_link_cache, 1);
     }
 
     /**
@@ -959,5 +960,21 @@ class DriveFile extends SearchableObject implements ObjectLinksInterface
         $this->hidden_data = json_encode($hidden_data);
     }
 
+
+    /**
+     * @return mixed
+     */
+    public function getAttachements()
+    {
+        return json_decode($this->attachements, true);
+    }
+
+    /**
+     * @param mixed $tags
+     */
+    public function setAttachements($attachements)
+    {
+        $this->attachements = json_encode($attachements);
+    }
 
 }
