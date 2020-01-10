@@ -14,28 +14,25 @@ services:
       command: '--experimental 1'
     php:
         image: twake-php
-        build: twake-php
+        build: Docker/twake-php
         volumes:
             - ./cron:/cron
-            - ./src/twake-core:/twake-core:cached
-            - ./src/twake-react:/twake-react
+            - ./:/twake-core:cached
             - ./data/fpm/:/etc/data/fpm/
         depends_on:
           - scylladb
-#          - mysql
           - elasticsearch_twake
         links:
           - websockets
           - scylladb
     websockets:
         image: twake-websockets
-        build: twake-websockets
+        build: Docker/twake-websockets
         volumes:
             - ./cron:/cron
-            - ./src/twake-core:/twake-core:cached
+            - ./:/twake-core:cached
         depends_on:
             - scylladb
-#          - mysql
         restart: "always"
     elasticsearch_twake:
         image: docker.elastic.co/elasticsearch/elasticsearch:6.4.3
@@ -55,7 +52,7 @@ services:
         restart: "always"
     nginx:
         image: twake-nginx
-        build: twake-nginx
+        build: Docker/twake-nginx
         ports:
             - 8000:80
         links:
@@ -68,7 +65,7 @@ services:
             - ./data/letsencrypt/:/etc/letsencrypt/
     php_push_server:
         image: twake-php-push-server
-        build: twake-php-push-server
+        build: Docker/twake-php-push-server
         volumes:
             - ./data/twake-push-server:/twake-push-server
         restart: "unless-stopped"

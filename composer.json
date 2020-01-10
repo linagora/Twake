@@ -58,7 +58,7 @@
       "spatie/pdf-to-text": "*",
       "dilab/resumable.php": "0.1.4",
       "ci/restclientbundle": "^2.0",
-      "sentry/sentry-symfony": "*"
+      "sentry/sentry-symfony": "^3.0"
     },
     "require-dev": {
         "sensio/generator-bundle": "^3.0",
