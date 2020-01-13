@@ -56,8 +56,7 @@ class AppKernel extends Kernel
             new AdministrationApi\WorkspacesBundle\AdministrationApiWorkspacesBundle(),
             new AdministrationApi\AppsBundle\AdministrationApiAppsBundle(),
             new AdministrationApi\CounterBundle\AdministrationApiCounterBundle(),
-            new AdministrationApi\GroupBundle\AdministrationApiGroupBundle(),
-            new Sentry\SentryBundle\SentryBundle(),
+            new AdministrationApi\GroupBundle\AdministrationApiGroupBundle()
         ];
 
         if (in_array($this->getEnvironment(), ['dev', 'test'], true)) {

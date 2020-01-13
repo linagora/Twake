@@ -174,6 +174,3 @@ tweede_golf_prometheus:
                 labels: [app, route]
                 help: Response size in bytes
                 initializer: 0
-
-sentry:
-    dsn: "https://14b316a4d17c44558068e89ab2220060@sentry.io/1775817"
