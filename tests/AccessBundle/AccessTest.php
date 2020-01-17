@@ -463,16 +463,6 @@ class AccessTest extends WebTestCaseExtended
 
         $this->assertEquals(false,$result["data"], "User 2 have access to filefortest , he should not");
 
-
-        $data = Array("type" => "DriveFile", "object_id" => $idtofind_detached);
-
-        $result = $this->doPost("/ajax/core/access", Array(
-            "data" => $data
-        ));
-
-        $this->assertEquals(true,$result["data"], "User 2 don't have access to detached file , he should");
-
-
         $data = Array("type" => "DriveFile", "object_id" => $idtofind_shared);
 
         $result = $this->doPost("/ajax/core/access", Array(
