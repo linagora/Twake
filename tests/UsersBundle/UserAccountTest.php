@@ -373,19 +373,6 @@ class UserAccountTest extends WebTestCaseExtended
         $result = $result["errors"][0];
         $this->assertEquals("usernamealreadytaken", $result, "testing username available");
 
-
-        $result = $this->doPost("/ajax/users/subscribe/mail", Array(
-            "email" => "usertest001@twake_phpunit.fr",
-            "username" => "usertestfortest",
-            "password" => "usertest001",
-            "name" => "namefortest",
-            "firstname" => "firstnamefortest",
-            "phone" => "phonefortest"
-        ));
-        $result = $result["errors"][0];
-        $this->assertEquals("mailalreadytaken", $result, "testing mail available");
-
-
         $result = $this->doPost("/ajax/users/subscribe/mail", Array(
             "email" => "12345678",
             "username" => "usertestfortest",
@@ -397,8 +384,9 @@ class UserAccountTest extends WebTestCaseExtended
         $result = $result["errors"][0];
         $this->assertEquals("mailalreadytaken", $result, "Testing wrong mail format");
 
+
         $result = $this->doPost("/ajax/users/subscribe/mail", Array(
-            "email" => "usertest001_123456@twake_phpunit.fr",
+            "email" => "usertest001@twake_phpunit.fr",
             "username" => "usertestfortest",
             "password" => "usertest001",
             "name" => "namefortest",
@@ -406,7 +394,7 @@ class UserAccountTest extends WebTestCaseExtended
             "phone" => "phonefortest"
         ));
         $result = $result["errors"][0];
-        $this->assertEquals("usernamealreadytaken", $result, "testing username available");
+        $this->assertEquals("mailalreadytaken", $result, "testing mail available");
 
 
         $mailfortest = new Mail();
