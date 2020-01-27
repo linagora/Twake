@@ -15,7 +15,6 @@ use WebsiteApi\UsersBundle\Entity\User;
 use WebsiteApi\WorkspacesBundle\Entity\Level;
 use WebsiteApi\WorkspacesBundle\Entity\WorkspaceUser;
 use WebsiteApi\WorkspacesBundle\Entity\Workspace;
-use WebsiteApi\PaymentsBundle\Entity\PriceLevel;
 use WebsiteApi\UploadBundle\Entity\File;
 use Symfony\Component\Console\Helper\ProgressBar;
 use WebsiteApi\WorkspacesBundle\Entity\PricingPlan;

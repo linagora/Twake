@@ -14,7 +14,7 @@ services:
 
     app.group_period:
         class: WebsiteApi\WorkspacesBundle\Services\GroupPeriods
-        arguments: ["@app.twake_doctrine", "@app.subscription_system"]
+        arguments: ["@app.twake_doctrine"]
 
     app.pricing_plan:
         class: WebsiteApi\WorkspacesBundle\Services\PricingPlan

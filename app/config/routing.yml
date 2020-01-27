@@ -33,11 +33,6 @@ twake_upload:
     prefix:   /ajax/upload/
     methods: [POST]
 
-twake_payments:
-    resource: "@TwakePaymentsBundle/Resources/config/routing.yml"
-    prefix:   /ajax/payments/
-    methods: [POST]
-
 twake_workspaces:
     resource: "@TwakeWorkspacesBundle/Resources/config/routing.yml"
     prefix:   /ajax/workspace/

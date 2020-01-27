@@ -14,12 +14,10 @@ class GroupPeriods implements GroupPeriodInterface
 {
 
     private $doctrine;
-    private $subscriptionSystem;
 
-    public function __construct($doctrine, $subscriptionSystem)
+    public function __construct($doctrine)
     {
         $this->doctrine = $doctrine;
-        $this->subscriptionSystem = $subscriptionSystem;
     }
 
     public function changePlanOrRenew($group, $billingType, $planId)
@@ -107,7 +105,6 @@ class GroupPeriods implements GroupPeriodInterface
     public function groupPeriodOverCost($groupPeriod)
     {
 
-        $this->subscriptionSystem->addBalanceConsumption($groupPeriod->getCurrentCost(), $groupPeriod->getGroup());
         $closedGroupPeriod = new ClosedGroupPeriod($groupPeriod);
 
         $newGroupPeriod = new GroupPeriod($groupPeriod->getGroup());
