@@ -28,6 +28,7 @@ parameters:
     mailer_port : -
     mailer_encryption: -
     mailer_auth_mode: plain
+    administration_token: 1234567890
     secret: c9a17eab88ab63bb3e90c027196a89776651a7c0
 
     cas_base_url: -
